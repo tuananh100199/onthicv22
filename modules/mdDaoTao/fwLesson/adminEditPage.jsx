@@ -3,6 +3,8 @@ import { connect } from 'react-redux';
 import { getLesson, updateLesson, createLessonVideo, swapLessonVideo, deleteLessonVideo, updateLessonVideo, changeLessonQuestions } from './redux';
 import { Link } from 'react-router-dom';
 import { QuestionView } from 'modules/_default/fwQuestion/index';
+import { getRateLessonByAdminPage } from 'modules/_default/fwRate/redux';
+import Pagination from 'view/component/Pagination';
 import { AdminPage, AdminModal, FormTabs, FormTextBox, FormRichTextBox, FormEditor, FormCheckbox, FormImageBox, CirclePageButton, TableCell, renderTable } from 'view/component/AdminPage';
 
 class VideoModal extends AdminModal {
@@ -69,6 +71,8 @@ class VideoModal extends AdminModal {
 const adminPageLink = '/user/dao-tao/bai-hoc';
 class adminEditPage extends AdminPage {
     state = {};
+    pageSize = 20;
+    state = { pageNumber: 1, pageTotal: -1 };
     componentDidMount() {
         T.ready(adminPageLink, () => {
             const params = T.routeMatcher('/user/dao-tao/bai-hoc/:_id').parse(window.location.pathname);
@@ -85,6 +89,7 @@ class adminEditPage extends AdminPage {
                         this.itemNumQuestion.value(numQuestion);
                         this.setState({ _id, title });
                         this.itemTitle.focus();
+                        this.props.getRateLessonByAdminPage(1, 20, { _refId: params._id, type: 'lesson' });
                     } else {
                         this.props.history.push(adminPageLink);
                     }
@@ -109,7 +114,8 @@ class adminEditPage extends AdminPage {
 
     render() {
         const permission = this.getUserPermission('lesson');
-
+        const { pageNumber, pageSize, pageTotal, totalItem } = this.props.rate && this.props.rate.page ?
+            this.props.rate.page : { pageNumber: 1, pageSize: 50, pageTotal: 1, totalItem: 0 };
         const tableVideo = renderTable({
             getDataSource: () => this.props.lesson && this.props.lesson.item && this.props.lesson.item.videos,
             renderHead: () => (
@@ -132,11 +138,33 @@ class adminEditPage extends AdminPage {
                 </tr>),
         });
 
+        const tableRate = renderTable({
+            getDataSource: () => this.props.rate && this.props.rate.page && this.props.rate.page.list,
+            renderHead: () => (
+                <tr>
+                    <th style={{ width: 'auto', textAlign: 'center' }}>#</th>
+                    <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Tên học viên</th>
+                    <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>CMND/CCCD</th>
+                    <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Số điện thoại</th>
+                    <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Đánh giá</th>
+                    <th style={{ width: '100%', textAlign: 'center' }} >Nhận xét</th>
+                </tr>),
+            renderRow: (item, index) => (
+                <tr key={index}>
+                    <TableCell type='number' content={index + 1} />
+                    <TableCell type='text' content={item.user && (item.user.lastname + ' ' + item.user.firstname)} />
+                    <TableCell type='text' content={item.user && item.user.identityCard} />
+                    <TableCell type='text' style={{ textAlign: 'center' }} content={item.user && item.user.phoneNumber} />
+                    <TableCell type='text' style={{ textAlign: 'center' }} content={item.value} />
+                    <TableCell type='text' content={item.note} />
+                </tr>),
+        });
+
         const componentInfo = (
             <div className='tile-body'>
                 <FormTextBox ref={e => this.itemTitle = e} label='Tên bài học' value={this.state.title} onChange={e => this.setState({ title: e.target.value })} readOnly={!permission.write} />
                 <FormRichTextBox ref={e => this.itemDescription = e} label='Mô tả ngắn gọn' rows='3' readOnly={!permission.write} />
-                <FormTextBox ref={e => this.itemNumQuestion = e} type='number' label='Số lượng câu hỏi ôn tập' value={this.state.numQuestion}  readOnly={!permission.write}></FormTextBox>
+                <FormTextBox ref={e => this.itemNumQuestion = e} type='number' label='Số lượng câu hỏi ôn tập' value={this.state.numQuestion} readOnly={!permission.write}></FormTextBox>
                 <FormEditor ref={e => this.itemEditor = e} label='Mô tả chi tiết' readOnly={!permission.write} />
                 {permission.write ? <CirclePageButton type='save' onClick={this.saveInfo} /> : null}
             </div>);
@@ -149,20 +177,33 @@ class adminEditPage extends AdminPage {
                     create={this.props.createLessonVideo} update={this.props.updateLessonVideo} change={() => this.props.getLesson(this.state._id)} />
             </div>);
 
+        const componentRate = (
+            <div className='tile-body'>
+                {tableRate}
+            </div>);
+
         const questions = this.props.lesson && this.props.lesson.item && this.props.lesson.item.questions,
             componentQuestion = <QuestionView type='lesson' parentId={this.state._id} className='tile-body' permission={permission} questions={questions} changeQuestions={this.props.changeLessonQuestions} />;
 
-        const tabs = [{ title: 'Thông tin chung', component: componentInfo }, { title: 'Video', component: componentVideo }, { title: 'Câu hỏi', component: componentQuestion }];
+        const tabs = [
+            { title: 'Thông tin chung', component: componentInfo },
+            { title: 'Video', component: componentVideo },
+            { title: 'Câu hỏi', component: componentQuestion },
+            { title: 'Đánh giá', component: componentRate }
+        ];
         return this.renderPage({
             icon: 'fa fa-book',
             title: 'Bài học: ' + (this.state.title || '...'),
             breadcrumb: [<Link key={0} to={adminPageLink}>Bài học</Link>, 'Chỉnh sửa'],
-            content: <FormTabs id='componentPageTab' contentClassName='tile' tabs={tabs} />,
+            content: <>
+                <FormTabs id='componentPageTab' contentClassName='tile' tabs={tabs} />
+                <Pagination name='pageLesson' style={{ left: 320 }} pageNumber={pageNumber} pageSize={pageSize} pageTotal={pageTotal} totalItem={totalItem} getPage={(pageNumber, pageSize) => this.props.getRateLessonByAdminPage(pageNumber, pageSize, { _refId: this.state._id, type: 'lesson' })} />
+            </>,
             backRoute: adminPageLink,
         });
     }
 }
 
-const mapStateToProps = state => ({ system: state.system, lesson: state.trainning.lesson });
-const mapActionsToProps = { getLesson, updateLesson, createLessonVideo, swapLessonVideo, deleteLessonVideo, updateLessonVideo, changeLessonQuestions };
+const mapStateToProps = state => ({ system: state.system, lesson: state.trainning.lesson, rate: state.framework.rate });
+const mapActionsToProps = { getLesson, updateLesson, createLessonVideo, swapLessonVideo, deleteLessonVideo, updateLessonVideo, changeLessonQuestions, getRateLessonByAdminPage };
 export default connect(mapStateToProps, mapActionsToProps)(adminEditPage);

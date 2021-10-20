@@ -24,6 +24,7 @@ class LecturerRatingPage extends AdminPage {
                         } else {
                             this.getLearningProgress(params._id);
                             this.loadSubject(data.item && data.item.subjects && data.item.subjects[0]._id, params._id);
+                            // this.itemSubject.value({ id: data.item.subjects[0]._id, text: data.item.subjects[0].title });
                         }
                     });
                 }
@@ -64,20 +65,36 @@ class LecturerRatingPage extends AdminPage {
         const students = this.props.course && this.props.course.students ? this.props.course.students : [],
             rate = this.props.rate;
         const select = <FormSelect data={listSubjects} label='Môn học' onChange={data => this.loadSubject(data.id, course._id)} style={{ margin: 0, width: '200px !important' }} />;
+        // TODO:Sang: khi load trang không hiển thị môn học mặc định(môn học [0]) ở FormSelect
         const table = renderTable({
             getDataSource: () => students, stickyHead: true,
             renderHead: () => (
                 <tr>
                     <th style={{ width: 'auto', textAlign: 'center' }}>#</th>
-                    <th style={{ width: '100%' }}>Tên học viên</th>
-                    {lessons.length ? lessons.map((lesson, i) => (<th key={i} style={{ width: 'auto' }} nowrap='true'>{lesson.title}</th>)) : null}
+                    <th style={{ width: '100%', textAlign: 'center' }}>Tên học viên</th>
+                    {lessons.length ? lessons.map((lesson, i) => (<th key={i} style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>{lesson.title}</th>)) : null}
 
                 </tr>),
             renderRow: (item, index) => (
                 <tr key={index}>
                     <TableCell type='number' content={index + 1} />
                     <TableCell type='text' content={item.lastname + ' ' + item.firstname} />
-                    {lessons.length ? lessons.map((lesson, i) => (<TableCell key={i} type='text' content={rate && rate.item && rate.item.find(element => (element._refId == lesson._id && element.user._id == item.user._id)) ? rate.item.find(element => (element._refId == lesson._id && element.user._id == item.user._id)).value : null} />)) : null}
+                    {lessons.length ? lessons.map((lesson, i) => (<TableCell key={i} type='text' style={{ textAlign: 'center' }}
+                        // onMouseEnter={() => {
+                        //     $('#' + lesson._id + item.user._id).addClass('d-block');
+                        //     $('#' + lesson._id + item.user._id).removeClass('d-none');
+                        // }}
+                        // onMouseLeave={() => {
+                        //     $('#' + lesson._id + item.user._id).addClass('d-none');
+                        //     $('#' + lesson._id + item.user._id).removeClass('d-block');
+                        // }}
+                        content={
+                            rate && rate.item && rate.item.find(element => (element._refId == lesson._id && element.user._id == item.user._id)) ?
+                                <div>
+                                    <p data-toggle='tooltip' title={rate.item.find(element => (element._refId == lesson._id && element.user._id == item.user._id)).note}>{rate.item.find(element => (element._refId == lesson._id && element.user._id == item.user._id)).value}</p>
+                                </div> :
+                                null} />)) :
+                        null}
                 </tr>),
         });
         const backRoute = `/user/course/${course._id}`;
@@ -93,7 +110,7 @@ class LecturerRatingPage extends AdminPage {
                         </div>
                         {table}
                     </div>
-                </div>;
+                </div>
             </>,
             backRoute,
         });
