@@ -81,7 +81,7 @@ class SectionChat extends AdminPage {
                 this.setState({
                     oldMessagePersonal: data.chats,
                     _selectedUserId: studentId,
-                    isLastedChat: false,
+                    isLastedChat: data.chats && data.chats.length < 20,
                     userName: student.lastname + ' ' + student.firstname,
                     userImage: student.image
                 });
