@@ -27,7 +27,7 @@ module.exports = (app) => {
     app.get('/user/course/:_id/representer', app.permission.check('course:read'), app.templates.admin);
     app.get('/user/course/:_id/rate-teacher', app.permission.check('course:read'), app.templates.admin);
     app.get('/user/course/:_id/feedback', app.permission.check('course:read'), app.templates.admin);
-    app.get('/user/course/:_id/feedback/:_feedbackId', app.permission.check('course:read'), app.templates.admin);   
+    app.get('/user/course/:_id/feedback/:_feedbackId', app.permission.check('course:read'), app.templates.admin);
     app.get('/user/course/:_id/your-students', app.permission.check('course:read'), app.templates.admin);
     app.get('/user/course/:_id/learning', app.permission.check('course:read'), app.templates.admin);
     app.get('/user/course/:_id/calendar', app.permission.check('course:read'), app.templates.admin);
@@ -487,9 +487,9 @@ module.exports = (app) => {
                         : 0) + subjectNext, 0) / monLyThuyet.length).toFixed(1));
 
                 const diemThucHanh = student.diemThucHanh ? Number(student.diemThucHanh) : 0;
-                if (filterOn){
-                    const diemTB = ((diemLyThuyet + diemThucHanh )/ 2).toFixed(1);
-                    if (5 <= diemTB){
+                if (filterOn) {
+                    const diemTB = ((diemLyThuyet + diemThucHanh) / 2).toFixed(1);
+                    if (5 <= diemTB) {
                         return app.clone(student, { diemLyThuyet, diemThucHanh });
                     }
                 } else {
@@ -500,124 +500,117 @@ module.exports = (app) => {
         });
     });
 
-    app.get('/api/course/learning-progress/export/:filterOn', app.permission.check('course:export'), (req, res) => {
+    app.get('/api/course/learning-progress/export', app.permission.check('course:export'), (req, res) => {
         const pageNumber = parseInt(req.params.pageNumber),
-        pageSize = parseInt(req.params.pageSize),
-        sessionUser = req.session.user,
-        condition = req.query.pageCondition || {},
-        pageCondition = { course: condition.courseId || { $ne: null } },
-        filterOn = (req.params.filterOn === 'true');
+            pageSize = parseInt(req.params.pageSize),
+            sessionUser = req.session.user,
+            condition = req.query.pageCondition || {},
+            pageCondition = { course: condition.courseId || { $ne: null } };
 
-    let listStudent = [],
-        subjects = [];
+        let listStudent = [],
+            subjects = [];
 
-    new Promise(resolve => {
-        if (sessionUser.isCourseAdmin) {
-            if (condition.searchText) {
-                const value = { $regex: `.*${condition.searchText}.*`, $options: 'i' };
-                pageCondition.$or = [
-                    { firstname: value },
-                    { lastname: value },
-                ];
+        new Promise(resolve => {
+            if (sessionUser.isCourseAdmin) {
+                if (condition.searchText) {
+                    const value = { $regex: `.*${condition.searchText}.*`, $options: 'i' };
+                    pageCondition.$or = [
+                        { firstname: value },
+                        { lastname: value },
+                    ];
+                }
+                app.model.student.getPage(pageNumber, pageSize, pageCondition, (error, page) => {
+                    if (error || !page) {
+                        res.send({ error });
+                    } else {
+                        page = app.clone(page);
+                        listStudent = page && page.list ? page.list.map(item => item = app.clone(item)) : [];
+                        subjects = listStudent.length && listStudent[0].course && listStudent[0].course.subjects ? listStudent[0].course.subjects : [];
+                        resolve();
+                    }
+                });
+            } else if (sessionUser.isLecturer) {
+                app.model.course.get(req.query._id, (error, item) => {
+                    if (error || !item) {
+                        res.send({ error });
+                    } else {
+                        item = app.clone(item);
+                        const studentTeacherGroup = item.teacherGroups.find(teacherGroup => teacherGroup.teacher && teacherGroup.teacher._id == sessionUser._id);
+                        listStudent = studentTeacherGroup ? studentTeacherGroup.student : [];
+                        subjects = item.subjects ? item.subjects : [];
+                        resolve();
+                    }
+                });
             }
-            app.model.student.getPage(pageNumber, pageSize, pageCondition, (error, page) => {
-                if (error || !page) {
-                    res.send({ error });
-                } else {
-                    page = app.clone(page);
-                    listStudent = page && page.list ? page.list.map(item => item = app.clone(item)) : [];
-                    subjects = listStudent.length && listStudent[0].course && listStudent[0].course.subjects ? listStudent[0].course.subjects : [];
-                    resolve();
-                }
-            });
-        } else if (sessionUser.isLecturer) {
-            app.model.course.get(req.query._id, (error, item) => {
-                if (error || !item) {
-                    res.send({ error });
-                } else {
-                    item = app.clone(item);
-                    const studentTeacherGroup = item.teacherGroups.find(teacherGroup => teacherGroup.teacher && teacherGroup.teacher._id == sessionUser._id);
-                    listStudent = studentTeacherGroup ? studentTeacherGroup.student : [];
-                    subjects = item.subjects ? item.subjects : [];
-                    resolve();
-                }
-            });
-        }
-    }).then(() => {
-        const monLyThuyet = subjects.filter(subject => subject.monThucHanh == false);
-        let listStudentReturn = listStudent.map((student => {
-            student = app.clone(student, { subject: {} });
-            subjects.forEach(subject => {
-                const diemMonHoc =
-                    student && student.tienDoHocTap && student.tienDoHocTap[subject._id] ?
-                        Number((Object.entries(student.tienDoHocTap[subject._id]).reduce((lessonNext, lesson) =>
-                            Number(lesson[1].score) / Object.keys(lesson[1].trueAnswers).length * 10 + lessonNext, 0)) / subject.lessons.length).toFixed(1) : 0;
-                const completedLessons = (subject && student.tienDoHocTap && student.tienDoHocTap[subject._id] ?
-                    (Object.keys(student.tienDoHocTap[subject._id]).length > subject.lessons.length ?
-                        subject.lessons.length :
-                        Object.keys(student.tienDoHocTap[subject._id]).length)
-                    : 0);
-                const obj = {};
-                obj[subject._id] = {
-                    completedLessons: completedLessons,
-                    numberLessons: subject.lessons.length ? subject.lessons.length : 0,
-                    diemMonHoc: diemMonHoc
-                };
-                student.subject = app.clone(student.subject, obj);
-            });
-            const diemLyThuyet = Number((monLyThuyet.reduce((subjectNext, subject) =>
-                (subject && student.tienDoHocTap && student.tienDoHocTap[subject._id] ?
-                    Number((Object.keys(student.tienDoHocTap[subject._id]).length ?
-                        Object.entries(student.tienDoHocTap[subject._id]).reduce((lessonNext, lesson) =>
-                            Number(lesson[1].score) / Object.keys(lesson[1].trueAnswers).length * 10 + lessonNext, 0) ?
-                            (Number(Object.entries(student.tienDoHocTap[subject._id]).reduce((lessonNext, lesson) =>
-                                Number(lesson[1].score) / Object.keys(lesson[1].trueAnswers).length * 10 + lessonNext, 0)) / subject.lessons.length).toFixed(1) : 0
-                        : 0))
-                    : 0) + subjectNext, 0) / monLyThuyet.length).toFixed(1));
+        }).then(() => {
+            const monLyThuyet = subjects.filter(subject => subject.monThucHanh == false);
+            let listStudentReturn = listStudent.map((student => {
+                student = app.clone(student, { subject: {} });
+                subjects.forEach(subject => {
+                    const diemMonHoc =
+                        student && student.tienDoHocTap && student.tienDoHocTap[subject._id] ?
+                            Number((Object.entries(student.tienDoHocTap[subject._id]).reduce((lessonNext, lesson) =>
+                                Number(lesson[1].score) / Object.keys(lesson[1].trueAnswers).length * 10 + lessonNext, 0)) / subject.lessons.length).toFixed(1) : 0;
+                    const completedLessons = (subject && student.tienDoHocTap && student.tienDoHocTap[subject._id] ?
+                        (Object.keys(student.tienDoHocTap[subject._id]).length > subject.lessons.length ?
+                            subject.lessons.length :
+                            Object.keys(student.tienDoHocTap[subject._id]).length)
+                        : 0);
+                    const obj = {};
+                    obj[subject._id] = {
+                        completedLessons: completedLessons,
+                        numberLessons: subject.lessons.length ? subject.lessons.length : 0,
+                        diemMonHoc: diemMonHoc
+                    };
+                    student.subject = app.clone(student.subject, obj);
+                });
+                const diemLyThuyet = Number((monLyThuyet.reduce((subjectNext, subject) =>
+                    (subject && student.tienDoHocTap && student.tienDoHocTap[subject._id] ?
+                        Number((Object.keys(student.tienDoHocTap[subject._id]).length ?
+                            Object.entries(student.tienDoHocTap[subject._id]).reduce((lessonNext, lesson) =>
+                                Number(lesson[1].score) / Object.keys(lesson[1].trueAnswers).length * 10 + lessonNext, 0) ?
+                                (Number(Object.entries(student.tienDoHocTap[subject._id]).reduce((lessonNext, lesson) =>
+                                    Number(lesson[1].score) / Object.keys(lesson[1].trueAnswers).length * 10 + lessonNext, 0)) / subject.lessons.length).toFixed(1) : 0
+                            : 0))
+                        : 0) + subjectNext, 0) / monLyThuyet.length).toFixed(1));
 
-            const diemThucHanh = student.diemThucHanh ? Number(student.diemThucHanh) : 0;
-            if (filterOn){
-                const diemTB = ((diemLyThuyet + diemThucHanh )/ 2).toFixed(1);
-                if (5 <= diemTB){
-                    return app.clone(student, { diemLyThuyet, diemThucHanh });
-                }
-            } else {
-                return app.clone(student, { diemLyThuyet, diemThucHanh });
-            }
-        }));
-        const workbook = app.excel.create(), worksheet = workbook.addWorksheet('LearningProgress');
-        const cells = [
-            { cell: 'A1', value: 'STT', bold: true, border: '1234' },
-            { cell: 'B1', value: 'Họ', bold: true, border: '1234' },
-            { cell: 'C1', value: 'Tên', bold: true, border: '1234' },
-            { cell: 'D1', value: 'CMND/CCCD', bold: true, border: '1234' },
-            { cell: 'E1', value: 'Điểm lý thuyết', bold: true, border: '1234' },
-            { cell: 'F1', value: 'Điểm thực hành', bold: true, border: '1234' },
-            { cell: 'G1', value: 'Điểm trung bình', bold: true, border: '1234' },
-        ];
+                const diemThucHanh = student.diemThucHanh ? Number(student.diemThucHanh) : 0;
+                const diemTB = ((diemLyThuyet + diemThucHanh) / 2).toFixed(1);
+                if (diemTB >= 5) return app.clone(student, { diemLyThuyet, diemThucHanh });
+            }));
+            const workbook = app.excel.create(), worksheet = workbook.addWorksheet('LearningProgress');
+            const cells = [
+                { cell: 'A1', value: 'STT', bold: true, border: '1234' },
+                { cell: 'B1', value: 'Họ', bold: true, border: '1234' },
+                { cell: 'C1', value: 'Tên', bold: true, border: '1234' },
+                { cell: 'D1', value: 'CMND/CCCD', bold: true, border: '1234' },
+                { cell: 'E1', value: 'Điểm lý thuyết', bold: true, border: '1234' },
+                { cell: 'F1', value: 'Điểm thực hành', bold: true, border: '1234' },
+                { cell: 'G1', value: 'Điểm trung bình', bold: true, border: '1234' },
+            ];
 
-        worksheet.columns = [
-            { header: 'STT', key: 'id', width: 15 },
-            { header: 'Họ', key: 'lastname', width: 20 },
-            { header: 'Tên', key: 'firstname', width: 20 },
-            { header: 'CMND/CCCD', key: 'identityCard', width: 20 },
-            { header: 'Điểm lý thuyết', key: 'diemLyThuyet', width: 20 },
-            { header: 'Điểm thực hành', key: 'diemThucHanh', width: 20 },
-            { header: 'Điểm trung bình', key: 'diemTB', width: 20 },
-        ];
-        listStudentReturn.filter(item => item).forEach((item, index) => {
-            worksheet.addRow({
-                id: index + 1,
-                lastname: item.lastname,
-                firstname: item.firstname,
-                identityCard: item.identityCard,
-                diemLyThuyet: item.diemLyThuyet,
-                diemThucHanh: item.diemThucHanh,
-                diemTB: ((item.diemLyThuyet + item.diemThucHanh )/ 2).toFixed(1),
+            worksheet.columns = [
+                { header: 'STT', key: 'id', width: 15 },
+                { header: 'Họ', key: 'lastname', width: 20 },
+                { header: 'Tên', key: 'firstname', width: 20 },
+                { header: 'CMND/CCCD', key: 'identityCard', width: 20 },
+                { header: 'Điểm lý thuyết', key: 'diemLyThuyet', width: 20 },
+                { header: 'Điểm thực hành', key: 'diemThucHanh', width: 20 },
+                { header: 'Điểm trung bình', key: 'diemTB', width: 20 },
+            ];
+            listStudentReturn.filter(item => item).forEach((item, index) => {
+                worksheet.addRow({
+                    id: index + 1,
+                    lastname: item.lastname,
+                    firstname: item.firstname,
+                    identityCard: item.identityCard,
+                    diemLyThuyet: item.diemLyThuyet,
+                    diemThucHanh: item.diemThucHanh,
+                    diemTB: ((item.diemLyThuyet + item.diemThucHanh) / 2).toFixed(1),
+                });
             });
-        });
-        app.excel.write(worksheet, cells);
-        app.excel.attachment(workbook, res, 'LearningProgress.xlsx');
+            app.excel.write(worksheet, cells);
+            app.excel.attachment(workbook, res, 'LearningProgress.xlsx');
         });
     });
 

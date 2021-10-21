@@ -28,7 +28,7 @@ class LearningProgressModal extends AdminModal {
             this.diemThucHanh.focus();
         } else {
             this.props.updateStudent(this.state._id, changes, () => {
-                this.props.getLearningProgressPage(undefined, undefined, {courseId: this.props.courseId, filterOn: this.props.filterOn}, () => this.hide());
+                this.props.getLearningProgressPage(undefined, undefined, { courseId: this.props.courseId, filterOn: this.props.filterOn }, () => this.hide());
             });
         }
     }
@@ -60,16 +60,16 @@ class AdminLearningProgressPage extends AdminPage {
             const params = T.routeMatcher('/user/course/:_id/learning').parse(window.location.pathname);
             if (params && params._id) {
                 const course = this.props.course ? this.props.course.item : null;
-                this.setState({courseId:  params._id});
+                this.setState({ courseId: params._id });
                 if (course) {
-                    this.props.getLearningProgressPage(undefined, undefined, {courseId: course._id, filterOn: this.state.filterOn});
+                    this.props.getLearningProgressPage(undefined, undefined, { courseId: course._id, filterOn: this.state.filterOn });
                 } else {
                     this.props.getCourse(params._id, data => {
                         if (data.error) {
                             T.notify('Lấy khóa học bị lỗi!', 'danger');
                             this.props.history.push('/user/course/' + params._id);
                         } else {
-                            this.props.getLearningProgressPage(undefined, undefined, {courseId: params._id, filterOn: this.state.filterOn });
+                            this.props.getLearningProgressPage(undefined, undefined, { courseId: params._id, filterOn: this.state.filterOn });
                         }
                     });
                 }
@@ -80,19 +80,18 @@ class AdminLearningProgressPage extends AdminPage {
     }
 
     getPage = (pageNumber, pageSize) => {
-        this.props.getLearningProgressPage(pageNumber, pageSize, { courseId: this.state.courseId, filterOn: this.state.filterOn});
+        this.props.getLearningProgressPage(pageNumber, pageSize, { courseId: this.state.courseId, filterOn: this.state.filterOn });
     }
 
     edit = (e, item) => e.preventDefault() || this.modal.show(item);
 
     onChange = (value) => {
         this.setState({ filterOn: value });
-        if(value) {
+        if (value) {
             this.props.getLearningProgressPage(undefined, undefined, { courseId: this.state.courseId, filterOn: value });
         } else {
             this.props.getLearningProgressPage(undefined, undefined, { courseId: this.state.courseId, filterOn: value });
         }
-        
     }
 
     render() {
@@ -102,7 +101,7 @@ class AdminLearningProgressPage extends AdminPage {
         const students = this.props.course && this.props.course && this.props.course.students ? this.props.course.students : [],
             subjects = this.props.course && this.props.course.subjects ? this.props.course.subjects.sort((a, b) => a.monThucHanh - b.monThucHanh) : [];
         const { pageNumber, pageSize, pageTotal, totalItem } = this.props.course && this.props.course.page ?
-            this.props.course.page: { pageNumber: 1, pageSize: 50, pageTotal: 1, totalItem: 0};
+            this.props.course.page : { pageNumber: 1, pageSize: 50, pageTotal: 1, totalItem: 0 };
 
         const subjectColumns = [];
         (subjects || []).forEach((subject, index) => {
@@ -117,27 +116,25 @@ class AdminLearningProgressPage extends AdminPage {
                     <th style={{ width: '100%' }} nowrap='true'>Tên học viên</th>
                     <th style={{ width: 'auto' }}>CMND/CCCD</th>
                     {subjectColumns}
-                    <th style={{ width: 'auto' }} nowrap='true'>Điểm lý thuyết</th>
-                    <th style={{ width: 'auto' }} nowrap='true'>Điểm thực hành</th>
-                    <th style={{ width: 'auto' }} nowrap='true'>Điểm trung bình</th>
+                    <th style={{ width: 'auto', color: 'coral' }} nowrap='true'>Điểm lý thuyết</th>
+                    <th style={{ width: 'auto', color: 'aqua' }} nowrap='true'>Điểm thực hành</th>
+                    <th style={{ width: 'auto', color: 'red' }} nowrap='true'>Điểm trung bình</th>
                 </tr>),
             renderRow: (item, index) => {
                 const student = students[index],
                     diemLyThuyet = item.diemLyThuyet && !isNaN(item.diemLyThuyet) ? Number(item.diemLyThuyet) : 0,
                     diemThucHanh = student && student.diemThucHanh && !isNaN(item.diemThucHanh) ? Number(student.diemThucHanh) : 0,
-                    diemTB = ((diemLyThuyet + diemThucHanh )/ 2).toFixed(1);
+                    diemTB = ((diemLyThuyet + diemThucHanh) / 2).toFixed(1);
                 return (
                     <tr key={index}>
                         <TableCell type='number' content={index + 1} />
-                        <TableCell type='text' content={item.lastname + ' ' + item.firstname} />
+                        <TableCell type='text' style={{ whiteSpace: 'nowrap' }} content={item.lastname + ' ' + item.firstname} />
                         <TableCell type='text' content={item.identityCard} />
                         {subjects && subjects.length && subjects.map((subject, i) => (
-                        <TableCell key={i} type='text' style={{ textAlign: 'center' }} content={` 
+                            <TableCell key={i} type='text' style={{ textAlign: 'center' }} content={` 
                             ${item.subject && item.subject[subject._id] && !subject.monThucHanh ? item.subject[subject._id].completedLessons : 0}
                             / ${subject.monThucHanh ? 0 : subject.lessons.length}
-                            ${subject.monThucHanh ? '' : `=> ${item.subject && item.subject[subject._id] ? item.subject[subject._id].diemMonHoc : 0}`}
-                            ` }
-                        />))}
+                            ${subject.monThucHanh ? '' : `=> ${item.subject && item.subject[subject._id] ? item.subject[subject._id].diemMonHoc : 0}`}`} />))}
                         <TableCell type='text' style={{ textAlign: 'center' }} content={diemLyThuyet} />
                         <TableCell type='link' style={{ textAlign: 'center' }} content={<>{diemThucHanh}<i className='fa fa-lg fa-edit' /></>} className='practicePoint' onClick={e => this.edit(e, item)} />
                         <TableCell type='text' style={{ textAlign: 'center' }} content={diemTB} />
@@ -155,12 +152,12 @@ class AdminLearningProgressPage extends AdminPage {
                     <div className='tile-body'>
                         <FormCheckbox ref={e => this.course = e} onChange={value => this.onChange(value)} label='Học viên đủ điều kiện thi hết môn' />
                         {table}
-                        {!isLecturer ? <Pagination name='adminLearningProgress' pageNumber={pageNumber} pageSize={pageSize} pageTotal={pageTotal} totalItem={totalItem} getPage={this.getPage} style={{ marginLeft: 45 }}/> : null}
+                        {!isLecturer ? <Pagination name='adminLearningProgress' pageNumber={pageNumber} pageSize={pageSize} pageTotal={pageTotal} totalItem={totalItem} getPage={this.getPage} style={{ marginLeft: 45 }} /> : null}
                         {item._id ? <LearningProgressModal ref={e => this.modal = e} updateStudent={this.props.updateStudent} getLearningProgressPage={this.props.getLearningProgressPage} courseId={item._id} filterOn={this.state.filterOn} /> : null}
-                        <CirclePageButton type='export' onClick={() => exportLearningProgressToExcel(this.state.filterOn)} />
+                        <CirclePageButton type='export' onClick={() => exportLearningProgressToExcel()} />
                     </div>
                 </div>
-                </>,
+            </>,
             backRoute,
         });
     }

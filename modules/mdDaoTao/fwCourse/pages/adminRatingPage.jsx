@@ -9,17 +9,12 @@ import './style.scss';
 
 class ViewNoteModal extends AdminModal {
     state = {};
-    onShow = (item) => {
-        this.setState({
-            item
-        });
-    }
-    render = () => {
-        return this.renderModal({
-            title: 'Đánh giá của học viên',
-            body: <p>{this.state.item}</p>
-        });
-    }
+    onShow = (item) => this.setState({ item });
+
+    render = () => this.renderModal({
+        title: 'Đánh giá của học viên',
+        body: <p>{this.state.item}</p>
+    });
 }
 
 class LecturerRatingPage extends AdminPage {
@@ -98,12 +93,12 @@ class LecturerRatingPage extends AdminPage {
                     <TableCell type='number' content={index + 1} />
                     <TableCell type='text' content={item.lastname + ' ' + item.firstname} />
                     {lessons.length ? lessons.map((lesson, i) => (<TableCell key={i} type='link' style={{ textAlign: 'center' }} className='practicePoint' onClick={e => this.view(e, rate && rate.item && rate.item.find(element => (element._refId == lesson._id && element.user._id == item.user._id)).note)} content={
-                            rate && rate.item && rate.item.find(element => (element._refId == lesson._id && element.user._id == item.user._id)) ?
-                                <>
-                                    {rate.item.find(element => (element._refId == lesson._id && element.user._id == item.user._id)).value}
-                                </>
-                                :
-                                null} />)) :
+                        rate && rate.item && rate.item.find(element => (element._refId == lesson._id && element.user._id == item.user._id)) ?
+                            <>
+                                {rate.item.find(element => (element._refId == lesson._id && element.user._id == item.user._id)).value}
+                            </>
+                            :
+                            null} />)) :
                         null}
                 </tr>)
         });
