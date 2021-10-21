@@ -105,7 +105,7 @@ class CommentTextBox extends React.Component {
                         onChange && onChange('update', item);
                     } else {
                         onChange && onChange('delete', item);
-                        T.notify('Bình luận của bạn đã được cập nhật và cần được duyệt lại!', 'info');
+                        T.alert('Bình luận của bạn đã được cập nhật và cần được duyệt lại!', 'info', false, 2000);
                     }
                     onCancel && onCancel();
                 });
@@ -115,7 +115,7 @@ class CommentTextBox extends React.Component {
                     if (item.state == 'approved') {
                         onChange && onChange('create', item);
                     } else {
-                        T.notify('Bình luận của bạn đã được gửi đi và cần được duyệt!', 'info');
+                        T.alert('Bình luận của bạn đã được gửi đi và cần được duyệt!', 'info', false, 2000);
                     }
                     onCancel && onCancel();
                 });
