@@ -5,6 +5,7 @@ import { getCourse, getLearningProgressPage } from '../redux'; // TODO: lỗi Vi
 import { getSubject } from 'modules/mdDaoTao/fwSubject/redux';
 import { getRateStudentByAdmin } from 'modules/_default/fwRate/redux';
 import { AdminPage, FormSelect, renderTable, TableCell, AdminModal } from 'view/component/AdminPage';
+import Pagination from 'view/component/Pagination';
 import './style.scss';
 
 class ViewNoteModal extends AdminModal {
@@ -77,6 +78,10 @@ class LecturerRatingPage extends AdminPage {
             course = this.props.course && this.props.course.item ? this.props.course.item : {},
             lessons = this.state.currentLessons ? this.state.currentLessons : [],
             listSubjects = subjects.map((subject) => ({ id: subject._id, text: subject.title }));
+        const user = this.props.system ? this.props.system.user : null,
+            { isLecturer } = user;
+        const { pageNumber, pageSize, pageTotal, totalItem } = this.props.course && this.props.course.page ?
+            this.props.course.page : { pageNumber: 1, pageSize: 50, pageTotal: 1, totalItem: 0 };
         const students = this.props.course && this.props.course.students ? this.props.course.students : [], rate = this.props.rate;
         const table = renderTable({
             getDataSource: () => students, stickyHead: true,
@@ -115,6 +120,7 @@ class LecturerRatingPage extends AdminPage {
                             <FormSelect ref={e => this.itemSubject = e} data={listSubjects} placeholder='Môn học' onChange={data => this.loadSubject(data.id, course._id)} style={{ margin: 0, width: '200px' }} />
                         </div>
                         {table}
+                        {!isLecturer ? <Pagination name='pageLesson' style={{ left: 320 }} pageNumber={pageNumber} pageSize={pageSize} pageTotal={pageTotal} totalItem={totalItem} getPage={(pageNumber, pageSize) => this.props.getLearningProgressPage(pageNumber, pageSize, { courseId: course._id, filterOn: false })} /> : null}
                     </div>
                     <ViewNoteModal ref={e => this.modal = e} />
                 </div>

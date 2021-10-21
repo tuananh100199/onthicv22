@@ -6,7 +6,7 @@ module.exports = (app) => {
         }
     };
     app.permission.add(
-        { name: 'student:read' }, { name: 'student:write', menu }, { name: 'student:delete' }, { name: 'student:import' },
+        { name: 'student:read' }, { name: 'student:write' }, { name: 'student:delete', menu }, { name: 'student:import' },
         { name: 'pre-student:read', menu }, { name: 'pre-student:write' }, { name: 'pre-student:delete' }, { name: 'pre-student:import' },
     );
 

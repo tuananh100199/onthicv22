@@ -77,7 +77,6 @@ module.exports = (app) => {
                         if (item && item.length) {
                             condition.user = { $in: item.map(item => item.user._id) };
                         }
-                        console.log(condition);
                         app.model.rate.getAll(condition, (error, item) => res.send({ error, item }));
                     }
                 });
