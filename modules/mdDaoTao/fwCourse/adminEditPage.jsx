@@ -54,15 +54,13 @@ class EditCoursePage extends AdminPage {
                     {isCourseAdmin ? <PageIconHeader text='Học viên' /> : null}
                     <PageIcon visible={isCourseAdmin} to={`/user/course/${item._id}/rate-teacher`} icon='fa-star' iconBackgroundColor='orange' text='Đánh giá Cố vấn học tập' />
                     <PageIcon visible={isCourseAdmin && permission.write && permissionFeedback.write} to={`/user/course/${item._id}/feedback`} icon='fa-heartbeat' iconBackgroundColor='teal' text='Phản hồi' />
-                    <PageIcon  to={`/user/course/${item._id}/forum`} icon='fa-users' iconBackgroundColor='#9ced65' text='Forum' />
-
+                    <PageIcon to={`/user/course/${item._id}/forum`} icon='fa-users' iconBackgroundColor='#9ced65' text='Forum' />
 
                     <PageIconHeader text='Đào tạo' />
                     <PageIcon visible={isLecturer} to={`/user/course/${item._id}/your-students`} icon='fa-graduation-cap' iconBackgroundColor='#18ffff' text='Học viên của bạn' />
                     <PageIcon visible={isLecturer || isCourseAdmin} to={`/user/course/${item._id}/learning`} icon='fa-line-chart' iconBackgroundColor='#69f0ae' text='Tiến độ học tập' />
                     <PageIcon visible={isLecturer || isCourseAdmin} to={`/user/course/${item._id}/rate-subject`} icon='fa-folder-open' iconBackgroundColor='#900' text='Đánh giá bài học' />
                     <PageIcon visible={isLecturer} to={`/user/course/${item._id}/calendar`} icon='fa-calendar' iconBackgroundColor='#8e24aa' text='Thời khoá biểu' />
-
                 </div>
             ),
             backRoute,

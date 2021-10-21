@@ -30,7 +30,7 @@ class SubjectModal extends AdminModal {
 class AdminSubjectPage extends AdminPage {
     componentDidMount() {
         T.ready('/user/course', () => {
-            const params = T.routeMatcher('/user/course/:_id/info').parse(window.location.pathname);
+            const params = T.routeMatcher('/user/course/:_id/subject').parse(window.location.pathname);
             if (params && params._id) {
                 const course = this.props.course ? this.props.course.item : null;
                 if (!course) {
