@@ -4,12 +4,13 @@ import { getForumPage, createForum, updateForum, deleteForum } from './redux';
 import { getCourse } from 'modules/mdDaoTao/fwCourse/redux';
 import { Link } from 'react-router-dom';
 import Pagination from 'view/component/Pagination';
-import { AdminPage, AdminModal, FormTextBox, FormRichTextBox, FormSelect } from 'view/component/AdminPage';
+import { AdminPage, AdminModal, FormTextBox, FormSelect, FormEditor } from 'view/component/AdminPage';
 import { ForumStates, ForumStatesMapper, ForumButtons } from './index';
 
 class ForumModal extends AdminModal {
     state = {};
     componentDidMount() {
+        $(this.modal).modal({ backdrop: 'static', keyboard: false, show: false });
         $(document).ready(() => this.onShown(() => this.itemTitle.focus()));
     }
 
@@ -48,13 +49,12 @@ class ForumModal extends AdminModal {
     }
 
     render = () => {
-        //TODO: Sang: itemContent => FormEditor, có upload hình
         const forumCreator = this.props.forumCreator;
         return this.renderModal({
-            title: 'Chủ đề',
+            title: 'Chủ đề', size: 'extra-large',
             body: <>
                 <FormTextBox ref={e => this.itemTitle = e} label='Tên' readOnly={false} />
-                <FormRichTextBox ref={e => this.itemContent = e} label='Nội dung (200 từ)' readOnly={false} />
+                <FormEditor ref={e => this.itemContent = e} label='Nội dung (200 từ)' readOnly={false} uploadUrl='/user/upload?category=forum' />
                 {forumCreator ? <FormSelect ref={e => this.itemState = e} label='Trạng thái' data={ForumStates} readOnly={false} /> : null}
             </>,
         });
@@ -123,7 +123,7 @@ class ForumPage extends AdminPage {
                 <ForumButtons state={item.state} permission={{ forumOwner }} onChangeState={(state) => this.props.updateForum(item._id, { state })} onEdit={() => this.modal.show(item)} onDelete={() => this.delete(item)} />
 
                 <div className='tile-body' style={{ marginBottom: 20 }}>
-                    <h5 style={{ fontWeight: 'normal' }}>{item.content}</h5>
+                    <p dangerouslySetInnerHTML={{ __html: item.content }} />
                     {item.messages && item.messages.length ? (
                         <ul>
                             {item.messages.map((message, index) => (

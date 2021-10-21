@@ -600,7 +600,7 @@ export class AdminModal extends React.Component {
     renderModal = ({ title, body, size, buttons, isLoading = false }) => {
         const { readOnly = false } = this.props;
         return (
-            <div className='modal fade' tabIndex='-1' role='dialog' ref={e => this.modal = e}>
+            <div className='modal fade' role='dialog' ref={e => this.modal = e}>
                 <form className={'modal-dialog' + (size == 'small' ? ' modal-sm' : (size == 'large' ? ' modal-lg' : (size == 'extra-large' ? ' modal-xl' : '')))} role='document' onSubmit={e => { e.preventDefault() || this.onSubmit && this.onSubmit(e); }}>
                     <div className='modal-content'>
                         <div className='modal-header'>

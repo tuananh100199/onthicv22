@@ -120,8 +120,8 @@ export function getCourse(_id, done) {
                     if (data.item.representerGroups) data.item.representerGroups = data.item.representerGroups.sort((a, b) =>
                         a.teacher == null || b.teacher == null || (a.teacher.firstname + ' ' + a.teacher.lastname).toLowerCase() > (b.teacher.firstname + ' ' + b.teacher.lastname).toLowerCase() ? +1 : -1);
                 }
-                done && done(data);
                 dispatch({ type: CourseGetItem, item: data.item });
+                done && done(data);
             }
         }, error => console.error(error) || T.notify('Lấy khóa học bị lỗi!', 'danger'));
     };
@@ -363,8 +363,8 @@ export function getLearningProgress(_id, done) {
                 T.notify('Lấy tiến độ học tập bị lỗi!', 'danger');
                 console.error('GET: ' + url + '.', data.error);
             } else {
-                done && done(data);
                 dispatch({ type: CourseGetLearningProgressByAdmin, students: data.students, subjects: data.subjects });
+                done && done(data);
             }
         }, error => console.error(error) || T.notify('Lấy tiến độ học tập bị lỗi!', 'danger'));
     };
