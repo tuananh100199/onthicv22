@@ -81,14 +81,14 @@ class TimeTableModal extends AdminModal {
             T.notify('Trùng thời khóa biểu!', 'danger');
             this.itemStartHour.focus();
         } else {
-            let today  = new Date();
+            let today = new Date();
             const currentDate = new Date(today.getFullYear(), today.getMonth(), today.getDate());
             data.date = new Date(data.date.getFullYear(), data.date.getMonth(), data.date.getDate());
             if (!_id && data.date < currentDate) {
                 T.notify('Ngày học không được nhỏ hơn ngày hiện tại!', 'danger');
                 this.itemDate.focus();
             } else {
-                _id ?this.props.update(_id, data,  student._id, () => this.hide()) : this.props.create(data, this.props.studentId, () => this.hide());
+                _id ? this.props.update(_id, data, student._id, () => this.hide()) : this.props.create(data, this.props.studentId, () => this.hide());
             }
         }
     }
@@ -120,13 +120,13 @@ class TimeTableModal extends AdminModal {
 
     getDateNumber = () => {
         const { student } = this.state,
-        date = new Date(this.state.date),
+            date = new Date(this.state.date),
             startHour = this.itemStartHour.value(),
             numOfHours = this.itemNumOfHours.value();
         const studentId = student ? student._id : this.props.studentId;
         if (date && startHour != null) {
             this.props.getDateNumber(studentId, new Date(date.getFullYear(), date.getMonth(), date.getDate()), startHour, numOfHours, (dateNumber) => this.setState({ dateNumber }));
-        } 
+        }
     }
 
     render = () => {
@@ -151,7 +151,7 @@ class TimeTableModal extends AdminModal {
                             {endHour ? <> từ <span className='text-success'> {this.itemStartHour.value()}h - {endHour}h</span></> : ''}. </>}
                         {dateNumber == null ? '' :
                             (dateNumber == -1 ? <span className='text-danger'>Trùng thời khóa biểu!</span> : <>Buổi học thứ: <span className='text-primary'>{dateNumber}</span>.</>)}
-                     </p>
+                    </p>
 
                     <FormTextBox ref={e => this.itemLicensePlates = e} label='Xe học' className='col-md-4' style={{ textTransform: 'uppercase' }} readOnly={this.props.readOnly} required />
                     <FormCheckbox ref={e => this.itemTruant = e} label='Học viên vắng học' className='col-md-8' readOnly={this.props.readOnly} />
@@ -207,14 +207,14 @@ class StudentView extends AdminPage {
             renderHead: () => (
                 <tr>
                     <th style={{ width: 'auto', textAlign: 'center' }}>#</th>
-                    <th style={{ width: '70%' }} nowrap='true'>Học viên</th>
+                    <th style={{ width: '100%' }} nowrap='true'>Học viên</th>
                     <th style={{ width: 'auto' }} nowrap='true'>Số điện thoại</th>
                     <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Khóa học</th>
                     <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Buổi học</th>
                     <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Ngày học</th>
                     <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Giờ học</th>
                     <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Số giờ học</th>
-                    <th style={{ width: '30%', textAlign: 'center' }} nowrap='true'>Xe học</th>
+                    <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Xe học</th>
                     <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Nghỉ học</th>
                     <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Thao tác</th>
                 </tr>),
