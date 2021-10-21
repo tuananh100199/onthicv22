@@ -19,6 +19,7 @@
 	3101 - Danh mục tin tức (/user/category/news)
 	3102 - Tin tức (/user/news)
 4000. Đào tạo (undefined)
+	2200 - Thông báo (/user/notification)
 	4001 - Danh mục câu hỏi thi (/user/drive-question/category)
 	4002 - Câu hỏi thi (/user/drive-question)
 	4003 - Danh mục biển báo (/user/sign/category)
