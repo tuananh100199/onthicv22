@@ -371,8 +371,8 @@ export function getLearningProgressPage(pageNumber, pageSize, pageCondition, don
                 T.notify('Lấy tiến độ học tập bị lỗi!', 'danger');
                 console.error(`GET: ${url}. ${data.error}`);
             } else {
-                done && done(data);
                 dispatch({ type: CourseGetLearningProgressPageByAdmin, page: data.page, students: data.students, subjects: data.subjects });
+                done && done(data);
             }
         }, error => console.error(error) || T.notify('Lấy tiến độ học tập bị lỗi!', 'danger'));
     };

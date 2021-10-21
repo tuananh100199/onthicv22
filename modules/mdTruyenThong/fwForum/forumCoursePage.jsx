@@ -40,10 +40,13 @@ class ForumModal extends AdminModal {
             } else if (this.itemState && data.state == null) {
                 T.notify('Trạng thái chủ đề bị trống!', 'danger');
             } else {
-                if (data.content.length > 200) data.content = data.content.substring(0, 200);
-                this.state._id ?
-                    this.props.update(this.state._id, data, () => this.hide()) :
-                    this.props.create(data, (data) => (data && data.item && this.props.courseId && this.props.history.push('/user/course/' + this.props.courseId + '/forum/' + data.item._id + '/message')) || this.hide());
+                if ((this.itemContent.text() || '').split(' ').length > 200) {
+                    T.notify('Nội dung của forum dài hơn 200 từ', 'danger');
+                } else {
+                    this.state._id ?
+                        this.props.update(this.state._id, data, () => this.hide()) :
+                        this.props.create(data, (data) => (data && data.item && this.props.history.push('/user/forum/message/' + data.item._id)) || this.hide());
+                }
             }
         }
     }
@@ -123,7 +126,7 @@ class ForumPage extends AdminPage {
                 <ForumButtons state={item.state} permission={{ forumOwner }} onChangeState={(state) => this.props.updateForum(item._id, { state })} onEdit={() => this.modal.show(item)} onDelete={() => this.delete(item)} />
 
                 <div className='tile-body' style={{ marginBottom: 20 }}>
-                    <p dangerouslySetInnerHTML={{ __html: item.content }} />
+                    <p className='limit-line' dangerouslySetInnerHTML={{ __html: item.content }} />
                     {item.messages && item.messages.length ? (
                         <ul>
                             {item.messages.map((message, index) => (

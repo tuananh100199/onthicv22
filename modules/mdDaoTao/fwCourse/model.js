@@ -9,7 +9,7 @@ module.exports = app => {
             division: String,
             fee: { type: Number, default: 0 },
         }],
-        subjects: [{ type: app.db.Schema.ObjectId, ref: 'Subject' }],       // Danh sách môn học => TODO: Sang: Thay đổi thứ tự các môn học
+        subjects: [{ type: app.db.Schema.ObjectId, ref: 'Subject' }],       // Danh sách môn học
         maxStudent: { type: Number, default: 100 },                         // Số lượng học viên tối đa
         modifiedDate: { type: Date, default: Date.now },
         createdDate: { type: Date, default: Date.now },

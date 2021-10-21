@@ -41,8 +41,8 @@ class CourseTypeEditPage extends AdminPage {
             this.props.getCourseType(params._id, item => {
                 if (item) {
                     this.setState(item, () => {
-                        this.itemTitle.value(item.title);
-                        this.totalTime.value(item.totalTime);
+                        this.itemTitle.value(item.title || '');
+                        this.totalTime.value(item.totalTime || '');
                         this.itemShortDescription.value(item.shortDescription);
                         this.itemDetailDescription.html(item.detailDescription);
                         this.itemPrice.value(item.price);
@@ -93,6 +93,26 @@ class CourseTypeEditPage extends AdminPage {
         }
     }
 
+    swap = (e, item, isMoveUp) => {
+        e.preventDefault();
+        const { _id, subjects = [] } = this.props.courseType.item;
+        const index = subjects.findIndex(_item => _item._id == item._id);
+        if (isMoveUp) {
+            if (index > 0) {
+                const preItem = subjects[index - 1];
+                subjects[index - 1] = item;
+                subjects[index] = preItem;
+            } else return;
+        } else {
+            if (index < subjects.length - 1) {
+                const postItem = subjects[index + 1];
+                subjects[index + 1] = item;
+                subjects[index] = postItem;
+            } else return;
+        }
+        this.props.updateCourseType(_id, { subjects });
+    }
+
     render() {
         const types = this.state.types ? this.state.types : [];
         const permissionSubject = this.getUserPermission('subject'),
@@ -101,7 +121,7 @@ class CourseTypeEditPage extends AdminPage {
             item = this.props.courseType && this.props.courseType.item ? this.props.courseType.item : { title: '', subjects: [] };
 
         const tableSubject = renderTable({
-            getDataSource: () => item.subjects && item.subjects.sort((a, b) => a.title.localeCompare(b.title)),
+            getDataSource: () => item.subjects && item.subjects,
             renderHead: () => (
                 <tr>
                     <th style={{ width: 'auto', textAlign: 'center' }}>#</th>
@@ -112,7 +132,7 @@ class CourseTypeEditPage extends AdminPage {
                 <tr key={index}>
                     <TableCell type='number' content={index + 1} />
                     <TableCell type={permissionSubject.read ? 'link' : 'text'} content={item.title} url={`/user/dao-tao/mon-hoc/${item._id}`} />
-                    {readOnly ? null : <TableCell type='buttons' content={item} permission={permissionCourseType} onDelete={this.remove} />}
+                    {readOnly ? null : <TableCell type='buttons' content={item} permission={permissionCourseType} onSwap={this.swap} onDelete={this.remove} />}
                 </tr>),
         });
 

@@ -10,7 +10,7 @@ module.exports = app => {
             condition = {};
         if (refParentId) condition.refParentId = refParentId;
         if (refId) condition.refId = refId;
-        if (!user || (!user.isCourseAdmin && !user.isLecturer && !permissions.includes('comment:write'))) {
+        if (!user || (!user.isCourseAdmin && !(user.isLecturer && user.isTrustLecturer) && !permissions.includes('comment:write'))) {
             condition.state = 'approved';
         }
         app.model.comment.getPage(pageNumber, pageSize, condition, (error, page) => res.send({ error, page }));
@@ -22,7 +22,7 @@ module.exports = app => {
             from = parseInt(req.params.from),
             limit = parseInt(req.params.limit);
         const condition = { parentId };
-        if (!user || (!user.isCourseAdmin && !user.isLecturer && !permissions.includes('comment:write'))) {
+        if (!user || (!user.isCourseAdmin && !(user.isLecturer && user.isTrustLecturer) && !permissions.includes('comment:write'))) {
             condition.state = 'approved';
         }
 
@@ -46,7 +46,7 @@ module.exports = app => {
                 data.parentId = _parentId;
             }
 
-            if (user.isCourseAdmin || user.isLecturer || permissions.includes('comment:write')) {
+            if (user.isCourseAdmin || (user.isLecturer && user.isTrustLecturer) || permissions.includes('comment:write')) {
                 data.state = 'approved';
             }
             app.model.comment.create(data, (error, item) => res.send({ error, item }));
@@ -58,11 +58,11 @@ module.exports = app => {
     app.put('/api/comment', app.permission.check(), (req, res) => {
         const changes = req.body.changes, { _id } = req.body;
         const user = req.session.user, permissions = user ? user.permissions : [];
-        const hasPermission = (permissions && permissions.includes('comment:write')) || (user && user._id == changes.author);
+        const hasPermission = (permissions && permissions.includes('comment:write')) || user.isCourseAdmin || (user.isLecturer && user.isTrustLecturer) || (user && user._id == changes.author);
         if (_id && hasPermission) {
             delete changes.parentId;
             changes.updatedDate = new Date();
-            if (user.isCourseAdmin || user.isLecturer || permissions.includes('comment:write')) {
+            if (user.isCourseAdmin || (user.isLecturer && user.isTrustLecturer) || permissions.includes('comment:write')) {
                 changes.state = 'approved';
             } else {
                 changes.state = 'waiting';
@@ -76,7 +76,7 @@ module.exports = app => {
     app.put('/api/comment-approval', app.permission.check(), (req, res) => {
         const state = req.body.state, { _id } = req.body;
         const user = req.session.user, permissions = user.permissions || [];
-        const hasPermission = permissions.includes('comment:write') || user.isCourseAdmin || user.isLecturer;
+        const hasPermission = permissions.includes('comment:write') || user.isCourseAdmin;
         if (_id && hasPermission) {
             app.model.comment.update(_id, { $set: { state } }, (error, item) => res.send({ error, item }));
         } else {
@@ -87,7 +87,7 @@ module.exports = app => {
     app.delete('/api/comment', app.permission.check(), (req, res) => {
         const { data } = req.body;
         const user = req.session.user || {}, permissions = user.permissions || [];
-        const hasPermission = permissions.includes('comment:delete') || (user && user._id === data.author._id);
+        const hasPermission = permissions.includes('comment:delete') || user.isCourseAdmin || (user && user._id === data.author._id);
         if (hasPermission) {
             app.model.comment.delete(data._id, (error) => {
                 if (error) {
