@@ -214,16 +214,16 @@ module.exports = (app) => {
         });
     });
 
-    // Rating APIs -----------------------------------------------------------------------------------------------------
-    app.post('/api/lesson/rating', app.permission.check('user:login'), (req, res) => {//mobile
-        const { courseId, subjectId, lessonId, rating } = req.body;
+    // View Lesson APIs -----------------------------------------------------------------------------------------------------
+    app.post('/api/lesson/view', app.permission.check('user:login'), (req, res) => {
+        const { courseId, subjectId, lessonId, view } = req.body;
         app.model.student.get({ user: req.session.user._id, course: courseId }, (error, student) => {
             if (error) {
                 res.send({ error });
             } else {
-                const data = { studentId: student._id, subjectId, lessonId, rating };
+                const data = { studentId: student._id, subjectId, lessonId, view };
                 app.model.student.updateLearningProgress(data, (error, item) => {
-                    res.send({ error, result: { rating }, item });
+                    res.send({ error, item });
                 });
             }
         });

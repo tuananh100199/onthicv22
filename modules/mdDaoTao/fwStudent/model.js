@@ -161,12 +161,12 @@ module.exports = (app) => {
             app.model.student.get(data.studentId, (error, student) => {
                 if (error) {
                     done(error);
-                } else if (data.rating) {
+                } else if (data.view) {
                     const obj = {};
                     if (student.tienDoHocTap[data.subjectId][data.lessonId]) {
-                        student.tienDoHocTap[data.subjectId][data.lessonId].rating = data.rating;
+                        student.tienDoHocTap[data.subjectId][data.lessonId].view = data.view;
                     } else {
-                        obj[data.lessonId].rating = data.rating;
+                        obj[data.lessonId]= {view : data.view};
                         Object.assign(student.tienDoHocTap[data.subjectId], obj);
                     }
                     model.findOneAndUpdate({ _id: data.studentId }, { tienDoHocTap: student.tienDoHocTap }, { new: true }).exec(done);
