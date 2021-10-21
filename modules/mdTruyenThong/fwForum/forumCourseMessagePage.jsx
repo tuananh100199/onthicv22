@@ -112,7 +112,7 @@ class ForumCourseMessagePage extends AdminPage {
                         {forum.user ? `${forum.user.lastname} ${forum.user.firstname}` : ''} -&nbsp;
                         {new Date(forum.modifiedDate || forum.createdDate).getText()}
                     </small> */}
-                    <h4 style={{ marginTop: 8 }}>{forum.content}</h4>
+                    <p dangerouslySetInnerHTML={{ __html: forum.content }} />
                 </div>
 
                 {list && list.length ?

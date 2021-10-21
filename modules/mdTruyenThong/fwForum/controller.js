@@ -238,4 +238,10 @@ module.exports = app => {
         app.permissionHooks.pushUserPermission(user, 'forum:write', 'forum:delete');
         resolve();
     }));
+
+    // Upload Hooks -----------------------------------------------------------------------------------------------------
+    app.createFolder(app.path.join(app.publicPath, '/img/forum'));
+    app.uploadHooks.add('uploadForumCkEditor', (req, fields, files, params, done) => {
+        app.permission.has(req, () => app.uploadCkEditorImage('forum', fields, files, params, done), done, 'user:login');
+    });
 };
