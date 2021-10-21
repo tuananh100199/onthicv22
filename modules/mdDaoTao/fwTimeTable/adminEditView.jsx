@@ -1,6 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { getTimeTablePage, createTimeTableByAdmin, updateTimeTableByAdmin, deleteTimeTableByAdmin, getTimeTableDateNumber } from './redux';
+import { getCourse } from 'modules/mdDaoTao/fwCourse/redux';
 import { Link } from 'react-router-dom';
 import { AdminPage, AdminModal, TableCell, renderTable, FormTextBox, FormCheckbox, FormRichTextBox, FormDatePicker } from 'view/component/AdminPage';
 
@@ -167,21 +168,29 @@ class TimeTableModal extends AdminModal {
 class StudentView extends AdminPage {
     state = {};
     componentDidMount() {
-        const params = T.routeMatcher('/user/course/:courseId/student/:studentId/time-table').parse(window.location.pathname),
-            courseId = params.courseId,
-            studentId = params.studentId;
-        const currentUser = this.props.system ? this.props.system.user : null,
-            { isLecturer, isCourseAdmin } = currentUser;
-        this.setState({ isLecturer: isLecturer, isCourseAdmin: isCourseAdmin });
-
-        if (studentId) {
-            this.setState({ courseId: courseId, studentId: studentId });
-            T.ready('/user/course/' + courseId, () => {
-                studentId && this.props.getTimeTablePage(1, 50, { student: studentId });
-            });
-        } else {
-            this.props.history.push(`/user/course/${this.state.courseId}`);
-        }
+        T.ready('/user/course', () => {
+            const params = T.routeMatcher('/user/course/:courseId/calendar/student/:studentId').parse(window.location.pathname),
+                courseId = params.courseId,
+                studentId = params.studentId;
+            const currentUser = this.props.system ? this.props.system.user : null,
+                { isLecturer, isCourseAdmin } = currentUser;
+            this.setState({ isLecturer: isLecturer, isCourseAdmin: isCourseAdmin });
+            if (studentId) {
+                const course = this.props.course ? this.props.course.item : null;
+                if (!course) {
+                    this.props.getCourse(courseId, data => {
+                        if (data.error) {
+                            T.notify('Lấy khóa học bị lỗi!', 'danger');
+                            this.props.history.push('/user/course/' + courseId);
+                        }
+                    });
+                }
+                this.setState({ courseId: courseId, studentId: studentId });
+                    studentId && this.props.getTimeTablePage(1, 50, { student: studentId });
+            } else {
+                this.props.history.push(`/user/course/${this.state.courseId}`);
+            } 
+        });
     }
 
     edit = (e, item) => {
@@ -197,11 +206,13 @@ class StudentView extends AdminPage {
         isConfirm && this.props.deleteTimeTableByAdmin(item._id, this.state.studentId));
 
     render() {
+        const courseItem = this.props.course && this.props.course.item ? this.props.course.item : {};
         const today = T.dateToText(new Date().toISOString(), 'dd/mm/yyyy');
-        const backRoute = '/user/course/' + this.state.courseId;
         const permission = this.getUserPermission('timeTable');
         let { pageNumber, pageSize, list } = this.props.timeTable && this.props.timeTable.page ?
             this.props.timeTable.page : { pageNumber: 1, pageSize: 50, pageTotal: 1, pageCondition: {}, totalItem: 0, list: [] };
+            const courseBackRoute = '/user/course/' + courseItem._id;
+            const listStudentBackRoute = '/user/course/' + courseItem._id + '/calendar';
         const table = renderTable({
             getDataSource: () => list,
             renderHead: () => (
@@ -235,9 +246,9 @@ class StudentView extends AdminPage {
         });
         return this.renderPage({
             icon: 'fa fa-cubes',
-            title: 'Khóa học: Thời khóa biểu học viên',
-            breadcrumb: [<Link key={0} to={backRoute}>Khóa học</Link>, 'Thời khóa biểu'],
-            backRoute: backRoute,
+            title: 'Thời khóa biểu: ' + courseItem.name,
+            breadcrumb: [<Link key={0} to='/user/course'>Khóa học</Link>, courseItem._id ? <Link key={0} to={courseBackRoute}>{courseItem.name}</Link> : '', <Link key={0} to={listStudentBackRoute}>Học viên </Link>, 'Thời khóa biểu'],
+            backRoute: listStudentBackRoute,
             content: <>
                 <div className='tile'>{table}</div>
                 <NoteModal ref={e => this.modalLecturer = e} readOnly={!permission.write}
@@ -253,6 +264,6 @@ class StudentView extends AdminPage {
     }
 }
 
-const mapStateToProps = state => ({ system: state.system, timeTable: state.trainning.timeTable });
-const mapActionsToProps = { getTimeTablePage, createTimeTableByAdmin, updateTimeTableByAdmin, deleteTimeTableByAdmin, getTimeTableDateNumber };
+const mapStateToProps = state => ({ system: state.system, timeTable: state.trainning.timeTable, course: state.trainning.course });
+const mapActionsToProps = { getCourse, getTimeTablePage, createTimeTableByAdmin, updateTimeTableByAdmin, deleteTimeTableByAdmin, getTimeTableDateNumber };
 export default connect(mapStateToProps, mapActionsToProps)(StudentView);

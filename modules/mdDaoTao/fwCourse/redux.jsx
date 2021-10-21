@@ -5,6 +5,7 @@ const CourseGetPage = 'CourseGetPage';
 const CourseGetItem = 'CourseGetItem';
 const CourseGetUserChat = 'CourseGetUserChat';
 const CourseGetPageByUser = 'CourseGetPageByUser';
+const CourseGetStudentByAdmin = 'CourseGetStudentByAdmin';
 const CourseUpdateStudentInfoInCourse = 'CourseUpdateStudentInfoInCourse';
 const CourseGetLearningProgressPageByAdmin = 'CourseGetLearningProgressPageByAdmin';
 
@@ -23,6 +24,11 @@ export default function courseReducer(state = {}, data) {
         case CourseGetUserChat: {
             return Object.assign({}, state, { user: data.user });
         }
+
+        case CourseGetStudentByAdmin: {
+            return Object.assign({}, state, { students: data.students });
+        }
+
 
         case CourseGetLearningProgressPageByAdmin: {
             return Object.assign({}, state, { page: data.page, students: data.students, subjects: data.subjects });
@@ -340,7 +346,7 @@ export function getCourseByStudent(_id, done) {
 }
 
 // Lecturer -----------------------------------------------------------------------------------------------------------
-export function getStudentByLecturer(_id, done) {
+export function getStudentByAdmin(_id, done) {
     return dispatch => {
         const url = '/api/course/lecturer/student';
         T.get(url, { _id }, data => {
@@ -349,7 +355,7 @@ export function getStudentByLecturer(_id, done) {
                 console.error('GET: ' + url + '.', data.error);
             } else {
                 done && done(data);
-                dispatch({ type: CourseGetItem, item: data.item });
+                dispatch({ type: CourseGetStudentByAdmin, students: data.item });
             }
         }, error => console.error(error) || T.notify('Lấy khóa học bị lỗi!', 'danger'));
     };
