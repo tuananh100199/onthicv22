@@ -12,7 +12,7 @@ class AdminFeedbackSystemPage extends AdminPage {
             icon: 'fa fa-comments-o',
             title: 'Phản hồi',
             breadcrumb: ['Phản hồi'],
-            content:<div className='tile'><FeedbackSection detailPageUrl='/user/feedback/system' type='system'/></div>,
+            content:<div className='tile'><FeedbackSection history={this.props.history} detailPageUrl='/user/feedback/system' type='system'/></div>,
         });
     }
 }
