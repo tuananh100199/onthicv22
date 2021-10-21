@@ -49,6 +49,26 @@ class AdminSubjectPage extends AdminPage {
 
     addSubject = e => e.preventDefault() || this.modal.show();
 
+    swap = (e, item, isMoveUp) => {
+        e.preventDefault();
+        const { _id, subjects = [] } = this.props.course.item;
+        const index = subjects.findIndex(_item => _item._id == item._id);
+        if (isMoveUp) {
+            if (index > 0) {
+                const preItem = subjects[index - 1];
+                subjects[index - 1] = item;
+                subjects[index] = preItem;
+            } else return;
+        } else {
+            if (index < subjects.length - 1) {
+                const postItem = subjects[index + 1];
+                subjects[index + 1] = item;
+                subjects[index] = postItem;
+            } else return;
+        }
+        this.props.updateCourse(_id, { subjects });
+    }
+
     removeSubject = (e, index) => e.preventDefault() || T.confirm('Xoá môn học', 'Bạn có chắc muốn xoá môn học khỏi khóa học này?', true, isConfirm => {
         if (isConfirm && this.props.course && this.props.course.item) {
             const { _id, subjects = [] } = this.props.course.item;
@@ -60,11 +80,10 @@ class AdminSubjectPage extends AdminPage {
     render() {
         const currentUser = this.props.system ? this.props.system.user : null,
             permission = this.getUserPermission('course');
-        const course = this.props.course ? this.props.course.item || {} : {};
         const readOnly = (!permission.write || currentUser.isLecturer) && !currentUser.isCourseAdmin,
             item = this.props.course && this.props.course.item ? this.props.course.item : { subjects: [] };
         const table = renderTable({
-            getDataSource: () => item && item.subjects && item.subjects.sort((a, b) => a.title.localeCompare(b.title)),
+            getDataSource: () => item && item.subjects,
             renderHead: () => (
                 <tr>
                     <th style={{ width: 'auto' }}>#</th>
@@ -77,20 +96,17 @@ class AdminSubjectPage extends AdminPage {
                     <TableCell type='number' content={index + 1} />
                     <TableCell type='link' content={item.title} url={'/user/dao-tao/mon-hoc/' + item._id} />
                     <TableCell type='number' content={item.lessons ? item.lessons.length : 0} />
-                    {!readOnly ?
-                        <td>
-                            <div className='btn-group'>
-                                <a className='btn btn-danger' href='#' onClick={e => this.removeSubject(e, index)}><i className='fa fa-lg fa-trash' /></a>
-                            </div>
-                        </td> : null}
+                    {!readOnly && (
+                        <TableCell type='buttons' content={item} permission={{ write: true, delete: true }} onDelete={e => this.removeSubject(e, index)} onSwap={this.swap} />
+                    )}
                 </tr>),
         });
 
-        const backRoute = `/user/course/${course._id}`;
+        const backRoute = `/user/course/${item._id}`;
         return this.renderPage({
             icon: 'fa fa-briefcase',
-            title: 'Môn học: ' + course.name,
-            breadcrumb: [<Link key={0} to='/user/course'>Khóa học</Link>, course._id ? <Link key={0} to={backRoute}>{course.name}</Link> : '', 'Môn học'],
+            title: 'Môn học: ' + item.name,
+            breadcrumb: [<Link key={0} to='/user/course'>Khóa học</Link>, item._id ? <Link key={0} to={backRoute}>{item.name}</Link> : '', 'Môn học'],
             content: (
                 <div className='tile'>
                     <div className='tile-body'>
