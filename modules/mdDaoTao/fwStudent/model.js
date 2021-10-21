@@ -45,6 +45,12 @@ module.exports = (app) => {
         duKienThangThi: Number,                                                                     // Dự kiến tháng thi
         duKienNamThi: Number,                                                                       // Dự kiến năm thi
 
+        diemThiHetMon: [{
+            subject: { type: app.db.Schema.ObjectId, ref: 'Subject' },
+            point: Number,
+        }],
+        diemTrungBinhThiHetMon: Number,
+
         createdDate: { type: Date, default: Date.now },                                             // Ngày tạo
         modifiedDate: { type: Date, default: Date.now },                                            // Ngày cập nhật cuối cùng
     });

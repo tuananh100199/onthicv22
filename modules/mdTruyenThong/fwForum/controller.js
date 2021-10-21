@@ -2,7 +2,7 @@ module.exports = app => {
     const menu = {
         parentMenu: app.parentMenu.communication,
         menus: {
-            3004: { title: 'Danh mục forum', link: '/user/category/forum' },
+            3200: { title: 'Danh mục forum', link: '/user/category/forum' },
         },
     };
 
@@ -16,9 +16,9 @@ module.exports = app => {
     app.get('/user/course/:_courseId/forum', app.permission.check('user:login'), app.templates.admin);
     app.get('/user/course/:_courseId/forum/:_categoryId', app.permission.check('user:login'), app.templates.admin);
     app.get('/user/course/:_courseId/forum/:_forumId/message', app.permission.check('user:login'), app.templates.admin);
-    
+
     // APIs -----------------------------------------------------------------------------------------------------------------------------------------
-    app.get('/api/forum/categories', app.permission.check('user:login'), (req, res) => {    
+    app.get('/api/forum/categories', app.permission.check('user:login'), (req, res) => {
         const isForumWrite = req.session.user.permissions ? req.session.user.permissions.includes('forum:write') : false;
         let condition = { type: 'forum' };
         if (!isForumWrite) condition.active = true;
@@ -57,7 +57,7 @@ module.exports = app => {
             pageSize = parseInt(req.params.pageSize),
             { categoryId, searchText, courseId } = req.query,
             pageCondition = { category: categoryId };
-            pageCondition.course = courseId ? courseId : null;
+        pageCondition.course = courseId ? courseId : null;
 
         if (searchText) {
             pageCondition.title = new RegExp(searchText, 'i');
@@ -139,7 +139,7 @@ module.exports = app => {
             pageSize = parseInt(req.params.pageSize),
             { _forumId, searchText } = req.query,
             pageCondition = { forum: _forumId };
-            const user = req.session.user;
+        const user = req.session.user;
         if (searchText) {
             pageCondition.content = new RegExp(searchText, 'i');
         }

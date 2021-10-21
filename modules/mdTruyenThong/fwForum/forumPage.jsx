@@ -111,7 +111,7 @@ class ForumPage extends AdminPage {
                 <ForumButtons state={item.state} permission={{ ...permission, forumOwner: adminPermission.settings, messageOwner: adminPermission.settings }} onChangeState={(state) => this.props.updateForum(item._id, { state })} onEdit={() => this.modal.show(item)} onDelete={() => this.delete(item)} />
 
                 <div className='tile-body' style={{ marginBottom: 20 }}>
-                    <p dangerouslySetInnerHTML={{ __html: item.content }} />
+                    <p className='limit-line' dangerouslySetInnerHTML={{ __html: item.content }} />
                     {item.messages && item.messages.length ? (
                         <ul>
                             {item.messages.map((message, index) => (
