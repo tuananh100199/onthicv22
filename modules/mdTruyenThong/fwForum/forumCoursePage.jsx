@@ -40,10 +40,13 @@ class ForumModal extends AdminModal {
             } else if (this.itemState && data.state == null) {
                 T.notify('Trạng thái chủ đề bị trống!', 'danger');
             } else {
-                if (data.content.length > 200) data.content = data.content.substring(0, 200);
-                this.state._id ?
-                    this.props.update(this.state._id, data, () => this.hide()) :
-                    this.props.create(data, (data) => (data && data.item && this.props.courseId && this.props.history.push('/user/course/' + this.props.courseId + '/forum/' + data.item._id + '/message')) || this.hide());
+                if ((this.itemContent.text() || '').split(' ').length > 200) {
+                    T.notify('Nội dung của forum dài hơn 200 từ', 'danger');
+                } else {
+                    this.state._id ?
+                        this.props.update(this.state._id, data, () => this.hide()) :
+                        this.props.create(data, (data) => (data && data.item && this.props.history.push('/user/forum/message/' + data.item._id)) || this.hide());
+                }
             }
         }
     }

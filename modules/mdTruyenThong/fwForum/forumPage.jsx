@@ -3,12 +3,13 @@ import { connect } from 'react-redux';
 import { getForumPage, createForum, updateForum, deleteForum } from './redux';
 import { Link } from 'react-router-dom';
 import Pagination from 'view/component/Pagination';
-import { AdminPage, AdminModal, FormTextBox, FormRichTextBox, FormSelect } from 'view/component/AdminPage';
+import { AdminPage, AdminModal, FormTextBox, FormSelect, FormEditor } from 'view/component/AdminPage';
 import { ForumStates, ForumStatesMapper, ForumButtons } from './index';
 
 class ForumModal extends AdminModal {
     state = {};
     componentDidMount() {
+        $(this.modal).modal({ backdrop: 'static', keyboard: false, show: false });
         $(document).ready(() => this.onShown(() => this.itemTitle.focus()));
     }
 
@@ -37,22 +38,24 @@ class ForumModal extends AdminModal {
             } else if (this.itemState && data.state == null) {
                 T.notify('Trạng thái chủ đề bị trống!', 'danger');
             } else {
-                if (data.content.length > 200) data.content = data.content.substring(0, 200);
-                this.state._id ?
-                    this.props.update(this.state._id, data, () => this.hide()) :
-                    this.props.create(data, (data) => (data && data.item && this.props.history.push('/user/forum/message/' + data.item._id)) || this.hide());
+                if ((this.itemContent.text() || '').split(' ').length > 200) {
+                    T.notify('Nội dung của forum dài hơn 200 từ', 'danger');
+                } else {
+                    this.state._id ?
+                        this.props.update(this.state._id, data, () => this.hide()) :
+                        this.props.create(data, (data) => (data && data.item && this.props.history.push('/user/forum/message/' + data.item._id)) || this.hide());
+                }
             }
         }
     }
 
     render = () => {
-        //TODO: Sang: itemContent => FormEditor, có upload hình
         const permission = this.props.permission;
         return this.renderModal({
-            title: 'Chủ đề',
+            title: 'Chủ đề', size: 'extra-large',
             body: <>
                 <FormTextBox ref={e => this.itemTitle = e} label='Tên' readOnly={false} />
-                <FormRichTextBox ref={e => this.itemContent = e} label='Nội dung (200 từ)' readOnly={false} />
+                <FormEditor ref={e => this.itemContent = e} label='Nội dung (200 từ)' readOnly={false} uploadUrl='/user/upload?category=forum' />
                 {permission.write ? <FormSelect ref={e => this.itemState = e} label='Trạng thái' data={ForumStates} readOnly={false} /> : null}
             </>,
         });
@@ -108,7 +111,7 @@ class ForumPage extends AdminPage {
                 <ForumButtons state={item.state} permission={{ ...permission, forumOwner: adminPermission.settings, messageOwner: adminPermission.settings }} onChangeState={(state) => this.props.updateForum(item._id, { state })} onEdit={() => this.modal.show(item)} onDelete={() => this.delete(item)} />
 
                 <div className='tile-body' style={{ marginBottom: 20 }}>
-                    <h5 style={{ fontWeight: 'normal' }}>{item.content}</h5>
+                    <p dangerouslySetInnerHTML={{ __html: item.content }} />
                     {item.messages && item.messages.length ? (
                         <ul>
                             {item.messages.map((message, index) => (
