@@ -462,7 +462,7 @@ module.exports = (app) => {
                     const diemMonHoc =
                         student && student.tienDoHocTap && student.tienDoHocTap[subject._id] ?
                             Number((Object.entries(student.tienDoHocTap[subject._id]).reduce((lessonNext, lesson) =>
-                                Number(lesson[1].score) / Object.keys(lesson[1].trueAnswers).length * 10 + lessonNext, 0)) / subject.lessons.length).toFixed(1) : 0;
+                                lesson[1].trueAnswer && Number(lesson[1].score) / Object.keys(lesson[1].trueAnswers).length * 10 + lessonNext, 0)) / subject.lessons.length).toFixed(1) : 0;
                     const completedLessons = (subject && student.tienDoHocTap && student.tienDoHocTap[subject._id] ?
                         (Object.keys(student.tienDoHocTap[subject._id]).length > subject.lessons.length ?
                             subject.lessons.length :
