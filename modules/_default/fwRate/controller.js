@@ -67,39 +67,45 @@ module.exports = (app) => {
     app.get('/api/rate/student', app.permission.check('rate:read'), (req, res) => {
         const sessionUser = req.session.user,
             listRefId = req.query.listRefId;
-        const ObjectId = require('mongodb').ObjectID;
-        const listStudentId = [];
-        if (sessionUser.isCourseAdmin) {
-            app.model.student.getAll({ course: req.query.courseId }, (error, item) => {
-                if (error) {
-                    res.send({ error });
-                } else {
-                    item.forEach(student => listStudentId.push(student.user._id));
-                    const objId = listStudentId.map(id => ObjectId(id));
-                    const condition = { type: 'lesson', _refId: { $in: listRefId }, user: { $in: objId } };
-                    app.model.rate.getAll(condition, (error, item) => {
-                        res.send({ error, item });
-                    });
-                }
-            });
+        if (listRefId) {
+            const condition = { type: 'lesson', _refId: { $in: listRefId } };
+            if (sessionUser.isCourseAdmin) {
+                app.model.student.getAll({ course: req.query.courseId }, (error, item) => {
+                    if (error) {
+                        res.send({ error });
+                    } else {
+                        if (item && item.length) {
+                            condition.user = { $in: item.map(item => item.user._id) };
+                        }
+                        console.log(condition);
+                        app.model.rate.getAll(condition, (error, item) => res.send({ error, item }));
+                    }
+                });
+            } else {
+                app.model.course.get(req.query.courseId, (error, item) => {
+                    if (error || !item) {
+                        res.send({ error });
+                    } else {
+                        const listStudent = item.teacherGroups.filter(teacherGroup => teacherGroup.teacher && teacherGroup.teacher._id == sessionUser._id);
+                        if (listStudent.length) {
+                            condition.user = { $in: listStudent[0].student.map(student => student.user._id) };
+                        }
+                        app.model.rate.getAll(condition, (error, item) => res.send({ error, item }));
+                    }
+                });
+            }
         } else {
-            app.model.course.get(req.query.courseId, (error, item) => {
-                if (error || !item) {
-                    res.send({ error });
-                } else {
-                    const listStudent = item.teacherGroups.filter(teacherGroup => teacherGroup.teacher && teacherGroup.teacher._id == sessionUser._id);
-                    listStudent.length && listStudent[0].student.map(student => listStudentId.push(student.user._id));
-                    const objId = listStudentId.map(id => ObjectId(id));
-                    const condition = {
-                        type: 'lesson', _refId: { $in: listRefId }, user: { $in: objId }
-                    };
-                    app.model.rate.getAll(condition, (error, item) => {
-                        res.send({ error, item });
-                    });
-                }
-            });
+            res.send({ item: [] });
         }
+    });
 
+    app.get('/api/rate/lesson/page/:pageNumber/:pageSize', app.permission.check('rate:read'), (req, res) => {
+        const pageNumber = parseInt(req.params.pageNumber),
+            pageSize = parseInt(req.params.pageSize),
+            condition = req.query.pageCondition || {};
+        app.model.rate.getPage(pageNumber, pageSize, condition, (error, page) => {
+            res.send({ error, page });
+        });
     });
 
     // Hook permissionHooks -------------------------------------------------------------------------------------------

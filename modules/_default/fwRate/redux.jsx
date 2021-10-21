@@ -61,6 +61,22 @@ export function getRateStudentByAdmin(courseId, listRefId, done) {
     };
 }
 
+export function getRateLessonByAdminPage(pageNumber, pageSize, pageCondition, done) {
+    return dispatch => {
+        const url = `/api/rate/lesson/page/${pageNumber}/${pageSize}`;
+        T.get(url, { pageCondition }, data => {
+            if (data.error) {
+                T.notify('Lấy đánh giá bị lỗi!', 'danger');
+                console.error(`GET: ${url}. ${data.error}`);
+            } else {
+                if (pageCondition) data.page.pageCondition = pageCondition;
+                done && done(data.page);
+                dispatch({ type: RateGetPage, page: data.page });
+            }
+        }, error => console.error(error) || T.notify('Lấy đánh giá bị lỗi!', 'danger'));
+    };
+}
+
 export function updateRate(_id, changes, done) {
     return dispatch => {
         const url = '/api/rate/student';

@@ -19,14 +19,14 @@ class SectionChat extends AdminPage {
         });
         _selectedUserId ? T.socket.emit('chat:join', { _userId: _selectedUserId }) : T.socket.emit('chat:joinCourseRoom', { courseId });
         T.socket.on('chat:send', this.onReceiveMessage);
-        // this.scrollToBottom();
+        this.scrollToBottom();
     }
 
     componentDidUpdate() {
         const listUser = this.state;
         !this.state._selectedUserId && listUser && listUser.length && this.selectUser(listUser[0]);
         this.scrollToChat;
-        // this.scrollToBottom();
+        this.scrollToBottom();
     }
 
     componentWillUnmount() {
@@ -126,6 +126,7 @@ class SectionChat extends AdminPage {
                     this.scrollToChat();
                 }
             }
+            this.scrollToBottom();
         }
     }
 
