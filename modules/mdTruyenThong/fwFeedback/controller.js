@@ -3,19 +3,20 @@ module.exports = (app) => {
     app.permission.add({ name: 'feedback:read', menu: { parentMenu: { index: 3030, title: 'Phản hồi', icon: 'fa-comments-o', link: '/user/feedback/system' } } });
 
     app.get('/user/feedback/system', app.permission.check('feedback:read'), app.templates.admin);
+    app.get('/user/feedback/system/:_id', app.permission.check('feedback:read'), app.templates.admin);
     app.get('/user/feedback', app.permission.check('user:login'), app.templates.admin);
 
-    app.get('/api/feedback/:type', app.permission.check('feedback:read'), (req, res) => {
-        const condition = { type: req.params.type, _refId: req.query._refId };
-        app.model.feedback.getAll(condition, (error, items) => res.send({ error, items }));
+    app.get('/api/feedback', app.permission.check('feedback:read'), (req, res) => {
+        const { _id } = req.query;
+        app.model.feedback.get(_id, (error, item) => res.send({ error, item }));
     });
 
     app.put('/api/feedback', app.permission.check('feedback:write'), (req, res) => {
-        const changes = req.body.changes;
-        if (typeof changes === 'string') {
+        const changes = req.body.changes, user = req.session.user;
+        if (typeof changes === 'string') { //send content in string
             const reply = {
                 content: changes,
-                adminUser: req.session.user && req.session.user._id
+                adminUser: user._id
             };
             app.model.feedback.addReply(req.body._id, reply, (error, item) => res.send({ error, item }));
         } else app.model.feedback.update(req.body._id, changes, (error, item) => res.send({ error, item }));
@@ -72,7 +73,7 @@ module.exports = (app) => {
                         res.send({ error: 'Bạn không thể xem phản hồi khóa học không phải của bạn!' });
                     } else {
                         if (type == 'course')
-                        app.model.feedback.getPage(pageNumber, pageSize, app.clone(condition, { user}), (error, page) => res.send({ error, page }));
+                            app.model.feedback.getPage(pageNumber, pageSize, app.clone(condition, { user }), (error, page) => res.send({ error, page }));
                         else if (type == 'teacher') {
                             app.model.course.get(_refId, (error, course) => {
                                 if (error || !course) {
@@ -81,14 +82,14 @@ module.exports = (app) => {
                                     const teacherGroups = course.teacherGroups.find(({ student }) => student.find(({ _id }) => _id == user) != null),
                                         _teacherId = teacherGroups && teacherGroups.teacher && teacherGroups.teacher._id;
                                     condition._refId = _teacherId;
-                                    app.model.feedback.getPage(pageNumber, pageSize, app.clone(condition, { user}), (error, page) => res.send({ error, page }));
+                                    app.model.feedback.getPage(pageNumber, pageSize, app.clone(condition, { user }), (error, page) => res.send({ error, page }));
                                 }
                             });
-    
+
                         }
                     }
                 });
-            } else app.model.feedback.getPage(pageNumber, pageSize, app.clone(condition, { user}), (error, page) => res.send({ error, page }));
+            } else app.model.feedback.getPage(pageNumber, pageSize, app.clone(condition, { user }), (error, page) => res.send({ error, page }));
         } catch (error) {
             res.send({ error: error.message });
         }

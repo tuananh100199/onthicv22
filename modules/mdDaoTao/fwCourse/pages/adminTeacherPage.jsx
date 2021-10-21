@@ -243,8 +243,8 @@ class AdminTeacherPage extends AdminPage {
         const backRoute = `/user/course/${item._id}`;
         return this.renderPage({
             icon: 'fa fa-user-circle',
-            title: 'Gán Quản trị viên khóa học: ' + item.name,
-            breadcrumb: [<Link key={0} to='/user/course'>Khóa học</Link>, item._id ? <Link key={0} to={backRoute}>{item.name}</Link> : '', 'Gán QTVKH'],
+            title: 'Gán Cố vấn học tập: ' + item.name,
+            breadcrumb: [<Link key={0} to='/user/course'>Khóa học</Link>, item._id ? <Link key={0} to={backRoute}>{item.name}</Link> : '', 'Gán CVHT'],
             content: (
                 <div className='tile'>
                     <div className='tile-body row'>

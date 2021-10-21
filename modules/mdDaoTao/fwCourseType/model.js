@@ -5,7 +5,7 @@ module.exports = app => {
         shortDescription: String,
         detailDescription: String,
         image: String,
-        subjects: [{ type: app.db.Schema.ObjectId, ref: 'Subject' }],
+        subjects: [{ type: app.db.Schema.ObjectId, ref: 'Subject' }], //TODO: Sang: Thay đổi thứ tự môn học
         questionTypes: [{
             category: { type: app.db.Schema.ObjectId, ref: 'Category' },
             amount: Number,

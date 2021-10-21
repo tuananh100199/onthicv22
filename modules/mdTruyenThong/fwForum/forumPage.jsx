@@ -46,6 +46,7 @@ class ForumModal extends AdminModal {
     }
 
     render = () => {
+        //TODO: Sang: itemContent => FormEditor, có upload hình
         const permission = this.props.permission;
         return this.renderModal({
             title: 'Chủ đề',
@@ -86,12 +87,12 @@ class ForumPage extends AdminPage {
 
     render() {
         const currentUser = this.props.system ? this.props.system.user : null,
-        { isCourseAdmin } = currentUser;
+            { isCourseAdmin } = currentUser;
         const permission = this.getUserPermission('forum');
         const adminPermission = this.getUserPermission('system', ['settings']);
         const { category, page } = this.props.forum || {};
         const { pageNumber, pageSize, pageTotal, totalItem, list } = page || { pageNumber: 1, pageSize: 50, pageTotal: 1, totalItem: 0 };
-        const backRoute = '/user/forum'; 
+        const backRoute = '/user/forum';
         const listForums = list && list.length ? list.map((item, index) => (
             <div key={index} className='tile'>
                 <div style={{ display: 'inline-flex' }}>
@@ -104,7 +105,7 @@ class ForumPage extends AdminPage {
                         {permission.write && isCourseAdmin && item.state && ForumStatesMapper[item.state] ? <b style={{ color: ForumStatesMapper[item.state].color }}>{ForumStatesMapper[item.state].text}</b> : ''}
                     </small>
                 </div>
-                <ForumButtons state={item.state} permission={{...permission, forumOwner: adminPermission.settings, messageOwner: adminPermission.settings }} onChangeState={(state) => this.props.updateForum(item._id, { state })} onEdit={() => this.modal.show(item)} onDelete={() => this.delete(item)} />
+                <ForumButtons state={item.state} permission={{ ...permission, forumOwner: adminPermission.settings, messageOwner: adminPermission.settings }} onChangeState={(state) => this.props.updateForum(item._id, { state })} onEdit={() => this.modal.show(item)} onDelete={() => this.delete(item)} />
 
                 <div className='tile-body' style={{ marginBottom: 20 }}>
                     <h5 style={{ fontWeight: 'normal' }}>{item.content}</h5>

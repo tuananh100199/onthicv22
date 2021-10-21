@@ -11,6 +11,8 @@ export class AdminFeedbackPage extends AdminPage {
         T.ready('/user/course', () => {
             const params = T.routeMatcher('/user/course/:_id/feedback').parse(window.location.pathname);
             if (params && params._id) {
+                this.course.value(true);
+                this.onChange(true, 'course');
                 const course = this.props.course ? this.props.course.item : null;
                 if (!course) {
                     this.props.getCourse(params._id, data => {
@@ -19,8 +21,6 @@ export class AdminFeedbackPage extends AdminPage {
                             this.props.history.push('/user/course/' + params._id);
                         }
                     });
-                    this.course.value(true);
-                    this.onChange(true, 'course');
                 }
             } else {
                 this.props.history.push('/user/course/');
@@ -49,7 +49,7 @@ export class AdminFeedbackPage extends AdminPage {
                             <FormCheckbox ref={e => this.course = e} onChange={value => this.onChange(value, 'course')} label='Phản hồi khóa học' />&nbsp; &nbsp; &nbsp; &nbsp;
                             <FormCheckbox ref={e => this.teacher = e} onChange={value => this.onChange(value, 'teacher')} label='Phản hồi cố vấn học tập' />
                         </div>
-                        {this.state.type && <FeedbackSection type={this.state.type} _refId={item._id} />}
+                        {this.state.type && <FeedbackSection history={this.props.history} detailPageUrl={`/user/course/${item._id}/feedback`} type={this.state.type} _refId={item._id} />}
                     </div>
                 </div>),
             backRoute,
