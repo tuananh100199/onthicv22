@@ -121,8 +121,8 @@ export function getCourse(_id, done) {
                     if (data.item.representerGroups) data.item.representerGroups = data.item.representerGroups.sort((a, b) =>
                         a.teacher == null || b.teacher == null || (a.teacher.firstname + ' ' + a.teacher.lastname).toLowerCase() > (b.teacher.firstname + ' ' + b.teacher.lastname).toLowerCase() ? +1 : -1);
                 }
-                done && done(data);
                 dispatch({ type: CourseGetItem, item: data.item });
+                done && done(data);
             }
         }, error => console.error(error) || T.notify('Lấy khóa học bị lỗi!', 'danger'));
     };

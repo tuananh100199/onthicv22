@@ -3,51 +3,53 @@ module.exports = app => {
 
     // APIs -----------------------------------------------------------------------------------------------------------------------------------------
     app.get('/api/comment/page/:pageNumber/:pageSize', (req, res) => {
+        const user = req.session.user, permissions = user && user.permissions && user.permissions.length ? user.permissions : [];
         const pageNumber = parseInt(req.params.pageNumber),
             pageSize = parseInt(req.params.pageSize),
             { refParentId, refId } = req.query,
             condition = {};
-        if (refParentId) condition.refParentId = app.db.Types.ObjectId(refParentId);
-        if (refId) condition.refId = app.db.Types.ObjectId(refId);
+        if (refParentId) condition.refParentId = refParentId;
+        if (refId) condition.refId = refId;
+        if (!user || (!user.isCourseAdmin && !user.isLecturer && !permissions.includes('comment:write'))) {
+            condition.state = 'approved';
+        }
         app.model.comment.getPage(pageNumber, pageSize, condition, (error, page) => res.send({ error, page }));
     });
 
-    app.get('/api/comment/scope/:commentId/:from/:limit', (req, res) => {
-        const commentId = req.params.commentId,
+    app.get('/api/comment/scope/:parentId/:from/:limit', (req, res) => {
+        const user = req.session.user, permissions = user && user.permissions && user.permissions.length ? user.permissions : [];
+        const parentId = req.params.parentId,
             from = parseInt(req.params.from),
             limit = parseInt(req.params.limit);
-        app.model.comment.getRepliesInScope({ _id: app.db.Types.ObjectId(commentId) }, from, limit, (error, comment) => {
-            if (error || !comment) {
+        const condition = { parentId };
+        if (!user || (!user.isCourseAdmin && !user.isLecturer && !permissions.includes('comment:write'))) {
+            condition.state = 'approved';
+        }
+
+        app.model.comment.getRepliesInScope(condition , from, limit, (error, replies) => {
+            if (error || !replies) {
                 res.send({ error: error || 'Invalid comment id' });
             } else {
-                res.send({ replies: comment.replies || [] });
+                res.send({ replies });
             }
         });
     });
 
     app.post('/api/comment', app.permission.check(), (req, res) => {
         let { _parentId, data } = req.body, user = req.session.user;
+        const permissions = user.permissions && user.permissions.length ? user.permissions : [];
         if (user && (data.refId || _parentId)) {
             data.author = user._id;
-            app.model.comment.create(data, (error, item) => {
-                if (item && _parentId) {
-                    delete data.refParentId;
-                    delete data.refId;
-                    app.model.comment.get(_parentId, (error, parentItem) => {
-                        if (parentItem) {
-                            if (parentItem.replies) {
-                                parentItem.replies.push(item._id);
-                            } else {
-                                parentItem.replies = [item._id];
-                            }
-                            parentItem.save();
-                        }
-                        res.send({ error, item });
-                    });
-                } else {
-                    res.send({ error, item });
-                }
-            });
+            if (_parentId) {
+                delete data.refParentId;
+                delete data.refId;
+                data.parentId = _parentId;
+            }
+
+            if (user.isCourseAdmin || user.isLecturer || permissions.includes('comment:write')) {
+                data.state = 'approved';
+            }
+            app.model.comment.create(data, (error, item) => res.send({ error, item }));
         } else {
             res.send({ error: 'Permission denied!' });
         }
@@ -58,8 +60,25 @@ module.exports = app => {
         const user = req.session.user, permissions = user ? user.permissions : [];
         const hasPermission = (permissions && permissions.includes('comment:write')) || (user && user._id == changes.author);
         if (_id && hasPermission) {
-            delete changes.replies;
+            delete changes.parentId;
+            changes.updatedDate = new Date();
+            if (user.isCourseAdmin || user.isLecturer || permissions.includes('comment:write')) {
+                changes.state = 'approved';
+            } else {
+                changes.state = 'waiting';
+            }
             app.model.comment.update(_id, { $set: changes }, (error, item) => res.send({ error, item }));
+        } else {
+            res.send({ error: 'Permission denied!' });
+        }
+    });
+
+    app.put('/api/comment-approval', app.permission.check(), (req, res) => {
+        const state = req.body.state, { _id } = req.body;
+        const user = req.session.user, permissions = user.permissions || [];
+        const hasPermission = permissions.includes('comment:write') || user.isCourseAdmin || user.isLecturer;
+        if (_id && hasPermission) {
+            app.model.comment.update(_id, { $set: { state } }, (error, item) => res.send({ error, item }));
         } else {
             res.send({ error: 'Permission denied!' });
         }
@@ -75,7 +94,7 @@ module.exports = app => {
                     res.send({ error });
                 } else {
                     // Delete item in replies
-                    app.model.comment.deleteReply({ replies: data._id }, data._id, (error, item) => {
+                    app.model.comment.delete({ parentId: data._id }, (error, item) => {
                         res.send({ error, item });
                     });
                 }
