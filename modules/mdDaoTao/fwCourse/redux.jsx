@@ -8,7 +8,6 @@ const CourseGetPageByUser = 'CourseGetPageByUser';
 const CourseUpdateStudentInfoInCourse = 'CourseUpdateStudentInfoInCourse';
 const CourseGetLearningProgressPageByAdmin = 'CourseGetLearningProgressPageByAdmin';
 
-
 export default function courseReducer(state = {}, data) {
     switch (data.type) {
         case CourseGetPage: {
@@ -26,7 +25,7 @@ export default function courseReducer(state = {}, data) {
         }
 
         case CourseGetLearningProgressPageByAdmin: {
-            return Object.assign({}, state, {page: data.page, students: data.students, subjects: data.subjects });
+            return Object.assign({}, state, { page: data.page, students: data.students, subjects: data.subjects });
         }
 
         case CourseUpdateStudentInfoInCourse: {
@@ -400,8 +399,8 @@ export function exportRepresenterAndStudentToExcel(_courseId) {
 export function exportTeacherAndStudentToExcel(_courseId) {
     T.download(T.url(`/api/course/teacher-student/export/${_courseId}`));
 }
-export function exportLearningProgressToExcel(filterOn) {
-    T.download(T.url(`/api/course/learning-progress/export/${filterOn}`));
+export function exportLearningProgressToExcel() {
+    T.download(T.url('/api/course/learning-progress/export'));
 }
 // Ajax Selections ----------------------------------------------------------------------------------------------------
 export const ajaxSelectCourse = {
