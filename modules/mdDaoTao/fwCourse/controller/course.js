@@ -441,7 +441,7 @@ module.exports = (app) => {
                     }
                 });
             } else if (sessionUser.isLecturer) {
-                app.model.course.get(req.query._id, (error, item) => {
+                app.model.course.get(condition.courseId, (error, item) => {
                     err = error;
                     if (error || !item) {
                         res.send({ error });

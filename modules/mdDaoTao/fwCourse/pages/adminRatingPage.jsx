@@ -1,7 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
-import { getCourse, getLearningProgress } from '../redux'; // TODO: lỗi Vinh coi lại hàm này
+import { getCourse, getLearningProgressPage } from '../redux'; // TODO: lỗi Vinh coi lại hàm này
 import { getSubject } from 'modules/mdDaoTao/fwSubject/redux';
 import { getRateStudentByAdmin } from 'modules/_default/fwRate/redux';
 import { AdminPage, FormSelect, renderTable, TableCell, AdminModal } from 'view/component/AdminPage';
@@ -19,7 +19,6 @@ class ViewNoteModal extends AdminModal {
 
 class LecturerRatingPage extends AdminPage {
     state = {};
-
     componentDidMount() {
         T.ready('/user/course', () => {
             const params = T.routeMatcher('/user/course/:_id/rate-subject').parse(window.location.pathname);
@@ -50,7 +49,7 @@ class LecturerRatingPage extends AdminPage {
     }
 
     getLearningProgress = (_courseId, done) => {
-        this.props.getLearningProgress(_courseId, data => {
+        this.props.getLearningProgressPage(undefined, undefined, { courseId: _courseId, filterOn: false }, data => {
             if (data.error) {
                 T.notify('Lấy tiến độ học tập học viên bị lỗi!', 'danger');
                 this.props.history.push('/user/course/');
@@ -78,7 +77,6 @@ class LecturerRatingPage extends AdminPage {
             course = this.props.course && this.props.course.item ? this.props.course.item : {},
             lessons = this.state.currentLessons ? this.state.currentLessons : [],
             listSubjects = subjects.map((subject) => ({ id: subject._id, text: subject.title }));
-
         const students = this.props.course && this.props.course.students ? this.props.course.students : [], rate = this.props.rate;
         const table = renderTable({
             getDataSource: () => students, stickyHead: true,
@@ -127,5 +125,5 @@ class LecturerRatingPage extends AdminPage {
 }
 
 const mapStateToProps = state => ({ system: state.system, course: state.trainning.course, rate: state.framework.rate });
-const mapActionsToProps = { getCourse, getLearningProgress, getSubject, getRateStudentByAdmin };
+const mapActionsToProps = { getCourse, getLearningProgressPage, getSubject, getRateStudentByAdmin };
 export default connect(mapStateToProps, mapActionsToProps)(LecturerRatingPage);
