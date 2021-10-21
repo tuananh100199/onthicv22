@@ -88,6 +88,10 @@ export default {
             component: Loadable({ loading: Loading, loader: () => import('./pages/adminLearningProgressPage') })
         },
         {
+            path: '/user/course/:_id/import-diem-thi-tot-nghiep',
+            component: Loadable({ loading: Loading, loader: () => import('./pages/adminImportDiemThiTotNghiepPage') })
+        },
+        {
             path: '/user/course/:_id/calendar',
             component: Loadable({ loading: Loading, loader: () => import('./pages/lecturerTimeTablePage') })
         },
