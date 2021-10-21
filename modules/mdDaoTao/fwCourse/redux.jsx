@@ -6,7 +6,8 @@ const CourseGetItem = 'CourseGetItem';
 const CourseGetUserChat = 'CourseGetUserChat';
 const CourseGetPageByUser = 'CourseGetPageByUser';
 const CourseUpdateStudentInfoInCourse = 'CourseUpdateStudentInfoInCourse';
-const CourseGetLearningProgressByAdmin = 'CourseGetLearningProgressByAdmin';
+const CourseGetLearningProgressPageByAdmin = 'CourseGetLearningProgressPageByAdmin';
+
 
 export default function courseReducer(state = {}, data) {
     switch (data.type) {
@@ -24,8 +25,8 @@ export default function courseReducer(state = {}, data) {
             return Object.assign({}, state, { user: data.user });
         }
 
-        case CourseGetLearningProgressByAdmin: {
-            return Object.assign({}, state, { students: data.students, subjects: data.subjects });
+        case CourseGetLearningProgressPageByAdmin: {
+            return Object.assign({}, state, {page: data.page, students: data.students, subjects: data.subjects });
         }
 
         case CourseUpdateStudentInfoInCourse: {
@@ -355,16 +356,18 @@ export function getStudentByLecturer(_id, done) {
     };
 }
 
-export function getLearningProgress(_id, done) {
+T.initCookiePage('adminLearningProgress');
+export function getLearningProgressPage(pageNumber, pageSize, pageCondition, done) {
+    const page = T.updatePage('adminLearningProgress', pageNumber, pageSize);
     return dispatch => {
-        const url = '/api/course/learning-progress';
-        T.get(url, { _id }, data => {
+        const url = `/api/course/learning-progress/page/${page.pageNumber}/${page.pageSize}`;
+        T.get(url, { pageCondition }, data => {
             if (data.error) {
                 T.notify('Lấy tiến độ học tập bị lỗi!', 'danger');
-                console.error('GET: ' + url + '.', data.error);
+                console.error(`GET: ${url}. ${data.error}`);
             } else {
-                dispatch({ type: CourseGetLearningProgressByAdmin, students: data.students, subjects: data.subjects });
                 done && done(data);
+                dispatch({ type: CourseGetLearningProgressPageByAdmin, page: data.page, students: data.students, subjects: data.subjects });
             }
         }, error => console.error(error) || T.notify('Lấy tiến độ học tập bị lỗi!', 'danger'));
     };
@@ -397,7 +400,9 @@ export function exportRepresenterAndStudentToExcel(_courseId) {
 export function exportTeacherAndStudentToExcel(_courseId) {
     T.download(T.url(`/api/course/teacher-student/export/${_courseId}`));
 }
-
+export function exportLearningProgressToExcel(filterOn) {
+    T.download(T.url(`/api/course/learning-progress/export/${filterOn}`));
+}
 // Ajax Selections ----------------------------------------------------------------------------------------------------
 export const ajaxSelectCourse = {
     ajax: false,
@@ -406,3 +411,4 @@ export const ajaxSelectCourse = {
     processResults: response => ({ results: response && response.page && response.page.list ? response.page.list.map(course => ({ id: course._id, text: course.name + (course.courseType ? ` (${course.courseType.title})` : '') })) : [] }),
     fetchOne: (_id, done) => (getCourse(_id, ({ item }) => done && done({ id: item._id, text: item.name + (item.courseType ? ` (${item.courseType.title})` : '') })))()
 };
+

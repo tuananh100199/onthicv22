@@ -1,9 +1,10 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
-import { getCourse, getLearningProgress } from '../redux';
+import { getCourse, getLearningProgressPage, exportLearningProgressToExcel } from '../redux';
 import { updateStudent } from 'modules/mdDaoTao/fwStudent/redux';
-import { AdminPage, AdminModal, TableCell, renderTable, FormTextBox } from 'view/component/AdminPage';
+import { AdminPage, AdminModal, CirclePageButton, TableCell, renderTable, FormTextBox, FormCheckbox } from 'view/component/AdminPage';
+import Pagination from 'view/component/Pagination';
 import './style.scss';
 
 class LearningProgressModal extends AdminModal {
@@ -27,13 +28,7 @@ class LearningProgressModal extends AdminModal {
             this.diemThucHanh.focus();
         } else {
             this.props.updateStudent(this.state._id, changes, () => {
-                this.props.getLearningProgress(this.props.courseId, data => {
-                    if (data.error) {
-                        T.notify('Lấy tiến độ học tập học viên bị lỗi!', 'danger');
-                        this.props.history.push('/user/course/');
-                    }
-                    this.hide();
-                });
+                this.props.getLearningProgressPage(undefined, undefined, {courseId: this.props.courseId, filterOn: this.props.filterOn}, () => this.hide());
             });
         }
     }
@@ -59,21 +54,22 @@ class LearningProgressModal extends AdminModal {
 }
 
 class AdminLearningProgressPage extends AdminPage {
-    state = {};
+    state = { filterOn: false };
     componentDidMount() {
         T.ready('/user/course', () => {
             const params = T.routeMatcher('/user/course/:_id/learning').parse(window.location.pathname);
             if (params && params._id) {
                 const course = this.props.course ? this.props.course.item : null;
+                this.setState({courseId:  params._id});
                 if (course) {
-                    this.getLearningProgress(course._id);
+                    this.props.getLearningProgressPage(undefined, undefined, {courseId: course._id, filterOn: this.state.filterOn});
                 } else {
                     this.props.getCourse(params._id, data => {
                         if (data.error) {
                             T.notify('Lấy khóa học bị lỗi!', 'danger');
                             this.props.history.push('/user/course/' + params._id);
                         } else {
-                            this.getLearningProgress(params._id);
+                            this.props.getLearningProgressPage(undefined, undefined, {courseId: params._id, filterOn: this.state.filterOn });
                         }
                     });
                 }
@@ -83,30 +79,33 @@ class AdminLearningProgressPage extends AdminPage {
         });
     }
 
-    getLearningProgress = (_courseId) => {
-        this.props.getLearningProgress(_courseId, data => {
-            if (data.error) {
-                T.notify('Lấy tiến độ học tập học viên bị lỗi!', 'danger');
-                this.props.history.push('/user/course/');
-            }
-        });
+    getPage = (pageNumber, pageSize) => {
+        this.props.getLearningProgressPage(pageNumber, pageSize, { courseId: this.state.courseId, filterOn: this.state.filterOn});
     }
 
     edit = (e, item) => e.preventDefault() || this.modal.show(item);
 
+    onChange = (value) => {
+        this.setState({ filterOn: value });
+        if(value) {
+            this.props.getLearningProgressPage(undefined, undefined, { courseId: this.state.courseId, filterOn: value });
+        } else {
+            this.props.getLearningProgressPage(undefined, undefined, { courseId: this.state.courseId, filterOn: value });
+        }
+        
+    }
+
     render() {
+        const user = this.props.system ? this.props.system.user : null,
+            { isLecturer } = user;
         const item = this.props.course && this.props.course.item ? this.props.course.item : {};
         const students = this.props.course && this.props.course && this.props.course.students ? this.props.course.students : [],
             subjects = this.props.course && this.props.course.subjects ? this.props.course.subjects.sort((a, b) => a.monThucHanh - b.monThucHanh) : [];
+        const { pageNumber, pageSize, pageTotal, totalItem } = this.props.course && this.props.course.page ?
+            this.props.course.page: { pageNumber: 1, pageSize: 50, pageTotal: 1, totalItem: 0};
 
-        const subjectPoints = [],
-            subjectColumns = [];
+        const subjectColumns = [];
         (subjects || []).forEach((subject, index) => {
-            const diemBaiHoc = item.subject && item.subject[subject._id] && !subject.monThucHanh ? item.subject[subject._id].completedLessons : 0,
-                soBaiHoc = subject.lessons.length,
-                diem = subject.monThucHanh ? '' : `=> ${item.subject && item.subject[subject._id] ? item.subject[subject._id].diemMonHoc : 0}`;
-
-            subjectPoints.push(<TableCell key={index} type='text' style={{ textAlign: 'center' }} content={`${diemBaiHoc} / ${soBaiHoc} ${diem}`} />);
             subjectColumns.push(<th key={index} style={{ width: 'auto', color: subject.monThucHanh ? 'aqua' : 'coral' }} nowrap='true'>{subject.title}</th>);
         });
 
@@ -125,16 +124,23 @@ class AdminLearningProgressPage extends AdminPage {
             renderRow: (item, index) => {
                 const student = students[index],
                     diemLyThuyet = item.diemLyThuyet && !isNaN(item.diemLyThuyet) ? Number(item.diemLyThuyet) : 0,
-                    diemThucHanh = student && student.diemThucHanh && !isNaN(item.diemThucHanh) ? Number(student.diemThucHanh) : 0;
+                    diemThucHanh = student && student.diemThucHanh && !isNaN(item.diemThucHanh) ? Number(student.diemThucHanh) : 0,
+                    diemTB = ((diemLyThuyet + diemThucHanh )/ 2).toFixed(1);
                 return (
                     <tr key={index}>
                         <TableCell type='number' content={index + 1} />
                         <TableCell type='text' content={item.lastname + ' ' + item.firstname} />
                         <TableCell type='text' content={item.identityCard} />
-                        {subjectPoints}
+                        {subjects && subjects.length && subjects.map((subject, i) => (
+                        <TableCell key={i} type='text' style={{ textAlign: 'center' }} content={` 
+                            ${item.subject && item.subject[subject._id] && !subject.monThucHanh ? item.subject[subject._id].completedLessons : 0}
+                            / ${subject.monThucHanh ? 0 : subject.lessons.length}
+                            ${subject.monThucHanh ? '' : `=> ${item.subject && item.subject[subject._id] ? item.subject[subject._id].diemMonHoc : 0}`}
+                            ` }
+                        />))}
                         <TableCell type='text' style={{ textAlign: 'center' }} content={diemLyThuyet} />
                         <TableCell type='link' style={{ textAlign: 'center' }} content={<>{diemThucHanh}<i className='fa fa-lg fa-edit' /></>} className='practicePoint' onClick={e => this.edit(e, item)} />
-                        <TableCell type='text' style={{ textAlign: 'center' }} content={((diemLyThuyet + diemLyThuyet) / 2).toFixed(1)} />
+                        <TableCell type='text' style={{ textAlign: 'center' }} content={diemTB} />
                     </tr>);
             },
         });
@@ -144,18 +150,22 @@ class AdminLearningProgressPage extends AdminPage {
             icon: 'fa fa-line-chart',
             title: 'Tiến độ học tập: ' + item.name,
             breadcrumb: [<Link key={0} to='/user/course'>Khóa học</Link>, item._id ? <Link key={0} to={backRoute}>{item.name}</Link> : '', 'Tiến độ học tập'],
-            content: (
+            content: <>
                 <div className='tile'>
                     <div className='tile-body'>
+                        <FormCheckbox ref={e => this.course = e} onChange={value => this.onChange(value)} label='Học viên đủ điều kiện thi hết môn' />
                         {table}
-                        {item._id ? <LearningProgressModal ref={e => this.modal = e} updateStudent={this.props.updateStudent} getLearningProgress={this.props.getLearningProgress} courseId={item._id} /> : null}
+                        {!isLecturer ? <Pagination name='adminLearningProgress' pageNumber={pageNumber} pageSize={pageSize} pageTotal={pageTotal} totalItem={totalItem} getPage={this.getPage} style={{ marginLeft: 45 }}/> : null}
+                        {item._id ? <LearningProgressModal ref={e => this.modal = e} updateStudent={this.props.updateStudent} getLearningProgressPage={this.props.getLearningProgressPage} courseId={item._id} filterOn={this.state.filterOn} /> : null}
+                        <CirclePageButton type='export' onClick={() => exportLearningProgressToExcel(this.state.filterOn)} />
                     </div>
-                </div>),
+                </div>
+                </>,
             backRoute,
         });
     }
 }
 
 const mapStateToProps = state => ({ system: state.system, course: state.trainning.course });
-const mapActionsToProps = { getCourse, getLearningProgress, updateStudent };
+const mapActionsToProps = { getCourse, getLearningProgressPage, updateStudent };
 export default connect(mapStateToProps, mapActionsToProps)(AdminLearningProgressPage);
