@@ -92,20 +92,20 @@ class ForumCourseMessagePage extends AdminPage {
         const courseItem = this.props.course && this.props.course.item ? this.props.course.item : {};
         const adminPermission = this.getUserPermission('system', ['settings']);
         const { user } = this.props.system,
-        { isLecturer, isTrustLecturer, isCourseAdmin } = user;
+            { isLecturer, isTrustLecturer, isCourseAdmin } = user;
         const createdDateStyle = { textDecoration: 'none', position: 'absolute', top: 0, left: 0, padding: '6px 12px', color: 'white', borderTopLeftRadius: 3, borderBottomRightRadius: 3 };
         const { item: forum } = this.props.forum || {};
-        const forumOwner =  adminPermission && adminPermission.settings || isCourseAdmin || (isLecturer && isTrustLecturer && user && forum && forum.user && (user._id == forum.user._id));
+        const forumOwner = adminPermission && adminPermission.settings || isCourseAdmin || (isLecturer && isTrustLecturer && user && forum && forum.user && (user._id == forum.user._id));
         const { pageNumber, pageSize, pageTotal, totalItem, list } = forum && forum.page ? forum.page : { pageNumber: 1, pageSize: 50, pageTotal: 1, totalItem: 0 };
         const backRoute = forum && forum.category ? '/user/course/' + courseItem._id + '/forum/' + forum.category._id : null;
-        const courseBackRoute = '/user/course/' + courseItem._id; 
-        const categoryBackRoute = '/user/course/' + courseItem._id + '/forum'; 
-        const forumBackRoute = forum && forum.category ? '/user/course/' + courseItem._id + '/forum/'+ forum.category._id : null; 
+        const courseBackRoute = '/user/course/' + courseItem._id;
+        const categoryBackRoute = '/user/course/' + courseItem._id + '/forum';
+        const forumBackRoute = forum && forum.category ? '/user/course/' + courseItem._id + '/forum/' + forum.category._id : null;
 
         return this.renderPage({
             icon: 'fa fa-comments',
             title: forum ? <>{forum.title} <small style={{ fontSize: 13 }}>({forum.user ? `${forum.user.lastname} ${forum.user.firstname}` : ''} {forum.modifiedDate ? ' - ' + (new Date(forum.modifiedDate).getText()) : ''})</small></> : '...',
-            breadcrumb: [<Link key={0} to='/user/course'>Khóa học</Link>, courseItem._id ? <Link key={0} to={courseBackRoute}>{courseItem.name}</Link> : '',<Link key={0} to={categoryBackRoute}> Danh mục </Link>, forum ? <Link key={0} to={forumBackRoute}>{forum.title }</Link> : 'Bài viết','Nội dung'],
+            breadcrumb: [<Link key={0} to='/user/course'>Khóa học</Link>, courseItem._id ? <Link key={0} to={courseBackRoute}>{courseItem.name}</Link> : '', <Link key={0} to={categoryBackRoute}> Danh mục </Link>, forum ? <Link key={0} to={forumBackRoute}>{forum.title}</Link> : 'Bài viết', 'Nội dung'],
             content: forum ? <>
                 <div className='tile'>
                     {/* <small className='bg-secondary' style={createdDateStyle}>

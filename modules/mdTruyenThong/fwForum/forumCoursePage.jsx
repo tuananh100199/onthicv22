@@ -42,12 +42,13 @@ class ForumModal extends AdminModal {
                 if (data.content.length > 200) data.content = data.content.substring(0, 200);
                 this.state._id ?
                     this.props.update(this.state._id, data, () => this.hide()) :
-                    this.props.create(data, (data) => (data && data.item && this.props.courseId && this.props.history.push('/user/course/' + this.props.courseId + '/forum/'+  data.item._id + '/message')) || this.hide());
+                    this.props.create(data, (data) => (data && data.item && this.props.courseId && this.props.history.push('/user/course/' + this.props.courseId + '/forum/' + data.item._id + '/message')) || this.hide());
             }
         }
     }
 
     render = () => {
+        //TODO: Sang: itemContent => FormEditor, có upload hình
         const forumCreator = this.props.forumCreator;
         return this.renderModal({
             title: 'Chủ đề',
@@ -65,7 +66,7 @@ class ForumPage extends AdminPage {
     componentDidMount() {
         T.ready('/user/course', () => {
             const params = T.routeMatcher('/user/course/:_courseId/forum/:_categoryId').parse(window.location.pathname),
-                courseId = params._courseId, 
+                courseId = params._courseId,
                 forumCategoryId = params._categoryId;
             if (forumCategoryId) {
                 this.setState({ courseId, forumCategoryId }, () => this.getPage());
@@ -104,10 +105,10 @@ class ForumPage extends AdminPage {
         let forumAdmin = adminPermission && adminPermission.settings || isCourseAdmin;
         const { category, page } = this.props.forum || {};
         const { pageNumber, pageSize, pageTotal, totalItem, list } = page || { pageNumber: 1, pageSize: 50, pageTotal: 1, totalItem: 0 };
-        const courseBackRoute = '/user/course/' + courseItem._id; 
+        const courseBackRoute = '/user/course/' + courseItem._id;
         const categoryBackRoute = '/user/course/' + courseItem._id + '/forum';
         const listForums = list && list.length ? list.map((item, index) => {
-            const forumOwner =  forumAdmin || (isLecturer && isTrustLecturer && user && item && item.user && (user._id == item.user._id));
+            const forumOwner = forumAdmin || (isLecturer && isTrustLecturer && user && item && item.user && (user._id == item.user._id));
             return <div key={index} className='tile'>
                 <div style={{ display: 'inline-flex' }}>
                     <h4 className='tile-title'>
@@ -135,7 +136,7 @@ class ForumPage extends AdminPage {
 
                 <Link to={`/user/course/${courseItem._id}/forum/${item._id}/message`} style={{ textDecoration: 'none', position: 'absolute', bottom: 0, right: 0, padding: 6, color: 'white', backgroundColor: '#1488db', borderBottomRightRadius: 3 }}>Đọc thêm...</Link>
             </div>;
-            }) : <div className='tile'>Chưa có bài viết!</div>;
+        }) : <div className='tile'>Chưa có bài viết!</div>;
 
         return this.renderPage({
             icon: 'fa fa-users',
@@ -144,7 +145,7 @@ class ForumPage extends AdminPage {
             content: category ? <>
                 {listForums}
                 <Pagination name='pageForum' style={{ marginLeft: '70px' }} pageNumber={pageNumber} pageSize={pageSize} pageTotal={pageTotal} totalItem={totalItem} getPage={this.getPage} />
-                <ForumModal ref={e => this.modal = e} courseId={courseItem._id} category={category._id} forumCreator={forumAdmin || isLecturer && isTrustLecturer } history={this.props.history}
+                <ForumModal ref={e => this.modal = e} courseId={courseItem._id} category={category._id} forumCreator={forumAdmin || isLecturer && isTrustLecturer} history={this.props.history}
                     create={this.props.createForum} update={this.props.updateForum} />
             </> : '...',
             backRoute: categoryBackRoute,
@@ -153,6 +154,6 @@ class ForumPage extends AdminPage {
     }
 }
 
-const mapStateToProps = state => ({ system: state.system, forum: state.communication.forum, course: state.trainning.course});
+const mapStateToProps = state => ({ system: state.system, forum: state.communication.forum, course: state.trainning.course });
 const mapActionsToProps = { getForumPage, createForum, updateForum, deleteForum, getCourse };
 export default connect(mapStateToProps, mapActionsToProps)(ForumPage);
