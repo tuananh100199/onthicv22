@@ -120,7 +120,9 @@ module.exports = (app) => {
         });
     });
 
-    app.get('/api/course', app.permission.check('course:read'), (req, res) => getCourseData(req.query._id, req.session.user, (error, item) => res.send({ error, item })));
+    app.get('/api/course', app.permission.check('user:login'), (req, res) => {
+        getCourseData(req.query._id, req.session.user, (error, item) => res.send({ error, item }));
+    });
 
     app.post('/api/course', app.permission.check('course:write'), (req, res) => {
         app.model.course.create(req.body.data || {}, (error, item) => res.send({ error, item }));

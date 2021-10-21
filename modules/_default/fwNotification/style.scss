@@ -1,0 +1,16 @@
+.notification {
+    margin-top: 10px;
+    display: flex;
+    text-decoration-line: none;
+
+    .notification-button {
+        display: none;
+    }
+
+    &:hover {
+        .notification-button {
+            display: block;
+            margin-left: 16px;
+        }
+    }
+}
