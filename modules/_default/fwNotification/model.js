@@ -3,16 +3,28 @@ module.exports = app => {
         type: String,                                           // Loại notification
         title: String,
         content: String,
-        image: String,
-        active: { type: Boolean, default: true },
         createdDate: { type: Date, default: Date.now },
+        sentDate: { type: Date, default: null },
     });
     const model = app.db.model('Notification', schema);
 
     app.model.notification = {
         create: (data, done) => model.create(data, done),
 
-        getAll: (condition, done) => model.find(condition).sort({ createdDate: -1 }).exec(done),
+        getPage: (pageNumber, pageSize, condition, done) => model.countDocuments(condition, (error, totalItem) => {
+            if (error) {
+                done(error);
+            } else {
+                const result = { totalItem, pageSize, pageTotal: Math.ceil(totalItem / pageSize) };
+                result.pageNumber = pageNumber === -1 ? result.pageTotal : Math.min(pageNumber, result.pageTotal);
+
+                const skipNumber = (result.pageNumber > 0 ? result.pageNumber - 1 : 0) * result.pageSize;
+                model.find(condition).sort({ createdDate: -1 }).skip(skipNumber).limit(result.pageSize).exec((error, list) => {
+                    result.list = list;
+                    done(error, result);
+                });
+            }
+        }),
 
         get: (condition, done) => typeof condition == 'string' ? model.findById(condition, done) : model.findOne(condition, done),
 
@@ -26,7 +38,7 @@ module.exports = app => {
             } else if (item == null) {
                 done('Invalid Id!');
             } else {
-                app.deleteImage(item.image);
+                item.image && app.deleteImage(item.image);
                 item.remove(done);
             }
         }),
