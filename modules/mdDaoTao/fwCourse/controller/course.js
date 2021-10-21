@@ -164,9 +164,9 @@ module.exports = (app) => {
                 delete changes.courseFee;
                 changes.courseFees = courseFees;
                 app.model.course.update(req.body._id, changes, () => getCourseData(req.body._id, req.session.user, (error, course) => {
-                    const item = {};
-                    course && Object.keys(changes).forEach(key => item[key] = course[key]);
-                    res.send({ error, item });
+                    // const item = {};
+                    // course && Object.keys(changes).forEach(key => item[key] = course[key]);
+                    res.send({ error, item: course });
                 }));
             }
         });

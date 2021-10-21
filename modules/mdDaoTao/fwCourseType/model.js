@@ -5,7 +5,7 @@ module.exports = app => {
         shortDescription: String,
         detailDescription: String,
         image: String,
-        subjects: [{ type: app.db.Schema.ObjectId, ref: 'Subject' }], //TODO: Sang: Thay đổi thứ tự môn học
+        subjects: [{ type: app.db.Schema.ObjectId, ref: 'Subject' }],
         questionTypes: [{
             category: { type: app.db.Schema.ObjectId, ref: 'Category' },
             amount: Number,
@@ -53,7 +53,7 @@ module.exports = app => {
         },
 
         // changes = { $set, $unset, $push, $pull }
-        update: (_id, changes, done) => model.findOneAndUpdate({ _id }, changes).populate('subjects', '-detailDescription').exec(done),
+        update: (_id, changes, done) => model.findOneAndUpdate({ _id }, changes, { new: true }).populate('subjects', '-detailDescription').exec(done),
 
         delete: (_id, done) => model.findById(_id, (error, item) => {
             if (error) {
