@@ -14,6 +14,7 @@ module.exports = (app) => {
         { name: 'course:delete' },
         { name: 'course:lock' },
         { name: 'course:export' },
+        { name: 'course:import' },
         { name: 'course:learn' }
     );
 
@@ -34,6 +35,7 @@ module.exports = (app) => {
     app.get('/user/course/:_id/rate-subject', app.permission.check('course:read'), app.templates.admin);
     app.get('/user/course/:_id/chat-all', app.permission.check('user:login'), app.templates.admin);
     app.get('/user/course/:_id/chat', app.permission.check('user:login'), app.templates.admin);
+    app.get('/user/course/:_id/import-final-score', app.permission.check('course:read'), app.templates.admin);
 
     app.get('/user/hoc-vien/khoa-hoc/:_id', app.permission.check('user:login'), app.templates.admin);
     app.get('/user/hoc-vien/khoa-hoc/thong-tin/:_id', app.permission.check('user:login'), app.templates.admin);
@@ -869,6 +871,43 @@ module.exports = (app) => {
                     });
                     app.excel.write(worksheet, cells);
                     app.excel.attachment(workbook, res, 'Teacher and student.xlsx');
+                }
+            });
+        }
+    });
+    // Hook upload final score excel---------------------------------------------------------------------------------------
+    app.uploadHooks.add('uploadExcelFinalScoreFile', (req, fields, files, params, done) => {
+        if (files.FinalScoreFile && files.FinalScoreFile.length > 0 && fields.userData && fields.userData.length) {
+            console.log('Hook: uploadExcelFinalScoreFile => your excel final score file upload');
+            const srcPath = files.FinalScoreFile[0].path;
+            app.excel.readFile(srcPath, workbook => {
+                app.deleteFile(srcPath);
+                if (workbook) {
+                    const userData = fields.userData[0], userDatas = userData.split(':'), worksheet = workbook.getWorksheet(1), data = [],
+                        // toDateObject = str => {
+                        //     const dateParts = str.split("/");
+                        //     return new Date(+dateParts[2], dateParts[1] - 1, +dateParts[0]);
+                        // },
+                        get = (row, col) => worksheet.getCell(`${col}${row}`).value;
+                    const handleUpload = (index = parseInt(userDatas[1])) => { //index =start
+                        // const values = worksheet.getRow(index).values;
+                        if (index > parseInt(userDatas[2])) { // index to stop loop
+                            done({ data });
+                        } else {
+                            console.log(get(8,'D'),'tss');
+                            data.push({
+                                identityCard: get(index, userDatas[3]), //id student todo
+                                diemThiHetMon: userDatas.slice(4).map((col) => ({
+                                    col,
+                                    point: get(index, col),
+                                })),
+                            });
+                            handleUpload(index + 1);
+                        }
+                    };
+                    handleUpload();
+                } else {
+                    done({ error: 'Error' });
                 }
             });
         }

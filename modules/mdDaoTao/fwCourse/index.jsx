@@ -104,6 +104,10 @@ export default {
             component: Loadable({ loading: Loading, loader: () => import('./pages/adminChatPersonalPage') })
         },
         {
+            path: '/user/course/:_id/import-final-score',
+            component: Loadable({ loading: Loading, loader: () => import('./pages/adminImportFinalScorePage') })
+        },
+        {
             path: '/user/hoc-vien/khoa-hoc/:_id',
             component: Loadable({ loading: Loading, loader: () => import('./userPageView') })
         },
