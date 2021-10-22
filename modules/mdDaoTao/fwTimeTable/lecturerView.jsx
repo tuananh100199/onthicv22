@@ -1,9 +1,11 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { getTimeTablePage, createTimeTableByAdmin, updateTimeTableByAdmin, deleteTimeTableByAdmin, getTimeTableDateNumber } from './redux';
-import { getCourse } from 'modules/mdDaoTao/fwCourse/redux';
-import { Link } from 'react-router-dom';
-import { AdminPage, AdminModal, TableCell, renderTable, FormTextBox, FormCheckbox, FormRichTextBox, FormDatePicker } from 'view/component/AdminPage';
+import {getTimeTablePageByAdmin, updateTimeTableByAdmin, createTimeTableByAdmin, deleteTimeTableByAdmin, getTimeTableDateNumber } from './redux';
+import { ajaxSelectStudentByCourse, getStudent } from 'modules/mdDaoTao/fwStudent/redux';
+import {  getCourse } from 'modules/mdDaoTao/fwCourse/redux';
+import Pagination from 'view/component/Pagination';
+import { AdminPage, AdminModal, TableCell, renderTable, FormTextBox, FormCheckbox, FormRichTextBox, FormSelect, FormDatePicker } from 'view/component/AdminPage';
+
 
 
 class NoteModal extends AdminModal {
@@ -23,7 +25,7 @@ class NoteModal extends AdminModal {
                 note: this.itemNote.value(),
                 truant: this.itemTruant.value(),
             };
-            this.props.update(_id, changes, student._id, () => this.hide());
+            this.props.update(_id, changes, {courseId: this.props.courseId, lecturerId: this.props.lecturerId}, () => this.hide());
         }
     }
 
@@ -43,6 +45,7 @@ class TimeTableModal extends AdminModal {
     onShow = (item) => {
         const { _id, student, dateNumber, date, startHour, numOfHours, truant, licensePlates, content, note } = item || { date: new Date(), startHour: 8, numOfHours: 2, truant: false, licensePlates: '', content: '', note: '' },
             endHour = startHour + numOfHours;
+        this.itemStudent.value(student ? student._id : null);
         this.itemDate.value(date);
         this.itemStartHour.value(startHour);
         this.itemNumOfHours.value(numOfHours);
@@ -50,49 +53,59 @@ class TimeTableModal extends AdminModal {
         this.itemTruant.value(truant);
         this.itemContent.value(content);
         this.itemNote.value(note);
-        this.setState({ loading: false, _id, student, courseType: null, dateNumber, date, endHour });
-        !_id ? this.props.getDateNumber(this.props.studentId, new Date(date.getFullYear(), date.getMonth(), date.getDate()), startHour, numOfHours, (dateNumber) => this.setState({ dateNumber })) : null;
+
+        this.setState({ loading: false, _id, student, dateNumber, date, endHour });
     }
 
     onSubmit = () => {
         const { _id, student } = this.state;
-        const data = {
-            student: student ? student._id : this.props.studentId,
-            date: this.itemDate.value(),
-            startHour: this.itemStartHour.value(),
-            numOfHours: this.itemNumOfHours.value(),
-            truant: this.itemTruant.value(),
-            licensePlates: this.itemLicensePlates.value(),
-            content: this.itemContent.value(),
-            note: this.itemNote.value(),
-        };
-        if (data.date == null) {
-            T.notify('Ngày học chưa được chọn!', 'danger');
-            this.itemDate.focus();
-        } else if (data.startHour == '') {
-            T.notify('Giờ bắt đầu chưa được chọn!', 'danger');
-            this.itemStartHour.focus();
-        } else if (data.numOfHours == '') {
-            T.notify('Số giờ học chưa được chọn!', 'danger');
-            this.itemNumOfHours.focus();
-        } else if (data.licensePlates == '') {
-            T.notify('Xe học chưa được chọn!', 'danger');
-            this.itemLicensePlates.focus();
-        } else if (this.state.dateNumber == -1) {
-            T.notify('Trùng thời khóa biểu!', 'danger');
-            this.itemStartHour.focus();
-        } else {
-            let today = new Date();
-            const currentDate = new Date(today.getFullYear(), today.getMonth(), today.getDate());
-            data.date = new Date(data.date.getFullYear(), data.date.getMonth(), data.date.getDate());
-            if (!_id && data.date < currentDate) {
-                T.notify('Ngày học không được nhỏ hơn ngày hiện tại!', 'danger');
+        if (student) {
+            const data = {
+                student: student ? student._id : null,
+                date: this.itemDate.value(),
+                startHour: this.itemStartHour.value(),
+                numOfHours: this.itemNumOfHours.value(),
+                truant: this.itemTruant.value(),
+                licensePlates: this.itemLicensePlates.value(),
+                content: this.itemContent.value(),
+                note: this.itemNote.value(),
+            };
+            if (data.date == null) {
+                T.notify('Ngày học chưa được chọn!', 'danger');
                 this.itemDate.focus();
+            } else if (data.startHour == '') {
+                T.notify('Giờ bắt đầu chưa được chọn!', 'danger');
+                this.itemStartHour.focus();
+            } else if (data.numOfHours == '') {
+                T.notify('Số giờ học chưa được chọn!', 'danger');
+                this.itemNumOfHours.focus();
+            } else if (data.licensePlates == '') {
+                T.notify('Xe học chưa được chọn!', 'danger');
+                this.itemLicensePlates.focus();
+            } else if (this.state.dateNumber == -1) {
+                T.notify('Trùng thời khóa biểu!', 'danger');
+                this.itemStartHour.focus();
             } else {
-                _id ? this.props.update(_id, data, student._id, () => this.hide()) : this.props.create(data, this.props.studentId, () => this.hide());
+                let today  = new Date();
+                const currentDate = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+                data.date = new Date(data.date.getFullYear(), data.date.getMonth(), data.date.getDate());
+                if (!_id && data.date < currentDate) {
+                    T.notify('Ngày học không được nhỏ hơn ngày hiện tại!', 'danger');
+                    this.itemDate.focus();
+                } else {
+                    _id ? this.props.update(_id, data, {courseId: this.props.courseId, lecturerId: this.props.lecturerId}, () => this.hide()) : this.props.create(data, {courseId: this.props.courseId, lecturerId: this.props.lecturerId}, () => this.hide());
+                }
             }
         }
     }
+
+    onChangeCourse = (data) => data && data.id && this.setState({ courseType: data.id }, () =>{
+        this.itemStudent.value(null);
+    });
+
+    onChangeStudent = (data) => data && data.id && this.setState({ loading: true }, () => this.props.getStudent(data.id, student => {
+        this.setState({ loading: false, student }, () => this.state._id || this.getDateNumber());
+    }));
 
     onSelectDate = (date) => this.setState({ date }, () => this.getDateNumber() || this.itemStartHour.focus());
 
@@ -124,24 +137,24 @@ class TimeTableModal extends AdminModal {
             date = new Date(this.state.date),
             startHour = this.itemStartHour.value(),
             numOfHours = this.itemNumOfHours.value();
-        const studentId = student ? student._id : this.props.studentId;
-        if (date && startHour != null) {
-            this.props.getDateNumber(studentId, new Date(date.getFullYear(), date.getMonth(), date.getDate()), startHour, numOfHours, (dateNumber) => this.setState({ dateNumber }));
+        if (student && date && startHour != null) {
+            this.props.getDateNumber(student._id, new Date(date.getFullYear(), date.getMonth(), date.getDate()), startHour,numOfHours, (dateNumber) => this.setState({ dateNumber }));
         }
     }
 
     render = () => {
-        const { date, endHour, student, dateNumber } = this.state;
+        const { loading, date, dateNumber, endHour, student } = this.state;
         return this.renderModal({
             title: 'Buổi học thực hành',
             size: 'large',
             body: <>
                 <div className='row'>
-                    {student ? <>
-                        <p className='col-lg-3'>Học viên: <b>{`${student && student.lastname} ${student && student.firstname}`}</b>. Hạng LX: <b>{student && student.courseType ? student.courseType.title : ''}</b></p>
-                        <p className='col-lg-6'>Khóa học: <b>{student && student.course ? student.course.name : ''}</b>. Hạng LX: <b>{student && student.courseType ? student.courseType.title : ''}</b></p>
-                        <p className='col-lg-3'>Số điện thoại: <b>{student && student.user && student.user.phoneNumber ? student.user.phoneNumber : 'Không có thông tin'}</b></p>
-                    </> : null}
+                    <FormSelect ref={e => this.itemStudent = e} label='Học viên' data={ajaxSelectStudentByCourse(this.props.courseId)} onChange={this.onChangeStudent} className='col-lg-6' readOnly={this.props.readOnly} />
+                    {loading ? <p className='col-12'>Đang tải...</p> : ''}
+                </div>
+                <div className='row' style={{ display: student ? 'flex' : 'none' }}>
+                    <p className='col-lg-7'>Khóa học: <b>{student && student.course ? student.course.name : ''}</b>. Hạng LX: <b>{student && student.courseType ? student.courseType.title : ''}</b></p>
+                    <p className='col-lg-5'>Số điện thoại: <b>{student && student.user && student.user.phoneNumber ? student.user.phoneNumber : 'Không có thông tin'}</b></p>
 
                     <FormDatePicker className='col-12 col-md-4' ref={e => this.itemDate = e} label='Ngày học' onChange={this.onSelectDate} readOnly={this.props.readOnly} required />
                     <FormTextBox className='col-6 col-md-4' ref={e => this.itemStartHour = e} label='Giờ bắt đầu' type='number' min='0' max='23' onChange={this.onChangeHour} readOnly={this.props.readOnly} required />
@@ -165,34 +178,28 @@ class TimeTableModal extends AdminModal {
     }
 }
 
-class StudentView extends AdminPage {
+class LecturerView extends AdminPage {
     state = {};
     componentDidMount() {
-        T.ready('/user/course', () => {
-            const params = T.routeMatcher('/user/course/:courseId/calendar/student/:studentId').parse(window.location.pathname),
-                courseId = params.courseId,
-                studentId = params.studentId;
-            const currentUser = this.props.system ? this.props.system.user : null,
-                { isLecturer, isCourseAdmin } = currentUser;
-            this.setState({ isLecturer: isLecturer, isCourseAdmin: isCourseAdmin });
-            if (studentId) {
-                const course = this.props.course ? this.props.course.item : null;
-                if (!course) {
-                    this.props.getCourse(courseId, data => {
-                        if (data.error) {
-                            T.notify('Lấy khóa học bị lỗi!', 'danger');
-                            this.props.history.push('/user/course/' + courseId);
-                        }
-                    });
+        const user = this.props.system ? this.props.system.user : null,
+            { isLecturer, isCourseAdmin } = user;
+        const courseId = this.props.courseId, 
+            lecturerId = this.props.lecturerId;
+        const course = this.props.course ? this.props.course.item : null;
+        if (!course) {
+            this.props.getCourse(courseId, data => {
+                if (data.error) {
+                    T.notify('Lấy khóa học bị lỗi!', 'danger');
+                    this.props.history.push('/user/course/' + courseId);
                 }
-                this.setState({ courseId: courseId, studentId: studentId });
-                    studentId && this.props.getTimeTablePage(1, 50, { student: studentId });
-            } else {
-                this.props.history.push(`/user/course/${this.state.courseId}`);
-            } 
-        });
+            });
+        }
+        if (courseId && lecturerId) {
+            this.setState({ courseId, lecturerId, isLecturer, isCourseAdmin });
+            this.props.getTimeTablePageByAdmin(undefined, undefined, { courseId: courseId, lecturerId: lecturerId});
+        }
     }
-
+    
     edit = (e, item) => {
         e.preventDefault();
         if (this.state.isLecturer) {
@@ -203,16 +210,16 @@ class StudentView extends AdminPage {
     }
 
     delete = (e, item) => e.preventDefault() || T.confirm('Xoá thời khóa biểu', 'Bạn có chắc muốn xoá thời khóa biểu này?', true, isConfirm =>
-        isConfirm && this.props.deleteTimeTableByAdmin(item._id, this.state.studentId));
+        isConfirm && this.props.deleteTimeTableByAdmin(item._id, {courseId: this.props.courseId, lecturerId: this.props.lecturerId} ));
+        
+    getPage = (pageNumber, pageSize) => this.props.getTimeTablePageByAdmin(pageNumber, pageSize, { courseId: this.state.courseId, lecturerId: this.state.lecturerId });
 
     render() {
         const courseItem = this.props.course && this.props.course.item ? this.props.course.item : {};
         const today = T.dateToText(new Date().toISOString(), 'dd/mm/yyyy');
         const permission = this.getUserPermission('timeTable');
-        let { pageNumber, pageSize, list } = this.props.timeTable && this.props.timeTable.page ?
-            this.props.timeTable.page : { pageNumber: 1, pageSize: 50, pageTotal: 1, pageCondition: {}, totalItem: 0, list: [] };
-            const courseBackRoute = '/user/course/' + courseItem._id;
-            const listStudentBackRoute = '/user/course/' + courseItem._id + '/calendar';
+        let { pageNumber, pageSize, pageTotal, totalItem, list } = this.props.timeTable && this.props.timeTable.page ?
+        this.props.timeTable.page : { pageNumber: 1, pageSize: 50, pageTotal: 1, totalItem: 0, list: [] };
         const table = renderTable({
             getDataSource: () => list,
             renderHead: () => (
@@ -240,30 +247,29 @@ class StudentView extends AdminPage {
                     <TableCell type='number' style={{ textAlign: 'center' }} content={item.numOfHours ? `${item.startHour}-${item.startHour + item.numOfHours}` : `${item.startHour}`} />
                     <TableCell type='number' style={{ textAlign: 'center' }} content={item.numOfHours} />
                     <TableCell type='number' style={{ textAlign: 'center' }} content={item.licensePlates} />
-                    <TableCell type='checkbox' content={item.truant} permission={permission} onChanged={active => this.props.updateTimeTableByAdmin(item._id, { truant: active }, this.state.studentId)} />
+                    <TableCell type='checkbox' content={item.truant} permission={permission} onChanged={active =>  this.props.updateTimeTableByAdmin(item._id, { truant: active }, {courseId: this.props.courseId, lecturerId: this.props.lecturerId} ) }/>
                     <TableCell type='buttons' content={item} permission={permission} onEdit={this.edit} onDelete={this.delete} />
-                </tr>),
+                </tr>
+            ),
         });
-        return this.renderPage({
-            icon: 'fa fa-cubes',
-            title: 'Thời khóa biểu: ' + courseItem.name,
-            breadcrumb: [<Link key={0} to='/user/course'>Khóa học</Link>, courseItem._id ? <Link key={0} to={courseBackRoute}>{courseItem.name}</Link> : '', <Link key={0} to={listStudentBackRoute}>Học viên </Link>, 'Thời khóa biểu'],
-            backRoute: listStudentBackRoute,
-            content: <>
-                <div className='tile'>{table}</div>
-                <NoteModal ref={e => this.modalLecturer = e} readOnly={!permission.write}
+        return (<>
+                <div>{table}</div>
+                <NoteModal ref={e => this.modalLecturer = e} readOnly={!permission.write} courseId={this.state.courseId} lecturerId={this.state.lecturerId}
                     update={this.props.updateTimeTableByAdmin} />
-                <TimeTableModal ref={e => this.modalCourseAdmin = e} studentId={this.state.studentId} readOnly={!permission.write}
-                    getStudent={this.props.getStudent} create={this.props.createTimeTableByAdmin} update={this.props.updateTimeTableByAdmin} getDateNumber={this.props.getTimeTableDateNumber} />
+                <TimeTableModal ref={e => this.modalCourseAdmin = e} readOnly={!permission.write} courseItem={courseItem} getStudent={this.props.getStudent} courseId={this.state.courseId} lecturerId={this.state.lecturerId}
+                    create={this.props.createTimeTableByAdmin} update={this.props.updateTimeTableByAdmin} getDateNumber={this.props.getTimeTableDateNumber} getPage={this.props.getTimeTablePageByAdmin}/>
+                 <Pagination name='pageTimeTable' pageNumber={pageNumber} pageSize={pageSize} pageTotal={pageTotal} totalItem={totalItem} style={{ left: 320 }}
+                        getPage={this.getPage} />
                 {this.state.isCourseAdmin ?
                     <button type='button' className='btn btn-success btn-circle' style={{ position: 'fixed', right: '10px', bottom: '10px' }} onClick={this.edit}>
                         <i className='fa fa-lg fa-plus' />
                     </button> : null}
-            </>,
-        });
+            </>
+        );
     }
 }
 
-const mapStateToProps = state => ({ system: state.system, timeTable: state.trainning.timeTable, course: state.trainning.course });
-const mapActionsToProps = { getCourse, getTimeTablePage, createTimeTableByAdmin, updateTimeTableByAdmin, deleteTimeTableByAdmin, getTimeTableDateNumber };
-export default connect(mapStateToProps, mapActionsToProps)(StudentView);
+const mapStateToProps = state => ({ system: state.system, course: state.trainning.course, timeTable: state.trainning.timeTable });
+const mapActionsToProps = { getTimeTablePageByAdmin, updateTimeTableByAdmin, createTimeTableByAdmin, deleteTimeTableByAdmin, getTimeTableDateNumber, getCourse, getStudent };
+export default connect(mapStateToProps, mapActionsToProps)(LecturerView);
+

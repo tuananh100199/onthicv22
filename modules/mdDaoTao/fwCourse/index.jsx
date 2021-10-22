@@ -88,12 +88,12 @@ export default {
             component: Loadable({ loading: Loading, loader: () => import('./pages/adminLearningProgressPage') })
         },
         {
-            path: '/user/course/:_id/calendar',
-            component: Loadable({ loading: Loading, loader: () => import('modules/mdDaoTao/fwTimeTable/adminView') })
+            path: '/user/course/:_id/lecturer/calendar',
+            component: Loadable({ loading: Loading, loader: () => import('./pages/lecturerTimeTablePage') })
         },
         {
-            path: '/user/course/:_id/calendar/student/:studentId',
-            component: Loadable({ loading: Loading, loader: () => import('modules/mdDaoTao/fwTimeTable/adminEditView') })
+            path: '/user/course/:_id/calendar',
+            component: Loadable({ loading: Loading, loader: () => import('modules/mdDaoTao/fwTimeTable/adminTimeTablePage') })
         },
         {
             path: '/user/course/:_id/rate-subject',

@@ -31,7 +31,7 @@ module.exports = (app) => {
     app.get('/user/course/:_id/your-students', app.permission.check('course:read'), app.templates.admin);
     app.get('/user/course/:_id/learning', app.permission.check('course:read'), app.templates.admin);
     app.get('/user/course/:_id/calendar', app.permission.check('course:read'), app.templates.admin);
-    app.get('/user/course/:_id/calendar/student/:studentId', app.permission.check('course:read'), app.templates.admin);
+    app.get('/user/course/:_id/lecturer/calendar', app.permission.check('course:read'), app.templates.admin);
     app.get('/user/course/:_id/rate-subject', app.permission.check('course:read'), app.templates.admin);
     app.get('/user/course/:_id/chat-all', app.permission.check('user:login'), app.templates.admin);
     app.get('/user/course/:_id/chat', app.permission.check('user:login'), app.templates.admin);

@@ -91,7 +91,7 @@ export function createTimeTable(data, done) {
     };
 }
 
-export function createTimeTableByAdmin(data, studentId, done) {
+export function createTimeTableByAdmin(data, condition, done) {
     return dispatch => {
         const url = '/api/time-table/admin';
         T.post(url, { data }, data => {
@@ -101,7 +101,7 @@ export function createTimeTableByAdmin(data, studentId, done) {
             } else {
                 T.notify('Tạo thời khóa biểu thành công!', 'success');
                 done && done(data.item);
-                dispatch(getTimeTablePage(undefined, undefined, {student: studentId}));
+                dispatch(getTimeTablePageByAdmin(undefined, undefined, condition));
             }
         }, error => console.error(error) || T.notify('Tạo thời khóa biểu bị lỗi!', 'danger'));
     };
@@ -123,7 +123,7 @@ export function updateTimeTable(_id, changes, done) {
     };
 }
 
-export function updateTimeTableByAdmin(_id, changes, studentId, done) {
+export function updateTimeTableByAdmin(_id, changes, condition, done) {
     return dispatch => {
         const url = '/api/time-table/admin';
         T.put(url, { _id, changes }, data => {
@@ -133,7 +133,7 @@ export function updateTimeTableByAdmin(_id, changes, studentId, done) {
             } else {
                 T.notify('Cập nhật thời khóa biểu thành công!', 'success');
                 done && done(data.item);
-                dispatch(getTimeTablePage(undefined, undefined, {student: studentId}));
+                dispatch(getTimeTablePageByAdmin(undefined, undefined, condition));
             }
             done && done(data.error);
         }, error => console.error(error) || T.notify('Cập nhật thời khóa biểu bị lỗi!', 'danger'));
@@ -155,7 +155,7 @@ export function deleteTimeTable(_id) {
     };
 }
 
-export function deleteTimeTableByAdmin(_id, studentId) {
+export function deleteTimeTableByAdmin(_id, condition) {
     return dispatch => {
         const url = '/api/time-table/admin';
         T.delete(url, { _id }, data => {
@@ -164,9 +164,26 @@ export function deleteTimeTableByAdmin(_id, studentId) {
                 console.error(`DELETE: ${url}. ${data.error}`);
             } else {
                 T.alert('Thời khóa biểu được xóa thành công!', 'error', false, 800);
-                dispatch(getTimeTablePage(undefined, undefined, {student: studentId}));
+                dispatch(getTimeTablePageByAdmin(undefined, undefined, condition));
             }
         }, error => console.error(error) || T.notify('Xóa thời khóa biểu bị lỗi!', 'danger'));
+    };
+}
+
+T.initCookiePage('pageTimeTable');
+export function getTimeTablePageByAdmin(pageNumber, pageSize, pageCondition, done) {
+    const page = T.updatePage('pageTimeTable', pageNumber, pageSize);
+    return dispatch => {
+        const url = `/api/time-table/page/admin/${page.pageNumber}/${page.pageSize}`;
+        T.get(url, { pageCondition }, data => {
+            if (data.error) {
+                T.notify('Lấy thời khóa biểu bị lỗi!', 'danger');
+                console.error(`GET: ${url}. ${data.error}`);
+            } else {
+                done && done(data.page);
+                dispatch({ type: TimeTableGetPage, page: data.page });
+            }
+        }, error => console.error(error) || T.notify('Lấy thời khóa biểu bị lỗi!', 'danger'));
     };
 }
 
