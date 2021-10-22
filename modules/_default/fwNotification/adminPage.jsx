@@ -1,12 +1,17 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { getNotificationPage, createNotification, updateNotification, deleteNotification } from './redux';
+
+import { ajaxSelectUser } from 'modules/_default/fwUser/redux';
 import { ajaxSelectCourse } from 'modules/mdDaoTao/fwCourse/redux';
 import { AdminPage, AdminModal, FormTextBox, FormRichTextBox, FormSelect } from 'view/component/AdminPage';
 import Pagination from 'view/component/Pagination';
 import './style.scss';
 
-const notificationTypes = [{ id: 1, text: 'Thông báo chung' }];
+const notificationTypes = [
+    { id: 0, text: 'Thông báo cá nhân' },
+    { id: 1, text: 'Thông báo chung' },
+];
 
 class NotificationModal extends AdminModal {
     state = {};
@@ -15,10 +20,11 @@ class NotificationModal extends AdminModal {
     }
 
     onShow = (item) => {
-        const { _id, type, course, title, content, createdDate } = item || { title: '', content: '' };
+        const { _id, type, user, course, title, content, createdDate } = item || { title: '', content: '' };
         this.title.value(title);
         this.content.value(content);
         this.type.value(type || 1);
+        this.user.value(user);
         this.course.value(course);
         this.setState({ _id, createdDate });
     }
@@ -57,10 +63,11 @@ class NotificationModal extends AdminModal {
         return this.renderModal({
             title: 'Danh mục',
             body: <>
-                {_id && createdDate ? <p>{new Date(createdDate).getText()}</p> : null}
+                {_id && createdDate ? <p>Thời gian: {new Date(createdDate).getText()}</p> : null}
                 <FormTextBox ref={e => this.title = e} label='Tiêu đề' readOnly={readOnly} />
                 <FormRichTextBox ref={e => this.content = e} label='Nội dung' readOnly={readOnly} />
                 <FormSelect ref={e => this.type = e} label='Loại thông báo' data={notificationTypes} readOnly={readOnly} />
+                <FormSelect ref={e => this.user = e} label='Học viên' data={ajaxSelectUser} readOnly={readOnly} />
                 <FormSelect ref={e => this.course = e} label='Khoá học' data={ajaxSelectCourse} readOnly={readOnly} />
             </>,
         });
@@ -99,7 +106,9 @@ class NotificationPage extends AdminPage {
                                 <li key={index} className='notification'>
                                     {(pageNumber - 1) * pageSize + index + 1}. &nbsp;
                                     {permission.write ?
-                                        <a href='#' className={item.sentDate ? 'text-secondary' : 'text-primary'} onClick={e => e.preventDefault() || this.modal.show(item)}>{item.title}</a> :
+                                        <a href='#' className={item.sentDate ? 'text-secondary' : 'text-primary'} onClick={e => e.preventDefault() || this.modal.show(item)}>
+                                            {item.title}. <small className='text-muted'>({new Date(item.createdDate).getText()})</small>
+                                        </a> :
                                         <a href='#' onClick={e => e.preventDefault() || this.modal.show(item)}>{item.title}</a>}
                                     {permission.write && !item.sentDate ? <a href='#' className='notification-button text-success' onClick={e => this.send(e, item)}><i className='fa fa-lg fa-paper-plane' /></a> : null}
                                     {permission.delete ? <a href='#' className='notification-button text-danger' onClick={e => this.delete(e, item)}><i className='fa fa-lg fa-trash' /></a> : null}
