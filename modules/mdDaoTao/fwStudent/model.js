@@ -45,6 +45,11 @@ module.exports = (app) => {
         duKienThangThi: Number,                                                                     // Dự kiến tháng thi
         duKienNamThi: Number,                                                                       // Dự kiến năm thi
 
+        diemThiTotNghiep: [{
+            monThiTotNghiep: { type: app.db.Schema.ObjectId },
+            point: Number,
+        }],
+
         diemThiHetMon: [{
             subject: { type: app.db.Schema.ObjectId, ref: 'Subject' },
             point: Number,
@@ -172,7 +177,7 @@ module.exports = (app) => {
                     if (student.tienDoHocTap[data.subjectId][data.lessonId]) {
                         student.tienDoHocTap[data.subjectId][data.lessonId].view = data.view;
                     } else {
-                        obj[data.lessonId]= {view : data.view};
+                        obj[data.lessonId] = { view: data.view };
                         Object.assign(student.tienDoHocTap[data.subjectId], obj);
                     }
                     model.findOneAndUpdate({ _id: data.studentId }, { tienDoHocTap: student.tienDoHocTap }, { new: true }).exec(done);

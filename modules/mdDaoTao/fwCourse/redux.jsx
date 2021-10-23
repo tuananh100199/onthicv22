@@ -388,6 +388,24 @@ export function getChatByAdmin(_id, done) {
     };
 }
 
+// Import Excel ----------------------------------------------------------------------------------------------------
+export function importScore(score, courseId, done) {
+    return () => {
+        const url = '/api/course/import-score';
+        T.put(url, { score, courseId }, data => {
+            if (data.error) {
+                T.notify('Import điểm thi tốt nghiệp bị lỗi!', 'danger');
+                console.error(`POST: ${url}. ${data.error}`);
+            } else {
+                data.notify && T.notify(data.notify, 'success');
+                done && done(data);
+            }
+        }, error => console.error(error) || T.notify('Import điểm thi tốt nghiệp bị lỗi!', 'danger'));
+    };
+}
+
+
+
 
 // Export to Excel ----------------------------------------------------------------------------------------------------
 export function exportStudentInfoToExcel(_courseId) {

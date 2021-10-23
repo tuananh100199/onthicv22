@@ -1,41 +1,93 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
-import { getCourse, getLearningProgressPage } from '../redux';
+import { getCourse, getLearningProgressPage, importScore } from '../redux';
 import { updateStudent } from 'modules/mdDaoTao/fwStudent/redux';
-import { AdminPage, FormTextBox, FormFileBox } from 'view/component/AdminPage';
+import { AdminPage, FormTextBox, FormFileBox, TableCell, renderTable, CirclePageButton } from 'view/component/AdminPage';
 import './style.scss';
 
 class AdminImportDiemThiTotNghiepPage extends AdminPage {
-    state = { filterOn: false };
+    itemMonThi = {};
+    state = { isFileBoxHide: true };
     componentDidMount() {
         T.ready('/user/course', () => {
             const params = T.routeMatcher('/user/course/:_id/import-diem-thi-tot-nghiep').parse(window.location.pathname);
             if (params && params._id) {
                 const course = this.props.course ? this.props.course.item : null;
                 this.setState({ courseId: params._id });
-                if (course) {
-                    this.props.getLearningProgressPage(undefined, undefined, { courseId: course._id, filterOn: this.state.filterOn });
-                } else {
+                if (!course) {
                     this.props.getCourse(params._id, data => {
                         if (data.error) {
                             T.notify('Lấy khóa học bị lỗi!', 'danger');
                             this.props.history.push('/user/course/' + params._id);
                         } else {
-                            this.props.getLearningProgressPage(undefined, undefined, { courseId: params._id, filterOn: this.state.filterOn });
+                            data.item && this.setDefaultInput(data.item.monThiTotNghiep);
                         }
                     });
+                } else {
+                    this.setDefaultInput(course.monThiTotNghiep);
                 }
+
+
             } else {
                 this.props.history.push('/user/course/');
             }
         });
     }
 
+    setDefaultInput = (monThiTotNghiep) => {
+        const listColumn = ['D', 'E', 'F', 'G', 'H', 'I', 'J'];
+        this.itemStartRow.value(8);
+        this.itemIdentityCard.value('C');
+        this.itemName.value('B');
+        monThiTotNghiep.forEach((monThi, index) => {
+            this[monThi._id].value(listColumn[index]);
+        });
+    }
+
+
+    change = (e) => {
+        e.preventDefault();
+        const { monThiTotNghiep } = this.props.course && this.props.course.item,
+            monThiTotNghiepIds = monThiTotNghiep.map(({ _id }) => _id),
+            params = ['itemStartRow', 'itemEndRow', 'itemName', 'itemIdentityCard', ...(monThiTotNghiep.length && monThiTotNghiepIds)],
+            isFileBoxHide = params.some(item => this[item].value() == '');
+        this.setState({ isFileBoxHide }, () => {
+            if (!this.state.isFileBoxHide) {
+                const userData = params.reduce((result, item) => `${result}:${this[item].value()}`, 'DiemThiTotNghiepFile');
+                this.fileBox.setData(userData);
+            }
+        });
+
+    }
+
+    save = () => {
+        const { _id } = this.props.course.item || {};
+        if (this.state.data) {
+            this.props.importScore(this.state.data, _id);
+        } else T.notify('Chưa có thông tin điểm thi tốt nghiệp của học viên!', 'danger');
+    }
+
+
+
+    onUploadSuccess = ({ data }) => {
+        const { monThiTotNghiep } = this.props.course && this.props.course.item,
+            monThiTotNghiepIds = monThiTotNghiep.map(({ _id }) => _id);
+        data.length && monThiTotNghiep.length && data.forEach(item => {
+            item.diemThiTotNghiep.forEach(item => {
+                item.monThiTotNghiep = monThiTotNghiepIds.find(_id => this[_id].value() == item.col);
+                delete item.col;
+            });
+        });
+        this.setState({ data });
+
+    }
+
+
     render() {
-        const item = this.props.course && this.props.course.item ? this.props.course.item : {},
-            listMonThi = item && item.monThiTotNghiep;
-        const filebox = (
+        const item = this.props.course && this.props.course.item ? this.props.course.item : {};
+        const listMonThi = item && item.monThiTotNghiep;
+        const filebox = !this.state.isFileBoxHide && (
             <>
                 <h3 className='tile-title'>Import điểm thi tốt nghiệp</h3>
                 <FormFileBox ref={e => this.fileBox = e} uploadType='DiemThiTotNghiepFile'
@@ -45,15 +97,38 @@ class AdminImportDiemThiTotNghiepPage extends AdminPage {
         const componentSetting = (
             <>
                 <div className='row'>
-                    <FormTextBox className='col-md-3' label='Dòng bắt đầu' />
-                    <FormTextBox className='col-md-3' label='Dòng kết thúc' />
-                    <FormTextBox className='col-md-3' label='Cột họ và tên' />
-                    <FormTextBox className='col-md-3' label='Cột ngày tháng năm sinh' />
+                    <FormTextBox className='col-md-3' ref={e => this.itemStartRow = e} label='Dòng bắt đầu' onChange={e => this.change(e)} />
+                    <FormTextBox className='col-md-3' ref={e => this.itemEndRow = e} label='Dòng kết thúc' onChange={e => this.change(e)} />
+                    <FormTextBox className='col-md-3' ref={e => this.itemName = e} label='Cột Họ và tên' onChange={e => this.change(e)} />
+                    <FormTextBox className='col-md-3' ref={e => this.itemIdentityCard = e} label='Cột CMND/CCCD' onChange={e => this.change(e)} />
                     {listMonThi && listMonThi.length && listMonThi.map((monThi, index) =>
-                        (<FormTextBox key={index} className='col-md-3' label={'Môn thi: ' + monThi.title} />)
+                        (<FormTextBox key={index} ref={e => this[monThi._id] = e} className='col-md-3' label={'Môn thi: ' + monThi.title} onChange={e => this.change(e)} />)
                     )}
                 </div>
             </>);
+        const subjectColumns = [];
+        (listMonThi || []).forEach(({ title }, index) => {
+            subjectColumns.push(<th key={index} style={{ width: 'auto' }} nowrap='true'>{'Môn ' + title}</th>);
+        });
+        const table = renderTable({
+            getDataSource: () => this.state.data,
+            renderHead: () => (
+                <tr>
+                    <th style={{ width: 'auto', textAlign: 'center' }}>#</th>
+                    <th style={{ width: '100%' }} nowrap='true'>Họ và tên</th>
+                    <th style={{ width: 'auto' }} nowrap='true'>Số CMND/CCCD</th>
+                    {subjectColumns}
+                </tr>),
+            renderRow: (item, index) => (
+                <tr key={index}>
+                    <TableCell type='number' content={index + 1} />
+                    <TableCell style={{ whiteSpace: 'nowrap' }} content={item.name} />
+                    <TableCell style={{ whiteSpace: 'nowrap' }} content={item.identityCard} />
+                    {item.diemThiTotNghiep.map(({ point }, idx) =>
+                        <TableCell type='number' key={idx} style={{ textAlign: 'center' }} content={point} />)}
+                </tr>),
+        });
+
         const backRoute = `/user/course/${item._id}/learning`;
         const backRouteCourse = `/user/course/${item._id}/learning`;
         return this.renderPage({
@@ -67,6 +142,11 @@ class AdminImportDiemThiTotNghiepPage extends AdminPage {
                         {filebox}
                     </div>
                 </div>
+                {this.state.data && this.state.data.length ? <div className='tile'>
+                    <h3 className='tile-title'>Bảng điểm thi hết môn</h3>
+                    {table}
+                </div> : null}
+                <CirclePageButton type='save' onClick={this.save} />
             </>,
             backRoute,
         });
@@ -74,5 +154,5 @@ class AdminImportDiemThiTotNghiepPage extends AdminPage {
 }
 
 const mapStateToProps = state => ({ system: state.system, course: state.trainning.course });
-const mapActionsToProps = { getCourse, getLearningProgressPage, updateStudent };
+const mapActionsToProps = { getCourse, getLearningProgressPage, updateStudent, importScore };
 export default connect(mapStateToProps, mapActionsToProps)(AdminImportDiemThiTotNghiepPage);

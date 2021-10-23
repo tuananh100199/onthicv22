@@ -875,6 +875,55 @@ module.exports = (app) => {
         }
     });
 
+    // Hook upload diem thi tot nghiep---------------------------------------------------------------------------------------
+    app.uploadHooks.add('uploadExcelDiemThiTotNghiepFile', (req, fields, files, params, done) => {
+        if (files.DiemThiTotNghiepFile && files.DiemThiTotNghiepFile.length > 0 && fields.userData && fields.userData.length > 0) {
+            console.log('Hook: uploadExcelDiemThiTotNghiepFile => your excel score file upload');
+            const srcPath = files.DiemThiTotNghiepFile[0].path;
+            app.excel.readFile(srcPath, workbook => {
+                app.deleteFile(srcPath);
+                if (workbook) {
+                    const userData = fields.userData[0], userDatas = userData.split(':'), worksheet = workbook.getWorksheet(5), data = [],
+                        get = (row, col) => worksheet.getCell(`${col}${row}`).value;
+                    const handleUpload = (index = parseInt(userDatas[1])) => {
+                        if (index > parseInt(userDatas[2])) {
+                            done({ data });
+                        } else {
+                            data.push({
+                                name: get(index, userDatas[3]),
+                                identityCard: get(index, userDatas[4]),
+                                diemThiTotNghiep: userDatas.slice(5).map((col) => ({
+                                    col,
+                                    point: get(index, col),
+                                })),
+                            });
+                            handleUpload(index + 1);
+                        }
+                    };
+                    handleUpload();
+                } else {
+                    done({ error: 'Error' });
+                }
+            });
+        }
+    });
+
+    app.put('/api/course/import-score', app.permission.check('student:write'), (req, res) => {
+        const { score, courseId } = req.body;
+        if (score && score.length) {
+            score.forEach(({ identityCard, diemThiTotNghiep }) =>
+                app.model.student.get({ identityCard, course: courseId }, (error, item) => {
+                    item.diemThiTotNghiep = diemThiTotNghiep;
+                    item.save();
+                }));
+            res.send({ notify: 'Import điểm thi hết môn thành công' });
+        } else {
+            res.send({ error: 'Danh sách điểm thi tốt nghiệp  trống!' });
+        }
+    });
+
+
+
     // Hook permissionHooks -------------------------------------------------------------------------------------------
     app.permissionHooks.add('courseAdmin', 'course', (user) => new Promise(resolve => {
         app.permissionHooks.pushUserPermission(user, 'course:read', 'course:write', 'course:export');

@@ -4,11 +4,21 @@ import { getLessonByStudent, viewLesson } from './redux';
 import { getStudentScore } from '../fwStudent/redux';
 import YouTube from 'react-youtube';
 import { Link } from 'react-router-dom';
-import { AdminPage } from 'view/component/AdminPage';
+import { AdminPage, AdminModal } from 'view/component/AdminPage';
 import RateModal from 'modules/_default/fwRate/RateModal';
 // import 'view/component/ratingStar.scss';
 import CommentSection from 'modules/_default/fwComment/CommentSection';
 
+
+class TaiLieuThamKhaoModal extends AdminModal {
+    state = {};
+    onShow = (item) => this.setState({ item });
+
+    render = () => this.renderModal({
+        title: 'Tài liệu tham khảo',
+        body: <p dangerouslySetInnerHTML={{ __html: this.state.item }} />
+    });
+}
 class adminEditPage extends AdminPage {
     state = { showQuestionButton: false, questionVisibility: 'hidden' };
     componentDidMount() {
@@ -47,7 +57,10 @@ class adminEditPage extends AdminPage {
     render() {
         const { lessonId, subjectId, title, courseId, tienDoHocTap } = this.state,
             lesson = this.props.lesson && this.props.lesson.item,
-            videos = lesson && lesson.videos ? lesson.videos : [];
+            videos = lesson && lesson.videos ? lesson.videos : [],
+            taiLieuThamKhao = lesson && lesson.taiLieuThamKhao;
+        const rate = this.props.rate && this.props.rate.item;
+        console.log(rate && rate.value);
         const videosRender = videos.length ? videos.map((video, index) => (
             <div key={index} className='d-flex justify-content-center pb-5'>
                 <div className='embed-responsive embed-responsive-16by9' style={{ width: '70%', display: 'block' }} onClick={e => this.onView(e, video._id, index)}>
@@ -67,11 +80,20 @@ class adminEditPage extends AdminPage {
                 <div className='tile'>
                     <a href={'/user/hoc-vien/khoa-hoc/' + courseId + '/mon-hoc/' + subjectId + '/bai-hoc/thong-tin/' + lessonId} style={{ color: 'black' }}><h5>Thông tin bài học</h5></a>
                     <h3 className='tile-title'>Bài giảng</h3>
-                    <div className='tile-body'>{videosRender}</div>
+                    <div className='tile-body'>
+                        {videosRender}
+                        {taiLieuThamKhao != '' ?
+                            // <button className='btn btn-primary' onClick={() => this.modalTaiLieuThamKhao.show(taiLieuThamKhao)}>
+                            //     Tài liệu tham khảo
+                            // </button>
+                            <a href='#' onClick={() => this.modalTaiLieuThamKhao.show(taiLieuThamKhao)} style={{ color: 'black' }} ><h5>Tài liệu tham khảo</h5></a>
+                            : null}
+                    </div>
                     <div className='tile-footer' >
                         <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                             <div className={isShowRating ? 'visible' : 'invisible'}>
-                                <button className='btn btn-primary' onClick={(e) => { e.preventDefault(); this.modal.show(); }}>Đánh giá bài học</button>
+                                <button className='btn btn-primary mb-2' onClick={(e) => { e.preventDefault(); this.modal.show(); }}>Đánh giá bài học</button>
+                                {rate && <h5>Đã đánh giá:   <span className='text-warning'>{rate.value + ' sao'}</span></h5>}
                                 <RateModal ref={e => this.modal = e} title='Đánh giá bài giảng' type='lesson' _refId={lessonId} />
                             </div>
                             <div>
@@ -84,12 +106,13 @@ class adminEditPage extends AdminPage {
                 <div className='tile'>
                     <div className='tile-body'><CommentSection refParentId={courseId} refId={subjectId} /></div>
                 </div>
+                <TaiLieuThamKhaoModal ref={e => this.modalTaiLieuThamKhao = e} />
             </> : null,
             backRoute: userPageLink,
         });
     }
 }
 
-const mapStateToProps = state => ({ system: state.system, lesson: state.trainning.lesson });
+const mapStateToProps = state => ({ system: state.system, lesson: state.trainning.lesson, rate: state.framework.rate });
 const mapActionsToProps = { getLessonByStudent, getStudentScore, viewLesson };
 export default connect(mapStateToProps, mapActionsToProps)(adminEditPage);
