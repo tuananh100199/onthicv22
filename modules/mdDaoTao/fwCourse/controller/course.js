@@ -121,7 +121,9 @@ module.exports = (app) => {
         });
     });
 
-    app.get('/api/course', app.permission.check('course:read'), (req, res) => getCourseData(req.query._id, req.session.user, (error, item) => res.send({ error, item })));
+    app.get('/api/course', app.permission.check('user:login'), (req, res) => {
+        getCourseData(req.query._id, req.session.user, (error, item) => res.send({ error, item }));
+    });
 
     app.post('/api/course', app.permission.check('course:write'), (req, res) => {
         app.model.course.create(req.body.data || {}, (error, item) => res.send({ error, item }));
@@ -461,7 +463,7 @@ module.exports = (app) => {
                 student = app.clone(student, { subject: {} });
                 subjects.forEach(subject => {
                     const diemMonHoc =
-                        student && student.tienDoHocTap && student.tienDoHocTap[subject._id] ?
+                        student && student.tienDoHocTap && student.tienDoHocTap[subject._id] && !subject.monThucHanh ?
                             Number((Object.entries(student.tienDoHocTap[subject._id]).reduce((lessonNext, lesson) =>
                                 Number(lesson[1].score) / Object.keys(lesson[1].trueAnswers).length * 10 + lessonNext, 0)) / subject.lessons.length).toFixed(1) : 0;
                     const completedLessons = (subject && student.tienDoHocTap && student.tienDoHocTap[subject._id] ?

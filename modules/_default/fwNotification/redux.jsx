@@ -50,15 +50,16 @@ export function getNotificationPage(pageNumber, pageSize, done) {
     };
 }
 
-export function createNotification(notification, done) {
-    return () => {
+export function createNotification(data, done) {
+    return dispatch => {
         const url = '/api/notification';
-        T.post(url, { notification }, data => {
+        T.post(url, { data }, data => {
             if (data.error) {
                 T.notify('Gửi thông báo bị lỗi!', 'danger');
                 console.error('POST: ' + url + '. ' + data.error);
             } else {
                 done && done(data);
+                dispatch(getNotificationPage());
             }
         }, error => console.error(error) || T.notify('Gửi thông báo bị lỗi!', 'danger'));
     };
@@ -74,8 +75,8 @@ export function updateNotification(_id, changes, done) {
                 done && done(data.error);
             } else {
                 T.notify('Cập nhật thông báo thành công!', 'info');
+                done && done(data);
                 dispatch(getNotificationPage());
-                done && done();
             }
         }, error => console.error(error) || T.notify('Cập nhật thông báo bị lỗi', 'danger'));
     };

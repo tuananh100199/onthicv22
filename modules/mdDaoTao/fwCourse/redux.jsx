@@ -106,24 +106,46 @@ export function getCoursePage(courseType, pageNumber, pageSize, pageCondition, d
     };
 }
 
+const fetchCourse = (_id, done) => {
+    const url = '/api/course';
+    T.get(url, { _id }, data => {
+        if (data.error) {
+            T.notify('Lấy khóa học bị lỗi!', 'danger');
+            console.error('GET: ' + url + '.', data.error);
+        } else {
+            if (data.item) {
+                if (data.item.admins) data.item.admins = data.item.admins.sort((a, b) =>
+                    (a.firstname + ' ' + a.lastname).toLowerCase() > (b.firstname + ' ' + b.lastname).toLowerCase() ? +1 : -1);
+                if (data.item.representerGroups) data.item.representerGroups = data.item.representerGroups.sort((a, b) =>
+                    a.teacher == null || b.teacher == null || (a.teacher.firstname + ' ' + a.teacher.lastname).toLowerCase() > (b.teacher.firstname + ' ' + b.teacher.lastname).toLowerCase() ? +1 : -1);
+            }
+            done && done(data);
+        }
+    }, error => console.error(error) || T.notify('Lấy khóa học bị lỗi!', 'danger'));
+};
 export function getCourse(_id, done) {
     return dispatch => {
-        const url = '/api/course';
-        T.get(url, { _id }, data => {
-            if (data.error) {
-                T.notify('Lấy khóa học bị lỗi!', 'danger');
-                console.error('GET: ' + url + '.', data.error);
-            } else {
-                if (data.item) {
-                    if (data.item.admins) data.item.admins = data.item.admins.sort((a, b) =>
-                        (a.firstname + ' ' + a.lastname).toLowerCase() > (b.firstname + ' ' + b.lastname).toLowerCase() ? +1 : -1);
-                    if (data.item.representerGroups) data.item.representerGroups = data.item.representerGroups.sort((a, b) =>
-                        a.teacher == null || b.teacher == null || (a.teacher.firstname + ' ' + a.teacher.lastname).toLowerCase() > (b.teacher.firstname + ' ' + b.teacher.lastname).toLowerCase() ? +1 : -1);
-                }
-                dispatch({ type: CourseGetItem, item: data.item });
-                done && done(data);
-            }
-        }, error => console.error(error) || T.notify('Lấy khóa học bị lỗi!', 'danger'));
+        fetchCourse(_id, data => {
+            dispatch && dispatch({ type: CourseGetItem, item: data.item });
+            done && done(data);
+        });
+
+        // const url = '/api/course';
+        // T.get(url, { _id }, data => {
+        //     if (data.error) {
+        //         T.notify('Lấy khóa học bị lỗi!', 'danger');
+        //         console.error('GET: ' + url + '.', data.error);
+        //     } else {
+        //         if (data.item) {
+        //             if (data.item.admins) data.item.admins = data.item.admins.sort((a, b) =>
+        //                 (a.firstname + ' ' + a.lastname).toLowerCase() > (b.firstname + ' ' + b.lastname).toLowerCase() ? +1 : -1);
+        //             if (data.item.representerGroups) data.item.representerGroups = data.item.representerGroups.sort((a, b) =>
+        //                 a.teacher == null || b.teacher == null || (a.teacher.firstname + ' ' + a.teacher.lastname).toLowerCase() > (b.teacher.firstname + ' ' + b.teacher.lastname).toLowerCase() ? +1 : -1);
+        //         }
+        //         dispatch && dispatch({ type: CourseGetItem, item: data.item });
+        //         done && done(data);
+        //     }
+        // }, error => console.error(error) || T.notify('Lấy khóa học bị lỗi!', 'danger'));
     };
 }
 
@@ -423,6 +445,7 @@ export const ajaxSelectCourse = {
     url: '/api/course/page/1/20',
     data: {},
     processResults: response => ({ results: response && response.page && response.page.list ? response.page.list.map(course => ({ id: course._id, text: course.name + (course.courseType ? ` (${course.courseType.title})` : '') })) : [] }),
-    fetchOne: (_id, done) => (getCourse(_id, ({ item }) => done && done({ id: item._id, text: item.name + (item.courseType ? ` (${item.courseType.title})` : '') })))()
+    // fetchOne: (_id, done) => (getCourse(_id, ({ item }) => done && done({ id: item._id, text: item.name + (item.courseType ? ` (${item.courseType.title})` : '') })))()
+    fetchOne: (_id, done) => fetchCourse(_id, ({ item }) => done && done({ id: item._id, text: item.name + (item.courseType ? ` (${item.courseType.title})` : '') }))
 };
 
