@@ -399,13 +399,13 @@ module.exports = (app) => {
 
     // Lecturer API
     app.get('/api/course/lecturer/student', app.permission.check('course:read'), (req, res) => {
-        const userId = req.session.user._id;
-        app.model.course.get(req.query._id, (error, item) => {
+        const { courseId, lecturerId } = req.query.condition;
+        app.model.course.get(courseId, (error, item) => {
             if (error || !item) {
                 res.send({ error });
             } else {
-                const listStudent = item.teacherGroups.filter(teacherGroup => teacherGroup.teacher && teacherGroup.teacher._id == userId);
-                res.send({ error, item: listStudent.length ? listStudent[0].student : null });
+                const listStudent = item.teacherGroups.filter(teacherGroup => teacherGroup.teacher && teacherGroup.teacher._id == lecturerId);
+                res.send({ error, list: listStudent.length ? listStudent[0].student : null });
             }
         });
     });

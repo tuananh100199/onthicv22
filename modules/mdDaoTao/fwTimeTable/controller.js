@@ -103,55 +103,46 @@ module.exports = (app) => {
     });
 
     // Course Admin && Lecturer API----------------------------------------------------------------------------------
-    // app.get('/api/time-table/page/admin/:pageNumber/:pageSize', app.permission.check('timeTable:read'), (req, res) => {
-    //     const user = req.session.user;
-    //     let pageNumber = parseInt(req.params.pageNumber),
-    //         pageSize = parseInt(req.params.pageSize),
-    //         condition = req.query.pageCondition || {},
-    //         pageCondition = {};
-    //     if (user.isLecturer){
-    //         app.model.course.get(condition.courseId, (error, item) => {
-    //             if (error || !item) {
-    //                 res.send({ error });
-    //             } else {
-    //                 item = app.clone(item);
-    //                 const listStudent = item.teacherGroups.filter(teacherGroup => teacherGroup.teacher && teacherGroup.teacher._id == user._id),
-    //                 studentIds = listStudent.length && listStudent[0].student.map(student => student._id);
-    //                 pageCondition = { student: { $in:  studentIds } };
-    //                 app.model.timeTable.getPage(pageNumber, pageSize, pageCondition, (error, page) => res.send({ error, page }));
-    //             }
-    //         });
-    //     } else{
-    //         app.model.student.getAll({ course: condition.courseId }, (error, list) => {
-    //             if (error) {
-    //                 res.send({ error });
-    //             } else {
-    //                 const studentIds = list.length && list.map(student => student._id);
-    //                 pageCondition = { student: { $in:  studentIds } };
-    //                 app.model.timeTable.getPage(pageNumber, pageSize, pageCondition, (error, page) => res.send({ error, page }));
-    //             }
-    //         });
-    //     }
-    // });
-
     app.get('/api/time-table/page/admin/:pageNumber/:pageSize', app.permission.check('timeTable:read'), (req, res) => {
         let pageNumber = parseInt(req.params.pageNumber),
             pageSize = parseInt(req.params.pageSize),
             condition = req.query.pageCondition || {},
-            pageCondition = {};
-            app.model.course.get(condition.courseId, (error, item) => {
-                if (error || !item) {
-                    res.send({ error });
-                } else {
-                    item = app.clone(item);
-                    const listStudent = item.teacherGroups.filter(teacherGroup => teacherGroup.teacher && teacherGroup.teacher._id == condition.lecturerId),
-                    studentIds = listStudent.length && listStudent[0].student.map(student => student._id);
-                    pageCondition = { student: { $in:  studentIds } };
-                    app.model.timeTable.getPage(pageNumber, pageSize, pageCondition, (error, page) => res.send({ error, page }));
+            pageCondition = {},
+            filterOn = JSON.parse(condition.filterOn);
+        app.model.course.get(condition.courseId, (error, item) => {
+            if (error || !item) {
+                res.send({ error });
+            } else {
+                item = app.clone(item);
+                const listStudent = item.teacherGroups.filter(teacherGroup => teacherGroup.teacher && teacherGroup.teacher._id == condition.lecturerId),
+                studentIds = listStudent.length && listStudent[0].student.map(student => student._id);
+                pageCondition = { student: { $in:  studentIds } };
+                if (filterOn){
+                    let today  = new Date();
+                    pageCondition.date = new Date(today.getFullYear(), today.getMonth(), today.getDate());
                 }
+                app.model.timeTable.getPage(pageNumber, pageSize, pageCondition, (error, page) => res.send({ error, page }));
+            }
         });
     });
 
+    app.get('/api/time-table/lecturer', app.permission.check('timeTable:read'), (req, res) => {
+        const condition = req.query.condition || {};
+        let lecturerCondition = {};
+        app.model.course.get(condition.courseId, (error, item) => {
+            if (error || !item) {
+                res.send({ error });
+            } else {
+                item = app.clone(item);
+                const listStudent = item.teacherGroups.filter(teacherGroup => teacherGroup.teacher && teacherGroup.teacher._id == condition.lecturerId),
+                studentIds = listStudent.length && listStudent[0].student.map(student => student._id);
+                lecturerCondition.student = { $in:  studentIds };
+                lecturerCondition.date = condition.date;
+                app.model.timeTable.getAll(lecturerCondition, (error, items) => res.send({ error, items }));
+            }
+        });
+    });
+    
     // Student API-----------------------------------------------------------------------------------------------------
     app.get('/api/time-table/student', app.permission.check('user:login'), (req, res) => {
         const userId = req.session.user._id;

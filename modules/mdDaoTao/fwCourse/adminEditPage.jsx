@@ -11,15 +11,12 @@ class EditCoursePage extends AdminPage {
         T.ready('/user/course', () => {
             const params = T.routeMatcher('/user/course/:_id').parse(window.location.pathname);
             if (params && params._id) {
-                const course = this.props.course ? this.props.course.item : null;
-                if (!course) {
-                    this.props.getCourse(params._id, data => {
-                        if (data.error) {
-                            T.notify('Lấy khóa học bị lỗi!', 'danger');
-                            this.props.history.push(backRoute);
-                        }
-                    });
-                }
+                this.props.getCourse(params._id, data => {
+                    if (data.error) {
+                        T.notify('Lấy khóa học bị lỗi!', 'danger');
+                        this.props.history.push(backRoute);
+                    }
+                });
             } else {
                 this.props.history.push(backRoute);
             }

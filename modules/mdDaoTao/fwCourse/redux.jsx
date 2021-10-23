@@ -417,3 +417,9 @@ export const ajaxSelectCourse = {
     fetchOne: (_id, done) => (getCourse(_id, ({ item }) => done && done({ id: item._id, text: item.name + (item.courseType ? ` (${item.courseType.title})` : '') })))()
 };
 
+export const ajaxSelectStudentOfLecturer = (courseId, lecturerId) => T.createAjaxAdapter(
+    '/api/course/lecturer/student',
+    params => ({ condition: { courseId, lecturerId, title: params.term } }),
+    response => response && response.list ?
+        response.list.map(item => ({ id: item._id, text: `${item.lastname} ${item.firstname}` })) : [],
+);

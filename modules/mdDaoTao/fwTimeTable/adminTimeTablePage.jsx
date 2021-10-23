@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { AdminPage } from 'view/component/AdminPage';
+import { AdminPage, FormCheckbox } from 'view/component/AdminPage';
 import 'modules/mdDaoTao/fwChat/chat.scss';
 import { Link } from 'react-router-dom';
 import { getCourse } from '../fwCourse/redux';
@@ -20,7 +20,7 @@ export class AdminTimeTablePage extends AdminPage {
                             this.props.history.push('/user/course/' + params._id);
                         } else if (data.item) {
                             const listLecturer = data.item && data.item.teacherGroups && data.item.teacherGroups.length &&  data.item.teacherGroups.map(group => group.teacher); 
-                            listLecturer && listLecturer.length && this.setState({ currentLecturer: listLecturer[0], listLecturer: listLecturer });
+                            listLecturer && listLecturer.length && this.setState({ currentLecturer: listLecturer[0], listLecturer: listLecturer, filterOn: false, key: listLecturer[0]});
                         }
                     });
             } else {
@@ -29,11 +29,16 @@ export class AdminTimeTablePage extends AdminPage {
         });
     }
 
+    onChange = (value) => {
+        this.setState({ filterOn: value , key: !this.state.key});
+        this.forceUpdate();
+    }
+
     selectLecturer = (lecturer) => {
-        this.setState({ currentLecturer: lecturer});
+        this.setState({ currentLecturer: lecturer, key: !this.state.key});
     }
     render() {
-        const { currentLecturer, listLecturer } = this.state;
+        const { currentLecturer, listLecturer, filterOn, key } = this.state;
         const item = this.props.course && this.props.course.item ? this.props.course.item : {};
         const inboxTimeTable = listLecturer && listLecturer.length && listLecturer.map((lecturer, index) => {
             const isSelectedUser = currentLecturer && currentLecturer._id ==  lecturer._id;
@@ -62,15 +67,16 @@ export class AdminTimeTablePage extends AdminPage {
                                         <h4>Danh sách cố vấn</h4>
                                     </div>
                                 </div>
-                                <div className='lecturer_time_table'>
+                                <div>
                                     {inboxTimeTable}
                                 </div>
                             </div>
                             <div className='col-sm-9' >
                                 <div className='recent_heading pb-3'>
-                                    <h4>{currentLecturer && currentLecturer.lastname + ' ' + currentLecturer.firstname }</h4>
+                                    <h4 style={{float: 'left'}}>{currentLecturer && currentLecturer.lastname + ' ' + currentLecturer.firstname }</h4>
+                                    <FormCheckbox ref={e => this.course = e} style={{float: 'right'}} onChange={value => this.onChange(value)} label='Hiển thị ngày hiện tại' />
                                 </div>
-                                {item && item._id ? <LecturerView  key={currentLecturer && currentLecturer._id} courseId={item._id} courseType={item.courseType} lecturerId={currentLecturer && currentLecturer._id} /> : null}
+                                {item && item._id ? <LecturerView  key={key} courseId={item._id} lecturerId={currentLecturer && currentLecturer._id} filterOn={filterOn}/> : null}
                             </div>
                         </div>
                     </div>

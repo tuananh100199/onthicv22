@@ -42,7 +42,7 @@ module.exports = app => {
             }
         }),
 
-        getAll: (condition, done) => done ? model.find(condition).sort({ date: 1 }).exec(done) : model.find({}).sort({ date: 1 }).exec(condition),
+        getAll: (condition, done) => done ? model.find(condition).populate(populateStudent).sort({ date: 1 }).exec(done) : model.find({}).populate(populateStudent).sort({ date: 1 }).exec(condition),
 
         get: (condition, done) => {
             const findTask = typeof condition == 'string' ? model.findById(condition) : model.findOne(condition);

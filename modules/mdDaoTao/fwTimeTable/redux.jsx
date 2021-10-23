@@ -46,6 +46,23 @@ export function getTimeTablePage(pageNumber, pageSize, pageCondition, done) {
     };
 }
 
+T.initCookiePage('pageTimeTable');
+export function getTimeTablePageByAdmin(pageNumber, pageSize, pageCondition, done) {
+    const page = T.updatePage('pageTimeTable', pageNumber, pageSize);
+    return dispatch => {
+        const url = `/api/time-table/page/admin/${page.pageNumber}/${page.pageSize}`;
+        T.get(url, { pageCondition }, data => {
+            if (data.error) {
+                T.notify('Lấy thời khóa biểu bị lỗi!', 'danger');
+                console.error(`GET: ${url}. ${data.error}`);
+            } else {
+                done && done(data.page);
+                dispatch({ type: TimeTableGetPage, page: data.page });
+            }
+        }, error => console.error(error) || T.notify('Lấy thời khóa biểu bị lỗi!', 'danger'));
+    };
+}
+
 export function getTimeTable(_id, done) {
     return dispatch => {
         const url = '/api/time-table';
@@ -70,6 +87,19 @@ export function getTimeTableDateNumber(student, date, startHour, numOfHours, don
                 console.error(`GET: ${url}. ${data.error}`);
             } else {
                 done && done(data.dateNumber);
+            }
+        }, error => console.error(error) || T.notify('Lấy thời khóa biểu bị lỗi', 'danger'));
+    };
+}
+export function getTimeTableOfLecturer(condition, done) {
+    return () => {
+        const url = '/api/time-table/lecturer';
+        T.get(url, { condition }, data => {
+            if (data.error) {
+                T.notify('Lấy thời khóa biểu bị lỗi!', 'danger');
+                console.error(`GET: ${url}. ${data.error}`);
+            } else {
+                done && done(data);
             }
         }, error => console.error(error) || T.notify('Lấy thời khóa biểu bị lỗi', 'danger'));
     };
@@ -167,23 +197,6 @@ export function deleteTimeTableByAdmin(_id, condition) {
                 dispatch(getTimeTablePageByAdmin(undefined, undefined, condition));
             }
         }, error => console.error(error) || T.notify('Xóa thời khóa biểu bị lỗi!', 'danger'));
-    };
-}
-
-T.initCookiePage('pageTimeTable');
-export function getTimeTablePageByAdmin(pageNumber, pageSize, pageCondition, done) {
-    const page = T.updatePage('pageTimeTable', pageNumber, pageSize);
-    return dispatch => {
-        const url = `/api/time-table/page/admin/${page.pageNumber}/${page.pageSize}`;
-        T.get(url, { pageCondition }, data => {
-            if (data.error) {
-                T.notify('Lấy thời khóa biểu bị lỗi!', 'danger');
-                console.error(`GET: ${url}. ${data.error}`);
-            } else {
-                done && done(data.page);
-                dispatch({ type: TimeTableGetPage, page: data.page });
-            }
-        }, error => console.error(error) || T.notify('Lấy thời khóa biểu bị lỗi!', 'danger'));
     };
 }
 
