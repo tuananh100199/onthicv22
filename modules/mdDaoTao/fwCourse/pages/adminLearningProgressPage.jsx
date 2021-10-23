@@ -148,7 +148,7 @@ class AdminLearningProgressPage extends AdminPage {
                     <div className='tile-body'>
                         <div className='row'>
                             <FormCheckbox className='col-md-9' ref={e => this.course = e} onChange={value => this.onChange(value)} label='Học viên đủ điều kiện thi hết môn' />
-                            <Link className='col-md-3' to={`${backRoute}/import-final-score`}><button className='btn'> Nhập điểm thi hết môn </button></Link>
+                            <Link className='col-md-3' to={`${backRoute}/import-final-score`}><button className='btn btn-primary'> Nhập điểm thi hết môn </button></Link>
                         </div>
                         {table}
                         {!isLecturer ? <Pagination name='adminLearningProgress' pageNumber={pageNumber} pageSize={pageSize} pageTotal={pageTotal} totalItem={totalItem} getPage={this.getPage} style={{ marginLeft: 45 }} /> : null}
