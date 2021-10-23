@@ -388,6 +388,21 @@ export function getChatByAdmin(_id, done) {
     };
 }
 
+export function importFinalScore(studentScores,course, done) {
+    return () => {
+        const url = '/api/course/import-final-score';
+        T.put(url, { studentScores, course }, data => {
+            if (data.error) {
+                T.notify('Import điểm thi hết môn bị lỗi!', 'danger');
+                console.error(`POST: ${url}. ${data.error}`);
+            } else {
+                T.notify('Import điểm thi hết môn thành công!', 'success');
+                done && done(data);
+            }
+        }, error => console.error(error) || T.notify('Import điểm thi hết môn bị lỗi!', 'danger'));
+    };
+}
+
 
 // Export to Excel ----------------------------------------------------------------------------------------------------
 export function exportStudentInfoToExcel(_courseId) {

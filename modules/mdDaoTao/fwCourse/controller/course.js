@@ -14,7 +14,6 @@ module.exports = (app) => {
         { name: 'course:delete' },
         { name: 'course:lock' },
         { name: 'course:export' },
-        { name: 'course:import' },
         { name: 'course:learn' }
     );
 
@@ -890,26 +889,34 @@ module.exports = (app) => {
                         // },
                         get = (row, col) => worksheet.getCell(`${col}${row}`).value;
                     const handleUpload = (index = parseInt(userDatas[1])) => { //index =start
-                        // const values = worksheet.getRow(index).values;
                         if (index > parseInt(userDatas[2])) { // index to stop loop
                             done({ data });
                         } else {
-                            console.log(get(8,'D'),'tss');
                             data.push({
-                                identityCard: get(index, userDatas[3]), //id student todo
-                                diemThiHetMon: userDatas.slice(4).map((col) => ({
-                                    col,
-                                    point: get(index, col),
-                                })),
+                                identityCard: get(index, userDatas[3]),
+                                diemThiHetMon: userDatas.slice(4).map((col) => ({ col, point: get(index, col) })),
                             });
                             handleUpload(index + 1);
                         }
                     };
                     handleUpload();
                 } else {
-                    done({ error: 'Error' });
+                    done({ error: 'Đọc file Excel bị lỗi!' });
                 }
             });
+        }
+    });
+
+    app.put('/api/course/import-final-score', app.permission.check('student:write'), (req, res) => {
+        const { studentScores, course } = req.body;
+        if (studentScores && studentScores.length) {
+            studentScores.forEach(({ identityCard, diemThiHetMon,diemTrungBinhThiHetMon }) => app.model.student.get({ identityCard, course }, (error, item) => {
+                item.diemThiHetMon = diemThiHetMon;
+                item.diemTrungBinhThiHetMon=diemTrungBinhThiHetMon;
+                item.save();
+            }));
+        } else {
+            res.send({ error: 'Danh sách điểm thi hết môn trống!' });
         }
     });
 
