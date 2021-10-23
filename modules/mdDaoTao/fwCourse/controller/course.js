@@ -912,11 +912,12 @@ module.exports = (app) => {
     app.put('/api/course/import-final-score', app.permission.check('student:write'), (req, res) => {
         const { studentScores, course } = req.body;
         if (studentScores && studentScores.length) {
-            studentScores.forEach(({ identityCard, diemThiHetMon,diemTrungBinhThiHetMon }) => app.model.student.get({ identityCard, course }, (error, item) => {
+            studentScores.forEach(({ identityCard, diemThiHetMon, diemTrungBinhThiHetMon }) => app.model.student.get({ identityCard, course }, (error, item) => {
                 item.diemThiHetMon = diemThiHetMon;
-                item.diemTrungBinhThiHetMon=diemTrungBinhThiHetMon;
+                item.diemTrungBinhThiHetMon = diemTrungBinhThiHetMon;
                 item.save();
             }));
+            res.send({ notify: 'Import điểm thi hết môn thành công' });
         } else {
             res.send({ error: 'Danh sách điểm thi hết môn trống!' });
         }

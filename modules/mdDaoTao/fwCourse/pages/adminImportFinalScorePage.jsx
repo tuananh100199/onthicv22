@@ -2,7 +2,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { importFinalScore, getCourse } from '../redux';
 import { Link } from 'react-router-dom';
-import { AdminPage, FormFileBox, FormTextBox, CirclePageButton, TableCell, renderTable } from 'view/component/AdminPage';
+import { AdminPage, FormFileBox, FormTextBox, TableCell, renderTable } from 'view/component/AdminPage';
 
 class ImportPage extends AdminPage {
     state = { isFileBoxHide: true };
@@ -50,7 +50,7 @@ class ImportPage extends AdminPage {
             item.diemTrungBinhThiHetMon = parseFloat(item.diemThiHetMon.reduce((res, { point }) => point / numOfSubject + res, 0).toFixed(1));
         }
         );
-        this.setState({ data });
+        this.setState({ data, isFileBoxHide: true });
     }
 
     onChange = (e) => {
@@ -65,6 +65,11 @@ class ImportPage extends AdminPage {
                 this.fileBox.setData(userData);
             }
         });
+    }
+
+    onReUpload = (e) => {
+        this.setState({ data: [], isFileBoxHide: false });
+        this.onChange(e);
     }
 
     save = () => {
@@ -112,20 +117,26 @@ class ImportPage extends AdminPage {
                         <FormTextBox ref={e => this.startRow = e} onChange={e => this.onChange(e)} label='Dòng bắt đầu' className='col-md-4' type='number' min={2} max={this.endRow ? parseInt(this.endRow.value()) : ''} />
                         <FormTextBox ref={e => this.endRow = e} onChange={e => this.onChange(e)} label='Dòng kết thúc' className='col-md-4' type='number' min={this.startRow ? parseInt(this.startRow.value()) : ''} />
                         <FormTextBox ref={e => this.idCardCol = e} onChange={e => this.onChange(e)} label='Cột CMND/CCCD' className='col-md-4' />
-                    </div>
-                    <div className="row">
+                        <h3 className='tile-title col-12'>Danh sách các cột môn học</h3>
                         {subjects.length ? subjects.map(({ _id, title }, index) => <FormTextBox key={index} ref={e => this[_id] = e} onChange={e => this.onChange(e)} label={'Môn ' + title} className='col-md-3' />) : ''}
                     </div>
                 </div>
-                {this.state.data && this.state.data.length ? <div className='tile'>
-                    <h3 className='tile-title'>Bản xem trước</h3>
+                {this.state.data ? <div className='tile'>
+                    <h3 className='tile-title'>Danh sách điểm thi hết môn của học viên</h3>
                     {table}
+                    <div className='tile-footer' style={{ textAlign: 'right' }}>
+                        <button className='btn btn-danger' type='button' style={{ marginRight: 10 }} onClick={this.onReUpload}>
+                            <i className='fa fa-fw fa-lg fa-cloud-upload' /> Upload lại
+                                    </button>
+                        <button className='btn btn-primary' type='button' onClick={this.save}>
+                            <i className='fa fa-fw fa-lg fa-save' /> Lưu
+                                    </button>
+                    </div>
                 </div> : null}
                 {!this.state.isFileBoxHide ? <div className='tile'>
                     <h3 className='tile-title'>Nhập điểm thi hết môn bằng Excel</h3>
                     <FormFileBox ref={e => this.fileBox = e} uploadType='FinalScoreFile' onSuccess={this.onUploadSuccess} readOnly={false} />
                 </div > : null}
-                <CirclePageButton type='save' onClick={this.save} />
             </>,
             backRoute,
         });
