@@ -42,7 +42,7 @@ class ImportPage extends AdminPage {
     onUploadSuccess = ({ data }) => {
         const { subjects = [] } = this.props.course.item || {}, numOfSubject = subjects.length,
             _subjectIds = subjects.map(({ _id }) => _id);
-        data.length && numOfSubject && data.forEach(item => {
+        data.length > 0 && numOfSubject > 0 && data.forEach(item => {
             item.diemThiHetMon.forEach(item => {
                 item.subject = _subjectIds.find(_id => this[_id].value() == item.col);
                 delete item.col;
@@ -57,7 +57,7 @@ class ImportPage extends AdminPage {
         e.preventDefault();
         const { subjects = [] } = this.props.course.item || {},
             _subjectIds = subjects.map(({ _id }) => _id),
-            params = ['startRow', 'endRow', 'idCardCol', ...(subjects.length && _subjectIds)],
+            params = ['startRow', 'endRow', 'idCardCol', ...(subjects.length > 0 && _subjectIds)],
             isFileBoxHide = params.some(item => this[item].value() == '');
         this.setState({ isFileBoxHide }, () => {
             if (!this.state.isFileBoxHide) {
@@ -113,12 +113,12 @@ class ImportPage extends AdminPage {
             content: <>
                 <div className='tile'>
                     <h3 className='tile-title'>Thông số đầu vào</h3>
-                    <div className="row">
+                    <div className='row'>
                         <FormTextBox ref={e => this.startRow = e} onChange={e => this.onChange(e)} label='Dòng bắt đầu' className='col-md-4' type='number' min={2} max={this.endRow ? parseInt(this.endRow.value()) : ''} />
                         <FormTextBox ref={e => this.endRow = e} onChange={e => this.onChange(e)} label='Dòng kết thúc' className='col-md-4' type='number' min={this.startRow ? parseInt(this.startRow.value()) : ''} />
                         <FormTextBox ref={e => this.idCardCol = e} onChange={e => this.onChange(e)} label='Cột CMND/CCCD' className='col-md-4' />
                         <h3 className='tile-title col-12'>Danh sách các cột môn học</h3>
-                        {subjects.length ? subjects.map(({ _id, title }, index) => <FormTextBox key={index} ref={e => this[_id] = e} onChange={e => this.onChange(e)} label={'Môn ' + title} className='col-md-3' />) : ''}
+                        {subjects.length > 0 ? subjects.map(({ _id, title }, index) => <FormTextBox key={index} ref={e => this[_id] = e} onChange={e => this.onChange(e)} label={'Môn ' + title} className='col-md-3' />) : ''}
                     </div>
                 </div>
                 {this.state.data ? <div className='tile'>

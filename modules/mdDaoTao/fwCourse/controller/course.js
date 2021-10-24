@@ -878,7 +878,7 @@ module.exports = (app) => {
     });
     // Hook upload final score excel---------------------------------------------------------------------------------------
     app.uploadHooks.add('uploadExcelFinalScoreFile', (req, fields, files, params, done) => {
-        if (files.FinalScoreFile && files.FinalScoreFile.length > 0 && fields.userData && fields.userData.length) {
+        if (files.FinalScoreFile && files.FinalScoreFile.length > 0 && fields.userData && fields.userData.length > 0 && fields.userData[0].startsWith('FinalScoreFile:')) {
             console.log('Hook: uploadExcelFinalScoreFile => your excel final score file upload');
             const srcPath = files.FinalScoreFile[0].path;
             app.excel.readFile(srcPath, workbook => {
@@ -910,14 +910,36 @@ module.exports = (app) => {
     });
 
     app.put('/api/course/import-final-score', app.permission.check('student:write'), (req, res) => {
-        const { studentScores, course } = req.body;
-        if (studentScores && studentScores.length) {
-            studentScores.forEach(({ identityCard, diemThiHetMon, diemTrungBinhThiHetMon }) => app.model.student.get({ identityCard, course }, (error, item) => {
-                item.diemThiHetMon = diemThiHetMon;
-                item.diemTrungBinhThiHetMon = diemTrungBinhThiHetMon;
-                item.save();
-            }));
-            res.send({ notify: 'Import điểm thi hết môn thành công' });
+        const { scores, course } = req.body;
+        let err = null;
+        if (scores && scores.length > 0) {
+            // studentScores.forEach(({ identityCard, diemThiHetMon, diemTrungBinhThiHetMon }) => app.model.student.get({ identityCard, course }, (error, item) => {
+            //     item.diemThiHetMon = diemThiHetMon;
+            //     item.diemTrungBinhThiHetMon = diemTrungBinhThiHetMon;
+            //     item.save();
+            // }));
+            // res.send({ notify: 'Import điểm thi hết môn thành công' });
+            const handleImportScore = (index = 0) => {
+                if (index == scores.length) {
+                    res.send({ error: err });
+                } else {
+                    const { identityCard, diemThiHetMon, diemTrungBinhThiHetMon } = scores[index];
+                    app.model.student.get({ identityCard, course }, (error, item) => {
+                        if (error || !item) {
+                            err = error;
+                            handleImportScore(index + 1);
+                        } else {
+                            item.diemThiHetMon = diemThiHetMon;
+                            item.diemTrungBinhThiHetMon = diemTrungBinhThiHetMon;
+                            item.save((error) => {
+                                err = error;
+                                handleImportScore(index + 1);
+                            });
+                        }
+                    });
+                }
+            };
+            handleImportScore();
         } else {
             res.send({ error: 'Danh sách điểm thi hết môn trống!' });
         }

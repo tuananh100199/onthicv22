@@ -410,10 +410,10 @@ export function getChatByAdmin(_id, done) {
     };
 }
 
-export function importFinalScore(studentScores,course, done) {
+export function importFinalScore(scores, course, done) {
     return () => {
         const url = '/api/course/import-final-score';
-        T.put(url, { studentScores, course }, data => {
+        T.put(url, { scores, course }, data => {
             if (data.error) {
                 T.notify('Import điểm thi hết môn bị lỗi!', 'danger');
                 console.error(`POST: ${url}. ${data.error}`);

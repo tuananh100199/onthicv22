@@ -17,25 +17,17 @@ module.exports = (app) => {
                             condition._refId = { $in: _teacherIds };
                             delete condition._courseId;
                             app.model.rate.getPage(pageNumber, pageSize, condition, (error, page) => {
-                                new Promise((resolve, reject) => {
-                                    if (error) {
-                                        reject(error);
-                                    } else {
-                                        let count = 0;
-                                        const list = [...page.list];
-                                        page.list = [];
-                                        list.forEach(item => {
-                                            item = app.clone(item, { _refId: _teachers.find(({ _id }) => item._refId == _id.toString()) });
-                                            page.list.push(item);
-                                            count++;
-                                            if (count == list.length) {
-                                                resolve(page);
-                                            }
-                                        });
-                                    }
-                                }).then((page) => {
+                                if (error) {
+                                    res.send({ error });
+                                } else {
+                                    const list = [...page.list];
+                                    page.list = [];
+                                    list.forEach(item => {
+                                        item = app.clone(item, { _refId: _teachers.find(({ _id }) => item._refId == _id.toString()) });
+                                        page.list.push(item);
+                                    });
                                     res.send({ page });
-                                }).catch(error => res.send(error));
+                                }
                             });
                         }
                     }
