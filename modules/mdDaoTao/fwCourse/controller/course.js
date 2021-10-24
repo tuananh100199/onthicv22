@@ -883,7 +883,7 @@ module.exports = (app) => {
             app.excel.readFile(srcPath, workbook => {
                 app.deleteFile(srcPath);
                 if (workbook) {
-                    const userData = fields.userData[0], userDatas = userData.split(':'), worksheet = workbook.getWorksheet(5), data = [],
+                    const userData = fields.userData[0], userDatas = userData.split(':'), worksheet = workbook.getWorksheet(1), data = [],
                         get = (row, col) => worksheet.getCell(`${col}${row}`).value;
                     const handleUpload = (index = parseInt(userDatas[1])) => {
                         if (index > parseInt(userDatas[2])) {
@@ -910,13 +910,26 @@ module.exports = (app) => {
 
     app.put('/api/course/import-score', app.permission.check('student:write'), (req, res) => {
         const { score, courseId } = req.body;
+        let err = null;
         if (score && score.length) {
-            score.forEach(({ identityCard, diemThiTotNghiep }) =>
-                app.model.student.get({ identityCard, course: courseId }, (error, item) => {
-                    item.diemThiTotNghiep = diemThiTotNghiep;
-                    item.save();
-                }));
-            res.send({ notify: 'Import điểm thi hết môn thành công' });
+            const handleImportScore = (index = 0) => {
+                if (index == score.length) {
+                    res.send({ error: err });
+                } else {
+                    const student = score[index];
+                    app.model.student.get({ identityCard: student.identityCard, course: courseId }, (error, item) => {
+                        if (error || !item) {
+                            err = error;
+                            handleImportScore(index + 1);
+                        } else {
+                            item.diemThiTotNghiep = student.diemThiTotNghiep;
+                            item.save();
+                            handleImportScore(index + 1);
+                        }
+                    });
+                }
+            };
+            handleImportScore();
         } else {
             res.send({ error: 'Danh sách điểm thi tốt nghiệp  trống!' });
         }

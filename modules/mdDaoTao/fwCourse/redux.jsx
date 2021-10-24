@@ -397,7 +397,7 @@ export function importScore(score, courseId, done) {
                 T.notify('Import điểm thi tốt nghiệp bị lỗi!', 'danger');
                 console.error(`POST: ${url}. ${data.error}`);
             } else {
-                data.notify && T.notify(data.notify, 'success');
+                T.notify('Import điểm thi tốt nghiệp thành công', 'success');
                 done && done(data);
             }
         }, error => console.error(error) || T.notify('Import điểm thi tốt nghiệp bị lỗi!', 'danger'));
