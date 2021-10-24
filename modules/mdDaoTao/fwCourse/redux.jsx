@@ -415,13 +415,13 @@ export function importFinalScore(scores, course, done) {
         const url = '/api/course/import-final-score';
         T.put(url, { scores, course }, data => {
             if (data.error) {
-                T.notify('Import điểm thi hết môn bị lỗi!', 'danger');
+                T.notify('Lưu điểm thi hết môn bị lỗi!', 'danger');
                 console.error(`POST: ${url}. ${data.error}`);
             } else {
-                T.notify('Import điểm thi hết môn thành công!', 'success');
+                T.notify('Lưu điểm thi hết môn thành công!', 'success');
                 done && done(data);
             }
-        }, error => console.error(error) || T.notify('Import điểm thi hết môn bị lỗi!', 'danger'));
+        }, error => console.error(error) || T.notify('Lưu điểm thi hết môn bị lỗi!', 'danger'));
     };
 }
 

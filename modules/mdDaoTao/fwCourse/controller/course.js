@@ -892,7 +892,7 @@ module.exports = (app) => {
                         get = (row, col) => worksheet.getCell(`${col}${row}`).value;
                     const handleUpload = (index = parseInt(userDatas[1])) => { //index =start
                         if (index > parseInt(userDatas[2])) { // index to stop loop
-                            done({ data });
+                            done({ data, notify: 'Tải lên file điểm thi hết môn thành công' });
                         } else {
                             data.push({
                                 identityCard: get(index, userDatas[3]),
@@ -913,12 +913,6 @@ module.exports = (app) => {
         const { scores, course } = req.body;
         let err = null;
         if (scores && scores.length > 0) {
-            // studentScores.forEach(({ identityCard, diemThiHetMon, diemTrungBinhThiHetMon }) => app.model.student.get({ identityCard, course }, (error, item) => {
-            //     item.diemThiHetMon = diemThiHetMon;
-            //     item.diemTrungBinhThiHetMon = diemTrungBinhThiHetMon;
-            //     item.save();
-            // }));
-            // res.send({ notify: 'Import điểm thi hết môn thành công' });
             const handleImportScore = (index = 0) => {
                 if (index == scores.length) {
                     res.send({ error: err });

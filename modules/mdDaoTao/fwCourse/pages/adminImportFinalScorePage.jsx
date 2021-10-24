@@ -39,7 +39,8 @@ class ImportPage extends AdminPage {
         });
     }
 
-    onUploadSuccess = ({ data }) => {
+    onUploadSuccess = ({ data, notify }) => {
+        T.notify(notify, 'success');
         const { subjects = [] } = this.props.course.item || {}, numOfSubject = subjects.length,
             _subjectIds = subjects.map(({ _id }) => _id);
         data.length > 0 && numOfSubject > 0 && data.forEach(item => {
