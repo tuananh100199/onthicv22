@@ -925,8 +925,10 @@ module.exports = (app) => {
                         } else {
                             item.diemThiHetMon = diemThiHetMon;
                             item.diemTrungBinhThiHetMon = diemTrungBinhThiHetMon;
-                            item.save((error) => {
-                                err = error;
+                            item.save((error, student) => {
+                                if (error || !student) {
+                                    err = error;
+                                }
                                 handleImportScore(index + 1);
                             });
                         }
