@@ -30,7 +30,7 @@ module.exports = (app) => {
     app.get('/user/course/:_id/feedback/:_feedbackId', app.permission.check('course:read'), app.templates.admin);
     app.get('/user/course/:_id/your-students', app.permission.check('course:read'), app.templates.admin);
     app.get('/user/course/:_id/learning', app.permission.check('course:read'), app.templates.admin);
-    app.get('/user/course/:_id/import-diem-thi-tot-nghiep', app.permission.check('course:read'), app.templates.admin);
+    app.get('/user/course/:_id/import-graduation-exam-score', app.permission.check('course:read'), app.templates.admin);
     app.get('/user/course/:_id/calendar', app.permission.check('course:read'), app.templates.admin);
     app.get('/user/course/:_id/rate-subject', app.permission.check('course:read'), app.templates.admin);
     app.get('/user/course/:_id/chat-all', app.permission.check('user:login'), app.templates.admin);
@@ -890,9 +890,8 @@ module.exports = (app) => {
                             done({ data });
                         } else {
                             data.push({
-                                name: get(index, userDatas[3]),
-                                identityCard: get(index, userDatas[4]),
-                                diemThiTotNghiep: userDatas.slice(5).map((col) => ({
+                                identityCard: get(index, userDatas[3]),
+                                diemThiTotNghiep: userDatas.slice(4).map((col) => ({
                                     col,
                                     point: get(index, col),
                                 })),

@@ -11,7 +11,7 @@ class AdminImportDiemThiTotNghiepPage extends AdminPage {
     state = { isFileBoxHide: true };
     componentDidMount() {
         T.ready('/user/course', () => {
-            const params = T.routeMatcher('/user/course/:_id/import-diem-thi-tot-nghiep').parse(window.location.pathname);
+            const params = T.routeMatcher('/user/course/:_id/import-graduation-exam-score').parse(window.location.pathname);
             if (params && params._id) {
                 const course = this.props.course ? this.props.course.item : null;
                 this.setState({ courseId: params._id });
@@ -39,7 +39,6 @@ class AdminImportDiemThiTotNghiepPage extends AdminPage {
         const listColumn = ['D', 'E', 'F', 'G', 'H', 'I', 'J'];
         this.itemStartRow.value(8);
         this.itemIdentityCard.value('C');
-        this.itemName.value('B');
         monThiTotNghiep.forEach((monThi, index) => {
             this[monThi._id].value(listColumn[index]);
         });
@@ -50,7 +49,7 @@ class AdminImportDiemThiTotNghiepPage extends AdminPage {
         e.preventDefault();
         const { monThiTotNghiep } = this.props.course && this.props.course.item,
             monThiTotNghiepIds = monThiTotNghiep.map(({ _id }) => _id),
-            params = ['itemStartRow', 'itemEndRow', 'itemName', 'itemIdentityCard', ...(monThiTotNghiep.length && monThiTotNghiepIds)],
+            params = ['itemStartRow', 'itemEndRow', 'itemIdentityCard', ...(monThiTotNghiep.length && monThiTotNghiepIds)],
             isFileBoxHide = params.some(item => this[item].value() == '');
         this.setState({ isFileBoxHide }, () => {
             if (!this.state.isFileBoxHide) {
@@ -71,6 +70,7 @@ class AdminImportDiemThiTotNghiepPage extends AdminPage {
 
 
     onUploadSuccess = ({ data }) => {
+        console.log(data);
         const { monThiTotNghiep } = this.props.course && this.props.course.item,
             monThiTotNghiepIds = monThiTotNghiep.map(({ _id }) => _id);
         data.length && monThiTotNghiep.length && data.forEach(item => {
@@ -99,8 +99,7 @@ class AdminImportDiemThiTotNghiepPage extends AdminPage {
                 <div className='row'>
                     <FormTextBox className='col-md-3' ref={e => this.itemStartRow = e} label='Dòng bắt đầu' onChange={e => this.change(e)} />
                     <FormTextBox className='col-md-3' ref={e => this.itemEndRow = e} label='Dòng kết thúc' onChange={e => this.change(e)} />
-                    <FormTextBox className='col-md-3' ref={e => this.itemName = e} label='Cột Họ và tên' onChange={e => this.change(e)} />
-                    <FormTextBox className='col-md-3' ref={e => this.itemIdentityCard = e} label='Cột CMND/CCCD' onChange={e => this.change(e)} />
+                    <FormTextBox className='col-md-4' ref={e => this.itemIdentityCard = e} label='Cột CMND/CCCD' onChange={e => this.change(e)} />
                     {listMonThi && listMonThi.length && listMonThi.map((monThi, index) =>
                         (<FormTextBox key={index} ref={e => this[monThi._id] = e} className='col-md-3' label={'Môn thi: ' + monThi.title} onChange={e => this.change(e)} />)
                     )}
@@ -115,14 +114,12 @@ class AdminImportDiemThiTotNghiepPage extends AdminPage {
             renderHead: () => (
                 <tr>
                     <th style={{ width: 'auto', textAlign: 'center' }}>#</th>
-                    <th style={{ width: '100%' }} nowrap='true'>Họ và tên</th>
-                    <th style={{ width: 'auto' }} nowrap='true'>Số CMND/CCCD</th>
+                    <th style={{ width: '100%' }} nowrap='true'>Số CMND/CCCD</th>
                     {subjectColumns}
                 </tr>),
             renderRow: (item, index) => (
                 <tr key={index}>
                     <TableCell type='number' content={index + 1} />
-                    <TableCell style={{ whiteSpace: 'nowrap' }} content={item.name} />
                     <TableCell style={{ whiteSpace: 'nowrap' }} content={item.identityCard} />
                     {item.diemThiTotNghiep.map(({ point }, idx) =>
                         <TableCell type='number' key={idx} style={{ textAlign: 'center' }} content={point} />)}

@@ -152,7 +152,7 @@ class AdminLearningProgressPage extends AdminPage {
                     <div className='tile-body'>
                         <div className='d-flex justify-content-between'>
                             <FormCheckbox ref={e => this.course = e} onChange={value => this.onChange(value)} label='Học viên đủ điều kiện thi hết môn' />
-                            <Link to={'/user/course/' + item._id + '/import-diem-thi-tot-nghiep'} className='btn btn-primary'>Nhập điểm thi tốt nghiệp</Link>
+                            <Link to={'/user/course/' + item._id + '/import-graduation-exam-score'} className='btn btn-primary'>Nhập điểm thi tốt nghiệp</Link>
                         </div>
                         {table}
                         {!isLecturer ? <Pagination name='adminLearningProgress' pageNumber={pageNumber} pageSize={pageSize} pageTotal={pageTotal} totalItem={totalItem} getPage={this.getPage} style={{ marginLeft: 45 }} /> : null}
