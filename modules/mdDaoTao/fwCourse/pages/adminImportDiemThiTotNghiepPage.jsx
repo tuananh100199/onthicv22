@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { getCourse, getLearningProgressPage, importScore } from '../redux';
 import { updateStudent } from 'modules/mdDaoTao/fwStudent/redux';
-import { AdminPage, FormTextBox, FormFileBox, TableCell, renderTable, CirclePageButton } from 'view/component/AdminPage';
+import { AdminPage, FormTextBox, FormFileBox, TableCell, renderTable } from 'view/component/AdminPage';
 import './style.scss';
 
 class AdminImportDiemThiTotNghiepPage extends AdminPage {
@@ -60,6 +60,12 @@ class AdminImportDiemThiTotNghiepPage extends AdminPage {
 
     }
 
+    onReUpload = (e) => {
+        this.setState({ data: [], isFileBoxHide: false });
+        this.change(e);
+    }
+
+
     save = () => {
         const { _id } = this.props.course.item || {};
         if (this.state.data) {
@@ -70,7 +76,6 @@ class AdminImportDiemThiTotNghiepPage extends AdminPage {
 
 
     onUploadSuccess = ({ data }) => {
-        console.log(data);
         const { monThiTotNghiep } = this.props.course && this.props.course.item,
             monThiTotNghiepIds = monThiTotNghiep.map(({ _id }) => _id);
         data.length && monThiTotNghiep.length && data.forEach(item => {
@@ -79,7 +84,7 @@ class AdminImportDiemThiTotNghiepPage extends AdminPage {
                 delete item.col;
             });
         });
-        this.setState({ data });
+        this.setState({ data, isFileBoxHide: true });
 
     }
 
@@ -96,10 +101,12 @@ class AdminImportDiemThiTotNghiepPage extends AdminPage {
         );
         const componentSetting = (
             <>
+                <h3 className='tile-title'>Thông số đầu vào</h3>
                 <div className='row'>
                     <FormTextBox className='col-md-3' ref={e => this.itemStartRow = e} label='Dòng bắt đầu' onChange={e => this.change(e)} />
                     <FormTextBox className='col-md-3' ref={e => this.itemEndRow = e} label='Dòng kết thúc' onChange={e => this.change(e)} />
                     <FormTextBox className='col-md-4' ref={e => this.itemIdentityCard = e} label='Cột CMND/CCCD' onChange={e => this.change(e)} />
+                    <h3 className='tile-title col-12'>Danh sách các cột môn thi</h3>
                     {listMonThi && listMonThi.length && listMonThi.map((monThi, index) =>
                         (<FormTextBox key={index} ref={e => this[monThi._id] = e} className='col-md-3' label={'Môn thi: ' + monThi.title} onChange={e => this.change(e)} />)
                     )}
@@ -140,10 +147,18 @@ class AdminImportDiemThiTotNghiepPage extends AdminPage {
                     </div>
                 </div>
                 {this.state.data && this.state.data.length ? <div className='tile'>
-                    <h3 className='tile-title'>Bảng điểm thi hết môn</h3>
+                    <h3 className='tile-title'>Danh sách điểm thi tốt nghiệp của học viên</h3>
                     {table}
-                </div> : null}
-                <CirclePageButton type='save' onClick={this.save} />
+                    <div className='tile-footer' style={{ textAlign: 'right' }}>
+                        <button className='btn btn-danger' type='button' style={{ marginRight: 10 }} onClick={this.onReUpload}>
+                            <i className='fa fa-fw fa-lg fa-cloud-upload' /> Upload lại
+                        </button>
+                        <button className='btn btn-primary' type='button' onClick={this.save}>
+                            <i className='fa fa-fw fa-lg fa-save' /> Lưu
+                        </button>
+                    </div>
+                </div>
+                    : null}
             </>,
             backRoute,
         });
