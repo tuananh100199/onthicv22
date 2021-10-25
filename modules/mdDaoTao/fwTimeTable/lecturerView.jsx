@@ -154,7 +154,7 @@ class TimeTableModal extends AdminModal {
     }
 
     render = () => {
-        const { loading, date, dateNumber, endHour, student, listTimeTable } = this.state;
+        const { loading, date, dateNumber, student, listTimeTable } = this.state;
         const table = renderTable({
             getDataSource: () => listTimeTable,
             renderHead: () => (
@@ -190,16 +190,15 @@ class TimeTableModal extends AdminModal {
                     <FormDatePicker className='col-12 col-md-4' ref={e => this.itemDate = e} label='Ngày học' onChange={this.onSelectDate} readOnly={this.props.readOnly} type='date-mask' required />
                     <FormTextBox className='col-6 col-md-4' ref={e => this.itemStartHour = e} label='Giờ bắt đầu' type='number' min='0' max='23' onChange={this.onChangeHour} readOnly={this.props.readOnly} required />
                     <FormTextBox className='col-6 col-md-4' ref={e => this.itemNumOfHours = e} label='Số giờ học' type='number' min='1' max='23' onChange={this.onChangeHour} readOnly={this.props.readOnly} required />
-                    <p className='col-12' style={{ visibility: date ? 'visible' : 'hidden' }}>
-                        {date == null ? '' : <>
-                            Học <span className='text-success'>{new Date(date).getDayText()} {new Date(date).getDateText()}</span>
-                            {endHour ? <> từ <span className='text-success'> {this.itemStartHour.value()}h - {endHour}h</span></> : ''}. </>}
-                        {dateNumber == null ? '' :
-                            (dateNumber == -1 ? <span className='text-danger'>Trùng thời khóa biểu!</span> : <>Buổi học thứ: <span className='text-primary'>{dateNumber}</span>.</>)}
-                    </p>
+                    
                     <div className='col-12' style={{ visibility: date &&  listTimeTable && listTimeTable.length ? 'visible' : 'hidden' }}>
                         {listTimeTable == null ? '' : <>
-                            <p>Lịch học</p> 
+                            <p> {dateNumber == null ? '' :
+                                (dateNumber == -1 ? <span className='text-danger'>Trùng thời khóa biểu!</span> : <>Buổi học thứ: <span className='text-primary'>{dateNumber}</span>.</>)}
+                            </p>
+                            <p>{date == null ? '' : <>
+                                Lịch học: <span className='text-success'>{new Date(date).getDayText()} {new Date(date).getDateText()}</span></>}
+                            </p>
                             {table}
                         </> }
                     </div>
