@@ -9,7 +9,7 @@ export class LecturerTimeTablePage extends AdminPage {
     state = {};
     componentDidMount() {
         T.ready('/user/course', () => {
-            const params = T.routeMatcher('/user/course/:_id/calendar').parse(window.location.pathname);
+            const params = T.routeMatcher('/user/course/:_id/lecturer/calendar').parse(window.location.pathname);
             if (params && params._id) {
                 const course = this.props.course ? this.props.course.item : null;
                 if (!course) {
@@ -27,16 +27,17 @@ export class LecturerTimeTablePage extends AdminPage {
     }
 
     render() {
+        const userId = this.props.system.user && this.props.system.user._id;
         const item = this.props.course && this.props.course.item ? this.props.course.item : {};
         const backRoute = `/user/course/${item._id}`;
         return this.renderPage({
             icon: 'fa fa-weixin',
-            title: 'Phòng chat chung: ' + item.name,
-            breadcrumb: [<Link key={0} to='/user/course'>Khóa học</Link>, item._id ? <Link key={0} to={backRoute}>{item.name}</Link> : '', 'Phòng chat chung'],
+            title: 'Thời khóa biểu: ' + item.name,
+            breadcrumb: [<Link key={0} to='/user/course'>Khóa học</Link>, item._id ? <Link key={0} to={backRoute}>{item.name}</Link> : '', 'Thời khóa biểu'],
             content: (
                 <div className='tile'>
                     <div className='tile-body'>
-                        {item && item._id ? <LecturerView courseId={item._id} courseType={item.courseType} /> : null}
+                        {item && item._id ? <LecturerView courseId={item._id} courseType={item.courseType} lecturerId={userId} /> : null}
                     </div>
                 </div>),
             backRoute,

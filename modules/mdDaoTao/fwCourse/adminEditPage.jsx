@@ -11,15 +11,12 @@ class EditCoursePage extends AdminPage {
         T.ready('/user/course', () => {
             const params = T.routeMatcher('/user/course/:_id').parse(window.location.pathname);
             if (params && params._id) {
-                const course = this.props.course ? this.props.course.item : null;
-                if (!course) {
-                    this.props.getCourse(params._id, data => {
-                        if (data.error) {
-                            T.notify('Lấy khóa học bị lỗi!', 'danger');
-                            this.props.history.push(backRoute);
-                        }
-                    });
-                }
+                this.props.getCourse(params._id, data => {
+                    if (data.error) {
+                        T.notify('Lấy khóa học bị lỗi!', 'danger');
+                        this.props.history.push(backRoute);
+                    }
+                });
             } else {
                 this.props.history.push(backRoute);
             }
@@ -57,9 +54,10 @@ class EditCoursePage extends AdminPage {
 
                     <PageIconHeader text='Đào tạo' />
                     <PageIcon visible={isLecturer} to={`/user/course/${item._id}/your-students`} icon='fa-graduation-cap' iconBackgroundColor='#18ffff' text='Học viên của bạn' />
-                    <PageIcon visible={isLecturer || isCourseAdmin || permission.write} to={`/user/course/${item._id}/learning`} icon='fa-line-chart' iconBackgroundColor='#69f0ae' text='Tiến độ học tập' />
-                    <PageIcon visible={isLecturer || isCourseAdmin || permission.write} to={`/user/course/${item._id}/rate-subject`} icon='fa-folder-open' iconBackgroundColor='#900' text='Đánh giá bài học' />
-                    <PageIcon visible={isLecturer || permission.write} to={`/user/course/${item._id}/calendar`} icon='fa-calendar' iconBackgroundColor='#8e24aa' text='Thời khoá biểu' />
+                    <PageIcon visible={isLecturer || isCourseAdmin} to={`/user/course/${item._id}/learning`} icon='fa-line-chart' iconBackgroundColor='#69f0ae' text='Tiến độ học tập' />
+                    <PageIcon visible={isLecturer || isCourseAdmin} to={`/user/course/${item._id}/rate-subject`} icon='fa-folder-open' iconBackgroundColor='#900' text='Đánh giá bài học' />
+                    <PageIcon visible={isLecturer} to={`/user/course/${item._id}/lecturer/calendar`} icon='fa-calendar' iconBackgroundColor='#8e24aa' text='Thời khoá biểu' />
+                    <PageIcon visible={isCourseAdmin} to={`/user/course/${item._id}/calendar`} icon='fa-calendar' iconBackgroundColor='#8e24aa' text='Thời khoá biểu' />
                 </div>
             ),
             backRoute,
