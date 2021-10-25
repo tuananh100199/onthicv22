@@ -34,6 +34,7 @@ module.exports = (app) => {
     app.get('/user/course/:_id/rate-subject', app.permission.check('course:read'), app.templates.admin);
     app.get('/user/course/:_id/chat-all', app.permission.check('user:login'), app.templates.admin);
     app.get('/user/course/:_id/chat', app.permission.check('user:login'), app.templates.admin);
+    app.get('/user/course/:_id/import-final-score', app.permission.check('course:read'), app.templates.admin);
 
     app.get('/user/hoc-vien/khoa-hoc/:_id', app.permission.check('user:login'), app.templates.admin);
     app.get('/user/hoc-vien/khoa-hoc/thong-tin/:_id', app.permission.check('user:login'), app.templates.admin);
@@ -873,6 +874,70 @@ module.exports = (app) => {
                     app.excel.attachment(workbook, res, 'Teacher and student.xlsx');
                 }
             });
+        }
+    });
+    // Hook upload final score excel---------------------------------------------------------------------------------------
+    app.uploadHooks.add('uploadExcelFinalScoreFile', (req, fields, files, params, done) => {
+        if (files.FinalScoreFile && files.FinalScoreFile.length > 0 && fields.userData && fields.userData.length > 0 && fields.userData[0].startsWith('FinalScoreFile:')) {
+            console.log('Hook: uploadExcelFinalScoreFile => your excel final score file upload');
+            const srcPath = files.FinalScoreFile[0].path;
+            app.excel.readFile(srcPath, workbook => {
+                app.deleteFile(srcPath);
+                if (workbook) {
+                    const userData = fields.userData[0], userDatas = userData.split(':'), worksheet = workbook.getWorksheet(1), data = [],
+                        // toDateObject = str => {
+                        //     const dateParts = str.split("/");
+                        //     return new Date(+dateParts[2], dateParts[1] - 1, +dateParts[0]);
+                        // },
+                        get = (row, col) => worksheet.getCell(`${col}${row}`).value;
+                    const handleUpload = (index = parseInt(userDatas[1])) => { //index =start
+                        if (index > parseInt(userDatas[2])) { // index to stop loop
+                            done({ data, notify: 'Tải lên file điểm thi hết môn thành công' });
+                        } else {
+                            data.push({
+                                identityCard: get(index, userDatas[3]),
+                                diemThiHetMon: userDatas.slice(4).map((col) => ({ col, point: get(index, col) })),
+                            });
+                            handleUpload(index + 1);
+                        }
+                    };
+                    handleUpload();
+                } else {
+                    done({ error: 'Đọc file Excel bị lỗi!' });
+                }
+            });
+        }
+    });
+
+    app.put('/api/course/import-final-score', app.permission.check('student:write'), (req, res) => {
+        const { scores, course } = req.body;
+        let err = null;
+        if (scores && scores.length > 0) {
+            const handleImportScore = (index = 0) => {
+                if (index == scores.length) {
+                    res.send({ error: err });
+                } else {
+                    const { identityCard, diemThiHetMon, diemTrungBinhThiHetMon } = scores[index];
+                    app.model.student.get({ identityCard, course }, (error, item) => {
+                        if (error || !item) {
+                            err = error;
+                            handleImportScore(index + 1);
+                        } else {
+                            item.diemThiHetMon = diemThiHetMon;
+                            item.diemTrungBinhThiHetMon = diemTrungBinhThiHetMon;
+                            item.save((error, student) => {
+                                if (error || !student) {
+                                    err = error;
+                                }
+                                handleImportScore(index + 1);
+                            });
+                        }
+                    });
+                }
+            };
+            handleImportScore();
+        } else {
+            res.send({ error: 'Danh sách điểm thi hết môn trống!' });
         }
     });
 
