@@ -104,7 +104,7 @@ class adminEditPage extends AdminPage {
                 </div>
 
                 <div className='tile'>
-                    <div className='tile-body'><CommentSection refParentId={courseId} refId={subjectId} /></div>
+                    <div className='tile-body'><CommentSection refParentId={courseId} refId={lessonId} /></div>
                 </div>
                 <TaiLieuThamKhaoModal ref={e => this.modalTaiLieuThamKhao = e} />
             </> : null,

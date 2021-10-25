@@ -87,11 +87,7 @@ class AdminLearningProgressPage extends AdminPage {
 
     onChange = (value) => {
         this.setState({ filterOn: value });
-        if (value) {
-            this.props.getLearningProgressPage(undefined, undefined, { courseId: this.state.courseId, filterOn: value });
-        } else {
-            this.props.getLearningProgressPage(undefined, undefined, { courseId: this.state.courseId, filterOn: value });
-        }
+        this.props.getLearningProgressPage(undefined, undefined, { courseId: this.state.courseId, filterOn: value });
     }
 
     render() {
@@ -150,9 +146,10 @@ class AdminLearningProgressPage extends AdminPage {
             content: <>
                 <div className='tile'>
                     <div className='tile-body'>
-                        <div className='d-flex justify-content-between'>
-                            <FormCheckbox ref={e => this.course = e} onChange={value => this.onChange(value)} label='Học viên đủ điều kiện thi hết môn' />
-                            <Link to={'/user/course/' + item._id + '/import-graduation-exam-score'} className='btn btn-primary'>Nhập điểm thi tốt nghiệp</Link>
+                        <div className='row'>
+                            <FormCheckbox className='col-md-6' ref={e => this.course = e} onChange={value => this.onChange(value)} label='Học viên đủ điều kiện thi hết môn' />
+                            <Link style={{ textAlign: 'right' }} className='col-md-3' to={`${backRoute}/import-final-score`}><button className='btn btn-primary'> Nhập điểm thi hết môn </button></Link>
+                            <Link to={'/user/course/' + item._id + '/import-graduation-exam-score'} className='col-md-3'><button className='btn btn-primary'>Nhập điểm thi tốt nghiệp</button></Link>
                         </div>
                         {table}
                         {!isLecturer ? <Pagination name='adminLearningProgress' pageNumber={pageNumber} pageSize={pageSize} pageTotal={pageTotal} totalItem={totalItem} getPage={this.getPage} style={{ marginLeft: 45 }} /> : null}

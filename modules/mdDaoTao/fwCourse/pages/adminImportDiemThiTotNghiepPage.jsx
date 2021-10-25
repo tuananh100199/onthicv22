@@ -3,12 +3,13 @@ import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { getCourse, getLearningProgressPage, importScore } from '../redux';
 import { updateStudent } from 'modules/mdDaoTao/fwStudent/redux';
-import { AdminPage, FormTextBox, FormFileBox, TableCell, renderTable } from 'view/component/AdminPage';
+import { AdminPage, FormTextBox, FormFileBox, TableCell, renderTable, FormCheckbox } from 'view/component/AdminPage';
 import './style.scss';
 
 class AdminImportDiemThiTotNghiepPage extends AdminPage {
-    itemMonThi = {};
-    state = { isFileBoxHide: true };
+    state = { isFileBoxHide: true, listDiemLiet: [] };
+    itemLiet = {};
+    // itemLietCol = {};
     componentDidMount() {
         T.ready('/user/course', () => {
             const params = T.routeMatcher('/user/course/:_id/import-graduation-exam-score').parse(window.location.pathname);
@@ -41,23 +42,44 @@ class AdminImportDiemThiTotNghiepPage extends AdminPage {
         this.itemIdentityCard.value('C');
         monThiTotNghiep.forEach((monThi, index) => {
             this[monThi._id].value(listColumn[index]);
+            this.itemLiet[monThi._id].value(monThi.diemLiet);
+            this.setState(prevState => ({
+                listDiemLiet: [...prevState.listDiemLiet, monThi.diemLiet]
+            }));
         });
     }
 
 
     change = (e) => {
-        e.preventDefault();
+        e && e.preventDefault();
         const { monThiTotNghiep } = this.props.course && this.props.course.item,
             monThiTotNghiepIds = monThiTotNghiep.map(({ _id }) => _id),
-            params = ['itemStartRow', 'itemEndRow', 'itemIdentityCard', ...(monThiTotNghiep.length && monThiTotNghiepIds)],
-            isFileBoxHide = params.some(item => this[item].value() == '');
+            listDiemLiet = this.state.listDiemLiet,
+            listDiemLietId = [];
+        monThiTotNghiep.forEach((item, index) => {
+            listDiemLiet[index] && listDiemLietId.push('Liet' + item._id);
+        });
+        let params = ['itemStartRow', 'itemEndRow', 'itemIdentityCard', ...(monThiTotNghiep.length && monThiTotNghiepIds)];
+        params = params.concat(listDiemLietId);
+        const isFileBoxHide = params.some(item => this[item].value() == '');
         this.setState({ isFileBoxHide }, () => {
             if (!this.state.isFileBoxHide) {
-                const userData = params.reduce((result, item) => `${result}:${this[item].value()}`, 'DiemThiTotNghiepFile');
+                const userData = params.reduce((result, item) => `${result}:${item.startsWith('Liet') ? item + '|' + this[item].value() : this[item].value()}`, 'DiemThiTotNghiepFile');
                 this.fileBox.setData(userData);
             }
         });
 
+    }
+
+    changeDiemLiet = (e, index) => {
+        this.setState(prevState => {
+            prevState.listDiemLiet[index] = e;
+            return {
+                listDiemLiet: prevState.listDiemLiet
+            };
+        }, () => {
+            this.change();
+        });
     }
 
     onReUpload = (e) => {
@@ -76,12 +98,12 @@ class AdminImportDiemThiTotNghiepPage extends AdminPage {
 
 
     onUploadSuccess = ({ data }) => {
-        const { monThiTotNghiep } = this.props.course && this.props.course.item,
-            monThiTotNghiepIds = monThiTotNghiep.map(({ _id }) => _id);
+        const { monThiTotNghiep } = this.props.course && this.props.course.item;
         data.length && monThiTotNghiep.length && data.forEach(item => {
-            item.diemThiTotNghiep.forEach(item => {
-                item.monThiTotNghiep = monThiTotNghiepIds.find(_id => this[_id].value() == item.col);
-                delete item.col;
+            item.diemThiTotNghiep.forEach(diemThi => {
+                diemThi.monThiTotNghiep = monThiTotNghiep.find(monThiTotNghiep => this[monThiTotNghiep._id].value() == diemThi.col);
+                diemThi.diemLiet = item.diemLiet.indexOf(diemThi.monThiTotNghiep._id) != -1;
+                delete diemThi.col;
             });
         });
         this.setState({ data, isFileBoxHide: true });
@@ -92,23 +114,31 @@ class AdminImportDiemThiTotNghiepPage extends AdminPage {
     render() {
         const item = this.props.course && this.props.course.item ? this.props.course.item : {};
         const listMonThi = item && item.monThiTotNghiep;
+        const listDiemLiet = this.state.listDiemLiet;
         const filebox = !this.state.isFileBoxHide && (
-            <>
+            <div className='tile'>
                 <h3 className='tile-title'>Import điểm thi tốt nghiệp</h3>
                 <FormFileBox ref={e => this.fileBox = e} uploadType='DiemThiTotNghiepFile'
                     onSuccess={this.onUploadSuccess} r />
-            </>
+            </div>
         );
         const componentSetting = (
             <>
                 <h3 className='tile-title'>Thông số đầu vào</h3>
                 <div className='row'>
-                    <FormTextBox className='col-md-3' ref={e => this.itemStartRow = e} label='Dòng bắt đầu' onChange={e => this.change(e)} />
-                    <FormTextBox className='col-md-3' ref={e => this.itemEndRow = e} label='Dòng kết thúc' onChange={e => this.change(e)} />
+                    <FormTextBox className='col-md-3' ref={e => this.itemStartRow = e} label='Dòng bắt đầu' onChange={e => this.change(e)} type='number' />
+                    <FormTextBox className='col-md-3' ref={e => this.itemEndRow = e} label='Dòng kết thúc' onChange={e => this.change(e)} type='number' />
                     <FormTextBox className='col-md-4' ref={e => this.itemIdentityCard = e} label='Cột CMND/CCCD' onChange={e => this.change(e)} />
                     <h3 className='tile-title col-12'>Danh sách các cột môn thi</h3>
                     {listMonThi && listMonThi.length && listMonThi.map((monThi, index) =>
-                        (<FormTextBox key={index} ref={e => this[monThi._id] = e} className='col-md-3' label={'Môn thi: ' + monThi.title} onChange={e => this.change(e)} />)
+                    (
+                        <div key={index} className='col-md-3'>
+                            <FormTextBox ref={e => this[monThi._id] = e} label={'Môn thi: ' + monThi.title} onChange={e => this.change(e)} />
+                            <FormCheckbox ref={e => this.itemLiet[monThi._id] = e} label={'Điểm liệt: ' + monThi.title} onChange={e => this.changeDiemLiet(e, index)} />
+                            {listDiemLiet && listDiemLiet[index] && <FormTextBox ref={e => this['Liet' + monThi._id] = e} label={'Điểm liệt: ' + monThi.title} onChange={e => this.change(e)} />}
+                        </div>
+
+                    )
                     )}
                 </div>
             </>);
@@ -128,8 +158,8 @@ class AdminImportDiemThiTotNghiepPage extends AdminPage {
                 <tr key={index}>
                     <TableCell type='number' content={index + 1} />
                     <TableCell style={{ whiteSpace: 'nowrap' }} content={item.identityCard} />
-                    {item.diemThiTotNghiep.map(({ point }, idx) =>
-                        <TableCell type='number' key={idx} style={{ textAlign: 'center' }} content={point} />)}
+                    {item.diemThiTotNghiep.map(({ point, diemLiet }, idx) =>
+                        <TableCell type='number' key={idx} style={{ textAlign: 'center' }} className={diemLiet ? 'text-danger' : ''} content={point} />)}
                 </tr>),
         });
 
@@ -143,9 +173,9 @@ class AdminImportDiemThiTotNghiepPage extends AdminPage {
                 <div className='tile'>
                     <div className='tile-body'>
                         {componentSetting}
-                        {filebox}
                     </div>
                 </div>
+                {filebox}
                 {this.state.data && this.state.data.length ? <div className='tile'>
                     <h3 className='tile-title'>Danh sách điểm thi tốt nghiệp của học viên</h3>
                     {table}

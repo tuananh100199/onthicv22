@@ -8,15 +8,29 @@ module.exports = (app) => {
     app.get('/user/notification', app.permission.check('user:login'), app.templates.admin);
 
     // APIs ------------------------------------------------------------------------------------------------------------
-    app.get('/api/notification/page/:pageNumber/:pageSize', (req, res) => {
+    app.get('/api/notification/page/:pageNumber/:pageSize', app.permission.check('user:login'), (req, res) => {
+        const user = req.session.user,
+            permissions = user && user.permissions && user.permissions.length ? user.permissions : [];
         const pageNumber = parseInt(req.params.pageNumber),
             pageSize = parseInt(req.params.pageSize);
-        app.model.notification.getPage(pageNumber, pageSize, {}, (error, page) => {
-            res.send({ page, error: error ? 'Danh sách thông báo không sẵn sàng!' : null });
-        });
+        if (user.isCourseAdmin || permissions.includes('notification:write')) {
+            app.model.notification.getPage(pageNumber, pageSize, {}, (error, page) => {
+                res.send({ page, error: error ? 'Danh sách thông báo không sẵn sàng!' : null });
+            });
+            // } else if (user.isCourseAdmin) {
+            //TODO
+        } else {
+            app.model.student.getAll({ user: user._id }, (error, students) => {
+                const _courseIds = [];
+                (students || []).forEach(student => student.course && _courseIds.push(student.course._id));
+                app.model.notification.getPage(pageNumber, pageSize, { course: { $in: _courseIds }, sentDate: { $ne: null } }, (error, page) => {
+                    res.send({ page, error: error ? 'Danh sách thông báo không sẵn sàng!' : null });
+                });
+            });
+        }
     });
 
-    app.post('/api/notification', app.permission.check('user:login'), (req, res) => {
+    app.post('/api/notification', app.permission.check('user:login'), (req, res) => { //TODO
         const user = req.session.user,
             permissions = user && user.permissions && user.permissions.length ? user.permissions : [];
         if (user.isCourseAdmin || permissions.includes('notification:write')) {
@@ -26,19 +40,24 @@ module.exports = (app) => {
         }
     });
 
-    app.put('/api/notification', app.permission.check('user:login'), (req, res) => {
+    app.put('/api/notification', app.permission.check('user:login'), (req, res) => { //TODO
         const user = req.session.user,
             permissions = user && user.permissions && user.permissions.length ? user.permissions : [];
         if (user.isCourseAdmin || permissions.includes('notification:write')) {
             const { _id, changes } = req.body;
             if (changes && changes.subjects && changes.subjects === 'empty') changes.subjects = [];
-            app.model.notification.update(_id, changes, (error, item) => res.send({ error, item }));
+            app.model.notification.update(_id, changes, (error, item) => {
+                if (!error && item && item.sentDate) {
+                    //TODO
+                }
+                res.send({ error, item });
+            });
         } else {
             res.send({ error: 'Bạn không có quyền!' });
         }
     });
 
-    app.delete('/api/notification', app.permission.check('notification:delete'), (req, res) => {
+    app.delete('/api/notification', app.permission.check('notification:delete'), (req, res) => { //TODO
         const { _id } = req.body;
         app.model.notification.delete(_id, (error) => res.send({ error }));
     });

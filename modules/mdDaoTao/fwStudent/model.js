@@ -48,6 +48,7 @@ module.exports = (app) => {
         diemThiTotNghiep: [{
             monThiTotNghiep: { type: app.db.Schema.ObjectId },
             point: Number,
+            diemLiet: { type: Boolean, default: false },
         }],
 
         diemThiHetMon: [{
@@ -174,7 +175,7 @@ module.exports = (app) => {
                     done(error);
                 } else if (data.view) {
                     const obj = {};
-                    if (student.tienDoHocTap[data.subjectId][data.lessonId]) {
+                    if (student.tienDoHocTap[data.subjectId] && student.tienDoHocTap[data.subjectId][data.lessonId]) {
                         student.tienDoHocTap[data.subjectId][data.lessonId].view = data.view;
                     } else {
                         obj[data.lessonId] = { view: data.view };
