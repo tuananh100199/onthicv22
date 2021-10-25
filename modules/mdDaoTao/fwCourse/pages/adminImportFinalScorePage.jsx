@@ -32,6 +32,7 @@ class ImportPage extends AdminPage {
 
     setInitialInput = (subjects) => {
         this.startRow.value(8);
+        this.endRow.focus();
         this.idCardCol.value('D');
         subjects.forEach(({ _id }, index) => {
             const col = String.fromCharCode('E'.charCodeAt() + index);
@@ -76,7 +77,7 @@ class ImportPage extends AdminPage {
     save = () => {
         const { _id } = this.props.course.item || {};
         if (this.state.data) {
-            this.props.importFinalScore(this.state.data, _id);
+            this.props.importFinalScore(this.state.data, _id, () => this.setState({ data: [], isFileBoxHide: false }));
         } else T.notify('Chưa có thông tin điểm thi hết môn của học viên!', 'danger');
     }
 
@@ -122,7 +123,7 @@ class ImportPage extends AdminPage {
                         {subjects.length > 0 ? subjects.map(({ _id, title }, index) => <FormTextBox key={index} ref={e => this[_id] = e} onChange={e => this.onChange(e)} label={'Môn ' + title} className='col-md-3' />) : ''}
                     </div>
                 </div>
-                {this.state.data ? <div className='tile'>
+                {this.state.data && this.state.data.length>0 ? <div className='tile'>
                     <h3 className='tile-title'>Danh sách điểm thi hết môn của học viên</h3>
                     {table}
                     <div className='tile-footer' style={{ textAlign: 'right' }}>
