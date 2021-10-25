@@ -87,11 +87,7 @@ class AdminLearningProgressPage extends AdminPage {
 
     onChange = (value) => {
         this.setState({ filterOn: value });
-        if (value) {
-            this.props.getLearningProgressPage(undefined, undefined, { courseId: this.state.courseId, filterOn: value });
-        } else {
-            this.props.getLearningProgressPage(undefined, undefined, { courseId: this.state.courseId, filterOn: value });
-        }
+        this.props.getLearningProgressPage(undefined, undefined, { courseId: this.state.courseId, filterOn: value });
     }
 
     render() {
@@ -150,7 +146,10 @@ class AdminLearningProgressPage extends AdminPage {
             content: <>
                 <div className='tile'>
                     <div className='tile-body'>
-                        <FormCheckbox ref={e => this.course = e} onChange={value => this.onChange(value)} label='Học viên đủ điều kiện thi hết môn' />
+                        <div className='row'>
+                            <FormCheckbox className='col-md-9' ref={e => this.course = e} onChange={value => this.onChange(value)} label='Học viên đủ điều kiện thi hết môn' />
+                            <Link style={{ textAlign: 'right' }} className='col-md-3' to={`${backRoute}/import-final-score`}><button className='btn btn-primary'> Nhập điểm thi hết môn </button></Link>
+                        </div>
                         {table}
                         {!isLecturer ? <Pagination name='adminLearningProgress' pageNumber={pageNumber} pageSize={pageSize} pageTotal={pageTotal} totalItem={totalItem} getPage={this.getPage} style={{ marginLeft: 45 }} /> : null}
                         {item._id ? <LearningProgressModal ref={e => this.modal = e} updateStudent={this.props.updateStudent} getLearningProgressPage={this.props.getLearningProgressPage} courseId={item._id} filterOn={this.state.filterOn} /> : null}

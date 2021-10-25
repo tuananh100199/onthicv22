@@ -2,6 +2,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import FeedbackSection from './FeedbackDetailSection';
 import { AdminPage } from 'view/component/AdminPage';
+import { Link } from 'react-router-dom';
 
 const backRoute = '/user/feedback/system';
 class AdminFeedbackSystemDetailPage extends AdminPage {
@@ -28,8 +29,9 @@ class AdminFeedbackSystemDetailPage extends AdminPage {
         return this.renderPage({
             icon: 'fa fa-comments-o',
             title: 'Phản hồi chi tiết',
-            breadcrumb: ['Phản hồi chi tiết'],
+            breadcrumb:[<Link key={0} to={backRoute}>Phản hồi</Link>, 'Phản hồi chi tiết'],
             content: _id && <FeedbackSection _id={_id} />,
+            backRoute,
         });
     }
 }

@@ -35,21 +35,21 @@ class FeedbackSection extends React.Component {
                     <th style={{ width: '40%' }}>Tên</th>
                     <th style={{ width: '30%' }} nowrap='true'>Thời gian</th>
                     <th style={{ width: '30%' }} nowrap='true'>Trạng thái</th>
-                    <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Thao tác</th>
+                    {/* <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Thao tác</th> */}
                 </tr>),
             renderRow: (item, index) => (
                 <tr key={index} style={{ fontWeight: item.isSeen == true ? 'normal' : 'bold' }}>
                     <TableCell type='number' content={index + 1} />
-                    <TableCell content={`${item.user && item.user.lastname} ${item.user && item.user.firstname}`} onClick={e => this.edit(e, item)} />
+                    <TableCell type='link' content={`${item.user && item.user.lastname} ${item.user && item.user.firstname}`} onClick={e => this.edit(e, item)} />
                     <TableCell content={T.dateToText(item.createdDate)} />
                     <TableCell content={item.replies && item.replies.length ? 'Đã trả lời' : 'Chưa trả lời'} />
-                    <TableCell type='buttons' content={item} onEdit={this.edit} />
+                    {/* <TableCell type='buttons' content={item} onEdit={this.edit} /> */}
                 </tr>),
         });
         return <>
             {table}
             <Pagination pageCondition={pageCondition} pageNumber={pageNumber} pageSize={pageSize} pageTotal={pageTotal} totalItem={totalItem}
-                getPage={this.props.getFeedbackPage} style={{ left: 320 }} />
+                getPage={this.props.getFeedbackPage} style={{ ...(this.props.type !== 'system' && { left: 320 }) }} />
         </>;
     }
 }

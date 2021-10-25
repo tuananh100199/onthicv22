@@ -233,17 +233,16 @@ export function changeLessonQuestions(data) {
 }
 
 // Lesson Rating ----------------------------------------------------------------------------------------------------
-export function rateLesson(lessonId, subjectId, courseId, rating, done) {
+export function viewLesson(lessonId, subjectId, courseId, view, done) {
     return () => {
-        const url = '/api/lesson/rating';
-        T.post(url, { lessonId, subjectId, courseId, rating }, data => {
+        const url = '/api/lesson/view';
+        T.post(url, { lessonId, subjectId, courseId, view }, data => {
             if (data.error) {
-                T.notify('Thêm đánh giá bị lỗi!', 'danger');
+                T.notify('Cập nhật bài thực hành bị lỗi!', 'danger');
                 console.error('GET: ' + url + '.', data.error);
             } else {
-                T.alert('Thêm đánh giá thành công!', 'success', true, 800);
-                done && done(data.result);
+                done && done(data);
             }
-        }, error => console.error(error) || T.notify('Thêm đánh giá bị lỗi!', 'danger'));
+        }, error => console.error(error) || T.notify('Cập nhật bài thực hành bị lỗi!', 'danger'));
     };
 }

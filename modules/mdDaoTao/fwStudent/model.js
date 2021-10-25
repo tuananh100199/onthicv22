@@ -45,6 +45,12 @@ module.exports = (app) => {
         duKienThangThi: Number,                                                                     // Dự kiến tháng thi
         duKienNamThi: Number,                                                                       // Dự kiến năm thi
 
+        diemThiHetMon: [{
+            subject: { type: app.db.Schema.ObjectId, ref: 'Subject' },
+            point: Number,
+        }],
+        diemTrungBinhThiHetMon: Number,
+
         createdDate: { type: Date, default: Date.now },                                             // Ngày tạo
         modifiedDate: { type: Date, default: Date.now },                                            // Ngày cập nhật cuối cùng
     });
@@ -161,12 +167,12 @@ module.exports = (app) => {
             app.model.student.get(data.studentId, (error, student) => {
                 if (error) {
                     done(error);
-                } else if (data.rating) {
+                } else if (data.view) {
                     const obj = {};
-                    if (student.tienDoHocTap[data.subjectId][data.lessonId]) {
-                        student.tienDoHocTap[data.subjectId][data.lessonId].rating = data.rating;
+                    if (student.tienDoHocTap[data.subjectId] && student.tienDoHocTap[data.subjectId][data.lessonId]) {
+                        student.tienDoHocTap[data.subjectId][data.lessonId].view = data.view;
                     } else {
-                        obj[data.lessonId].rating = data.rating;
+                        obj[data.lessonId] = { view: data.view };
                         Object.assign(student.tienDoHocTap[data.subjectId], obj);
                     }
                     model.findOneAndUpdate({ _id: data.studentId }, { tienDoHocTap: student.tienDoHocTap }, { new: true }).exec(done);

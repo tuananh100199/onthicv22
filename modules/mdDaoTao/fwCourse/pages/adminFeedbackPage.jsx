@@ -39,7 +39,7 @@ export class AdminFeedbackPage extends AdminPage {
         const item = this.props.course && this.props.course.item ? this.props.course.item : {};
         const backRoute = `/user/course/${item._id}`;
         return this.renderPage({
-            icon: 'fa fa-line-chart',
+            icon: 'fa fa-heartbeat',
             title: 'Phản hồi: ' + item.name,
             breadcrumb: [<Link key={0} to='/user/course'>Khóa học</Link>, item._id ? <Link key={0} to={backRoute}>{item.name}</Link> : '', 'Phản hồi'],
             content: (
