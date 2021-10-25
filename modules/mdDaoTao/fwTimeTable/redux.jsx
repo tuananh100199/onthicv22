@@ -78,10 +78,10 @@ export function getTimeTable(_id, done) {
     };
 }
 
-export function getTimeTableDateNumber(student, date, startHour, numOfHours, done) {
+export function getTimeTableDateNumber(_id, student, date, startHour, numOfHours, done) {
     return () => {
         const url = '/api/time-table/date-number';
-        T.get(url, { student, date, startHour, numOfHours }, data => {
+        T.get(url, { _id, student, date, startHour, numOfHours }, data => {
             if (data.error) {
                 T.notify('Lấy thời khóa biểu bị lỗi!', 'danger');
                 console.error(`GET: ${url}. ${data.error}`);

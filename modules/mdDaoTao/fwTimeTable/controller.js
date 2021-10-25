@@ -47,35 +47,46 @@ module.exports = (app) => {
     });
 
     app.get('/api/time-table/date-number', app.permission.check('timeTable:read'), (req, res) => {
-        let { student, date, startHour, numOfHours } = req.query,
+        let { _id, student, date, startHour, numOfHours } = req.query,
             dateTime = new Date(date).getTime();
         startHour = Number(startHour);
         numOfHours = Number(numOfHours);
         const endHour = startHour + numOfHours;
-
+        let currentList = null ;
         app.model.timeTable.getAll({ student }, (error, items) => {
+        new Promise((resolve) => {
             if (error) {
                 res.send({ error: 'Lỗi khi lấy dữ liệu thời khóa biểu' });
             } else {
-                let dateNumber = 1;
-                items = items || [];
-                for (let i = 0; i < items.length; i++) {
-                    const item = items[i],
-                    itemEndHour =  item.startHour + item.numOfHours;
-
-                    if (item.date.getTime() == dateTime && ((startHour >= item.startHour && startHour < itemEndHour) || (startHour < item.startHour && endHour > item.startHour))) {
-                        dateNumber = -1;
-                        break;
-                    } else if (item.date.getTime() <= dateTime && item.startHour <= startHour) {
-                        dateNumber++;
-                    }
-                    //  else {
-                    //     break;
-                    // }
+                currentList = items.map(item => app.clone(item));
+                if (_id) {
+                    app.model.timeTable.get(_id, (error, timeTable) => {
+                        if(timeTable) {
+                            currentList = currentList.filter(item => item._id != timeTable._id);
+                            resolve(currentList);
+                        }
+                    });
+                } else {
+                    resolve(currentList);
                 }
-                res.send({ dateNumber });
             }
+        }).then((currentList) => {
+            let dateNumber = 1;
+            currentList = currentList || [];
+            for (let i = 0; i < currentList.length; i++) {
+                const item = currentList[i],
+                itemEndHour =  item.startHour + item.numOfHours;
+                item.date = new Date(item.date);
+                if (item.date.getTime() == dateTime && ((startHour >= item.startHour && startHour < itemEndHour) || (startHour < item.startHour && endHour > item.startHour))) {
+                    dateNumber = -1;
+                    break;
+                } else if (item.date.getTime() <= dateTime && item.startHour <= startHour) {
+                    dateNumber++;
+                }
+            }
+            res.send({ dateNumber });
         });
+    });
     });
 
     app.post('/api/time-table', app.permission.check('timeTable:write'), (req, res) => {

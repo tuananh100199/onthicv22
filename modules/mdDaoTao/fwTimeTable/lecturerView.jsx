@@ -54,7 +54,7 @@ class TimeTableModal extends AdminModal {
         this.itemContent.value(content);
         this.itemNote.value(note);
 
-        this.setState({ loading: false, _id, student, dateNumber, date, endHour });
+        this.setState({ loading: false, _id, student, dateNumber, date, startHour, endHour });
         item ? this.props.getTimeTableOfLecturer({courseId: this.props.courseId, lecturerId: this.props.lecturerId, date: date }, data => {
             if (data.items){
                 this.setState({ listTimeTable: data.items }, () => this.getDateNumber());
@@ -87,7 +87,7 @@ class TimeTableModal extends AdminModal {
             } else if (data.licensePlates == '') {
                 T.notify('Xe học chưa được chọn!', 'danger');
                 this.itemLicensePlates.focus();
-            } else if (this.state.dateNumber == -1) {
+            } else if (!_id && this.state.dateNumber == -1) {
                 T.notify('Trùng thời khóa biểu!', 'danger');
                 this.itemStartHour.focus();
             } else {
@@ -104,7 +104,7 @@ class TimeTableModal extends AdminModal {
         }
     }
 
-    onChangeCourse = (data) => data && data.id && this.setState({ courseType: data.id }, () =>{
+    onChangeCourse = (data) => data && data.id && this.setState({ courseType: data.id }, () => {
         this.itemStudent.value(null);
     });
 
@@ -144,12 +144,12 @@ class TimeTableModal extends AdminModal {
     }
 
     getDateNumber = () => {
-        const { student } = this.state,
+        const { _id, student } = this.state,
             date = new Date(this.state.date),
             startHour = this.itemStartHour.value(),
             numOfHours = this.itemNumOfHours.value();
         if (student && date && startHour != null) {
-            this.props.getDateNumber(student._id, new Date(date.getFullYear(), date.getMonth(), date.getDate()), startHour,numOfHours, (dateNumber) => this.setState({ dateNumber }));
+            this.props.getDateNumber(_id, student._id, new Date(date.getFullYear(), date.getMonth(), date.getDate()), startHour,numOfHours, (dateNumber) => this.setState({ dateNumber }));
         }
     }
 
