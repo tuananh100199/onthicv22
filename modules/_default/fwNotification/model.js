@@ -2,6 +2,7 @@ module.exports = app => {
     const schema = app.db.Schema({
         type: String,                                               // Loại notification
         course: { type: app.db.Schema.ObjectId, ref: 'Course' },    // Khóa học
+        user: { type: app.db.Schema.ObjectId, ref: 'User' },        // Thông báo đến đúng cá nhân
 
         title: String,
         content: String,
