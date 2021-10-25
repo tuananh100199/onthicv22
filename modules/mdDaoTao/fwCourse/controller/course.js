@@ -910,35 +910,41 @@ module.exports = (app) => {
     });
 
     app.put('/api/course/import-final-score', app.permission.check('course:write'), (req, res) => {
-        const { scores, course } = req.body;
-        let err = null;
-        if (scores && scores.length > 0) {
-            const handleImportScore = (index = 0) => {
-                if (index == scores.length) {
-                    res.send({ error: err });
-                } else {
-                    const { identityCard, diemThiHetMon, diemTrungBinhThiHetMon } = scores[index];
-                    app.model.student.get({ identityCard, course }, (error, item) => {
-                        if (error || !item) {
-                            err = error;
-                            handleImportScore(index + 1);
-                        } else {
-                            item.diemThiHetMon = diemThiHetMon;
-                            item.diemTrungBinhThiHetMon = diemTrungBinhThiHetMon;
-                            item.save((error, student) => {
-                                if (error || !student) {
-                                    err = error;
-                                }
+        const sessionUser = req.session.user, division = sessionUser.division;
+        if (sessionUser && sessionUser.isCourseAdmin && division && !division.isOutside) {
+            const { scores, course } = req.body;
+            let err = null;
+            if (scores && scores.length > 0) {
+                const handleImportScore = (index = 0) => {
+                    if (index == scores.length) {
+                        res.send({ error: err });
+                    } else {
+                        const { identityCard, diemThiHetMon, diemTrungBinhThiHetMon } = scores[index];
+                        app.model.student.get({ identityCard, course }, (error, item) => {
+                            if (error || !item) {
+                                err = error;
                                 handleImportScore(index + 1);
-                            });
-                        }
-                    });
-                }
-            };
-            handleImportScore();
+                            } else {
+                                item.diemThiHetMon = diemThiHetMon;
+                                item.diemTrungBinhThiHetMon = diemTrungBinhThiHetMon;
+                                item.save((error, student) => {
+                                    if (error || !student) {
+                                        err = error;
+                                    }
+                                    handleImportScore(index + 1);
+                                });
+                            }
+                        });
+                    }
+                };
+                handleImportScore();
+            } else {
+                res.send({ error: 'Danh sách điểm thi hết môn trống!' });
+            }
         } else {
-            res.send({ error: 'Danh sách điểm thi hết môn trống!' });
+            res.send({ error: 'Bạn không có quyền import điểm thi hết môn!' });
         }
+
     });
 
     // Hook permissionHooks -------------------------------------------------------------------------------------------
