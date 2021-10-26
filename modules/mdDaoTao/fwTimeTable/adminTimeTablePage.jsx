@@ -20,7 +20,7 @@ export class AdminTimeTablePage extends AdminPage {
                             this.props.history.push('/user/course/' + params._id);
                         } else if (data.item) {
                             const listLecturer = data.item && data.item.teacherGroups && data.item.teacherGroups.length &&  data.item.teacherGroups.map(group => group.teacher); 
-                            listLecturer && listLecturer.length && this.setState({ currentLecturer: listLecturer[0], listLecturer: listLecturer, filterOn: false, key: listLecturer[0]});
+                            listLecturer && listLecturer.length && this.setState({ currentLecturer: listLecturer[0], listLecturer: listLecturer, filterOn: false, key: listLecturer[0], list: true, grid: false});
                         }
                     });
             } else {
@@ -38,7 +38,7 @@ export class AdminTimeTablePage extends AdminPage {
         this.setState({ currentLecturer: lecturer, key: !this.state.key});
     }
     render() {
-        const { currentLecturer, listLecturer, filterOn, key } = this.state;
+        const { currentLecturer, listLecturer, filterOn, key, grid, list } = this.state;
         const item = this.props.course && this.props.course.item ? this.props.course.item : {};
         const inboxTimeTable = listLecturer && listLecturer.length && listLecturer.map((lecturer, index) => {
             const isSelectedUser = currentLecturer && currentLecturer._id ==  lecturer._id;
@@ -74,9 +74,14 @@ export class AdminTimeTablePage extends AdminPage {
                             <div className='col-sm-9' >
                                 <div className='recent_heading pb-3'>
                                     <h4 style={{float: 'left'}}>{currentLecturer && currentLecturer.lastname + ' ' + currentLecturer.firstname }</h4>
-                                    <FormCheckbox ref={e => this.course = e} style={{float: 'right'}} onChange={value => this.onChange(value)} label='Hiển thị ngày hiện tại' />
+                                    <div style={{float: 'right', display: 'flex'}}>
+                                        <button style={{border: 'none', outlineColor: '#2189CF', marginRight: '3px'}} onClick={() => this.setState({grid: false, list: true})}><i className="fa fa-bars"></i> List</button>
+                                        <button style={{border: 'none', outlineColor: '#2189CF'}} onClick={() =>this.setState({grid: true, list: false})}><i className="fa fa-th-large"></i> Grid</button>
+                                        <FormCheckbox ref={e => this.course = e} style={{paddingLeft: '12px'}} onChange={value => this.onChange(value)} label='Hiển thị ngày hiện tại' />
+                                    </div>
                                 </div>
-                                {item && item._id ? <LecturerView  key={key} courseId={item._id} lecturerId={currentLecturer && currentLecturer._id} filterOn={filterOn}/> : null}
+                                {list && item && item._id ? <LecturerView  key={key} courseId={item._id} lecturerId={currentLecturer && currentLecturer._id} filterOn={filterOn}/> : null}
+                                {grid ? <>TODO</> : null}
                             </div>
                         </div>
                     </div>
