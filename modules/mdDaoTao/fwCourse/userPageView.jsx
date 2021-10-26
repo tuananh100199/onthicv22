@@ -78,13 +78,6 @@ class UserCoursePageDetail extends AdminPage {
                     <PageIcon to={`/user/hoc-vien/khoa-hoc/${courseId}/thoi-khoa-bieu`} icon='fa-calendar' iconBackgroundColor='#ffc107' text='Thời khóa biểu' />
                     {/* <PageIcon to={`/user/course/${courseId}/forum`} icon='fa-users' iconBackgroundColor='#8d6e63' text='Forum' /> */}
 
-                    <PageIcon to={`/user/chat/${courseId}`} icon='fa-comments-o' iconBackgroundColor='#28a745' text='Chat' visible={this.state.chatActive} />
-                    <PageIcon to={`/user/hoc-vien/khoa-hoc/${courseId}/phan-hoi`} icon='fa-commenting-o' iconBackgroundColor='#dc3545' text='Phản hồi' />
-                    <PageIcon to={''} icon='fa-star' iconBackgroundColor='orange' text='Đánh giá cố vấn học tập' visible={teacher != null}
-                        onClick={(e) => { e.preventDefault(); this.modal.show(); }} subtitle={rate ? rate + ' sao' : 'Chưa đánh giá'} />
-                    {/* check render */}
-                    {teacher && <RateModal ref={e => this.modal = e} title='Đánh giá cố vấn học tập' type='teacher' _refId={teacher._id} />}
-
                     {subjects.length ? <>
                         <PageIconHeader text='Môn học lý thuyết' />
                         {subjects.map((subject, index) =>
@@ -94,12 +87,19 @@ class UserCoursePageDetail extends AdminPage {
 
                     {subjects.length ? <>
                         <PageIconHeader text='Môn học thực hành' />
-                        {/* TODO: hiển thị môn học thực hành */}
-                        {/* <h4 style={{ width: '100%' }}>Môn học lý thuyết</h4> */}
                         {subjects.map((subject, index) =>
                             subject.monThucHanh && <PageIcon key={index} to={`/user/hoc-vien/khoa-hoc/${courseId}/mon-hoc/${subject._id}`} icon='fa-briefcase' iconBackgroundColor='#1488db' text={subject ? subject.title : ''} />
                         )}
                     </> : null}
+
+                    <PageIconHeader text='Phản hồi từ học viên' />
+                    <PageIcon to={`/user/hoc-vien/khoa-hoc/${courseId}/phan-hoi`} icon='fa-commenting-o' iconBackgroundColor='#dc3545' text='Phản hồi' />
+                    <PageIcon to={''} icon='fa-star' iconBackgroundColor='orange' text='Đánh giá cố vấn học tập' visible={teacher != null}
+                        onClick={(e) => { e.preventDefault(); this.modal.show(); }} subtitle={rate ? rate + ' sao' : 'Chưa đánh giá'} />
+                    <PageIcon to={`/user/chat/${courseId}`} icon='fa-comments-o' iconBackgroundColor='#28a745' text='Chat' visible={this.state.chatActive} />
+                    {/* check render */}
+                    {teacher && <RateModal ref={e => this.modal = e} title='Đánh giá cố vấn học tập' type='teacher' _refId={teacher._id} />}
+
                     <CirclePageButton type='custom' customClassName='btn-success' customIcon='fa-comments-o' onClick={() => this.props.history.push('/user/chat/' + this.state.courseId)} />
                 </div>
             ),

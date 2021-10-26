@@ -36,9 +36,10 @@ module.exports = (app) => {
                             if (error || !course) {
                                 res.send({ error: 'Invalid parameter!' });
                             } else {
-                                // const teacherGroups = course.teacherGroups.find(({ student }) => student.find(({ _id }) => _id == user) != null),
-                                //     _teacherId = teacherGroups && teacherGroups.teacher && teacherGroups.teacher._id;
-                                // req.body.newData._refId = _teacherId;
+                                const _studentId = student._id,
+                                    teacherGroups = course.teacherGroups.find(({ student }) => student.find(({ _id }) => _id == _studentId.toString()) != null),
+                                    _teacherId = teacherGroups && teacherGroups.teacher && teacherGroups.teacher._id;
+                                req.body.newData._refId = _teacherId;
                                 app.model.feedback.create(app.clone(req.body.newData, { user }), (error, item) => res.send({ error, item }));
                             }
                         });
@@ -52,15 +53,38 @@ module.exports = (app) => {
     app.get('/api/feedback/page/:pageNumber/:pageSize', app.permission.check('feedback:read'), (req, res) => {
         const pageNumber = parseInt(req.params.pageNumber),
             pageSize = parseInt(req.params.pageSize),
-            condition = req.query.pageCondition || {};
-        //         { type, _refId } = condition,
-        //         user = req.session.user;
+            condition = req.query.pageCondition || {},
+            { type, _refId } = condition,
+            user = req.session.user;
         try {
-            app.model.feedback.getPage(pageNumber, pageSize, condition, (error, page) => res.send({ error, page }));
+            if (type == 'system') {
+                if (user.roles.some(role => role.name == 'admin')) {
+                    app.model.feedback.getPage(pageNumber, pageSize, condition, (error, page) => res.send({ error, page }));
+                } else res.send({ error: 'Bạn không có quyền admin' });
+            } else if (type == 'course' || type == 'teacher') {
+                if (user.isCourseAdmin) {
+                    if (type == 'course')
+                        app.model.feedback.getPage(pageNumber, pageSize, condition, (error, page) => res.send({ error, page }));
+                    else if (type == 'teacher') {
+                        app.model.course.get(_refId, (error, course) => {
+                            if (error || !course) {
+                                res.send({ error: 'Invalid parameter!' });
+                            } else {
+                                const _teachers = course.teacherGroups.map(({ teacher }) => teacher),
+                                    _teacherIds = _teachers.map(({ _id }) => _id);
+                                condition._refId = { $in: _teacherIds };
+                                app.model.feedback.getPage(pageNumber, pageSize, condition, (error, page) => res.send({ error, page }));
+                            }
+                        });
+                    }
+                }
+            }
         } catch (error) {
             res.send({ error });
         }
     });
+
+
 
     app.get('/api/feedback/student/page/:pageNumber/:pageSize', app.permission.check('user:login'), (req, res) => { //mobile
         const pageNumber = parseInt(req.params.pageNumber),
@@ -81,7 +105,8 @@ module.exports = (app) => {
                                 if (error || !course) {
                                     res.send({ error: 'Invalid parameter!' });
                                 } else {
-                                    const teacherGroups = course.teacherGroups.find(({ student }) => student.find(({ _id }) => _id == user) != null),
+                                    const _studentId = student._id,
+                                    teacherGroups = course.teacherGroups.find(({ student }) => student.find(({ _id }) => _id == _studentId.toString()) != null),
                                         _teacherId = teacherGroups && teacherGroups.teacher && teacherGroups.teacher._id;
                                     condition._refId = _teacherId;
                                     app.model.feedback.getPage(pageNumber, pageSize, app.clone(condition, { user }), (error, page) => res.send({ error, page }));
@@ -101,30 +126,6 @@ module.exports = (app) => {
         const condition = { type: req.params.type, _refId: req.query._refId, user: req.session.user && req.session.user._id };
         app.model.feedback.getAll(condition, (error, items) => res.send({ error, items }));
     });
-
-    //         if (type == 'system') {
-    //             if (user.roles.some(role => role.name == 'admin')) {
-    //                 app.model.feedback.getPage(pageNumber, pageSize, condition, (error, page) => res.send({ error, page }));
-    //             } else res.send({ error: 'Bạn không có quyền admin' });
-    //         } else if (type == 'course' || type == 'teacher') {
-    //             if (user.isCourseAdmin) {
-    //                 if (type == 'course')
-    //                     app.model.feedback.getPage(pageNumber, pageSize, condition, (error, page) => res.send({ error, page }));
-    //                 else if (type == 'teacher') {
-    //                     app.model.course.get(_refId, (error, course) => {
-    //                         if (error || !course) {
-    //                             res.send({ error: 'Invalid parameter!' });
-    //                         } else {
-    //                             const _teachers = course.teacherGroups.map(({ teacher }) => teacher),
-    //                                 _teacherIds = _teachers.map(({ _id }) => _id);
-    //                             condition._refId = { $in: _teacherIds };
-    //                             console.log(condition);
-    //                             app.model.feedback.getPage(pageNumber, pageSize, condition, (error, page) => res.send({ error, page }));
-    //                         }
-    //                     });
-    //                 }
-    //             }
-    //         }
 
     // Hook permissionHooks -------------------------------------------------------------------------------------------
     app.permissionHooks.add('courseAdmin', 'feedback', (user) => new Promise(resolve => {
