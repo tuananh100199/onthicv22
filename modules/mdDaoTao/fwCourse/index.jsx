@@ -88,8 +88,12 @@ export default {
             component: Loadable({ loading: Loading, loader: () => import('./pages/adminLearningProgressPage') })
         },
         {
-            path: '/user/course/:_id/calendar',
+            path: '/user/course/:_id/lecturer/calendar',
             component: Loadable({ loading: Loading, loader: () => import('./pages/lecturerTimeTablePage') })
+        },
+        {
+            path: '/user/course/:_id/calendar',
+            component: Loadable({ loading: Loading, loader: () => import('modules/mdDaoTao/fwTimeTable/adminTimeTablePage') })
         },
         {
             path: '/user/course/:_id/rate-subject',
@@ -102,6 +106,10 @@ export default {
         {
             path: '/user/course/:_id/chat',
             component: Loadable({ loading: Loading, loader: () => import('./pages/adminChatPersonalPage') })
+        },
+        {
+            path: '/user/course/:_id/import-final-score',
+            component: Loadable({ loading: Loading, loader: () => import('./pages/adminImportFinalScorePage') })
         },
         {
             path: '/user/hoc-vien/khoa-hoc/:_id',

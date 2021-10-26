@@ -5,8 +5,9 @@ const CourseGetPage = 'CourseGetPage';
 const CourseGetItem = 'CourseGetItem';
 const CourseGetUserChat = 'CourseGetUserChat';
 const CourseGetPageByUser = 'CourseGetPageByUser';
+const CourseGetStudentByAdmin = 'CourseGetStudentByAdmin';
 const CourseUpdateStudentInfoInCourse = 'CourseUpdateStudentInfoInCourse';
-const CourseGetLearningProgressByAdmin = 'CourseGetLearningProgressByAdmin';
+const CourseGetLearningProgressPageByAdmin = 'CourseGetLearningProgressPageByAdmin';
 
 export default function courseReducer(state = {}, data) {
     switch (data.type) {
@@ -24,8 +25,13 @@ export default function courseReducer(state = {}, data) {
             return Object.assign({}, state, { user: data.user });
         }
 
-        case CourseGetLearningProgressByAdmin: {
-            return Object.assign({}, state, { students: data.students, subjects: data.subjects });
+        case CourseGetStudentByAdmin: {
+            return Object.assign({}, state, { students: data.students });
+        }
+
+
+        case CourseGetLearningProgressPageByAdmin: {
+            return Object.assign({}, state, { page: data.page, students: data.students, subjects: data.subjects });
         }
 
         case CourseUpdateStudentInfoInCourse: {
@@ -106,24 +112,46 @@ export function getCoursePage(courseType, pageNumber, pageSize, pageCondition, d
     };
 }
 
+const fetchCourse = (_id, done) => {
+    const url = '/api/course';
+    T.get(url, { _id }, data => {
+        if (data.error) {
+            T.notify('Lấy khóa học bị lỗi!', 'danger');
+            console.error('GET: ' + url + '.', data.error);
+        } else {
+            if (data.item) {
+                if (data.item.admins) data.item.admins = data.item.admins.sort((a, b) =>
+                    (a.firstname + ' ' + a.lastname).toLowerCase() > (b.firstname + ' ' + b.lastname).toLowerCase() ? +1 : -1);
+                if (data.item.representerGroups) data.item.representerGroups = data.item.representerGroups.sort((a, b) =>
+                    a.teacher == null || b.teacher == null || (a.teacher.firstname + ' ' + a.teacher.lastname).toLowerCase() > (b.teacher.firstname + ' ' + b.teacher.lastname).toLowerCase() ? +1 : -1);
+            }
+            done && done(data);
+        }
+    }, error => console.error(error) || T.notify('Lấy khóa học bị lỗi!', 'danger'));
+};
 export function getCourse(_id, done) {
     return dispatch => {
-        const url = '/api/course';
-        T.get(url, { _id }, data => {
-            if (data.error) {
-                T.notify('Lấy khóa học bị lỗi!', 'danger');
-                console.error('GET: ' + url + '.', data.error);
-            } else {
-                if (data.item) {
-                    if (data.item.admins) data.item.admins = data.item.admins.sort((a, b) =>
-                        (a.firstname + ' ' + a.lastname).toLowerCase() > (b.firstname + ' ' + b.lastname).toLowerCase() ? +1 : -1);
-                    if (data.item.representerGroups) data.item.representerGroups = data.item.representerGroups.sort((a, b) =>
-                        a.teacher == null || b.teacher == null || (a.teacher.firstname + ' ' + a.teacher.lastname).toLowerCase() > (b.teacher.firstname + ' ' + b.teacher.lastname).toLowerCase() ? +1 : -1);
-                }
-                done && done(data);
-                dispatch({ type: CourseGetItem, item: data.item });
-            }
-        }, error => console.error(error) || T.notify('Lấy khóa học bị lỗi!', 'danger'));
+        fetchCourse(_id, data => {
+            dispatch && dispatch({ type: CourseGetItem, item: data.item });
+            done && done(data);
+        });
+
+        // const url = '/api/course';
+        // T.get(url, { _id }, data => {
+        //     if (data.error) {
+        //         T.notify('Lấy khóa học bị lỗi!', 'danger');
+        //         console.error('GET: ' + url + '.', data.error);
+        //     } else {
+        //         if (data.item) {
+        //             if (data.item.admins) data.item.admins = data.item.admins.sort((a, b) =>
+        //                 (a.firstname + ' ' + a.lastname).toLowerCase() > (b.firstname + ' ' + b.lastname).toLowerCase() ? +1 : -1);
+        //             if (data.item.representerGroups) data.item.representerGroups = data.item.representerGroups.sort((a, b) =>
+        //                 a.teacher == null || b.teacher == null || (a.teacher.firstname + ' ' + a.teacher.lastname).toLowerCase() > (b.teacher.firstname + ' ' + b.teacher.lastname).toLowerCase() ? +1 : -1);
+        //         }
+        //         dispatch && dispatch({ type: CourseGetItem, item: data.item });
+        //         done && done(data);
+        //     }
+        // }, error => console.error(error) || T.notify('Lấy khóa học bị lỗi!', 'danger'));
     };
 }
 
@@ -340,7 +368,7 @@ export function getCourseByStudent(_id, done) {
 }
 
 // Lecturer -----------------------------------------------------------------------------------------------------------
-export function getStudentByLecturer(_id, done) {
+export function getStudentByAdmin(_id, done) {
     return dispatch => {
         const url = '/api/course/lecturer/student';
         T.get(url, { _id }, data => {
@@ -349,22 +377,24 @@ export function getStudentByLecturer(_id, done) {
                 console.error('GET: ' + url + '.', data.error);
             } else {
                 done && done(data);
-                dispatch({ type: CourseGetItem, item: data.item });
+                dispatch({ type: CourseGetStudentByAdmin, students: data.item });
             }
         }, error => console.error(error) || T.notify('Lấy khóa học bị lỗi!', 'danger'));
     };
 }
 
-export function getLearningProgress(_id, done) {
+T.initCookiePage('adminLearningProgress');
+export function getLearningProgressPage(pageNumber, pageSize, pageCondition, done) {
+    const page = T.updatePage('adminLearningProgress', pageNumber, pageSize);
     return dispatch => {
-        const url = '/api/course/learning-progress';
-        T.get(url, { _id }, data => {
+        const url = `/api/course/learning-progress/page/${page.pageNumber}/${page.pageSize}`;
+        T.get(url, { pageCondition }, data => {
             if (data.error) {
                 T.notify('Lấy tiến độ học tập bị lỗi!', 'danger');
-                console.error('GET: ' + url + '.', data.error);
+                console.error(`GET: ${url}. ${data.error}`);
             } else {
+                dispatch({ type: CourseGetLearningProgressPageByAdmin, page: data.page, students: data.students, subjects: data.subjects });
                 done && done(data);
-                dispatch({ type: CourseGetLearningProgressByAdmin, students: data.students, subjects: data.subjects });
             }
         }, error => console.error(error) || T.notify('Lấy tiến độ học tập bị lỗi!', 'danger'));
     };
@@ -386,6 +416,21 @@ export function getChatByAdmin(_id, done) {
     };
 }
 
+export function importFinalScore(scores, course, done) {
+    return () => {
+        const url = '/api/course/import-final-score';
+        T.put(url, { scores, course }, data => {
+            if (data.error) {
+                T.notify('Lưu điểm thi hết môn bị lỗi!', 'danger');
+                console.error(`POST: ${url}. ${data.error}`);
+            } else {
+                T.notify('Lưu điểm thi hết môn thành công!', 'success');
+                done && done(data);
+            }
+        }, error => console.error(error) || T.notify('Lưu điểm thi hết môn bị lỗi!', 'danger'));
+    };
+}
+
 
 // Export to Excel ----------------------------------------------------------------------------------------------------
 export function exportStudentInfoToExcel(_courseId) {
@@ -397,12 +442,22 @@ export function exportRepresenterAndStudentToExcel(_courseId) {
 export function exportTeacherAndStudentToExcel(_courseId) {
     T.download(T.url(`/api/course/teacher-student/export/${_courseId}`));
 }
-
+export function exportLearningProgressToExcel() {
+    T.download(T.url('/api/course/learning-progress/export'));
+}
 // Ajax Selections ----------------------------------------------------------------------------------------------------
 export const ajaxSelectCourse = {
     ajax: false,
     url: '/api/course/page/1/20',
     data: {},
     processResults: response => ({ results: response && response.page && response.page.list ? response.page.list.map(course => ({ id: course._id, text: course.name + (course.courseType ? ` (${course.courseType.title})` : '') })) : [] }),
-    fetchOne: (_id, done) => (getCourse(_id, ({ item }) => done && done({ id: item._id, text: item.name + (item.courseType ? ` (${item.courseType.title})` : '') })))()
+    // fetchOne: (_id, done) => (getCourse(_id, ({ item }) => done && done({ id: item._id, text: item.name + (item.courseType ? ` (${item.courseType.title})` : '') })))()
+    fetchOne: (_id, done) => fetchCourse(_id, ({ item }) => done && done({ id: item._id, text: item.name + (item.courseType ? ` (${item.courseType.title})` : '') }))
 };
+
+export const ajaxSelectStudentOfLecturer = (courseId, lecturerId) => T.createAjaxAdapter(
+    '/api/course/lecturer/student',
+    params => ({ condition: { courseId, lecturerId, title: params.term } }),
+    response => response && response.list ?
+        response.list.map(item => ({ id: item._id, text: `${item.lastname} ${item.firstname}` })) : [],
+);

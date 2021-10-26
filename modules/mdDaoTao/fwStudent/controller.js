@@ -6,7 +6,7 @@ module.exports = (app) => {
         }
     };
     app.permission.add(
-        { name: 'student:read' }, { name: 'student:write', menu }, { name: 'student:delete' }, { name: 'student:import' },
+        { name: 'student:read' }, { name: 'student:write' }, { name: 'student:delete', menu }, { name: 'student:import' },
         { name: 'pre-student:read', menu }, { name: 'pre-student:write' }, { name: 'pre-student:delete' }, { name: 'pre-student:import' },
     );
 
@@ -167,10 +167,7 @@ module.exports = (app) => {
                     const student = students[index];
                     student.division = req.body.division;
                     const dataPassword = convert(student.birthday),
-                        newUser = {
-                            ...student,
-                            password: dataPassword,
-                        };
+                        newUser = { ...student, password: dataPassword, active: true };
                     app.model.user.create(newUser, (error, user) => {
                         if (error && !user) {
                             err = error;
@@ -275,15 +272,17 @@ module.exports = (app) => {
                             done({ data });
                         } else {
                             const stringToDate = (values) => {
-                                return new Date(values.slice(6, 10), values.slice(3, 5) - 1, values.slice(0, 2));
+                                values = values ? values.trim() : '';
+                                return values.length >= 10 ? new Date(values.slice(6, 10), values.slice(3, 5) - 1, values.slice(0, 2)) : null;
                             };
+                            const email = values[4] && values[4] != undefined ? values[4].text : '';
                             data.push({
                                 id: index - 1,
                                 lastname: values[2],
                                 firstname: values[3],
-                                email: typeof values[4] == 'string' ? values[4] : values[4].text,
+                                email: email.text || email,
                                 phoneNumber: values[5],
-                                sex: values[6].toLowerCase().trim() == 'nam' ? 'male' : 'female',
+                                sex: values[6] && values[6].toLowerCase().trim() == 'nam' ? 'male' : 'female',
                                 birthday: stringToDate(values[7]),
                                 nationality: values[8],
                                 residence: values[9],
@@ -294,10 +293,10 @@ module.exports = (app) => {
                                 giayPhepLaiXe2BanhSo: values[14],
                                 giayPhepLaiXe2BanhNgay: stringToDate(values[15]),
                                 giayPhepLaiXe2BanhNoiCap: values[16],
-                                giayKhamSucKhoe: values[17] ? (values[17].toLowerCase().trim() == 'x' ? true : false) : false,
-                                giayKhamSucKhoeNgayKham: values[17] ? (values[17].toLowerCase().trim() == 'x' ? stringToDate(values[18]) : null) : null,
-                                hinhThe3x4: values[19] ? (values[19].toLowerCase().trim() == 'x' ? true : false) : false,
-                                hinhChupTrucTiep: values[20] ? (values[20].toLowerCase().trim() == 'x' ? true : false) : false,
+                                giayKhamSucKhoe: values[17] && values[17].toLowerCase().trim() == 'x' ? true : false,
+                                giayKhamSucKhoeNgayKham: values[17] && values[17].toLowerCase().trim() == 'x' ? stringToDate(values[18]) : null,
+                                hinhThe3x4: values[19] && values[19].toLowerCase().trim() == 'x' ? true : false,
+                                hinhChupTrucTiep: values[20] && values[20].toLowerCase().trim() == 'x' ? true : false,
                             });
                             handleUpload(index + 1);
                         }

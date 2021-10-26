@@ -11,36 +11,18 @@ module.exports = (app) => {
                     if (error || !course) {
                         res.send({ error: 'Invalid parameter!' });
                     } else {
-                        const _teacherIds = course.teacherGroups.map(item => item.teacher && item.teacher._id);
+                        const _teachers = course.teacherGroups.map(({ teacher }) => teacher),
+                            _teacherIds = _teachers.map(({ _id }) => _id);
                         if (_teacherIds) {
                             condition._refId = { $in: _teacherIds };
                             delete condition._courseId;
                             app.model.rate.getPage(pageNumber, pageSize, condition, (error, page) => {
-                                new Promise((resolve, reject) => {
-                                    if (error) {
-                                        reject(error);
-                                    } else {
-                                        let count = 0;
-                                        const list = [...page.list];
-                                        page.list = [];
-                                        list.forEach(item => {
-                                            app.model.user.get(item._refId, (error, user) => {
-                                                if (error) {
-                                                    res.send({ error });
-                                                } else {
-                                                    item = app.clone(item, { _refId: user });
-                                                    page.list.push(item);
-                                                    count++;
-                                                    if (count == list.length) {
-                                                        resolve(page);
-                                                    }
-                                                }
-                                            });
-                                        });
-                                    }
-                                }).then((page) => {
+                                if (error) {
+                                    res.send({ error });
+                                } else {
+                                    page.list = page.list.map(item => ({ ...item._doc, _refId: _teachers.find(({ _id }) => item._refId == _id.toString()) }));
                                     res.send({ page });
-                                }).catch(error => res.send(error));
+                                }
                             });
                         }
                     }
@@ -77,7 +59,6 @@ module.exports = (app) => {
                         if (item && item.length) {
                             condition.user = { $in: item.map(item => item.user._id) };
                         }
-                        console.log(condition);
                         app.model.rate.getAll(condition, (error, item) => res.send({ error, item }));
                     }
                 });

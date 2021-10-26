@@ -9,46 +9,10 @@ import { AdminPage, AdminModal, FormFileBox, FormCheckbox, FormDatePicker, FormT
 class EditModal extends AdminModal {
     state = {};
     onShow = (item) => {
-        let { id,
-            firstname,
-            lastname,
-            email,
-            phoneNumber,
-            sex,
-            birthday,
-            nationality,
-            residence,
-            regularResidence,
-            identityCard,
-            identityIssuedBy,
-            identityDate,
-            giayPhepLaiXe2BanhSo,
-            giayPhepLaiXe2BanhNgay,
-            giayPhepLaiXe2BanhNoiCap,
-            giayKhamSucKhoe,
-            giayKhamSucKhoeNgayKham,
-            hinhThe3x4,
-            hinhChupTrucTiep } = item ||
-            {
-                firstname: '',
-                lastname: '',
-                email: '',
-                phoneNumber: '',
-                sex: '',
-                birthday: '',
-                nationality: '',
-                residence: '',
-                regularResidence: '',
-                identityCard: '',
-                identityIssuedBy: '',
-                identityDate: '',
-                giayPhepLaiXe2BanhSo: '',
-                giayPhepLaiXe2BanhNgay: '',
-                giayPhepLaiXe2BanhNoiCap: '',
-                giayKhamSucKhoe: '',
-                giayKhamSucKhoeNgayKham: '',
-                hinhThe3x4: '',
-                hinhChupTrucTiep: ''
+        let { id, firstname, lastname, email, phoneNumber, sex, birthday, nationality, residence, regularResidence, identityCard, identityIssuedBy, identityDate,
+            giayPhepLaiXe2BanhSo, giayPhepLaiXe2BanhNgay, giayPhepLaiXe2BanhNoiCap, giayKhamSucKhoe, giayKhamSucKhoeNgayKham, hinhThe3x4, hinhChupTrucTiep } = item || {
+                firstname: '', lastname: '', email: '', phoneNumber: '', sex: '', birthday: '', nationality: '', residence: '', regularResidence: '', identityCard: '', identityIssuedBy: '', identityDate: '',
+                giayPhepLaiXe2BanhSo: '', giayPhepLaiXe2BanhNgay: '', giayPhepLaiXe2BanhNoiCap: '', giayKhamSucKhoe: '', giayKhamSucKhoeNgayKham: '', hinhThe3x4: '', hinhChupTrucTiep: ''
             };
         this.setState({ id: id, className: giayKhamSucKhoe ? 'col-md-6' : 'invisible' });
         this.itemFirstname.value(firstname);

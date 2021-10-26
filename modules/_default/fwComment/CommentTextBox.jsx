@@ -25,7 +25,7 @@ class CommentTextBox extends React.Component {
                 return 0;
             }
 
-            $(this.commentArea).on('keyup', (event) => {
+            $(this.commentArea).on('keyup', function (event) {
                 if (event.keyCode == 13) {
                     let content = this.value;
                     let caret = getCaret(this);
@@ -38,14 +38,18 @@ class CommentTextBox extends React.Component {
                 }
             });
 
-            $(this.commentArea).on('keydown', (event) => {
+            $(this.commentArea).on('keydown', function (event) {
                 if (event.keyCode == 13 && !event.shiftKey) {
                     event.preventDefault();
                 }
             });
 
-            $(this.commentArea).on('input', () => {
-                const currentRows = Math.ceil((this.scrollHeight - 20 * 2) / (14 * 1.42857143));
+            $(this.commentArea).on('input', function () {
+                // Set textAreaHeight
+                // font-size: 14px;
+                // line-height: 1.5
+                // padding: 6px
+                const currentRows = Math.ceil((this.scrollHeight - 6 * 2) / (14 * 1.5));
                 if (_this.props.maxRows && currentRows <= _this.props.maxRows) {
                     this.style.height = 'auto';
                     this.style.height = (this.scrollHeight + 3) + 'px';
@@ -66,6 +70,8 @@ class CommentTextBox extends React.Component {
             if (comment) {
                 $(this.commentArea).val(comment.content);
                 $(this.commentArea).trigger('input');
+                $(this.buttons).css({ opacity: 1, height: '32px' });
+                $(this.sendButton).css({ opacity: 1 });
             }
         });
     }
@@ -85,7 +91,6 @@ class CommentTextBox extends React.Component {
             refParentId, refId,
             content: $(this.commentArea).val()
         };
-        console.log(data);
 
         if (!data.content) {
             T.notify('Vui lòng nhập nội dung bình luận!', 'danger');
@@ -96,13 +101,22 @@ class CommentTextBox extends React.Component {
                 data.author = comment.author._id;
                 onUpdate && onUpdate(comment._id, data, (item) => {
                     $(this.commentArea).val('');
-                    onChange && onChange('update', item);
+                    if (item.state == 'approved') {
+                        onChange && onChange('update', item);
+                    } else {
+                        onChange && onChange('delete', item);
+                        T.alert('Bình luận của bạn đã được cập nhật và cần được duyệt lại!', 'info', false, 2000);
+                    }
                     onCancel && onCancel();
                 });
             } else {
                 onCreate(parentId || null, data, (item) => {
                     $(this.commentArea).val('');
-                    onChange && onChange('create', item);
+                    if (item.state == 'approved') {
+                        onChange && onChange('create', item);
+                    } else {
+                        T.alert('Bình luận của bạn đã được gửi đi và cần được duyệt!', 'info', false, 2000);
+                    }
                     onCancel && onCancel();
                 });
             }

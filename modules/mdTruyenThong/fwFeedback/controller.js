@@ -36,7 +36,8 @@ module.exports = (app) => {
                             if (error || !course) {
                                 res.send({ error: 'Invalid parameter!' });
                             } else {
-                                const teacherGroups = course.teacherGroups.find(({ student }) => student.find(({ _id }) => _id == user) != null),
+                                const _studentId = student._id,
+                                    teacherGroups = course.teacherGroups.find(({ student }) => student.find(({ _id }) => _id == _studentId.toString()) != null),
                                     _teacherId = teacherGroups && teacherGroups.teacher && teacherGroups.teacher._id;
                                 req.body.newData._refId = _teacherId;
                                 app.model.feedback.create(app.clone(req.body.newData, { user }), (error, item) => res.send({ error, item }));
@@ -50,18 +51,43 @@ module.exports = (app) => {
     });
 
     app.get('/api/feedback/page/:pageNumber/:pageSize', app.permission.check('feedback:read'), (req, res) => {
-        let pageNumber = parseInt(req.params.pageNumber),
+        const pageNumber = parseInt(req.params.pageNumber),
             pageSize = parseInt(req.params.pageSize),
-            condition = req.query.pageCondition || {};
+            condition = req.query.pageCondition || {},
+            { type, _refId } = condition,
+            user = req.session.user;
         try {
-            app.model.feedback.getPage(pageNumber, pageSize, condition, (error, page) => res.send({ error, page }));
+            if (type == 'system') {
+                if (user.roles.some(role => role.name == 'admin')) {
+                    app.model.feedback.getPage(pageNumber, pageSize, condition, (error, page) => res.send({ error, page }));
+                } else res.send({ error: 'Bạn không có quyền admin' });
+            } else if (type == 'course' || type == 'teacher') {
+                if (user.isCourseAdmin) {
+                    if (type == 'course')
+                        app.model.feedback.getPage(pageNumber, pageSize, condition, (error, page) => res.send({ error, page }));
+                    else if (type == 'teacher') {
+                        app.model.course.get(_refId, (error, course) => {
+                            if (error || !course) {
+                                res.send({ error: 'Invalid parameter!' });
+                            } else {
+                                const _teachers = course.teacherGroups.map(({ teacher }) => teacher),
+                                    _teacherIds = _teachers.map(({ _id }) => _id);
+                                condition._refId = { $in: _teacherIds };
+                                app.model.feedback.getPage(pageNumber, pageSize, condition, (error, page) => res.send({ error, page }));
+                            }
+                        });
+                    }
+                }
+            }
         } catch (error) {
             res.send({ error });
         }
     });
 
+
+
     app.get('/api/feedback/student/page/:pageNumber/:pageSize', app.permission.check('user:login'), (req, res) => { //mobile
-        let pageNumber = parseInt(req.params.pageNumber),
+        const pageNumber = parseInt(req.params.pageNumber),
             pageSize = parseInt(req.params.pageSize),
             condition = req.query.pageCondition || {},
             { type, _refId } = condition,
@@ -79,7 +105,8 @@ module.exports = (app) => {
                                 if (error || !course) {
                                     res.send({ error: 'Invalid parameter!' });
                                 } else {
-                                    const teacherGroups = course.teacherGroups.find(({ student }) => student.find(({ _id }) => _id == user) != null),
+                                    const _studentId = student._id,
+                                    teacherGroups = course.teacherGroups.find(({ student }) => student.find(({ _id }) => _id == _studentId.toString()) != null),
                                         _teacherId = teacherGroups && teacherGroups.teacher && teacherGroups.teacher._id;
                                     condition._refId = _teacherId;
                                     app.model.feedback.getPage(pageNumber, pageSize, app.clone(condition, { user }), (error, page) => res.send({ error, page }));

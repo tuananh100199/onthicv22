@@ -78,7 +78,7 @@ module.exports = (app) => {
                     image.write(app.path.join(app.publicPath, url), (error) => {
                         done({
                             uploaded: error == null,
-                            url,
+                            url, width: '80%', height: ' ',
                             error: { message: error ? 'Upload has errors!' : '' },
                         });
                     });

@@ -74,6 +74,21 @@ export function updateComment(_id, changes, done) {
     };
 }
 
+export function approveComment(_id, state, done) {
+    return () => {
+        const url = '/api/comment-approval';
+        T.put(url, { _id, state }, data => {
+            if (data.error) {
+                T.notify('Duyệt bình luận bị lỗi!', 'danger');
+                console.error('PUT: ' + url + '.', data.error);
+                done && done(data.error);
+            } else {
+                done && done(data.item);
+            }
+        }, error => console.error(error) || T.notify('Duyệt bình luận bị lỗi!', 'danger'));
+    };
+}
+
 export function deleteComment(comment, done) {
     return () => {
         const url = '/api/comment';

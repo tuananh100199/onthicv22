@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { deleteComment, getCommentScope } from './redux';
+import { approveComment, deleteComment, getCommentScope } from './redux';
 import CommentTextBox from './CommentTextBox';
 
 class Comment extends React.Component {
@@ -30,6 +30,30 @@ class Comment extends React.Component {
         const replyEditMode = this.state.replyEditMode;
         replyEditMode[_id] = false;
         this.setState({ replyEditMode });
+    }
+
+    approve = (e, _id, status) => {
+        e.preventDefault();
+        T.confirm('Duyệt bình luận', `Bạn có chắc muốn <strong>${status == 'approved' ? 'duyệt' : 'từ chối'}</strong> bình luận này?`, 'info', isConfirm => {
+            if (isConfirm) {
+                this.props.approveComment(_id, status, (item) => {
+                    T.alert(`${status == 'approved' ? 'Duyệt ' : 'Từ chối '} bình luận thành công!`, 'success', false, 800);
+                    this.props.onChange('update', item);
+                });
+            }
+        });
+    }
+
+    approveReply = (e, _id, status) => {
+        e.preventDefault();
+        T.confirm('Duyệt bình luận', `Bạn có chắc muốn <strong>${status == 'approved' ? 'duyệt' : 'từ chối'}</strong> bình luận này?`, 'info', isConfirm => {
+            if (isConfirm) {
+                this.props.approveComment(_id, status, (item) => {
+                    T.alert(`${status == 'approved' ? 'Duyệt ' : 'Từ chối '} bình luận thành công!`, 'success', false, 800);
+                    this.onChange('update', item);
+                });
+            }
+        });
     }
 
     reply = (e) => {
@@ -80,14 +104,16 @@ class Comment extends React.Component {
         const { editMode, replyEditMode } = this.state;
         const { comment = {}, user, refParentId, refId, onChange } = this.props || {};
         const author = comment.author || {}, replies = comment.replies || [], totalReplies = comment.totalReplies || 0;
-        const hasPermission = (user && author && author._id == user._id) || (user && user.permissions && user.permissions.includes('comment:write'));
+        const permissionWrite = user && ((author && author._id == user._id) || (user.isCourseAdmin) || (user.permissions && user.permissions.includes('comment:write')));
+        const permissionDelete = user && ((author && author._id == user._id) || (user.isCourseAdmin) || (user.permissions && user.permissions.includes('comment:delete')));
+        const permissionApprove = user && (user.isCourseAdmin || (user.permissions && user.permissions.includes('comment:write')));
         return <>
             <li>
-                <div className='comments-details'>
+                <div className={'comments-details ' + comment.state}>
                     <div className='comments-list-img' style={{ backgroundImage: `url('${author.image || '/img/avatar-default.png'}')` }} />
                     <div className='comments-content-wrap'>
                         <span>
-                            <b><a href='#' onClick={e => e.preventDefault()}>{author.lastname} {author.firstname}</a></b>
+                            <b><a href='#' onClick={e => e.preventDefault()}>{author.lastname} {author.firstname} &nbsp;</a></b>
                             <span className='post-time'>{new Date(comment.createdDate).getShortText()}</span>
                         </span>
                         {!editMode ?
@@ -98,8 +124,10 @@ class Comment extends React.Component {
                         <div ref={e => this.controlText = e}>
                             {comment.updatedDate && comment.createdDate != comment.updatedDate && <><small className='text-muted'>Đã chỉnh sửa</small><br /></>}
                             {user && user._id && <><small className='text-primary' style={{ cursor: 'pointer' }} onClick={e => this.reply(e)}>Trả lời</small>&nbsp;&nbsp;&nbsp;</>}
-                            {hasPermission && <><small className='text-blue' style={{ cursor: 'pointer' }} onClick={e => this.edit(e, 'editComment', 'controlText')}>Chỉnh sửa</small>&nbsp;&nbsp;&nbsp;</>}
-                            {hasPermission && <small className='text-danger' style={{ cursor: 'pointer' }} onClick={e => this.delete(e, comment, false)}>Xoá</small>}
+                            {permissionWrite && <><small className='text-blue' style={{ cursor: 'pointer' }} onClick={e => this.edit(e, 'editComment', 'controlText')}>Chỉnh sửa</small>&nbsp;&nbsp;&nbsp;</>}
+                            {permissionDelete && <><small className='text-danger' style={{ cursor: 'pointer' }} onClick={e => this.delete(e, comment, false)}>Xoá</small>&nbsp;&nbsp;&nbsp;</>}
+                            {permissionApprove && comment.state == 'waiting' && <><small className='text-success' style={{ cursor: 'pointer' }} onClick={e => this.approve(e, comment._id, 'approved')}>Duyệt</small>&nbsp;&nbsp;&nbsp;</>}
+                            {permissionApprove && comment.state == 'waiting' && <><small className='text-danger' style={{ cursor: 'pointer' }} onClick={e => this.approve(e, comment._id, 'reject')}>Từ chối</small>&nbsp;&nbsp;&nbsp;</>}
                         </div>
                     </div>
                 </div>
@@ -109,15 +137,17 @@ class Comment extends React.Component {
             </li>
             {replies.map((comment, index) => {
                 const author = comment.author || {};
-                const hasPermission = (user && author && author._id == user._id) || (user && user.permissions && user.permissions.includes('comment:write'));
+                const permissionWrite = user && ((author && author._id == user._id) || (user.isCourseAdmin) || (user.permissions && user.permissions.includes('comment:write')));
+                const permissionDelete = user && ((author && author._id == user._id) || (user.isCourseAdmin) || (user.permissions && user.permissions.includes('comment:delete')));
+                const permissionApprove = user && (user.isCourseAdmin || (user.permissions && user.permissions.includes('comment:write')));
                 const editMode = replyEditMode[comment._id] == true;
                 return (
                     <li key={index} className='threaded-comments'>
-                        <div className='comments-details'>
+                        <div className={'comments-details ' + comment.state}>
                             <div className='comments-list-img' style={{ backgroundImage: `url('${author.image || '/img/avatar-default.png'}')` }} />
                             <div className='comments-content-wrap'>
                                 <span>
-                                    <b><a href='#' onClick={e => e.preventDefault()}>{author.lastname} {author.firstname}</a></b>
+                                    <b><a href='#' onClick={e => e.preventDefault()}>{author.lastname} {author.firstname} &nbsp;</a></b>
                                     <span className='post-time'>{new Date(comment.createdDate).getShortText()}</span>
                                 </span>
                                 {!editMode ?
@@ -126,8 +156,10 @@ class Comment extends React.Component {
                                 }
                                 <div ref={e => this['controlText' + comment._id] = e}>
                                     {comment.updatedDate && comment.createdDate != comment.updatedDate && <><small className='text-muted' style={{ cursor: 'pointer' }}>Đã chỉnh sửa</small><br /></>}
-                                    {hasPermission && <><small className='text-blue' style={{ cursor: 'pointer' }} onClick={e => this.editReply(e, comment._id, 'editComment' + comment._id, 'controlText' + comment._id)}>Chỉnh sửa</small>&nbsp;&nbsp;&nbsp;</>}
-                                    {hasPermission && <small className='text-danger' style={{ cursor: 'pointer' }} onClick={e => this.delete(e, comment, true)}>Xoá</small>}
+                                    {permissionWrite && <><small className='text-blue' style={{ cursor: 'pointer' }} onClick={e => this.editReply(e, comment._id, 'editComment' + comment._id, 'controlText' + comment._id)}>Chỉnh sửa</small>&nbsp;&nbsp;&nbsp;</>}
+                                    {permissionDelete && <><small className='text-danger' style={{ cursor: 'pointer' }} onClick={e => this.delete(e, comment, true)}>Xoá&nbsp;&nbsp;&nbsp;</small></>}
+                                    {permissionApprove && comment.state == 'waiting' && <><small className='text-success' style={{ cursor: 'pointer' }} onClick={e => this.approveReply(e, comment._id, 'approved')}>Duyệt</small>&nbsp;&nbsp;&nbsp;</>}
+                                    {permissionApprove && comment.state == 'waiting' && <><small className='text-danger' style={{ cursor: 'pointer' }} onClick={e => this.approveReply(e, comment._id, 'reject')}>Từ chối</small>&nbsp;&nbsp;&nbsp;</>}
                                 </div>
                             </div>
                         </div>
@@ -143,5 +175,5 @@ class Comment extends React.Component {
 }
 
 const mapStateToProps = state => ({ system: state.system, user: state.system ? state.system.user : null });
-const mapActionsToProps = { onDelete: deleteComment, getCommentScope };
+const mapActionsToProps = { onDelete: deleteComment, approveComment, getCommentScope };
 export default connect(mapStateToProps, mapActionsToProps, null, { forwardRef: true })(Comment);

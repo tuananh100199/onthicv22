@@ -32,7 +32,7 @@ class AdminFeedbackSystemDetailPage extends AdminPage {
         const backRoute = `/user/course/${item._id}/feedback`;
         const { _feedbackId } = this.state;
         return this.renderPage({
-            icon: 'fa fa-line-chart',
+            icon: 'fa fa-heartbeat',
             title: 'Phản hồi chi tiết: ' + item.name,
             breadcrumb: [<Link key={0} to='/user/course'>Khóa học</Link>, item._id ? <Link key={1} to={`/user/course/${item._id}`}>{item.name}</Link> : '',
             _feedbackId ? <Link key={2} to={backRoute}>Phản hồi</Link>:'' ,'Phản hồi chi tiết'],

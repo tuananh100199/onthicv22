@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { getLessonByStudent, rateLesson } from './redux';
+import { getLessonByStudent, viewLesson } from './redux';
 import { getStudentScore } from '../fwStudent/redux';
 import YouTube from 'react-youtube';
 import { Link } from 'react-router-dom';
@@ -19,6 +19,9 @@ class adminEditPage extends AdminPage {
                     T.notify('Lấy bài học bị lỗi!', 'danger');
                     this.props.history.push('/user');
                 } else if (data.item) {
+                    if (data.item.questions && !data.item.questions.length) {
+                        this.props.viewLesson(params._id, params.subjectId, params.courseId, true);
+                    }
                     T.ready('/user/hoc-vien/khoa-hoc/' + params.courseId);
                     this.props.getStudentScore(params.courseId, data => {
                         if (data.error) {
@@ -79,7 +82,7 @@ class adminEditPage extends AdminPage {
                 </div>
 
                 <div className='tile'>
-                    <div className='tile-body'><CommentSection refParentId={courseId} refId={subjectId} /></div>
+                    <div className='tile-body'><CommentSection refParentId={courseId} refId={lessonId} /></div>
                 </div>
             </> : null,
             backRoute: userPageLink,
@@ -88,5 +91,5 @@ class adminEditPage extends AdminPage {
 }
 
 const mapStateToProps = state => ({ system: state.system, lesson: state.trainning.lesson });
-const mapActionsToProps = { getLessonByStudent, getStudentScore, rateLesson };
+const mapActionsToProps = { getLessonByStudent, getStudentScore, viewLesson };
 export default connect(mapStateToProps, mapActionsToProps)(adminEditPage);

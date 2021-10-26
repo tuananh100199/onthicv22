@@ -35,12 +35,13 @@ class ChatPage extends AdminPage {
             { title: 'Phòng chat chung', component: <UserAllChat /> },
             { title: 'Phòng chat cá nhân', component: <UserPersonalChat /> },
         ];
+        const backRoute = isAdmin ? `/user/course/${this.state.courseId}` : `/user/hoc-vien/khoa-hoc/${this.state.courseId}`;
         return this.renderPage({
             icon: 'fa fa-comments-o',
             title: 'Chat',
             breadcrumb: [<a key={0} href='#' onClick={() => this.props.history.goBack()}>Khóa học</a>, 'Chat'],
             content: <FormTabs id='courseEditPageTab' contentClassName='tile' tabs={isAdmin ? adminTabs : userTabs} />,
-            onBack: () => this.props.history.goBack(),
+            backRoute,
         });
     }
 }

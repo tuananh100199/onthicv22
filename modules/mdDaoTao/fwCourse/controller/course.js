@@ -27,13 +27,15 @@ module.exports = (app) => {
     app.get('/user/course/:_id/representer', app.permission.check('course:read'), app.templates.admin);
     app.get('/user/course/:_id/rate-teacher', app.permission.check('course:read'), app.templates.admin);
     app.get('/user/course/:_id/feedback', app.permission.check('course:read'), app.templates.admin);
-    app.get('/user/course/:_id/feedback/:_feedbackId', app.permission.check('course:read'), app.templates.admin);   
+    app.get('/user/course/:_id/feedback/:_feedbackId', app.permission.check('course:read'), app.templates.admin);
     app.get('/user/course/:_id/your-students', app.permission.check('course:read'), app.templates.admin);
     app.get('/user/course/:_id/learning', app.permission.check('course:read'), app.templates.admin);
     app.get('/user/course/:_id/calendar', app.permission.check('course:read'), app.templates.admin);
+    app.get('/user/course/:_id/lecturer/calendar', app.permission.check('course:read'), app.templates.admin);
     app.get('/user/course/:_id/rate-subject', app.permission.check('course:read'), app.templates.admin);
     app.get('/user/course/:_id/chat-all', app.permission.check('user:login'), app.templates.admin);
     app.get('/user/course/:_id/chat', app.permission.check('user:login'), app.templates.admin);
+    app.get('/user/course/:_id/import-final-score', app.permission.check('course:write'), app.templates.admin);
 
     app.get('/user/hoc-vien/khoa-hoc/:_id', app.permission.check('user:login'), app.templates.admin);
     app.get('/user/hoc-vien/khoa-hoc/thong-tin/:_id', app.permission.check('user:login'), app.templates.admin);
@@ -120,7 +122,9 @@ module.exports = (app) => {
         });
     });
 
-    app.get('/api/course', app.permission.check('course:read'), (req, res) => getCourseData(req.query._id, req.session.user, (error, item) => res.send({ error, item })));
+    app.get('/api/course', app.permission.check('user:login'), (req, res) => {
+        getCourseData(req.query._id, req.session.user, (error, item) => res.send({ error, item }));
+    });
 
     app.post('/api/course', app.permission.check('course:write'), (req, res) => {
         app.model.course.create(req.body.data || {}, (error, item) => res.send({ error, item }));
@@ -164,9 +168,9 @@ module.exports = (app) => {
                 delete changes.courseFee;
                 changes.courseFees = courseFees;
                 app.model.course.update(req.body._id, changes, () => getCourseData(req.body._id, req.session.user, (error, course) => {
-                    const item = {};
-                    course && Object.keys(changes).forEach(key => item[key] = course[key]);
-                    res.send({ error, item });
+                    // const item = {};
+                    // course && Object.keys(changes).forEach(key => item[key] = course[key]);
+                    res.send({ error, item: course });
                 }));
             }
         });
@@ -398,36 +402,139 @@ module.exports = (app) => {
 
     // Lecturer API
     app.get('/api/course/lecturer/student', app.permission.check('course:read'), (req, res) => {
-        const userId = req.session.user._id;
-        app.model.course.get(req.query._id, (error, item) => {
+        const { courseId, lecturerId } = req.query.condition;
+        app.model.course.get(courseId, (error, item) => {
             if (error || !item) {
                 res.send({ error });
             } else {
-                const listStudent = item.teacherGroups.filter(teacherGroup => teacherGroup.teacher && teacherGroup.teacher._id == userId);
-                res.send({ error, item: listStudent.length ? listStudent[0].student : null });
+                const listStudent = item.teacherGroups.filter(teacherGroup => teacherGroup.teacher && teacherGroup.teacher._id == lecturerId);
+                res.send({ error, list: listStudent.length ? listStudent[0].student : null });
             }
         });
     });
 
-    app.get('/api/course/learning-progress', app.permission.check('course:write'), (req, res) => {
-        const sessionUser = req.session.user;
+    app.get('/api/course/learning-progress/page/:pageNumber/:pageSize', app.permission.check('course:write'), (req, res) => {
+        const pageNumber = parseInt(req.params.pageNumber),
+            pageSize = parseInt(req.params.pageSize),
+            sessionUser = req.session.user,
+            condition = req.query.pageCondition || {},
+            pageCondition = { course: condition.courseId || { $ne: null } },
+            filterOn = JSON.parse(condition.filterOn);
         let listStudent = [],
-            subjects = [], err = null;
+            subjects = [], err = null, pageReturn = {};
+
         new Promise(resolve => {
             if (sessionUser.isCourseAdmin) {
-                app.model.student.getAll({ course: req.query._id }, (error, items) => {
+                if (condition.searchText) {
+                    const value = { $regex: `.*${condition.searchText}.*`, $options: 'i' };
+                    pageCondition.$or = [
+                        { firstname: value },
+                        { lastname: value },
+                    ];
+                }
+                app.model.student.getPage(pageNumber, pageSize, pageCondition, (error, page) => {
                     err = error;
-                    if (error || !items) {
+                    if (error || !page) {
                         res.send({ error });
                     } else {
-                        listStudent = items.map(item => item = app.clone(item));
+                        pageReturn = page;
+                        page = app.clone(page);
+                        listStudent = page && page.list ? page.list.map(item => item = app.clone(item)) : [];
+                        subjects = listStudent.length && listStudent[0].course && listStudent[0].course.subjects ? listStudent[0].course.subjects : [];
+                        resolve();
+                    }
+                });
+            } else if (sessionUser.isLecturer) {
+                app.model.course.get(condition.courseId, (error, item) => {
+                    err = error;
+                    if (error || !item) {
+                        res.send({ error });
+                    } else {
+                        item = app.clone(item);
+                        const studentTeacherGroup = item.teacherGroups.find(teacherGroup => teacherGroup.teacher && teacherGroup.teacher._id == sessionUser._id);
+                        listStudent = studentTeacherGroup ? studentTeacherGroup.student : [];
+                        subjects = item.subjects ? item.subjects : [];
+                        resolve();
+                    }
+                });
+            }
+        }).then(() => {
+            const monLyThuyet = subjects.filter(subject => subject.monThucHanh == false);
+            let listStudentReturn = listStudent.map((student => {
+                student = app.clone(student, { subject: {} });
+                subjects.forEach(subject => {
+                    const diemMonHoc =
+                        student && student.tienDoHocTap && student.tienDoHocTap[subject._id] && !subject.monThucHanh ?
+                            Number((Object.entries(student.tienDoHocTap[subject._id]).reduce((lessonNext, lesson) =>
+                                Number(lesson[1].score) / Object.keys(lesson[1].trueAnswers).length * 10 + lessonNext, 0)) / subject.lessons.length).toFixed(1) : 0;
+                    const completedLessons = (subject && student.tienDoHocTap && student.tienDoHocTap[subject._id] ?
+                        (Object.keys(student.tienDoHocTap[subject._id]).length > subject.lessons.length ?
+                            subject.lessons.length :
+                            Object.keys(student.tienDoHocTap[subject._id]).length)
+                        : 0);
+                    const obj = {};
+                    obj[subject._id] = {
+                        completedLessons: completedLessons,
+                        numberLessons: subject.lessons.length ? subject.lessons.length : 0,
+                        diemMonHoc: diemMonHoc
+                    };
+                    student.subject = app.clone(student.subject, obj);
+                });
+                const diemLyThuyet = Number((monLyThuyet.reduce((subjectNext, subject) =>
+                    (subject && student.tienDoHocTap && student.tienDoHocTap[subject._id] ?
+                        Number((Object.keys(student.tienDoHocTap[subject._id]).length ?
+                            Object.entries(student.tienDoHocTap[subject._id]).reduce((lessonNext, lesson) =>
+                                Number(lesson[1].score) / Object.keys(lesson[1].trueAnswers).length * 10 + lessonNext, 0) ?
+                                (Number(Object.entries(student.tienDoHocTap[subject._id]).reduce((lessonNext, lesson) =>
+                                    Number(lesson[1].score) / Object.keys(lesson[1].trueAnswers).length * 10 + lessonNext, 0)) / subject.lessons.length).toFixed(1) : 0
+                            : 0))
+                        : 0) + subjectNext, 0) / monLyThuyet.length).toFixed(1));
+
+                const diemThucHanh = student.diemThucHanh ? Number(student.diemThucHanh) : 0;
+                if (filterOn) {
+                    const diemTB = ((diemLyThuyet + diemThucHanh) / 2).toFixed(1);
+                    if (5 <= diemTB) {
+                        return app.clone(student, { diemLyThuyet, diemThucHanh });
+                    }
+                } else {
+                    return app.clone(student, { diemLyThuyet, diemThucHanh });
+                }
+            }));
+            res.send({ error: err, page: pageReturn ? pageReturn : null, students: listStudentReturn.filter(item => item), subjects });
+        });
+    });
+
+    app.get('/api/course/learning-progress/export', app.permission.check('course:export'), (req, res) => {
+        const pageNumber = parseInt(req.params.pageNumber),
+            pageSize = parseInt(req.params.pageSize),
+            sessionUser = req.session.user,
+            condition = req.query.pageCondition || {},
+            pageCondition = { course: condition.courseId || { $ne: null } };
+
+        let listStudent = [],
+            subjects = [];
+
+        new Promise(resolve => {
+            if (sessionUser.isCourseAdmin) {
+                if (condition.searchText) {
+                    const value = { $regex: `.*${condition.searchText}.*`, $options: 'i' };
+                    pageCondition.$or = [
+                        { firstname: value },
+                        { lastname: value },
+                    ];
+                }
+                app.model.student.getPage(pageNumber, pageSize, pageCondition, (error, page) => {
+                    if (error || !page) {
+                        res.send({ error });
+                    } else {
+                        page = app.clone(page);
+                        listStudent = page && page.list ? page.list.map(item => item = app.clone(item)) : [];
                         subjects = listStudent.length && listStudent[0].course && listStudent[0].course.subjects ? listStudent[0].course.subjects : [];
                         resolve();
                     }
                 });
             } else if (sessionUser.isLecturer) {
                 app.model.course.get(req.query._id, (error, item) => {
-                    err = error;
                     if (error || !item) {
                         res.send({ error });
                     } else {
@@ -472,10 +579,42 @@ module.exports = (app) => {
                         : 0) + subjectNext, 0) / monLyThuyet.length).toFixed(1));
 
                 const diemThucHanh = student.diemThucHanh ? Number(student.diemThucHanh) : 0;
-                return app.clone(student, { diemLyThuyet, diemThucHanh });
+                const diemTB = ((diemLyThuyet + diemThucHanh) / 2).toFixed(1);
+                if (diemTB >= 5) return app.clone(student, { diemLyThuyet, diemThucHanh });
             }));
+            const workbook = app.excel.create(), worksheet = workbook.addWorksheet('LearningProgress');
+            const cells = [
+                { cell: 'A1', value: 'STT', bold: true, border: '1234' },
+                { cell: 'B1', value: 'Họ', bold: true, border: '1234' },
+                { cell: 'C1', value: 'Tên', bold: true, border: '1234' },
+                { cell: 'D1', value: 'CMND/CCCD', bold: true, border: '1234' },
+                { cell: 'E1', value: 'Điểm lý thuyết', bold: true, border: '1234' },
+                { cell: 'F1', value: 'Điểm thực hành', bold: true, border: '1234' },
+                { cell: 'G1', value: 'Điểm trung bình', bold: true, border: '1234' },
+            ];
 
-            res.send({ error: err, students: listStudentReturn, subjects });
+            worksheet.columns = [
+                { header: 'STT', key: 'id', width: 15 },
+                { header: 'Họ', key: 'lastname', width: 20 },
+                { header: 'Tên', key: 'firstname', width: 20 },
+                { header: 'CMND/CCCD', key: 'identityCard', width: 20 },
+                { header: 'Điểm lý thuyết', key: 'diemLyThuyet', width: 20 },
+                { header: 'Điểm thực hành', key: 'diemThucHanh', width: 20 },
+                { header: 'Điểm trung bình', key: 'diemTB', width: 20 },
+            ];
+            listStudentReturn.filter(item => item).forEach((item, index) => {
+                worksheet.addRow({
+                    id: index + 1,
+                    lastname: item.lastname,
+                    firstname: item.firstname,
+                    identityCard: item.identityCard,
+                    diemLyThuyet: item.diemLyThuyet,
+                    diemThucHanh: item.diemThucHanh,
+                    diemTB: ((item.diemLyThuyet + item.diemThucHanh) / 2).toFixed(1),
+                });
+            });
+            app.excel.write(worksheet, cells);
+            app.excel.attachment(workbook, res, 'LearningProgress.xlsx');
         });
     });
 
@@ -738,15 +877,85 @@ module.exports = (app) => {
             });
         }
     });
+    // Hook upload final score excel---------------------------------------------------------------------------------------
+    app.uploadHooks.add('uploadExcelFinalScoreFile', (req, fields, files, params, done) => {
+        if (files.FinalScoreFile && files.FinalScoreFile.length > 0 && fields.userData && fields.userData.length > 0 && fields.userData[0].startsWith('FinalScoreFile:')) {
+            console.log('Hook: uploadExcelFinalScoreFile => your excel final score file upload');
+            const srcPath = files.FinalScoreFile[0].path;
+            app.excel.readFile(srcPath, workbook => {
+                app.deleteFile(srcPath);
+                if (workbook) {
+                    const userData = fields.userData[0], userDatas = userData.split(':'), worksheet = workbook.getWorksheet(1), data = [],
+                        // toDateObject = str => {
+                        //     const dateParts = str.split("/");
+                        //     return new Date(+dateParts[2], dateParts[1] - 1, +dateParts[0]);
+                        // },
+                        get = (row, col) => worksheet.getCell(`${col}${row}`).value;
+                    const handleUpload = (index = parseInt(userDatas[1])) => { //index =start
+                        if (index > parseInt(userDatas[2])) { // index to stop loop
+                            done({ data, notify: 'Tải lên file điểm thi hết môn thành công' });
+                        } else {
+                            data.push({
+                                identityCard: get(index, userDatas[3]),
+                                diemThiHetMon: userDatas.slice(4).map((col) => ({ col, point: get(index, col) })),
+                            });
+                            handleUpload(index + 1);
+                        }
+                    };
+                    handleUpload();
+                } else {
+                    done({ error: 'Đọc file Excel bị lỗi!' });
+                }
+            });
+        }
+    });
+
+    app.put('/api/course/import-final-score', app.permission.check('course:write'), (req, res) => {
+        const sessionUser = req.session.user, division = sessionUser.division;
+        if (sessionUser && sessionUser.isCourseAdmin && division && !division.isOutside) {
+            const { scores, course } = req.body;
+            let err = null;
+            if (scores && scores.length > 0) {
+                const handleImportScore = (index = 0) => {
+                    if (index == scores.length) {
+                        res.send({ error: err });
+                    } else {
+                        const { identityCard, diemThiHetMon, diemTrungBinhThiHetMon } = scores[index];
+                        app.model.student.get({ identityCard, course }, (error, item) => {
+                            if (error || !item) {
+                                err = error;
+                                handleImportScore(index + 1);
+                            } else {
+                                item.diemThiHetMon = diemThiHetMon;
+                                item.diemTrungBinhThiHetMon = diemTrungBinhThiHetMon;
+                                item.save((error, student) => {
+                                    if (error || !student) {
+                                        err = error;
+                                    }
+                                    handleImportScore(index + 1);
+                                });
+                            }
+                        });
+                    }
+                };
+                handleImportScore();
+            } else {
+                res.send({ error: 'Danh sách điểm thi hết môn trống!' });
+            }
+        } else {
+            res.send({ error: 'Bạn không có quyền import điểm thi hết môn!' });
+        }
+
+    });
 
     // Hook permissionHooks -------------------------------------------------------------------------------------------
     app.permissionHooks.add('courseAdmin', 'course', (user) => new Promise(resolve => {
-        app.permissionHooks.pushUserPermission(user, 'course:read', 'course:write');
+        app.permissionHooks.pushUserPermission(user, 'course:read', 'course:write', 'course:export');
         resolve();
     }));
 
     app.permissionHooks.add('lecturer', 'course', (user) => new Promise(resolve => {
-        app.permissionHooks.pushUserPermission(user, 'course:read', 'course:write', 'student:write', 'student:read');
+        app.permissionHooks.pushUserPermission(user, 'course:read', 'course:write', 'course:export', 'student:write', 'student:read');
         resolve();
     }));
 };

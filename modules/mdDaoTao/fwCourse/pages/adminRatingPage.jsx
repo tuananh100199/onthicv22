@@ -1,25 +1,23 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
-import { getCourse, getLearningProgress } from '../redux'; // TODO: lỗi Vinh coi lại hàm này
+import { getCourse, getLearningProgressPage } from '../redux'; // TODO: lỗi Vinh coi lại hàm này
 import { getSubject } from 'modules/mdDaoTao/fwSubject/redux';
 import { getRateStudentByAdmin } from 'modules/_default/fwRate/redux';
 import { AdminPage, FormSelect, renderTable, TableCell, AdminModal } from 'view/component/AdminPage';
+import Pagination from 'view/component/Pagination';
 import './style.scss';
+
 class ViewNoteModal extends AdminModal {
     state = {};
-    onShow = (item) => {
-        this.setState({
-            item
-        });
-    }
-    render = () => {
-        return this.renderModal({
-            title: 'Đánh giá của học viên',
-            body: <p>{this.state.item}</p>
-        });
-    }
+    onShow = (item) => this.setState({ item });
+
+    render = () => this.renderModal({
+        title: 'Đánh giá của học viên',
+        body: <p>{this.state.item}</p>
+    });
 }
+
 class LecturerRatingPage extends AdminPage {
     state = {};
     componentDidMount() {
@@ -28,7 +26,9 @@ class LecturerRatingPage extends AdminPage {
             if (params && params._id) {
                 const course = this.props.course ? this.props.course.item : null;
                 if (course) {
-                    this.getLearningProgress(course._id);
+                    this.getLearningProgress(course._id, () => {
+                        course.subjects && this.itemSubject.value(course.subjects[0]._id);
+                    });
                     this.loadSubject(course.subjects && course.subjects[0]._id, course._id);
                 } else {
                     this.props.getCourse(params._id, data => {
@@ -36,9 +36,10 @@ class LecturerRatingPage extends AdminPage {
                             T.notify('Lấy khóa học bị lỗi!', 'danger');
                             this.props.history.push('/user/course/' + params._id);
                         } else {
-                            this.getLearningProgress(params._id);
                             this.loadSubject(data.item && data.item.subjects && data.item.subjects[0]._id, params._id);
-                            // this.itemSubject.value({ id: data.item.subjects[0]._id, text: data.item.subjects[0].title });
+                            this.getLearningProgress(params._id, () => {
+                                this.itemSubject.value(data.item.subjects[0]._id);
+                            });
                         }
                     });
                 }
@@ -48,11 +49,13 @@ class LecturerRatingPage extends AdminPage {
         });
     }
 
-    getLearningProgress = (_courseId) => {
-        this.props.getLearningProgress(_courseId, data => {
+    getLearningProgress = (_courseId, done) => {
+        this.props.getLearningProgressPage(undefined, undefined, { courseId: _courseId, filterOn: false }, data => {
             if (data.error) {
                 T.notify('Lấy tiến độ học tập học viên bị lỗi!', 'danger');
                 this.props.history.push('/user/course/');
+            } else {
+                done && done();
             }
         });
     }
@@ -75,10 +78,11 @@ class LecturerRatingPage extends AdminPage {
             course = this.props.course && this.props.course.item ? this.props.course.item : {},
             lessons = this.state.currentLessons ? this.state.currentLessons : [],
             listSubjects = subjects.map((subject) => ({ id: subject._id, text: subject.title }));
-        const students = this.props.course && this.props.course.students ? this.props.course.students : [],
-            rate = this.props.rate;
-        const select = <FormSelect data={listSubjects} label='Môn học' onChange={data => this.loadSubject(data.id, course._id)} style={{ margin: 0, width: '200px !important' }} />;
-        // TODO:Sang: khi load trang không hiển thị môn học mặc định(môn học [0]) ở FormSelect
+        const user = this.props.system ? this.props.system.user : null,
+            { isLecturer } = user;
+        const { pageNumber, pageSize, pageTotal, totalItem } = this.props.course && this.props.course.page ?
+            this.props.course.page : { pageNumber: 1, pageSize: 50, pageTotal: 1, totalItem: 0 };
+        const students = this.props.course && this.props.course.students ? this.props.course.students : [], rate = this.props.rate;
         const table = renderTable({
             getDataSource: () => students, stickyHead: true,
             renderHead: () => (
@@ -91,16 +95,15 @@ class LecturerRatingPage extends AdminPage {
                 <tr key={index}>
                     <TableCell type='number' content={index + 1} />
                     <TableCell type='text' content={item.lastname + ' ' + item.firstname} />
-                    {lessons.length ? lessons.map((lesson, i) => (<TableCell key={i} type='link' style={{ textAlign: 'center' }} className='practicePoint' onClick={e => this.view(e, rate && rate.item && rate.item.find(element => (element._refId == lesson._id && element.user._id == item.user._id)).note)}
-                        content={
-                            rate && rate.item && rate.item.find(element => (element._refId == lesson._id && element.user._id == item.user._id)) ?
-                                <>
-                                    {rate.item.find(element => (element._refId == lesson._id && element.user._id == item.user._id)).value}
-                                </>
-                                :
-                                null} />)) :
+                    {lessons.length ? lessons.map((lesson, i) => (<TableCell key={i} type='link' style={{ textAlign: 'center' }} className='practicePoint' onClick={e => this.view(e, rate && rate.item && rate.item.find(element => (element._refId == lesson._id && element.user._id == item.user._id)).note)} content={
+                        rate && rate.item && rate.item.find(element => (element._refId == lesson._id && element.user._id == item.user._id)) ?
+                            <>
+                                {rate.item.find(element => (element._refId == lesson._id && element.user._id == item.user._id)).value}
+                            </>
+                            :
+                            null} />)) :
                         null}
-                </tr>),
+                </tr>)
         });
         const backRoute = `/user/course/${course._id}`;
         return this.renderPage({
@@ -110,19 +113,23 @@ class LecturerRatingPage extends AdminPage {
             content: <>
                 <div className='tile'>
                     <div className='tile-body'>
-                        <div className='pb-3 w-25'>
-                            {select}
+                        <div className='pb-3 row'>
+                            <div className='col-auto'>
+                                <label className='col-form-label'>Môn học: </label>
+                            </div>
+                            <FormSelect ref={e => this.itemSubject = e} data={listSubjects} placeholder='Môn học' onChange={data => this.loadSubject(data.id, course._id)} style={{ margin: 0, width: '200px' }} />
                         </div>
                         {table}
+                        {!isLecturer ? <Pagination name='pageLesson' style={{ left: 320 }} pageNumber={pageNumber} pageSize={pageSize} pageTotal={pageTotal} totalItem={totalItem} getPage={(pageNumber, pageSize) => this.props.getLearningProgressPage(pageNumber, pageSize, { courseId: course._id, filterOn: false })} /> : null}
                     </div>
                     <ViewNoteModal ref={e => this.modal = e} />
                 </div>
             </>,
-            backRoute,
+            backRoute
         });
     }
 }
 
 const mapStateToProps = state => ({ system: state.system, course: state.trainning.course, rate: state.framework.rate });
-const mapActionsToProps = { getCourse, getLearningProgress, getSubject, getRateStudentByAdmin };
+const mapActionsToProps = { getCourse, getLearningProgressPage, getSubject, getRateStudentByAdmin };
 export default connect(mapStateToProps, mapActionsToProps)(LecturerRatingPage);

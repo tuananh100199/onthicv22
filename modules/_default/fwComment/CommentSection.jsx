@@ -6,15 +6,15 @@ import CommentTextBox from './CommentTextBox';
 import Pagination from 'view/component/Pagination';
 
 class CommentSection extends React.Component {
-    state = { pageNumber: 1, pageSize: 20, pageTotal: -1, list: [] };
+    state = { pageNumber: 1, pageSize: 25, pageTotal: -1, list: [] };
     componentDidMount() {
         $(document).ready(() => this.getData());
     }
 
-    getData = (pageNumber = this.state.pageNumber) => {
+    getData = (pageNumber = this.state.pageNumber, pageSize = this.state.pageSize) => {
         const { refParentId, refId } = this.props;
-        this.props.getCommentPage(refParentId, refId, null, null, page => {
-            if (pageNumber != this.state.pageNumber) {
+        this.props.getCommentPage(refParentId, refId, pageNumber, pageSize, page => {
+            if (pageNumber != this.state.pageNumber || pageSize != this.state.pageSize) {
                 $('html, body').stop().animate({
                     scrollTop: $(this.commentArea).offset().top - 100
                 }, 1000);
@@ -35,22 +35,18 @@ class CommentSection extends React.Component {
     }
 
     render() {
-        //TODO: Sang xem lại chỗ này để chuyển state của comment, reply.
-        // Người có quyền comment:write, isCourseAdmin hay isLecturer thì mới được duyệt state=approved, còn lại create/update thì state=waiting => nhớ thông báo lên cho người ta biết là chờ admin duyệt
-        const { refParentId, refId, view = 'user' } = this.props;
+        const { refParentId, refId } = this.props;
         const { pageNumber, pageSize, pageTotal, list } = this.state;
         return (
             <div className={this.props.className}>
-                {view == 'user' ? (
-                    <div className='comment-respond'>
-                        <h3 className='comment-reply-title'>Để lại bình luận</h3>
-                        {refParentId && refId ? <CommentTextBox refParentId={refParentId} refId={refId} onChange={this.updateItem} rows={2} maxRows={4} /> : null}
-                    </div>) : null}
+                <div className='comment-respond'>
+                    <h3 className='comment-reply-title'>Để lại bình luận</h3>
+                    {refParentId && refId ? <CommentTextBox refParentId={refParentId} refId={refId} onChange={this.updateItem} rows={2} maxRows={4} /> : null}
+                </div>
                 <div className='comments-area' ref={e => this.commentArea = e}>
-                    {view == 'user' ? (
-                        <div className='comments-heading'>
-                            <h3>Bình luận</h3>
-                        </div>) : null}
+                    <div className='comments-heading'>
+                        <h3>Bình luận</h3>
+                    </div>
                     <div className='comments-list'>
                         {list && list.length ?
                             <ul style={{ listStyleType: 'none' }}>
