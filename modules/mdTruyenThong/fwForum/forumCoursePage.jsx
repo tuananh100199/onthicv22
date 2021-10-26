@@ -43,9 +43,10 @@ class ForumModal extends AdminModal {
                 if ((this.itemContent.text() || '').split(' ').length > 200) {
                     T.notify('Nội dung của forum dài hơn 200 từ', 'danger');
                 } else {
+                    
                     this.state._id ?
                         this.props.update(this.state._id, data, () => this.hide()) :
-                        this.props.create(data, (data) => (data && data.item && this.props.history.push('/user/forum/message/' + data.item._id)) || this.hide());
+                        this.props.create(data, (data) => (data && data.item && this.props.history.push(`/user/course/${this.props.courseId}/forum/${data.item._id}/message`)) || this.hide());
                 }
             }
         }
@@ -67,20 +68,24 @@ class ForumModal extends AdminModal {
 class ForumPage extends AdminPage {
     state = {};
     componentDidMount() {
-        T.ready('/user/course', () => {
-            const params = T.routeMatcher('/user/course/:_courseId/forum/:_categoryId').parse(window.location.pathname),
+        const params = T.routeMatcher('/user/course/:_courseId/forum/:_categoryId').parse(window.location.pathname),
                 courseId = params._courseId,
                 forumCategoryId = params._categoryId;
+            const user = this.props.system ? this.props.system.user : null,
+                { _id, isLecturer,isTrustLecturer, isCourseAdmin } = user;
+         T.ready((isLecturer || isCourseAdmin) ? '/user/course': `/user/hoc-vien/khoa-hoc/${courseId}`, () => { 
             if (forumCategoryId) {
-                this.setState({ courseId, forumCategoryId }, () => this.getPage());
-                const course = this.props.course ? this.props.course.item : null;
-                if (!course) {
-                    this.props.getCourse(params._id, data => {
-                        if (data.error) {
-                            T.notify('Lấy khóa học bị lỗi!', 'danger');
-                            this.props.history.push('/user/course/' + params._id);
-                        }
-                    });
+                this.setState({ userId: _id, isLecturer, isTrustLecturer, isCourseAdmin, courseId, forumCategoryId }, () => this.getPage());
+                if((isLecturer || isCourseAdmin) ){
+                    const course = this.props.course ? this.props.course.item : null;
+                    if (!course) {
+                        this.props.getCourse(params._id, data => {
+                            if (data.error) {
+                                T.notify('Lấy khóa học bị lỗi!', 'danger');
+                                this.props.history.push('/user/course/' + params._id);
+                            }
+                        });
+                    }
                 }
             } else {
                 this.props.history.goBack();
@@ -102,20 +107,21 @@ class ForumPage extends AdminPage {
 
     render() {
         const courseItem = this.props.course && this.props.course.item ? this.props.course.item : {};
-        const user = this.props.system ? this.props.system.user : null,
-            { isLecturer, isTrustLecturer, isCourseAdmin } = user;
+        const { userId, isLecturer, isTrustLecturer, isCourseAdmin } = this.state;
         const adminPermission = this.getUserPermission('system', ['settings']);
         let forumAdmin = adminPermission && adminPermission.settings || isCourseAdmin;
         const { category, page } = this.props.forum || {};
         const { pageNumber, pageSize, pageTotal, totalItem, list } = page || { pageNumber: 1, pageSize: 50, pageTotal: 1, totalItem: 0 };
-        const courseBackRoute = '/user/course/' + courseItem._id;
-        const categoryBackRoute = '/user/course/' + courseItem._id + '/forum';
+        const courseBackRoute = '/user/course/' + this.state.courseId,
+            categoryBackRoute = '/user/course/' + this.state.courseId + '/forum',
+            userBackRoute = `/user/hoc-vien/khoa-hoc/${this.state.courseId}`;
+
         const listForums = list && list.length ? list.map((item, index) => {
-            const forumOwner = forumAdmin || (isLecturer && isTrustLecturer && user && item && item.user && (user._id == item.user._id));
+            const forumOwner = forumAdmin || (isLecturer && isTrustLecturer && item && item.user && (userId == item.user._id));
             return <div key={index} className='tile'>
                 <div style={{ display: 'inline-flex' }}>
                     <h4 className='tile-title'>
-                        <Link to={`/user/course/${courseItem._id}/forum/${item._id}/message`} style={{ textDecoration: 'none' }}>{item.title}</Link>&nbsp;&nbsp;
+                        <Link to={`/user/course/${this.state.courseId}/forum/${item._id}/message`} style={{ textDecoration: 'none' }}>{item.title}</Link>&nbsp;&nbsp;
                     </h4>
                     <small style={{ paddingTop: 10 }}>
                         ({item.user ? `${item.user.lastname} ${item.user.firstname}` : ''}
@@ -137,18 +143,20 @@ class ForumPage extends AdminPage {
                         </ul>) : ''}
                 </div>
 
-                <Link to={`/user/course/${courseItem._id}/forum/${item._id}/message`} style={{ textDecoration: 'none', position: 'absolute', bottom: 0, right: 0, padding: 6, color: 'white', backgroundColor: '#1488db', borderBottomRightRadius: 3 }}>Đọc thêm...</Link>
+                <Link to={`/user/course/${this.state.courseId}/forum/${item._id}/message`} style={{ textDecoration: 'none', position: 'absolute', bottom: 0, right: 0, padding: 6, color: 'white', backgroundColor: '#1488db', borderBottomRightRadius: 3 }}>Đọc thêm...</Link>
             </div>;
         }) : <div className='tile'>Chưa có bài viết!</div>;
 
         return this.renderPage({
             icon: 'fa fa-users',
             title: category ? category.title : 'Forum',
-            breadcrumb: [<Link key={0} to='/user/course'>Khóa học</Link>, courseItem._id ? <Link key={0} to={courseBackRoute}>{courseItem.name}</Link> : '', category ? <Link key={0} to={categoryBackRoute}>Danh mục</Link> : 'Forum', category ? category.title : 'Danh sách'],
+            breadcrumb: this.state.isLecturer || this.state.isCourseAdmin ? 
+            [<Link key={0} to='/user/course'>Khóa học</Link>, this.state.courseId ? <Link key={0} to={courseBackRoute}>{courseItem.name}</Link> : '',<Link key={0} to={categoryBackRoute}>Danh mục</Link>, category ? category.title : 'Danh sách'] : 
+            [<Link key={0} to={userBackRoute}>Khóa học của tôi</Link>, <Link key={0} to={categoryBackRoute}>Forum</Link>, category ? category.title : 'Danh sách'],
             content: category ? <>
                 {listForums}
                 <Pagination name='pageForum' style={{ marginLeft: '70px' }} pageNumber={pageNumber} pageSize={pageSize} pageTotal={pageTotal} totalItem={totalItem} getPage={this.getPage} />
-                <ForumModal ref={e => this.modal = e} courseId={courseItem._id} category={category._id} forumCreator={forumAdmin || isLecturer && isTrustLecturer} history={this.props.history}
+                <ForumModal ref={e => this.modal = e} courseId={this.state.courseId} category={category._id} forumCreator={forumAdmin || isLecturer && isTrustLecturer} history={this.props.history}
                     create={this.props.createForum} update={this.props.updateForum} />
             </> : '...',
             backRoute: categoryBackRoute,

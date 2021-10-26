@@ -56,11 +56,14 @@ class CourseMessageModal extends AdminModal {
 class ForumCourseMessagePage extends AdminPage {
     state = {};
     componentDidMount() {
-        T.ready('/user/course', () => {
-            const params = T.routeMatcher('/user/course/:_courseId/forum/:_forumId/message').parse(window.location.pathname),
-                forumId = params._forumId;
+        const params = T.routeMatcher('/user/course/:_courseId/forum/:_forumId/message').parse(window.location.pathname),
+                forumId = params._forumId,
+                courseId = params._courseId;
+                const user = this.props.system ? this.props.system.user : null,
+                { _id, isLecturer, isTrustLecturer, isCourseAdmin } = user;
+        T.ready((isLecturer || isCourseAdmin) ? '/user/course': `/user/hoc-vien/khoa-hoc/${courseId}`, () => { 
             if (forumId) {
-                this.setState({ forumId }, () => this.props.getForum(forumId) || this.getPage());
+                this.setState({userId: _id, isLecturer, isTrustLecturer, isCourseAdmin, forumId }, () => this.props.getForum(forumId) || this.getPage());
                 const course = this.props.course ? this.props.course.item : null;
                 if (!course) {
                     this.props.getCourse(params._id, data => {
@@ -91,21 +94,22 @@ class ForumCourseMessagePage extends AdminPage {
     render() {
         const courseItem = this.props.course && this.props.course.item ? this.props.course.item : {};
         const adminPermission = this.getUserPermission('system', ['settings']);
-        const { user } = this.props.system,
-            { isLecturer, isTrustLecturer, isCourseAdmin } = user;
+        const { userId, isLecturer, isTrustLecturer, isCourseAdmin } = this.state;
         const createdDateStyle = { textDecoration: 'none', position: 'absolute', top: 0, left: 0, padding: '6px 12px', color: 'white', borderTopLeftRadius: 3, borderBottomRightRadius: 3 };
-        const { item: forum } = this.props.forum || {};
-        const forumOwner = adminPermission && adminPermission.settings || isCourseAdmin || (isLecturer && isTrustLecturer && user && forum && forum.user && (user._id == forum.user._id));
+        const { item: forum, category } = this.props.forum || {};
+        const forumOwner = adminPermission && adminPermission.settings || isCourseAdmin || (isLecturer && isTrustLecturer && forum && forum.user && (userId == forum.user._id));
         const { pageNumber, pageSize, pageTotal, totalItem, list } = forum && forum.page ? forum.page : { pageNumber: 1, pageSize: 50, pageTotal: 1, totalItem: 0 };
-        const backRoute = forum && forum.category ? '/user/course/' + courseItem._id + '/forum/' + forum.category._id : null;
         const courseBackRoute = '/user/course/' + courseItem._id;
         const categoryBackRoute = '/user/course/' + courseItem._id + '/forum';
         const forumBackRoute = forum && forum.category ? '/user/course/' + courseItem._id + '/forum/' + forum.category._id : null;
+        const userBackRoute = `/user/hoc-vien/khoa-hoc/${this.state.courseId}`;
 
         return this.renderPage({
             icon: 'fa fa-comments',
             title: forum ? <>{forum.title} <small style={{ fontSize: 13 }}>({forum.user ? `${forum.user.lastname} ${forum.user.firstname}` : ''} {forum.modifiedDate ? ' - ' + (new Date(forum.modifiedDate).getText()) : ''})</small></> : '...',
-            breadcrumb: [<Link key={0} to='/user/course'>Khóa học</Link>, courseItem._id ? <Link key={0} to={courseBackRoute}>{courseItem.name}</Link> : '', <Link key={0} to={categoryBackRoute}> Danh mục </Link>, forum ? <Link key={0} to={forumBackRoute}>{forum.title}</Link> : 'Bài viết', 'Nội dung'],
+            breadcrumb: (this.state.isLecturer || this.state.isCourseAdmin) ? 
+            [<Link key={0} to='/user/course'>Khóa học</Link>, courseItem._id ? <Link key={0} to={courseBackRoute}>{courseItem.name}</Link> : '', <Link key={0} to={categoryBackRoute}>Danh mục</Link>, <Link key={0} to={forumBackRoute}>{forum && forum.title}</Link>, 'Bài viết'] : 
+            [<Link key={0} to={userBackRoute}>Khóa học của tôi</Link>, <Link key={0} to={categoryBackRoute}>Forum</Link>,<Link key={0} to={forumBackRoute}>{category ? category.title : 'Danh sách'}</Link>,'Bài viết'],
             content: forum ? <>
                 <div className='tile'>
                     {/* <small className='bg-secondary' style={createdDateStyle}>
@@ -125,14 +129,14 @@ class ForumCourseMessagePage extends AdminPage {
                                     {forumOwner && item.state && ForumStatesMapper[item.state] ? <b style={{ color: ForumStatesMapper[item.state].color }}>{ForumStatesMapper[item.state].text}</b> : ''}
                                 </small>
                                 <p style={{ margin: '12px 0 0 0' }}>{item.content}</p>
-                                <ForumButtons state={item.state} permission={{ forumOwner, messageOwner: user && item && item.user && user._id == item.user._id }} onChangeState={(state) => this.props.updateForumMessage(item._id, { state })} onEdit={() => this.modal.show(item)} onDelete={() => this.delete(item)} />
+                                <ForumButtons state={item.state} permission={{ forumOwner, messageOwner: item && item.user && userId == item.user._id }} onChangeState={(state) => this.props.updateForumMessage(item._id, { state })} onEdit={() => this.modal.show(item)} onDelete={() => this.delete(item)} />
                             </div>
                         </div>) :
                     <div className='tile' style={{ marginLeft: 20 }}>Chưa có bài viết!</div>}
                 <Pagination name='pageForumMessage' style={{ marginLeft: '70px' }} pageNumber={pageNumber} pageSize={pageSize} pageTotal={pageTotal} totalItem={totalItem} getPage={this.getPage} />
                 <CourseMessageModal ref={e => this.modal = e} forum={forum._id} permission={{ forumOwner }} create={this.props.createForumMessage} update={this.props.updateForumMessage} getPage={this.getPage} />
             </> : '...',
-            backRoute: backRoute,
+            backRoute: forumBackRoute,
             onCreate: this.edit,
         });
     }
