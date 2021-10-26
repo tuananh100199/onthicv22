@@ -9,12 +9,12 @@ import SectionForumCourseCategory from './SectionForumCourseCategory';
 class ForumCategoryPage extends AdminPage {
     state = {};
     componentDidMount() {
-        T.ready('/user/course', () => {
-            const params = T.routeMatcher('/user/course/:courseId/forum').parse(window.location.pathname),
-            courseId = params.courseId;
-            const user = this.props.system ? this.props.system.user : null,
+        const params = T.routeMatcher('/user/course/:courseId/forum').parse(window.location.pathname),
+        courseId = params.courseId;
+        const user = this.props.system ? this.props.system.user : null,
             { isLecturer, isCourseAdmin } = user,
             admin = isLecturer || isCourseAdmin;
+         T.ready(admin ? '/user/course': `/user/hoc-vien/khoa-hoc/${courseId}`, () => { 
             if (courseId) {
                 this.setState({ courseId, admin },() => this.props.getForumCategories(courseId));
                 if(admin){
@@ -42,7 +42,7 @@ class ForumCategoryPage extends AdminPage {
         return this.renderPage({
             icon: 'fa fa-users',
             title: `Forum khóa học: ${item.name ? item.name : ''}`,
-            breadcrumb: this.state.admin ? [<Link key={0} to='/user/course'>Khóa học</Link>, item._id ? <Link key={0} to={backRoute}>{item.name}</Link> : '', 'Forum'] : [<Link key={0} to={userBackRoute}>Khóa học của tôi</Link>, 'Forum'],
+            breadcrumb: this.state.admin ? [<Link key={0} to='/user/course'>Khóa học</Link>, item._id ? <Link key={0} to={backRoute}>{item.name}</Link> : '', 'Danh mục'] : [<Link key={0} to={userBackRoute}>Khóa học của tôi</Link>, 'Forum'],
             content: <SectionForumCourseCategory courseId={this.state.courseId} />,
             backRoute: this.state.admin ? backRoute : userBackRoute,
         });
