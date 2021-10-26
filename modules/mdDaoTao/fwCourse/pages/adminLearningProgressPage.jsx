@@ -2,7 +2,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { getCourse, getLearningProgressPage, exportLearningProgressToExcel } from '../redux';
-import { updateStudent } from 'modules/mdDaoTao/fwStudent/redux';
+import { updateStudent, getStudentPage } from 'modules/mdDaoTao/fwStudent/redux';
 import { AdminPage, AdminModal, CirclePageButton, TableCell, renderTable, FormTextBox, FormCheckbox } from 'view/component/AdminPage';
 import Pagination from 'view/component/Pagination';
 import './style.scss';
@@ -92,17 +92,28 @@ class AdminLearningProgressPage extends AdminPage {
 
     render() {
         const user = this.props.system ? this.props.system.user : null,
-            { isLecturer } = user;
-        const item = this.props.course && this.props.course.item ? this.props.course.item : {};
-        const students = this.props.course && this.props.course && this.props.course.students ? this.props.course.students : [],
-            subjects = this.props.course && this.props.course.subjects ? this.props.course.subjects.sort((a, b) => a.monThucHanh - b.monThucHanh) : [];
+            { isLecturer, isCourseAdmin } = user,
+            item = this.props.course && this.props.course.item ? this.props.course.item : {},
+            students = this.props.course && this.props.course && this.props.course.students ? this.props.course.students : [],
+            subjects = this.props.course && this.props.course.subjects ? this.props.course.subjects.sort((a, b) => a.monThucHanh - b.monThucHanh) : [],
+            monThiTotNghiep = item && item.monThiTotNghiep ? item.monThiTotNghiep : [];
         const { pageNumber, pageSize, pageTotal, totalItem } = this.props.course && this.props.course.page ?
             this.props.course.page : { pageNumber: 1, pageSize: 50, pageTotal: 1, totalItem: 0 };
-
         const subjectColumns = [];
         (subjects || []).forEach((subject, index) => {
             subjectColumns.push(<th key={index} style={{ width: 'auto', color: subject.monThucHanh ? 'aqua' : 'coral' }} nowrap='true'>{subject.title}</th>);
         });
+
+        const finalScoreColumns = [];
+        (subjects || []).forEach((subject, index) => {
+            finalScoreColumns.push(<th key={index} style={{ width: 'auto', color: subject.monThucHanh ? 'aqua' : 'coral' }} nowrap='true'>{'Điểm thi ' + subject.title}</th>);
+        });
+
+        const monThiTotNghiepColumns = [];
+        (monThiTotNghiep || []).forEach((monThi, index) => {
+            monThiTotNghiepColumns.push(<th key={index} style={{ width: 'auto' }} nowrap='true'>{monThi.title}</th>);
+        });
+
 
         const table = renderTable({
             getDataSource: () => students, stickyHead: true,
@@ -110,11 +121,14 @@ class AdminLearningProgressPage extends AdminPage {
                 <tr>
                     <th style={{ width: 'auto', textAlign: 'center' }}>#</th>
                     <th style={{ width: '100%' }} nowrap='true'>Tên học viên</th>
-                    <th style={{ width: 'auto' }}>CMND/CCCD</th>
+                    {/* <th style={{ width: 'auto' }}>CMND/CCCD</th> */}
                     {subjectColumns}
                     <th style={{ width: 'auto', color: 'coral' }} nowrap='true'>Điểm lý thuyết</th>
                     <th style={{ width: 'auto', color: 'aqua' }} nowrap='true'>Điểm thực hành</th>
                     <th style={{ width: 'auto', color: 'red' }} nowrap='true'>Điểm trung bình</th>
+                    {isCourseAdmin && finalScoreColumns}
+                    {isCourseAdmin && <th style={{ width: 'auto', color: 'red' }} nowrap='true'>Điểm trung bình thi hết môn</th>}
+                    {isCourseAdmin && monThiTotNghiepColumns}
                 </tr>),
             renderRow: (item, index) => {
                 const student = students[index],
@@ -124,8 +138,8 @@ class AdminLearningProgressPage extends AdminPage {
                 return (
                     <tr key={index}>
                         <TableCell type='number' content={index + 1} />
-                        <TableCell type='text' style={{ whiteSpace: 'nowrap' }} content={item.lastname + ' ' + item.firstname} />
-                        <TableCell type='text' content={item.identityCard} />
+                        <TableCell type='text' style={{ whiteSpace: 'nowrap' }} content={<p>{item.lastname + ' ' + item.firstname} <br /> {item.identityCard}</p>} />
+                        {/* <TableCell type='text' content={item.identityCard} /> */}
                         {subjects && subjects.length && subjects.map((subject, i) => (
                             <TableCell key={i} type='text' style={{ textAlign: 'center' }} content={` 
                             ${item.subject && item.subject[subject._id] && !subject.monThucHanh ? item.subject[subject._id].completedLessons : 0}
@@ -134,6 +148,11 @@ class AdminLearningProgressPage extends AdminPage {
                         <TableCell type='text' style={{ textAlign: 'center' }} content={diemLyThuyet} />
                         <TableCell type='link' style={{ textAlign: 'center' }} content={<>{diemThucHanh}<i className='fa fa-lg fa-edit' /></>} className='practicePoint' onClick={e => this.edit(e, item)} />
                         <TableCell type='text' style={{ textAlign: 'center' }} content={diemTB} />
+                        {isCourseAdmin && students && students[index] && students[index].diemThiHetMon && students[index].diemThiHetMon.length && students[index].diemThiHetMon.map((diemThi, i) => (
+                            <TableCell key={i} type='text' style={{ textAlign: 'center' }} content={diemThi.point} />))}
+                        {isCourseAdmin && <TableCell key={index} type='text' style={{ textAlign: 'center' }} content={students && students[index] && students[index].diemTrungBinhThiHetMon} />}
+                        {isCourseAdmin && students && students[index] && students[index].diemThiTotNghiep && students[index].diemThiTotNghiep.length && students[index].diemThiTotNghiep.map((diemThi, i) => (
+                            <TableCell key={i} type='text' style={{ textAlign: 'center' }} className={diemThi.diemLiet ? 'text-danger' : ''} content={diemThi.point} />))}
                     </tr>);
             },
         });
@@ -164,5 +183,5 @@ class AdminLearningProgressPage extends AdminPage {
 }
 
 const mapStateToProps = state => ({ system: state.system, course: state.trainning.course });
-const mapActionsToProps = { getCourse, getLearningProgressPage, updateStudent };
+const mapActionsToProps = { getCourse, getLearningProgressPage, updateStudent, getStudentPage };
 export default connect(mapStateToProps, mapActionsToProps)(AdminLearningProgressPage);

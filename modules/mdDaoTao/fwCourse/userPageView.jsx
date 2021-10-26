@@ -2,9 +2,40 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { getCourseByStudent } from './redux';
 import { getRateByUser } from 'modules/_default/fwRate/redux';
+import { getStudent } from 'modules/mdDaoTao/fwStudent/redux';
 import RateModal from 'modules/_default/fwRate/RateModal';
-import { AdminPage, CirclePageButton, PageIconHeader, PageIcon } from 'view/component/AdminPage';
+import { AdminPage, CirclePageButton, PageIconHeader, PageIcon, AdminModal, renderTable, TableCell } from 'view/component/AdminPage';
 
+class ViewScoreModal extends AdminModal {
+    state = {};
+    onShow = (data) => {
+        const { student, course } = data;
+        this.setState({ student, course });
+    };
+
+    render = () => {
+        const { student, course } = this.state,
+            data = student ? [student] : [],
+            monThiTotNghiep = course && course.monThiTotNghiep,
+            diemThiTotNghiep = student && student.diemThiTotNghiep;
+        const table = renderTable({
+            getDataSource: () => data,
+            renderHead: () => (
+                <tr>
+                    {monThiTotNghiep.length ? monThiTotNghiep.map((monThi, i) => (<th key={i} style={{ width: '100%' }} nowrap='true'>{monThi.title}</th>)) : null}
+                </tr>),
+            renderRow: (index) => (
+                <tr key={index}>
+                    {diemThiTotNghiep.length ? diemThiTotNghiep.map((monThi, i) => (<TableCell type='number' key={i} className={monThi.diemLiet ? 'text-danger' : ''} content={monThi.point} />)) : null}
+                </tr>),
+        });
+
+        return this.renderModal({
+            title: 'Điểm thi tốt nghiệp của học viên',
+            body: <div className='d-flex justify-content-center'>{table}</div>
+        });
+    }
+}
 class UserCoursePageDetail extends AdminPage {
     state = { name: '...' };
     componentDidMount() {
@@ -20,12 +51,13 @@ class UserCoursePageDetail extends AdminPage {
                     } else if (data.notify) {
                         T.alert(data.notify, 'error', false, 2000);
                         this.props.history.push('/user');
-                    } else if (data.item && data._studentId) {
+                    } else if (data.item && data.student) {
                         this.setState(data.item);
                         if (data.teacher) {
                             this.setState({ teacher: data.teacher });
                             this.props.getRateByUser('teacher', data.teacher._id);
                         }
+                        this.setState({ student: data.student });
                     } else {
                         this.props.history.push('/user');
                     }
@@ -64,8 +96,9 @@ class UserCoursePageDetail extends AdminPage {
     }
 
     render() {
-        const subjects = this.props.course && this.props.course.item && this.props.course.item.subjects ? this.props.course.item.subjects : [];
-        const { name, courseId, teacher } = this.state, rate = this.props.rate.item && this.props.rate.item.value;
+        const course = this.props.course && this.props.course.item,
+            subjects = course && course.subjects ? course.subjects : [];
+        const { name, courseId, teacher, student } = this.state, rate = this.props.rate.item && this.props.rate.item.value;
         return this.renderPage({
             icon: 'fa fa-cubes',
             title: `Khóa học: ${name}`,
@@ -76,6 +109,7 @@ class UserCoursePageDetail extends AdminPage {
 
                     <PageIcon to={`/user/hoc-vien/khoa-hoc/thong-tin/${courseId}`} icon='fa-info' iconBackgroundColor='#17a2b8' text='Thông tin khóa học' />
                     <PageIcon to={`/user/hoc-vien/khoa-hoc/${courseId}/thoi-khoa-bieu`} icon='fa-calendar' iconBackgroundColor='#ffc107' text='Thời khóa biểu' />
+                    <PageIcon to='#' icon='fa-graduation-cap ' iconBackgroundColor='#8d6e63' text='Xem điểm thi tốt nghiệp' onClick={(e) => { e.preventDefault(); this.viewScoreModal.show({ student, course }); }} />
                     {/* <PageIcon to={`/user/course/${courseId}/forum`} icon='fa-users' iconBackgroundColor='#8d6e63' text='Forum' /> */}
 
                     <PageIcon to={''} icon='fa-star' iconBackgroundColor='orange' text='Đánh giá cố vấn học tập' visible={teacher != null}
@@ -92,8 +126,6 @@ class UserCoursePageDetail extends AdminPage {
 
                     {subjects.length ? <>
                         <PageIconHeader text='Môn học thực hành' />
-                        {/* TODO: hiển thị môn học thực hành */}
-                        {/* <h4 style={{ width: '100%' }}>Môn học lý thuyết</h4> */}
                         {subjects.map((subject, index) =>
                             subject.monThucHanh && <PageIcon key={index} to={`/user/hoc-vien/khoa-hoc/${courseId}/mon-hoc/${subject._id}`} icon='fa-briefcase' iconBackgroundColor='#1488db' text={subject ? subject.title : ''} />
                         )}
@@ -103,6 +135,8 @@ class UserCoursePageDetail extends AdminPage {
                     <PageIcon to={`/user/hoc-vien/khoa-hoc/${courseId}/phan-hoi`} icon='fa-commenting-o' iconBackgroundColor='#dc3545' text='Phản hồi' />
 
                     <CirclePageButton type='custom' customClassName='btn-success' customIcon='fa-comments-o' onClick={() => this.props.history.push('/user/chat/' + this.state.courseId)} />
+
+                    <ViewScoreModal ref={e => this.viewScoreModal = e} />
                 </div>
             ),
         });
@@ -110,5 +144,5 @@ class UserCoursePageDetail extends AdminPage {
 }
 
 const mapStateToProps = state => ({ system: state.system, course: state.trainning.course, driveTest: state.trainning.driveTest, rate: state.framework.rate });
-const mapActionsToProps = { getCourseByStudent, getRateByUser };
+const mapActionsToProps = { getCourseByStudent, getRateByUser, getStudent };
 export default connect(mapStateToProps, mapActionsToProps)(UserCoursePageDetail);

@@ -673,7 +673,7 @@ module.exports = (app) => {
                         const _studentId = student._id,
                             teacherGroups = item.teacherGroups.find(({ student }) => student.find(({ _id }) => _id == _studentId.toString()) != null),
                             teacher = (teacherGroups && teacherGroups.teacher) || null;
-                        res.send({ error, item, _studentId, teacher });
+                        res.send({ error, item, teacher, student });
                     });
                 } else {
                     res.send({ notify: 'Khóa học chưa được kích hoạt!' });
