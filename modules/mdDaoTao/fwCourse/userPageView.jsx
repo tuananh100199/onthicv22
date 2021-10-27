@@ -24,7 +24,7 @@ class ViewScoreModal extends AdminModal {
             body:
                 <>
                     {!isLoading ? monThiTotNghiep.map((monThi, i) => (
-                        <h5 key={i}>{monThi.title + ': '}<span className={diemThiTotNghiep[i].diemLiet ? 'text-danger' : ''}>{diemThiTotNghiep[i].point}</span></h5>
+                        <p key={i}>{monThi.title + ': '}<span className={diemThiTotNghiep[i].diemLiet ? 'text-danger' : ''}>{diemThiTotNghiep[i].point}</span></p>
                     )) : null}
                 </>
         });

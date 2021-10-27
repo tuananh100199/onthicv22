@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { getCourse, getLearningProgressPage, exportLearningProgressToExcel } from '../redux';
 import { updateStudent, getStudentPage } from 'modules/mdDaoTao/fwStudent/redux';
-import { AdminPage, AdminModal, CirclePageButton, TableCell, renderTable, FormTextBox, FormSelect } from 'view/component/AdminPage';
+import { AdminPage, AdminModal, CirclePageButton, TableCell, renderTable, FormTextBox, FormSelect, FormCheckbox } from 'view/component/AdminPage';
 import Pagination from 'view/component/Pagination';
 import './style.scss';
 
@@ -57,75 +57,76 @@ class CourseAdminModal extends AdminModal {
     state = { isLoading: true };
     componentDidMount() {
         $(document).ready(() => this.onShown(() => this.diemThucHanh.focus()));
-        const { monThiTotNghiep, subjects } = this.props;
-        monThiTotNghiep && monThiTotNghiep.forEach((monThi) => {
-            this[monThi._id] && this[monThi._id].value(0);
-        });
-        subjects && subjects.forEach((monThi) => {
-            this[monThi._id] && this[monThi._id].value(0);
-        });
     }
 
     onShow = (item) => {
-        const { _id, diemThucHanh, diemThiHetMon, diemThiTotNghiep } = item || { diemThucHanh: 0 },
-            { monThiTotNghiep } = this.props.course;
+        const { _id, diemThucHanh, diemThiHetMon, diemThiTotNghiep } = item || { diemThucHanh: 0 };
         diemThiTotNghiep && diemThiTotNghiep.length && diemThiTotNghiep.forEach((monThi) => {
-            this[monThi._id] && this[monThi._id].value(monThi.point);
+            this[monThi.monThiTotNghiep] && this[monThi.monThiTotNghiep].value(monThi.point);
         });
         diemThiHetMon && diemThiHetMon.length && diemThiHetMon.forEach((monThi) => {
-            this[monThi._id] && this[monThi._id].value(monThi.point);
+            this[monThi.subject] && this[monThi.subject].value(monThi.point);
         });
         this.diemThucHanh.value(diemThucHanh);
         this.setState({
             _id,
             diemThiHetMon,
-            diemThiTotNghiep,
-            monThiTotNghiep,
+            diemThiTotNghiep
         });
     }
 
     onSubmit = () => {
+        const { diemThiHetMon, diemThiTotNghiep } = this.state;
+        let isUpdate = true;
+        for (let i = 0; i < diemThiHetMon.length; i++) {
+            if (this[diemThiHetMon[i].subject].value() == '') {
+                T.notify('Vui lòng nhập điểm thi hết môn!', 'danger');
+                this[diemThiHetMon[i].subject].focus();
+                isUpdate = false;
+                break;
+            } else {
+                diemThiHetMon[i].point = parseInt(this[diemThiHetMon[i].subject].value());
+            }
+        }
+        for (let i = 0; i < diemThiTotNghiep.length; i++) {
+            if (this[diemThiTotNghiep[i].monThiTotNghiep].value() == '') {
+                T.notify('Vui lòng nhập điểm thi tốt nghiệp!', 'danger');
+                this[diemThiTotNghiep[i].monThiTotNghiep].focus();
+                isUpdate = false;
+                break;
+            } else {
+                diemThiTotNghiep[i].point = parseInt(this[diemThiTotNghiep[i].monThiTotNghiep].value());
+            }
+        }
         const changes = {
             diemThucHanh: this.diemThucHanh.value(),
-
+            diemThiHetMon,
+            diemThiTotNghiep
         };
         if (changes.diemThucHanh == '') {
             T.notify('Vui lòng nhập điểm thực hành!', 'danger');
             this.diemThucHanh.focus();
-        } else {
+        } else if (isUpdate) {
             this.props.updateStudent(this.state._id, changes, () => {
                 this.props.getLearningProgressPage(undefined, undefined, { courseId: this.props.course._id, filter: this.props.filter }, () => this.hide());
             });
         }
     }
 
-    onChangeScore = () => {
-        let diemThucHanh = this.diemThucHanh.value();
-        if (diemThucHanh) {
-            diemThucHanh = Number(diemThucHanh);
-            if (diemThucHanh < 0) {
-                this.diemThucHanh.value(0);
-            } else if (diemThucHanh > 10) {
-                this.diemThucHanh.value(diemThucHanh % 100 <= 10 ? diemThucHanh % 100 : diemThucHanh % 10);
-            }
-        }
-    }
-
     render = () => {
-        const { diemThiHetMon, diemThiTotNghiep, monThiTotNghiep } = this.state,
-            course = this.props.course;
+        const { monThiTotNghiep, subjects } = this.props.course;
         return this.renderModal({
             title: 'Bảng điểm tổng hợp',
             size: 'large',
             body:
                 <div className='row'>
-                    {diemThiTotNghiep && diemThiTotNghiep.length && diemThiTotNghiep.map((monThi, index) => (
-                        <FormTextBox key={index} className='col-md-3' ref={e => this[monThi._id] = e} type='number' min='0' label={monThiTotNghiep[index].title} />
-                    ))}
-                    {diemThiHetMon && diemThiHetMon.length && diemThiHetMon.map((monThi, index) => (
-                        <FormTextBox key={index} className='col-md-3' ref={e => this[monThi._id] = e} type='number' min='0' label={course.subjects[index].title} />
-                    ))}
-                    <FormTextBox className='col-md-3' ref={e => this.diemThucHanh = e} label='Điểm thực hành' type='number' min='0' max='10' onChange={this.onChangeScore} />
+                    {monThiTotNghiep && monThiTotNghiep.length ? monThiTotNghiep.map((monThi, index) => (
+                        <FormTextBox key={index} className='col-md-3' ref={e => this[monThi._id] = e} type='number' min='0' label={monThi.title} />
+                    )) : null}
+                    {subjects && subjects.length ? subjects.map((monThi, index) => (
+                        <FormTextBox key={index} className='col-md-3' ref={e => this[monThi._id] = e} type='number' min='0' label={monThi.title} />
+                    )) : null}
+                    <FormTextBox className='col-md-3' ref={e => this.diemThucHanh = e} label='Điểm thực hành' type='number' min='0' max='10' />
                 </div>
 
         });
@@ -140,7 +141,8 @@ class AdminLearningProgressPage extends AdminPage {
         T.ready('/user/course', () => {
             const params = T.routeMatcher('/user/course/:_id/learning').parse(window.location.pathname);
             if (params && params._id) {
-                const course = this.props.course ? this.props.course.item : null;
+                const course = this.props.course ? this.props.course.item : null,
+                    user = this.props.system && this.props.system.user;
                 this.setState({ courseId: params._id });
                 if (course) {
                     this.props.getLearningProgressPage(undefined, undefined, { courseId: course._id, filter: this.state.filter });
@@ -154,7 +156,7 @@ class AdminLearningProgressPage extends AdminPage {
                         }
                     });
                 }
-                this.filter.value('all');
+                user.isCourseAdmin && this.filter.value('all');
             } else {
                 this.props.history.push('/user/course/');
             }
@@ -162,7 +164,7 @@ class AdminLearningProgressPage extends AdminPage {
     }
 
     getPage = (pageNumber, pageSize, data) => {
-        const filter = data ? data.id : this.state.filter;
+        const filter = data ? data : this.state.filter;
         this.setState({ filter });
         this.props.getLearningProgressPage(pageNumber, pageSize, { courseId: this.state.courseId, filter });
     }
@@ -188,10 +190,6 @@ class AdminLearningProgressPage extends AdminPage {
                 { id: 'thiHetMon', text: 'Học viên đủ điều kiện thi hết môn' },
                 { id: 'thiTotNghiep', text: 'Học viên đủ điều kiện thi tốt nghiệp' },
                 { id: 'totNghiep', text: 'Học viên đủ điều kiện tốt nghiệp' },
-            ],
-            dataSelectLecturer = [
-                { id: 'all', text: 'Tất cả học viên' },
-                { id: 'thiHetMon', text: 'Học viên đủ điều kiện thi hết môn' },
             ];
         const { pageNumber, pageSize, pageTotal, totalItem } = this.props.course && this.props.course.page ?
             this.props.course.page : { pageNumber: 1, pageSize: 50, pageTotal: 1, totalItem: 0 };
@@ -271,7 +269,9 @@ class AdminLearningProgressPage extends AdminPage {
                     <div className='tile-body'>
                         <div className='row'>
                             <div className='col-md-6'>
-                                <FormSelect ref={e => this.filter = e} data={isCourseAdmin ? dataSelectCourseAdmin : dataSelectLecturer} onChange={data => this.getPage(undefined, undefined, data)} style={{ marginBottom: '10px', width: '300px' }} />
+                                {isCourseAdmin ? <FormSelect ref={e => this.filter = e} data={dataSelectCourseAdmin} onChange={data => this.getPage(undefined, undefined, data.id)} style={{ marginBottom: '10px', width: '300px' }} /> :
+                                    <FormCheckbox ref={e => this.course = e} onChange={value => { const data = value ? 'thiHetMon' : 'all'; this.getPage(undefined, undefined, data); }} label='Học viên đủ điều kiện thi hết môn' />
+                                }
                             </div>
                             {isCourseAdmin && <Link style={{ textAlign: 'right' }} className='col-md-3' to={`${backRoute}/import-final-score`}><button className='btn btn-primary'> Nhập điểm thi hết môn </button></Link>}
                             {isCourseAdmin && <Link to={'/user/course/' + item._id + '/import-graduation-exam-score'} className='col-md-3'><button className='btn btn-primary'>Nhập điểm thi tốt nghiệp</button></Link>}
