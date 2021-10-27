@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { getStudentPage, updateStudent } from './redux';
 import { createNotification } from 'modules/_default/fwNotification/redux';
 import { ajaxSelectCourseType } from 'modules/mdDaoTao/fwCourseType/redux';
-import { AdminPage, FormTextBox, FormSelect, FormDatePicker, renderTable, TableCell, AdminModal } from 'view/component/AdminPage';
+import { AdminPage, FormTextBox, FormSelect, FormDatePicker, renderTable, TableCell, AdminModal, CirclePageButton } from 'view/component/AdminPage';
 import Pagination from 'view/component/Pagination';
 
 class StudentModal extends AdminModal {
@@ -59,21 +59,22 @@ class FailStudentPage extends AdminPage {
 
     edit = (e, item) => e.preventDefault() || this.modal.show(item);
 
-    sendNotification = (e, item) => e.preventDefault() || 
-    T.confirm('Gửi thông báo', `Bạn có chắc muốn gửi thông báo Ngày thi sát hạch dự kiến đến học viên ${item.lastname} ${item.firstname} là ${T.dateToText(item.ngayDuKienThiSatHach, 'dd/mm/yyyy')} ?`,
-        true, isConfirm => {
-            if (isConfirm) {
-                const data = {
-                    title: 'Ngày thi sát hạch dự kiến',
-                    content: `Ngày thi sát hạch dự kiến của bạn là ${T.dateToText(item.ngayDuKienThiSatHach, 'dd/mm/yyyy')}`,
-                    type: '0',
-                    course: item.course && item.course._id,
-                    user: item.user && item.user._id,
-                    sentDate: new Date(),
-                };
-                this.props.createNotification(data, () => T.notify('Gửi thông báo thành công!', 'success'));
-            }
-        });
+    //TODO: TAM  sendNotification
+    sendNotification = (e, item) => e.preventDefault() ||
+        T.confirm('Gửi thông báo', `Bạn có chắc muốn gửi thông báo Ngày thi sát hạch dự kiến đến học viên ${item.lastname} ${item.firstname} là ${T.dateToText(item.ngayDuKienThiSatHach, 'dd/mm/yyyy')} ?`,
+            true, isConfirm => {
+                if (isConfirm) {
+                    const data = {
+                        title: 'Ngày thi sát hạch dự kiến',
+                        content: `Ngày thi sát hạch dự kiến của bạn là ${T.dateToText(item.ngayDuKienThiSatHach, 'dd/mm/yyyy')}`,
+                        type: '0',
+                        course: item.course && item.course._id,
+                        user: item.user && item.user._id,
+                        sentDate: new Date(),
+                    };
+                    this.props.createNotification(data, () => T.notify('Gửi thông báo thành công!', 'success'));
+                }
+            });
 
     render() {
         const permission = this.getUserPermission('student', ['read', 'write']);
@@ -106,25 +107,24 @@ class FailStudentPage extends AdminPage {
                 </tr>)
         });
         return this.renderPage({
-            icon: 'fa fa-cubes', // select icon
+            icon: 'fa fa-users', // select icon
             title: 'Học viên chưa đạt sát hạch',
             breadcrumb: ['Học viên chưa đạt sát hạch'],
             content: <>
                 <div className='tile'>
                     <div className='tile-body'>
-                        <div className='pb-3 row'>
+                        <div className='row'>
                             <div className='col-auto'>
                                 <label className='col-form-label'>Loại khóa học: </label>
                             </div>
                             <FormSelect ref={e => this.courseType = e} data={ajaxSelectCourseType} placeholder='Loại khóa học'
                                 onChange={data => this.onChangeCourseType(data.id)} style={{ margin: 0, width: '200px' }} />
                         </div>
+                        {table}
                     </div>
                 </div>
-                <div className="tile">
-                    <h3 className='tile-title'>Học viên chưa đạt sát hạch</h3>
-                    {table}
-                </div>
+                <CirclePageButton type='import' style={{ right: 70 }} onClick={() => T.alert('todo')} />
+                <CirclePageButton type='export' onClick={() => T.alert('todo')} />
                 <StudentModal readOnly={!permission.write} ref={e => this.modal = e} update={this.props.updateStudent} />
                 <Pagination pageCondition={pageCondition} pageNumber={pageNumber} pageSize={pageSize} pageTotal={pageTotal} totalItem={totalItem} getPage={(pageNumber, pageSize) => this.onSearch({ pageNumber, pageSize })} />
             </>,

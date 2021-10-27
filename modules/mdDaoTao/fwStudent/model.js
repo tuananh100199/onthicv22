@@ -51,7 +51,7 @@ module.exports = (app) => {
         }],
         diemTrungBinhThiHetMon: Number,
 
-        datSatHach: Boolean,
+        datSatHach: { type: Boolean, default: false },
         ngayDuKienThiSatHach: Date,
         liDoChuaDatSatHach: String,
 
@@ -149,7 +149,7 @@ module.exports = (app) => {
                 });
             } else {
                 changes.modifiedDate = new Date();
-                model.findOneAndUpdate({ _id }, changes, { new: true }).populate('user', 'email phoneNumber').populate('division', 'id title').populate('course','name').exec(done);
+                model.findOneAndUpdate({ _id }, changes, { new: true }).populate('user', 'email phoneNumber').populate('division', 'id title').populate('course', 'name').exec(done);
             }
         },
 
