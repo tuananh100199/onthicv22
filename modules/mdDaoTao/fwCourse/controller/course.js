@@ -496,21 +496,28 @@ module.exports = (app) => {
                 if (sessionUser.isCourseAdmin) {
                     const diemThiTotNghiep = student && student.diemThiTotNghiep && student.diemThiTotNghiep.length ? student.diemThiTotNghiep : [],
                         monThiTotNghiep = student && student.course && student.course.monThiTotNghiep && student.course.monThiTotNghiep.length ? student.course.monThiTotNghiep : [];
-                    for (let i = 0; i < diemThiTotNghiep.length; i++) {
-                        if (diemThiTotNghiep[i].diemLiet || diemThiTotNghiep[i].point < monThiTotNghiep[i].score) {
-                            filterTotNghiep = false;
-                            break;
+                    if (diemThiTotNghiep.length) {
+                        for (let i = 0; i < diemThiTotNghiep.length; i++) {
+                            if (diemThiTotNghiep[i].diemLiet || diemThiTotNghiep[i].point < monThiTotNghiep[i].score) {
+                                filterTotNghiep = false;
+                                break;
+                            }
                         }
+                    } else {
+                        filterTotNghiep = false;
                     }
-                    const diemThiHetMon = student && student.diemThiHetMon && student.diemThiHetMon.length ? student.diemThiHetMon : [];
-                    for (let i = 0; i < diemThiHetMon.length; i++) {
-                        if (diemThiHetMon[i].point < 5) {
-                            filterThiTotNghiep = false;
-                            break;
+                    const diemThiHetMon = student && student.diemThiHetMon && student.diemThiHetMon;
+                    if (diemThiHetMon.length) {
+                        for (let i = 0; i < diemThiHetMon.length; i++) {
+                            if (diemThiHetMon[i].point < 5) {
+                                filterThiTotNghiep = false;
+                                break;
+                            }
                         }
+                    } else {
+                        filterThiTotNghiep = false;
                     }
                 }
-
                 switch (filter) {
                     case 'thiHetMon':
                         {
@@ -620,18 +627,26 @@ module.exports = (app) => {
                 if (sessionUser.isCourseAdmin) {
                     const diemThiTotNghiep = student && student.diemThiTotNghiep && student.diemThiTotNghiep.length ? student.diemThiTotNghiep : [],
                         monThiTotNghiep = student && student.course && student.course.monThiTotNghiep && student.course.monThiTotNghiep.length ? student.course.monThiTotNghiep : [];
-                    for (let i = 0; i < diemThiTotNghiep.length; i++) {
-                        if (diemThiTotNghiep[i].diemLiet || diemThiTotNghiep[i].point < monThiTotNghiep[i].score) {
-                            filterTotNghiep = false;
-                            break;
+                    if (diemThiTotNghiep.length) {
+                        for (let i = 0; i < diemThiTotNghiep.length; i++) {
+                            if (diemThiTotNghiep[i].diemLiet || diemThiTotNghiep[i].point < monThiTotNghiep[i].score) {
+                                filterTotNghiep = false;
+                                break;
+                            }
                         }
+                    } else {
+                        filterTotNghiep = false;
                     }
-                    const diemThiHetMon = student && student.diemThiHetMon && student.diemThiHetMon.length ? student.diemThiHetMon : [];
-                    for (let i = 0; i < diemThiHetMon.length; i++) {
-                        if (diemThiHetMon[i].point < 5) {
-                            filterThiTotNghiep = false;
-                            break;
+                    const diemThiHetMon = student && student.diemThiHetMon && student.diemThiHetMon;
+                    if (diemThiHetMon.length) {
+                        for (let i = 0; i < diemThiHetMon.length; i++) {
+                            if (diemThiHetMon[i].point < 5) {
+                                filterThiTotNghiep = false;
+                                break;
+                            }
                         }
+                    } else {
+                        filterThiTotNghiep = false;
                     }
                 }
                 switch (filter) {
