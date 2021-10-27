@@ -20,7 +20,8 @@ module.exports = (app) => {
                                 if (error) {
                                     res.send({ error });
                                 } else {
-                                    page.list = page.list.map(item => ({ ...item._doc, _refId: _teachers.find(({ _id }) => item._refId == _id.toString()) }));
+                                    const list = app.clone(page.list);
+                                    page.list = list.map(item => app.clone(item, { _refId: _teachers.find(({ _id }) => item._refId == _id.toString()) }));
                                     res.send({ page });
                                 }
                             });
