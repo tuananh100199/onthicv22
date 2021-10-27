@@ -54,10 +54,16 @@ class LearningProgressModal extends AdminModal {
 }
 
 class CourseAdminModal extends AdminModal {
-    state = {};
-    itemScore = {};
+    state = { isLoading: true };
     componentDidMount() {
         $(document).ready(() => this.onShown(() => this.diemThucHanh.focus()));
+        const { monThiTotNghiep, subjects } = this.props;
+        monThiTotNghiep && monThiTotNghiep.forEach((monThi) => {
+            this[monThi._id] && this[monThi._id].value(0);
+        });
+        subjects && subjects.forEach((monThi) => {
+            this[monThi._id] && this[monThi._id].value(0);
+        });
     }
 
     onShow = (item) => {
@@ -67,14 +73,14 @@ class CourseAdminModal extends AdminModal {
             this[monThi._id] && this[monThi._id].value(monThi.point);
         });
         diemThiHetMon && diemThiHetMon.length && diemThiHetMon.forEach((monThi) => {
-            this.itemScore[monThi._id] && this.itemScore[monThi._id].value(monThi.point);
+            this[monThi._id] && this[monThi._id].value(monThi.point);
         });
         this.diemThucHanh.value(diemThucHanh);
         this.setState({
             _id,
             diemThiHetMon,
             diemThiTotNghiep,
-            monThiTotNghiep
+            monThiTotNghiep,
         });
     }
 
@@ -88,7 +94,7 @@ class CourseAdminModal extends AdminModal {
             this.diemThucHanh.focus();
         } else {
             this.props.updateStudent(this.state._id, changes, () => {
-                this.props.getLearningProgressPage(undefined, undefined, { courseId: this.props.course._id, filterOn: this.props.filterOn }, () => this.hide());
+                this.props.getLearningProgressPage(undefined, undefined, { courseId: this.props.course._id, filter: this.props.filter }, () => this.hide());
             });
         }
     }
@@ -261,14 +267,14 @@ class AdminLearningProgressPage extends AdminPage {
                             <div className='col-md-6'>
                                 <FormSelect ref={e => this.filter = e} data={isCourseAdmin ? dataSelectCourseAdmin : dataSelectLecturer} onChange={data => this.getPage(undefined, undefined, data)} style={{ marginBottom: '10px', width: '300px' }} />
                             </div>
-                            <Link style={{ textAlign: 'right' }} className='col-md-3' to={`${backRoute}/import-final-score`}><button className='btn btn-primary'> Nhập điểm thi hết môn </button></Link>
-                            <Link to={'/user/course/' + item._id + '/import-graduation-exam-score'} className='col-md-3'><button className='btn btn-primary'>Nhập điểm thi tốt nghiệp</button></Link>
+                            {isCourseAdmin && <Link style={{ textAlign: 'right' }} className='col-md-3' to={`${backRoute}/import-final-score`}><button className='btn btn-primary'> Nhập điểm thi hết môn </button></Link>}
+                            {isCourseAdmin && <Link to={'/user/course/' + item._id + '/import-graduation-exam-score'} className='col-md-3'><button className='btn btn-primary'>Nhập điểm thi tốt nghiệp</button></Link>}
                         </div>
                         {table}
                         {!isLecturer ? <Pagination name='adminLearningProgress' pageNumber={pageNumber} pageSize={pageSize} pageTotal={pageTotal} totalItem={totalItem} getPage={this.getPage} style={{ marginLeft: 45 }} /> : null}
                         {item._id ? <LearningProgressModal ref={e => this.modal = e} updateStudent={this.props.updateStudent} getLearningProgressPage={this.props.getLearningProgressPage} courseId={item._id} filter={this.state.filter} /> : null}
-                        {item._id ? <CourseAdminModal ref={e => this.courseAdmiModal = e} updateStudent={this.props.updateStudent} getLearningProgressPage={this.props.getLearningProgressPage} course={item} filter={this.state.filter} /> : null}
-                        <CirclePageButton type='export' onClick={() => exportLearningProgressToExcel(this.state.filter)} />
+                        {item._id ? <CourseAdminModal ref={e => this.courseAdmiModal = e} updateStudent={this.props.updateStudent} getLearningProgressPage={this.props.getLearningProgressPage} monThiTotNghiep={monThiTotNghiep} subjects={subjects} course={item} filter={this.state.filter} /> : null}
+                        {isCourseAdmin && <CirclePageButton type='export' onClick={() => exportLearningProgressToExcel(this.state.filter)} />}
                     </div>
                 </div>
             </>,
