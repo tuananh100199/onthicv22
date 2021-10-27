@@ -96,7 +96,7 @@ class FailStudentPage extends AdminPage {
                     <TableCell content={<>{`${item.lastname} ${item.firstname}`}<br />{item.identityCard}</>} style={{ whiteSpace: 'nowrap' }} />
                     <TableCell content={item.course && item.course.name} />
                     <TableCell content={item.liDoChuaDatSatHach || 'Chưa có'} />
-                    <TableCell content={T.dateToText(item.ngayDuKienThiSatHach, 'dd/mm/yyyy') || 'Chưa có'} />
+                    <TableCell content={item.ngayDuKienThiSatHach ? T.dateToText(item.ngayDuKienThiSatHach, 'dd/mm/yyyy') : 'Chưa có'} />
                     <TableCell type='buttons' content={item} permission={permission} onEdit={this.edit}>
                         {permission.write && item.ngayDuKienThiSatHach ?
                             <a className='btn btn-success' href='#' onClick={(e) => this.sendNotification(e, item)}>
