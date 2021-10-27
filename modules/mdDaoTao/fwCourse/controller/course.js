@@ -928,6 +928,7 @@ module.exports = (app) => {
                             } else {
                                 item.diemThiHetMon = diemThiHetMon;
                                 item.diemTrungBinhThiHetMon = diemTrungBinhThiHetMon;
+                                item.modifiedDate = new Date();
                                 item.save((error, student) => {
                                     if (error || !student) {
                                         err = error;
