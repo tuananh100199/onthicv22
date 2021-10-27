@@ -243,11 +243,17 @@ class AdminLearningProgressPage extends AdminPage {
                         <TableCell type='text' style={{ textAlign: 'center' }} content={diemLyThuyet} />
                         <TableCell type='link' style={{ textAlign: 'center' }} content={<>{diemThucHanh}<i className='fa fa-lg fa-edit' /></>} className='practicePoint' onClick={e => this.edit(e, item)} />
                         <TableCell type='text' style={{ textAlign: 'center' }} content={diemTB} />
-                        {isCourseAdmin && students && students[index] && students[index].diemThiHetMon && students[index].diemThiHetMon.length && students[index].diemThiHetMon.map((diemThi, i) => (
-                            <TableCell key={i} type='text' style={{ textAlign: 'center' }} content={diemThi.point} />))}
+                        {isCourseAdmin && subjects && subjects.length && subjects.map((diemThi, i) => (
+                            <TableCell key={i} type='text' style={{ textAlign: 'center' }}
+                                content={
+                                    students && students[index] && students[index].diemThiHetMon && students[index].diemThiHetMon[i] && students[index].diemThiHetMon[i].point
+                                } />))}
                         {isCourseAdmin && <TableCell key={index} type='text' style={{ textAlign: 'center' }} content={students && students[index] && students[index].diemTrungBinhThiHetMon} />}
-                        {isCourseAdmin && students && students[index] && students[index].diemThiTotNghiep && students[index].diemThiTotNghiep.length && students[index].diemThiTotNghiep.map((diemThi, i) => (
-                            <TableCell key={i} type='text' style={{ textAlign: 'center' }} className={diemThi.diemLiet ? 'text-danger' : ''} content={diemThi.point} />))}
+                        {isCourseAdmin && monThiTotNghiep && monThiTotNghiep.length ? monThiTotNghiep.map((diemThi, i) => (
+                            <TableCell key={i} type='text' style={{ textAlign: 'center' }} className={students && students[index] && students[index].diemThiTotNghiep && students[index].diemThiTotNghiep[i] && students[index].diemThiTotNghiep[i].diemLiet ? 'text-danger' : ''}
+                                content={
+                                    students && students[index] && students[index].diemThiTotNghiep && students[index].diemThiTotNghiep[i] && students[index].diemThiTotNghiep[i].point
+                                } />)) : null}
                         {isCourseAdmin && (
                             <TableCell type='buttons' content={item} permission={{ write: true, delete: true }} onEdit={e => this.edit(e, item)} />
                         )}
