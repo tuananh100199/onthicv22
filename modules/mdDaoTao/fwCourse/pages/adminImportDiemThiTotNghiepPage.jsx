@@ -92,6 +92,8 @@ class AdminImportDiemThiTotNghiepPage extends AdminPage {
         const { _id } = this.props.course.item || {};
         if (this.state.data) {
             this.props.importScore(this.state.data, _id);
+            this.setState({ data: [], isFileBoxHide: false });
+            this.change();
         } else T.notify('Chưa có thông tin điểm thi tốt nghiệp của học viên!', 'danger');
     }
 

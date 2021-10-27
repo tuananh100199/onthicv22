@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { getCourse, getLearningProgressPage, exportLearningProgressToExcel } from '../redux';
 import { updateStudent, getStudentPage } from 'modules/mdDaoTao/fwStudent/redux';
-import { AdminPage, AdminModal, CirclePageButton, TableCell, renderTable, FormTextBox, FormCheckbox } from 'view/component/AdminPage';
+import { AdminPage, AdminModal, CirclePageButton, TableCell, renderTable, FormTextBox, FormSelect } from 'view/component/AdminPage';
 import Pagination from 'view/component/Pagination';
 import './style.scss';
 
@@ -28,7 +28,7 @@ class LearningProgressModal extends AdminModal {
             this.diemThucHanh.focus();
         } else {
             this.props.updateStudent(this.state._id, changes, () => {
-                this.props.getLearningProgressPage(undefined, undefined, { courseId: this.props.courseId, filterOn: this.props.filterOn }, () => this.hide());
+                this.props.getLearningProgressPage(undefined, undefined, { courseId: this.props.courseId, filter: this.props.filter }, () => this.hide());
             });
         }
     }
@@ -53,8 +53,83 @@ class LearningProgressModal extends AdminModal {
     }
 }
 
+class CourseAdminModal extends AdminModal {
+    state = {};
+    itemScore = {};
+    componentDidMount() {
+        $(document).ready(() => this.onShown(() => this.diemThucHanh.focus()));
+    }
+
+    onShow = (item) => {
+        const { _id, diemThucHanh, diemThiHetMon, diemThiTotNghiep } = item || { diemThucHanh: 0 },
+            { monThiTotNghiep } = this.props.course;
+        diemThiTotNghiep && diemThiTotNghiep.length && diemThiTotNghiep.forEach((monThi) => {
+            this[monThi._id] && this[monThi._id].value(monThi.point);
+        });
+        diemThiHetMon && diemThiHetMon.length && diemThiHetMon.forEach((monThi) => {
+            this.itemScore[monThi._id] && this.itemScore[monThi._id].value(monThi.point);
+        });
+        this.diemThucHanh.value(diemThucHanh);
+        this.setState({
+            _id,
+            diemThiHetMon,
+            diemThiTotNghiep,
+            monThiTotNghiep
+        });
+    }
+
+    onSubmit = () => {
+        const changes = {
+            diemThucHanh: this.diemThucHanh.value(),
+
+        };
+        if (changes.diemThucHanh == '') {
+            T.notify('Vui lòng nhập điểm thực hành!', 'danger');
+            this.diemThucHanh.focus();
+        } else {
+            this.props.updateStudent(this.state._id, changes, () => {
+                this.props.getLearningProgressPage(undefined, undefined, { courseId: this.props.course._id, filterOn: this.props.filterOn }, () => this.hide());
+            });
+        }
+    }
+
+    onChangeScore = () => {
+        let diemThucHanh = this.diemThucHanh.value();
+        if (diemThucHanh) {
+            diemThucHanh = Number(diemThucHanh);
+            if (diemThucHanh < 0) {
+                this.diemThucHanh.value(0);
+            } else if (diemThucHanh > 10) {
+                this.diemThucHanh.value(diemThucHanh % 100 <= 10 ? diemThucHanh % 100 : diemThucHanh % 10);
+            }
+        }
+    }
+
+    render = () => {
+        const { diemThiHetMon, diemThiTotNghiep, monThiTotNghiep } = this.state,
+            course = this.props.course;
+        return this.renderModal({
+            title: 'Bảng điểm tổng hợp',
+            size: 'large',
+            body:
+                <div className='row'>
+                    {diemThiTotNghiep && diemThiTotNghiep.length && diemThiTotNghiep.map((monThi, index) => (
+                        <FormTextBox key={index} className='col-md-3' ref={e => this[monThi._id] = e} type='number' min='0' label={monThiTotNghiep[index].title} />
+                    ))}
+                    {diemThiHetMon && diemThiHetMon.length && diemThiHetMon.map((monThi, index) => (
+                        <FormTextBox key={index} className='col-md-3' ref={e => this[monThi._id] = e} type='number' min='0' label={course.subjects[index].title} />
+                    ))}
+                    <FormTextBox className='col-md-3' ref={e => this.diemThucHanh = e} label='Điểm thực hành' type='number' min='0' max='10' onChange={this.onChangeScore} />
+                </div>
+
+        });
+    }
+}
+
+
+
 class AdminLearningProgressPage extends AdminPage {
-    state = { filterOn: false };
+    state = { filter: 'all' };
     componentDidMount() {
         T.ready('/user/course', () => {
             const params = T.routeMatcher('/user/course/:_id/learning').parse(window.location.pathname);
@@ -62,33 +137,38 @@ class AdminLearningProgressPage extends AdminPage {
                 const course = this.props.course ? this.props.course.item : null;
                 this.setState({ courseId: params._id });
                 if (course) {
-                    this.props.getLearningProgressPage(undefined, undefined, { courseId: course._id, filterOn: this.state.filterOn });
+                    this.props.getLearningProgressPage(undefined, undefined, { courseId: course._id, filter: this.state.filter });
                 } else {
                     this.props.getCourse(params._id, data => {
                         if (data.error) {
                             T.notify('Lấy khóa học bị lỗi!', 'danger');
                             this.props.history.push('/user/course/' + params._id);
                         } else {
-                            this.props.getLearningProgressPage(undefined, undefined, { courseId: params._id, filterOn: this.state.filterOn });
+                            this.props.getLearningProgressPage(undefined, undefined, { courseId: params._id, filter: this.state.filter });
                         }
                     });
                 }
+                this.filter.value('all');
             } else {
                 this.props.history.push('/user/course/');
             }
         });
     }
 
-    getPage = (pageNumber, pageSize) => {
-        this.props.getLearningProgressPage(pageNumber, pageSize, { courseId: this.state.courseId, filterOn: this.state.filterOn });
+    getPage = (pageNumber, pageSize, data) => {
+        const filter = data ? data.id : this.state.filter;
+        this.setState({ filter });
+        this.props.getLearningProgressPage(pageNumber, pageSize, { courseId: this.state.courseId, filter });
     }
 
-    edit = (e, item) => e.preventDefault() || this.modal.show(item);
-
-    onChange = (value) => {
-        this.setState({ filterOn: value });
-        this.props.getLearningProgressPage(undefined, undefined, { courseId: this.state.courseId, filterOn: value });
-    }
+    edit = (e, item) => {
+        const user = this.props.system ? this.props.system.user : null,
+            { isCourseAdmin } = user;
+        e.preventDefault();
+        isCourseAdmin ?
+            this.courseAdmiModal.show(item) :
+            this.modal.show(item);
+    };
 
     render() {
         const user = this.props.system ? this.props.system.user : null,
@@ -96,7 +176,17 @@ class AdminLearningProgressPage extends AdminPage {
             item = this.props.course && this.props.course.item ? this.props.course.item : {},
             students = this.props.course && this.props.course && this.props.course.students ? this.props.course.students : [],
             subjects = this.props.course && this.props.course.subjects ? this.props.course.subjects.sort((a, b) => a.monThucHanh - b.monThucHanh) : [],
-            monThiTotNghiep = item && item.monThiTotNghiep ? item.monThiTotNghiep : [];
+            monThiTotNghiep = item && item.monThiTotNghiep ? item.monThiTotNghiep : [],
+            dataSelectCourseAdmin = [
+                { id: 'all', text: 'Tất cả học viên' },
+                { id: 'thiHetMon', text: 'Học viên đủ điều kiện thi hết môn' },
+                { id: 'thiTotNghiep', text: 'Học viên đủ điều kiện thi tốt nghiệp' },
+                { id: 'totNghiep', text: 'Học viên đủ điều kiện tốt nghiệp' },
+            ],
+            dataSelectLecturer = [
+                { id: 'all', text: 'Tất cả học viên' },
+                { id: 'thiHetMon', text: 'Học viên đủ điều kiện thi hết môn' },
+            ];
         const { pageNumber, pageSize, pageTotal, totalItem } = this.props.course && this.props.course.page ?
             this.props.course.page : { pageNumber: 1, pageSize: 50, pageTotal: 1, totalItem: 0 };
         const subjectColumns = [];
@@ -121,7 +211,6 @@ class AdminLearningProgressPage extends AdminPage {
                 <tr>
                     <th style={{ width: 'auto', textAlign: 'center' }}>#</th>
                     <th style={{ width: '100%' }} nowrap='true'>Tên học viên</th>
-                    {/* <th style={{ width: 'auto' }}>CMND/CCCD</th> */}
                     {subjectColumns}
                     <th style={{ width: 'auto', color: 'coral' }} nowrap='true'>Điểm lý thuyết</th>
                     <th style={{ width: 'auto', color: 'aqua' }} nowrap='true'>Điểm thực hành</th>
@@ -129,6 +218,7 @@ class AdminLearningProgressPage extends AdminPage {
                     {isCourseAdmin && finalScoreColumns}
                     {isCourseAdmin && <th style={{ width: 'auto', color: 'red' }} nowrap='true'>Điểm trung bình thi hết môn</th>}
                     {isCourseAdmin && monThiTotNghiepColumns}
+                    {isCourseAdmin && <th style={{ width: 'auto' }} nowrap='true'>Thao tác</th>}
                 </tr>),
             renderRow: (item, index) => {
                 const student = students[index],
@@ -139,7 +229,6 @@ class AdminLearningProgressPage extends AdminPage {
                     <tr key={index}>
                         <TableCell type='number' content={index + 1} />
                         <TableCell type='text' style={{ whiteSpace: 'nowrap' }} content={<p>{item.lastname + ' ' + item.firstname} <br /> {item.identityCard}</p>} />
-                        {/* <TableCell type='text' content={item.identityCard} /> */}
                         {subjects && subjects.length && subjects.map((subject, i) => (
                             <TableCell key={i} type='text' style={{ textAlign: 'center' }} content={` 
                             ${item.subject && item.subject[subject._id] && !subject.monThucHanh ? item.subject[subject._id].completedLessons : 0}
@@ -153,6 +242,9 @@ class AdminLearningProgressPage extends AdminPage {
                         {isCourseAdmin && <TableCell key={index} type='text' style={{ textAlign: 'center' }} content={students && students[index] && students[index].diemTrungBinhThiHetMon} />}
                         {isCourseAdmin && students && students[index] && students[index].diemThiTotNghiep && students[index].diemThiTotNghiep.length && students[index].diemThiTotNghiep.map((diemThi, i) => (
                             <TableCell key={i} type='text' style={{ textAlign: 'center' }} className={diemThi.diemLiet ? 'text-danger' : ''} content={diemThi.point} />))}
+                        {isCourseAdmin && (
+                            <TableCell type='buttons' content={item} permission={{ write: true, delete: true }} onEdit={e => this.edit(e, item)} />
+                        )}
                     </tr>);
             },
         });
@@ -166,14 +258,17 @@ class AdminLearningProgressPage extends AdminPage {
                 <div className='tile'>
                     <div className='tile-body'>
                         <div className='row'>
-                            <FormCheckbox className='col-md-6' ref={e => this.course = e} onChange={value => this.onChange(value)} label='Học viên đủ điều kiện thi hết môn' />
+                            <div className='col-md-6'>
+                                <FormSelect ref={e => this.filter = e} data={isCourseAdmin ? dataSelectCourseAdmin : dataSelectLecturer} onChange={data => this.getPage(undefined, undefined, data)} style={{ marginBottom: '10px', width: '300px' }} />
+                            </div>
                             <Link style={{ textAlign: 'right' }} className='col-md-3' to={`${backRoute}/import-final-score`}><button className='btn btn-primary'> Nhập điểm thi hết môn </button></Link>
                             <Link to={'/user/course/' + item._id + '/import-graduation-exam-score'} className='col-md-3'><button className='btn btn-primary'>Nhập điểm thi tốt nghiệp</button></Link>
                         </div>
                         {table}
                         {!isLecturer ? <Pagination name='adminLearningProgress' pageNumber={pageNumber} pageSize={pageSize} pageTotal={pageTotal} totalItem={totalItem} getPage={this.getPage} style={{ marginLeft: 45 }} /> : null}
-                        {item._id ? <LearningProgressModal ref={e => this.modal = e} updateStudent={this.props.updateStudent} getLearningProgressPage={this.props.getLearningProgressPage} courseId={item._id} filterOn={this.state.filterOn} /> : null}
-                        <CirclePageButton type='export' onClick={() => exportLearningProgressToExcel()} />
+                        {item._id ? <LearningProgressModal ref={e => this.modal = e} updateStudent={this.props.updateStudent} getLearningProgressPage={this.props.getLearningProgressPage} courseId={item._id} filter={this.state.filter} /> : null}
+                        {item._id ? <CourseAdminModal ref={e => this.courseAdmiModal = e} updateStudent={this.props.updateStudent} getLearningProgressPage={this.props.getLearningProgressPage} course={item} filter={this.state.filter} /> : null}
+                        <CirclePageButton type='export' onClick={() => exportLearningProgressToExcel(this.state.filter)} />
                     </div>
                 </div>
             </>,

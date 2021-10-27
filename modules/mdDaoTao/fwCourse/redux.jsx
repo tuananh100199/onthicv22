@@ -454,8 +454,8 @@ export function exportRepresenterAndStudentToExcel(_courseId) {
 export function exportTeacherAndStudentToExcel(_courseId) {
     T.download(T.url(`/api/course/teacher-student/export/${_courseId}`));
 }
-export function exportLearningProgressToExcel() {
-    T.download(T.url('/api/course/learning-progress/export'));
+export function exportLearningProgressToExcel(filter) {
+    T.download(T.url(`/api/course/learning-progress/export/${filter}`));
 }
 // Ajax Selections ----------------------------------------------------------------------------------------------------
 export const ajaxSelectCourse = {

@@ -4,7 +4,7 @@ import { getCourseByStudent } from './redux';
 import { getRateByUser } from 'modules/_default/fwRate/redux';
 import { getStudent } from 'modules/mdDaoTao/fwStudent/redux';
 import RateModal from 'modules/_default/fwRate/RateModal';
-import { AdminPage, CirclePageButton, PageIconHeader, PageIcon, AdminModal, renderTable, TableCell } from 'view/component/AdminPage';
+import { AdminPage, CirclePageButton, PageIconHeader, PageIcon, AdminModal } from 'view/component/AdminPage';
 
 class ViewScoreModal extends AdminModal {
     state = {};
@@ -15,24 +15,18 @@ class ViewScoreModal extends AdminModal {
 
     render = () => {
         const { student, course } = this.state,
-            data = student ? [student] : [],
             monThiTotNghiep = course && course.monThiTotNghiep,
-            diemThiTotNghiep = student && student.diemThiTotNghiep;
-        const table = renderTable({
-            getDataSource: () => data,
-            renderHead: () => (
-                <tr>
-                    {monThiTotNghiep.length ? monThiTotNghiep.map((monThi, i) => (<th key={i} style={{ width: '100%' }} nowrap='true'>{monThi.title}</th>)) : null}
-                </tr>),
-            renderRow: (index) => (
-                <tr key={index}>
-                    {diemThiTotNghiep.length ? diemThiTotNghiep.map((monThi, i) => (<TableCell type='number' key={i} className={monThi.diemLiet ? 'text-danger' : ''} content={monThi.point} />)) : null}
-                </tr>),
-        });
+            diemThiTotNghiep = student && student.diemThiTotNghiep,
+            isLoading = !(monThiTotNghiep && monThiTotNghiep.length && diemThiTotNghiep && diemThiTotNghiep.length);
 
         return this.renderModal({
             title: 'Điểm thi tốt nghiệp của học viên',
-            body: <div className='d-flex justify-content-center'>{table}</div>
+            body:
+                <>
+                    {!isLoading ? monThiTotNghiep.map((monThi, i) => (
+                        <h5 key={i}>{monThi.title + ': '}<span className={diemThiTotNghiep[i].diemLiet ? 'text-danger' : ''}>{diemThiTotNghiep[i].point}</span></h5>
+                    )) : null}
+                </>
         });
     }
 }
