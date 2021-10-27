@@ -37,7 +37,6 @@ class MonThiTotNghiepModal extends AdminModal {
     }
 
     onShow = (item) => {
-        console.log(item);
         let { title, score, totalScore, diemLiet } = item || { title: '', score: '', totalScore: '', diemLiet: false };
         this.itemTitle.value(title);
         this.itemScore.value(score);
