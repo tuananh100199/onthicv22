@@ -43,7 +43,8 @@ class NoteModal extends AdminModal {
 class TimeTableModal extends AdminModal {
     state = {};
     onShow = (item) => {
-        const { _id, student, dateNumber, date, startHour, numOfHours, truant, licensePlates, content, note } = item || { date: null, startHour: 8, numOfHours: 2, truant: false, licensePlates: '', content: '', note: '' },
+        console.log('item', item);
+        const { _id, student, dateNumber, date, startHour, numOfHours, truant, licensePlates, content, note } = item || { date: item.start ? item.start : null, startHour: 8, numOfHours: 2, truant: false, licensePlates: '', content: '', note: '' },
             endHour = startHour + numOfHours;
         this.itemStudent.value(student ? student._id : null);
         this.itemDate.value(date);
@@ -98,7 +99,9 @@ class TimeTableModal extends AdminModal {
                     T.notify('Ngày học không được nhỏ hơn ngày hiện tại!', 'danger');
                     this.itemDate.focus();
                 } else {
-                    _id ? this.props.update(_id, data, {courseId: this.props.courseId, lecturerId: this.props.lecturerId, filterOn: this.props.filterOn}, () => this.hide()) : this.props.create(data, {courseId: this.props.courseId, lecturerId: this.props.lecturerId, filterOn: this.props.filterOn}, () => this.hide());
+                    this.props.onSave(_id, data, () => {
+                        this.hide();
+                    });
                 }
             }
         }
@@ -216,6 +219,7 @@ class TimeTableModal extends AdminModal {
 
 class LecturerView extends AdminPage {
     state = {};
+    eventSelect = null;
     componentDidMount() {
         const user = this.props.system ? this.props.system.user : null,
             { isLecturer, isCourseAdmin } = user;
@@ -235,8 +239,89 @@ class LecturerView extends AdminPage {
             this.setState({ courseId, lecturerId, isLecturer, isCourseAdmin, filterOn });
             this.props.getTimeTablePageByAdmin(undefined, undefined, { courseId: courseId, lecturerId: lecturerId, filterOn: filterOn});
         }
+        const _this = this;
+        T.ready('/user/course', () => {
+          $(this.calendar).fullCalendar({
+                timeZone: 'UTC', timeFormat: 'DD-HH:mm', dayHeaderFormat: 'dd/mm',
+                // weekNumbers: true,
+                selectable: true, eventLimit: false,
+                displayEventTime: true, slotEventOverlap: false, navLinks: true,
+                weekNumberCalculation: 'ISO',
+                fixedWeekCount: false, displayEventEnd: true,
+                showNonCurrentDates: false,
+                header: {
+                    left: 'prev,next',
+                    center: 'title',
+                    right: 'month,agendaWeek,agendaDay'
+                },
+                views: {
+                    month: { timeFormat: '' },
+                    agendaWeek: { columnHeaderFormat: 'ddd DD/MM' }
+                },
+                events: function(start, end, timezone, callback) {
+                    _this.getData(items => {
+                        callback(items.map(item => _this.getEventObject({}, item)));
+                    });
+                    },
+                select: (startDate, endDate) => {
+                    this.onCalendarSelect(startDate.toDate(), endDate.toDate());
+                },
+                eventClick: function(calEvent) {
+                    _this.eventSelect = calEvent;
+                    _this.onCalendarSelect(calEvent.start.toDate(), calEvent.end, calEvent.item);
+                },
+            });
+        });
+    }
+
+    getEventObject = (currentEnvent = {}, newItem) => {
+        let date = new Date(newItem.date);
+        const newEvent = {
+        ...currentEnvent,
+        title: `${newItem.startHour}-${newItem.startHour + newItem.numOfHours} ${newItem.student ? newItem.student.lastname + ' ' + newItem.student.firstname : ''}`,
+        start: date,
+        // end: (newItem.date + 1) + + `T${newItem.startHour + newItem.numOfHours}:00:00`,
+        // className: `calendar-event-${EnumTrangThaiDksd[newItem.trangThai]}`,
+        item: newItem,
+        // color: newItem.trangThai == 0 && new Date() > new Date(newItem.ngayBatDau) ? '#7b8494' : '',
+    };
+        // if (userEmail && userEmail == newItem?.emailNguoiTao) {
+        //     newEvent['textColor'] = '#511a6b !important';
+        // }
+        // console.log(newEvent);
+        return newEvent;
     }
     
+    getData = (done) => {
+        this.props.getTimeTablePageByAdmin(undefined, undefined, { courseId: this.props.courseId, lecturerId: this.props.lecturerId, filterOn: this.props.filterOn}, item => {
+           done && done(item.list);
+        });
+    }
+    
+    onCalendarSelect = (start, end, item) => {
+        const data = { start: start, end: end, ...item };
+        this.modalCourseAdmin.show(data);
+    }
+
+    onModalFormSave = (_id, data, done) => {
+
+        _id ? this.props.updateTimeTableByAdmin(_id, data, {courseId: this.props.courseId, lecturerId: this.props.lecturerId, filterOn: this.props.filterOn}, item => {
+            // console.log('data-update', item);
+            done && done();
+            if (this.eventSelect) {
+                const eventSelect = this.getEventObject(this.eventSelect, item);
+                $(this.calendar).fullCalendar('removeEvents', [this.eventSelect._id]);
+                $(this.calendar).fullCalendar('renderEvent', eventSelect);
+                this.eventSelect = null;
+            }
+        }) : this.props.createTimeTableByAdmin(data, {courseId: this.props.courseId, lecturerId: this.props.lecturerId, filterOn: this.props.filterOn}, data => {
+            // console.log('data-create', data);
+            done && done();
+            const newEvent = this.getEventObject({}, data);
+            $(this.calendar).fullCalendar('renderEvent', newEvent);
+        });
+    }
+
     edit = (e, item) => {
         e.preventDefault();
         if (this.state.isLecturer) {
@@ -291,11 +376,16 @@ class LecturerView extends AdminPage {
             ),
         });
         return (<>
-                <div>{table}</div>
+                <div>
+                    {this.props.list ? table : null}
+                    {this.props.grid ? 
+                    <div ref={e => this.calendar = e}></div>
+                    : null} 
+                </div>
                 <NoteModal ref={e => this.modalLecturer = e} readOnly={!permission.write} courseId={this.props.courseId} lecturerId={this.props.lecturerId} filterOn={this.props.filterOn}
                     update={this.props.updateTimeTableByAdmin} />
                 <TimeTableModal ref={e => this.modalCourseAdmin = e} readOnly={!permission.write} courseItem={courseItem} getStudent={this.props.getStudent} courseId={this.props.courseId} lecturerId={this.props.lecturerId} filterOn={this.props.filterOn}
-                    create={this.props.createTimeTableByAdmin} update={this.props.updateTimeTableByAdmin} getDateNumber={this.props.getTimeTableDateNumber} getPage={this.props.getTimeTablePageByAdmin} getTimeTableOfLecturer={this.props.getTimeTableOfLecturer} /> 
+                    create={this.props.createTimeTableByAdmin} update={this.props.updateTimeTableByAdmin} getDateNumber={this.props.getTimeTableDateNumber} getPage={this.props.getTimeTablePageByAdmin} getTimeTableOfLecturer={this.props.getTimeTableOfLecturer} onSave={this.onModalFormSave}  /> 
                  <Pagination name='pageTimeTable' pageNumber={pageNumber} pageSize={pageSize} pageTotal={pageTotal} totalItem={totalItem} style={{ left: 320 }}
                         getPage={this.getPage} />
                 {this.state.isCourseAdmin ?

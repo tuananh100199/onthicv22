@@ -38,8 +38,10 @@ export class AdminTimeTablePage extends AdminPage {
         this.setState({ currentLecturer: lecturer, key: !this.state.key});
     }
     render() {
+        // console.log(this.state);
         const { currentLecturer, listLecturer, filterOn, key, grid, list } = this.state;
         const item = this.props.course && this.props.course.item ? this.props.course.item : {};
+        // console.log('item', item);
         const inboxTimeTable = listLecturer && listLecturer.length && listLecturer.map((lecturer, index) => {
             const isSelectedUser = currentLecturer && currentLecturer._id ==  lecturer._id;
             return (
@@ -75,13 +77,12 @@ export class AdminTimeTablePage extends AdminPage {
                                 <div className='recent_heading pb-3'>
                                     <h4 style={{float: 'left'}}>{currentLecturer && currentLecturer.lastname + ' ' + currentLecturer.firstname }</h4>
                                     <div style={{float: 'right', display: 'flex'}}>
-                                        <button style={{border: 'none', outlineColor: '#2189CF', marginRight: '3px'}} onClick={() => this.setState({grid: false, list: true})}><i className="fa fa-bars"></i> List</button>
-                                        <button style={{border: 'none', outlineColor: '#2189CF'}} onClick={() =>this.setState({grid: true, list: false})}><i className="fa fa-th-large"></i> Grid</button>
+                                        <button style={{border: 'none', outlineColor: '#2189CF', marginRight: '3px'}} onClick={() => this.setState({key: !key, grid: false, list: true})}><i className='fa fa-bars'></i> List</button>
+                                        <button style={{border: 'none', outlineColor: '#2189CF'}} onClick={() =>this.setState({key: !key, grid: true, list: false})}><i className='fa fa-th-large'></i> Grid</button>
                                         <FormCheckbox ref={e => this.course = e} style={{paddingLeft: '12px'}} onChange={value => this.onChange(value)} label='Hiển thị ngày hiện tại' />
                                     </div>
                                 </div>
-                                {list && item && item._id ? <LecturerView  key={key} courseId={item._id} lecturerId={currentLecturer && currentLecturer._id} filterOn={filterOn}/> : null}
-                                {grid ? <>TODO</> : null}
+                                {currentLecturer && item && item._id ? <LecturerView key={key} courseId={item._id} lecturerId={currentLecturer && currentLecturer._id} filterOn={filterOn} list={list} grid={grid}/> : null}
                             </div>
                         </div>
                     </div>

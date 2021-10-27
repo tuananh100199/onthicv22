@@ -37,7 +37,7 @@ export class LecturerTimeTablePage extends AdminPage {
             content: (
                 <div className='tile'>
                     <div className='tile-body'>
-                        {item && item._id ? <LecturerView courseId={item._id} courseType={item.courseType} lecturerId={userId} /> : null}
+                        {item && item._id ? <LecturerView courseId={item._id} courseType={item.courseType} lecturerId={userId} filterOn={false}/> : null}
                     </div>
                 </div>),
             backRoute,

@@ -94,7 +94,13 @@ module.exports = (app) => {
     });
 
     app.post('/api/time-table/admin', app.permission.check('timeTable:write'), (req, res) => {
-        app.model.timeTable.create(req.body.data, (error, item) => res.send({ error, item }));
+        app.model.timeTable.create(req.body.data, (error, item) => {
+            if (error && !item) {
+                res.send({ error });
+            } else {
+                app.model.timeTable.get(item._id, (error, item) => res.send({ error, item }));
+            }
+        });
     });
 
     app.put('/api/time-table', app.permission.check('timeTable:write'), (req, res) => {
