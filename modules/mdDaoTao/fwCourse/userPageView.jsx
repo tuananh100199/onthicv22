@@ -76,7 +76,7 @@ class UserCoursePageDetail extends AdminPage {
 
                     <PageIcon to={`/user/hoc-vien/khoa-hoc/thong-tin/${courseId}`} icon='fa-info' iconBackgroundColor='#17a2b8' text='Thông tin khóa học' />
                     <PageIcon to={`/user/hoc-vien/khoa-hoc/${courseId}/thoi-khoa-bieu`} icon='fa-calendar' iconBackgroundColor='#ffc107' text='Thời khóa biểu' />
-                    {/* <PageIcon to={`/user/course/${courseId}/forum`} icon='fa-users' iconBackgroundColor='#8d6e63' text='Forum' /> */}
+                    <PageIcon to={`/user/course/${courseId}/forum`} icon='fa-users' iconBackgroundColor='#9ced65' text='Forum' />
 
                     {subjects.length ? <>
                         <PageIconHeader text='Môn học lý thuyết' />
