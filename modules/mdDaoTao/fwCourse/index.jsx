@@ -92,8 +92,12 @@ export default {
             component: Loadable({ loading: Loading, loader: () => import('./pages/adminImportDiemThiTotNghiepPage') })
         },
         {
-            path: '/user/course/:_id/calendar',
+            path: '/user/course/:_id/lecturer/calendar',
             component: Loadable({ loading: Loading, loader: () => import('./pages/lecturerTimeTablePage') })
+        },
+        {
+            path: '/user/course/:_id/calendar',
+            component: Loadable({ loading: Loading, loader: () => import('modules/mdDaoTao/fwTimeTable/adminTimeTablePage') })
         },
         {
             path: '/user/course/:_id/rate-subject',

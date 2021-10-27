@@ -167,10 +167,7 @@ module.exports = (app) => {
                     const student = students[index];
                     student.division = req.body.division;
                     const dataPassword = convert(student.birthday),
-                        newUser = {
-                            ...student,
-                            password: dataPassword,
-                        };
+                        newUser = { ...student, password: dataPassword, active: true };
                     app.model.user.create(newUser, (error, user) => {
                         if (error && !user) {
                             err = error;
