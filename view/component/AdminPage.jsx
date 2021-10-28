@@ -169,13 +169,13 @@ export class FormCheckbox extends React.Component {
                     </label>
                 </div>
             </div>) : (
-                <div className={'animated-checkbox ' + className} style={style}>
-                    <label>
-                        <input type='checkbox' checked={this.state.checked} onChange={this.onCheck} />
-                        <span className={'label-text ' + (this.state.checked ? trueClassName : falseClassName)}>{label}</span>
-                    </label>
-                </div>
-            );
+            <div className={'animated-checkbox ' + className} style={style}>
+                <label>
+                    <input type='checkbox' checked={this.state.checked} onChange={this.onCheck} />
+                    <span className={'label-text ' + (this.state.checked ? trueClassName : falseClassName)}>{label}</span>
+                </label>
+            </div>
+        );
     }
 }
 
@@ -462,11 +462,11 @@ export class FormDatePicker extends React.Component {
                         formatChars={{ '2': '[12]', '0': '[09]', '1': '[01]', '3': '[0-3]', '9': '[0-9]', '5': '[0-5]', 'h': '[0-2]' }}
                         value={this.state.value} readOnly={readOnly} placeholder={label} />
                 ) : (
-                        <Datetime ref={e => this.input = e} timeFormat={type == 'time' ? 'HH:mm' : false} dateFormat='DD/MM/YYYY'
-                            inputProps={{ placeholder: label, ref: e => this.inputRef = e, readOnly, style: { display: readOnly ? 'none' : '' } }}
-                            value={this.state.value} onChange={this.handleChange} closeOnSelect={true} />
-                        // value={this.state.value} onChange={e => this.setState({ value: new Date(e) })} closeOnSelect={true} />
-                    )}
+                    <Datetime ref={e => this.input = e} timeFormat={type == 'time' ? 'HH:mm' : false} dateFormat='DD/MM/YYYY'
+                        inputProps={{ placeholder: label, ref: e => this.inputRef = e, readOnly, style: { display: readOnly ? 'none' : '' } }}
+                        value={this.state.value} onChange={this.handleChange} closeOnSelect={true} />
+                    // value={this.state.value} onChange={e => this.setState({ value: new Date(e) })} closeOnSelect={true} />
+                )}
             </div>);
     }
 }
@@ -490,12 +490,12 @@ export class FormFileBox extends React.Component {
     setData = data => this.fileBox.setData(data);
 
     render() {
-        let { label = '', className = '', style = {}, readOnly = false, postUrl = '/user/upload', uploadType = '', onDelete = null, onSuccess = null } = this.props;
+        let { label = '', className = '', style = {}, userData, readOnly = false, postUrl = '/user/upload', uploadType = '', onDelete = null, onSuccess = null } = this.props;
         return (
             <div className={'form-group ' + className} style={style}>
                 {label && <label>{label}&nbsp;</label>}
-                {!readOnly && onDelete ? <a href='#' className='text-danger' onClick={onDelete}><i className='fa fa-fw fa-lg fa-trash' /></a> : null}
-                <FileBox ref={e => this.fileBox = e} postUrl={postUrl} uploadType={uploadType} readOnly={readOnly} success={data => onSuccess && onSuccess(data)} />
+                {!readOnly && onDelete ? <a href='#' className='text-danger' userData={userData} onClick={onDelete}><i className='fa fa-fw fa-lg fa-trash' /></a> : null}
+                <FileBox userData={userData} ref={e => this.fileBox = e} postUrl={postUrl} uploadType={uploadType} readOnly={readOnly} success={data => onSuccess && onSuccess(data)} />
             </div>);
     }
 }
@@ -558,7 +558,7 @@ export class PageIcon extends React.Component {
 }
 export class PageIconHeader extends React.Component {
     render() {
-        const { className = 'col-md-12', text = '', visible=true } = this.props;
+        const { className = 'col-md-12', text = '', visible = true } = this.props;
         return visible && <h4 className={className}>{text}</h4>;
     }
 }

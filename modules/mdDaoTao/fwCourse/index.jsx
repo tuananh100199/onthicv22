@@ -88,6 +88,10 @@ export default {
             component: Loadable({ loading: Loading, loader: () => import('./pages/adminLearningProgressPage') })
         },
         {
+            path: '/user/course/:_id/import-graduation-exam-score',
+            component: Loadable({ loading: Loading, loader: () => import('./pages/adminImportDiemThiTotNghiepPage') })
+        },
+        {
             path: '/user/course/:_id/lecturer/calendar',
             component: Loadable({ loading: Loading, loader: () => import('./pages/lecturerTimeTablePage') })
         },

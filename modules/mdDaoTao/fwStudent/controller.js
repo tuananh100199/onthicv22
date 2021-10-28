@@ -285,7 +285,7 @@ module.exports = (app) => {
                                 values = values ? values.trim() : '';
                                 return values.length >= 10 ? new Date(values.slice(6, 10), values.slice(3, 5) - 1, values.slice(0, 2)) : null;
                             };
-                            const email = values[4] && values[4] != undefined ? values[4].text : '';
+                            const email = values[4] && values[4] != undefined ? values[4] : '';
                             data.push({
                                 id: index - 1,
                                 lastname: values[2],
