@@ -108,7 +108,13 @@ module.exports = (app) => {
     });
 
     app.put('/api/time-table/admin', app.permission.check('timeTable:write'), (req, res) => {
-        app.model.timeTable.update(req.body._id, req.body.changes, (error, item) => res.send({ error, item }));
+        app.model.timeTable.update(req.body._id, req.body.changes, (error, item) => {
+            if (error && !item) {
+                res.send({ error });
+            } else {
+                app.model.timeTable.get(item._id, (error, item) => res.send({ error, item }));
+            }
+        });
     });
 
     app.delete('/api/time-table', app.permission.check('timeTable:delete'), (req, res) => {

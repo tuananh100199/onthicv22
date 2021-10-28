@@ -11,7 +11,7 @@ import { AdminPage, AdminModal, TableCell, renderTable, FormTextBox, FormCheckbo
 class NoteModal extends AdminModal {
     state = {};
     onShow = (item) => {
-        const { _id, student, note, truant } = item || { note: '', truant: false };
+        const { _id, student, note, truant } = item.data || { note: '', truant: false };
         this.itemNote.value(note);
         this.itemTruant.value(truant);
 
@@ -25,7 +25,7 @@ class NoteModal extends AdminModal {
                 note: this.itemNote.value(),
                 truant: this.itemTruant.value(),
             };
-            this.props.update(_id, changes, {courseId: this.props.courseId, lecturerId: this.props.lecturerId}, () => this.hide());
+            this.props.update(_id, changes, {courseId: this.props.courseId, lecturerId: this.props.lecturerId, filterOn: false}, () => this.hide());
         }
     }
 
@@ -41,7 +41,7 @@ class NoteModal extends AdminModal {
 }
 
 class TimeTableModal extends AdminModal {
-    state = {};
+    state = {listTimeTable: null};
     onShow = (item) => {
         function formatDayOrMonth(item){
             return ('0' + item).slice(-2);
@@ -69,8 +69,10 @@ class TimeTableModal extends AdminModal {
         date ? this.props.getTimeTableOfLecturer({courseId: this.props.courseId, lecturerId: this.props.lecturerId, date: formatDate(date)}, data => {
             if (data.items && data.items.length){
                 this.setState({ listTimeTable: data.items }, () => this.getDateNumber());
-            } 
-        }) :  this.setState({ listTimeTable: null });
+            } else{
+                this.setState({ listTimeTable: null });
+            }
+        }) :  null;
     }
 
     onSubmit = () => {
@@ -80,7 +82,7 @@ class TimeTableModal extends AdminModal {
                 student: student ? student._id : null,
                 date: this.itemDate.value(),
                 startHour: this.itemStartHour.value(),
-                numOfHours: this.itemNumOfHours.value(),
+                numOfHours: Number(this.itemNumOfHours.value()),
                 truant: this.itemTruant.value(),
                 licensePlates: this.itemLicensePlates.value(),
                 content: this.itemContent.value(),
@@ -209,15 +211,18 @@ class TimeTableModal extends AdminModal {
                     <FormTextBox className='col-6 col-md-4' ref={e => this.itemStartHour = e} label='Giờ bắt đầu' type='number' min='0' max='23' onChange={this.onChangeHour} readOnly={this.props.readOnly} required />
                     <FormTextBox className='col-6 col-md-4' ref={e => this.itemNumOfHours = e} label='Số giờ học' type='number' min='1' max='23' onChange={this.onChangeHour} readOnly={this.props.readOnly} required />
                     
-                    <div className='col-12' style={{ visibility: date &&  listTimeTable && listTimeTable.length ? 'visible' : 'hidden' }}>
-                        {listTimeTable == null ? '' : <>
+                    <div className='col-12'>
+                        { <>
                             <p> {dateNumber == null ? '' :
                                 (dateNumber == -1 ? <span className='text-danger'>Trùng thời khóa biểu!</span> : <>Buổi học thứ: <span className='text-primary'>{dateNumber}</span>.</>)}
                             </p>
-                            <p>{date == null ? '' : <>
-                                Lịch học: <span className='text-success'>{new Date(date).getDayText()} {new Date(date).getDateText()}</span></>}
-                            </p>
-                            {table}
+                            {listTimeTable && listTimeTable.length && date != null ? 
+                            <div>
+                                <p>
+                                    Lịch học: <span className='text-success'>{new Date(date).getDayText()} {new Date(date).getDateText()}</span>
+                                </p>
+                                {table}
+                            </div> : ''}
                         </> }
                     </div>
 
@@ -329,7 +334,6 @@ class LecturerView extends AdminPage {
     }
 
     onModalFormSave = (_id, data, done) => {
-
         _id ? this.props.updateTimeTableByAdmin(_id, data, {courseId: this.props.courseId, lecturerId: this.props.lecturerId, filterOn: this.props.filterOn}, item => {
             done && done();
             if (this.eventSelect) {
