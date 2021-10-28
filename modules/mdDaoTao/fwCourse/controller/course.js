@@ -539,6 +539,11 @@ module.exports = (app) => {
                             return app.clone(student, { diemLyThuyet, diemThucHanh });
                         }
                         break;
+                    case 'satHach':
+                        if (student.datSatHach) {
+                            return app.clone(student, { diemLyThuyet, diemThucHanh });
+                        }
+                        break;
                     default:
                         return app.clone(student, { diemLyThuyet, diemThucHanh });
                 }
