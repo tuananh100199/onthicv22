@@ -223,6 +223,7 @@ class AdminLearningProgressPage extends AdminPage {
                     {isCourseAdmin && finalScoreColumns}
                     {isCourseAdmin && <th style={{ width: 'auto', color: 'red' }} nowrap='true'>Điểm trung bình thi hết môn</th>}
                     {isCourseAdmin && monThiTotNghiepColumns}
+                    {isCourseAdmin && <th style={{ width: 'auto' }} nowrap='true'>Đạt sát hạch</th>}
                     {isCourseAdmin && <th style={{ width: 'auto' }} nowrap='true'>Thao tác</th>}
                 </tr>),
             renderRow: (item, index) => {
@@ -247,12 +248,13 @@ class AdminLearningProgressPage extends AdminPage {
                                 content={
                                     students && students[index] && students[index].diemThiHetMon && students[index].diemThiHetMon[i] && students[index].diemThiHetMon[i].point
                                 } />))}
-                        {isCourseAdmin && <TableCell key={index} type='text' style={{ textAlign: 'center' }} content={students && students[index] && students[index].diemTrungBinhThiHetMon} />}
+                        {isCourseAdmin && <TableCell type='text' style={{ textAlign: 'center' }} content={students && students[index] && students[index].diemTrungBinhThiHetMon} />}
                         {isCourseAdmin && monThiTotNghiep && monThiTotNghiep.length ? monThiTotNghiep.map((diemThi, i) => (
                             <TableCell key={i} type='text' style={{ textAlign: 'center' }} className={students && students[index] && students[index].diemThiTotNghiep && students[index].diemThiTotNghiep[i] && students[index].diemThiTotNghiep[i].diemLiet ? 'text-danger' : ''}
                                 content={
                                     students && students[index] && students[index].diemThiTotNghiep && students[index].diemThiTotNghiep[i] && students[index].diemThiTotNghiep[i].point
                                 } />)) : null}
+                        {isCourseAdmin && <TableCell type='text' style={{ textAlign: 'center' }} content={students && students[index] && students[index].datSatHach ? 'X' : ''} />}
                         {isCourseAdmin && (
                             <TableCell type='buttons' content={item} permission={{ write: true, delete: true }} onEdit={e => this.edit(e, item)} />
                         )}

@@ -21,7 +21,7 @@ class UserModal extends AdminModal {
     componentDidMount() {
         $(document).ready(() => this.onShown(() => this.itemLastname.focus()));
     }
-    
+
     onShow = (item) => {
         if (item == null) item = { _id: null, firstname: '', lastname: '', email: '', phoneNumber: '', sex: 'male', birthday: null, identityCard: '', division: null, roles: [], active: true, isCourseAdmin: false, isLecturer: false, isTrustLecturer: false, isStaff: false };
         this.itemFirstname.value(item.firstname || '');
@@ -57,6 +57,7 @@ class UserModal extends AdminModal {
             isCourseAdmin: this.itemIsCourseAdmin.value(),
             isStaff: this.itemIsStaff.value(),
             isLecturer: this.itemIsLecturer.value(),
+            isRepresenter: this.itemIsRepresenter.value(),
             isTrustLecturer: this.itemIsTrustLecturer.value(),
             roles: this.itemRoles.value(),
             birthday: this.itemBirthday.value(),

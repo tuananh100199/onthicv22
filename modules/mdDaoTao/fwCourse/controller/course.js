@@ -560,7 +560,8 @@ module.exports = (app) => {
             pageCondition = { course: condition.courseId || { $ne: null } },
             filter = req.params.filter;
         let listStudent = [],
-            subjects = [];
+            subjects = [],
+            monThiTotNghiep = [];
 
         new Promise(resolve => {
             if (sessionUser.isCourseAdmin) {
@@ -578,6 +579,7 @@ module.exports = (app) => {
                         page = app.clone(page);
                         listStudent = page && page.list ? page.list.map(item => item = app.clone(item)) : [];
                         subjects = listStudent.length && listStudent[0].course && listStudent[0].course.subjects ? listStudent[0].course.subjects : [];
+                        monThiTotNghiep = listStudent.length && listStudent[0].course && listStudent[0].course.monThiTotNghiep ? listStudent[0].course.monThiTotNghiep : [];
                         resolve();
                     }
                 });
@@ -675,6 +677,11 @@ module.exports = (app) => {
                             return app.clone(student, { diemLyThuyet, diemThucHanh });
                         }
                         break;
+                    case 'satHach':
+                        if (student.datSatHach) {
+                            return app.clone(student, { diemLyThuyet, diemThucHanh });
+                        }
+                        break;
                     default:
                         return app.clone(student, { diemLyThuyet, diemThucHanh });
                 }
@@ -689,7 +696,7 @@ module.exports = (app) => {
                 { cell: 'F1', value: 'Điểm thực hành', bold: true, border: '1234' },
                 { cell: 'G1', value: 'Điểm trung bình', bold: true, border: '1234' },
             ];
-            worksheet.columns = [
+            let columns = [
                 { header: 'STT', key: 'id', width: 15 },
                 { header: 'Họ', key: 'lastname', width: 20 },
                 { header: 'Tên', key: 'firstname', width: 20 },
@@ -698,8 +705,16 @@ module.exports = (app) => {
                 { header: 'Điểm thực hành', key: 'diemThucHanh', width: 20 },
                 { header: 'Điểm trung bình', key: 'diemTB', width: 20 },
             ];
+            const listMonThi = subjects.concat(monThiTotNghiep);
+            listMonThi.push({ title: 'Sát hạch', _id: 'satHach' });
+            listMonThi.length && listMonThi.forEach((monThi, index) => {
+                const col = String.fromCharCode('H'.charCodeAt() + index) + '1';
+                cells.push({ cell: col, value: monThi.title, bold: true, border: '1234' });
+                columns.push({ header: monThi.title, key: monThi._id.toString(), width: 20 });
+            });
+            worksheet.columns = columns;
             listStudentReturn.filter(item => item).forEach((item, index) => {
-                worksheet.addRow({
+                const obj = {
                     id: index + 1,
                     lastname: item.lastname,
                     firstname: item.firstname,
@@ -707,7 +722,15 @@ module.exports = (app) => {
                     diemLyThuyet: item.diemLyThuyet,
                     diemThucHanh: item.diemThucHanh,
                     diemTB: ((item.diemLyThuyet + item.diemThucHanh) / 2).toFixed(1),
+                };
+                subjects.length && subjects.forEach((monThi, index) => {
+                    obj[monThi._id] = item.diemThiHetMon[index] ? item.diemThiHetMon[index].point : 0;
                 });
+                monThiTotNghiep.length && monThiTotNghiep.forEach((monThi, index) => {
+                    obj[monThi._id] = item.diemThiTotNghiep[index] ? item.diemThiTotNghiep[index].point : 0;
+                });
+                obj['satHach'] = item.datSatHach ? 'X' : '';
+                worksheet.addRow(obj);
             });
             app.excel.write(worksheet, cells);
             app.excel.attachment(workbook, res, 'BangDiemHocVien.xlsx');
