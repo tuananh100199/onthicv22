@@ -552,17 +552,16 @@ module.exports = (app) => {
         });
     });
 
-    app.get('/api/course/learning-progress/export/:filter', app.permission.check('course:export'), (req, res) => {
+    app.get('/api/course/learning-progress/export/:_courseId/:filter', app.permission.check('course:export'), (req, res) => {
         const pageNumber = parseInt(req.params.pageNumber),
             pageSize = parseInt(req.params.pageSize),
             sessionUser = req.session.user,
             condition = req.query.pageCondition || {},
-            pageCondition = { course: condition.courseId || { $ne: null } },
+            pageCondition = { course: req.params._courseId || { $ne: null } },
             filter = req.params.filter;
         let listStudent = [],
             subjects = [],
             monThiTotNghiep = [];
-
         new Promise(resolve => {
             if (sessionUser.isCourseAdmin) {
                 if (condition.searchText) {
@@ -584,7 +583,7 @@ module.exports = (app) => {
                     }
                 });
             } else if (sessionUser.isLecturer) {
-                app.model.course.get(req.query._id, (error, item) => {
+                app.model.course.get(req.params._courseId, (error, item) => {
                     if (error || !item) {
                         res.send({ error });
                     } else {

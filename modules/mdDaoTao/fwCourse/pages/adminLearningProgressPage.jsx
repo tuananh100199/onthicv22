@@ -283,7 +283,7 @@ class AdminLearningProgressPage extends AdminPage {
                         {!isLecturer ? <Pagination name='adminLearningProgress' pageNumber={pageNumber} pageSize={pageSize} pageTotal={pageTotal} totalItem={totalItem} getPage={this.getPage} style={{ marginLeft: 45 }} /> : null}
                         {item._id ? <LearningProgressModal ref={e => this.modal = e} updateStudent={this.props.updateStudent} getLearningProgressPage={this.props.getLearningProgressPage} courseId={item._id} filter={this.state.filter} /> : null}
                         {item._id ? <CourseAdminModal ref={e => this.courseAdmiModal = e} updateStudent={this.props.updateStudent} getLearningProgressPage={this.props.getLearningProgressPage} monThiTotNghiep={monThiTotNghiep} subjects={subjects} course={item} filter={this.state.filter} /> : null}
-                        {isCourseAdmin && <CirclePageButton type='export' onClick={() => exportLearningProgressToExcel(this.state.filter)} />}
+                        {isCourseAdmin && <CirclePageButton type='export' onClick={() => exportLearningProgressToExcel(this.state.courseId, this.state.filter)} />}
                     </div>
                 </div>
             </>,
