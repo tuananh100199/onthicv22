@@ -76,7 +76,6 @@ module.exports = app => {
         }),
 
         addMonThiTotNghiep: (_id, data, done) => {
-            console.log(data);
             model.findOneAndUpdate({ _id }, { $push: { monThiTotNghiep: data } }, { new: true }).exec(done);
         },
 

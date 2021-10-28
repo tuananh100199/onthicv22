@@ -60,7 +60,6 @@ class adminEditPage extends AdminPage {
             videos = lesson && lesson.videos ? lesson.videos : [],
             taiLieuThamKhao = lesson && lesson.taiLieuThamKhao;
         const rate = this.props.rate && this.props.rate.item;
-        console.log(rate && rate.value);
         const videosRender = videos.length ? videos.map((video, index) => (
             <div key={index} className='d-flex justify-content-center pb-5'>
                 <div className='embed-responsive embed-responsive-16by9' style={{ width: '70%', display: 'block' }} onClick={e => this.onView(e, video._id, index)}>
