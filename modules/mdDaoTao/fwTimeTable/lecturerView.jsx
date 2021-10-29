@@ -40,7 +40,6 @@ class NoteModal extends AdminModal {
 
 class TimeTableModal extends AdminModal {
     state = {listTimeTable: null};
-
     onShow = (item) => {
         function formatDayOrMonth(item){
             return ('0' + item).slice(-2);
@@ -83,7 +82,7 @@ class TimeTableModal extends AdminModal {
                 student: student ? student._id : null,
                 date: this.itemDate.value(),
                 startHour: this.itemStartHour.value(),
-                numOfHours: this.itemNumOfHours.value(),
+                numOfHours: Number(this.itemNumOfHours.value()),
                 truant: this.itemTruant.value(),
                 licensePlates: this.itemLicensePlates.value(),
                 content: this.itemContent.value(),
@@ -240,7 +239,6 @@ class LecturerView extends AdminPage {
     state = {};
     eventSelect = null;
     componentDidMount() {
-        // this.componentTypes = Object.keys(T.component).sort().map(key => ({ id: key, text: (T.component[key] && T.component[key].text) || key }));
         const user = this.props.system ? this.props.system.user : null,
             { isLecturer, isCourseAdmin } = user;
         const { courseId, lecturerId, filterOn } = this.props;
@@ -403,7 +401,7 @@ class LecturerView extends AdminPage {
                     <TableCell type='number' style={{ textAlign: 'center' }} content={item.numOfHours} />
                     <TableCell type='number' style={{ textAlign: 'center' }} content={item.licensePlates} />
                     <TableCell type='checkbox' content={item.truant} permission={permission} onChanged={active =>  T.confirm('Học viên vắng học', 'Bạn có chắc muốn thay đổi trạng thái học viên nghỉ học?', true, isConfirm =>
-        isConfirm && this.props.updateTimeTableByAdmin(item._id, { truant: active }, {courseId: this.props.courseId, lecturerId: this.props.lecturerId, filterOn: this.props.filterOn} )) }/>
+                        isConfirm && this.props.updateTimeTableByAdmin(item._id, { truant: active }, {courseId: this.props.courseId, lecturerId: this.props.lecturerId, filterOn: this.props.filterOn} )) }/>
                     <TableCell type='buttons' content={item} permission={permission} onEdit={this.edit} onDelete={this.delete} />
                 </tr>
             ),
