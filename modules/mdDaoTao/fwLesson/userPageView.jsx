@@ -85,7 +85,7 @@ class adminEditPage extends AdminPage {
                             // <button className='btn btn-primary' onClick={() => this.modalTaiLieuThamKhao.show(taiLieuThamKhao)}>
                             //     Tài liệu tham khảo
                             // </button>
-                            <a href='#' onClick={() => this.modalTaiLieuThamKhao.show(taiLieuThamKhao)} style={{ color: 'black' }} ><h5>Tài liệu tham khảo</h5></a>
+                            <a href={'/user/hoc-vien/khoa-hoc/' + courseId + '/mon-hoc/' + subjectId + '/bai-hoc/tai-lieu/' + lessonId} style={{ color: 'black' }}><h5>Tài liệu tham khảo</h5></a>
                             : null}
                     </div>
                     <div className='tile-footer' >

@@ -132,7 +132,7 @@ class AdminImportDiemThiTotNghiepPage extends AdminPage {
                     <FormTextBox className='col-md-3' ref={e => this.itemEndRow = e} label='Dòng kết thúc' onChange={e => this.change(e)} type='number' />
                     <FormTextBox className='col-md-4' ref={e => this.itemIdentityCard = e} label='Cột CMND/CCCD' onChange={e => this.change(e)} />
                     <h3 className='tile-title col-12'>Danh sách các cột môn thi</h3>
-                    {listMonThi && listMonThi.length && listMonThi.map((monThi, index) =>
+                    {listMonThi && listMonThi.length ? listMonThi.map((monThi, index) =>
                     (
                         <div key={index} className='col-md-3'>
                             <FormTextBox ref={e => this[monThi._id] = e} label={'Môn thi: ' + monThi.title} onChange={e => this.change(e)} />
@@ -141,7 +141,7 @@ class AdminImportDiemThiTotNghiepPage extends AdminPage {
                         </div>
 
                     )
-                    )}
+                    ) : null}
                 </div>
             </>);
         const subjectColumns = [];
