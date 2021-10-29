@@ -15,13 +15,15 @@ module.exports = (app) => {
         { name: 'student:read', menu: menuFailStudent }, { name: 'student:write' }, { name: 'student:delete', menu }, { name: 'student:import' },
         { name: 'pre-student:read', menu }, { name: 'pre-student:write' }, { name: 'pre-student:delete' }, { name: 'pre-student:import' },
     );
-    
+
+    app.get('/user/student/import-fail-pass', app.permission.check('student:import'), app.templates.admin);
     app.get('/user/student/fail-exam', app.permission.check('student:read'), app.templates.admin);
     app.get('/user/pre-student', app.permission.check('pre-student:read'), app.templates.admin);
     app.get('/user/pre-student/import', app.permission.check('pre-student:import'), app.templates.admin);
 
     // Student APIs ---------------------------------------------------------------------------------------------------
     app.get('/api/student/page/:pageNumber/:pageSize', app.permission.check('student:read'), (req, res) => {
+        // console.log('lâefhhh', app.mapToId('Trần Văn Tâm', '02/09/2021', '614ff55d4812de24f84ab44e', 'k17'));
         let pageNumber = parseInt(req.params.pageNumber),
             pageSize = parseInt(req.params.pageSize),
             condition = req.query.pageCondition || {},
@@ -319,9 +321,102 @@ module.exports = (app) => {
         }
     });
 
+    // Hook upload fail pass student excel---------------------------------------------------------------------------------------
+    app.uploadHooks.add('uploadExcelFailPassStudentFile', (req, fields, files, params, done) => {
+        if (files.FailPassStudentFile && files.FailPassStudentFile.length > 0 && fields.userData && fields.userData.length > 0 && fields.userData[0].startsWith('FailPassStudentFile:')) {
+            console.log('Hook: uploadExcelFailPassStudentFile => your excel fail pass student file upload');
+            const srcPath = files.FailPassStudentFile[0].path;
+            app.excel.readFile(srcPath, workbook => {
+                app.deleteFile(srcPath);
+                if (workbook) {
+                    const userData = fields.userData[0], userDatas = userData.split(':'), worksheet = workbook.getWorksheet(1), data = [],
+                        get = (row, col) => worksheet.getCell(`${col}${row}`).value,
+                        colCourseType = userDatas[6],
+                        courseTypeSelected = userDatas[7];
+
+                    const handleUpload = (index = parseInt(userDatas[1])) => { //index =start
+                        if (index > parseInt(userDatas[2])) { // index to stop loop
+                            done({ data, notify: 'Tải lên file thành công' });
+                        } else {
+                            if (get(index, colCourseType).trim() == courseTypeSelected) {
+                                const fullname = get(index, userDatas[3]),
+                                    birthday = get(index, userDatas[4]),
+                                    course = get(index, userDatas[5]);
+                                console.log(typeof birthday, 'dssddh');
+                                const toDateObject = str => {
+                                    const dateParts = str.split('/');
+                                    return new Date(+dateParts[2], dateParts[1] - 1, +dateParts[0]);
+                                },
+                                    condition = {
+                                        fullname: fullname.trim(),
+                                        birthday: typeof birthday == 'object' ? birthday : toDateObject(birthday.trim()), //date object ...
+                                        // courseType: courseType.trim(),
+                                    },
+                                    name = { $regex: course.trim(), $options: 'i' };
+                                console.log(condition, 'beforre app.model. course');
+                                app.model.course.get({ name }, (error, item) => {
+                                    if (error || !item) {
+                                        data.push({ fullname, birthday, course });
+                                        handleUpload(index + 1);
+                                        // res.send({ error });
+                                        // result = null;
+                                    } else {
+                                        condition.courseType = item.courseType._id;
+                                        condition.course = item._id;
+                                        console.log(condition, 'f');
+                                        app.model.student.mapToId(condition, (error, list) => {
+                                            if (error || !list || list.length > 2) {
+                                                data.push({ fullname, birthday, course });
+                                                handleUpload(index + 1);
+                                                // res.send({ error });
+                                            } else {
+                                                const _id = list[0] && list[0]._id;
+                                                data.push({ fullname, birthday, course, _id });
+                                                handleUpload(index + 1);
+                                            }
+                                        });
+
+                                    }
+                                });
+                            }
+                        }
+                    };
+                    handleUpload();
+                } else {
+                    done({ error: 'Đọc file Excel bị lỗi!' });
+                }
+            });
+        }
+    });
+
+    app.put('/api/student/imort-fail-pass', app.permission.check('student:import'), (req, res) => {
+        const sessionUser = req.session.user, division = sessionUser.division;
+        if (sessionUser && sessionUser.isCourseAdmin && division && !division.isOutside) {
+            const { _studentIds, type } = req.body,
+                changes = [
+                    { datSatHach: true, liDoChuaDatSatHach: '' }, //Pass
+                    { datSatHach: false, liDoChuaDatSatHach: '' }, //Fail liDoChuaDatSatHach for admin define
+                    { datSatHach: false, liDoChuaDatSatHach: 'Vắng thi' }, //Absence 
+                ];
+            // let err = null;
+            if (_studentIds && _studentIds.length > 0) {
+                const condition = { _id: { $in: _studentIds } };
+                app.model.student.updateMany(condition, changes[parseInt(type)], (error) => {
+                    res.send({ error });
+                });
+            } else {
+                res.send({ error: 'Danh sách học viên trống!' });
+            }
+        } else {
+            res.send({ error: 'Bạn không có quyền import danh sách học viên!' });
+        }
+    });
+
     // Hook permissionHooks -------------------------------------------------------------------------------------------
     app.permissionHooks.add('courseAdmin', 'student', (user) => new Promise(resolve => {
         app.permissionHooks.pushUserPermission(user, 'student:read', 'student:write');
+        // Quản lý khóa học nội bộ thì được import danh sách học viên bằng file Excel
+        if (user.division && !user.division.isOutside) app.permissionHooks.pushUserPermission(user, 'student:import');
         resolve();
     }));
 };

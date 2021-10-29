@@ -215,6 +215,21 @@ export function importPreStudent(students, division, courseType, done) {
     };
 }
 
+export function importFailPassStudent(_studentIds, type, done) {
+    return () => {
+        const url = '/api/student/imort-fail-pass';
+        T.put(url, { _studentIds, type }, data => {
+            if (data.error) {
+                T.notify('Lưu danh sách học viên bị lỗi!', 'danger');
+                console.error(`POST: ${url}. ${data.error}`);
+            } else {
+                T.notify('Lưu danh sách học viên thành công!', 'success');
+                done && done(data);
+            }
+        }, error => console.error(error) || T.notify('Lưu danh sách học viên bị lỗi!', 'danger'));
+    };
+}
+
 // Ajax Selections ----------------------------------------------------------------------------------------------------
 export const ajaxSelectPreStudent = T.createAjaxAdapter(
     '/api/pre-student/page/1/20',
