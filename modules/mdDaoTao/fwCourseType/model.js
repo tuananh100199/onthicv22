@@ -1,3 +1,4 @@
+
 module.exports = app => {
     const schema = app.db.Schema({
         title: String,
@@ -10,6 +11,14 @@ module.exports = app => {
             category: { type: app.db.Schema.ObjectId, ref: 'Category' },
             amount: Number,
         }],
+
+        monThiTotNghiep: [{
+            title: String,
+            totalScore: Number,
+            score: Number,
+            diemLiet: { type: Boolean, default: false },
+        }],
+
         isPriceDisplayed: { type: Boolean, default: false },
         totalTime: Number,
 
@@ -65,6 +74,14 @@ module.exports = app => {
                 item.remove(done);
             }
         }),
+
+        addMonThiTotNghiep: (_id, data, done) => {
+            model.findOneAndUpdate({ _id }, { $push: { monThiTotNghiep: data } }, { new: true }).exec(done);
+        },
+
+        deleteMonThiTotNghiep: (_id, idMonThi, done) => {
+            model.findOneAndUpdate({ _id }, { $pull: { monThiTotNghiep: { _id: idMonThi } } }, { new: true }).populate('subjects', '-detailDescription').exec(done);
+        },
 
         addSubject: (_id, subject, done) => {
             model.findOneAndUpdate({ _id }, { $push: { subjects: subject } }, { new: true }).populate('subjects', '-detailDescription').exec(done);

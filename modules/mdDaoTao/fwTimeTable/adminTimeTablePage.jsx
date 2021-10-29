@@ -20,7 +20,7 @@ export class AdminTimeTablePage extends AdminPage {
                             this.props.history.push('/user/course/' + params._id);
                         } else if (data.item) {
                             const listLecturer = data.item && data.item.teacherGroups && data.item.teacherGroups.length &&  data.item.teacherGroups.map(group => group.teacher); 
-                            listLecturer && listLecturer.length && this.setState({ currentLecturer: listLecturer[0], listLecturer: listLecturer, filterOn: false, key: listLecturer[0]});
+                            listLecturer && listLecturer.length && this.setState({ currentLecturer: listLecturer[0], listLecturer: listLecturer, filterOn: false, key: listLecturer[0], list: true, calendar: false});
                         }
                     });
             } else {
@@ -38,7 +38,7 @@ export class AdminTimeTablePage extends AdminPage {
         this.setState({ currentLecturer: lecturer, key: !this.state.key});
     }
     render() {
-        const { currentLecturer, listLecturer, filterOn, key } = this.state;
+        const { currentLecturer, listLecturer, filterOn, key, calendar, list } = this.state;
         const item = this.props.course && this.props.course.item ? this.props.course.item : {};
         const inboxTimeTable = listLecturer && listLecturer.length && listLecturer.map((lecturer, index) => {
             const isSelectedUser = currentLecturer && currentLecturer._id ==  lecturer._id;
@@ -54,7 +54,7 @@ export class AdminTimeTablePage extends AdminPage {
         });
         const backRoute = `/user/course/${item._id}`;
         return this.renderPage({
-            icon: 'fa fa-weixin',
+            icon: 'fa fa-calendar',
             title: 'Thời khóa biểu: ' + item.name,
             breadcrumb: [<Link key={0} to='/user/course'>Khóa học</Link>, item._id ? <Link key={0} to={backRoute}>{item.name}</Link> : '', 'Thời khóa biểu'],
             content: (
@@ -74,9 +74,13 @@ export class AdminTimeTablePage extends AdminPage {
                             <div className='col-sm-9' >
                                 <div className='recent_heading pb-3'>
                                     <h4 style={{float: 'left'}}>{currentLecturer && currentLecturer.lastname + ' ' + currentLecturer.firstname }</h4>
-                                    <FormCheckbox ref={e => this.course = e} style={{float: 'right'}} onChange={value => this.onChange(value)} label='Hiển thị ngày hiện tại' />
+                                    <div style={{float: 'right', display: 'flex'}}>
+                                        {list ? <FormCheckbox ref={e => this.course = e} style={{paddingRight: '12px'}} onChange={value => this.onChange(value)} label='Hiển thị ngày hiện tại' /> : null}
+                                        <button style={{border: 'none', outline: 'none', marginRight: '3px', backgroundColor: list ? '#2189CF' : ''}} onClick={() => this.setState({key: !key, calendar: false, list: true})}><i className='fa fa-bars'></i> Danh sách</button>
+                                        <button style={{border: 'none', outline: 'none', backgroundColor: calendar ? '#2189CF' : ''}} onClick={() =>this.setState({key: !key, calendar: true, list: false, filterOn: false})}><i className='fa fa-calendar'></i> Lịch</button>
+                                    </div>
                                 </div>
-                                {item && item._id ? <LecturerView  key={key} courseId={item._id} lecturerId={currentLecturer && currentLecturer._id} filterOn={filterOn}/> : null}
+                                {currentLecturer && item && item._id ? <LecturerView key={key} courseId={item._id} lecturerId={currentLecturer && currentLecturer._id} filterOn={filterOn} list={list} calendar={calendar} lecturerName={currentLecturer && currentLecturer.lastname + ' ' + currentLecturer.firstname} /> : null}
                             </div>
                         </div>
                     </div>

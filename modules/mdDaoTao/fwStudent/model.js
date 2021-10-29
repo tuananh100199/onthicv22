@@ -45,6 +45,12 @@ module.exports = (app) => {
         duKienThangThi: Number,                                                                     // Dự kiến tháng thi
         duKienNamThi: Number,                                                                       // Dự kiến năm thi
 
+        diemThiTotNghiep: [{
+            monThiTotNghiep: { type: app.db.Schema.ObjectId },
+            point: Number,
+            diemLiet: { type: Boolean, default: false },
+        }],
+
         diemThiHetMon: [{
             subject: { type: app.db.Schema.ObjectId, ref: 'Subject' },
             point: Number,

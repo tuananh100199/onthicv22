@@ -40,12 +40,20 @@ class UserCourseInfo extends AdminPage {
             title: 'Khóa học: ' + (this.state.name),
             breadcrumb: [<Link key={0} to={userPageLink}>Khóa học</Link>, 'Chi tiết khóa học'],
             content: (
-                <div className='tile'>
-                    <h3 className='tile-title'>Thông tin chung</h3>
-                    <div className='tile-body row'>
-                        <label className='col-md-6'>Tên khóa học: <b>{this.state.name}</b></label>
-                        <label className='col-md-3'>Loại khóa học: <b>{this.state.courseType ? this.state.courseType.title : ''}</b></label>
-                        <label className='col-md-3'>Học phí:  <b>{this.state.courseFee ? T.numberDisplay(this.state.courseFee) + ' đồng' : ''}</b></label>
+                <>
+                    <div className='tile'>
+                        <h3 className='tile-title'>Thông tin chung</h3>
+                        <div className='tile-body row'>
+                            <label className='col-md-6'>Tên khóa học: <b>{this.state.name}</b></label>
+                            <label className='col-md-3'>Loại khóa học: <b>{this.state.courseType ? this.state.courseType.title : ''}</b></label>
+                            <label className='col-md-3'>Học phí:  <b>{this.state.courseFee ? T.numberDisplay(this.state.courseFee) + ' đồng' : ''}</b></label>
+                            {this.state.shortDescription ? <div className='col-md-12'><label>Giới thiệu ngắn khóa học:</label> <b>{this.state.shortDescription}</b></div> : <></>}
+                            {this.state.detailDescription ? <div className='col-md-12'><label>Mô tả chi tiết: </label><p dangerouslySetInnerHTML={{ __html: this.state.detailDescription }} /> </div> : <></>}
+                        </div>
+                    </div>
+
+                    <div className='tile'>
+                        <h3 className='tile-title'>Thời gian</h3>
                         <label className='col'>Thời gian khai giảng: <b>{T.dateToText(this.state.thoiGianKhaiGiang, 'dd/mm/yyyy h:mm')}</b></label>
                         <label className='col-md-6'>Thời gian bắt đầu: <b>{T.dateToText(this.state.thoiGianBatDau, 'dd/mm/yyyy h:mm')}</b></label>
                         <label className='col-md-6'>Thời gian kết thúc: <b>{T.dateToText(this.state.thoiGianKetThuc, 'dd/mm/yyyy h:mm')}</b></label>
@@ -53,10 +61,9 @@ class UserCourseInfo extends AdminPage {
                         <label className='col-md-6'>Thời gian kết thúc môn chính thức: <b>{T.dateToText(this.state.thoiGianThiKetThucMonChinhThuc, 'dd/mm/yyyy h:mm')}</b></label>
                         <label className='col-md-6'>Thời gian tốt nghiệp dự kiến: <b>{T.dateToText(this.state.thoiGianThiTotNghiepDuKien, 'dd/mm/yyyy h:mm')}</b></label>
                         <label className='col-md-6'>Thời gian tốt nghiệp chính thức: <b>{T.dateToText(this.state.thoiGianThiTotNghiepChinhThuc, 'dd/mm/yyyy h:mm')}</b></label>
-                        {this.state.shortDescription ? <div className='col-md-12'><label>Giới thiệu ngắn khóa học:</label> <b>{this.state.shortDescription}</b></div> : <></>}
-                        {this.state.detailDescription ? <div className='col-md-12'><label>Mô tả chi tiết: </label><p dangerouslySetInnerHTML={{ __html: this.state.detailDescription }} /> </div> : <></>}
                     </div>
-                </div>
+
+                </>
             ),
             backRoute: userPageLink,
         });

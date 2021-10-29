@@ -5,7 +5,6 @@ const CourseGetPage = 'CourseGetPage';
 const CourseGetItem = 'CourseGetItem';
 const CourseGetUserChat = 'CourseGetUserChat';
 const CourseGetPageByUser = 'CourseGetPageByUser';
-const CourseGetStudentByAdmin = 'CourseGetStudentByAdmin';
 const CourseUpdateStudentInfoInCourse = 'CourseUpdateStudentInfoInCourse';
 const CourseGetLearningProgressPageByAdmin = 'CourseGetLearningProgressPageByAdmin';
 
@@ -24,11 +23,6 @@ export default function courseReducer(state = {}, data) {
         case CourseGetUserChat: {
             return Object.assign({}, state, { user: data.user });
         }
-
-        case CourseGetStudentByAdmin: {
-            return Object.assign({}, state, { students: data.students });
-        }
-
 
         case CourseGetLearningProgressPageByAdmin: {
             return Object.assign({}, state, { page: data.page, students: data.students, subjects: data.subjects });
@@ -367,22 +361,6 @@ export function getCourseByStudent(_id, done) {
     };
 }
 
-// Lecturer -----------------------------------------------------------------------------------------------------------
-export function getStudentByAdmin(_id, done) {
-    return dispatch => {
-        const url = '/api/course/lecturer/student';
-        T.get(url, { _id }, data => {
-            if (data.error) {
-                T.notify('Lấy khóa học bị lỗi!', 'danger');
-                console.error('GET: ' + url + '.', data.error);
-            } else {
-                done && done(data);
-                dispatch({ type: CourseGetStudentByAdmin, students: data.item });
-            }
-        }, error => console.error(error) || T.notify('Lấy khóa học bị lỗi!', 'danger'));
-    };
-}
-
 T.initCookiePage('adminLearningProgress');
 export function getLearningProgressPage(pageNumber, pageSize, pageCondition, done) {
     const page = T.updatePage('adminLearningProgress', pageNumber, pageSize);
@@ -416,6 +394,24 @@ export function getChatByAdmin(_id, done) {
     };
 }
 
+// Import Excel ----------------------------------------------------------------------------------------------------
+export function importScore(score, courseId, done) {
+    return () => {
+        const url = '/api/course/import-score';
+        T.put(url, { score, courseId }, data => {
+            if (data.error) {
+                T.notify('Import điểm thi tốt nghiệp bị lỗi!', 'danger');
+                console.error(`POST: ${url}. ${data.error}`);
+            } else {
+                T.notify('Lưu điểm thi tốt nghiệp thành công', 'success');
+                done && done(data);
+            }
+        }, error => console.error(error) || T.notify('Import điểm thi tốt nghiệp bị lỗi!', 'danger'));
+    };
+}
+
+
+
 export function importFinalScore(scores, course, done) {
     return () => {
         const url = '/api/course/import-final-score';
@@ -442,8 +438,8 @@ export function exportRepresenterAndStudentToExcel(_courseId) {
 export function exportTeacherAndStudentToExcel(_courseId) {
     T.download(T.url(`/api/course/teacher-student/export/${_courseId}`));
 }
-export function exportLearningProgressToExcel() {
-    T.download(T.url('/api/course/learning-progress/export'));
+export function exportLearningProgressToExcel(_courseId, filter) {
+    T.download(T.url(`/api/course/learning-progress/export/${_courseId}/${filter}`));
 }
 // Ajax Selections ----------------------------------------------------------------------------------------------------
 export const ajaxSelectCourse = {
