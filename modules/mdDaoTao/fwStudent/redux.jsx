@@ -79,7 +79,8 @@ export function updateStudent(_id, changes, done) {
             } else {
                 T.notify('Cập nhật thông tin học viên thành công!', 'success');
                 done && done(data.item);
-                dispatch(getStudentPage());
+                dispatch({ type: StudentUpdate, item: data.item });
+                // dispatch(getStudentPage());
             }
             done && done(data.error);
         }, error => console.error(error) || T.notify('Cập nhật thông tin học viên bị lỗi!', 'danger'));

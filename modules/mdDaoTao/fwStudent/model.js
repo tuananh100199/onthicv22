@@ -57,6 +57,10 @@ module.exports = (app) => {
         }],
         diemTrungBinhThiHetMon: Number,
 
+        datSatHach: { type: Boolean, default: false },
+        ngayDuKienThiSatHach: Date,
+        liDoChuaDatSatHach: String,
+
         createdDate: { type: Date, default: Date.now },                                             // Ngày tạo
         modifiedDate: { type: Date, default: Date.now },                                            // Ngày cập nhật cuối cùng
     });
@@ -151,7 +155,7 @@ module.exports = (app) => {
                 });
             } else {
                 changes.modifiedDate = new Date();
-                model.findOneAndUpdate({ _id }, changes, { new: true }).populate('user', 'email phoneNumber').populate('division', 'id title').exec(done);
+                model.findOneAndUpdate({ _id }, changes, { new: true }).populate('user', 'email phoneNumber').populate('division', 'id title').populate('course', 'name').exec(done);
             }
         },
 

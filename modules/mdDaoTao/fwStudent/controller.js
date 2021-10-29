@@ -4,12 +4,19 @@ module.exports = (app) => {
         menus: {
             4040: { title: 'Ứng viên', link: '/user/pre-student' },
         }
+    }, menuFailStudent = {
+        parentMenu: app.parentMenu.trainning,
+        menus: {
+            4060: { title: 'Học viên chưa đạt sát hạch', link: '/user/student/fail-exam' },
+        }
     };
+
     app.permission.add(
-        { name: 'student:read' }, { name: 'student:write' }, { name: 'student:delete', menu }, { name: 'student:import' },
+        { name: 'student:read', menu: menuFailStudent }, { name: 'student:write' }, { name: 'student:delete', menu }, { name: 'student:import' },
         { name: 'pre-student:read', menu }, { name: 'pre-student:write' }, { name: 'pre-student:delete' }, { name: 'pre-student:import' },
     );
-
+    
+    app.get('/user/student/fail-exam', app.permission.check('student:read'), app.templates.admin);
     app.get('/user/pre-student', app.permission.check('pre-student:read'), app.templates.admin);
     app.get('/user/pre-student/import', app.permission.check('pre-student:import'), app.templates.admin);
 
@@ -24,6 +31,8 @@ module.exports = (app) => {
                 pageCondition.division = req.session.user.division._id;
             }
 
+            if (condition.courseType) pageCondition.courseType = condition.courseType;
+            pageCondition.datSatHach = condition.datSatHach;
             if (condition.searchText) {
                 const value = { $regex: `.*${condition.searchText}.*`, $options: 'i' };
                 pageCondition.$or = [
@@ -31,6 +40,7 @@ module.exports = (app) => {
                     // { email: value },
                     { firstname: value },
                     { lastname: value },
+                    { identityCard: value },
                 ];
             }
             app.model.student.getPage(pageNumber, pageSize, pageCondition, (error, page) => res.send({ error, page }));
