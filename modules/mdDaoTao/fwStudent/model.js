@@ -45,11 +45,21 @@ module.exports = (app) => {
         duKienThangThi: Number,                                                                     // Dự kiến tháng thi
         duKienNamThi: Number,                                                                       // Dự kiến năm thi
 
+        diemThiTotNghiep: [{
+            monThiTotNghiep: { type: app.db.Schema.ObjectId },
+            point: Number,
+            diemLiet: { type: Boolean, default: false },
+        }],
+
         diemThiHetMon: [{
             subject: { type: app.db.Schema.ObjectId, ref: 'Subject' },
             point: Number,
         }],
         diemTrungBinhThiHetMon: Number,
+
+        datSatHach: { type: Boolean, default: false },
+        ngayDuKienThiSatHach: Date,
+        liDoChuaDatSatHach: String,
 
         createdDate: { type: Date, default: Date.now },                                             // Ngày tạo
         modifiedDate: { type: Date, default: Date.now },                                            // Ngày cập nhật cuối cùng
@@ -145,7 +155,7 @@ module.exports = (app) => {
                 });
             } else {
                 changes.modifiedDate = new Date();
-                model.findOneAndUpdate({ _id }, changes, { new: true }).populate('user', 'email phoneNumber').populate('division', 'id title').exec(done);
+                model.findOneAndUpdate({ _id }, changes, { new: true }).populate('user', 'email phoneNumber').populate('division', 'id title').populate('course', 'name').exec(done);
             }
         },
 

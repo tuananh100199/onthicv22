@@ -20,6 +20,10 @@ export default {
             component: Loadable({ loading: Loading, loader: () => import('./adminStudentPage') })
         },
         {
+            path: '/user/student/fail-exam',
+            component: Loadable({ loading: Loading, loader: () => import('./adminFailStudentPage') })
+        },
+        {
             path: '/user/pre-student/import',
             component: Loadable({ loading: Loading, loader: () => import('./adminImportPage') })
         },

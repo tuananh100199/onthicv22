@@ -82,10 +82,11 @@ class adminEditPage extends AdminPage {
                         T.notify('Lấy bài học bị lỗi!', 'danger');
                         this.props.history.push(adminPageLink);
                     } else if (data.item) {
-                        const { _id, title, shortDescription, detailDescription, numQuestion } = data.item;
+                        const { _id, title, shortDescription, detailDescription, taiLieuThamKhao, numQuestion } = data.item;
                         this.itemTitle.value(title);
                         this.itemDescription.value(shortDescription);
                         this.itemEditor.html(detailDescription);
+                        this.itemTaiLieuThamKhao.html(taiLieuThamKhao);
                         this.itemNumQuestion.value(numQuestion);
                         this.setState({ _id, title });
                         this.itemTitle.focus();
@@ -100,12 +101,15 @@ class adminEditPage extends AdminPage {
         });
     }
 
-    saveInfo = () => this.props.updateLesson(this.state._id, {
-        title: this.itemTitle.value(),
-        shortDescription: this.itemDescription.value(),
-        detailDescription: this.itemEditor.html(),
-        numQuestion: this.itemNumQuestion.value(),
-    });
+    saveInfo = () => {
+        this.props.updateLesson(this.state._id, {
+            title: this.itemTitle.value(),
+            shortDescription: this.itemDescription.value(),
+            detailDescription: this.itemEditor.html(),
+            taiLieuThamKhao: this.itemTaiLieuThamKhao.text().trim() == '' ? '' : this.itemTaiLieuThamKhao.html(),
+            numQuestion: this.itemNumQuestion.value(),
+        });
+    };
 
     showVideoModal = (e, video) => e.preventDefault() || this.modalVideo.show(video);
     deleteVideo = (e, video) => e.preventDefault() || T.confirm('Xóa video', `Bạn có chắc bạn muốn xóa video <strong>${video.title}</strong>?`, true, isConfirm =>
@@ -166,6 +170,7 @@ class adminEditPage extends AdminPage {
                 <FormRichTextBox ref={e => this.itemDescription = e} label='Mô tả ngắn gọn' rows='3' readOnly={!permission.write} />
                 <FormTextBox ref={e => this.itemNumQuestion = e} type='number' label='Số lượng câu hỏi ôn tập' value={this.state.numQuestion} readOnly={!permission.write}></FormTextBox>
                 <FormEditor ref={e => this.itemEditor = e} label='Mô tả chi tiết' readOnly={!permission.write} />
+                <FormEditor ref={e => this.itemTaiLieuThamKhao = e} label='Tài liệu tham khảo' readOnly={!permission.write} />
                 {permission.write ? <CirclePageButton type='save' onClick={this.saveInfo} /> : null}
             </div>);
 

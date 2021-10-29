@@ -9,6 +9,14 @@ module.exports = app => {
             division: String,
             fee: { type: Number, default: 0 },
         }],
+
+        monThiTotNghiep: [{
+            title: String,
+            totalScore: Number,
+            score: Number,
+            diemLiet: { type: Boolean, default: false },
+        }],
+
         subjects: [{ type: app.db.Schema.ObjectId, ref: 'Subject' }],       // Danh sách môn học
         maxStudent: { type: Number, default: 100 },                         // Số lượng học viên tối đa
         modifiedDate: { type: Date, default: Date.now },
@@ -51,6 +59,7 @@ module.exports = app => {
                 shortDescription: item.shortDescription,
                 detailDescription: item.detailDescription,
                 subjects: item.subjects,
+                monThiTotNghiep: item.monThiTotNghiep,
             }, done)),
 
         getPage: (pageNumber, pageSize, condition, done) => model.countDocuments(condition, (error, totalItem) => {

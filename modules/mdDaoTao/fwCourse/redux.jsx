@@ -394,6 +394,24 @@ export function getChatByAdmin(_id, done) {
     };
 }
 
+// Import Excel ----------------------------------------------------------------------------------------------------
+export function importScore(score, courseId, done) {
+    return () => {
+        const url = '/api/course/import-score';
+        T.put(url, { score, courseId }, data => {
+            if (data.error) {
+                T.notify('Import điểm thi tốt nghiệp bị lỗi!', 'danger');
+                console.error(`POST: ${url}. ${data.error}`);
+            } else {
+                T.notify('Lưu điểm thi tốt nghiệp thành công', 'success');
+                done && done(data);
+            }
+        }, error => console.error(error) || T.notify('Import điểm thi tốt nghiệp bị lỗi!', 'danger'));
+    };
+}
+
+
+
 export function importFinalScore(scores, course, done) {
     return () => {
         const url = '/api/course/import-final-score';
@@ -420,8 +438,8 @@ export function exportRepresenterAndStudentToExcel(_courseId) {
 export function exportTeacherAndStudentToExcel(_courseId) {
     T.download(T.url(`/api/course/teacher-student/export/${_courseId}`));
 }
-export function exportLearningProgressToExcel() {
-    T.download(T.url('/api/course/learning-progress/export'));
+export function exportLearningProgressToExcel(_courseId, filter) {
+    T.download(T.url(`/api/course/learning-progress/export/${_courseId}/${filter}`));
 }
 // Ajax Selections ----------------------------------------------------------------------------------------------------
 export const ajaxSelectCourse = {

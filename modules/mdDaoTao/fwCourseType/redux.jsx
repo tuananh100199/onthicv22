@@ -143,6 +143,22 @@ export function deleteCourseTypeSubject(_courseTypeId, _subjectId, done) {
     };
 }
 
+export function deleteCourseTypeMonThi(_courseTypeId, _id, done) {
+    return dispatch => {
+        const url = '/api/course-type/mon-thi-tot-nghiep';
+        T.delete(url, { _courseTypeId, _id }, data => {
+            if (data.error) {
+                T.notify('Xóa môn thi bị lỗi!', 'danger');
+                console.error('DELETE: ' + url + '.', data.error);
+            } else {
+                T.notify('Môn thi được xoá thành công!', 'success');
+                dispatch({ type: CourseTypeGetItem, item: data.item });
+                done && done();
+            }
+        }, error => console.error(error) || T.notify('Xóa môn thi bị lỗi!', 'danger'));
+    };
+}
+
 // Home ---------------------------------------------------------------------------------------------------------------
 export function getAllCourseTypeByUser(done) {
     return () => {
