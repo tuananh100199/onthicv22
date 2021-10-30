@@ -20,6 +20,7 @@ module.exports = (app) => {
     app.get('/user/course/:_id', app.permission.check('course:read'), app.templates.admin);
     app.get('/user/course/:_id/info', app.permission.check('course:read'), app.templates.admin);
     app.get('/user/course/:_id/subject', app.permission.check('course:read'), app.templates.admin);
+    app.get('/user/course/:_id/graduation-subject', app.permission.check('course:read'), app.templates.admin);
     app.get('/user/course/:_id/manager', app.permission.check('course:read'), app.templates.admin);
     app.get('/user/course/:_id/student', app.permission.check('course:read'), app.templates.admin);
     app.get('/user/course/:_id/teacher', app.permission.check('course:read'), app.templates.admin);
@@ -163,6 +164,7 @@ module.exports = (app) => {
                     if (changes.subjects && changes.subjects === 'empty') changes.subjects = [];
                     if (changes.teacherGroups && changes.teacherGroups === 'empty') changes.teacherGroups = [];
                     if (changes.admins && changes.admins === 'empty') changes.admins = [];
+                    if (changes.monThiTotNghiep && changes.monThiTotNghiep === 'empty') changes.admins = [];
                 }
 
                 delete changes.courseFee;

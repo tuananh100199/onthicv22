@@ -12,10 +12,10 @@ module.exports = (app) => {
     };
 
     app.permission.add(
-        { name: 'student:read', menu: menuFailStudent }, { name: 'student:write' }, { name: 'student:delete', menu }, { name: 'student:import' },
+        { name: 'student:read', menu: menuFailStudent }, { name: 'student:write' }, { name: 'student:delete', menu }, { name: 'student:import' },//TODO: Thầy TÙNG
         { name: 'pre-student:read', menu }, { name: 'pre-student:write' }, { name: 'pre-student:delete' }, { name: 'pre-student:import' },
     );
-    
+
     app.get('/user/student/fail-exam', app.permission.check('student:read'), app.templates.admin);
     app.get('/user/pre-student', app.permission.check('pre-student:read'), app.templates.admin);
     app.get('/user/pre-student/import', app.permission.check('pre-student:import'), app.templates.admin);
