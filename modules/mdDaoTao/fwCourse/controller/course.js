@@ -324,7 +324,7 @@ module.exports = (app) => {
             });
         }).then(() => getCourseData(_courseId, sessionUser, (error, item) => {
             error = error || (item ? null : 'Lỗi khi cập nhật khóa học!');
-            item = item ? { students: item.students, ...(type == 'remove' && { teacherGroups: item.teacherGroups, representerGroups: item.representerGroups }) } : null;
+            item = item || null;
             res.send({ error, item });
         })).catch(error => console.error(error) || res.send({ error }));
     });
@@ -342,7 +342,7 @@ module.exports = (app) => {
             }
         }).then(() => getCourseData(_courseId, req.session.user, (error, item) => {
             error = error || (item ? null : 'Lỗi khi cập nhật khóa học!');
-            item = item ? { representerGroups: item.representerGroups } : null;
+            item = item || null;
             res.send({ error, item });
         })).catch(error => console.error(error) || res.send({ error }));
     });
@@ -360,7 +360,7 @@ module.exports = (app) => {
             }
         }).then(() => getCourseData(_courseId, req.session.user, (error, item) => {
             error = error || (item ? null : 'Lỗi khi cập nhật khóa học!');
-            item = item ? { representerGroups: item.representerGroups } : null;
+            item = item || null;
             res.send({ error, item });
         })).catch(error => console.error(error) || res.send({ error }));
     });
@@ -378,7 +378,7 @@ module.exports = (app) => {
             }
         }).then(() => getCourseData(_courseId, req.session.user, (error, item) => {
             error = error || (item ? null : 'Lỗi khi cập nhật khóa học!');
-            item = item ? { teacherGroups: item.teacherGroups } : null;
+            item = item || null;
             res.send({ error, item });
         })).catch(error => console.error(error) || res.send({ error }));
     });
@@ -396,7 +396,7 @@ module.exports = (app) => {
             }
         }).then(() => getCourseData(_courseId, req.session.user, (error, item) => {
             error = error || (item ? null : 'Lỗi khi cập nhật khóa học!');
-            item = item ? { teacherGroups: item.teacherGroups } : null;
+            item = item || null;
             res.send({ error, item });
         })).catch(error => console.error(error) || res.send({ error }));
     });
