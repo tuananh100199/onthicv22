@@ -12,18 +12,17 @@ module.exports = (app) => {
     };
 
     app.permission.add(
-        { name: 'student:read', menu: menuFailStudent }, { name: 'student:write' }, { name: 'student:delete', menu }, { name: 'student:import' },
+        { name: 'student:read' }, { name: 'student:write' }, { name: 'student:delete', menu }, { name: 'student:import', menu: menuFailStudent },
         { name: 'pre-student:read', menu }, { name: 'pre-student:write' }, { name: 'pre-student:delete' }, { name: 'pre-student:import' },
     );
 
     app.get('/user/student/import-fail-pass', app.permission.check('student:import'), app.templates.admin);
-    app.get('/user/student/fail-exam', app.permission.check('student:read'), app.templates.admin);
+    app.get('/user/student/fail-exam', app.permission.check('student:import'), app.templates.admin);
     app.get('/user/pre-student', app.permission.check('pre-student:read'), app.templates.admin);
     app.get('/user/pre-student/import', app.permission.check('pre-student:import'), app.templates.admin);
 
     // Student APIs ---------------------------------------------------------------------------------------------------
     app.get('/api/student/page/:pageNumber/:pageSize', app.permission.check('student:read'), (req, res) => {
-        // console.log('lâefhhh', app.mapToId('Trần Văn Tâm', '02/09/2021', '614ff55d4812de24f84ab44e', 'k17'));
         let pageNumber = parseInt(req.params.pageNumber),
             pageSize = parseInt(req.params.pageSize),
             condition = req.query.pageCondition || {},
