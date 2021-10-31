@@ -454,7 +454,7 @@ module.exports = (app) => {
                     } else {
                         item = app.clone(item);
                         const studentTeacherGroup = item.teacherGroups.find(teacherGroup => teacherGroup.teacher && teacherGroup.teacher._id == sessionUser._id);
-                        listStudent = studentTeacherGroup ? studentTeacherGroup.student : [];
+                        listStudent = studentTeacherGroup && studentTeacherGroup.student ? studentTeacherGroup.student : [];
                         subjects = item.subjects ? item.subjects : [];
                         resolve();
                     }
