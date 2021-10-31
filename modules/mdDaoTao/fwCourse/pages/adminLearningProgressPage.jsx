@@ -63,6 +63,7 @@ class CourseAdminModal extends AdminModal {
         const { _id, diemThucHanh, diemThiHetMon, diemThiTotNghiep } = item || { diemThucHanh: 0 };
         diemThiTotNghiep && diemThiTotNghiep.length && diemThiTotNghiep.forEach((monThi) => {
             this[monThi.monThiTotNghiep] && this[monThi.monThiTotNghiep].value(monThi.point);
+            this['Liet' + monThi.monThiTotNghiep] && this['Liet' + monThi.monThiTotNghiep].value(monThi.diemLiet);
         });
         diemThiHetMon && diemThiHetMon.length && diemThiHetMon.forEach((monThi) => {
             this[monThi.subject] && this[monThi.subject].value(monThi.point);
@@ -96,6 +97,7 @@ class CourseAdminModal extends AdminModal {
                 break;
             } else {
                 diemThiTotNghiep[i].point = parseInt(this[diemThiTotNghiep[i].monThiTotNghiep].value());
+                diemThiTotNghiep[i].diemLiet = this['Liet' + diemThiTotNghiep[i].monThiTotNghiep].value();
             }
         }
         const changes = {
@@ -121,7 +123,10 @@ class CourseAdminModal extends AdminModal {
             body:
                 <div className='row'>
                     {monThiTotNghiep && monThiTotNghiep.length ? monThiTotNghiep.map((monThi, index) => (
-                        <FormTextBox key={index} className='col-md-3' ref={e => this[monThi._id] = e} type='number' min='0' label={monThi.title} />
+                        <div className='col-md-3' key={index}>
+                            <FormTextBox ref={e => this[monThi._id] = e} type='number' min='0' label={monThi.title} />
+                            <FormCheckbox ref={e => this['Liet' + monThi._id] = e} label={'Điểm liệt: ' + monThi.title} />
+                        </div>
                     )) : null}
                     {subjects && subjects.length ? subjects.map((monThi, index) => (
                         <FormTextBox key={index} className='col-md-3' ref={e => this[monThi._id] = e} type='number' min='0' label={monThi.title} />

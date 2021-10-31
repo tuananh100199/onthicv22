@@ -39,6 +39,7 @@ class EditCoursePage extends AdminPage {
                     <PageIconHeader text='Thông tin chung' />
                     <PageIcon visible={isLecturer || isCourseAdmin || permission.write} to={`/user/course/${item._id}/info`} icon='fa-info' iconBackgroundColor='#17a2b8' text='Thông tin khóa học' />
                     <PageIcon visible={isLecturer || isCourseAdmin || permission.write} to={`/user/course/${item._id}/subject`} icon='fa-briefcase' iconBackgroundColor='#1488db' text='Môn học' />
+                    <PageIcon visible={isCourseAdmin || permission.write} to={`/user/course/${item._id}/graduation-subject`} icon='fa-clone' iconBackgroundColor='#dc143c' text='Môn thi tốt nghiệp' />
                     {item.chatActive && (isLecturer || isCourseAdmin || permission.write) && <PageIcon to={`/user/chat/${item._id}`} icon='fa-comments-o' iconBackgroundColor='#9ccc65' text='Chat' />}
 
                     {isCourseAdmin ? <PageIconHeader text='Nhân sự' /> : null}

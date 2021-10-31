@@ -80,7 +80,7 @@ module.exports = app => {
         },
 
         deleteMonThiTotNghiep: (_id, idMonThi, done) => {
-            model.findOneAndUpdate({ _id }, { $pull: { monThiTotNghiep: { _id: idMonThi } } }, { new: true }).populate('subjects', '-detailDescription').exec(done);
+            model.findOneAndUpdate({ _id }, { $pull: { monThiTotNghiep: { _id: idMonThi } } }, { new: true }).exec(done);
         },
 
         addSubject: (_id, subject, done) => {

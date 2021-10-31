@@ -9,18 +9,18 @@ module.exports = (app) => {
     };
 
     app.permission.add(
-        { name: 'course:read', },
-        { name: 'course:write', menu },
+        { name: 'course:read', menu },
+        { name: 'course:write' },
         { name: 'course:delete' },
         { name: 'course:lock' },
         { name: 'course:export' },
-        { name: 'course:learn' }
     );
 
     app.get('/user/course', app.permission.check('course:read'), app.templates.admin);
     app.get('/user/course/:_id', app.permission.check('course:read'), app.templates.admin);
     app.get('/user/course/:_id/info', app.permission.check('course:read'), app.templates.admin);
     app.get('/user/course/:_id/subject', app.permission.check('course:read'), app.templates.admin);
+    app.get('/user/course/:_id/graduation-subject', app.permission.check('course:read'), app.templates.admin);
     app.get('/user/course/:_id/manager', app.permission.check('course:read'), app.templates.admin);
     app.get('/user/course/:_id/student', app.permission.check('course:read'), app.templates.admin);
     app.get('/user/course/:_id/teacher', app.permission.check('course:read'), app.templates.admin);
@@ -164,6 +164,7 @@ module.exports = (app) => {
                     if (changes.subjects && changes.subjects === 'empty') changes.subjects = [];
                     if (changes.teacherGroups && changes.teacherGroups === 'empty') changes.teacherGroups = [];
                     if (changes.admins && changes.admins === 'empty') changes.admins = [];
+                    if (changes.monThiTotNghiep && changes.monThiTotNghiep === 'empty') changes.admins = [];
                 }
 
                 delete changes.courseFee;
@@ -414,7 +415,7 @@ module.exports = (app) => {
         });
     });
 
-    app.get('/api/course/learning-progress/page/:pageNumber/:pageSize', app.permission.check('course:write'), (req, res) => {
+    app.get('/api/course/learning-progress/page/:pageNumber/:pageSize', app.permission.check('course:read'), (req, res) => {
         const pageNumber = parseInt(req.params.pageNumber),
             pageSize = parseInt(req.params.pageSize),
             sessionUser = req.session.user,
@@ -736,11 +737,8 @@ module.exports = (app) => {
         });
     });
 
-    app.put('/api/course/learning-progress/lecturer', app.permission.check('course:write'), (req, res) => {
-        app.model.student.update(req.body._id, req.body.changes, (error, item) => res.send({ error, item }));
-    });
     // Chat API
-    app.get('/api/course/chat/admin', app.permission.check('course:write'), (req, res) => {
+    app.get('/api/course/chat/admin', app.permission.check('course:read'), (req, res) => {
         const sessionUser = req.session.user;
         if (sessionUser.isCourseAdmin) {
             app.model.student.getAll({ course: req.query._id }, (error, item) => res.send({ error, item }));
@@ -1145,7 +1143,7 @@ module.exports = (app) => {
     }));
 
     app.permissionHooks.add('lecturer', 'course', (user) => new Promise(resolve => {
-        app.permissionHooks.pushUserPermission(user, 'course:read', 'course:write', 'course:export', 'student:write', 'student:read');
+        app.permissionHooks.pushUserPermission(user, 'course:read', 'course:export', 'student:write', 'student:read');
         resolve();
     }));
 };
