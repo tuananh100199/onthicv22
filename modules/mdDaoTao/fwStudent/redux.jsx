@@ -229,3 +229,11 @@ export const ajaxSelectStudentByCourse = (course) => ({
     processResults: response => ({ results: response && response.page && response.page.list ? response.page.list.map(student => ({ id: student._id, text: `${student.lastname} ${student.firstname}` + (student.identityCard ? ` (${student.identityCard})` : '') })) : [] }),
     fetchOne: (_id, done) => (getStudent(_id, student => done && done({ id: student._id, text: `${student.lastname} ${student.firstname}` + (student.identityCard ? ` (${student.identityCard})` : '') })))()
 });
+
+export const ajaxSelectStudentOfLecturer = (courseId, lecturerId) => ({
+    ajax: true,
+    url: '/api/course/lecturer/student',
+    data: params => ({ condition: { courseId, lecturerId, title: params.term }}),
+    processResults: response => ({ results: response && response.list ? response.list.map(student => ({ id: student._id, text: `${student.lastname} ${student.firstname}` })) : [] }),
+    fetchOne: (_id, done) => (getStudent(_id, student => done && done({ id: student._id, text: `${student.lastname} ${student.firstname}` })))()
+});
