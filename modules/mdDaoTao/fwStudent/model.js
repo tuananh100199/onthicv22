@@ -58,8 +58,12 @@ module.exports = (app) => {
         diemTrungBinhThiHetMon: Number,
 
         datSatHach: { type: Boolean, default: false },
+        totNghiep: { type: Boolean, default: false },
         ngayDuKienThiSatHach: Date,
         liDoChuaDatSatHach: String,
+
+        ngayDuKienThiTotNghiep: Date,
+        liDoChuaTotNghiep: String,
 
         createdDate: { type: Date, default: Date.now },                                             // Ngày tạo
         modifiedDate: { type: Date, default: Date.now },                                            // Ngày cập nhật cuối cùng
