@@ -40,7 +40,7 @@ class AdminImportDiemThiTotNghiepPage extends AdminPage {
         const listColumn = ['D', 'E', 'F', 'G', 'H', 'I', 'J'];
         this.itemStartRow.value(8);
         this.itemIdentityCard.value('C');
-        monThiTotNghiep.forEach((monThi, index) => {
+        monThiTotNghiep.length && monThiTotNghiep.forEach((monThi, index) => {
             this[monThi._id].value(listColumn[index]);
             this.itemLiet[monThi._id].value(monThi.diemLiet);
             this.setState(prevState => ({

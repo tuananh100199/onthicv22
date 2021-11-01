@@ -7,6 +7,7 @@ module.exports = (app) => {
     }, menuFailStudent = {
         parentMenu: app.parentMenu.trainning,
         menus: {
+            4055: { title: 'Học viên chưa tốt nghiệp', link: '/user/student/fail-graduation' },
             4060: { title: 'Học viên chưa đạt sát hạch', link: '/user/student/fail-exam' },
         }
     };
@@ -17,6 +18,7 @@ module.exports = (app) => {
     );
 
     app.get('/user/student/fail-exam', app.permission.check('student:read'), app.templates.admin);
+    app.get('/user/student/fail-graduation', app.permission.check('student:read'), app.templates.admin);
     app.get('/user/pre-student', app.permission.check('pre-student:read'), app.templates.admin);
     app.get('/user/pre-student/import', app.permission.check('pre-student:import'), app.templates.admin);
 
@@ -33,6 +35,7 @@ module.exports = (app) => {
 
             if (condition.courseType) pageCondition.courseType = condition.courseType;
             pageCondition.datSatHach = condition.datSatHach;
+            pageCondition.totNghiep = condition.totNghiep;
             if (condition.searchText) {
                 const value = { $regex: `.*${condition.searchText}.*`, $options: 'i' };
                 pageCondition.$or = [

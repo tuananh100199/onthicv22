@@ -50,7 +50,7 @@ class LecturerRatingPage extends AdminPage {
     }
 
     getLearningProgress = (_courseId, done) => {
-        this.props.getLearningProgressPage(undefined, undefined, { courseId: _courseId, filterOn: false }, data => {
+        this.props.getLearningProgressPage(undefined, undefined, { courseId: _courseId, filter: 'all' }, data => {
             if (data.error) {
                 T.notify('Lấy tiến độ học tập học viên bị lỗi!', 'danger');
                 this.props.history.push('/user/course/');
@@ -120,7 +120,7 @@ class LecturerRatingPage extends AdminPage {
                             <FormSelect ref={e => this.itemSubject = e} data={listSubjects} placeholder='Môn học' onChange={data => this.loadSubject(data.id, course._id)} style={{ margin: 0, width: '200px' }} />
                         </div>
                         {table}
-                        {!isLecturer ? <Pagination name='pageLesson' style={{ left: 320 }} pageNumber={pageNumber} pageSize={pageSize} pageTotal={pageTotal} totalItem={totalItem} getPage={(pageNumber, pageSize) => this.props.getLearningProgressPage(pageNumber, pageSize, { courseId: course._id, filterOn: false })} /> : null}
+                        {!isLecturer ? <Pagination name='pageLesson' style={{ left: 320 }} pageNumber={pageNumber} pageSize={pageSize} pageTotal={pageTotal} totalItem={totalItem} getPage={(pageNumber, pageSize) => this.props.getLearningProgressPage(pageNumber, pageSize, { courseId: course._id, filter: 'all' })} /> : null}
                     </div>
                     <ViewNoteModal ref={e => this.modal = e} />
                 </div>
