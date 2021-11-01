@@ -200,8 +200,15 @@ module.exports = (app) => {
                             }
                             student.user = user._id;   // assign id of user to user field of prestudent
                             student.courseType = req.body.courseType;
-                            app.model.student.create(student, () => {
-                                handleCreateStudent(index + 1);
+                            app.model.user.get({ identityCard: student.lecturerIdentityCard }, (error, user) => {
+                                if (error || !user) {
+                                    res.send({ error: `Lỗi không tìm thấy cố vấn có CMND/CCCD: ${student.lecturerIdentityCard}` });
+                                } else {
+                                    student.planLecturer = user._id;
+                                    app.model.student.create(student, () => {
+                                        handleCreateStudent(index + 1);
+                                    });
+                                }
                             });
                         }
                     });
@@ -310,6 +317,8 @@ module.exports = (app) => {
                                 giayKhamSucKhoeNgayKham: values[17] && values[17].toLowerCase().trim() == 'x' ? stringToDate(values[18]) : null,
                                 hinhThe3x4: values[19] && values[19].toLowerCase().trim() == 'x' ? true : false,
                                 hinhChupTrucTiep: values[20] && values[20].toLowerCase().trim() == 'x' ? true : false,
+                                lecturerIdentityCard: values[21],
+                                lecturerName: values[22] ,
                             });
                             handleUpload(index + 1);
                         }
