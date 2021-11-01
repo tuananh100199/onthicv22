@@ -194,7 +194,7 @@ class AdminLearningProgressPage extends AdminPage {
                 { id: 'all', text: 'Tất cả học viên' },
                 { id: 'thiHetMon', text: 'Học viên đủ điều kiện thi hết môn' },
                 { id: 'thiTotNghiep', text: 'Học viên đủ điều kiện thi tốt nghiệp' },
-                { id: 'totNghiep', text: 'Học viên đủ điều kiện tốt nghiệp' },
+                { id: 'totNghiep', text: 'Học viên đủ điều kiện thi sát hạch' },
                 { id: 'satHach', text: 'Học viên đã đạt sát hạch' },
             ];
         const { pageNumber, pageSize, pageTotal, totalItem } = this.props.course && this.props.course.page ?

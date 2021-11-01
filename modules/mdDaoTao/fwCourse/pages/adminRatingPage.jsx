@@ -1,7 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
-import { getCourse, getLearningProgressPage } from '../redux'; // TODO: lỗi Vinh coi lại hàm này
+import { getCourse, getLearningProgressPage } from '../redux';
 import { getSubject } from 'modules/mdDaoTao/fwSubject/redux';
 import { getRateStudentByAdmin } from 'modules/_default/fwRate/redux';
 import { AdminPage, FormSelect, renderTable, TableCell, AdminModal } from 'view/component/AdminPage';
@@ -107,7 +107,7 @@ class LecturerRatingPage extends AdminPage {
         });
         const backRoute = `/user/course/${course._id}`;
         return this.renderPage({
-            icon: 'fa fa-cubes',
+            icon: 'fa fa-folder-open',
             title: 'Đánh giá bài học: ' + course.name,
             breadcrumb: [<Link key={0} to='/user/course'>Khóa học</Link>, course._id ? <Link key={0} to={backRoute}>{course.name}</Link> : '', 'Đánh giá bài học'],
             content: <>

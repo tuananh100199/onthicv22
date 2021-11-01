@@ -423,10 +423,11 @@ module.exports = (app) => {
             pageCondition = { course: condition.courseId || { $ne: null } },
             filter = condition.filter;
         let listStudent = [],
-            subjects = [], err = null, pageReturn = {};
+            subjects = [], pageReturn = {};
+        const isAdmin = sessionUser.isCourseAdmin || sessionUser.permissions.includes('course:write');
 
-        new Promise(resolve => {
-            if (sessionUser.isCourseAdmin) {
+        new Promise((resolve, reject) => {
+            if (isAdmin) {
                 if (condition.searchText) {
                     const value = { $regex: `.*${condition.searchText}.*`, $options: 'i' };
                     pageCondition.$or = [
@@ -435,9 +436,9 @@ module.exports = (app) => {
                     ];
                 }
                 app.model.student.getPage(pageNumber, pageSize, pageCondition, (error, page) => {
-                    err = error;
                     if (error || !page) {
-                        res.send({ error });
+                        error && console.error(error);
+                        reject('Lỗi khi đọc danh sách sinh viên!');
                     } else {
                         pageReturn = page;
                         page = app.clone(page);
@@ -448,53 +449,62 @@ module.exports = (app) => {
                 });
             } else if (sessionUser.isLecturer) {
                 app.model.course.get(condition.courseId, (error, item) => {
-                    err = error;
                     if (error || !item) {
-                        res.send({ error });
+                        error && console.error(error);
+                        reject('Lỗi khi đọc thông tin khóa học!');
                     } else {
                         item = app.clone(item);
                         const studentTeacherGroup = item.teacherGroups.find(teacherGroup => teacherGroup.teacher && teacherGroup.teacher._id == sessionUser._id);
-                        listStudent = studentTeacherGroup ? studentTeacherGroup.student : [];
+                        listStudent = studentTeacherGroup && studentTeacherGroup.student ? studentTeacherGroup.student : [];
                         subjects = item.subjects ? item.subjects : [];
                         resolve();
                     }
                 });
+            } else {
+                reject('Bạn không đủ quyền!');
             }
         }).then(() => {
-            const monLyThuyet = subjects.filter(subject => subject.monThucHanh == false);
-            let listStudentReturn = listStudent.map((student => {
+            const monLyThuyet = subjects.filter(subject => subject.monThucHanh == false),
+                students = [];
+            listStudent.forEach((student => {
                 student = app.clone(student, { subject: {} });
                 subjects.forEach(subject => {
-                    const diemMonHoc =
-                        student && student.tienDoHocTap && student.tienDoHocTap[subject._id] && !subject.monThucHanh ?
-                            Number((Object.entries(student.tienDoHocTap[subject._id]).reduce((lessonNext, lesson) =>
-                                Number(lesson[1].score) / Object.keys(lesson[1].trueAnswers).length * 10 + lessonNext, 0)) / subject.lessons.length).toFixed(1) : 0;
-                    const completedLessons = (subject && student.tienDoHocTap && student.tienDoHocTap[subject._id] ?
-                        (Object.keys(student.tienDoHocTap[subject._id]).length > subject.lessons.length ?
-                            subject.lessons.length :
-                            Object.keys(student.tienDoHocTap[subject._id]).length)
-                        : 0);
+                    let diemMonHoc = 0, completedLessons = 0, numberLessons = subject.lessons ? subject.lessons.length : 0;
+                    if (numberLessons) {
+                        if (student && student.tienDoHocTap && student.tienDoHocTap[subject._id] && !subject.monThucHanh) {
+                            const tongDiemMonHoc = Object.entries(student.tienDoHocTap[subject._id]).reduce((lessonNext, lesson) => {
+                                return lesson[1].trueAnswers ? Number(lesson[1].score) / Object.keys(lesson[1].trueAnswers).length * 10 + lessonNext : 0;
+                            }, 0);
+                            diemMonHoc = Number(tongDiemMonHoc / numberLessons).toFixed(1);
+                        }
+                        if (subject && student.tienDoHocTap && student.tienDoHocTap[subject._id]) {
+                            completedLessons = (Object.keys(student.tienDoHocTap[subject._id]).length > numberLessons ?
+                                numberLessons :
+                                Object.keys(student.tienDoHocTap[subject._id]).length);
+                        }
+                    }
+
                     const obj = {};
-                    obj[subject._id] = {
-                        completedLessons: completedLessons,
-                        numberLessons: subject.lessons.length ? subject.lessons.length : 0,
-                        diemMonHoc: diemMonHoc
-                    };
+                    obj[subject._id] = { completedLessons, diemMonHoc, numberLessons };
                     student.subject = app.clone(student.subject, obj);
                 });
-                const diemLyThuyet = Number((monLyThuyet.reduce((subjectNext, subject) =>
-                    (subject && student.tienDoHocTap && student.tienDoHocTap[subject._id] ?
-                        Number((Object.keys(student.tienDoHocTap[subject._id]).length ?
-                            Object.entries(student.tienDoHocTap[subject._id]).reduce((lessonNext, lesson) =>
-                                Number(lesson[1].score) / Object.keys(lesson[1].trueAnswers).length * 10 + lessonNext, 0) ?
-                                (Number(Object.entries(student.tienDoHocTap[subject._id]).reduce((lessonNext, lesson) =>
-                                    Number(lesson[1].score) / Object.keys(lesson[1].trueAnswers).length * 10 + lessonNext, 0)) / subject.lessons.length).toFixed(1) : 0
-                            : 0))
-                        : 0) + subjectNext, 0) / monLyThuyet.length).toFixed(1));
+
+                let tongDiemLyThuyet = monLyThuyet.reduce((subjectNext, subject) => {
+                    let subjectPoint = 0;
+                    if (subject && student.tienDoHocTap && student.tienDoHocTap[subject._id] && Object.keys(student.tienDoHocTap[subject._id]).length) {
+                        const subjectTotalPoint = Object.entries(student.tienDoHocTap[subject._id]).reduce((lessonNext, lesson) => {
+                            return lesson[1].trueAnswers ? Number(lesson[1].score) / Object.keys(lesson[1].trueAnswers).length * 10 + lessonNext : 0;
+                        }, 0);
+                        subjectPoint = subject.lessons.length ? subjectTotalPoint / subject.lessons.length : 0;
+                    }
+                    return Number(subjectPoint.toFixed(1)) + subjectNext;
+                }, 0);
+                const diemLyThuyet = Number((tongDiemLyThuyet / monLyThuyet.length).toFixed(1));
+
                 const diemThucHanh = student.diemThucHanh ? Number(student.diemThucHanh) : 0;
                 let filterTotNghiep = true,
                     filterThiTotNghiep = true;
-                if (sessionUser.isCourseAdmin) {
+                if (isAdmin) {
                     const diemThiTotNghiep = student && student.diemThiTotNghiep && student.diemThiTotNghiep.length ? student.diemThiTotNghiep : [],
                         monThiTotNghiep = student && student.course && student.course.monThiTotNghiep && student.course.monThiTotNghiep.length ? student.course.monThiTotNghiep : [];
                     if (diemThiTotNghiep.length) {
@@ -519,38 +529,17 @@ module.exports = (app) => {
                         filterThiTotNghiep = false;
                     }
                 }
-                switch (filter) {
-                    case 'thiHetMon':
-                        {
-                            const diemTB = ((diemLyThuyet + diemThucHanh) / 2).toFixed(1);
-                            if (5 <= diemTB) {
-                                return app.clone(student, { diemLyThuyet, diemThucHanh });
-                            }
-                        }
-                        break;
-                    case 'thiTotNghiep':
-                        {
-                            if (filterThiTotNghiep) {
-                                return app.clone(student, { diemLyThuyet, diemThucHanh });
-                            }
-                        }
-                        break;
-                    case 'totNghiep':
-                        if (filterTotNghiep) {
-                            return app.clone(student, { diemLyThuyet, diemThucHanh });
-                        }
-                        break;
-                    case 'satHach':
-                        if (student.datSatHach) {
-                            return app.clone(student, { diemLyThuyet, diemThucHanh });
-                        }
-                        break;
-                    default:
-                        return app.clone(student, { diemLyThuyet, diemThucHanh });
+
+                if ((filter == 'thiHetMon' && 5 <= ((diemLyThuyet + diemThucHanh) / 2).toFixed(1)) ||
+                    (filter == 'thiTotNghiep' && filterThiTotNghiep) ||
+                    (filter == 'totNghiep' && filterTotNghiep) ||
+                    (filter == 'satHach' && student.datSatHach) ||
+                    !['thiHetMon', 'thiTotNghiep', 'totNghiep', 'satHach'].includes(filter)) {
+                    students.push(app.clone(student, { diemLyThuyet, diemThucHanh }));
                 }
             }));
-            res.send({ error: err, page: pageReturn ? pageReturn : null, students: listStudentReturn.filter(item => item), subjects });
-        });
+            res.send({ page: pageReturn ? pageReturn : null, students, subjects });
+        }).catch(error => console.error(error) || res.send({ error }));
     });
 
     app.get('/api/course/learning-progress/export/:_courseId/:filter', app.permission.check('course:export'), (req, res) => {
@@ -658,18 +647,13 @@ module.exports = (app) => {
                 }
                 switch (filter) {
                     case 'thiHetMon':
-                        {
-                            const diemTB = ((diemLyThuyet + diemThucHanh) / 2).toFixed(1);
-                            if (5 <= diemTB) {
-                                return app.clone(student, { diemLyThuyet, diemThucHanh });
-                            }
+                        if (5 <= ((diemLyThuyet + diemThucHanh) / 2).toFixed(1)) {
+                            return app.clone(student, { diemLyThuyet, diemThucHanh });
                         }
                         break;
                     case 'thiTotNghiep':
-                        {
-                            if (filterThiTotNghiep) {
-                                return app.clone(student, { diemLyThuyet, diemThucHanh });
-                            }
+                        if (filterThiTotNghiep) {
+                            return app.clone(student, { diemLyThuyet, diemThucHanh });
                         }
                         break;
                     case 'totNghiep':
@@ -993,6 +977,7 @@ module.exports = (app) => {
             });
         }
     });
+
     // Hook upload final score excel---------------------------------------------------------------------------------------
     app.uploadHooks.add('uploadExcelFinalScoreFile', (req, fields, files, params, done) => {
         if (files.FinalScoreFile && files.FinalScoreFile.length > 0 && fields.userData && fields.userData.length > 0 && fields.userData[0].startsWith('FinalScoreFile:')) {

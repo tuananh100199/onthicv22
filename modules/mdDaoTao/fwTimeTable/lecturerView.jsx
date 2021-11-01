@@ -1,8 +1,8 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import {getTimeTablePageByAdmin, updateTimeTableByAdmin, createTimeTableByAdmin, deleteTimeTableByAdmin, getTimeTableDateNumber, getTimeTableOfLecturer } from './redux';
-import { getStudent } from 'modules/mdDaoTao/fwStudent/redux';
-import {  getCourse, ajaxSelectStudentOfLecturer } from 'modules/mdDaoTao/fwCourse/redux';
+import { getStudent, ajaxSelectStudentOfLecturer } from 'modules/mdDaoTao/fwStudent/redux';
+import {  getCourse } from 'modules/mdDaoTao/fwCourse/redux';
 import Pagination from 'view/component/Pagination';
 import { AdminPage, AdminModal, TableCell, renderTable, FormTextBox, FormCheckbox, FormRichTextBox, FormSelect, FormDatePicker } from 'view/component/AdminPage';
 
