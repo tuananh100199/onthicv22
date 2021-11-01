@@ -16,70 +16,7 @@ module.exports = (app, appName) => {
         }
         return result;
     };
-
-    // app.mapToId = function () {
-    //     let result = null;
-    //     const fullname = arguments[0], birthday = arguments[1], courseName = arguments[2],
-    //         toDateObject = str => {
-    //             const dateParts = str.split("/");
-    //             return new Date(+dateParts[2], dateParts[1] - 1, +dateParts[0]);
-    //         },
-    //         condition = {
-    //             fullname: fullname.trim(),
-    //             birthday: typeof birthday == 'object' ? birthday : toDateObject(birthday.trim()), //date object ...
-    //             // courseType: courseType.trim(),
-    //         },
-    //         name = { $regex: courseName.trim(), $options: 'i' };
-    //     console.log(condition, 'beforre app.model. course');
-    //     new Promise((resolve, reject) => {
-    //         app.model.course.get({ name }, (error, item) => {
-    //             if (error || !item) {
-    //                 reject(null);
-    //                 // result = null;
-    //             } else {
-    //                 condition.courseType = item.courseType._id;
-    //                 condition.course = item._id;
-    //                 console.log(condition, 'f');
-    //                 app.model.student.mapToId(condition, (error, list) => {
-    //                     if (error || !list || list.length > 2) {
-    //                         reject(null);
-    //                     } else {
-    //                         console.log('list', list);
-    //                         console.log('ts', list[0] && list[0]._id);
-    //                         result = list[0] && list[0]._id;
-    //                         resolve(list[0] && list[0]._id);
-    //                     }
-    //                 });
-
-    //             }
-    //         });
-    //     }).then(value => {
-    //         return value;
-    //     }).catch(error => {
-    //         return error;
-    //     });
-
-    //     //     app.model.course.get({ name }, (error, item) => {
-    //     //         if (error || !item) {
-    //     //             console.log(error, 'errrr');
-    //     //             result = null;
-    //     //         } else {
-    //     //             condition.courseType = item.courseType._id;
-    //     //             condition.course = item._id;
-    //     //             console.log(condition, 'f');
-    //     //             app.model.student.mapToId(condition, (error, list) => {
-    //     //                 if (error || !list || list.length > 2) {
-    //     //                     result = null;
-    //     //                 } else {
-    //     //                     console.log('tttts', list[0] && list[0]._id);
-    //     //                     result = list[0] && list[0]._id;
-    //     //                 }
-    //     //             });
-    //     //         }
-    //     //     });
-    //     //     return result;
-    // };
-
+    
     // Response template - html file ---------------------------------------------------------------------------------------------------------------------------
     app.templates = {};
     app.createTemplate = function () {
