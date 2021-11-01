@@ -378,22 +378,6 @@ export function getLearningProgressPage(pageNumber, pageSize, pageCondition, don
     };
 }
 
-// Chat -----------------------------------------------------------------------------------------------------------
-export function getChatByAdmin(_id, done) {
-    return dispatch => {
-        const url = '/api/course/chat/admin';
-        T.get(url, { _id }, data => {
-            if (data.error) {
-                T.notify('Lấy các liên hệ bị lỗi!', 'danger');
-                console.error('GET: ' + url + '.', data.error);
-            } else {
-                done && done(data);
-                dispatch({ type: CourseGetUserChat, user: data.item });
-            }
-        }, error => console.error(error) || T.notify('Lấy các liên hệ bị lỗi!', 'danger'));
-    };
-}
-
 // Import Excel ----------------------------------------------------------------------------------------------------
 export function importScore(score, courseId, done) {
     return () => {

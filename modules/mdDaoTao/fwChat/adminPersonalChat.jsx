@@ -1,7 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { getUserChats } from './redux';
-import { getChatByAdmin } from '../fwCourse/redux';
+import { getUserChats, getChatByAdmin } from './redux';
 import { AdminPage } from 'view/component/AdminPage';
 import './chat.scss';
 import SectionChat from './sectionChat';

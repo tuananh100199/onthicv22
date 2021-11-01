@@ -37,7 +37,7 @@ class StudentModal extends AdminModal {
 }
 
 
-class FailGraduationPage extends AdminPage {
+class FailGraduationPage extends AdminPage {//TODO: Vinh
     state = { searchText: '' };
     componentDidMount() {
         T.ready('/user/student/fail-graduation', () => {
