@@ -215,3 +215,8 @@ export function ajaxGetUser(_id, done) {
         console.error('GET: ' + url + '. ' + error);
     });
 }
+
+export const ajaxSelectLecturer = T.createAjaxAdapter(
+    '/api/user/all',
+    response => response && response.list ? response.list.filter(user => user.isLecturer).map(item => ({ id: item._id, text: `${item.lastname} ${item.firstname}` })) : [],
+);

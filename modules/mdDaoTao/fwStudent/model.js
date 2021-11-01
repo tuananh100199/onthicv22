@@ -30,6 +30,7 @@ module.exports = (app) => {
         hinhChupTrucTiep: { type: Boolean, default: false },
 
         planCourse: String,                                                                         // Khóa học dự kiến
+        planLecturer: { type: app.db.Schema.ObjectId, ref: 'User' },                                // Cố vấn học tập dự kiến                                 
         division: { type: app.db.Schema.ObjectId, ref: 'Division' },                                // Cơ sở đào tạo
         course: { type: app.db.Schema.ObjectId, ref: 'Course' },                                    // Khóa học
         courseType: { type: app.db.Schema.ObjectId, ref: 'CourseType' },                            // Hạng đăng ký
@@ -111,7 +112,7 @@ module.exports = (app) => {
                             delete condition.searchText;
                             if (sort && sort.division == 0) delete sort.division;
                             model.find({ _id: { $in: _ids }, ...condition }).sort(sort).skip(skipNumber).limit(result.pageSize)
-                                .populate('user', '-password').populate('division', '_id title isOutside').populate('courseType').populate('course').populate({
+                                .populate('user', '-password').populate('division', '_id title isOutside').populate('planLecturer', '_id lastname firstname').populate('courseType').populate('course').populate({
                                     path: 'course', populate: { path: 'subjects', select: '-detailDescription' }
                                 }).exec((error, list) => {
                                     result.list = list;
@@ -123,7 +124,7 @@ module.exports = (app) => {
                     delete condition.searchText;
                     if (sort && sort.division == 0) delete sort.division;
                     model.find(condition).sort(sort).skip(skipNumber).limit(result.pageSize)
-                        .populate('user', '-password').populate('division', '_id title isOutside').populate('courseType').populate('course').populate({
+                        .populate('user', '-password').populate('division', '_id title isOutside').populate('planLecturer', '_id lastname firstname').populate('courseType').populate('course').populate({
                             path: 'course', populate: { path: 'subjects', select: '-detailDescription' }
                         }).exec((error, list) => {
                             result.list = list;
