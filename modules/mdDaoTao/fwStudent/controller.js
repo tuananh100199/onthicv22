@@ -338,14 +338,16 @@ module.exports = (app) => {
                         colCourseType = userDatas[6], courseTypeSelected = userDatas[7], colIdCard = userDatas[8];
 
                     const handleUpload = (index = startRow) => {
-                        if (index > endRow) { // end loop !
+                        if (index > endRow) { // end loop 
                             if (data.some(({ identityCard }) => identityCard == undefined)) { //check map not 100%
                                 const tempFolderName = app.date.getDateFolderName(), tempFilePath = app.path.join(app.uploadPath, tempFolderName);
                                 if (!app.fs.existsSync(tempFilePath)) {
                                     app.createFolder(tempFilePath);
                                 }
                                 set(startRow - 6, colIdCard, 'CMND/CCCD');
-                                workbook.xlsx.writeFile(tempFilePath + '\\abc.xlsx');
+                                workbook.xlsx.writeFile(tempFilePath + '\\abc.xlsx').then(() => {
+                                    done({ fileName: 'abc.xlsx', notify: 'Mời bạn chờ file được tải về máy' });
+                                });
                                 done({ fileName: 'abc.xlsx', notify: 'Mời bạn chờ file được tải về máy' });
                             } else {
                                 done({ data, notify: 'Tải lên file thành công' });
