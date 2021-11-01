@@ -160,7 +160,7 @@ module.exports = (app) => {
                         if (student && student.tienDoHocTap && student.tienDoHocTap[subject._id] && !subject.monThucHanh) {
                             const listLessons = Object.entries(student.tienDoHocTap[subject._id]);
                             let tongDiemMonHoc = 0;
-                            listLessons.forEach(lesson => {
+                            (listLessons || []).forEach(lesson => {
                                 tongDiemMonHoc += lesson[1].trueAnswers ? Number(lesson[1].score) / Object.keys(lesson[1].trueAnswers).length * 10 : 0;
                             });
                             diemMonHoc = Number(tongDiemMonHoc / numberLessons).toFixed(1);
