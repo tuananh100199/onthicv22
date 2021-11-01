@@ -54,6 +54,7 @@ module.exports = (app) => {
                             handleImportScore(index + 1);
                         } else {
                             item.diemThiTotNghiep = student.diemThiTotNghiep;
+                            item.totNghiep = student.totNghiep;
                             item.save();
                             handleImportScore(index + 1);
                         }

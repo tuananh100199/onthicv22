@@ -47,7 +47,7 @@ class FailGraduationPage extends AdminPage {//TODO: Vinh
     }
 
     onSearch = ({ pageNumber, pageSize, searchText = this.state.searchText, courseType = this.courseType.value() }, done) => {
-        this.props.getStudentPage(pageNumber, pageSize, { searchText, courseType, datSatHach: false }, () => {
+        this.props.getStudentPage(pageNumber, pageSize, { searchText, courseType, totNghiep: false }, () => {
             this.setState({ searchText });
             done && done();
         });
@@ -58,23 +58,6 @@ class FailGraduationPage extends AdminPage {//TODO: Vinh
     }
 
     edit = (e, item) => e.preventDefault() || this.modal.show(item);
-
-    //TODO: TAM  sendNotification
-    // sendNotification = (e, item) => e.preventDefault() ||
-    //     T.confirm('Gửi thông báo', `Bạn có chắc muốn gửi thông báo Ngày thi sát hạch dự kiến đến học viên ${item.lastname} ${item.firstname} là ${T.dateToText(item.ngayDuKienThiTotNghiep, 'dd/mm/yyyy')} ?`,
-    //         true, isConfirm => {
-    //             if (isConfirm) {
-    //                 const data = {
-    //                     title: 'Ngày thi sát hạch dự kiến',
-    //                     content: `Ngày thi sát hạch dự kiến của bạn là ${T.dateToText(item.ngayDuKienThiTotNghiep, 'dd/mm/yyyy')}`,
-    //                     type: '0',
-    //                     course: item.course && item.course._id,
-    //                     user: item.user && item.user._id,
-    //                     sentDate: new Date(),
-    //                 };
-    //                 this.props.createNotification(data, () => T.notify('Gửi thông báo thành công!', 'success'));
-    //             }
-    //         });
 
     render() {
         const permission = this.getUserPermission('student', ['read', 'write']);
@@ -123,7 +106,6 @@ class FailGraduationPage extends AdminPage {//TODO: Vinh
                         {table}
                     </div>
                 </div>
-                <CirclePageButton type='import' style={{ right: 70 }} onClick={() => T.alert('todo')} />
                 <CirclePageButton type='export' onClick={() => T.alert('todo')} />
                 <StudentModal readOnly={!permission.write} ref={e => this.modal = e} update={this.props.updateStudent} />
                 <Pagination pageCondition={pageCondition} pageNumber={pageNumber} pageSize={pageSize} pageTotal={pageTotal} totalItem={totalItem} getPage={(pageNumber, pageSize) => this.onSearch({ pageNumber, pageSize })} />

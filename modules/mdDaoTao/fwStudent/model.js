@@ -58,6 +58,7 @@ module.exports = (app) => {
         diemTrungBinhThiHetMon: Number,
 
         datSatHach: { type: Boolean, default: false },
+        totNghiep: { type: Boolean, default: false },
         ngayDuKienThiSatHach: Date,
         liDoChuaDatSatHach: String,
 

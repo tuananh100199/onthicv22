@@ -102,11 +102,14 @@ class AdminImportDiemThiTotNghiepPage extends AdminPage {
     onUploadSuccess = ({ data }) => {
         const { monThiTotNghiep } = this.props.course && this.props.course.item;
         data.length && monThiTotNghiep.length && data.forEach(item => {
+            let totNghiep = true;
             item.diemThiTotNghiep.forEach(diemThi => {
                 diemThi.monThiTotNghiep = monThiTotNghiep.find(monThiTotNghiep => this[monThiTotNghiep._id].value() == diemThi.col);
                 diemThi.diemLiet = item.diemLiet.indexOf(diemThi.monThiTotNghiep._id) != -1;
+                if (diemThi.diemLiet || diemThi.point < diemThi.monThiTotNghiep.score) totNghiep = false;
                 delete diemThi.col;
             });
+            item.totNghiep = totNghiep;
         });
         this.setState({ data, isFileBoxHide: true });
 

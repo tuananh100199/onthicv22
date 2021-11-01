@@ -34,8 +34,8 @@ module.exports = (app) => {
             }
 
             if (condition.courseType) pageCondition.courseType = condition.courseType;
-            pageCondition.datSatHach = condition.datSatHach;
-            pageCondition.totNghiep = condition.totNghiep;
+            if (condition.datSatHach) pageCondition.datSatHach = condition.datSatHach;
+            if (condition.totNghiep) pageCondition.totNghiep = condition.totNghiep;
             if (condition.searchText) {
                 const value = { $regex: `.*${condition.searchText}.*`, $options: 'i' };
                 pageCondition.$or = [

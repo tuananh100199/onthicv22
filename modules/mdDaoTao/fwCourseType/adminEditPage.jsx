@@ -37,11 +37,12 @@ class MonThiTotNghiepModal extends AdminModal {
     }
 
     onShow = (item) => {
-        let { title, score, totalScore, diemLiet } = item || { title: '', score: '', totalScore: '', diemLiet: false };
+        let { title, score, totalScore, diemLiet, _id } = item || { title: '', score: '', totalScore: '', diemLiet: false };
         this.itemTitle.value(title);
         this.itemScore.value(score);
         this.itemTotalScore.value(totalScore);
         this.itemDiemLiet.value(diemLiet);
+        this.setState({ _id });
     }
 
     onSubmit = () => {
@@ -51,6 +52,16 @@ class MonThiTotNghiepModal extends AdminModal {
             totalScore: this.itemTotalScore.value(),
             diemLiet: this.itemDiemLiet.value()
         };
+        let monThiTotNghiep = this.props.item.monThiTotNghiep;
+        if (!this.state._id) {
+            monThiTotNghiep.push(data);
+        } else {
+            let index = monThiTotNghiep.findIndex(monThi => monThi._id == this.state._id);
+            data._id = this.state._id;
+            if (index != -1) {
+                monThiTotNghiep && monThiTotNghiep[index] ? monThiTotNghiep[index] = data : null;
+            }
+        }
         if (data.title == '') {
             T.notify('Tên môn thi bị trống!', 'danger');
             this.itemTitle.focus();
@@ -61,7 +72,7 @@ class MonThiTotNghiepModal extends AdminModal {
             T.notify('Số câu đậu bị trống!', 'danger');
             this.itemScore.focus();
         } else {
-            this.props.updateCourseType(this.props.item._id, { monThiTotNghiep: data }, this.hide);
+            this.props.updateCourseType(this.props.item._id, { monThiTotNghiep }, this.hide);
         }
     }
 
@@ -140,6 +151,26 @@ class CourseTypeEditPage extends AdminPage {
         }
     }
 
+    swapMonThiTotNghiep = (e, item, isMoveUp) => {
+        e.preventDefault();
+        const { _id, monThiTotNghiep = [] } = this.props.courseType.item;
+        const index = monThiTotNghiep.findIndex(_item => _item._id == item._id);
+        if (isMoveUp) {
+            if (index > 0) {
+                const preItem = monThiTotNghiep[index - 1];
+                monThiTotNghiep[index - 1] = item;
+                monThiTotNghiep[index] = preItem;
+            } else return;
+        } else {
+            if (index < monThiTotNghiep.length - 1) {
+                const postItem = monThiTotNghiep[index + 1];
+                monThiTotNghiep[index + 1] = item;
+                monThiTotNghiep[index] = postItem;
+            } else return;
+        }
+        this.props.updateCourseType(_id, { monThiTotNghiep });
+    }
+
     changeDiemLiet = (item, diemLiet) => {
         item.diemLiet = diemLiet;
         this.props.updateCourseType(this.state._id, { monThiTotNghiep: item });
@@ -209,7 +240,7 @@ class CourseTypeEditPage extends AdminPage {
                     <TableCell type='text' content={item.totalScore} />
                     <TableCell type='text' content={item.score} />
                     <TableCell type='checkbox' content={item.diemLiet} permission={permissionCourseType} onChanged={diemLiet => this.changeDiemLiet(item, diemLiet)} />
-                    {readOnly ? null : <TableCell type='buttons' content={item} permission={permissionCourseType} onEdit={(e, item,) => e.preventDefault() || this.monThiTotNghiepModal.show(item)} onDelete={this.deleteMonThiTotNghiep} />}
+                    {readOnly ? null : <TableCell type='buttons' content={item} permission={permissionCourseType} onSwap={this.swapMonThiTotNghiep} onEdit={(e, item,) => e.preventDefault() || this.monThiTotNghiepModal.show(item)} onDelete={this.deleteMonThiTotNghiep} />}
                 </tr>),
         });
 

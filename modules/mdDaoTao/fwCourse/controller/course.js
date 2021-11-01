@@ -322,8 +322,7 @@ module.exports = (app) => {
             condition = req.query.pageCondition || {},
             pageCondition = { course: condition.courseId || { $ne: null } },
             filter = condition.filter;
-        let listStudent = [],
-            subjects = [], pageReturn = {};
+        let listStudent = [], subjects = [], pageReturn = {};
         const isAdmin = sessionUser.isCourseAdmin || sessionUser.permissions.includes('course:write');
 
         new Promise((resolve, reject) => {
@@ -402,21 +401,21 @@ module.exports = (app) => {
                 const diemLyThuyet = Number((tongDiemLyThuyet / monLyThuyet.length).toFixed(1));
 
                 const diemThucHanh = student.diemThucHanh ? Number(student.diemThucHanh) : 0;
-                let filterTotNghiep = true,
-                    filterThiTotNghiep = true;
+                // let filterTotNghiep = true,
+                let filterThiTotNghiep = true;
                 if (isAdmin) {
-                    const diemThiTotNghiep = student && student.diemThiTotNghiep && student.diemThiTotNghiep.length ? student.diemThiTotNghiep : [],
-                        monThiTotNghiep = student && student.course && student.course.monThiTotNghiep && student.course.monThiTotNghiep.length ? student.course.monThiTotNghiep : [];
-                    if (diemThiTotNghiep.length) {
-                        for (let i = 0; i < diemThiTotNghiep.length; i++) {
-                            if (diemThiTotNghiep[i].diemLiet || diemThiTotNghiep[i].point < monThiTotNghiep[i].score) {
-                                filterTotNghiep = false;
-                                break;
-                            }
-                        }
-                    } else {
-                        filterTotNghiep = false;
-                    }
+                    // const diemThiTotNghiep = student && student.diemThiTotNghiep && student.diemThiTotNghiep.length ? student.diemThiTotNghiep : [],
+                    //     monThiTotNghiep = student && student.course && student.course.monThiTotNghiep && student.course.monThiTotNghiep.length ? student.course.monThiTotNghiep : [];
+                    // if (diemThiTotNghiep.length) {
+                    //     for (let i = 0; i < diemThiTotNghiep.length; i++) {
+                    //         if (diemThiTotNghiep[i].diemLiet || diemThiTotNghiep[i].point < monThiTotNghiep[i].score) {
+                    //             filterTotNghiep = false;
+                    //             break;
+                    //         }
+                    //     }
+                    // } else {
+                    //     filterTotNghiep = false;
+                    // }
                     const diemThiHetMon = student && student.diemThiHetMon && student.diemThiHetMon;
                     if (diemThiHetMon.length) {
                         for (let i = 0; i < diemThiHetMon.length; i++) {
@@ -432,7 +431,7 @@ module.exports = (app) => {
 
                 if ((filter == 'thiHetMon' && 5 <= ((diemLyThuyet + diemThucHanh) / 2).toFixed(1)) ||
                     (filter == 'thiTotNghiep' && filterThiTotNghiep) ||
-                    (filter == 'totNghiep' && filterTotNghiep) ||
+                    (filter == 'totNghiep' && student.totNghiep) ||
                     (filter == 'satHach' && student.datSatHach) ||
                     !['thiHetMon', 'thiTotNghiep', 'totNghiep', 'satHach'].includes(filter)) {
                     students.push(app.clone(student, { diemLyThuyet, diemThucHanh }));
