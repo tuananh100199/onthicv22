@@ -191,8 +191,8 @@ module.exports = (app) => {
                 let filterTotNghiep = true,
                     filterThiTotNghiep = true;
                 if (isAdmin) {
-                    const diemThiTotNghiep = student && student.diemThiTotNghiep && student.diemThiTotNghiep.length ? student.diemThiTotNghiep : [],
-                        monThiTotNghiep = student && student.course && student.course.monThiTotNghiep && student.course.monThiTotNghiep.length ? student.course.monThiTotNghiep : [];
+                    const diemThiTotNghiep = student && student.diemThiTotNghiep && student.diemThiTotNghiep.length ? student.diemThiTotNghiep : [];
+                    monThiTotNghiep = student && student.course && student.course.monThiTotNghiep && student.course.monThiTotNghiep.length ? student.course.monThiTotNghiep : [];
                     if (diemThiTotNghiep.length) {
                         for (let i = 0; i < diemThiTotNghiep.length; i++) {
                             if (diemThiTotNghiep[i].diemLiet || diemThiTotNghiep[i].point < monThiTotNghiep[i].score) {
