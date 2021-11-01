@@ -78,7 +78,7 @@ class CourseAdminModal extends AdminModal {
 
     onSubmit = () => {
         const { diemThiHetMon, diemThiTotNghiep } = this.state;
-        let isUpdate = true;
+        let isUpdate = true, totNghiep = true;
         for (let i = 0; i < diemThiHetMon.length; i++) {
             if (this[diemThiHetMon[i].subject].value() == '') {
                 T.notify('Vui lòng nhập điểm thi hết môn!', 'danger');
@@ -98,12 +98,14 @@ class CourseAdminModal extends AdminModal {
             } else {
                 diemThiTotNghiep[i].point = parseInt(this[diemThiTotNghiep[i].monThiTotNghiep].value());
                 diemThiTotNghiep[i].diemLiet = this['Liet' + diemThiTotNghiep[i].monThiTotNghiep].value();
+                if (diemThiTotNghiep[i].diemLiet || diemThiTotNghiep[i].point < diemThiTotNghiep[i].monThiTotNghiep.score) totNghiep = false;
             }
         }
         const changes = {
             diemThucHanh: this.diemThucHanh.value(),
             diemThiHetMon,
-            diemThiTotNghiep
+            diemThiTotNghiep,
+            totNghiep
         };
         if (changes.diemThucHanh == '') {
             T.notify('Vui lòng nhập điểm thực hành!', 'danger');

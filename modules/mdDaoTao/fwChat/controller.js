@@ -56,6 +56,23 @@ module.exports = app => {
         });
     });
 
+    // Chat API
+    app.get('/api/chat/admin', app.permission.check('course:read'), (req, res) => {
+        const sessionUser = req.session.user;
+        if (sessionUser.isCourseAdmin) {
+            app.model.student.getAll({ course: req.query._id }, (error, item) => res.send({ error, item }));
+        } else {
+            app.model.course.get(req.query._id, (error, item) => {
+                if (error || !item) {
+                    res.send({ error });
+                } else {
+                    const listStudent = item.teacherGroups.filter(teacherGroup => teacherGroup.teacher && teacherGroup.teacher._id == sessionUser._id);
+                    res.send({ error, item: listStudent.length ? listStudent[0].student : null });
+                }
+            });
+        }
+    });
+
     app.get('/api/chat/student', app.permission.check('user:login'), (req, res) => {
         const sessionUser = req.session.user;
         app.model.course.get(req.query.courseId, (error, item) => {

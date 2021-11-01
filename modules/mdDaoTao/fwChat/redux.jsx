@@ -91,6 +91,22 @@ export function getUserChats(_selectedUserId, sent, done) {
     };
 }
 
+// Chat -----------------------------------------------------------------------------------------------------------
+export function getChatByAdmin(_id, done) {
+    return dispatch => {
+        const url = '/api/chat/admin';
+        T.get(url, { _id }, data => {
+            if (data.error) {
+                T.notify('Lấy các liên hệ bị lỗi!', 'danger');
+                console.error('GET: ' + url + '.', data.error);
+            } else {
+                done && done(data);
+                dispatch({ type: ChatGetUserChats, user: data.item });
+            }
+        }, error => console.error(error) || T.notify('Lấy các liên hệ bị lỗi!', 'danger'));
+    };
+}
+
 export function getAllChats(_courseId, sent, done) {
     return dispatch => {
         const url = '/api/chat/all';
