@@ -33,11 +33,11 @@ class ImportPage extends AdminPage {
 
     onUploadSuccess = ({ data, fileName, notify }) => {
         if (fileName) { // map not 100%
-            window.open('/api/student/download-fail-pass');// browser allow popup
+           downloadFailPassStudentFile();
+            // window.open('/api/student/download-fail-pass');// browser allow popup !
         } else if (data && data.length > 0) {
             this.setState({ data, isFileBoxHide: true });
         }
-        // this.props.downloadFailPassStudentFile();
         T.notify(notify, 'success');
     }
 
@@ -135,5 +135,5 @@ class ImportPage extends AdminPage {
     }
 }
 const mapStateToProps = state => ({ system: state.system });
-const mapActionsToProps = { importFailPassStudent, downloadFailPassStudentFile };
+const mapActionsToProps = { importFailPassStudent };
 export default connect(mapStateToProps, mapActionsToProps)(ImportPage);
