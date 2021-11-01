@@ -72,6 +72,102 @@ module.exports = (app) => {
         });
     });
 
+    app.get('/api/student/export/:_courseId/:filter', app.permission.check('course:read'), (req, res) => {
+        let pageNumber = parseInt(req.params.pageNumber),
+            pageSize = parseInt(req.params.pageSize),
+            condition = req.query.pageCondition || {},
+            pageCondition = { courseType: req.params._courseId || { $ne: null } },
+            filter = req.params.filter;
+        function dateToText(date) {
+            const newDate = new Date(date);
+            let year = newDate.getFullYear();
+            let month = (1 + newDate.getMonth()).toString().padStart(2, '0');
+            let day = newDate.getDate().toString().padStart(2, '0');
+            console.log(month);
+            return day + '/' + month + '/' + year;
+        }
+        try {
+            if (req.session.user.isCourseAdmin && req.session.user.division && req.session.user.division.isOutside) { // Session user là quản trị viên khóa học
+                pageCondition.division = req.session.user.division._id;
+            }
+
+            if (condition.courseType) pageCondition.courseType = condition.courseType;
+            if (filter == 'HVChuaDatSatHach') pageCondition.datSatHach = false;
+            if (filter == 'HVChuaTotNghiep') pageCondition.totNghiep = false;
+            if (condition.searchText) {
+                const value = { $regex: `.*${condition.searchText}.*`, $options: 'i' };
+                pageCondition.$or = [
+                    // { phoneNumber: value },
+                    // { email: value },
+                    { firstname: value },
+                    { lastname: value },
+                    { identityCard: value },
+                ];
+            }
+            app.model.student.getPage(pageNumber, pageSize, pageCondition, (error, page) => {
+                const students = page && page.list ? page.list.map(item => item = app.clone(item)) : [];
+                const workbook = app.excel.create(), worksheet = workbook.addWorksheet(filter);
+                const cells = [
+                    { cell: 'A1', value: 'STT', bold: true, border: '1234' },
+                    { cell: 'B1', value: 'Họ', bold: true, border: '1234' },
+                    { cell: 'C1', value: 'Tên', bold: true, border: '1234' },
+                    { cell: 'D1', value: 'CMND/CCCD', bold: true, border: '1234' },
+                    { cell: 'E1', value: 'Khóa học', bold: true, border: '1234' },
+                ];
+
+                let columns = [
+                    { header: 'STT', key: '_id', width: 5 },
+                    { header: 'Họ', key: 'lastname', width: 15 },
+                    { header: 'Tên', key: 'firstname', width: 15 },
+                    { header: 'CMND/CCCD', key: 'identityCard', width: 15 },
+                    { header: 'Khóa học', key: 'course', width: 40 },
+                ];
+
+                if (filter == 'HVChuaTotNghiep') {
+                    cells.push(
+                        { cell: 'F1', value: 'Ngày dự kiến thi tốt nghiệp', bold: true, border: '1234' },
+                        { cell: 'G1', value: 'Lý do chưa tốt nghiệp', bold: true, border: '1234' }
+                    );
+                    columns.push(
+                        { header: 'Ngày dự kiến thi tốt nghiệp', key: 'ngayDuKienThiTotNghiep', width: 30 },
+                        { header: 'Lý do chưa tốt nghiệp', key: 'liDoChuaTotNghiep', width: 80 },
+                    );
+                } else if (filter == 'HVChuaDatSatHach') {
+                    cells.push(
+                        { cell: 'F1', value: 'Ngày dự kiến thi sát hạch', bold: true, border: '1234' },
+                        { cell: 'G1', value: 'Lý do chưa đạt sát hạch', bold: true, border: '1234' }
+                    );
+                    columns.push(
+                        { header: 'Ngày dự kiến thi sát hạch', key: 'ngayDuKienThiSatHach', width: 30 },
+                        { header: 'Lý do chưa đạt sát hạch', key: 'liDoChuaDatSatHach', width: 80 },
+                    );
+                }
+                worksheet.columns = columns;
+                students.forEach((student, index) => {
+                    const obj = {
+                        _id: index + 1,
+                        lastname: student.lastname,
+                        firstname: student.firstname,
+                        identityCard: student.identityCard,
+                        course: student.course ? student.course.name : '',
+                    };
+                    if (filter == 'HVChuaTotNghiep') {
+                        obj['ngayDuKienThiTotNghiep'] = student.ngayDuKienThiTotNghiep ? dateToText(student.ngayDuKienThiTotNghiep) : '';
+                        obj['liDoChuaTotNghiep'] = student.liDoChuaTotNghiep ? student.liDoChuaTotNghiep : '';
+                    } else if (filter == 'HVChuaDatSatHach') {
+                        obj['ngayDuKienThiSatHach'] = student.ngayDuKienThiSatHach;
+                        obj['liDoChuaTotNghiep'] = student.liDoChuaDatSatHach ? student.liDoChuaTotNghiep.liDoChuaDatSatHach : '';
+                    }
+                    worksheet.addRow(obj);
+                });
+                app.excel.write(worksheet, cells);
+                app.excel.attachment(workbook, res, 'DanhSachHocVien.xlsx');
+            });
+        } catch (error) {
+            res.send({ error });
+        }
+    });
+
     // Pre-student APIs -----------------------------------------------------------------------------------------------
     app.get('/api/pre-student/page/:pageNumber/:pageSize', app.permission.check('pre-student:read'), (req, res) => {
         let pageNumber = parseInt(req.params.pageNumber),

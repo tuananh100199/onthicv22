@@ -1,8 +1,8 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { getStudentPage, updateStudent } from './redux';
+import { exportExamStudent, getStudentPage, updateStudent } from './redux';
 import { createNotification } from 'modules/_default/fwNotification/redux';
-import { ajaxSelectCourseType } from 'modules/mdDaoTao/fwCourseType/redux';
+import { getCourseTypeAll, ajaxSelectCourseType } from 'modules/mdDaoTao/fwCourseType/redux';
 import { AdminPage, FormRichTextBox, FormSelect, FormDatePicker, renderTable, TableCell, AdminModal, CirclePageButton } from 'view/component/AdminPage';
 import Pagination from 'view/component/Pagination';
 
@@ -42,6 +42,10 @@ class FailGraduationPage extends AdminPage {//TODO: Vinh
     componentDidMount() {
         T.ready('/user/student/fail-graduation', () => {
             T.showSearchBox();
+            this.props.getCourseTypeAll(data => {
+                const courseTypes = data.map(item => ({ id: item._id, text: item.title }));
+                this.courseType.value(courseTypes[0]);
+            });
             T.onSearch = (searchText) => this.onSearch({ searchText });// search attach coursetype ?
         });
     }
@@ -54,6 +58,7 @@ class FailGraduationPage extends AdminPage {//TODO: Vinh
     }
 
     onChangeCourseType = (courseType) => {
+        this.setState({ courseId: courseType });
         this.onSearch({ courseType });
     }
 
@@ -106,7 +111,7 @@ class FailGraduationPage extends AdminPage {//TODO: Vinh
                         {table}
                     </div>
                 </div>
-                <CirclePageButton type='export' onClick={() => T.alert('todo')} />
+                {this.state.courseId ? <CirclePageButton type='export' onClick={() => exportExamStudent(this.state.courseId, 'HVChuaTotNghiep')} /> : null}
                 <StudentModal readOnly={!permission.write} ref={e => this.modal = e} update={this.props.updateStudent} />
                 <Pagination pageCondition={pageCondition} pageNumber={pageNumber} pageSize={pageSize} pageTotal={pageTotal} totalItem={totalItem} getPage={(pageNumber, pageSize) => this.onSearch({ pageNumber, pageSize })} />
             </>,
@@ -115,5 +120,5 @@ class FailGraduationPage extends AdminPage {//TODO: Vinh
 }
 
 const mapStateToProps = state => ({ system: state.system, student: state.trainning.student });
-const mapActionsToProps = { getStudentPage, updateStudent, createNotification };
+const mapActionsToProps = { getStudentPage, updateStudent, createNotification, getCourseTypeAll };
 export default connect(mapStateToProps, mapActionsToProps)(FailGraduationPage);

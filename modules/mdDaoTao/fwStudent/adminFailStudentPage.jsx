@@ -1,8 +1,8 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { getStudentPage, updateStudent } from './redux';
+import { exportExamStudent, getStudentPage, updateStudent } from './redux';
 import { createNotification } from 'modules/_default/fwNotification/redux';
-import { ajaxSelectCourseType } from 'modules/mdDaoTao/fwCourseType/redux';
+import { ajaxSelectCourseType, getCourseTypeAll } from 'modules/mdDaoTao/fwCourseType/redux';
 import { AdminPage, FormRichTextBox, FormSelect, FormDatePicker, renderTable, TableCell, AdminModal, CirclePageButton } from 'view/component/AdminPage';
 import Pagination from 'view/component/Pagination';
 
@@ -30,7 +30,7 @@ class StudentModal extends AdminModal {
         title: 'Chỉnh sửa học viên chưa đạt sát hạch',
         body: (
             <div className='row'>
-                 <FormDatePicker className='col-12' ref={e => this.ngayDuKienThiSatHach = e} label='Ngày dự kiến thi sát hạch (dd/mm/yyyy)' readOnly={this.props.readOnly} type='date-mask' />
+                <FormDatePicker className='col-12' ref={e => this.ngayDuKienThiSatHach = e} label='Ngày dự kiến thi sát hạch (dd/mm/yyyy)' readOnly={this.props.readOnly} type='date-mask' />
                 <FormRichTextBox className='col-12' ref={e => this.liDoChuaDatSatHach = e} label='Lí do chưa đạt sát hạch' readOnly={this.props.readOnly} />
             </div>),
     });
@@ -42,6 +42,10 @@ class FailStudentPage extends AdminPage {
     componentDidMount() {
         T.ready('/user/student/fail-exam', () => {
             T.showSearchBox();
+            this.props.getCourseTypeAll(data => {
+                const courseTypes = data.map(item => ({ id: item._id, text: item.title }));
+                this.courseType.value(courseTypes[0]);
+            });
             T.onSearch = (searchText) => this.onSearch({ searchText });// search attach coursetype ?
         });
     }
@@ -54,6 +58,7 @@ class FailStudentPage extends AdminPage {
     }
 
     onChangeCourseType = (courseType) => {
+        this.setState({ courseId: courseType });
         this.onSearch({ courseType });
     }
 
@@ -124,7 +129,7 @@ class FailStudentPage extends AdminPage {
                     </div>
                 </div>
                 <CirclePageButton type='import' style={{ right: 70 }} onClick={() => T.alert('todo')} />
-                <CirclePageButton type='export' onClick={() => T.alert('todo')} />
+                <CirclePageButton type='export' onClick={() => exportExamStudent(this.state.courseId, 'HVChuaDatSatHach')} />
                 <StudentModal readOnly={!permission.write} ref={e => this.modal = e} update={this.props.updateStudent} />
                 <Pagination pageCondition={pageCondition} pageNumber={pageNumber} pageSize={pageSize} pageTotal={pageTotal} totalItem={totalItem} getPage={(pageNumber, pageSize) => this.onSearch({ pageNumber, pageSize })} />
             </>,
@@ -133,5 +138,5 @@ class FailStudentPage extends AdminPage {
 }
 
 const mapStateToProps = state => ({ system: state.system, student: state.trainning.student });
-const mapActionsToProps = { getStudentPage, updateStudent, createNotification };
+const mapActionsToProps = { getStudentPage, updateStudent, createNotification, getCourseTypeAll };
 export default connect(mapStateToProps, mapActionsToProps)(FailStudentPage);
