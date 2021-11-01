@@ -224,7 +224,7 @@ module.exports = (app) => {
                     students.push(app.clone(student, { diemLyThuyet, diemThucHanh }));
                 }
             }));
-            const workbook = app.excel.create(), worksheet = workbook.addWorksheet('LearningProgress');
+            const workbook = app.excel.create(), worksheet = workbook.addWorksheet(filter);
             const cells = [
                 { cell: 'A1', value: 'STT', bold: true, border: '1234' },
                 { cell: 'B1', value: 'Họ', bold: true, border: '1234' },
