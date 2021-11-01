@@ -33,11 +33,11 @@ class ImportPage extends AdminPage {
 
     onUploadSuccess = ({ data, fileName, notify }) => {
         if (fileName) { // map not 100%
-            window.open('/api/student/download-fail-pass');// browser allow popup
+           downloadFailPassStudentFile();
+            // window.open('/api/student/download-fail-pass');// browser allow popup !
         } else if (data && data.length > 0) {
             this.setState({ data, isFileBoxHide: true });
         }
-        // this.props.downloadFailPassStudentFile();
         T.notify(notify, 'success');
     }
 
@@ -102,10 +102,10 @@ class ImportPage extends AdminPage {
                     <h3 className='tile-title'>Thông số đầu vào</h3>
                     <div className='row'>
                         <FormSelect ref={e => this.courseType = e} data={ajaxSelectCourseType} label='Loại khóa học'
-                            onChange={data => this.onChange(undefined, data.text)} className='col-md-4' />
-                        <FormSelect ref={e => this.importType = e} label='Loại file tải lên' data={importTypes} className='col-md-4' />
-                        <FormTextBox ref={e => this.startRow = e} onChange={e => this.onChange(e)} label='Dòng bắt đầu' className='col-md-4' type='number' min={2} max={this.endRow ? parseInt(this.endRow.value()) : ''} />
-                        <FormTextBox ref={e => this.endRow = e} onChange={e => this.onChange(e)} label='Dòng kết thúc' className='col-md-4' type='number' min={this.startRow ? parseInt(this.startRow.value()) : ''} />
+                            onChange={data => this.onChange(undefined, data.text)} className='col-md-6' />
+                        <FormSelect ref={e => this.importType = e} label='Loại file tải lên' data={importTypes} className='col-md-6' />
+                        <FormTextBox ref={e => this.startRow = e} onChange={e => this.onChange(e)} label='Dòng bắt đầu' className='col-md-6' type='number' min={2} max={this.endRow ? parseInt(this.endRow.value()) : ''} />
+                        <FormTextBox ref={e => this.endRow = e} onChange={e => this.onChange(e)} label='Dòng kết thúc' className='col-md-6' type='number' min={this.startRow ? parseInt(this.startRow.value()) : ''} />
                         <FormTextBox ref={e => this.fullnameCol = e} onChange={e => this.onChange(e)} label='Cột Họ và tên' className='col-md-4' />
                         <FormTextBox ref={e => this.birthdayCol = e} onChange={e => this.onChange(e)} label='Cột Ngày sinh' className='col-md-4' />
                         <FormTextBox ref={e => this.courseCol = e} onChange={e => this.onChange(e)} label='Cột Khóa học' className='col-md-4' />
@@ -135,5 +135,5 @@ class ImportPage extends AdminPage {
     }
 }
 const mapStateToProps = state => ({ system: state.system });
-const mapActionsToProps = { importFailPassStudent, downloadFailPassStudentFile };
+const mapActionsToProps = { importFailPassStudent };
 export default connect(mapStateToProps, mapActionsToProps)(ImportPage);

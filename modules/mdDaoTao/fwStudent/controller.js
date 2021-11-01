@@ -338,17 +338,27 @@ module.exports = (app) => {
                         colCourseType = userDatas[6], courseTypeSelected = userDatas[7], colIdCard = userDatas[8];
 
                     const handleUpload = (index = startRow) => {
-                        if (index > endRow) { // end loop !
-                            if (data.some(({ identityCard }) => identityCard == undefined)) { //check map not 100%
-                                const tempFolderName = app.date.getDateFolderName(), tempFilePath = app.path.join(app.uploadPath, tempFolderName);
+                        if (index > endRow) { // end loop  
+                            if (data.some(({ identityCard }) => identityCard == undefined)) { //check map not 100%, map fail then not push identityCard to data
+                                const tempFolderName = app.date.getDateFolderName(), tempFilePath = app.path.join(app.assetPath, 'temp', tempFolderName);
                                 if (!app.fs.existsSync(tempFilePath)) {
                                     app.createFolder(tempFilePath);
                                 }
                                 set(startRow - 6, colIdCard, 'CMND/CCCD');
-                                workbook.xlsx.writeFile(tempFilePath + '\\abc.xlsx').then(() => {
-                                    done({ fileName: 'abc.xlsx', notify: 'Mời bạn chờ file được tải về máy' });
+                                const colIdCardValues = worksheet.getColumn(colIdCard);
+                                colIdCardValues.width = 20;
+                                colIdCardValues.eachCell((cell) => { //highlight nhap cmnd !
+                                    if (cell.text == 'Nhập CMND/CCCD') {
+                                        cell.fill = {
+                                            type: 'pattern',
+                                            pattern: 'solid',
+                                            fgColor: { argb: 'FFFFFF00' },
+                                        };
+                                    }
                                 });
-                                // done({ fileName: 'abc.xlsx', notify: 'Mời bạn chờ file được tải về máy' });
+                                workbook.xlsx.writeFile(app.path.join(tempFilePath, 'abc.xlsx')).then(() => { //wait for write file done, then resolve,if not, file res maybe empty
+                                    done({ fileName: 'abc.xlsx', notify: 'Vui lòng chờ file được tải về máy' });
+                                });
                             } else {
                                 done({ data, notify: 'Tải lên file thành công' });
                             }
@@ -382,7 +392,7 @@ module.exports = (app) => {
                                                     handleUpload(index + 1);
                                                 } else if (list.length == 1 && list[0]) { //map success
                                                     const { identityCard } = list[0];
-                                                    set(index, colIdCard, identityCard);
+                                                    set(index, colIdCard, `'${identityCard}`); // add ' before it to check 00..
                                                     data.push({ fullname, birthday, courseName: course, course: item._id, identityCard });
                                                     handleUpload(index + 1);
                                                 }
@@ -467,21 +477,21 @@ module.exports = (app) => {
 
     app.get('/api/student/download-fail-pass', app.permission.check('student:import'), (req, res) => {
         const sessionUser = req.session.user,
-            tempFolderName = app.date.getDateFolderName(), tempFilePath = app.path.join(app.uploadPath, tempFolderName),
+            tempFolderName = app.date.getDateFolderName(), tempFolderPath = app.path.join(app.assetPath, 'temp', tempFolderName),
             division = sessionUser.division;
-        // workbook = req.query.workbook || {};
-        if (sessionUser && sessionUser.isCourseAdmin && division && division.isOutside) {
-            res.send({ error: 'Bạn không có quyền xuất file excel này!' });
+        if (sessionUser && sessionUser.isLecturer && division && division.isOutside) {
+            res.send({ error: 'Bạn không có quyền tải file excel này!' });
         } else {
-            res.download(tempFilePath + '\\abc.xlsx', 'Danh sách học viên.xlsx', function (err) {
-                if (err) {
-                    res.send({ err });
-                } else {
-                    app.deleteFile(tempFilePath + '\\abc.xlsx');
-                    // app.deleteFolder(tempFilePath);
-                    // decrement a download credit
-                }
-            });
+            if (app.fs.existsSync(app.path.join(tempFolderPath, 'abc.xlsx'))) {
+                res.download(app.path.join(tempFolderPath, 'abc.xlsx'), 'Danh sách học viên.xlsx', (error) => {
+                    if (error) {
+                        res.send({ error });
+                    } else {
+                        app.deleteFile(app.path.join(tempFolderPath, 'abc.xlsx'));
+                    }
+                });
+            } else res.send({ error: 'File không tồn tại trên server' });
+
         }
     });
 

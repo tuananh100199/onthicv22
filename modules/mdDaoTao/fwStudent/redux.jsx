@@ -230,18 +230,8 @@ export function importFailPassStudent(student, type, done) {
     };
 }
 
-export function downloadFailPassStudentFile(workbook, done) {
-    return () => {
-        const url = '/api/student/download-fail-pass';
-        T.get(url, { workbook }, data => {
-            if (data.error) {
-                T.notify('Lấy danh sách học viên bị lỗi!', 'danger');
-                console.error(`GET: ${url}. ${data.error}`);
-            } else {
-                done && done(data);
-            }
-        }, error => console.error(error) || T.notify('Lấy danh sách học viên bị lỗi!', 'danger'));
-    };
+export function downloadFailPassStudentFile() {
+    T.download(T.url('/api/student/download-fail-pass'));
 }
 
 // Ajax Selections ----------------------------------------------------------------------------------------------------
