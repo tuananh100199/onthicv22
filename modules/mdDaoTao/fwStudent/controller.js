@@ -345,8 +345,10 @@ module.exports = (app) => {
                                     app.createFolder(tempFilePath);
                                 }
                                 set(startRow - 6, colIdCard, 'CMND/CCCD');
-                                workbook.xlsx.writeFile(tempFilePath + '\\abc.xlsx');
-                                done({ fileName: 'abc.xlsx', notify: 'Mời bạn chờ file được tải về máy' });
+                                workbook.xlsx.writeFile(tempFilePath + '\\abc.xlsx').then(() => {
+                                    done({ fileName: 'abc.xlsx', notify: 'Mời bạn chờ file được tải về máy' });
+                                });
+                                // done({ fileName: 'abc.xlsx', notify: 'Mời bạn chờ file được tải về máy' });
                             } else {
                                 done({ data, notify: 'Tải lên file thành công' });
                             }
