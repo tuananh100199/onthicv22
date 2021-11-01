@@ -40,6 +40,10 @@ export default {
             component: Loadable({ loading: Loading, loader: () => import('./pages/adminSubjectPage') })
         },
         {
+            path: '/user/course/:_id/graduation-subject',
+            component: Loadable({ loading: Loading, loader: () => import('./pages/adminGraduationSubjectPage') })
+        },
+        {
             path: '/user/course/:_id/manager',
             component: Loadable({ loading: Loading, loader: () => import('./pages/adminManagerPage') })
         },

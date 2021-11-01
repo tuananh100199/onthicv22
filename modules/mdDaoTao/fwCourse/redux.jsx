@@ -378,22 +378,6 @@ export function getLearningProgressPage(pageNumber, pageSize, pageCondition, don
     };
 }
 
-// Chat -----------------------------------------------------------------------------------------------------------
-export function getChatByAdmin(_id, done) {
-    return dispatch => {
-        const url = '/api/course/chat/admin';
-        T.get(url, { _id }, data => {
-            if (data.error) {
-                T.notify('Lấy các liên hệ bị lỗi!', 'danger');
-                console.error('GET: ' + url + '.', data.error);
-            } else {
-                done && done(data);
-                dispatch({ type: CourseGetUserChat, user: data.item });
-            }
-        }, error => console.error(error) || T.notify('Lấy các liên hệ bị lỗi!', 'danger'));
-    };
-}
-
 // Import Excel ----------------------------------------------------------------------------------------------------
 export function importScore(score, courseId, done) {
     return () => {
@@ -447,13 +431,5 @@ export const ajaxSelectCourse = {
     url: '/api/course/page/1/20',
     data: {},
     processResults: response => ({ results: response && response.page && response.page.list ? response.page.list.map(course => ({ id: course._id, text: course.name + (course.courseType ? ` (${course.courseType.title})` : '') })) : [] }),
-    // fetchOne: (_id, done) => (getCourse(_id, ({ item }) => done && done({ id: item._id, text: item.name + (item.courseType ? ` (${item.courseType.title})` : '') })))()
     fetchOne: (_id, done) => fetchCourse(_id, ({ item }) => done && done({ id: item._id, text: item.name + (item.courseType ? ` (${item.courseType.title})` : '') }))
 };
-
-export const ajaxSelectStudentOfLecturer = (courseId, lecturerId) => T.createAjaxAdapter(
-    '/api/course/lecturer/student',
-    params => ({ condition: { courseId, lecturerId, title: params.term } }),
-    response => response && response.list ?
-        response.list.map(item => ({ id: item._id, text: `${item.lastname} ${item.firstname}` })) : [],
-);

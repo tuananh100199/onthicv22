@@ -39,24 +39,10 @@ module.exports = (app) => {
 
     app.put('/api/course-type', app.permission.check('course-type:write'), (req, res) => {
         const { _id, changes } = req.body;
-        if (changes && changes.monThiTotNghiep) {
-            app.model.courseType.get(_id, (error, item) => {
-                if (error || !item) {
-                    res.send({ error, item });
-                } else {
-                    let index = item.monThiTotNghiep && item.monThiTotNghiep.findIndex(monThiTotNghiep => monThiTotNghiep.title.toLowerCase().trim() == changes.monThiTotNghiep.title.toLowerCase().trim());
-                    if (index != -1) {
-                        item.monThiTotNghiep[index] = changes.monThiTotNghiep;
-                        app.model.courseType.update(_id, item, (error, item) => res.send({ error, item }));
-                    } else {
-                        app.model.courseType.addMonThiTotNghiep(_id, changes.monThiTotNghiep, (error, item) => res.send({ error, item }));
-                    }
-                }
-            });
-        } else {
-            if (changes && changes.subjects && changes.subjects === 'empty') changes.subjects = [];
-            app.model.courseType.update(_id, changes, (error, item) => res.send({ error, item }));
-        }
+        if (changes && changes.subjects && changes.subjects === 'empty') changes.subjects = [];
+        if (changes && changes.monThiTotNghiep && changes.monThiTotNghiep === 'empty') changes.monThiTotNghiep = [];
+        app.model.courseType.update(_id, changes, (error, item) => res.send({ error, item }));
+
     });
 
     app.delete('/api/course-type/mon-thi-tot-nghiep', app.permission.check('course-type:write'), (req, res) => {

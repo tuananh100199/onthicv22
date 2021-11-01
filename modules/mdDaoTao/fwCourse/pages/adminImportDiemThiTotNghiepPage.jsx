@@ -40,7 +40,7 @@ class AdminImportDiemThiTotNghiepPage extends AdminPage {
         const listColumn = ['D', 'E', 'F', 'G', 'H', 'I', 'J'];
         this.itemStartRow.value(8);
         this.itemIdentityCard.value('C');
-        monThiTotNghiep.forEach((monThi, index) => {
+        monThiTotNghiep.length && monThiTotNghiep.forEach((monThi, index) => {
             this[monThi._id].value(listColumn[index]);
             this.itemLiet[monThi._id].value(monThi.diemLiet);
             this.setState(prevState => ({
@@ -102,11 +102,14 @@ class AdminImportDiemThiTotNghiepPage extends AdminPage {
     onUploadSuccess = ({ data }) => {
         const { monThiTotNghiep } = this.props.course && this.props.course.item;
         data.length && monThiTotNghiep.length && data.forEach(item => {
+            let totNghiep = true;
             item.diemThiTotNghiep.forEach(diemThi => {
                 diemThi.monThiTotNghiep = monThiTotNghiep.find(monThiTotNghiep => this[monThiTotNghiep._id].value() == diemThi.col);
                 diemThi.diemLiet = item.diemLiet.indexOf(diemThi.monThiTotNghiep._id) != -1;
+                if (diemThi.diemLiet || diemThi.point < diemThi.monThiTotNghiep.score) totNghiep = false;
                 delete diemThi.col;
             });
+            item.totNghiep = totNghiep;
         });
         this.setState({ data, isFileBoxHide: true });
 
@@ -132,7 +135,7 @@ class AdminImportDiemThiTotNghiepPage extends AdminPage {
                     <FormTextBox className='col-md-3' ref={e => this.itemEndRow = e} label='Dòng kết thúc' onChange={e => this.change(e)} type='number' />
                     <FormTextBox className='col-md-4' ref={e => this.itemIdentityCard = e} label='Cột CMND/CCCD' onChange={e => this.change(e)} />
                     <h3 className='tile-title col-12'>Danh sách các cột môn thi</h3>
-                    {listMonThi && listMonThi.length && listMonThi.map((monThi, index) =>
+                    {listMonThi && listMonThi.length ? listMonThi.map((monThi, index) =>
                     (
                         <div key={index} className='col-md-3'>
                             <FormTextBox ref={e => this[monThi._id] = e} label={'Môn thi: ' + monThi.title} onChange={e => this.change(e)} />
@@ -141,7 +144,7 @@ class AdminImportDiemThiTotNghiepPage extends AdminPage {
                         </div>
 
                     )
-                    )}
+                    ) : null}
                 </div>
             </>);
         const subjectColumns = [];

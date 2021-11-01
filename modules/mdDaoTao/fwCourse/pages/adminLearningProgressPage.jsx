@@ -63,6 +63,7 @@ class CourseAdminModal extends AdminModal {
         const { _id, diemThucHanh, diemThiHetMon, diemThiTotNghiep } = item || { diemThucHanh: 0 };
         diemThiTotNghiep && diemThiTotNghiep.length && diemThiTotNghiep.forEach((monThi) => {
             this[monThi.monThiTotNghiep] && this[monThi.monThiTotNghiep].value(monThi.point);
+            this['Liet' + monThi.monThiTotNghiep] && this['Liet' + monThi.monThiTotNghiep].value(monThi.diemLiet);
         });
         diemThiHetMon && diemThiHetMon.length && diemThiHetMon.forEach((monThi) => {
             this[monThi.subject] && this[monThi.subject].value(monThi.point);
@@ -77,7 +78,7 @@ class CourseAdminModal extends AdminModal {
 
     onSubmit = () => {
         const { diemThiHetMon, diemThiTotNghiep } = this.state;
-        let isUpdate = true;
+        let isUpdate = true, totNghiep = true;
         for (let i = 0; i < diemThiHetMon.length; i++) {
             if (this[diemThiHetMon[i].subject].value() == '') {
                 T.notify('Vui lòng nhập điểm thi hết môn!', 'danger');
@@ -96,12 +97,15 @@ class CourseAdminModal extends AdminModal {
                 break;
             } else {
                 diemThiTotNghiep[i].point = parseInt(this[diemThiTotNghiep[i].monThiTotNghiep].value());
+                diemThiTotNghiep[i].diemLiet = this['Liet' + diemThiTotNghiep[i].monThiTotNghiep].value();
+                if (diemThiTotNghiep[i].diemLiet || diemThiTotNghiep[i].point < diemThiTotNghiep[i].monThiTotNghiep.score) totNghiep = false;
             }
         }
         const changes = {
             diemThucHanh: this.diemThucHanh.value(),
             diemThiHetMon,
-            diemThiTotNghiep
+            diemThiTotNghiep,
+            totNghiep
         };
         if (changes.diemThucHanh == '') {
             T.notify('Vui lòng nhập điểm thực hành!', 'danger');
@@ -121,7 +125,10 @@ class CourseAdminModal extends AdminModal {
             body:
                 <div className='row'>
                     {monThiTotNghiep && monThiTotNghiep.length ? monThiTotNghiep.map((monThi, index) => (
-                        <FormTextBox key={index} className='col-md-3' ref={e => this[monThi._id] = e} type='number' min='0' label={monThi.title} />
+                        <div className='col-md-3' key={index}>
+                            <FormTextBox ref={e => this[monThi._id] = e} type='number' min='0' label={monThi.title} />
+                            <FormCheckbox ref={e => this['Liet' + monThi._id] = e} label={'Điểm liệt: ' + monThi.title} />
+                        </div>
                     )) : null}
                     {subjects && subjects.length ? subjects.map((monThi, index) => (
                         <FormTextBox key={index} className='col-md-3' ref={e => this[monThi._id] = e} type='number' min='0' label={monThi.title} />
@@ -189,7 +196,7 @@ class AdminLearningProgressPage extends AdminPage {
                 { id: 'all', text: 'Tất cả học viên' },
                 { id: 'thiHetMon', text: 'Học viên đủ điều kiện thi hết môn' },
                 { id: 'thiTotNghiep', text: 'Học viên đủ điều kiện thi tốt nghiệp' },
-                { id: 'totNghiep', text: 'Học viên đủ điều kiện tốt nghiệp' },
+                { id: 'totNghiep', text: 'Học viên đủ điều kiện thi sát hạch' },
                 { id: 'satHach', text: 'Học viên đã đạt sát hạch' },
             ];
         const { pageNumber, pageSize, pageTotal, totalItem } = this.props.course && this.props.course.page ?
@@ -235,19 +242,19 @@ class AdminLearningProgressPage extends AdminPage {
                     <tr key={index}>
                         <TableCell type='number' content={index + 1} />
                         <TableCell type='text' style={{ whiteSpace: 'nowrap' }} content={<p>{item.lastname + ' ' + item.firstname} <br /> {item.identityCard}</p>} />
-                        {subjects && subjects.length && subjects.map((subject, i) => (
+                        {subjects && subjects.length ? subjects.map((subject, i) => (
                             <TableCell key={i} type='text' style={{ textAlign: 'center' }} content={` 
                             ${item.subject && item.subject[subject._id] && !subject.monThucHanh ? item.subject[subject._id].completedLessons : 0}
                             / ${subject.monThucHanh ? 0 : subject.lessons.length}
-                            ${subject.monThucHanh ? '' : `=> ${item.subject && item.subject[subject._id] ? item.subject[subject._id].diemMonHoc : 0}`}`} />))}
+                            ${subject.monThucHanh ? '' : `=> ${item.subject && item.subject[subject._id] ? item.subject[subject._id].diemMonHoc : 0}`}`} />)) : null}
                         <TableCell type='text' style={{ textAlign: 'center' }} content={diemLyThuyet} />
                         <TableCell type='link' style={{ textAlign: 'center' }} content={<>{diemThucHanh}<i className='fa fa-lg fa-edit' /></>} className='practicePoint' onClick={e => this.edit(e, item)} />
                         <TableCell type='text' style={{ textAlign: 'center' }} content={diemTB} />
-                        {isCourseAdmin && subjects && subjects.length && subjects.map((diemThi, i) => (
+                        {isCourseAdmin && subjects && subjects.length ? subjects.map((diemThi, i) => (
                             <TableCell key={i} type='text' style={{ textAlign: 'center' }}
                                 content={
                                     students && students[index] && students[index].diemThiHetMon && students[index].diemThiHetMon[i] && students[index].diemThiHetMon[i].point
-                                } />))}
+                                } />)) : null}
                         {isCourseAdmin && <TableCell type='text' style={{ textAlign: 'center' }} content={students && students[index] && students[index].diemTrungBinhThiHetMon} />}
                         {isCourseAdmin && monThiTotNghiep && monThiTotNghiep.length ? monThiTotNghiep.map((diemThi, i) => (
                             <TableCell key={i} type='text' style={{ textAlign: 'center' }} className={students && students[index] && students[index].diemThiTotNghiep && students[index].diemThiTotNghiep[i] && students[index].diemThiTotNghiep[i].diemLiet ? 'text-danger' : ''}

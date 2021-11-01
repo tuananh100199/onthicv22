@@ -7,17 +7,19 @@ module.exports = (app) => {
     }, menuFailStudent = {
         parentMenu: app.parentMenu.trainning,
         menus: {
+            4055: { title: 'Học viên chưa tốt nghiệp', link: '/user/student/fail-graduation' },
             4060: { title: 'Học viên chưa đạt sát hạch', link: '/user/student/fail-exam' },
         }
     };
 
     app.permission.add(
-        { name: 'student:read' }, { name: 'student:write' }, { name: 'student:delete', menu }, { name: 'student:import', menu: menuFailStudent },
+        { name: 'student:read', menu: menuFailStudent }, { name: 'student:write' }, { name: 'student:delete', menu }, { name: 'student:import' },//TODO: Thầy TÙNG
         { name: 'pre-student:read', menu }, { name: 'pre-student:write' }, { name: 'pre-student:delete' }, { name: 'pre-student:import' },
     );
 
     app.get('/user/student/import-fail-pass', app.permission.check('student:import'), app.templates.admin);
-    app.get('/user/student/fail-exam', app.permission.check('student:import'), app.templates.admin);
+    app.get('/user/student/fail-exam', app.permission.check('student:read'), app.templates.admin);
+    app.get('/user/student/fail-graduation', app.permission.check('student:read'), app.templates.admin);
     app.get('/user/pre-student', app.permission.check('pre-student:read'), app.templates.admin);
     app.get('/user/pre-student/import', app.permission.check('pre-student:import'), app.templates.admin);
 
@@ -33,7 +35,8 @@ module.exports = (app) => {
             }
 
             if (condition.courseType) pageCondition.courseType = condition.courseType;
-            pageCondition.datSatHach = condition.datSatHach;
+            if (condition.datSatHach) pageCondition.datSatHach = condition.datSatHach;
+            if (condition.totNghiep) pageCondition.totNghiep = condition.totNghiep;
             if (condition.searchText) {
                 const value = { $regex: `.*${condition.searchText}.*`, $options: 'i' };
                 pageCondition.$or = [
@@ -198,8 +201,15 @@ module.exports = (app) => {
                             }
                             student.user = user._id;   // assign id of user to user field of prestudent
                             student.courseType = req.body.courseType;
-                            app.model.student.create(student, () => {
-                                handleCreateStudent(index + 1);
+                            app.model.user.get({ identityCard: student.lecturerIdentityCard }, (error, user) => {
+                                if (error || !user) {
+                                    res.send({ error: `Lỗi không tìm thấy cố vấn có CMND/CCCD: ${student.lecturerIdentityCard}` });
+                                } else {
+                                    student.planLecturer = user._id;
+                                    app.model.student.create(student, () => {
+                                        handleCreateStudent(index + 1);
+                                    });
+                                }
                             });
                         }
                     });
@@ -308,6 +318,8 @@ module.exports = (app) => {
                                 giayKhamSucKhoeNgayKham: values[17] && values[17].toLowerCase().trim() == 'x' ? stringToDate(values[18]) : null,
                                 hinhThe3x4: values[19] && values[19].toLowerCase().trim() == 'x' ? true : false,
                                 hinhChupTrucTiep: values[20] && values[20].toLowerCase().trim() == 'x' ? true : false,
+                                lecturerIdentityCard: values[21],
+                                lecturerName: values[22] ,
                             });
                             handleUpload(index + 1);
                         }
