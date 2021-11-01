@@ -329,54 +329,81 @@ module.exports = (app) => {
                 app.deleteFile(srcPath);
                 if (workbook) {
                     const userData = fields.userData[0], userDatas = userData.split(':'), worksheet = workbook.getWorksheet(1), data = [],
-                        get = (row, col) => worksheet.getCell(`${col}${row}`).value,
-                        colCourseType = userDatas[6],
-                        courseTypeSelected = userDatas[7];
+                        get = (row, col) => worksheet.getCell(`${col}${row}`).text,
+                        set = (row, col, value) => {
+                            worksheet.getCell(`${col}${row}`).value = value;
+                        },
+                        startRow = parseInt(userDatas[1]), endRow = parseInt(userDatas[2]),
+                        // totalRow = endRow - startRow + 1,
+                        colCourseType = userDatas[6], courseTypeSelected = userDatas[7], colIdCard = userDatas[8];
 
-                    const handleUpload = (index = parseInt(userDatas[1])) => { //index =start
-                        if (index > parseInt(userDatas[2])) { // index to stop loop
-                            done({ data, notify: 'Tải lên file thành công' });
+                    const handleUpload = (index = startRow) => {
+                        if (index > endRow) { // end loop !
+                            if (data.some(({ identityCard }) => identityCard == undefined)) { //check map not 100%
+                                const tempFolderName = app.date.getDateFolderName(), tempFilePath = app.path.join(app.uploadPath, tempFolderName);
+                                if (!app.fs.existsSync(tempFilePath)) {
+                                    app.createFolder(tempFilePath);
+                                }
+                                set(startRow - 6, colIdCard, 'CMND/CCCD');
+                                workbook.xlsx.writeFile(tempFilePath + '\\abc.xlsx');
+                                done({ fileName: 'abc.xlsx', notify: 'Mời bạn chờ file được tải về máy' });
+                            } else {
+                                done({ data, notify: 'Tải lên file thành công' });
+                            }
                         } else {
                             if (get(index, colCourseType).trim() == courseTypeSelected) {
-                                const fullname = get(index, userDatas[3]),
+                                const fullname = get(index, userDatas[3]).trim(),
                                     birthday = get(index, userDatas[4]),
-                                    course = get(index, userDatas[5]);
-                                console.log(typeof birthday, 'dssddh');
-                                const toDateObject = str => {
-                                    const dateParts = str.split('/');
-                                    return new Date(+dateParts[2], dateParts[1] - 1, +dateParts[0]);
-                                },
-                                    condition = {
-                                        fullname: fullname.trim(),
-                                        birthday: typeof birthday == 'object' ? birthday : toDateObject(birthday.trim()), //date object ...
-                                        // courseType: courseType.trim(),
+                                    course = get(index, userDatas[5]).trim(),
+                                    identityCard = get(index, colIdCard).trim(),
+                                    toDateObject = str => {
+                                        const dateParts = str.split('/');
+                                        return new Date(+dateParts[2], dateParts[1] - 1, +dateParts[0]);
                                     },
-                                    name = { $regex: course.trim(), $options: 'i' };
-                                console.log(condition, 'beforre app.model. course');
-                                app.model.course.get({ name }, (error, item) => {
-                                    if (error || !item) {
-                                        data.push({ fullname, birthday, course });
-                                        handleUpload(index + 1);
-                                        // res.send({ error });
-                                        // result = null;
-                                    } else {
-                                        condition.courseType = item.courseType._id;
-                                        condition.course = item._id;
-                                        console.log(condition, 'f');
-                                        app.model.student.mapToId(condition, (error, list) => {
-                                            if (error || !list || list.length > 2) {
-                                                data.push({ fullname, birthday, course });
-                                                handleUpload(index + 1);
-                                                // res.send({ error });
-                                            } else {
-                                                const _id = list[0] && list[0]._id;
-                                                data.push({ fullname, birthday, course, _id });
-                                                handleUpload(index + 1);
-                                            }
-                                        });
+                                    name = { $regex: course, $options: 'i' };
+                                if (identityCard == '' || identityCard == 'Nhập CMND/CCCD') { // find identitycard = '' => map
+                                    app.model.course.get({ name }, (error, item) => {
+                                        if (error || !item) {
+                                            set(index, colIdCard, 'Nhập CMND/CCCD');
+                                            data.push({ fullname, birthday, courseName: course });
+                                            handleUpload(index + 1);
+                                        } else {
+                                            const condition = {
+                                                fullname,
+                                                birthday: typeof birthday == 'object' ? birthday : toDateObject(birthday.trim()),
+                                                course: item._id,
+                                            };
+                                            app.model.student.mapToId(condition, (error, list) => {
+                                                if (error || list.length == 0 || list.length > 2) {
+                                                    set(index, colIdCard, 'Nhập CMND/CCCD');
+                                                    data.push({ fullname, birthday, courseName: course });
+                                                    handleUpload(index + 1);
+                                                } else if (list.length == 1 && list[0]) { //map success
+                                                    const { identityCard } = list[0];
+                                                    set(index, colIdCard, identityCard);
+                                                    data.push({ fullname, birthday, courseName: course, course: item._id, identityCard });
+                                                    handleUpload(index + 1);
+                                                }
+                                            });
 
-                                    }
-                                });
+                                        }
+                                    });
+                                } else { // available identity card
+                                    app.model.course.get({ name }, (error, item) => {
+                                        if (error || !item) {
+                                            data.push({ fullname, birthday, courseName: course }); // course shoud be push ?
+                                            handleUpload(index + 1);
+                                        } else {
+                                            data.push({
+                                                fullname, birthday, courseName: course, course: item._id, identityCard
+                                            });
+                                            handleUpload(index + 1);
+                                        }
+                                    });
+                                }
+
+                            } else {
+                                handleUpload(index + 1);
                             }
                         }
                     };
@@ -388,26 +415,71 @@ module.exports = (app) => {
         }
     });
 
-    app.put('/api/student/imort-fail-pass', app.permission.check('student:import'), (req, res) => {
+    app.put('/api/student/import-fail-pass', app.permission.check('student:import'), (req, res) => {
         const sessionUser = req.session.user, division = sessionUser.division;
-        if (sessionUser && sessionUser.isCourseAdmin && division && !division.isOutside) {
-            const { _studentIds, type } = req.body,
+        if (sessionUser && !sessionUser.isLecturer && division && !division.isOutside) {
+            const { student, type } = req.body,
                 changes = [
                     { datSatHach: true, liDoChuaDatSatHach: '' }, //Pass
                     { datSatHach: false, liDoChuaDatSatHach: '' }, //Fail liDoChuaDatSatHach for admin define
                     { datSatHach: false, liDoChuaDatSatHach: 'Vắng thi' }, //Absence 
                 ];
-            // let err = null;
-            if (_studentIds && _studentIds.length > 0) {
-                const condition = { _id: { $in: _studentIds } };
-                app.model.student.updateMany(condition, changes[parseInt(type)], (error) => {
-                    res.send({ error });
-                });
+            let err = null;
+            if (student && student.length > 0) {
+                if (type) {
+                    const handleImport = (index = 0) => {
+                        if (index == student.length) {
+                            res.send({ error: err });
+                        } else {
+                            const { identityCard, course } = student[index];
+                            app.model.student.get({ identityCard, course }, (error, item) => {
+                                if (error || !item) {
+                                    err = error;
+                                    handleImport(index + 1);
+                                } else {
+                                    Object.entries(changes[parseInt(type)]).forEach(([key, value]) => {
+                                        item[key] = value;
+                                    });
+                                    item.modifiedDate = new Date();
+                                    item.save((error, student) => {
+                                        if (error || !student) {
+                                            err = error;
+                                        }
+                                        handleImport(index + 1);
+                                    });
+                                }
+                            });
+                        }
+                    };
+                    handleImport();
+                } else {
+                    res.send({ error: 'Kiểu import file trống!' });
+                }
             } else {
                 res.send({ error: 'Danh sách học viên trống!' });
             }
         } else {
             res.send({ error: 'Bạn không có quyền import danh sách học viên!' });
+        }
+    });
+
+    app.get('/api/student/download-fail-pass', app.permission.check('student:import'), (req, res) => {
+        const sessionUser = req.session.user,
+            tempFolderName = app.date.getDateFolderName(), tempFilePath = app.path.join(app.uploadPath, tempFolderName),
+            division = sessionUser.division;
+        // workbook = req.query.workbook || {};
+        if (sessionUser && sessionUser.isCourseAdmin && division && division.isOutside) {
+            res.send({ error: 'Bạn không có quyền xuất file excel này!' });
+        } else {
+            res.download(tempFilePath + '\\abc.xlsx', 'Danh sách học viên.xlsx', function (err) {
+                if (err) {
+                    res.send({ err });
+                } else {
+                    app.deleteFile(tempFilePath + '\\abc.xlsx');
+                    // app.deleteFolder(tempFilePath);
+                    // decrement a download credit
+                }
+            });
         }
     });
 

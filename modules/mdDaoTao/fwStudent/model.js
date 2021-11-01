@@ -136,8 +136,8 @@ module.exports = (app) => {
         mapToId: (condition, done) => {
             model.aggregate([{ $project: { 'name': { $concat: ['$lastname', ' ', '$firstname'] } } },
             { $match: { 'name': { $regex: condition.fullname, $options: 'i' } } }]).exec((error, list) => {
-                if (error || !list) {
-                    done(error);
+                if (error || list.length==0) {
+                    done(error,list);
                 } else {
                     const _ids = list.map(item => item._id);
                     delete condition.fullname;

@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { importFailPassStudent } from './redux';
+import { importFailPassStudent, downloadFailPassStudentFile } from './redux';
 import { Link } from 'react-router-dom';
 import { ajaxSelectCourseType } from 'modules/mdDaoTao/fwCourseType/redux';
 import { AdminPage, FormSelect, FormFileBox, FormTextBox, TableCell, renderTable } from 'view/component/AdminPage';
@@ -28,12 +28,17 @@ class ImportPage extends AdminPage {
         this.courseCol.value('J');
         this.courseTypeCol.value('K');
         this.importType.value(1);
+        this.idCardCol.value('N');
     }
 
-    onUploadSuccess = ({ data, notify }) => {
+    onUploadSuccess = ({ data, fileName, notify }) => {
+        if (fileName) { // map not 100%
+            window.open('/api/student/download-fail-pass');// browser allow popup
+        } else if (data && data.length > 0) {
+            this.setState({ data, isFileBoxHide: true });
+        }
+        // this.props.downloadFailPassStudentFile();
         T.notify(notify, 'success');
-        // data.length > 0 
-        this.setState({ data, isFileBoxHide: true });
     }
 
     onChangeCourseType = (courseTypeName) => {
@@ -41,12 +46,11 @@ class ImportPage extends AdminPage {
     }
 
     onChange = (e, text = undefined) => {
-        console.log(text);
         e && e.preventDefault();
         if (text) {
             this.onChangeCourseType(text);
         }
-        const params = ['startRow', 'endRow', 'fullnameCol', 'birthdayCol', 'courseCol', 'courseTypeCol', 'courseType'],
+        const params = ['startRow', 'endRow', 'fullnameCol', 'birthdayCol', 'courseCol', 'courseTypeCol', 'courseType', 'idCardCol'],
             isFileBoxHide = params.some(item => [null, ''].includes(this[item].value()));
         this.setState({ isFileBoxHide }, () => {
             if (!this.state.isFileBoxHide) {
@@ -62,8 +66,8 @@ class ImportPage extends AdminPage {
     }
 
     save = () => {
-        if (this.state.data) {
-            this.props.importFailPassStudent(this.state.data.map(({ _id }) => _id), this.importType.value(), () => this.setState({ data: [], isFileBoxHide: false }));
+        if (this.state.data && this.state.data.length > 0) {
+            this.props.importFailPassStudent(this.state.data.map(({ identityCard, course }) => ({ identityCard, course })), this.importType.value(), () => this.setState({ data: [], isFileBoxHide: false }));
         } else T.notify('Chưa có thông tin học viên!', 'danger');
     }
 
@@ -75,19 +79,17 @@ class ImportPage extends AdminPage {
                 <tr>
                     <th style={{ width: 'auto', textAlign: 'center' }}>#</th>
                     <th style={{ width: '40%' }} nowrap='true'>Họ và tên</th>
+                    <th style={{ width: 'auto' }} nowrap='true'>Số CMND/CCCD</th>
                     <th style={{ width: '30%' }} nowrap='true'>Ngày sinh</th>
                     <th style={{ width: '30%' }} nowrap='true'>Khóa học</th>
-                    <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Ghi chú</th>
                 </tr>),
             renderRow: (item, index) => (
                 <tr key={index}>
                     <TableCell type='number' content={index + 1} />
                     <TableCell style={{ whiteSpace: 'nowrap' }} content={item.fullname} />
-                    <TableCell style={{ whiteSpace: 'nowrap' }} content={item.birthday} />
-                    <TableCell style={{ whiteSpace: 'nowrap' }} content={item.course} />
-                    {item._id ?<TableCell style={{ whiteSpace: 'nowrap' }} content='Thành công' />:<TableCell type='link' style={{ whiteSpace: 'nowrap' }} content='Nhập CMND/CCCD' />}
-                    {/* <TableCell style={{ whiteSpace: 'nowrap' }} content={item._id ? 'Thành công' : 'Cần nhập CMND'} /> */}
-                    {/* <TableCell type='number' style={{ textAlign: 'center' }} content={item.diemTrungBinhThiHetMon} /> */}
+                    <TableCell style={{ whiteSpace: 'nowrap' }} content={item.identityCard} />
+                    <TableCell style={{ whiteSpace: 'nowrap' }} content={typeof item.birthday == 'object' ? T.dateToText(item.birthday) : item.birthday} />
+                    <TableCell style={{ whiteSpace: 'nowrap' }} content={item.courseName} />
                 </tr>),
         });
 
@@ -96,22 +98,23 @@ class ImportPage extends AdminPage {
             title: 'Nhập học viên đạt/chưa đạt sát hạch bằng Excel ',
             breadcrumb: [<Link key={0} to='/user/student/fail-exam'>Học viên chưa đạt sát hạch</Link>, 'Nhập học viên đạt/chưa đạt sát hạch bằng Excel'],
             content: <>
-                <div className='tile'>
+                < div className='tile' style={{ ...(this.state.data && this.state.data.length > 0 && { display: 'none' }) }}>
                     <h3 className='tile-title'>Thông số đầu vào</h3>
                     <div className='row'>
                         <FormSelect ref={e => this.courseType = e} data={ajaxSelectCourseType} label='Loại khóa học'
-                            onChange={data => this.onChange(undefined, data.text)} className='col-md-3' />
-                        <FormSelect ref={e => this.importType = e} label='Loại file tải lên' data={importTypes} className='col-md-3' />
-                        <FormTextBox ref={e => this.startRow = e} onChange={e => this.onChange(e)} label='Dòng bắt đầu' className='col-md-3' type='number' min={2} max={this.endRow ? parseInt(this.endRow.value()) : ''} />
-                        <FormTextBox ref={e => this.endRow = e} onChange={e => this.onChange(e)} label='Dòng kết thúc' className='col-md-3' type='number' min={this.startRow ? parseInt(this.startRow.value()) : ''} />
-                        <FormTextBox ref={e => this.fullnameCol = e} onChange={e => this.onChange(e)} label='Cột Họ và tên' className='col-md-3' />
-                        <FormTextBox ref={e => this.birthdayCol = e} onChange={e => this.onChange(e)} label='Cột Ngày sinh' className='col-md-3' />
-                        <FormTextBox ref={e => this.courseCol = e} onChange={e => this.onChange(e)} label='Cột Khóa học' className='col-md-3' />
-                        <FormTextBox ref={e => this.courseTypeCol = e} onChange={e => this.onChange(e)} label='Cột Loại khóa học' className='col-md-3' />
+                            onChange={data => this.onChange(undefined, data.text)} className='col-md-4' />
+                        <FormSelect ref={e => this.importType = e} label='Loại file tải lên' data={importTypes} className='col-md-4' />
+                        <FormTextBox ref={e => this.startRow = e} onChange={e => this.onChange(e)} label='Dòng bắt đầu' className='col-md-4' type='number' min={2} max={this.endRow ? parseInt(this.endRow.value()) : ''} />
+                        <FormTextBox ref={e => this.endRow = e} onChange={e => this.onChange(e)} label='Dòng kết thúc' className='col-md-4' type='number' min={this.startRow ? parseInt(this.startRow.value()) : ''} />
+                        <FormTextBox ref={e => this.fullnameCol = e} onChange={e => this.onChange(e)} label='Cột Họ và tên' className='col-md-4' />
+                        <FormTextBox ref={e => this.birthdayCol = e} onChange={e => this.onChange(e)} label='Cột Ngày sinh' className='col-md-4' />
+                        <FormTextBox ref={e => this.courseCol = e} onChange={e => this.onChange(e)} label='Cột Khóa học' className='col-md-4' />
+                        <FormTextBox ref={e => this.courseTypeCol = e} onChange={e => this.onChange(e)} label='Cột Loại khóa học' className='col-md-4' />
+                        <FormTextBox ref={e => this.idCardCol = e} onChange={e => this.onChange(e)} label='Cột CMND/CCCD' className='col-md-4' />
                     </div>
                 </div>
                 {this.state.data && this.state.data.length > 0 ? <div className='tile'>
-                    <h3 className='tile-title'>Danh sách học viên</h3>
+                    <h3 className='tile-title'>{`Danh sách học viên ${importTypes[parseInt(this.importType.value())].text} sát hạch của loại khóa học ${this.state.courseTypeName} `}</h3>
                     {table}
                     <div className='tile-footer' style={{ textAlign: 'right' }}>
                         <button className='btn btn-danger' type='button' style={{ marginRight: 10 }} onClick={this.onReUpload}>
@@ -132,5 +135,5 @@ class ImportPage extends AdminPage {
     }
 }
 const mapStateToProps = state => ({ system: state.system });
-const mapActionsToProps = { importFailPassStudent };
+const mapActionsToProps = { importFailPassStudent, downloadFailPassStudentFile };
 export default connect(mapStateToProps, mapActionsToProps)(ImportPage);

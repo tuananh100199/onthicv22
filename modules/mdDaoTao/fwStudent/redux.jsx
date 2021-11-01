@@ -215,18 +215,32 @@ export function importPreStudent(students, division, courseType, done) {
     };
 }
 
-export function importFailPassStudent(_studentIds, type, done) {
+export function importFailPassStudent(student, type, done) {
     return () => {
-        const url = '/api/student/imort-fail-pass';
-        T.put(url, { _studentIds, type }, data => {
+        const url = '/api/student/import-fail-pass';
+        T.put(url, { student, type }, data => {
             if (data.error) {
                 T.notify('Lưu danh sách học viên bị lỗi!', 'danger');
-                console.error(`POST: ${url}. ${data.error}`);
+                console.error(`PUT: ${url}. ${data.error}`);
             } else {
                 T.notify('Lưu danh sách học viên thành công!', 'success');
                 done && done(data);
             }
         }, error => console.error(error) || T.notify('Lưu danh sách học viên bị lỗi!', 'danger'));
+    };
+}
+
+export function downloadFailPassStudentFile(workbook, done) {
+    return () => {
+        const url = '/api/student/download-fail-pass';
+        T.get(url, { workbook }, data => {
+            if (data.error) {
+                T.notify('Lấy danh sách học viên bị lỗi!', 'danger');
+                console.error(`GET: ${url}. ${data.error}`);
+            } else {
+                done && done(data);
+            }
+        }, error => console.error(error) || T.notify('Lấy danh sách học viên bị lỗi!', 'danger'));
     };
 }
 
