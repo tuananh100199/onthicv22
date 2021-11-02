@@ -7,7 +7,7 @@ import { AdminPage, FormSelect, FormFileBox, FormTextBox, TableCell, renderTable
 
 const importTypes = [
     { id: 0, text: 'Đạt' },
-    { id: 1, text: 'Chưa đạt' },
+    { id: 1, text: 'Trượt' },
     { id: 2, text: 'Vắng thi' },
 ];
 

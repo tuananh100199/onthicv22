@@ -123,8 +123,8 @@ class FailStudentPage extends AdminPage {
                         {table}
                     </div>
                 </div>
-                <CirclePageButton type='import' style={{ right: 70 }} onClick={() => this.props.history.push('/user/student/import-fail-pass')} />
-                <CirclePageButton type='export' onClick={() => T.alert('todo')} />
+                <CirclePageButton type='import' onClick={() => this.props.history.push('/user/student/import-fail-pass')} />
+                {/* <CirclePageButton type='export' style={{ right: 70 }} onClick={() => T.alert('todo')} /> */} 
                 <StudentModal readOnly={!permission.write} ref={e => this.modal = e} update={this.props.updateStudent} />
                 <Pagination pageCondition={pageCondition} pageNumber={pageNumber} pageSize={pageSize} pageTotal={pageTotal} totalItem={totalItem} getPage={(pageNumber, pageSize) => this.onSearch({ pageNumber, pageSize })} />
             </>,

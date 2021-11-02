@@ -319,7 +319,7 @@ module.exports = (app) => {
                                 hinhThe3x4: values[19] && values[19].toLowerCase().trim() == 'x' ? true : false,
                                 hinhChupTrucTiep: values[20] && values[20].toLowerCase().trim() == 'x' ? true : false,
                                 lecturerIdentityCard: values[21],
-                                lecturerName: values[22] ,
+                                lecturerName: values[22],
                             });
                             handleUpload(index + 1);
                         }
@@ -341,8 +341,8 @@ module.exports = (app) => {
                 app.deleteFile(srcPath);
                 if (workbook) {
                     const userData = fields.userData[0], userDatas = userData.split(':'), worksheet = workbook.getWorksheet(1), data = [],
-                        get = (row, col) => worksheet.getCell(`${col}${row}`).text,
-                        set = (row, col, value) => {
+                        getCellValue = (row, col) => worksheet.getCell(`${col}${row}`).text,
+                        setCellValue = (row, col, value) => {
                             worksheet.getCell(`${col}${row}`).value = value;
                         },
                         startRow = parseInt(userDatas[1]), endRow = parseInt(userDatas[2]),
@@ -356,11 +356,11 @@ module.exports = (app) => {
                                 if (!app.fs.existsSync(tempFilePath)) {
                                     app.createFolder(tempFilePath);
                                 }
-                                set(startRow - 6, colIdCard, 'CMND/CCCD');
+                                setCellValue(startRow - 6, colIdCard, 'CMND/CCCD');
                                 const colIdCardValues = worksheet.getColumn(colIdCard);
                                 colIdCardValues.width = 20;
-                                colIdCardValues.eachCell((cell) => { //highlight nhap cmnd !
-                                    if (cell.text == 'Nhập CMND/CCCD') {
+                                colIdCardValues.eachCell({ includeEmpty: false }, (cell) => { //highlight nhap cmnd 
+                                    if (cell.text == '\'') {
                                         cell.fill = {
                                             type: 'pattern',
                                             pattern: 'solid',
@@ -375,20 +375,21 @@ module.exports = (app) => {
                                 done({ data, notify: 'Tải lên file thành công' });
                             }
                         } else {
-                            if (get(index, colCourseType).trim() == courseTypeSelected) {
-                                const fullname = get(index, userDatas[3]).trim(),
-                                    birthday = get(index, userDatas[4]),
-                                    course = get(index, userDatas[5]).trim(),
-                                    identityCard = get(index, colIdCard).trim(),
+                            if (getCellValue(index, colCourseType).trim() == courseTypeSelected) {
+                                let identityCard = getCellValue(index, colIdCard); //check getCellValue null
+                                const fullname = getCellValue(index, userDatas[3]).trim(),
+                                    birthday = getCellValue(index, userDatas[4]),
+                                    course = getCellValue(index, userDatas[5]).trim(),
                                     toDateObject = str => {
                                         const dateParts = str.split('/');
                                         return new Date(+dateParts[2], dateParts[1] - 1, +dateParts[0]);
                                     },
                                     name = { $regex: course, $options: 'i' };
-                                if (identityCard == '' || identityCard == 'Nhập CMND/CCCD') { // find identitycard = '' => map
+                                identityCard = typeof identityCard == 'string' ? identityCard.trim() : '';
+                                if (identityCard == '' || identityCard == '\'') { // find identitycard = '' => map
                                     app.model.course.get({ name }, (error, item) => {
                                         if (error || !item) {
-                                            set(index, colIdCard, 'Nhập CMND/CCCD');
+                                            setCellValue(index, colIdCard, '\''); //Nhập CMND/CCCD
                                             data.push({ fullname, birthday, courseName: course });
                                             handleUpload(index + 1);
                                         } else {
@@ -399,12 +400,12 @@ module.exports = (app) => {
                                             };
                                             app.model.student.mapToId(condition, (error, list) => {
                                                 if (error || list.length == 0 || list.length > 2) {
-                                                    set(index, colIdCard, 'Nhập CMND/CCCD');
+                                                    setCellValue(index, colIdCard, '\''); //Nhập CMND/CCCD
                                                     data.push({ fullname, birthday, courseName: course });
                                                     handleUpload(index + 1);
                                                 } else if (list.length == 1 && list[0]) { //map success
                                                     const { identityCard } = list[0];
-                                                    set(index, colIdCard, `'${identityCard}`); // add ' before it to check 00..
+                                                    setCellValue(index, colIdCard, `'${identityCard}`); // add ' before it to check 00..
                                                     data.push({ fullname, birthday, courseName: course, course: item._id, identityCard });
                                                     handleUpload(index + 1);
                                                 }
@@ -425,7 +426,6 @@ module.exports = (app) => {
                                         }
                                     });
                                 }
-
                             } else {
                                 handleUpload(index + 1);
                             }
