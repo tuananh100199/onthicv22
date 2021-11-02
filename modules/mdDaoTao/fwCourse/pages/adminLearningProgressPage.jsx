@@ -242,19 +242,19 @@ class AdminLearningProgressPage extends AdminPage {
                     <tr key={index}>
                         <TableCell type='number' content={index + 1} />
                         <TableCell type='text' style={{ whiteSpace: 'nowrap' }} content={<p>{item.lastname + ' ' + item.firstname} <br /> {item.identityCard}</p>} />
-                        {subjects && subjects.length && subjects.map((subject, i) => (
+                        {subjects && subjects.length ? subjects.map((subject, i) => (
                             <TableCell key={i} type='text' style={{ textAlign: 'center' }} content={` 
                             ${item.subject && item.subject[subject._id] && !subject.monThucHanh ? item.subject[subject._id].completedLessons : 0}
                             / ${subject.monThucHanh ? 0 : subject.lessons.length}
-                            ${subject.monThucHanh ? '' : `=> ${item.subject && item.subject[subject._id] ? item.subject[subject._id].diemMonHoc : 0}`}`} />))}
+                            ${subject.monThucHanh ? '' : `=> ${item.subject && item.subject[subject._id] ? item.subject[subject._id].diemMonHoc : 0}`}`} />)) : null}
                         <TableCell type='text' style={{ textAlign: 'center' }} content={diemLyThuyet} />
                         <TableCell type='link' style={{ textAlign: 'center' }} content={<>{diemThucHanh}<i className='fa fa-lg fa-edit' /></>} className='practicePoint' onClick={e => this.edit(e, item)} />
                         <TableCell type='text' style={{ textAlign: 'center' }} content={diemTB} />
-                        {isCourseAdmin && subjects && subjects.length && subjects.map((diemThi, i) => (
+                        {isCourseAdmin && subjects && subjects.length ? subjects.map((diemThi, i) => (
                             <TableCell key={i} type='text' style={{ textAlign: 'center' }}
                                 content={
                                     students && students[index] && students[index].diemThiHetMon && students[index].diemThiHetMon[i] && students[index].diemThiHetMon[i].point
-                                } />))}
+                                } />)) : null}
                         {isCourseAdmin && <TableCell type='text' style={{ textAlign: 'center' }} content={students && students[index] && students[index].diemTrungBinhThiHetMon} />}
                         {isCourseAdmin && monThiTotNghiep && monThiTotNghiep.length ? monThiTotNghiep.map((diemThi, i) => (
                             <TableCell key={i} type='text' style={{ textAlign: 'center' }} className={students && students[index] && students[index].diemThiTotNghiep && students[index].diemThiTotNghiep[i] && students[index].diemThiTotNghiep[i].diemLiet ? 'text-danger' : ''}

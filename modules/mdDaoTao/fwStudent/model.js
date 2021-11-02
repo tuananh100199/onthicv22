@@ -138,6 +138,19 @@ module.exports = (app) => {
             }
         }),
 
+        mapToId: (condition, done) => {
+            model.aggregate([{ $project: { 'name': { $concat: ['$lastname', ' ', '$firstname'] } } },
+            { $match: { 'name': { $regex: condition.fullname, $options: 'i' } } }]).exec((error, list) => {
+                if (error || list.length==0) {
+                    done(error,list);
+                } else {
+                    const _ids = list.map(item => item._id);
+                    delete condition.fullname;
+                    model.find({ _id: { $in: _ids }, ...condition }).exec(done);
+                }
+            });
+        },
+
         // changes = { $set, $unset, $push, $pull }
         update: (_id, changes, done) => {
             if (changes.course) {
@@ -162,6 +175,11 @@ module.exports = (app) => {
                 changes.modifiedDate = new Date();
                 model.findOneAndUpdate({ _id }, changes, { new: true }).populate('user', 'email phoneNumber').populate('division', 'id title').populate('course', 'name').exec(done);
             }
+        },
+
+        updateMany: (condition, changes, done) => {
+            changes.modifiedDate = new Date();
+            model.updateMany(condition, { $set: changes }, { new: true }, done);
         },
 
         resetLesson: (_id, changes, done) => {
