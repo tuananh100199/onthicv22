@@ -6,7 +6,36 @@ import { updateStudent } from 'modules/mdDaoTao/fwStudent/redux';
 import { Link } from 'react-router-dom';
 import { AdminPage, AdminModal, CirclePageButton, FormSelect, FormTextBox, FormCheckbox } from 'view/component/AdminPage';
 import AdminStudentModal from '../adminStudentModal';
+class AssignModal extends AdminModal {
+    state = {};
+    componentDidMount() {
+        $(document).ready(() => this.onShown(() => this.itemMaxStudent.focus()));
+    }
 
+    onShow = () => {
+        this.itemMaxStudent.value(0);
+    }
+
+    onSubmit = () => {
+        const changes = {
+            maxStudent: Number(this.itemMaxStudent.value()),
+        };
+        if (changes.maxStudent == '') {
+            T.notify('Vui lòng nhập số lượng học viên tối đa cho một cố vấn!', 'danger');
+            this.itemMaxStudent.focus();
+        } else {
+            this.props.handleAutoAssignStudent(changes);
+            this.hide();
+        }
+    }
+
+    render = () => {
+        return this.renderModal({
+            title: 'Số lượng học viên tối đa',
+            body: <FormTextBox ref={e => this.itemMaxStudent = e} label='Số lượng' type='number' min='0' max='100' onChange={this.onChangeScore} />
+        });
+    }
+}
 class TeacherModal extends AdminModal {
     state = { teachers: [] };
     onShow = ({ course, _divisionId, _studentIds }) => {
@@ -168,6 +197,32 @@ class AdminTeacherPage extends AdminPage {
         });
     }
 
+    // handleAutoAssignStudent = (maxStudent) => {
+    //     const { _id, teacherGroups = [], students = [] } = this.props.course.item;
+    //     const assignedStudents = [];
+    //     (teacherGroups || []).forEach(item => (item.student || []).forEach(student => assignedStudents.push(student._id)));
+    //     const isValidStudent = (student) => !assignedStudents.includes(student._id) && student.division && (!student.division.isOutside || this.state.outsideStudentVisible);
+    //     const autoAssignStudents = students.filter(student => isValidStudent(student));
+    //     let teacherGroupsClone = teacherGroups.map(item =>item), 
+    //         restStudents = []; // những học viên chưa có cố vấn học tập dự kiến
+    //     autoAssignStudents.forEach(student => { // gán cố vấn cho những học viên đã có cố vấn học tập dự kiến
+    //         const _teacherId = student.planLecturer ? student.planLecturer : null;
+    //         if (_teacherId) {
+    //             if (!teacherGroupsClone.includes(_teacherId)) {
+    //                 this.props.updateCourseTeacherGroup(_id, _teacherId, 'add');
+    //                 teacherGroupsClone.push(_teacherId);
+    //             }
+    //             this.props.updateCourseTeacherGroupStudent(_id, _teacherId, [student._id], 'add', () => !this.onSuccess || this.onAssignSuccess());
+    //         } else{
+    //             restStudents.push(student);
+    //         }
+    //     });
+    //     restStudents.forEach(student => { // gán cố vấn cho những học viên chưa có cố vấn học tập dự kiến
+    //         const studentOfTeacher = teacherGroups.forEach(teacherGroup => {
+    //         });
+    //     });
+    // }
+
     render() {
         const permission = this.getUserPermission('course'),
             item = this.props.course && this.props.course.item ? this.props.course.item : { admins: [] },
@@ -319,7 +374,9 @@ class AdminTeacherPage extends AdminPage {
                                     </ol> : <label style={{ color: 'black' }}>Chưa có cố vấn học tập!</label>}
                             </div>
                         </div>
+                        <CirclePageButton type='custom' customClassName='btn-success' style={{marginRight: '55px'}} customIcon='fa fa-arrow-right' onClick={e => e.preventDefault() || this.autoAssignmodal.show()} />
                         {!isOutsideCourseAdmin ? <CirclePageButton type='export' onClick={() => exportTeacherAndStudentToExcel(_courseId)} /> : null}
+                        <AssignModal ref={e => this.autoAssignmodal = e} handleAutoAssignStudent={this.handleAutoAssignStudent} />
                         <AdminStudentModal ref={e => this.studentModal = e} updateStudent={this.updateStudent} />
                     </div>
                 </div>),

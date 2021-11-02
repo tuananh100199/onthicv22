@@ -4,7 +4,7 @@ import { ajaxSelectDivision } from 'modules/mdDaoTao/fwDivision/redux';
 import { ajaxSelectCourseType } from 'modules/mdDaoTao/fwCourseType/redux';
 import { importPreStudent } from './redux';
 import { Link } from 'react-router-dom';
-import { AdminPage, AdminModal, FormFileBox, FormCheckbox, FormDatePicker, FormTextBox, FormSelect, TableCell, renderTable, CirclePageButton } from 'view/component/AdminPage';
+import { AdminPage, AdminModal, FormFileBox, FormCheckbox, FormDatePicker, FormTextBox, FormSelect, TableCell, renderTable } from 'view/component/AdminPage';
 
 class EditModal extends AdminModal {
     state = {};
@@ -119,16 +119,19 @@ class EditModal extends AdminModal {
 }
 
 class ImportPage extends AdminPage {
-    fileBox = React.createRef();
-    state = {};
+    // fileBox = React.createRef();
+    state = { isFileBoxHide: false };
+
     componentDidMount() {
         T.ready('/user/pre-student');
     }
 
     onUploadSuccess = (data) => {
-        this.setState(data);
+        console.log('data', data);
         this.itemDivision.value(null);
         this.itemCourseType.value(null);
+
+        this.setState({ data, isFileBoxHide: true });      
     }
 
     showEditModal = (e, item) => e.preventDefault() || this.modalEdit.show(item);
@@ -164,8 +167,22 @@ class ImportPage extends AdminPage {
     }
 
     render() {
+        console.log(this.state);
         const permission = this.getUserPermission('pre-student', ['read', 'write', 'delete', 'import']),
             readOnly = !permission.write;
+
+        const filebox = !this.state.isFileBoxHide && (
+            <div className='tile'>
+                <h3 className='tile-title'>Import danh sách ứng viên</h3>
+                <FormFileBox ref={e => this.fileBox = e} uploadType='CandidateFile'
+                    onSuccess={this.onUploadSuccess} readOnly={readOnly} />
+                <div className='tile-footer' style={{ textAlign: 'right' }}>
+                    <button className='btn btn-primary' type='button'>
+                        <a href='/download/candidate.xlsx' style={{ textDecoration: 'none', color: 'white' }}><i className='fa-fw fa-lg fa fa-download' /> Tải xuống file mẫu</a>
+                    </button>
+                </div>
+            </div >
+        );
         const table = renderTable({
             getDataSource: () => this.state.data && this.state.data.length > 0 ? this.state.data : [],
             renderHead: () => (
@@ -194,32 +211,46 @@ class ImportPage extends AdminPage {
                 </tr>),
         });
 
-        const filebox = (
-            <div className='tile'>
-                <h3 className='tile-title'>Import danh sách ứng viên</h3>
-                <FormFileBox ref={e => this.fileBox = e} uploadType='CandidateFile'
-                    onSuccess={this.onUploadSuccess} readOnly={readOnly} />
-                <div className='tile-footer' style={{ textAlign: 'right' }}>
-                    <button className='btn btn-primary' type='button'>
-                        <a href='/download/candidate.xlsx' style={{ textDecoration: 'none', color: 'white' }}><i className='fa-fw fa-lg fa fa-download' /> Tải xuống file mẫu</a>
-                    </button>
-                </div>
-            </div >
-        );
+        // const filebox = (
+        //     <div className='tile'>
+        //         <h3 className='tile-title'>Import danh sách ứng viên</h3>
+        //         <FormFileBox ref={e => this.fileBox = e} uploadType='CandidateFile'
+        //             onSuccess={this.onUploadSuccess} readOnly={readOnly} />
+        //         <div className='tile-footer' style={{ textAlign: 'right' }}>
+        //             <button className='btn btn-primary' type='button'>
+        //                 <a href='/download/candidate.xlsx' style={{ textDecoration: 'none', color: 'white' }}><i className='fa-fw fa-lg fa fa-download' /> Tải xuống file mẫu</a>
+        //             </button>
+        //         </div>
+        //     </div >
+        // );
         const list = (
             <div>
-                <div className='tile'>
-                    <h3 className='tile-title'>Chọn cơ sở</h3>
-                    <FormSelect ref={e => this.itemDivision = e} className='col-md-4' labelStyle={{ display: 'none' }} label={'Chọn cơ sở'} data={ajaxSelectDivision} readOnly={readOnly} />
-                    <h3 className='tile-title'>Chọn loại khóa học</h3>
-                    <FormSelect ref={e => this.itemCourseType = e} className='col-md-4' labelStyle={{ display: 'none' }} label={'Chọn loại khóa học'} data={ajaxSelectCourseType} readOnly={readOnly} />
-                    <h3 className='tile-title'>Danh sách ứng viên</h3>
-                    <div className='tile-body' style={{ overflowX: 'auto' }}>
-                        {table}
+                <div className='tile row'>
+                    <div className='col-md-6'>
+                        <h3 className='tile-title'>Chọn cơ sở</h3>
+                        <FormSelect ref={e => this.itemDivision = e}  labelStyle={{ display: 'none' }} label={'Chọn cơ sở'} data={ajaxSelectDivision} readOnly={readOnly} />
+                    </div>
+                    <div className='col-md-6'>
+                        <h3 className='tile-title'>Chọn loại khóa học</h3>
+                        <FormSelect ref={e => this.itemCourseType = e}labelStyle={{ display: 'none' }} label={'Chọn loại khóa học'} data={ajaxSelectCourseType} readOnly={readOnly} />
+                    </div>
+                    <div className='col-md-12'>
+                        <h3 className='tile-title'>Danh sách ứng viên</h3>
+                        <div className='tile-body' style={{ overflowX: 'auto' }}>
+                            {table}
+                        </div>
                     </div>
                 </div>
                 <EditModal ref={e => this.modalEdit = e} readOnly={readOnly} edit={this.edit} />
-                <CirclePageButton type='save' onClick={this.save} />
+                {/* <CirclePageButton type='save' onClick={this.save} /> */}
+                <div className='tile-footer' style={{ textAlign: 'right' }}>
+                        <button className='btn btn-danger' type='button' style={{ marginRight: 10 }} onClick={this.onReUpload}>
+                            <i className='fa fa-fw fa-lg fa-cloud-upload' /> Upload lại
+                        </button>
+                        <button className='btn btn-primary' type='button' onClick={this.save}>
+                            <i className='fa fa-fw fa-lg fa-save' /> Lưu
+                        </button>
+                    </div>
             </div>
         );
         return this.renderPage({
