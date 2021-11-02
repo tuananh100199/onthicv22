@@ -3,7 +3,8 @@ import { connect } from 'react-redux';
 import { exportExamStudent, getStudentPage, updateStudent } from './redux';
 import { createNotification } from 'modules/_default/fwNotification/redux';
 import { ajaxSelectCourseType, getCourseTypeAll } from 'modules/mdDaoTao/fwCourseType/redux';
-import { AdminPage, FormRichTextBox, FormSelect, FormDatePicker, renderTable, TableCell, AdminModal, CirclePageButton } from 'view/component/AdminPage';
+import { getNotificationTemplateAll, getNotificationTemplate, ajaxSelectNotificationTemplate } from 'modules/mdTruyenThong/fwNotificationTemplate/redux';
+import { AdminPage, FormRichTextBox, FormSelect, FormDatePicker, FormTextBox, renderTable, TableCell, AdminModal, CirclePageButton } from 'view/component/AdminPage';
 import Pagination from 'view/component/Pagination';
 
 class StudentModal extends AdminModal {
@@ -36,6 +37,55 @@ class StudentModal extends AdminModal {
     });
 }
 
+class NotificationModal extends AdminModal {
+    state = {};
+    componentDidMount() {
+        $(document).ready(() => this.onShown(() => this.itemName.focus()));
+    }
+
+    onShow = (item) => {
+        const { _id, title, name, content } = this.props.data || { _id: '', title: '', name: '', content: '' };
+        let newContent = content.replaceAll('{ho_ten}', item.lastname + ' ' + item.firstname).replaceAll('{ngay_thi_sat_hach}', `${T.dateToText(item.ngayDuKienThiSatHach, 'dd/mm/yyyy')}`);
+        console.log(item);
+        this.itemTitle.value(title);
+        this.itemName.value(name);
+        this.itemContent.value(newContent);
+        this.setState({ _id, item });
+    }
+
+    onSend = () => {
+        const user = this.state.item && this.state.item.user;
+        console.log(user);
+        const data = {
+            title: this.itemTitle.value(),
+            content: this.itemContent.value(),
+            type: '0',
+            user: user._id,
+            sentDate: new Date(),
+        };
+        this.props.create(data, () => {
+            T.notify('Gửi thông báo thành công!', 'success');
+            this.hide();
+        });
+    }
+
+
+
+    render = () => this.renderModal({
+        title: 'Thông báo',
+        body: <>
+            {/* <FormSelect ref={e => this.itemType = e} data={this.state.dataType} placeholder='Loại thông báo' style={{ width: '200px' }} /> */}
+            <FormTextBox ref={e => this.itemName = e} label='Tên thông báo' readOnly={this.props.readOnly} />
+            <FormTextBox ref={e => this.itemTitle = e} label='Chủ đề' readOnly={this.props.readOnly} />
+            <FormRichTextBox ref={e => this.itemContent = e} label='Nội dung' readOnly={this.props.readOnly} />
+        </>,
+        buttons:
+            <a className='btn btn-success' href='#' onClick={e => this.onSend(e)} style={{ color: 'white' }}>
+                <i className='fa fa-lg fa-paper-plane' /> Gửi thông báo
+            </a>
+    });
+}
+
 
 class FailStudentPage extends AdminPage {
     state = { searchText: '' };
@@ -46,6 +96,10 @@ class FailStudentPage extends AdminPage {
                 const courseTypes = data.map(item => ({ id: item._id, text: item.title }));
                 this.courseType.value(courseTypes[0]);
             });
+            // this.props.getNotificationTemplateAll({}, data => {
+            //     const notificationTemplate = data.length && data.map(item => ({ id: item._id, text: item.name }));
+            //     this.notificationTemplate.value(notificationTemplate.length ? notificationTemplate[1] : null);
+            // });
             T.onSearch = (searchText) => this.onSearch({ searchText });// search attach coursetype ?
         });
     }
@@ -62,24 +116,17 @@ class FailStudentPage extends AdminPage {
         this.onSearch({ courseType });
     }
 
+    onChangeNotificationTemplate = (_id) => {
+        this.props.getNotificationTemplate(_id, data => {
+            this.setState({
+                dataNotification: data,
+            });
+        });
+    }
+
     edit = (e, item) => e.preventDefault() || this.modal.show(item);
 
-    //TODO: TAM  sendNotification
-    sendNotification = (e, item) => e.preventDefault() ||
-        T.confirm('Gửi thông báo', `Bạn có chắc muốn gửi thông báo Ngày thi sát hạch dự kiến đến học viên ${item.lastname} ${item.firstname} là ${T.dateToText(item.ngayDuKienThiSatHach, 'dd/mm/yyyy')} ?`,
-            true, isConfirm => {
-                if (isConfirm) {
-                    const data = {
-                        title: 'Ngày thi sát hạch dự kiến',
-                        content: `Ngày thi sát hạch dự kiến của bạn là ${T.dateToText(item.ngayDuKienThiSatHach, 'dd/mm/yyyy')}`,
-                        type: '0',
-                        course: item.course && item.course._id,
-                        user: item.user && item.user._id,
-                        sentDate: new Date(),
-                    };
-                    this.props.createNotification(data, () => T.notify('Gửi thông báo thành công!', 'success'));
-                }
-            });
+    sendNotification = (e, item) => e.preventDefault() || this.notiModal.show(item);
 
     render() {
         const permission = this.getUserPermission('student', ['read', 'write']);
@@ -100,7 +147,7 @@ class FailStudentPage extends AdminPage {
                 <tr key={index}>
                     <TableCell type='number' content={index + 1} />
                     <TableCell content={<>{`${item.lastname} ${item.firstname}`}<br />{item.identityCard}</>} style={{ whiteSpace: 'nowrap' }} />
-                    <TableCell content={item.course && item.course.name} />
+                    <TableCell content={item.course && item.course.name} nowrap={'true'} />
                     <TableCell content={item.ngayDuKienThiSatHach ? T.dateToText(item.ngayDuKienThiSatHach, 'dd/mm/yyyy') : 'Chưa có'} />
                     <TableCell content={item.liDoChuaDatSatHach || 'Chưa có'} />
                     <TableCell type='buttons' content={item} permission={permission} onEdit={this.edit}>
@@ -124,6 +171,11 @@ class FailStudentPage extends AdminPage {
                             </div>
                             <FormSelect ref={e => this.courseType = e} data={ajaxSelectCourseType} placeholder='Loại khóa học'
                                 onChange={data => this.onChangeCourseType(data.id)} style={{ margin: 0, width: '200px' }} />
+                            <div className='col-auto'>
+                                <label className='col-form-label'>Template thông báo: </label>
+                            </div>
+                            <FormSelect ref={e => this.notificationTemplate = e} data={ajaxSelectNotificationTemplate} placeholder='Template thông báo'
+                                onChange={data => this.onChangeNotificationTemplate(data.id)} />
                         </div>
                         {table}
                     </div>
@@ -131,12 +183,13 @@ class FailStudentPage extends AdminPage {
                 <CirclePageButton type='import' style={{ right: 70 }} onClick={() => T.alert('todo')} />
                 <CirclePageButton type='export' onClick={() => exportExamStudent(this.state.courseId, 'HVChuaDatSatHach')} />
                 <StudentModal readOnly={!permission.write} ref={e => this.modal = e} update={this.props.updateStudent} />
+                <NotificationModal readOnly={!permission.write} ref={e => this.notiModal = e} create={this.props.createNotification} data={this.state.dataNotification} />
                 <Pagination pageCondition={pageCondition} pageNumber={pageNumber} pageSize={pageSize} pageTotal={pageTotal} totalItem={totalItem} getPage={(pageNumber, pageSize) => this.onSearch({ pageNumber, pageSize })} />
             </>,
         });
     }
 }
 
-const mapStateToProps = state => ({ system: state.system, student: state.trainning.student });
-const mapActionsToProps = { getStudentPage, updateStudent, createNotification, getCourseTypeAll };
+const mapStateToProps = state => ({ system: state.system, student: state.trainning.student, notificationTemplate: state.communication.notificationTemplate });
+const mapActionsToProps = { getStudentPage, updateStudent, createNotification, getCourseTypeAll, getNotificationTemplateAll, getNotificationTemplate, ajaxSelectNotificationTemplate };
 export default connect(mapStateToProps, mapActionsToProps)(FailStudentPage);

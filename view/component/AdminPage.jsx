@@ -10,7 +10,7 @@ import 'react-datetime/css/react-datetime.css';
 // Table components ---------------------------------------------------------------------------------------------------
 export class TableCell extends React.Component { // type = number | date | link | image | checkbox | buttons | text (default)
     render() {
-        let { type = 'text', content = '', permission = {}, className = '', style = {}, contentStyle = {}, alt = '', display = true, rowSpan = 1, dateFormat } = this.props;
+        let { type = 'text', content = '', permission = {}, className = '', style = {}, contentStyle = {}, alt = '', display = true, rowSpan = 1, dateFormat, nowrap } = this.props;
         if (style == null) style = {};
 
         if (display != true) {
@@ -60,7 +60,7 @@ export class TableCell extends React.Component { // type = number | date | link 
                     </div>
                 </td>);
         } else {
-            return <td className={className} style={{ ...style }} rowSpan={rowSpan}>{content}</td>;
+            return <td className={className} style={{ ...style }} nowrap={nowrap} rowSpan={rowSpan}>{content}</td>;
         }
     }
 }
@@ -236,11 +236,24 @@ export class FormRichTextBox extends React.Component {
 
     focus = () => this.input.focus();
 
+    insert = (e) => {
+        let cursorPosition = this.input.selectionStart;
+        let textBeforeCursorPosition = this.input.innerHTML.substring(0, cursorPosition);
+        let textAfterCursorPosition = this.input.innerHTML.substring(cursorPosition, this.input.innerHTML.length);
+        this.setState({
+            value: textBeforeCursorPosition + ' ' + e.target.innerHTML + ' ' + textAfterCursorPosition
+        });
+    }
+
     render() {
-        const { style = {}, rows = 3, label = '', className = '', readOnly = false, onChange = null, required = false } = this.props;
+        const { style = {}, rows = 3, label = '', className = '', readOnly = false, onChange = null, listParams = [], required = false } = this.props;
         return (
             <div className={'form-group ' + (className ? className : '')} style={style}>
                 <label onClick={this.focus}>{label}{!readOnly && required ? <span style={{ color: 'red' }}> *</span> : ''}</label>{readOnly && this.state.value ? <>: <br /><b>{this.state.value}</b></> : ''}
+                {!readOnly && listParams.length ?
+                    <p className='form-text  mb-1 '>
+                        {listParams.map((param, index) => (<small className='text-muted ml-1' style={{ cursor: 'pointer' }} key={index} onClick={(e) => this.insert(e)}>{param}</small>))}
+                    </p> : null}
                 <textarea ref={e => this.input = e} className='form-control' style={{ display: readOnly ? 'none' : 'block' }} placeholder={label} value={this.state.value} rows={rows}
                     onChange={e => this.setState({ value: e.target.value }) || onChange && onChange(e)} />
             </div>);
