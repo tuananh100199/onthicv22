@@ -30,7 +30,7 @@ export function getCourseTypePage(pageNumber, pageSize, done) {
                 T.notify('Lấy danh sách loại khóa học bị lỗi!', 'danger');
                 console.error('GET: ' + url + '.', data.error);
             } else {
-                if (done) done(data.page.pageNumber, data.page.pageSize, data.page.pageTotal, data.page.totalItem);
+                done && done(data.page.pageNumber, data.page.pageSize, data.page.pageTotal, data.page.totalItem);
                 dispatch({ type: CourseTypeGetPage, page: data.page });
             }
         }, error => console.error(error) || T.notify('Lấy danh sách loại khóa học bị lỗi!', 'danger'));
@@ -58,7 +58,7 @@ export function getCourseType(_id, done) {
             T.notify('Lấy loại khóa học bị lỗi!', 'danger');
             console.error('GET: getCourseType.', data.error);
         } else {
-            if (done) done(data.item);
+            done && done(data.item);
             dispatch({ type: CourseTypeGetItem, item: data.item });
         }
     });
@@ -73,7 +73,7 @@ export function createCourseType(data, done) {
                 console.error('POST: ' + url + '.', data.error);
             } else {
                 dispatch(getCourseTypePage());
-                if (done) done(data);
+                done && done(data);
             }
         }, error => console.error(error) || T.notify('Tạo loại khóa học bị lỗi!', 'danger'));
     };
@@ -88,6 +88,7 @@ export function updateCourseType(_id, changes, done) {
                 console.error('PUT: ' + url + '.', data.error);
                 done && done(data.error);
             } else {
+                dispatch({ type: CourseTypeGetItem, item: data.item });
                 dispatch(getCourseTypePage());
                 T.notify('Cập nhật khóa học thành công!', 'success');
                 done && done();
@@ -142,6 +143,22 @@ export function deleteCourseTypeSubject(_courseTypeId, _subjectId, done) {
     };
 }
 
+export function deleteCourseTypeMonThi(_courseTypeId, _id, done) {
+    return dispatch => {
+        const url = '/api/course-type/mon-thi-tot-nghiep';
+        T.delete(url, { _courseTypeId, _id }, data => {
+            if (data.error) {
+                T.notify('Xóa môn thi bị lỗi!', 'danger');
+                console.error('DELETE: ' + url + '.', data.error);
+            } else {
+                T.notify('Môn thi được xoá thành công!', 'success');
+                dispatch({ type: CourseTypeGetItem, item: data.item });
+                done && done();
+            }
+        }, error => console.error(error) || T.notify('Xóa môn thi bị lỗi!', 'danger'));
+    };
+}
+
 // Home ---------------------------------------------------------------------------------------------------------------
 export function getAllCourseTypeByUser(done) {
     return () => {
@@ -151,7 +168,7 @@ export function getAllCourseTypeByUser(done) {
                 T.notify('Lấy loại khóa học bị lỗi', 'danger');
                 console.error('GET: ' + url + '. ' + data.error);
             } else {
-                if (done) done(data.list);
+                done && done(data.list);
                 // dispatch({ type: CourseTypeGetAll, list: data.list });
             }
         }, error => console.error(error) || T.notify('Lấy loại khóa học bị lỗi', 'danger'));
@@ -166,7 +183,7 @@ export function getCourseTypeByUser(_id, done) {
                 T.notify('Lấy loại khóa học bị lỗi!', 'danger');
                 console.error('GET: ' + url + '.', data.error);
             } else {
-                if (done) done(data);
+                done && done(data);
                 dispatch({ type: CourseTypeGetItem, item: data.item });
             }
         }, error => console.error(error) || T.notify('Lấy loại khóa học bị lỗi!', 'danger'));

@@ -23,6 +23,7 @@ module.exports = app => {
                 if (condition.searchText) {
                     const value = { $regex: `.*${condition.searchText}.*`, $options: 'i' };
                     pageCondition.$or.push(
+                        { identityCard: value },
                         { phoneNumber: value },
                         { email: value },
                         { firstname: value },
@@ -33,8 +34,6 @@ module.exports = app => {
                 if (condition.userType && condition.userType != 'all') {
                     pageCondition.$or.push(Object.fromEntries(
                         (Array.isArray(condition.userType) ? condition.userType : [condition.userType]).map(item => [item, true])));
-                    // (Array.isArray(condition.userType) ? condition.userType : [condition.userType]).forEach(item =>
-                    //     pageCondition.$or.push(JSON.parse(`{"${item}":true}`)));
                 }
 
                 if (condition.dateStart && condition.dateEnd) {
@@ -66,6 +65,16 @@ module.exports = app => {
         } else {
             res.send({ error: 'Invalid params!' });
         }
+    });
+
+    app.get('/api/user/lecturer', app.permission.check('user:read'), (_, res) => {
+        app.model.user.getAll({ isLecturer: true }, (error, list) => {
+            if (error || list && list.length < 1) {
+                res.send({ error: 'Lấy thông tin cố vấn học tập bị lỗi' });
+            } else {
+                res.send({ error, list });
+            }
+        });
     });
 
     app.post('/api/user', app.permission.check('user:write'), (req, res) => {

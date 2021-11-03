@@ -35,7 +35,10 @@ module.exports = app => {
     });
 
     // Hook upload images ---------------------------------------------------------------------------------------------------------------------------
-    app.createFolder(app.path.join(app.publicPath, '/img/category'));
+    app.createFolder(app.path.join(app.publicPath, '/img/category'),
+        app.path.join(app.publicPath, '/img/newsCategory'), app.path.join(app.publicPath, '/img/forumCategory'),
+        app.path.join(app.publicPath, '/img/driveQuestionCategory'), app.path.join(app.publicPath, '/img/signCategory'),
+    );
 
     const uploadCategoryImage = (fields, files, done) => {
         if (fields.userData && fields.userData[0].startsWith('newsCategoryImage:') && files.CategoryImage && files.CategoryImage.length > 0) {
@@ -50,6 +53,10 @@ module.exports = app => {
             console.log('Hook: uploadCategoryImage => sign');
             const _id = fields.userData[0].substring('signCategoryImage:'.length);
             app.uploadImage('signCategory', app.model.category.get, _id, files.CategoryImage[0].path, done);
+        } else if (fields.userData && fields.userData[0].startsWith('forumCategoryImage:') && files.CategoryImage && files.CategoryImage.length > 0) {
+            console.log('Hook: uploadCategoryImage => forum');
+            const _id = fields.userData[0].substring('forumCategoryImage:'.length);
+            app.uploadImage('forumCategory', app.model.category.get, _id, files.CategoryImage[0].path, done);
         }
     };
 

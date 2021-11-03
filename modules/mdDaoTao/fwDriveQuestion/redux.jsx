@@ -50,7 +50,7 @@ export function getAllDriveQuestions(searchText, done) {
                 T.notify('Lấy tất cả câu hỏi thi bị lỗi!', 'danger');
                 console.error('GET: ' + url + '. ' + data.error);
             } else {
-                if (done) done(data.list);
+                done && done(data.list);
                 dispatch({ type: DriveQuestionGetAll, items: data.list });
             }
         }, error => console.error(error) || T.notify('Lấy tất cả câu hỏi thi bị lỗi!', 'danger'));
@@ -66,7 +66,7 @@ export function getDriveQuestionPage(pageNumber, pageSize, searchText, done) {
                 T.notify('Lấy danh sách câu hỏi thi bị lỗi!', 'danger');
                 console.error('GET: ' + url + '. ' + data.error);
             } else {
-                if (done) done(data.page.pageNumber, data.page.pageSize, data.page.pageTotal, data.page.totalItem);
+                done && done(data.page.pageNumber, data.page.pageSize, data.page.pageTotal, data.page.totalItem);
                 dispatch({ type: DriveQuestionGetPage, page: data.page });
             }
         }, error => console.error(error) || T.notify('Lấy danh sách câu hỏi thi bị lỗi!', 'danger'));
@@ -83,7 +83,7 @@ export function getDriveQuestionItem(_id, done) {
             } else {
                 dispatch({ type: DriveQuestionGet, item: data.item });
             }
-            if (done) done(data);
+            done && done(data);
         }, error => console.error(error) || T.notify('Lấy câu hỏi thi bị lỗi', 'danger'));
     };
 }
@@ -102,7 +102,7 @@ export function createDriveQuestion(data, done) {
                 T.notify('Tạo câu hỏi thi bị lỗi!', 'danger');
                 console.error('POST: ' + url + '. ' + data.error);
             } else {
-                if (done) done(data);
+                done && done(data);
                 T.notify('Tạo câu hỏi thi thành công!', 'success');
                 dispatch(getDriveQuestionPage());
             }

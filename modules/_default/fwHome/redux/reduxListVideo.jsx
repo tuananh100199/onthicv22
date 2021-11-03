@@ -32,7 +32,7 @@ export function getListVideoAll(done) {
                 T.notify('Lấy tất cả danh sách video bị lỗi!', 'danger');
                 console.error(`GET: ${url}. ${data.error}`);
             } else {
-                if (done) done(data.list);
+                done && done(data.list);
                 dispatch({ type: ListVideoGetAll, list: data.list || [] });
             }
         }, error => console.error(`GET: ${url}. ${error}`));
@@ -61,7 +61,7 @@ export function createListVideo(data, done) {
                 console.error(`POST: ${url}. ${data.error}`);
             } else {
                 dispatch(getListVideoAll());
-                if (done) done(data);
+                done && done(data);
             }
         }, error => console.error(error) || T.notify('Tạo danh sách video bị lỗi!', 'danger'));
     };
@@ -107,7 +107,7 @@ export function getListVideoByUser(_id, done) {
                 T.notify('Lấy danh sách video bị lỗi', 'danger');
                 console.error('GET: ' + url + '. ' + data.error);
             } else {
-                if (done) done(data);
+                done && done(data);
             }
         }, error => console.error(error) || T.notify('Lấy danh sách video bị lỗi', 'danger'));
     };

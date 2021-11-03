@@ -1,3 +1,5 @@
+@import './scss/comment';
+
 .component {
     position: relative;
     border: 1px solid #ddd;
@@ -585,4 +587,23 @@
     margin-bottom: 5px;
     font-weight: 400;
     font-size: 1.1rem;
+}
+
+.admin-form-select {
+    span.select2-selection__clear {
+        color: #888;
+        font-size: 22px;
+        font-weight: unset;
+        margin-right: 10px;
+        height: 36px;
+        line-height: 34px;
+    }
+}
+
+.limit-line {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 2; /* number of lines to show */
+    -webkit-box-orient: vertical;
 }

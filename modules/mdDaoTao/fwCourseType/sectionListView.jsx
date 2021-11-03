@@ -22,7 +22,7 @@ class SectionListView extends React.Component {
                             <div className='text-center'>
                                 <img style={{ borderRadius: '50%' }} src={item.image} height={100} width={100} alt='' />
                                 <div className='service_title'><Link to={'/course-type/' + item._id}>{item.title}</Link></div>
-                                {item.isPriceDisplayed && <h3 className='service_title'>{T.numberDisplay(item.price ? `Giá : ${item.price} VND` : '')}</h3>}
+                                {item.isPriceDisplayed && <h3 className='service_title'>{T.numberDisplay(item.price ? `Giá : ${item.price} VNĐ` : '')}</h3>}
                                 <div className='service_text'>
                                     <p>{item.shortDescription}</p>
                                 </div>

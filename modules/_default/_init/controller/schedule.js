@@ -4,8 +4,11 @@ module.exports = (app) => {
         run: () => {
             // Thực hiện task lúc nửa đêm
             app.schedule('0 0 * * *', () => {
+                // Cập nhật biến đếm ngày hôm nay về 0
+                if (app.primaryWorker) app.redis.set(`${app.appName}:state:todayViews`, 0);
+
                 // Dọn rác /temp/:dateFolderName cách 1 ngày
-                if (app.configWorker) {
+                if (app.primaryWorker) {
                     const tempPath = app.path.join(app.assetPath, '/temp'),
                         date = new Date(),
                         todayDirname = app.date.getDateFolderName(date);
@@ -18,9 +21,6 @@ module.exports = (app) => {
                         }
                     });
                 }
-
-                // Cập nhật biến đếm ngày hôm nay về 0
-                if (app.configWorker) app.redis.set(`${app.appName}:state:todayViews`, 0);
             });
         },
     });

@@ -9,10 +9,20 @@ module.exports = app => {
             division: String,
             fee: { type: Number, default: 0 },
         }],
+
+        monThiTotNghiep: [{
+            title: String,
+            totalScore: Number,
+            score: Number,
+            diemLiet: { type: Boolean, default: false },
+        }],
+
         subjects: [{ type: app.db.Schema.ObjectId, ref: 'Subject' }],       // Danh sách môn học
-        maxStudent: { type: Number, default: 100 },                                       // Số lượng học viên tối đa
+        maxStudent: { type: Number, default: 100 },                         // Số lượng học viên tối đa
         modifiedDate: { type: Date, default: Date.now },
         createdDate: { type: Date, default: Date.now },
+        chatActive: { type: Boolean, default: true },                       // Cho phép chat trong khoá học
+        commentActive: { type: Boolean, default: true },                    // Cho phép bình luận dưới bài học
         active: { type: Boolean, default: false },
 
         thoiGianKhaiGiang: { type: Date, default: Date.now },
@@ -33,8 +43,8 @@ module.exports = app => {
             student: [{ type: app.db.Schema.Types.ObjectId, ref: 'Student' }],
         }],
 
-        lock: { type: Boolean, default: false }, // bổ sung khóa khóa học lại
-        close: { type: Boolean, default: false }, // khóa học đã đóng
+        lock: { type: Boolean, default: false },                            // Cho phép thay đổi thông tin toàn khoá học => TODO: readOnly
+        close: { type: Boolean, default: false },                           // Khóa học đã đóng
     });
     const model = app.db.model('Course', schema);
 
@@ -49,6 +59,7 @@ module.exports = app => {
                 shortDescription: item.shortDescription,
                 detailDescription: item.detailDescription,
                 subjects: item.subjects,
+                monThiTotNghiep: item.monThiTotNghiep,
             }, done)),
 
         getPage: (pageNumber, pageSize, condition, done) => model.countDocuments(condition, (error, totalItem) => {
@@ -58,7 +69,7 @@ module.exports = app => {
                 let result = { totalItem, pageSize, pageTotal: Math.ceil(totalItem / pageSize) };
                 result.pageNumber = pageNumber === -1 ? result.pageTotal : Math.min(pageNumber, result.pageTotal);
                 const skipNumber = (result.pageNumber > 0 ? result.pageNumber - 1 : 0) * result.pageSize;
-                model.find(condition).populate('admins', '-password').sort({ name: 1 }).skip(skipNumber).limit(result.pageSize).exec((error, list) => {
+                model.find(condition).populate('admins', '-password').populate('courseType', 'title').sort({ name: 1 }).skip(skipNumber).limit(result.pageSize).exec((error, list) => {
                     result.list = error ? [] : list;
                     done(error, result);
                 });
@@ -72,7 +83,7 @@ module.exports = app => {
             findTask.populate('courseType').populate('subjects', '-detailDescription').populate({
                 path: 'teacherGroups.teacher', select: '-password', populate: { path: 'user division' }
             }).populate({
-                path: 'teacherGroups.student', populate: { path: 'user division courseType course', select: 'email title name' }
+                path: 'teacherGroups.student', populate: { path: 'user division courseType course', select: 'email title name image phoneNumber' }
             }).populate({
                 path: 'representerGroups.representer', select: '-password', populate: { path: 'user division' }
             }).populate({

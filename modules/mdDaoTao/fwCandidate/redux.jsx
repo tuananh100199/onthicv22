@@ -52,7 +52,7 @@ export function getCandidatePage(pageNumber, pageSize, searchText, done) {
                 T.notify('Lấy danh sách đăng ký tư vấn bị lỗi!', 'danger');
                 console.error('GET: ' + url + '. ' + data.error);
             } else {
-                if (done) done(data.page.pageNumber, data.page.pageSize, data.page.pageTotal, data.page.totalItem);
+                done && done(data.page.pageNumber, data.page.pageSize, data.page.pageTotal, data.page.totalItem);
                 dispatch({ type: CandidateGetPage, page: data.page });
             }
         }, error => console.error(error) || T.notify('Lấy danh sách đăng ký tư vấn bị lỗi!', 'danger'));

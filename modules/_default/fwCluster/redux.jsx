@@ -47,7 +47,7 @@ export function createCluster(done) {
                 console.error(`POST: ${url}. ${data.error}`);
             } else {
                 dispatch(getClusterAll());
-                if (done) done(data);
+                done && done(data);
             }
         }, error => console.error(error) || T.notify('Tạo cluster bị lỗi!', 'danger'));
     };

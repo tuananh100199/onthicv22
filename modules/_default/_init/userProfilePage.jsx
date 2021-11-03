@@ -1,8 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { Link } from 'react-router-dom';
 import { getUserCourse } from 'modules/mdDaoTao/fwCourse/redux';
-import { AdminPage } from 'view/component/AdminPage';
+import { AdminPage, PageIconHeader, PageIcon } from 'view/component/AdminPage';
 
 class UserProfilePage extends AdminPage {
     componentDidMount() {
@@ -19,53 +18,24 @@ class UserProfilePage extends AdminPage {
             breadcrumb: ['Trang cá nhân'],
             content: (
                 <div className='row'>
-                    <h4 className='col-md-12'>Thông tin cá nhân</h4>
-                    <Link to='/user/profile' className='col-md-6 col-lg-4'>
-                        <div className='widget-small coloured-icon info'>
-                            <i className='icon fa fa-3x fa-user' />
-                            <div className='info'>
-                                <h4>Thông tin cá nhân</h4>
-                            </div>
-                        </div>
-                    </Link>
+                    <PageIconHeader text='Thông tin cá nhân' />
+                    <PageIcon to={'/user/profile'} icon='fa-user' iconBackgroundColor='#17a2b8' text='Thông tin cá nhân' />
 
                     {students && students.length ? <>
-                        <h4 className='col-md-12'>Khóa học của bạn</h4>
+                        <PageIconHeader text='Khóa học của bạn' />
                         {students.map((student, index) => {
-                            const activeCourse = student.course && student.course.active;
-                            const content = (
-                                <div className='widget-small coloured-icon info'>
-                                    <i className='icon fa fa-3x fa fa-cubes' />
-                                    <div className='info'>
-                                        <h4>Khóa học hạng {student.courseType && student.courseType.title ? student.courseType.title : ''}</h4>
-                                        <p style={{ fontWeight: 'bold' }}>{activeCourse ? 'Lớp: ' + student.course.name : 'Đang chờ khóa'}</p>
-                                    </div>
-                                </div>);
-                            return (
-                                <div key={index} className='col-md-6 col-lg-4'>
-                                    {activeCourse ? <Link to={'/user/hoc-vien/khoa-hoc/' + student.course._id}>{content}</Link> : content}
-                                </div>);
+                            const { _id, name, active } = student.course || {};
+                            const text = () => <>
+                                <h4>Khóa học hạng {student.courseType && student.courseType.title ? student.courseType.title : ''}</h4>
+                                <p style={{ fontWeight: 'bold' }}>{active ? 'Lớp: ' + name : 'Đang chờ khóa'}</p>
+                            </>;
+                            return _id ? <PageIcon key={index} to={`/user/hoc-vien/khoa-hoc/${_id}`} icon='fa-cubes' iconBackgroundColor='#1488db' text={text} disabled={!active} /> : '';
                         })}
                     </> : null}
 
-                    <h4 className='col-md-12'>Ôn tập</h4>
-                    <Link to='/user/hoc-vien/khoa-hoc/bo-de-thi-thu' className='col-md-6 col-lg-4'>
-                        <div className='widget-small coloured-icon info'>
-                            <i className='icon fa fa-3x fa-graduation-cap' />
-                            <div className='info'>
-                                <h4>Bộ đề thi thử</h4>
-                            </div>
-                        </div>
-                    </Link>
-
-                    <Link to='/user/hoc-vien/khoa-hoc/bo-de-thi-ngau-nhien' className='col-md-6 col-lg-4'>
-                        <div className='widget-small coloured-icon info'>
-                            <i className='icon fa fa-3x fa-graduation-cap' />
-                            <div className='info'>
-                                <h4>Bộ đề thi ngẫu nhiên</h4>
-                            </div>
-                        </div>
-                    </Link>
+                    <PageIconHeader text='Ôn tập' />
+                    <PageIcon to='/user/hoc-vien/khoa-hoc/bo-de-thi-thu' icon='fa-sitemap' iconBackgroundColor='#7cb342' text='Bộ đề thi thử' />
+                    <PageIcon to='/user/hoc-vien/khoa-hoc/bo-de-thi-ngau-nhien' icon='fa-share-alt' iconBackgroundColor='#69f0ae' text='Bộ đề thi ngẫu nhiên' />
                 </div>),
         });
     }

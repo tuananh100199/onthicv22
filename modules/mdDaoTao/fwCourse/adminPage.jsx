@@ -1,9 +1,9 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { getCoursePage, createCourse, updateCourse, deleteCourse } from './redux';
+import { createCourse } from './redux';
 import { getCourseTypeAll, ajaxSelectCourseType } from '../fwCourseType/redux';
 import { AdminPage, AdminModal, FormTextBox, FormSelect, FormTabs } from 'view/component/AdminPage';
-import AdminCourseFilterView from './tabView/adminCourseFilterView';
+import AdminCourseFilterView from './adminCourseFilterView';
 
 class CourseModal extends AdminModal {
     componentDidMount() {
@@ -42,6 +42,7 @@ class CourseModal extends AdminModal {
         </>,
     });
 }
+
 class CoursePage extends AdminPage {
     state = {};
     componentDidMount() {
@@ -73,5 +74,5 @@ class CoursePage extends AdminPage {
 }
 
 const mapStateToProps = state => ({ system: state.system, course: state.trainning.course });
-const mapActionsToProps = { getCoursePage, createCourse, updateCourse, deleteCourse, getCourseTypeAll };
+const mapActionsToProps = { createCourse, getCourseTypeAll };
 export default connect(mapStateToProps, mapActionsToProps)(CoursePage);

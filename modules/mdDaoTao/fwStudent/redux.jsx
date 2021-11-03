@@ -6,6 +6,7 @@ const StudentUpdate = 'StudentUpdate';
 const StudentGetCourse = 'StudentGetCourse';
 const PreStudentGetPage = 'PreStudentGetPage';
 const PreStudentGetAll = 'PreStudentGetAll';
+const StudentGetItem = 'StudentGetItem';
 
 export default function studentReducer(state = {}, data) {
     switch (data.type) {
@@ -41,6 +42,9 @@ export default function studentReducer(state = {}, data) {
         case PreStudentGetPage:
             return Object.assign({}, state, { prePage: data.page });
 
+        case StudentGetItem:
+            return Object.assign({}, state, { item: data.item });
+
         default:
             return state;
     }
@@ -75,7 +79,8 @@ export function updateStudent(_id, changes, done) {
             } else {
                 T.notify('Cập nhật thông tin học viên thành công!', 'success');
                 done && done(data.item);
-                dispatch(getStudentPage());
+                dispatch({ type: StudentUpdate, item: data.item });
+                // dispatch(getStudentPage());
             }
             done && done(data.error);
         }, error => console.error(error) || T.notify('Cập nhật thông tin học viên bị lỗi!', 'danger'));
@@ -103,7 +108,7 @@ export function getStudent(_id, done) {
         T.get(url, { _id }, data => {
             if (data.error) {
                 T.notify('Lấy thông tin học viên bị lỗi!', 'danger');
-                console.error(`DELETE: ${url}. ${data.error}`);
+                console.error(`GET: ${url}. ${data.error}`);
             } else {
                 // T.alert('Lấy thông tin học viên thành công!', 'info', false, 800);
                 done && done(data.item);
@@ -119,7 +124,7 @@ export function getStudentScore(courseId, done) {
         T.get(url, { courseId }, data => {
             if (data.error) {
                 T.notify('Lấy thông tin học viên bị lỗi!', 'danger');
-                console.error(`DELETE: ${url}. ${data.error}`);
+                console.error(`GET: ${url}. ${data.error}`);
             } else {
                 // T.alert('Lấy thông tin học viên thành công!', 'info', false, 800);
                 done && done(data.item);
@@ -209,3 +214,26 @@ export function importPreStudent(students, division, courseType, done) {
         }, error => console.error(error) || T.notify('Tạo học viên bị lỗi!', 'danger'));
     };
 }
+
+// Ajax Selections ----------------------------------------------------------------------------------------------------
+export const ajaxSelectPreStudent = T.createAjaxAdapter(
+    '/api/pre-student/page/1/20',
+    response => response && response.page && response.page.list ?
+        response.page.list.map(student => ({ id: student._id, text: `${student.lastname} ${student.firstname}` + (student.identityCard ? ` (${student.identityCard})` : '') })) : [],
+);
+
+export const ajaxSelectStudentByCourse = (course) => ({
+    ajax: false,
+    url: '/api/student/page/1/20' + (course ? `?course=${course}` : ''),
+    data: {},
+    processResults: response => ({ results: response && response.page && response.page.list ? response.page.list.map(student => ({ id: student._id, text: `${student.lastname} ${student.firstname}` + (student.identityCard ? ` (${student.identityCard})` : '') })) : [] }),
+    fetchOne: (_id, done) => (getStudent(_id, student => done && done({ id: student._id, text: `${student.lastname} ${student.firstname}` + (student.identityCard ? ` (${student.identityCard})` : '') })))()
+});
+
+export const ajaxSelectStudentOfLecturer = (courseId, lecturerId) => ({
+    ajax: true,
+    url: '/api/course/lecturer/student',
+    data: params => ({ condition: { courseId, lecturerId, title: params.term }}),
+    processResults: response => ({ results: response && response.list ? response.list.map(student => ({ id: student._id, text: `${student.lastname} ${student.firstname}` })) : [] }),
+    fetchOne: (_id, done) => (getStudent(_id, student => done && done({ id: student._id, text: `${student.lastname} ${student.firstname}` })))()
+});

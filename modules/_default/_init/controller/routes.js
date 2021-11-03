@@ -72,6 +72,15 @@ module.exports = (app) => {
                                     },
                                     menus: {}
                                 };
+                                data.user.menu['3020'] = {
+                                    parentMenu: {
+                                        index: 3020,
+                                        title: 'Phản hồi',
+                                        link: '/user/feedback',
+                                        permissions: ['user:login'],
+                                        icon: 'fa-cog',
+                                    },
+                                };
                             }
                             let index = 0;
                             students.forEach(student => {
@@ -84,7 +93,10 @@ module.exports = (app) => {
                                     };
                                 }
                             });
-                            if (index == 0) delete data.user.menu['5000'];
+                            if (index == 0) {
+                                delete data.user.menu['5000'];
+                                delete data.user.menu['3020'];
+                            }
                         }
                     });
                 }

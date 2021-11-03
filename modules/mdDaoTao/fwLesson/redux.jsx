@@ -39,7 +39,7 @@ export function getLessonPage(pageNumber, pageSize, searchText, done) {
                 T.notify('Lấy danh sách loại khóa học bị lỗi!', 'danger');
                 console.error('GET: ' + url + '.', data.error);
             } else {
-                if (done) done(data.page.pageNumber, data.page.pageSize, data.page.pageTotal, data.page.totalItem);
+                done && done(data.page.pageNumber, data.page.pageSize, data.page.pageTotal, data.page.totalItem);
                 dispatch({ type: LessonGetPage, page: data.page });
             }
         }, error => console.error(error) || T.notify('Lấy danh sách loại khóa học bị lỗi!', 'danger'));
@@ -54,7 +54,7 @@ export function getLesson(_id, done) {
                 T.notify('Lấy loại khóa học bị lỗi1!', 'danger');
                 console.error('GET: ' + url + '.', data.error);
             } else {
-                if (done) done(data);
+                done && done(data);
                 dispatch({ type: LessonGetItem, item: data.item });
             }
         }, error => console.error(error) || T.notify('Lấy loại khóa học bị lỗi!', 'danger'));
@@ -69,7 +69,7 @@ export function getLessonByStudent(_id, courseId, subjectId, done) {
                 T.notify('Lấy loại khóa học bị lỗi1!', 'danger');
                 console.error('GET: ' + url + '.', data.error);
             } else {
-                if (done) done(data);
+                done && done(data);
                 dispatch({ type: LessonGetItem, item: data.item });
             }
         }, error => console.error(error) || T.notify('Lấy loại khóa học bị lỗi!', 'danger'));
@@ -78,13 +78,13 @@ export function getLessonByStudent(_id, courseId, subjectId, done) {
 
 export function checkQuestion(lessonId, subjectId, courseId, answers, done) {
     return () => {
-        const url = '/api/question/student/submit';
+        const url = '/api/lesson/question/student/submit';
         T.post(url, { lessonId, subjectId, courseId, answers }, data => {
             if (data.error) {
                 T.notify('Kiểm tra đáp án bị lỗi!', 'danger');
                 console.error('GET: ' + url + '.', data.error);
             } else {
-                if (done) done(data.result);
+                done && done(data.result);
             }
         }, error => console.error(error) || T.notify('Kiểm tra đáp án bị lỗi!', 'danger'));
     };
@@ -92,13 +92,13 @@ export function checkQuestion(lessonId, subjectId, courseId, answers, done) {
 
 export function resetStudentScore(lessonId, subjectId, courseId, done) {
     return () => {
-        const url = '/api/question/student/reset';
+        const url = '/api/lesson/question/student/reset';
         T.put(url, { lessonId, subjectId, courseId }, data => {
             if (data.error) {
                 T.notify('Làm lại câu hỏi ôn tập bị lỗi!', 'danger');
                 console.error('POST: ' + url + '.', data.error);
             } else {
-                if (done) done(data.result);
+                done && done(data.result);
             }
         }, error => console.error(error) || T.notify('Làm lại câu hỏi ôn tập bị lỗi!', 'danger'));
     };
@@ -112,7 +112,7 @@ export function createLesson(data, done) {
                 T.notify('Tạo loại khóa học bị lỗi!', 'danger');
                 console.error('POST: ' + url + '.', data.error);
             } else {
-                if (done) done(data);
+                done && done(data);
                 dispatch(getLessonPage());
             }
         }, error => console.error(error) || T.notify('Tạo loại khóa học bị lỗi!', 'danger'));
@@ -230,4 +230,19 @@ export function deleteLessonVideo(_lessonId, _lessonVideoId, done) {
 // Lesson Question ----------------------------------------------------------------------------------------------------
 export function changeLessonQuestions(data) {
     return { type: LessonGetItem, item: { questions: data.questions } };
+}
+
+// Lesson Rating ----------------------------------------------------------------------------------------------------
+export function viewLesson(lessonId, subjectId, courseId, view, done) {
+    return () => {
+        const url = '/api/lesson/view';
+        T.post(url, { lessonId, subjectId, courseId, view }, data => {
+            if (data.error) {
+                T.notify('Cập nhật bài thực hành bị lỗi!', 'danger');
+                console.error('GET: ' + url + '.', data.error);
+            } else {
+                done && done(data);
+            }
+        }, error => console.error(error) || T.notify('Cập nhật bài thực hành bị lỗi!', 'danger'));
+    };
 }

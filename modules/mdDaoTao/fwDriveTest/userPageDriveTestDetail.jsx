@@ -15,13 +15,30 @@ class UserPageDriveTestDetail extends AdminPage {
                 params = route.parse(window.location.pathname);
             this.props.getDriveTestItemByStudent(params._id, data => {
                 if (data.item) {
-                    const { _id, title, questions } = data.item;
-                    if (questions && questions.length == 1) {
-                        this.setState({ prevButton: 'invisible', nextButton: 'invisible' });
-                    } else {
-                        this.setState({ prevButton: 'invisible' });
-                    }
-                    this.setState({ activeQuestionIndex: 0, _id, title, questions });
+                    const newState = {
+                        activeQuestionIndex: 0,
+                        prevButton: 'invisible',
+                        _id: data.item._id,
+                        title: data.item.title,
+                        questions: data.item.questions,
+                        totalTime: data.item.courseType.totalTime,
+                    };
+                    if (newState.questions && newState.questions.length == 1) newState.nextButton = 'invisible';
+                    this.setState(newState);
+                    let minutes = data.item.courseType.totalTime;
+                    let seconds = 0;
+                    window.interval = setInterval(() => {
+                        --seconds;
+                        minutes = (seconds < 0) ? --minutes : minutes;
+                        seconds = (seconds < 0) ? 59 : seconds;
+                        seconds = (seconds < 10) ? '0' + seconds : seconds;
+                        $('#time').text(minutes + ':' + seconds);
+                        if (minutes < 0) clearInterval(window.interval);
+                        if ((seconds <= 0) && (minutes <= 0)) {
+                            clearInterval(window.interval);
+                            this.submitAnswer();
+                        }
+                    }, 1000);
                 } else {
                     this.props.history.push(backRoute);
                 }
@@ -31,8 +48,9 @@ class UserPageDriveTestDetail extends AdminPage {
 
     componentWillUnmount() {
         window.removeEventListener('keydown', this.logKey);
+        clearInterval(window.interval);
     }
-    
+
     logKey = (e) => {
         const activeQuestionIndex = this.state.activeQuestionIndex,
             maxIndex = this.state.questions.length - 1,
@@ -60,7 +78,7 @@ class UserPageDriveTestDetail extends AdminPage {
     }
 
     submitAnswer = (e) => {
-        e.preventDefault();
+        e && e.preventDefault();
         this.props.checkDriveTestScore(this.state._id, this.state.studentAnswer, result => {
             T.alert('Gửi câu trả lời thành công!', 'success', false, 2000);
             this.setState({
@@ -94,11 +112,18 @@ class UserPageDriveTestDetail extends AdminPage {
     }
 
     changeQuestion = (e, index) => {
-        const questions = this.state.questions ? this.state.questions : [];
+        const questions = this.state.questions ? this.state.questions : [],
+            activeQuestion = this.state.questions[index],
+            questionId = activeQuestion ? activeQuestion._id : null,
+            prevStudentAnswer = this.state.studentAnswer[questions[this.state.activeQuestionIndex]._id];
         e.preventDefault();
+        if (prevStudentAnswer) {
+            this.setState(prevState => ({
+                prevAnswers: { ...prevState.prevAnswers, [questions[this.state.activeQuestionIndex]._id]: prevStudentAnswer },
+                prevTrueAnswers: { ...prevState.prevTrueAnswers, [questions[this.state.activeQuestionIndex]._id]: questions[this.state.activeQuestionIndex].trueAnswer },
+            }));
+        }
         this.setState({ activeQuestionIndex: index }, () => {
-            const activeQuestion = this.state.questions[index],
-                questionId = activeQuestion ? activeQuestion._id : null;
             if (activeQuestion) {
                 if (this.state.prevAnswers && this.state.prevAnswers[questionId]) {
                     $('#' + questionId + this.state.prevAnswers[questionId]).prop('checked', true);
@@ -149,16 +174,17 @@ class UserPageDriveTestDetail extends AdminPage {
         } else if (activeQuestionIndex == 0) {
             activeQuestion && prevAnswers && prevAnswers[activeQuestion._id] && $('#' + activeQuestion._id + prevAnswers[activeQuestion._id]).prop('checked', true);
         }
+
         return this.renderPage({
             icon: 'fa fa-dashboard',
             title: 'Ôn tập: ' + (this.state.title || '...'),
             breadcrumb: [<Link key={0} to={userPageLink}>Bộ đề thi thử</Link>, this.state.title],
             backRoute: userPageLink,
-            content: (<>
-            {questions && questions.length ? (
+            content: questions && questions.length ?
                 <div className='tile'>
-                    <div className='tile-header'>
-                        {questions.map((question, index) => (<span key={index} style={{ cursor: 'pointer' }} onClick={e => this.changeQuestion(e, index)}><i className={'fa fa-square ' + (prevAnswers && prevTrueAnswers && prevAnswers[question._id] ? (prevAnswers[question._id] == prevTrueAnswers[question._id] ? 'text-primary' : 'text-danger') : 'text-secondary')} aria-hidden='true'></i>&nbsp;&nbsp;</span>))}
+                    <div className='tile-header row'>
+                        <div className='col-md-10'>{questions.map((question, index) => (<span key={index} style={{ cursor: 'pointer' }} onClick={e => this.changeQuestion(e, index)}><i className={'fa fa-square ' + (prevAnswers && prevTrueAnswers && prevAnswers[question._id] ? (prevAnswers[question._id] == prevTrueAnswers[question._id] ? 'text-primary' : 'text-danger') : 'text-secondary')} aria-hidden='true'></i>&nbsp;&nbsp;</span>))}</div>
+                        <h3 className='col-md-2' id='time'></h3>
                     </div>
                     <div className='tile-body row'>
                         {activeQuestion ? (
@@ -187,33 +213,31 @@ class UserPageDriveTestDetail extends AdminPage {
                         <div style={{ width: '100%' }}>
                             <nav aria-label='...' style={{ display: 'flex', justifyContent: 'center' }}>
                                 <ul className='pagination'>
-                                    <li className={'page-item ' + this.state.prevButton} id='prev-btn'>
+                                    <li className={'page-item ' + this.state.prevButton} >
                                         <a role='button' className='page-link' onClick={e => this.changeQuestion(e, activeQuestionIndex - 1)}><i className='fa fa-arrow-left' aria-hidden='true' /> Câu trước</a>
                                     </li>
-                                    <li className={'page-item ' + this.state.nextButton} id='next-btn'>
+                                    <li className={'page-item ' + this.state.nextButton}>
                                         <a role='button' className='page-link' onClick={e => this.changeQuestion(e, activeQuestionIndex + 1)}> Câu tiếp <i className='fa fa-arrow-right' aria-hidden='true' /></a>
                                     </li>
                                 </ul>
                             </nav>
                             <div>
                                 {showTotalScore ?
-                                    <h4 id='totalScore' style={{ marginLeft: '15px' }}>Số câu đúng của bạn: <b className='text-danger' >{score} / {questions && questions.length}</b></h4>
+                                    <h4 style={{ marginLeft: '15px' }}>Số câu đúng của bạn: <b className='text-danger' >{score} / {questions && questions.length}</b></h4>
                                     : null}
                                 <div style={{ float: 'right', marginRight: '10px' }}>
                                     {showSubmitButton ?
                                         <button className='btn btn-lg' id='submit-btn' disabled={!(this.state.studentAnswer && Object.keys(this.state.studentAnswer).length == questions.length)} onClick={e => this.submitAnswer(e)} >
                                             <i className='fa fa-lg fa-paper-plane-o' /> Nộp bài
                                         </button> :
-                                        <button className='btn btn-lg btn-info' id='refresh-btn' onClick={e => this.resetQuestion(e, questions[0]._id)} disabled={false}>
+                                        <button className='btn btn-lg btn-info' onClick={e => this.resetQuestion(e, questions[0]._id)} disabled={false}>
                                             <i className='fa fa-lg fa-refresh' /> Làm lại
                                         </button>}
                                 </div>
                             </div>
                         </div>
                     </div>
-                </div>
-                ) : <div className='tile'>Không có dữ liệu</div>}
-            </>),
+                </div> : <div className='tile'>Không có dữ liệu</div>,
         });
     }
 }

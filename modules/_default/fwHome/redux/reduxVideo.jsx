@@ -39,7 +39,7 @@ export function getVideoAll(condition, done) {
                 T.notify('Lấy danh sách video bị lỗi!', 'danger');
                 console.error('GET: ' + url + '. ' + data.error);
             } else {
-                if (done) done(data.list);
+                done && done(data.list);
                 dispatch({ type: VideoGetAll, list: data.list || [] });
             }
         }, error => {
@@ -68,7 +68,7 @@ export function createVideo(data, done) {
                 console.error('POST: ' + url + '. ' + data.error);
             } else {
                 dispatch(getVideoAll());
-                if (done) done(data);
+                done && done(data);
             }
         }, error => console.error(error) || T.notify('Tạo video bị lỗi!', 'danger'));
     };
@@ -116,7 +116,7 @@ export function getVideoAllByUser(condition, done) {
                 T.notify('Lấy danh sách video bị lỗi!', 'danger');
                 console.error('GET: ' + url + '. ' + data.error);
             } else {
-                if (done) done(data.items);
+                done && done(data.items);
             }
         }, error => console.error(error) || T.notify('Lấy danh sách video bị lỗi!', 'danger'));
     };
@@ -130,7 +130,7 @@ export function homeGetVideo(_id, done) {
                 console.error('GET: ' + url + '. ' + data.error);
             } else {
                 dispatch({ type: VideoGet, item: data.item });
-                if (done) done({ item: data.item });
+                done && done({ item: data.item });
             }
         }, error => console.error('GET: ' + url + '. ' + error));
     };

@@ -40,7 +40,14 @@ module.exports = (app) => {
     app.put('/api/course-type', app.permission.check('course-type:write'), (req, res) => {
         const { _id, changes } = req.body;
         if (changes && changes.subjects && changes.subjects === 'empty') changes.subjects = [];
+        if (changes && changes.monThiTotNghiep && changes.monThiTotNghiep === 'empty') changes.monThiTotNghiep = [];
         app.model.courseType.update(_id, changes, (error, item) => res.send({ error, item }));
+
+    });
+
+    app.delete('/api/course-type/mon-thi-tot-nghiep', app.permission.check('course-type:write'), (req, res) => {
+        const { _courseTypeId, _id } = req.body;
+        app.model.courseType.deleteMonThiTotNghiep(_courseTypeId, _id, (error, item) => res.send({ error, item }));
     });
 
     app.delete('/api/course-type', app.permission.check('course-type:delete'), (req, res) => {

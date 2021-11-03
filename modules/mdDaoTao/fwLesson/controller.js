@@ -9,9 +9,10 @@ module.exports = (app) => {
 
     app.get('/user/dao-tao/bai-hoc', app.permission.check('lesson:read'), app.templates.admin);
     app.get('/user/dao-tao/bai-hoc/:_id', app.permission.check('lesson:read'), app.templates.admin);
-    app.get('/user/hoc-vien/khoa-hoc/:courseId/mon-hoc/:subjectId/bai-hoc/:_id', app.permission.check('lesson:read'), app.templates.admin);
-    app.get('/user/hoc-vien/khoa-hoc/:courseId/mon-hoc/:subjectId/bai-hoc/thong-tin/:_id', app.permission.check('lesson:read'), app.templates.admin);
-    app.get('/user/hoc-vien/khoa-hoc/:courseId/mon-hoc/:subjectId/bai-hoc/cau-hoi/:_id', app.permission.check('lesson:read'), app.templates.admin);
+    app.get('/user/hoc-vien/khoa-hoc/:courseId/mon-hoc/:subjectId/bai-hoc/:_id', app.permission.check('user:login'), app.templates.admin);
+    app.get('/user/hoc-vien/khoa-hoc/:courseId/mon-hoc/:subjectId/bai-hoc/tai-lieu/:_id', app.permission.check('user:login'), app.templates.admin);
+    app.get('/user/hoc-vien/khoa-hoc/:courseId/mon-hoc/:subjectId/bai-hoc/thong-tin/:_id', app.permission.check('user:login'), app.templates.admin);
+    app.get('/user/hoc-vien/khoa-hoc/:courseId/mon-hoc/:subjectId/bai-hoc/cau-hoi/:_id', app.permission.check('user:login'), app.templates.admin);
 
     // Lesson APIs ----------------------------------------------------------------------------------------------------
     app.get('/api/lesson/page/:pageNumber/:pageSize', app.permission.check('lesson:read'), (req, res) => {
@@ -32,7 +33,7 @@ module.exports = (app) => {
         app.model.lesson.get(_id, (error, item) => res.send({ error, item }));
     });
 
-    app.get('/api/lesson/student', app.permission.check('lesson:read'), (req, res) => {//mobile
+    app.get('/api/lesson/student', app.permission.check('user:login'), (req, res) => {//mobile
         const { _id, courseId, subjectId } = req.query;
         app.model.lesson.get(_id, (error, item) => {
             if (item && item.questions) {
@@ -71,7 +72,7 @@ module.exports = (app) => {
         });
     });
 
-    app.post('/api/question/student/submit', app.permission.check('lesson:read'), (req, res) => {//mobile
+    app.post('/api/lesson/question/student/submit', app.permission.check('user:login'), (req, res) => {//mobile
         const { courseId, subjectId, lessonId, answers } = req.body;
         let questionIds = answers ? Object.keys(answers) : [],
             score = 0;
@@ -101,7 +102,7 @@ module.exports = (app) => {
                         res.send({ error });
                     } else {
                         const data = { studentId: student._id, subjectId, lessonId, trueAnswer, answers, score };
-                        app.model.student.addStudiedLesson(data, (error, item) => {
+                        app.model.student.updateLearningProgress(data, (error, item) => {
                             res.send({ error, result: { score, trueAnswer, answers }, item });
                         });
                     }
@@ -110,7 +111,7 @@ module.exports = (app) => {
         });
     });
 
-    app.put('/api/question/student/reset', app.permission.check('lesson:read'), (req, res) => {//mobile
+    app.put('/api/lesson/question/student/reset', app.permission.check('user:login'), (req, res) => {//mobile
         const { courseId, subjectId, lessonId } = req.body,
             userId = req.session.user._id;
         app.model.student.getAll({ user: userId, course: courseId }, (error, students) => {
@@ -213,6 +214,22 @@ module.exports = (app) => {
             }
         });
     });
+
+    // View Lesson APIs -----------------------------------------------------------------------------------------------------
+    app.post('/api/lesson/view', app.permission.check('user:login'), (req, res) => {
+        const { courseId, subjectId, lessonId, view } = req.body;
+        app.model.student.get({ user: req.session.user._id, course: courseId }, (error, student) => {
+            if (error) {
+                res.send({ error });
+            } else {
+                const data = { studentId: student._id, subjectId, lessonId, view };
+                app.model.student.updateLearningProgress(data, (error, item) => {
+                    res.send({ error, item });
+                });
+            }
+        });
+    });
+
 
     // Hook readyHooks  -----------------------------------------------------------------------------------------------
     app.readyHooks.add('createLessonQuestionManager', {

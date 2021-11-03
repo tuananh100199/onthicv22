@@ -41,7 +41,7 @@ export function getStatisticAll(done) {
                 T.notify('Lấy danh sách thống kê bị lỗi!', 'danger');
                 console.error('GET: ' + url + '. ' + data.error);
             } else {
-                if (done) done(data.list);
+                done && done(data.list);
                 dispatch({ type: StatisticGetAll, list: data.list || [] });
             }
         }, error => console.error(error) || T.notify('Lấy danh sách thống kê bị lỗi!', 'danger'));
@@ -69,7 +69,7 @@ export function createStatistic(data, done) {
                 console.error('POST: ' + url + '. ' + data.error);
             } else {
                 dispatch(getStatisticAll());
-                if (done) done(data);
+                done && done(data);
             }
         }, error => console.error(error) || T.notify('Tạo thống kê bị lỗi!', 'danger'));
     };
@@ -116,7 +116,7 @@ export function createStatisticItem(data, done) {
                 console.error('POST: ' + url + '. ' + data.error);
             } else {
                 dispatch(getStatistic(data.item.statisticId));
-                if (done) done(data);
+                done && done(data);
             }
         }, error => console.error(error) || T.notify('Tạo thống kê bị lỗi!', 'danger'));
     };
@@ -132,7 +132,7 @@ export function updateStatisticItem(_id, changes, done) {
             } else {
                 T.notify('Cập nhật thống kê thành công!', 'info');
                 dispatch(getStatistic(data.item.statisticId));
-                if (done) done();
+                done && done();
             }
         }, error => console.error(error) || T.notify('Cập nhật thống kê bị lỗi!', 'danger'));
     };
@@ -180,7 +180,7 @@ export function homeGetStatistic(_id, done) {
                 T.notify('Lấy danh sách thống kê bị lỗi!', 'danger');
                 console.error('GET: ' + url + '. ' + data.error);
             } else {
-                if (done) done(data.item);
+                done && done(data.item);
             }
         }, error => {
             console.error('GET: ' + url + '. ' + error);

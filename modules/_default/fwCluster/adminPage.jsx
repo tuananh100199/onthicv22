@@ -3,6 +3,17 @@ import { connect } from 'react-redux';
 import { getClusterAll, createCluster, resetCluster, deleteCluster, getSystemImageAll, applySystemImage, deleteSystemImage } from './redux';
 import { AdminPage, TableCell, renderTable } from 'view/component/AdminPage';
 
+const parseImageFilename = (filename) => {
+    const texts = filename.split('-');
+    let date = texts.length >= 1 ? texts[0] : null,
+        time = texts.length >= 2 ? texts[1] : null,
+        version = texts.length >= 3 ? texts[2] : '?';
+    if (date && date.length == 8) date = date.substring(0, 4) + '/' + date.substring(4, 6) + '/' + date.substring(6, 8);
+    if (time && time.length == 4) time = time.substring(0, 2) + ' ' + date.substring(2, 4);
+    if (version.endsWith('.zip')) version = version.substring(0, version.length - 4);
+    return { version, date: date ? date + ':' + time : '?' };
+};
+
 class ClusterPage extends AdminPage {
     componentDidMount() {
         T.ready();
@@ -46,13 +57,15 @@ class ClusterPage extends AdminPage {
     render() {
         const permission = this.getUserPermission('cluster');
         const clusterTable = renderTable({
-            getDataSource: () => this.props.cluster && this.props.cluster.clusters,
+            getDataSource: () => this.props.cluster && this.props.cluster.clusters && this.props.cluster.clusters.sort((a, b) => new Date(b.createdDate).getTime() - new Date(a.createdDate).getTime()),
             renderHead: () => (
                 <tr>
                     <th style={{ width: 'auto', textAlign: 'center' }}>#</th>
                     <th style={{ width: 'auto', textAlign: 'center' }}>Id</th>
-                    <th style={{ width: '100%' }} nowrap='true'>Image name</th>
-                    <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Image version</th>
+                    <th style={{ width: '100%', textAlign: 'center' }} nowrap='true'>Version</th>
+                    <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Primary</th>
+                    {/* <th style={{ width: 'auto' }} nowrap='true'>Image filename</th> */}
+                    <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Image date</th>
                     <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Start date</th>
                     <th style={{ width: 'auto', textAlign: 'center' }}>Status</th>
                     <th style={{ width: 'auto', textAlign: 'center' }}>Actions</th>
@@ -61,8 +74,10 @@ class ClusterPage extends AdminPage {
                 <tr key={index}>
                     <TableCell type='number' content={index + 1} />
                     <TableCell type='text' style={{ textAlign: 'center' }} content={item.pid} />
-                    <TableCell type='text' content={item.imageInfo} />
                     <TableCell type='text' style={{ textAlign: 'center' }} content={item.version} />
+                    <TableCell type='text' style={{ textAlign: 'center' }} className='text-danger' content={item.primaryWorker ? <i className='fa fa-star' /> : ''} />
+                    {/* <TableCell type='text' style={{ whiteSpace: 'nowrap' }} content={item.imageInfo} /> */}
+                    <TableCell type='text' style={{ textAlign: 'center', whiteSpace: 'nowrap' }} content={parseImageFilename(item.imageInfo).date} />
                     <TableCell type='text' style={{ textAlign: 'center', whiteSpace: 'nowrap' }} content={new Date(item.createdDate).getShortText()} />
                     <TableCell type='text' className={item.status == 'running' ? 'text-primary' : 'text-danger'} content={item.status} />
                     <TableCell type='buttons' content={item} style={{ textAlign: 'center' }} permission={permission} onDelete={this.deleteCluster}>
@@ -78,14 +93,16 @@ class ClusterPage extends AdminPage {
             renderHead: () => (
                 <tr>
                     <th style={{ width: 'auto', textAlign: 'center' }}>#</th>
-                    <th style={{ width: '100%' }} nowrap='true'>Image name</th>
+                    <th style={{ width: '100%', textAlign: 'center' }} nowrap='true'>Version</th>
+                    <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>File</th>
                     <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Created date</th>
                     <th style={{ width: 'auto', textAlign: 'center' }}>Actions</th>
                 </tr>),
             renderRow: (item, index) => (
                 <tr key={index}>
                     <TableCell type='number' content={index + 1} />
-                    <TableCell type='text' content={item.filename} />
+                    <TableCell type='text' style={{ textAlign: 'center' }} content={parseImageFilename(item.filename).version} />
+                    <TableCell type='text' style={{ whiteSpace: 'nowrap' }} content={item.filename} />
                     <TableCell type='text' style={{ textAlign: 'center', whiteSpace: 'nowrap' }} content={new Date(item.createdDate).getShortText()} />
                     <TableCell type='buttons' content={item} style={{ textAlign: 'center' }} permission={permission} onDelete={this.deleteSystemImage}>
                         {permission.write &&
@@ -102,12 +119,9 @@ class ClusterPage extends AdminPage {
             breadcrumb: ['Cluster'],
             content: <>
                 <div className='tile'>
-                    <h3 className='tile-title'>Cluster</h3>
+                    <h3 className='tile-title'>Clusters</h3>
                     <div className='tile-body'>{clusterTable}</div>
                     <div style={{ textAlign: 'right' }}>
-                        {/* <button className='btn btn-success' type='button' onClick={this.resetAllClusters}>
-                            <i className='fa fa-fw fa-lg fa-refresh'/>Reset
-                        </button>&nbsp;&nbsp; */}
                         <button className='btn btn-primary' type='button' onClick={this.createCluster}>
                             <i className='fa fa-fw fa-lg fa-plus' />Add
                         </button>
@@ -115,7 +129,7 @@ class ClusterPage extends AdminPage {
                 </div>
 
                 <div className='tile'>
-                    <h3 className='tile-title'>System Image</h3>
+                    <h3 className='tile-title'>System Images</h3>
                     <div className='tile-body'>{imageTable}</div>
                     <div style={{ textAlign: 'right' }}>
                         <button className='btn btn-warning' type='button' onClick={this.refreshSystemImages}>

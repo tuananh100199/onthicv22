@@ -49,7 +49,7 @@ export function createCategory(data, done) {
                 console.error('POST: ' + url + '.', data.error);
             } else {
                 dispatch(getCategoryAll(data.item.type));
-                if (done) done(data);
+                done && done(data);
             }
         }, error => console.error(error) || T.notify('Tạo danh mục bị lỗi!', 'danger'));
     };
@@ -80,6 +80,7 @@ export function swapCategory(_id, isMoveUp, type) {
                 T.notify('Thay đổi thứ tự danh mục bị lỗi!', 'danger');
                 console.error('PUT: ' + url + '.', data.error);
             } else {
+                T.notify('Cập nhật danh mục thành công!', 'success');
                 dispatch(getCategoryAll(type));
             }
         }, error => console.error(error) || T.notify('Thay đổi thứ tự danh mục bị lỗi!', 'danger'));

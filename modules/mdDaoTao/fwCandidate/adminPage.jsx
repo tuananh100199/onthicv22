@@ -22,11 +22,11 @@ class CandidateModal extends AdminModal {
         this.itemIdentityCard.value(identityCard);
         this.itemBirthday.value(birthday);
         this.itemPlanCourse.value(planCourse);
-        ajaxGetCourseType(courseType, data => {
+        ajaxGetCourseType(courseType, data => { //TODO: cần xem lại đoạn code này
             this.setState({ courseTypeTitle: data.item.title });
             this.courseType.value(data && data.item ? { id: data.item._id, text: data.item.title } : null);
         });
-        ajaxGetDivision(division, data =>
+        ajaxGetDivision(division, data => //TODO: cần xem lại đoạn code này
             this.division.value(data && data.item ? { id: data.item._id, text: data.item.title } : null));
         this.states.value(state);
         this.setState({ _id });
@@ -135,7 +135,7 @@ class CandidateModal extends AdminModal {
             <FormSelect className='col-md-6' ref={e => this.states = e} label='Trạng thái' data={this.props.states} />
             <FormSelect className='col-md-6' ref={e => this.division = e} label='Cơ sở đào tạo' data={ajaxSelectDivision} />
             <FormTextBox className='col-md-6' ref={e => this.itemIdentityCard = e} label='CMND/CCCD' />
-            <FormDatePicker className='col-md-6' ref={e => this.itemBirthday = e} label='Ngày sinh' />
+            <FormDatePicker className='col-md-6' ref={e => this.itemBirthday = e} label='Ngày sinh' type='date-mask' />
             <FormTextBox className='col-md-6' ref={e => this.itemPlanCourse = e} label='Khóa dự kiến' />
         </div>,
         buttons: this.props.permission.write ?
@@ -192,8 +192,8 @@ class CandidatePage extends AdminPage {
             renderHead: () => (
                 <tr>
                     <th style={{ width: 'auto', textAlign: 'center' }}>#</th>
-                    <th style={{ width: '50%' }}>Họ và tên</th>
-                    <th style={{ width: '50%' }}>Thông tin liên hệ</th>
+                    <th style={{ width: '50%' }} nowrap='true'>Họ và tên</th>
+                    <th style={{ width: '50%' }} nowrap='true'>Thông tin liên hệ</th>
                     <th style={{ width: 'auto' }} nowrap='true'>Cơ sở đào tạo</th>
                     <th style={{ width: 'auto' }} nowrap='true'>Loại khóa học</th>
                     <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Trạng thái</th>
@@ -215,8 +215,8 @@ class CandidatePage extends AdminPage {
                 return (
                     <tr key={index}>
                         <TableCell type='number' content={(pageNumber - 1) * pageSize + index + 1} />
-                        <TableCell type='link' content={item.lastname + ' ' + item.firstname} onClick={e => this.edit(e, item)} />
-                        <TableCell content={<>{item.email}<br />{item.phoneNumber}</>} />
+                        <TableCell type='link' content={item.lastname + ' ' + item.firstname} onClick={e => this.edit(e, item)} style={{ whiteSpace: 'nowrap' }} />
+                        <TableCell content={<>{item.email}<br />{item.phoneNumber}</>} style={{ whiteSpace: 'nowrap' }} />
                         <TableCell content={dropdownDivision} style={{ whiteSpace: 'nowrap', textAlign: 'center' }} />
                         <TableCell content={dropdownCourseType} style={{ whiteSpace: 'nowrap', textAlign: 'center' }} />
                         <TableCell content={item.state == 'UngVien' ? <span style={{ color: '#28A745' }}>Ứng viên</span> : dropdownState} style={{ whiteSpace: 'nowrap', textAlign: 'center' }} />

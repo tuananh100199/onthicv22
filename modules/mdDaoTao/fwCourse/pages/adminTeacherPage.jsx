@@ -1,10 +1,11 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { updateStudentInfoInCourse, updateCourseTeacherGroup, updateCourseTeacherGroupStudent, exportTeacherAndStudentToExcel } from '../redux';
+import { getCourse, updateStudentInfoInCourse, updateCourseTeacherGroup, updateCourseTeacherGroupStudent, exportTeacherAndStudentToExcel } from '../redux';
 import { ajaxSelectUserType } from 'modules/_default/fwUser/redux';
-import { CirclePageButton, FormSelect, FormTextBox, FormCheckbox, AdminModal } from 'view/component/AdminPage';
-import AdminStudentModal from '../adminStudentModal';
 import { updateStudent } from 'modules/mdDaoTao/fwStudent/redux';
+import { Link } from 'react-router-dom';
+import { AdminPage, AdminModal, CirclePageButton, FormSelect, FormTextBox, FormCheckbox } from 'view/component/AdminPage';
+import AdminStudentModal from '../adminStudentModal';
 
 class TeacherModal extends AdminModal {
     state = { teachers: [] };
@@ -56,17 +57,35 @@ class TeacherModal extends AdminModal {
     }
 }
 
-class AdminTeacherView extends React.Component {
+class AdminTeacherPage extends AdminPage {
     state = { searchStudentText: '', outsideStudentVisible: true, sortType: 'division', assignedButtonVisible: false }; // sortType = name | division
     students = {};
     itemDivisionSelectAll = {};
     itemDivisionDeSelectAll = {};
+    componentDidMount() {
+        T.ready('/user/course', () => {
+            const params = T.routeMatcher('/user/course/:_id/teacher').parse(window.location.pathname);
+            if (params && params._id) {
+                const course = this.props.course ? this.props.course.item : null;
+                if (!course) {
+                    this.props.getCourse(params._id, data => {
+                        if (data.error) {
+                            T.notify('Lấy khóa học bị lỗi!', 'danger');
+                            this.props.history.push('/user/course/' + params._id);
+                        }
+                    });
+                }
+            } else {
+                this.props.history.push('/user/course/');
+            }
+        });
+    }
 
     addTeacher = e => {
         e.preventDefault();
         const { _id, teacherGroups = [] } = this.props.course.item,
             _teacherId = this.selectTeacher.value();
-        if (_teacherId && teacherGroups.find(({ teacher }) => teacher._id == _teacherId) == null) {
+        if (_teacherId && teacherGroups.find(({ teacher }) => teacher && (teacher._id == _teacherId)) == null) {
             this.props.updateCourseTeacherGroup(_id, _teacherId, 'add', () => this.selectTeacher.value(null));
         } else {
             T.notify('Bạn chọn trùng cố vấn học tập', 'danger');
@@ -80,11 +99,9 @@ class AdminTeacherView extends React.Component {
 
     showStudentInfo = (e, student) => e.preventDefault() || this.studentModal.show(student);
 
-    updateStudent = (studentId, changes) => {
-        this.props.updateStudent(studentId, changes, (data) => {
-            data && this.props.updateStudentInfoInCourse(studentId, data);
-        });
-    }
+    updateStudent = (studentId, changes) => this.props.updateStudent(studentId, changes, (data) => {
+        data && this.props.updateStudentInfoInCourse(studentId, data);
+    });
 
     selectDivisionStudents = (_divisionId, selected) => {
         this.itemDivisionSelectAll[_divisionId] && this.itemDivisionSelectAll[_divisionId].value(true);
@@ -152,7 +169,8 @@ class AdminTeacherView extends React.Component {
     }
 
     render() {
-        const permission = this.props.permission,
+        const permission = this.getUserPermission('course'),
+            item = this.props.course && this.props.course.item ? this.props.course.item : { admins: [] },
             currentUser = this.props.system ? this.props.system.user : null,
             permissionTeacherWrite = permission.write || (currentUser && currentUser.isCourseAdmin);
         const isOutsideCourseAdmin = currentUser && currentUser.isCourseAdmin && currentUser.division && currentUser.division.isOutside ? true : false;
@@ -222,85 +240,94 @@ class AdminTeacherView extends React.Component {
             });
         }
 
-        return (
-            <div className='row'>
-                <div className='col-md-6' >
-                    <h3 className='tile-title'>Học viên</h3>
-                    <div style={{ float: 'right', marginTop: 8, marginRight: 8 }}>
-                        <FormCheckbox label='Hiện cơ sở ngoài' onChange={value => this.setState({ outsideStudentVisible: value })} style={{ display: isOutsideCourseAdmin ? 'none' : 'inline-block', marginRight: 16 }} defaultValue={true} />
-                        Sắp xếp theo:&nbsp;
-                        <a className={sortType == 'name' ? ' text-warning' : 'text-secondary'} href='#' onClick={e => e.preventDefault() || this.setState({ sortType: 'name' })}>
-                            Tên
-                        </a> |&nbsp;
-                        <a className={sortType == 'division' ? ' text-warning' : 'text-secondary'} href='#' onClick={e => e.preventDefault() || this.setState({ sortType: 'division' })}>
-                            Cơ sở
-                        </a>
-                    </div>
+        const backRoute = `/user/course/${item._id}`;
+        return this.renderPage({
+            icon: 'fa fa-user-circle',
+            title: 'Gán Cố vấn học tập: ' + item.name,
+            breadcrumb: [<Link key={0} to='/user/course'>Khóa học</Link>, item._id ? <Link key={0} to={backRoute}>{item.name}</Link> : '', 'Gán CVHT'],
+            content: (
+                <div className='tile'>
+                    <div className='tile-body row'>
+                        <div className='col-md-6' >
+                            <h3 className='tile-title'>Học viên</h3>
+                            <div style={{ float: 'right', marginTop: 8, marginRight: 8 }}>
+                                <FormCheckbox label='Hiện cơ sở ngoài' onChange={value => this.setState({ outsideStudentVisible: value })} style={{ display: isOutsideCourseAdmin ? 'none' : 'inline-block', marginRight: 16 }} defaultValue={true} />
+                                Sắp xếp theo:&nbsp;
+                                <a className={sortType == 'name' ? ' text-warning' : 'text-secondary'} href='#' onClick={e => e.preventDefault() || this.setState({ sortType: 'name' })}>
+                                    Tên
+                                </a> |&nbsp;
+                                <a className={sortType == 'division' ? ' text-warning' : 'text-secondary'} href='#' onClick={e => e.preventDefault() || this.setState({ sortType: 'division' })}>
+                                    Cơ sở
+                                </a>
+                            </div>
 
-                    <div style={{ borderWidth: 1, borderStyle: 'solid', borderColor: '#ddd', borderRadius: 5, padding: 12 }}>
-                        <FormTextBox ref={e => this.searchBox = e} label='Tìm kiếm học viên' onChange={e => this.setState({ searchStudentText: e.target.value })} />
-                        <div style={{ display: studentList.length ? 'block' : 'none' }}>
-                            <a href='#' onClick={e => this.showAssignedModal(e, this.props.course.item)} style={{ float: 'right', color: 'black', display: assignedButtonVisible ? 'block' : 'none' }}>
-                                Gán <i style={{ marginLeft: 5, fontSize: 20 }} className='fa fa-arrow-right text-success' />
-                            </a>
+                            <div style={{ borderWidth: 1, borderStyle: 'solid', borderColor: '#ddd', borderRadius: 5, padding: 12 }}>
+                                <FormTextBox ref={e => this.searchBox = e} label='Tìm kiếm học viên' onChange={e => this.setState({ searchStudentText: e.target.value })} />
+                                <div style={{ display: studentList.length ? 'block' : 'none' }}>
+                                    <a href='#' onClick={e => this.showAssignedModal(e, this.props.course.item)} style={{ float: 'right', color: 'black', display: assignedButtonVisible ? 'block' : 'none' }}>
+                                        Gán <i style={{ marginLeft: 5, fontSize: 20 }} className='fa fa-arrow-right text-success' />
+                                    </a>
+                                </div>
+                                {studentList.length ? <ul className='menuList' style={{ width: '100%', paddingLeft: 20, margin: 0 }}>{studentList}</ul> : <label>Danh sách trống!</label>}
+                            </div>
+                            <TeacherModal ref={e => this.modal = e} readOnly={!permission.write} add={this.props.updateCourseTeacherGroupStudent} onSuccess={this.onAssignSuccess} />
                         </div>
-                        {studentList.length ? <ul className='menuList' style={{ width: '100%', paddingLeft: 20, margin: 0 }}>{studentList}</ul> : <label>Danh sách trống!</label>}
-                    </div>
-                    <TeacherModal ref={e => this.modal = e} readOnly={!permission.write} add={this.props.updateCourseTeacherGroupStudent} onSuccess={this.onAssignSuccess} />
-                </div>
 
-                <div className='col-md-6'>
-                    <h3 className='tile-title'>Cố vấn học tập</h3>
-                    <div style={{ borderWidth: 1, borderStyle: 'solid', borderColor: '#ddd', borderRadius: 5, padding: 12 }}>
-                        <label>Tìm kiếm cố vấn học tập</label>
-                        <div style={{ display: permissionTeacherWrite ? 'flex' : 'none' }}>
-                            <FormSelect ref={e => this.selectTeacher = e} data={ajaxSelectUserType(['isLecturer'])} style={{ width: '100%' }} />
-                            <div style={{ width: 'auto', paddingLeft: 8 }}>
-                                <button className='btn btn-success' type='button' onClick={this.addTeacher}><i className='fa fa-fw fa-lg fa-plus' /></button>
+                        <div className='col-md-6'>
+                            <h3 className='tile-title'>Cố vấn học tập</h3>
+                            <div style={{ borderWidth: 1, borderStyle: 'solid', borderColor: '#ddd', borderRadius: 5, padding: 12 }}>
+                                <label>Tìm kiếm cố vấn học tập</label>
+                                <div style={{ display: permissionTeacherWrite ? 'flex' : 'none' }}>
+                                    <FormSelect ref={e => this.selectTeacher = e} data={ajaxSelectUserType(['isLecturer'])} style={{ width: '100%' }} />
+                                    <div style={{ width: 'auto', paddingLeft: 8 }}>
+                                        <button className='btn btn-success' type='button' onClick={this.addTeacher}><i className='fa fa-fw fa-lg fa-plus' /></button>
+                                    </div>
+                                </div>
+                                {teacherGroups && teacherGroups.length ?
+                                    <ol className='menuList' style={{ width: '100%', paddingLeft: 20, margin: 0, overflow: 'hidden', overflowY: 'scroll', height: 'calc(100vh - 420px)' }}>
+                                        {teacherGroups.map((item, index) => item.teacher ?
+                                            <li className='text-primary' style={{ margin: 10 }} key={index}>
+                                                <div style={{ display: 'inline-flex' }}>
+                                                    <h5>
+                                                        {item.teacher.lastname} {item.teacher.firstname} - {item.teacher.division && item.teacher.division.title}&nbsp;
+                                                        {item.teacher.division.isOutside ? <span className='text-secondary'>(cơ sở ngoài)</span> : ''}
+                                                    </h5>
+                                                    <div className='buttons'>
+                                                        <a href='#' onClick={e => _courseId && this.removeTeacher(e, item.teacher)}>
+                                                            <i style={{ marginLeft: 10, fontSize: 20 }} className='fa fa-times text-danger' />
+                                                        </a>
+                                                    </div>
+                                                </div>
+                                                <ul style={{ width: '100%', paddingLeft: 20, margin: 0 }}>
+                                                    {item.student.length ? item.student.map((student, indexStudent) => (
+                                                        <li key={indexStudent} style={{ margin: 10, color: 'black' }}>
+                                                            <div style={{ display: 'inline-flex' }}>
+                                                                <a href='#' style={{ color: 'black' }} onClick={e => this.showStudentInfo(e, student)}>
+                                                                    {student.lastname} {student.firstname} ({student.identityCard}) - {student.division && student.division.title}&nbsp;
+                                                                    {student.division && student.division.isOutside ? <span className='text-secondary'>(cơ sở ngoài)</span> : ''}
+                                                                </a>
+                                                                <div className='buttons'>
+                                                                    <a href='#' onClick={e => _courseId && this.removeStudent(e, item.teacher, student)}>
+                                                                        <i style={{ marginLeft: 10, fontSize: 20 }} className='fa fa-times text-danger' />
+                                                                    </a>
+                                                                </div>
+                                                            </div>
+                                                        </li>
+                                                    )) : <label style={{ color: 'black' }}>Chưa có học viên!</label>}
+                                                </ul>
+                                            </li> : null)}
+                                    </ol> : <label style={{ color: 'black' }}>Chưa có cố vấn học tập!</label>}
                             </div>
                         </div>
-                        {teacherGroups.length ?
-                            <ol className='menuList' style={{ width: '100%', paddingLeft: 20, margin: 0, overflow: 'hidden', overflowY: 'scroll', height: 'calc(100vh - 420px)' }}>
-                                {teacherGroups.map((item, index) => item.teacher ?
-                                    <li className='text-primary' style={{ margin: 10 }} key={index}>
-                                        <div style={{ display: 'inline-flex' }}>
-                                            <h5>
-                                                {item.teacher.lastname} {item.teacher.firstname} - {item.teacher.division && item.teacher.division.title}&nbsp;
-                                                {item.teacher.division.isOutside ? <span className='text-secondary'>(cơ sở ngoài)</span> : ''}
-                                            </h5>
-                                            <div className='buttons'>
-                                                <a href='#' onClick={e => _courseId && this.removeTeacher(e, item.teacher)}>
-                                                    <i style={{ marginLeft: 10, fontSize: 20 }} className='fa fa-times text-danger' />
-                                                </a>
-                                            </div>
-                                        </div>
-                                        <ul style={{ width: '100%', paddingLeft: 20, margin: 0 }}>
-                                            {item.student.length ? item.student.map((student, indexStudent) => (
-                                                <li key={indexStudent} style={{ margin: 10, color: 'black' }}>
-                                                    <div style={{ display: 'inline-flex' }}>
-                                                        <a href='#' style={{ color: 'black' }} onClick={e => this.showStudentInfo(e, student)}>
-                                                            {student.lastname} {student.firstname} ({student.identityCard}) - {student.division && student.division.title}&nbsp;
-                                                            {student.division && student.division.isOutside ? <span className='text-secondary'>(cơ sở ngoài)</span> : ''}
-                                                        </a>
-                                                        <div className='buttons'>
-                                                            <a href='#' onClick={e => _courseId && this.removeStudent(e, item.teacher, student)}>
-                                                                <i style={{ marginLeft: 10, fontSize: 20 }} className='fa fa-times text-danger' />
-                                                            </a>
-                                                        </div>
-                                                    </div>
-                                                </li>
-                                            )) : <label style={{ color: 'black' }}>Chưa có học viên!</label>}
-                                        </ul>
-                                    </li> : null)}
-                            </ol> : <label style={{ color: 'black' }}>Chưa có cố vấn học tập!</label>}
+                        {!isOutsideCourseAdmin ? <CirclePageButton type='export' onClick={() => exportTeacherAndStudentToExcel(_courseId)} /> : null}
+                        <AdminStudentModal ref={e => this.studentModal = e} updateStudent={this.updateStudent} />
                     </div>
-                </div>
-                {!isOutsideCourseAdmin ? <CirclePageButton type='export' onClick={() => exportTeacherAndStudentToExcel(_courseId)} /> : null}
-                <AdminStudentModal ref={e => this.studentModal = e} permission={this.props.permissionCourse} updateStudent={this.updateStudent} />
-            </div>);
+                </div>),
+            backRoute,
+        });
     }
 }
 
 const mapStateToProps = state => ({ system: state.system, student: state.trainning.student, course: state.trainning.course });
-const mapActionsToProps = { updateStudentInfoInCourse, updateCourseTeacherGroup, updateCourseTeacherGroupStudent, updateStudent, exportTeacherAndStudentToExcel };
-export default connect(mapStateToProps, mapActionsToProps)(AdminTeacherView);
+const mapActionsToProps = { getCourse, updateStudentInfoInCourse, updateCourseTeacherGroup, updateCourseTeacherGroupStudent, updateStudent, exportTeacherAndStudentToExcel };
+export default connect(mapStateToProps, mapActionsToProps)(AdminTeacherPage);

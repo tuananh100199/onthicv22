@@ -10,9 +10,9 @@ module.exports = (app) => {
     app.get('/user/dao-tao', app.permission.check('subject:read'), app.templates.admin);
     app.get('/user/dao-tao/mon-hoc', app.permission.check('subject:read'), app.templates.admin);
     app.get('/user/dao-tao/mon-hoc/:_id', app.templates.admin);
-    app.get('/user/hoc-vien/khoa-hoc/:courseId/mon-hoc/:_id', app.permission.check('course:learn'), app.templates.admin);
-    app.get('/user/hoc-vien/khoa-hoc/:courseId/mon-hoc/thong-tin/:_id', app.permission.check('course:learn'), app.templates.admin);
-    app.get('/user/hoc-vien/khoa-hoc/:courseId/mon-hoc/phan-hoi/:_id', app.permission.check('course:learn'), app.templates.admin);
+    app.get('/user/hoc-vien/khoa-hoc/:courseId/mon-hoc/:_id', app.permission.check('user:login'), app.templates.admin);
+    app.get('/user/hoc-vien/khoa-hoc/:courseId/mon-hoc/thong-tin/:_id', app.permission.check('user:login'), app.templates.admin);
+    app.get('/user/hoc-vien/khoa-hoc/:courseId/mon-hoc/phan-hoi/:_id', app.permission.check('user:login'), app.templates.admin);
 
     // Subject APIs ---------------------------------------------------------------------------------------------------
     app.get('/api/subject/page/:pageNumber/:pageSize', app.permission.check('subject:read'), (req, res) => {
@@ -35,11 +35,9 @@ module.exports = (app) => {
         app.model.subject.get(req.query._id, (error, item) => res.send({ error, item }));
     });
 
-    app.get('/api/subject/student', app.permission.check('subject:read'), (req, res) => {
+    app.get('/api/subject/student', app.permission.check('user:login'), (req, res) => {
         const subjectId = req.query._id;
-        app.model.subject.get(subjectId, (error, item) => {
-            res.send({ error, item });
-        });
+        app.model.subject.get(subjectId, (error, item) => res.send({ error, item }));
     });
 
     app.post('/api/subject', app.permission.check('subject:write'), (req, res) => {
@@ -54,7 +52,7 @@ module.exports = (app) => {
         app.model.subject.delete(req.body._id, (error) => res.send({ error }));
     });
 
-    app.post('/api/subject/student/submit', app.permission.check('subject:read'), (req, res) => {
+    app.post('/api/subject/student/submit', app.permission.check('user:login'), (req, res) => {
         const { courseId, subjectId, answers } = req.body;
         app.model.student.get({ user: req.session.user._id, course: courseId }, (error, student) => {
             if (error) {
@@ -125,6 +123,10 @@ module.exports = (app) => {
 
     // Hook permissionHooks  ------------------------------------------------------------------------------------------
     app.permissionHooks.add('courseAdmin', 'subject', (user) => new Promise(resolve => {
+        app.permissionHooks.pushUserPermission(user, 'subject:read');
+        resolve();
+    }));
+    app.permissionHooks.add('lecturer', 'subject', (user) => new Promise(resolve => {
         app.permissionHooks.pushUserPermission(user, 'subject:read');
         resolve();
     }));

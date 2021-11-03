@@ -1,3 +1,4 @@
+
 module.exports = app => {
     const schema = app.db.Schema({
         title: String,
@@ -10,8 +11,20 @@ module.exports = app => {
             category: { type: app.db.Schema.ObjectId, ref: 'Category' },
             amount: Number,
         }],
+
+        monThiTotNghiep: [{
+            title: String,
+            totalScore: Number,
+            score: Number,
+            diemLiet: { type: Boolean, default: false },
+        }],
+
         isPriceDisplayed: { type: Boolean, default: false },
         totalTime: Number,
+
+        practiceNumOfMonths: { type: Number, default: 0 },                          // Tổng tháng dạy thực hành
+        practiceNumOfHours: { type: Number, default: 0 },                           // Tổng giờ dạy thực hành
+        practiceNumOfReviewHours: { type: Number, default: 0 },                     // Tổng giờ ôn tập thực hành
     });
     const model = app.db.model('CourseType', schema);
 
@@ -21,7 +34,7 @@ module.exports = app => {
                 done(error);
             } else {
                 item.image = `/img/course-type/${item._id}.jpg`;
-                const srcPath = app.path.join(app.publicPath, '/img/avatar.jpg'),
+                const srcPath = app.path.join(app.publicPath, '/img/avatar-default.png'),
                     destPath = app.path.join(app.publicPath, item.image);
                 app.fs.copyFile(srcPath, destPath, error => error ? done(error) : item.save(done));
             }
@@ -49,7 +62,7 @@ module.exports = app => {
         },
 
         // changes = { $set, $unset, $push, $pull }
-        update: (_id, changes, done) => model.findOneAndUpdate({ _id }, changes).populate('subjects', '-detailDescription').exec(done),
+        update: (_id, changes, done) => model.findOneAndUpdate({ _id }, changes, { new: true }).populate('subjects', '-detailDescription').exec(done),
 
         delete: (_id, done) => model.findById(_id, (error, item) => {
             if (error) {
@@ -61,6 +74,14 @@ module.exports = app => {
                 item.remove(done);
             }
         }),
+
+        addMonThiTotNghiep: (_id, data, done) => {
+            model.findOneAndUpdate({ _id }, { $push: { monThiTotNghiep: data } }, { new: true }).exec(done);
+        },
+
+        deleteMonThiTotNghiep: (_id, idMonThi, done) => {
+            model.findOneAndUpdate({ _id }, { $pull: { monThiTotNghiep: { _id: idMonThi } } }, { new: true }).exec(done);
+        },
 
         addSubject: (_id, subject, done) => {
             model.findOneAndUpdate({ _id }, { $push: { subjects: subject } }, { new: true }).populate('subjects', '-detailDescription').exec(done);

@@ -78,7 +78,7 @@ module.exports = (app) => {
                     image.write(app.path.join(app.publicPath, url), (error) => {
                         done({
                             uploaded: error == null,
-                            url,
+                            url, width: '80%', height: ' ',
                             error: { message: error ? 'Upload has errors!' : '' },
                         });
                     });
@@ -171,6 +171,6 @@ module.exports = (app) => {
     // Hook readyHooks ------------------------------------------------------------------------------------------------------------------------------
     app.readyHooks.add('readyInit', {
         ready: () => app.redis,
-        run: () => app.configWorker && app.state.init(),
+        run: () => app.primaryWorker && app.state.init(),
     });
 };

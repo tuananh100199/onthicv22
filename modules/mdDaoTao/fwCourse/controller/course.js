@@ -9,23 +9,43 @@ module.exports = (app) => {
     };
 
     app.permission.add(
-        { name: 'course:read', },
-        { name: 'course:write', menu },
+        { name: 'course:read', menu },
+        { name: 'course:write' },
         { name: 'course:delete' },
         { name: 'course:lock' },
         { name: 'course:export' },
-        { name: 'course:learn' }
     );
 
     app.get('/user/course', app.permission.check('course:read'), app.templates.admin);
     app.get('/user/course/:_id', app.permission.check('course:read'), app.templates.admin);
-    app.get('/user/hoc-vien/khoa-hoc/:_id', app.permission.check('course:learn'), app.templates.admin);
-    app.get('/user/hoc-vien/khoa-hoc/thong-tin/:_id', app.permission.check('course:learn'), app.templates.admin);
+    app.get('/user/course/:_id/info', app.permission.check('course:read'), app.templates.admin);
+    app.get('/user/course/:_id/subject', app.permission.check('course:read'), app.templates.admin);
+    app.get('/user/course/:_id/graduation-subject', app.permission.check('course:read'), app.templates.admin);
+    app.get('/user/course/:_id/manager', app.permission.check('course:read'), app.templates.admin);
+    app.get('/user/course/:_id/student', app.permission.check('course:read'), app.templates.admin);
+    app.get('/user/course/:_id/teacher', app.permission.check('course:read'), app.templates.admin);
+    app.get('/user/course/:_id/representer', app.permission.check('course:read'), app.templates.admin);
+    app.get('/user/course/:_id/rate-teacher', app.permission.check('course:read'), app.templates.admin);
+    app.get('/user/course/:_id/feedback', app.permission.check('course:read'), app.templates.admin);
+    app.get('/user/course/:_id/feedback/:_feedbackId', app.permission.check('course:read'), app.templates.admin);
+    app.get('/user/course/:_id/your-students', app.permission.check('course:read'), app.templates.admin);
+    app.get('/user/course/:_id/learning', app.permission.check('course:read'), app.templates.admin);
+    app.get('/user/course/:_id/import-graduation-exam-score', app.permission.check('course:write'), app.templates.admin);
+    app.get('/user/course/:_id/calendar', app.permission.check('course:read'), app.templates.admin);
+    app.get('/user/course/:_id/lecturer/calendar', app.permission.check('course:read'), app.templates.admin);
+    app.get('/user/course/:_id/rate-subject', app.permission.check('course:read'), app.templates.admin);
+    app.get('/user/course/:_id/chat-all', app.permission.check('user:login'), app.templates.admin);
+    app.get('/user/course/:_id/chat', app.permission.check('user:login'), app.templates.admin);
+    app.get('/user/course/:_id/import-final-score', app.permission.check('course:write'), app.templates.admin);
+
+    app.get('/user/hoc-vien/khoa-hoc/:_id', app.permission.check('user:login'), app.templates.admin);
+    app.get('/user/hoc-vien/khoa-hoc/thong-tin/:_id', app.permission.check('user:login'), app.templates.admin);
+    app.get('/user/hoc-vien/khoa-hoc/:_id/phan-hoi', app.permission.check('user:login'), app.templates.admin);
 
     const getCourseData = (_id, sessionUser, done) => {
         app.model.course.get(_id, (error, item) => {
             if (error || !item) {
-                done('Khoá học không tồn tại!');
+                done('Khóa học không tồn tại!');
             } else {
                 const division = sessionUser.division,
                     courseFees = item.courseFees;
@@ -87,8 +107,8 @@ module.exports = (app) => {
         const pageNumber = parseInt(req.params.pageNumber),
             pageSize = parseInt(req.params.pageSize),
             sessionUser = req.session.user,
-            { pageCondition, courseType } = req.query;
-        const condition = { courseType, ...pageCondition };
+            condition = req.query.pageCondition || {};
+        if (req.query.courseType) condition.courseType = req.query.courseType;
         if (sessionUser.isLecturer && !sessionUser.isCourseAdmin) {
             condition.teacherGroups = { $elemMatch: { teacher: sessionUser._id } };
             condition.active = true;
@@ -103,146 +123,63 @@ module.exports = (app) => {
         });
     });
 
-    app.get('/api/course', app.permission.check('course:read'), (req, res) => getCourseData(req.query._id, req.session.user, (error, item) => res.send({ error, item })));
+    app.get('/api/course', app.permission.check('user:login'), (req, res) => {
+        getCourseData(req.query._id, req.session.user, (error, item) => res.send({ error, item }));
+    });
 
     app.post('/api/course', app.permission.check('course:write'), (req, res) => {
         app.model.course.create(req.body.data || {}, (error, item) => res.send({ error, item }));
     });
 
     app.put('/api/course', (req, res, next) => (req.session.user && req.session.user.isCourseAdmin) ? next() : app.permission.check('course:write')(req, res, next), (req, res) => {
-        let changes = req.body.changes || {};
-        const sessionUser = req.session.user,
-            courseFees = changes.courseFees,
-            division = sessionUser.division;
-        if (sessionUser && sessionUser.isCourseAdmin && division && division.isOutside) {
-            if (courseFees) {
-                const index = courseFees.findIndex(courseFee => courseFee.division == division._id);
-                if (index != -1) courseFees[index].fee = changes.courseFee;
-                else courseFees.push({
-                    division: division._id,
-                    fee: changes.courseFee
-                });
+        app.model.course.get(req.body._id, (error, item) => {
+            if (error || !item) {
+                res.send({ error: 'Dữ liệu không hợp lệ!' });
+            } else {
+                let changes = req.body.changes || {};
+                const sessionUser = req.session.user,
+                    courseFees = app.clone(item.courseFees || {}),
+                    division = sessionUser.division;
+                if (sessionUser && sessionUser.isCourseAdmin && division && division.isOutside) {
+                    if (courseFees) {
+                        const index = courseFees.findIndex(courseFee => courseFee.division == division._id);
+                        if (index != -1) {
+                            courseFees[index].fee = changes.courseFee;
+                        } else {
+                            courseFees.push({ division: division._id, fee: changes.courseFee });
+                        }
+                    }
+                    if (changes.subjects && changes.subjects === 'empty') changes.subjects = [];
+
+                    //TODO: Với user là isCourseAdmin + isOutside: cho phép họ thêm / xoá lecturer, student thuộc cơ sở của họ
+                    changes.teacherGroups = changes.teacherGroups == null || changes.teacherGroups === 'empty' ? [] : changes.teacherGroups;
+                } else {
+                    if (courseFees) {
+                        if (courseFees.length == 0) {
+                            courseFees.push({ division: division._id, fee: changes.courseFee });
+                        } else {
+                            courseFees[0].fee = changes.courseFee;
+                        }
+                    }
+                    if (changes.subjects && changes.subjects === 'empty') changes.subjects = [];
+                    if (changes.teacherGroups && changes.teacherGroups === 'empty') changes.teacherGroups = [];
+                    if (changes.admins && changes.admins === 'empty') changes.admins = [];
+                    if (changes.monThiTotNghiep && changes.monThiTotNghiep === 'empty') changes.admins = [];
+                }
+
+                delete changes.courseFee;
+                changes.courseFees = courseFees;
+                app.model.course.update(req.body._id, changes, () => getCourseData(req.body._id, req.session.user, (error, course) => {
+                    // const item = {};
+                    // course && Object.keys(changes).forEach(key => item[key] = course[key]);
+                    res.send({ error, item: course });
+                }));
             }
-            if (changes.subjects && changes.subjects === 'empty') changes.subjects = [];
-            const teacherGroups = changes.teacherGroups == null || changes.teacherGroups === 'empty' ? [] : changes.teacherGroups;
-            //TODO: Với user là isCourseAdmin + isOutside: cho phép họ thêm / xoá lecturer, student thuộc cơ sở của họ
-            changes = { teacherGroups };
-        } else {
-            if (courseFees) courseFees[0].fee = changes.courseFee;
-            if (changes.subjects && changes.subjects === 'empty') changes.subjects = [];
-            if (changes.teacherGroups && changes.teacherGroups === 'empty') changes.teacherGroups = [];
-            if (changes.admins && changes.admins === 'empty') changes.admins = [];
-        }
-        delete changes.courseFee;
-        app.model.course.update(req.body._id, changes, () => getCourseData(req.body._id, req.session.user, (error, course) => {
-            const item = {};
-            course && Object.keys(changes).forEach(key => item[key] = course[key]);
-            res.send({ error, item });
-        }));
+        });
     });
 
     app.delete('/api/course', app.permission.check('course:delete'), (req, res) => {
         app.model.course.delete(req.body._id, (error) => res.send({ error }));
-    });
-
-    app.get('/api/course/export/:_courseId', app.permission.check('course:read'), (req, res) => {
-        app.model.course.get(req.params._courseId, (error, course) => {
-            if (error) {
-                res.send({ error });
-            } else {
-                const numOfLesson = course.subjects.reduce((a, b) => (b.lessons ? b.lessons.length : 0) + a, 0);
-
-                const workbook = app.excel.create(), worksheet = workbook.addWorksheet(`Danh sách điểm của học viên lớp ${course.name}`);
-                const cells = [
-                    { cell: 'A1', border: '1234', value: 'STT', font: { size: 12, align: 'center' }, bold: true },
-                    { cell: 'B1', border: '1234', value: 'Họ', font: { size: 12, align: 'center' }, bold: true },
-                    { cell: 'C1', border: '1234', value: 'Tên', font: { size: 12, align: 'center' }, bold: true },
-                ];
-                let row = 2;
-                course.teacherGroups.forEach(group => {
-                    group.student.forEach(item => {
-                        row++;
-                        worksheet.insertRow(row, [row - 2, item.lastname, item.firstname]);
-                    });
-                });
-                new Promise((resolve, reject) => {
-                    let count = 0;
-                    let countIndex = 0;
-                    ['A1:A2', 'B1:B2', 'C1:C2'].forEach((item) => worksheet.mergeCells(item));
-                    for (const item of course.subjects) {
-                        if (item) {
-                            app.model.subject.get(item._id, (error, subject) => {
-                                if (error) {
-                                    reject(error);
-                                } else {
-                                    cells.push({
-                                        cell: `${String.fromCharCode('D'.charCodeAt() + countIndex)}1`,
-                                        border: '1234',
-                                        value: subject.title,
-                                        font: { size: 12, align: 'center' }, bold: true
-                                    });
-                                    const currentCountIndex = countIndex;
-                                    countIndex += subject.lessons.length;
-                                    worksheet.mergeCells(`${String.fromCharCode('D'.charCodeAt() + currentCountIndex)}1:${String.fromCharCode('D'.charCodeAt() + (countIndex - 1))}1`);
-                                    for (const lesson of subject.lessons) {
-                                        cells.push({
-                                            cell: `${String.fromCharCode('D'.charCodeAt() + count)}2`,
-                                            border: '1234',
-                                            value: lesson.title,
-                                            font: { size: 12, align: 'center' },
-                                            bold: true
-                                        });
-                                        let rowCell = 2;
-                                        course.teacherGroups.forEach(group => {
-                                            group.student.forEach(item => {
-                                                rowCell++;
-                                                const value = item.tienDoHocTap && item.tienDoHocTap[subject._id] && item.tienDoHocTap[subject._id][lesson._id] && item.tienDoHocTap[subject._id][lesson._id].score || 0;
-                                                worksheet.getCell(`${String.fromCharCode('D'.charCodeAt() + count)}${rowCell}`).value = `${value}/${lesson.questions.length}`;
-                                            });
-                                        });
-                                        count++;
-                                        if (count == numOfLesson) {
-                                            const colAvgWord = String.fromCharCode('D'.charCodeAt() + numOfLesson);
-                                            cells.push({
-                                                cell: `${colAvgWord}1`,
-                                                border: '1234',
-                                                value: 'Điểm trung bình',
-                                                font: { size: 12, align: 'center' }, bold: true
-                                            });
-                                            worksheet.mergeCells(`${colAvgWord}1:${colAvgWord}2`);
-                                            let rowSum = 2;
-                                            course.teacherGroups.forEach(group => {
-                                                group.student.forEach(() => {
-                                                    rowSum++;
-                                                    let sum = 0;
-                                                    for (let i = 0; i < numOfLesson; i++) {
-                                                        const scoreText = worksheet.getCell(`${String.fromCharCode('D'.charCodeAt() + i)}${rowSum}`).text;
-                                                        const scoreSplitted = scoreText.split('/');
-                                                        let score = parseInt(scoreSplitted[0]);
-                                                        let sumOfQuestion = parseInt(scoreSplitted[1]);
-                                                        let div = 0;
-                                                        if (sumOfQuestion > 0) {
-                                                            div = score / sumOfQuestion;
-                                                        }
-                                                        sum += div;
-                                                    }
-                                                    sum /= numOfLesson;
-                                                    worksheet.getCell(`${colAvgWord}${rowSum}`).value = parseFloat(sum).toFixed(2);
-                                                });
-                                            });
-                                            resolve();
-                                        }
-                                    }
-                                }
-                            });
-                        }
-                    }
-                }).then(() => {
-                    app.excel.write(worksheet, cells);
-                    app.excel.attachment(workbook, res, `Danh sách điểm của học viên lớp ${course.name}.xlsx`);
-                }).catch(error => res.send(error));
-            }
-        });
     });
 
     // Students APIs --------------------------------------------------------------------------------------------------
@@ -252,11 +189,11 @@ module.exports = (app) => {
         new Promise((resolve, reject) => {
             app.model.course.get(_courseId, (error, course) => {
                 if (error || course == null) {
-                    reject('Khoá học không hợp lệ!');
+                    reject('Khóa học không hợp lệ!');
                 } else if (sessionUser.permissions.includes('course:write') || (sessionUser.isCourseAdmin && course.admins.find(admin => admin._id == sessionUser._id))) {
                     if (type == 'add') {
                         const solve = (index = 0) => index < _studentIds.length ?
-                            app.model.student.update(_studentIds[index], { course: _courseId }, error => error ? reject('Lỗi khi cập nhật khoá học!') : solve(index + 1)) :
+                            app.model.student.update(_studentIds[index], { course: _courseId }, error => error ? reject('Lỗi khi cập nhật khóa học!') : solve(index + 1)) :
                             resolve();
                         solve();
                     } else if (type == 'remove') {
@@ -264,18 +201,18 @@ module.exports = (app) => {
                             if (index < _studentIds.length) {
                                 app.model.student.get({ _id: _studentIds[index], course: _courseId }, (error, student) => {
                                     if (error) {
-                                        reject('Lỗi khi cập nhật khoá học!');
+                                        reject('Lỗi khi cập nhật khóa học!');
                                     } else if (student) {
                                         course.teacherGroups.forEach(group => group.student.forEach((item, index) => item._id == student._id.toString() && group.student.splice(index, 1)));
                                         course.representerGroups.forEach(group => group.student.forEach((item, index) => item._id == student._id.toString() && group.student.splice(index, 1)));
                                         student.course = null;
-                                        student.save(error => error ? reject('Lỗi khi cập nhật khoá học!') : solve(index + 1));
+                                        student.save(error => error ? reject('Lỗi khi cập nhật khóa học!') : solve(index + 1));
                                     } else {
                                         solve(index + 1);
                                     }
                                 });
                             } else {
-                                course.save(error => error ? reject('Lỗi khi cập nhật khoá học!') : resolve());
+                                course.save(error => error ? reject('Lỗi khi cập nhật khóa học!') : resolve());
                             }
                         };
                         solve();
@@ -283,11 +220,11 @@ module.exports = (app) => {
                         reject('Dữ liệu không hợp lệ!');
                     }
                 } else {
-                    reject('Khoá học không được phép truy cập!');
+                    reject('Khóa học không được phép truy cập!');
                 }
             });
         }).then(() => getCourseData(_courseId, sessionUser, (error, item) => {
-            error = error || (item ? null : 'Lỗi khi cập nhật khoá học!');
+            error = error || (item ? null : 'Lỗi khi cập nhật khóa học!');
             item = item ? { students: item.students, ...(type == 'remove' && { teacherGroups: item.teacherGroups, representerGroups: item.representerGroups }) } : null;
             res.send({ error, item });
         })).catch(error => console.error(error) || res.send({ error }));
@@ -305,7 +242,7 @@ module.exports = (app) => {
                 reject('Dữ liệu không hợp lệ!');
             }
         }).then(() => getCourseData(_courseId, req.session.user, (error, item) => {
-            error = error || (item ? null : 'Lỗi khi cập nhật khoá học!');
+            error = error || (item ? null : 'Lỗi khi cập nhật khóa học!');
             item = item ? { representerGroups: item.representerGroups } : null;
             res.send({ error, item });
         })).catch(error => console.error(error) || res.send({ error }));
@@ -323,7 +260,7 @@ module.exports = (app) => {
                 reject('Dữ liệu không hợp lệ!');
             }
         }).then(() => getCourseData(_courseId, req.session.user, (error, item) => {
-            error = error || (item ? null : 'Lỗi khi cập nhật khoá học!');
+            error = error || (item ? null : 'Lỗi khi cập nhật khóa học!');
             item = item ? { representerGroups: item.representerGroups } : null;
             res.send({ error, item });
         })).catch(error => console.error(error) || res.send({ error }));
@@ -341,7 +278,7 @@ module.exports = (app) => {
                 reject('Dữ liệu không hợp lệ!');
             }
         }).then(() => getCourseData(_courseId, req.session.user, (error, item) => {
-            error = error || (item ? null : 'Lỗi khi cập nhật khoá học!');
+            error = error || (item ? null : 'Lỗi khi cập nhật khóa học!');
             item = item ? { teacherGroups: item.teacherGroups } : null;
             res.send({ error, item });
         })).catch(error => console.error(error) || res.send({ error }));
@@ -359,7 +296,7 @@ module.exports = (app) => {
                 reject('Dữ liệu không hợp lệ!');
             }
         }).then(() => getCourseData(_courseId, req.session.user, (error, item) => {
-            error = error || (item ? null : 'Lỗi khi cập nhật khoá học!');
+            error = error || (item ? null : 'Lỗi khi cập nhật khóa học!');
             item = item ? { teacherGroups: item.teacherGroups } : null;
             res.send({ error, item });
         })).catch(error => console.error(error) || res.send({ error }));
@@ -367,18 +304,126 @@ module.exports = (app) => {
 
     // Lecturer API
     app.get('/api/course/lecturer/student', app.permission.check('course:read'), (req, res) => {
-        const userId = req.session.user._id;
-        app.model.course.get(req.query._id, (error, item) => {
+        const { courseId, lecturerId } = req.query.condition;
+        app.model.course.get(courseId, (error, item) => {
             if (error || !item) {
                 res.send({ error });
             } else {
-                const listStudent = item.teacherGroups.filter(teacherGroup => teacherGroup.teacher && teacherGroup.teacher._id == userId);
-                res.send({ error, item: listStudent.length ? listStudent[0].student : null });
+                const listStudent = item.teacherGroups.filter(teacherGroup => teacherGroup.teacher && teacherGroup.teacher._id == lecturerId);
+                res.send({ error, list: listStudent.length ? listStudent[0].student : null });
             }
         });
     });
 
-    // Get Course by Student API
+    app.get('/api/course/learning-progress/page/:pageNumber/:pageSize', app.permission.check('course:read'), (req, res) => {
+        const pageNumber = parseInt(req.params.pageNumber),
+            pageSize = parseInt(req.params.pageSize),
+            sessionUser = req.session.user,
+            condition = req.query.pageCondition || {},
+            pageCondition = { course: condition.courseId || { $ne: null } },
+            filter = condition.filter;
+        let listStudent = [], subjects = [], pageReturn = {};
+        const isAdmin = sessionUser.isCourseAdmin || sessionUser.permissions.includes('course:write');
+
+        new Promise((resolve, reject) => {
+            if (isAdmin) {
+                if (condition.searchText) {
+                    const value = { $regex: `.*${condition.searchText}.*`, $options: 'i' };
+                    pageCondition.$or = [
+                        { firstname: value },
+                        { lastname: value },
+                    ];
+                }
+                app.model.student.getPage(pageNumber, pageSize, pageCondition, (error, page) => {
+                    if (error || !page) {
+                        error && console.error(error);
+                        reject('Lỗi khi đọc danh sách sinh viên!');
+                    } else {
+                        pageReturn = page;
+                        page = app.clone(page);
+                        listStudent = page && page.list ? page.list.map(item => item = app.clone(item)) : [];
+                        subjects = listStudent.length && listStudent[0].course && listStudent[0].course.subjects ? listStudent[0].course.subjects : [];
+                        resolve();
+                    }
+                });
+            } else if (sessionUser.isLecturer) {
+                app.model.course.get(condition.courseId, (error, item) => {
+                    if (error || !item) {
+                        error && console.error(error);
+                        reject('Lỗi khi đọc thông tin khóa học!');
+                    } else {
+                        item = app.clone(item);
+                        const studentTeacherGroup = item.teacherGroups.find(teacherGroup => teacherGroup.teacher && teacherGroup.teacher._id == sessionUser._id);
+                        listStudent = studentTeacherGroup && studentTeacherGroup.student ? studentTeacherGroup.student : [];
+                        subjects = item.subjects ? item.subjects : [];
+                        resolve();
+                    }
+                });
+            } else {
+                reject('Bạn không đủ quyền!');
+            }
+        }).then(() => {
+            const monLyThuyet = subjects.filter(subject => subject.monThucHanh == false),
+                students = [];
+            listStudent.forEach((student => {
+                student = app.clone(student, { subject: {} });
+                let tongDiemLyThuyet = 0;
+                subjects.forEach(subject => {
+                    let diemMonHoc = 0, completedLessons = 0, numberLessons = subject.lessons ? subject.lessons.length : 0;
+                    if (numberLessons) {
+                        if (student && student.tienDoHocTap && student.tienDoHocTap[subject._id] && !subject.monThucHanh) {
+                            const listLessons = Object.entries(student.tienDoHocTap[subject._id]);
+                            let tongDiemMonHoc = 0;
+                            (listLessons || []).forEach(lesson => {
+                                tongDiemMonHoc += lesson[1].trueAnswers ? Number(lesson[1].score) / Object.keys(lesson[1].trueAnswers).length * 10 : 0;
+                            });
+                            diemMonHoc = Number(tongDiemMonHoc / numberLessons).toFixed(1);
+                        }
+                        if (subject && student.tienDoHocTap && student.tienDoHocTap[subject._id]) {
+                            completedLessons = (Object.keys(student.tienDoHocTap[subject._id]).length > numberLessons ?
+                                numberLessons :
+                                Object.keys(student.tienDoHocTap[subject._id]).length);
+                        }
+                    }
+                    if (!subject.monThucHanh) {
+                        tongDiemLyThuyet += Number(diemMonHoc);
+                    }
+
+                    const obj = {};
+                    obj[subject._id] = { completedLessons, diemMonHoc, numberLessons };
+                    student.subject = app.clone(student.subject, obj);
+                });
+
+                const diemLyThuyet = Number((tongDiemLyThuyet / monLyThuyet.length).toFixed(1));
+                const diemThucHanh = student.diemThucHanh ? Number(student.diemThucHanh) : 0;
+
+                let filterThiTotNghiep = true;
+                if (isAdmin) {
+                    const diemThiHetMon = student && student.diemThiHetMon && student.diemThiHetMon;
+                    if (diemThiHetMon.length) {
+                        for (let i = 0; i < diemThiHetMon.length; i++) {
+                            if (diemThiHetMon[i].point < 5) {
+                                filterThiTotNghiep = false;
+                                break;
+                            }
+                        }
+                    } else {
+                        filterThiTotNghiep = false;
+                    }
+                }
+
+                if ((filter == 'thiHetMon' && 5 <= ((diemLyThuyet + diemThucHanh) / 2).toFixed(1)) ||
+                    (filter == 'thiTotNghiep' && filterThiTotNghiep) ||
+                    (filter == 'totNghiep' && student.totNghiep) ||
+                    (filter == 'satHach' && student.datSatHach) ||
+                    !['thiHetMon', 'thiTotNghiep', 'totNghiep', 'satHach'].includes(filter)) {
+                    students.push(app.clone(student, { diemLyThuyet, diemThucHanh }));
+                }
+            }));
+            res.send({ page: pageReturn ? pageReturn : null, students, subjects });
+        }).catch(error => console.error(error) || res.send({ error }));
+    });
+
     // API: Mobile
     app.get('/api/mobile/course/student/all', app.permission.check('user:login'), (req, res) => {//mobile
         const _userId = req.session.user._id;
@@ -395,24 +440,26 @@ module.exports = (app) => {
         });
     });
 
-    app.get('/api/course/student/all', app.permission.check('course:read'), (req, res) => {
+    app.get('/api/course/student/all', app.permission.check('user:login'), (req, res) => {
         const _userId = req.session.user._id;
-        app.model.student.getAll({ user: _userId }, (error, students) => {
-            res.send({ error, students });
-        });
+        app.model.student.getAll({ user: _userId }, (error, students) => res.send({ error, students }));
     });
 
-    app.get('/api/course/student', app.permission.check('course:read'), (req, res) => {//mobile
-        const _courseId = req.query._id,
-            _studentId = req.session.user._id;
-        app.model.student.get({ user: _studentId, course: _courseId }, (error, student) => {
+    app.get('/api/course/student', app.permission.check('user:login'), (req, res) => {//mobile
+        const _courseId = req.query._id;
+        app.model.student.get({ user: req.session.user._id, course: _courseId }, (error, student) => {
             if (error) {
                 res.send({ error });
             } else if (!student) {
                 res.send({ notify: 'Bạn không thuộc khóa học này!' });
             } else {
                 if (student.course && student.course.active) {
-                    app.model.course.get(_courseId, (error, item) => res.send({ error, item, _studentId: student._id }));
+                    app.model.course.get(_courseId, (error, item) => {
+                        const _studentId = student._id,
+                            teacherGroups = item.teacherGroups.find(({ student }) => student.find(({ _id }) => _id == _studentId.toString()) != null),
+                            teacher = (teacherGroups && teacherGroups.teacher) || null;
+                        res.send({ error, item, teacher, student });
+                    });
                 } else {
                     res.send({ notify: 'Khóa học chưa được kích hoạt!' });
                 }
@@ -420,209 +467,14 @@ module.exports = (app) => {
         });
     });
 
-    app.get('/api/course/student/export/:_courseId', app.permission.check('course:read'), (req, res) => {
-        const sessionUser = req.session.user,
-            division = sessionUser.division,
-            courseId = req.params._courseId;
-        if (sessionUser && sessionUser.isCourseAdmin && division && division.isOutside) {
-            res.send({ error: 'Bạn không có quyền xuất file excel này!' });
-        } else {
-            app.model.student.getAll({ course: courseId, division: division._id }, (error, students) => {
-                if (error) {
-                    res.send({ error: 'Hệ thống bị lỗi!' });
-                } else {
-                    const workbook = app.excel.create(), worksheet = workbook.addWorksheet('Student');
-                    const cells = [
-                        { cell: 'A1', value: 'STT', bold: true, border: '1234' },
-                        { cell: 'B1', value: 'Họ', bold: true, border: '1234' },
-                        { cell: 'C1', value: 'Tên', bold: true, border: '1234' },
-                        { cell: 'D1', value: 'CMND/CCCD', bold: true, border: '1234' },
-                        { cell: 'E1', value: 'Cơ sở', bold: true, border: '1234' },
-                        { cell: 'F1', value: 'Email', bold: true, border: '1234' },
-                        { cell: 'G1', value: 'Loại khóa học', bold: true, border: '1234' },
-                        { cell: 'H1', value: 'Khóa học', bold: true, border: '1234' },
-                    ];
-
-                    worksheet.columns = [
-                        { header: 'STT', key: '_id', width: 15 },
-                        { header: 'Họ', key: 'lastname', width: 15 },
-                        { header: 'Tên', key: 'firstname', width: 15 },
-                        { header: 'CMND/CCCD', key: 'identityCard', width: 15 },
-                        { header: 'Cơ sở', key: 'division', width: 30 },
-                        { header: 'Email', key: 'email', width: 40 },
-                        { header: 'Loại khóa học', key: 'courseType', width: 40 },
-                        { header: 'Khóa học', key: 'course', width: 80 },
-                    ];
-                    students.forEach((student, index) => {
-                        worksheet.addRow({
-                            _id: index + 1,
-                            lastname: student.lastname,
-                            firstname: student.firstname,
-                            identityCard: student.identityCard,
-                            division: student.division ? student.division.title : '',
-                            email: student.user && student.user.email,
-                            courseType: student.courseType ? student.courseType.title : '',
-                            course: student.course ? student.course.name : '',
-                        });
-                    });
-                    app.excel.write(worksheet, cells);
-                    app.excel.attachment(workbook, res, 'Student.xlsx');
-                }
-            });
-        }
-    });
-
-    app.get('/api/course/representer-student/export/:_courseId', app.permission.check('course:read'), (req, res) => {
-        const courseId = req.params._courseId;
-        app.model.course.get(courseId, (error, course) => {
-            if (error) {
-                res.send({ error: 'Hệ thống bị lỗi!' });
-            } else {
-                const workbook = app.excel.create(), worksheet = workbook.addWorksheet('Representer and student');
-                const cells = [
-                    { cell: 'A1', value: 'Giáo viên', bold: true, border: '1234' },
-                    { cell: 'B1', value: 'STT', bold: true, border: '1234' },
-                    { cell: 'C1', value: 'Họ', bold: true, border: '1234' },
-                    { cell: 'D1', value: 'Tên', bold: true, border: '1234' },
-                    { cell: 'E1', value: 'CMND/CCCD', bold: true, border: '1234' },
-                    { cell: 'F1', value: 'Cơ sở', bold: true, border: '1234' },
-                    { cell: 'G1', value: 'Email', bold: true, border: '1234' },
-                    { cell: 'H1', value: 'Loại khóa học', bold: true, border: '1234' },
-                    { cell: 'I1', value: 'Khóa học', bold: true, border: '1234' },
-                ];
-                worksheet.columns = [
-                    { header: 'Giáo viên', key: 'representer', width: 30 },
-                    { header: 'STT', key: '_id', width: 15 },
-                    { header: 'Họ', key: 'lastname', width: 15 },
-                    { header: 'Tên', key: 'firstname', width: 15 },
-                    { header: 'CMND/CCCD', key: 'identityCard', width: 15 },
-                    { header: 'Cơ sở', key: 'division', width: 30 },
-                    { header: 'Email', key: 'email', width: 40 },
-                    { header: 'Loại khóa học', key: 'courseType', width: 40 },
-                    { header: 'Khóa học', key: 'course', width: 80 },
-                ];
-
-                let count = 2, mergeStart = 0, mergeEnd = 0;
-                course && course.representerGroups.forEach(group => {
-                    cells.push({
-                        cell: `${'A' + count}`,
-                        border: '1234',
-                        value: group.representer.lastname + ' ' + group.representer.firstname,
-                        font: { size: 12, align: 'center' },
-                        bold: true
-                    });
-                    let indexStudent = 0;
-                    if (group.student && group.student.length > 0) {
-                        group.student.forEach((student, index) => {
-                            worksheet.addRow({
-                                _id: index + 1,
-                                lastname: student.lastname,
-                                firstname: student.firstname,
-                                identityCard: student.identityCard,
-                                division: student.division ? student.division.title : '',
-                                email: student.user && student.user.email,
-                                courseType: student.courseType ? student.courseType.title : '',
-                                course: student.course ? student.course.name : '',
-                            });
-                            indexStudent += 1;
-                        });
-                    } else {
-                        worksheet.addRow({});
-                        indexStudent = 1;
-                    }
-                    mergeStart = count;
-                    mergeEnd = count + indexStudent - 1;
-                    worksheet.mergeCells(`${'A' + mergeStart}:${'A' + mergeEnd}`);
-                    count += indexStudent;
-                });
-                app.excel.write(worksheet, cells);
-                app.excel.attachment(workbook, res, 'Representer and student.xlsx');
-            }
-        });
-    });
-
-    app.get('/api/course/teacher-student/export/:_courseId', app.permission.check('course:read'), (req, res) => {
-        const sessionUser = req.session.user,
-            division = sessionUser.division,
-            courseId = req.params._courseId;
-        if (sessionUser && sessionUser.isCourseAdmin && division && division.isOutside) {
-            res.send({ error: 'Bạn không có quyền xuất file excel này!' });
-        } else {
-            app.model.course.get(courseId, (error, course) => {
-                if (error) {
-                    res.send({ error: 'Hệ thống bị lỗi!' });
-                } else {
-                    const workbook = app.excel.create(), worksheet = workbook.addWorksheet('Teacher and student');
-                    const cells = [
-                        { cell: 'A1', value: 'Cố vấn học tập', bold: true, border: '1234' },
-                        { cell: 'B1', value: 'STT', bold: true, border: '1234' },
-                        { cell: 'C1', value: 'Họ', bold: true, border: '1234' },
-                        { cell: 'D1', value: 'Tên', bold: true, border: '1234' },
-                        { cell: 'E1', value: 'CMND/CCCD', bold: true, border: '1234' },
-                        { cell: 'F1', value: 'Cơ sở', bold: true, border: '1234' },
-                        { cell: 'G1', value: 'Email', bold: true, border: '1234' },
-                        { cell: 'H1', value: 'Loại khóa học', bold: true, border: '1234' },
-                        { cell: 'I1', value: 'Khóa học', bold: true, border: '1234' },
-                    ];
-                    worksheet.columns = [
-                        { header: 'Cố vấn học tập', key: 'teacher', width: 30 },
-                        { header: 'STT', key: '_id', width: 15 },
-                        { header: 'Họ', key: 'lastname', width: 15 },
-                        { header: 'Tên', key: 'firstname', width: 15 },
-                        { header: 'CMND/CCCD', key: 'identityCard', width: 15 },
-                        { header: 'Cơ sở', key: 'division', width: 30 },
-                        { header: 'Email', key: 'email', width: 40 },
-                        { header: 'Loại khóa học', key: 'courseType', width: 40 },
-                        { header: 'Khóa học', key: 'course', width: 80 },
-                    ];
-
-                    let count = 2, mergeStart = 0, mergeEnd = 0;
-                    course && course.teacherGroups.forEach(group => {
-                        cells.push({
-                            cell: `${'A' + count}`,
-                            border: '1234',
-                            value: group.teacher.lastname + ' ' + group.teacher.firstname,
-                            font: { size: 12, align: 'center' },
-                            bold: true
-                        });
-                        let indexStudent = 0;
-                        if (group.student && group.student.length > 0) {
-                            group.student.forEach((student, index) => {
-                                worksheet.addRow({
-                                    _id: index + 1,
-                                    lastname: student.lastname,
-                                    firstname: student.firstname,
-                                    identityCard: student.identityCard,
-                                    division: student.division ? student.division.title : '',
-                                    email: student.user && student.user.email,
-                                    courseType: student.courseType ? student.courseType.title : '',
-                                    course: student.course ? student.course.name : '',
-                                });
-                                indexStudent += 1;
-                            });
-                        } else {
-                            worksheet.addRow({});
-                            indexStudent = 1;
-                        }
-                        mergeStart = count;
-                        mergeEnd = count + indexStudent - 1;
-                        worksheet.mergeCells(`${'A' + mergeStart}:${'A' + mergeEnd}`);
-                        count += indexStudent;
-                    });
-                    app.excel.write(worksheet, cells);
-                    app.excel.attachment(workbook, res, 'Teacher and student.xlsx');
-                }
-            });
-        }
-    });
-
     // Hook permissionHooks -------------------------------------------------------------------------------------------
     app.permissionHooks.add('courseAdmin', 'course', (user) => new Promise(resolve => {
-        app.permissionHooks.pushUserPermission(user, 'course:read');
+        app.permissionHooks.pushUserPermission(user, 'course:read', 'course:write', 'course:export');
         resolve();
     }));
+
     app.permissionHooks.add('lecturer', 'course', (user) => new Promise(resolve => {
-        app.permissionHooks.pushUserPermission(user, 'course:write');
+        app.permissionHooks.pushUserPermission(user, 'course:read', 'course:export', 'student:write', 'student:read');
         resolve();
     }));
 };

@@ -1,6 +1,7 @@
 import React from 'react';
-import {AdminModal, FormDatePicker, FormTextBox, FormSelect, FormCheckbox } from 'view/component/AdminPage';
+import { AdminModal, FormDatePicker, FormTextBox, FormSelect, FormCheckbox } from 'view/component/AdminPage';
 import { ajaxSelectDivision } from 'modules/mdDaoTao/fwDivision/redux';
+
 export default class AdminStudentModal extends AdminModal {
     state = {};
     onShow = (item) => {
@@ -154,8 +155,8 @@ export default class AdminStudentModal extends AdminModal {
             <div className='row'>
                 <FormTextBox ref={e => this.itemLastname = e} label='Họ ứng viên' className='col-md-8' readOnly={this.props.readOnly} />
                 <FormTextBox ref={e => this.itemFirstname = e} label='Tên ứng viên' className='col-md-4' readOnly={this.props.readOnly} />
-                <FormTextBox ref={e => this.itemEmail = e} label='Email' className='col-md-6'  readOnly={this.state._id ? true : this.props.readOnly} />
-                <FormTextBox ref={e => this.itemPhoneNumber = e} label='Số điện thoại' className='col-md-6'  readOnly={this.state._id ? true : this.props.readOnly} />
+                <FormTextBox ref={e => this.itemEmail = e} label='Email' className='col-md-6' readOnly={this.state._id ? true : this.props.readOnly} />
+                <FormTextBox ref={e => this.itemPhoneNumber = e} label='Số điện thoại' className='col-md-6' readOnly={this.state._id ? true : this.props.readOnly} />
                 <FormSelect ref={e => this.itemSex = e} className='col-md-3' label='Giới tính' data={[{ id: 'female', text: 'Nữ' }, { id: 'male', text: 'Nam' }]} readOnly={this.props.readOnly} />
                 <FormDatePicker ref={e => this.itemBirthday = e} className='col-md-3' label='Ngày sinh' readOnly={this.props.readOnly} />
                 <FormTextBox ref={e => this.itemNationality = e} label='Quốc tịch' className='col-md-6' readOnly={this.props.readOnly} />
@@ -176,4 +177,3 @@ export default class AdminStudentModal extends AdminModal {
         ),
     });
 }
-   

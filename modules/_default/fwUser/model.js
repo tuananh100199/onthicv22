@@ -13,16 +13,20 @@ module.exports = (app) => {
         phoneNumber: String,
         image: String,
         active: { type: Boolean, default: false },
-        createdDate: Date,
+        createdDate: { type: Date, default: Date.now },
 
         isCourseAdmin: { type: Boolean, default: false },                                           // Là quản trị viên khóa học
         isLecturer: { type: Boolean, default: false },                                              // Là cố vấn học tập
         isRepresenter: { type: Boolean, default: false },                                           // Là người đại diện (giáo viên báo cáo với Sở)
         isStaff: { type: Boolean, default: false },                                                 // Là nhân viên
+        isTrustLecturer: { type: Boolean, default: false }, // cố vấn học tập tin cậy => họ được quyền approved forum, comment của họ
 
         token: String,
         tokenDate: Date,
         fcmToken: String,
+
+        notificationRead: [{ type: app.db.Schema.ObjectId, ref: 'Notification' }],                  // Người dùng đã đọc các notification này
+        notificationUnread: [{ type: app.db.Schema.ObjectId, ref: 'Notification' }],                // Người dùng chưa đọc các notification này
     });
 
     schema.methods.equalPassword = function (password) {
@@ -40,9 +44,9 @@ module.exports = (app) => {
         create: (data, done) => {
             app.model.user.get({ identityCard: data.identityCard }, (error, user) => {
                 if (error) {
-                    if (done) done(error);
+                    done && done(error);
                 } else if (user) {
-                    if (done) done('CMND/CCCD của bạn đã được đăng ký!', user);
+                    done && done('CMND/CCCD của bạn đã được đăng ký!', user);
                 } else {
                     data.createdDate = new Date();
                     data.tokenDate = new Date();
@@ -81,7 +85,7 @@ module.exports = (app) => {
                                     }
                                 });
                             } else {
-                                user.roles = [];
+                                // user.roles = [];
                                 user.save((error, user) => done && done(error, user));
                             }
                         }

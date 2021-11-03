@@ -24,6 +24,10 @@ export default {
             component: Loadable({ loading: Loading, loader: () => import('./userPageView') })
         },
         {
+            path: '/user/hoc-vien/khoa-hoc/:courseId/mon-hoc/:subjectId/bai-hoc/tai-lieu/:_id',
+            component: Loadable({ loading: Loading, loader: () => import('./userTaiLieuThamKhao') })
+        },
+        {
             path: '/user/hoc-vien/khoa-hoc/:courseId/mon-hoc/:subjectId/bai-hoc/thong-tin/:_id',
             component: Loadable({ loading: Loading, loader: () => import('./userLessonInfo') })
         },

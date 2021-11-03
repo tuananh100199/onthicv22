@@ -1,17 +1,25 @@
 {
   "name": "hiep-phat",
-  "version": "1.0.59",
+  "version": "1.0.79",
   "title": "Hiep Phat Website",
   "description": "Trung tam dao tao lai xe Hiep Phat",
   "main": "hiepphat.main.js",
-  "dbName": "hiepphat",
   "port": 5090,
   "rootUrl": "https://hpo.edu.vn",
-  "autoLogin": true,
+  "redisDB": {
+    "host": "localhost",
+    "port": 6379
+  },
+  "mongoDB": {
+    "dbName": "hiepphat",
+    "host": "localhost",
+    "port": 27017
+  },
   "scripts": {
     "nodemon": "nodemon hiepphat.main.js --ignore node_modules/ --ignore public/ --ignore src/view/ --ignore webpack.config.js --ignore *.json",
     "webpack-server": "webpack serve --mode development --color",
-    "build": "webpack --mode production",
+    "build-webpack": "webpack --mode production",
+    "build": "db.generate -d",
     "lint:fix": "npm run lint --  --fix",
     "lint": "eslint . --ext .jsx,.js --ignore-path .gitignore",
     "prepare": "husky install"
@@ -97,6 +105,7 @@
     "connect-redis": "^5.0.0",
     "cookie-parser": "^1.4.5",
     "country-list": "^2.2.0",
+    "dayjs": "^1.10.7",
     "decompress-zip": "^0.3.3",
     "docxtemplater": "^3.21.1",
     "docxtemplater-image-module-free": "^1.1.1",
@@ -113,6 +122,7 @@
     "json-beautify": "^1.1.1",
     "jsonwebtoken": "^8.5.1",
     "lint-staged": "^10.5.4",
+    "lodash": "^4.17.21",
     "moment": "^2.29.0",
     "mongoose": "^5.10.14",
     "morgan": "^1.10.0",

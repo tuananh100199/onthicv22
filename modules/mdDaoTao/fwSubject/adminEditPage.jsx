@@ -4,7 +4,7 @@ import { getSubject, updateSubject, addSubjectLesson, swapSubjectLesson, deleteS
 import { ajaxSelectLesson } from 'modules/mdDaoTao/fwLesson/redux';
 import { Link } from 'react-router-dom';
 import { QuestionView } from 'modules/_default/fwQuestion/index';
-import { AdminPage, AdminModal, FormTabs, FormTextBox, FormRichTextBox, FormEditor, FormSelect, CirclePageButton, TableCell, renderTable } from 'view/component/AdminPage';
+import { AdminPage, AdminModal, FormTabs, FormTextBox, FormCheckbox, FormRichTextBox, FormEditor, FormSelect, CirclePageButton, TableCell, renderTable } from 'view/component/AdminPage';
 
 class LessonModal extends AdminModal {
     onShow = () => this.lessonSelect.value(null);
@@ -36,12 +36,12 @@ class AdminEditPage extends AdminPage {
                         T.notify('Lấy môn học bị lỗi!', 'danger');
                         this.props.history.push(adminPageLink);
                     } else if (data.item) {
-                        const { _id, title, shortDescription, detailDescription } = data.item;
+                        const { _id, title, shortDescription, detailDescription, monThucHanh } = data.item;
                         this.itemTitle.value(title);
                         this.itemDescription.value(shortDescription);
                         this.itemEditor.html(detailDescription);
                         this.itemTitle.focus();
-
+                        this.itemMonThucHanh.value(monThucHanh);
                         this.setState({ _id, title });
                     } else {
                         this.props.history.push(adminPageLink);
@@ -57,6 +57,7 @@ class AdminEditPage extends AdminPage {
         title: this.itemTitle.value(),
         shortDescription: this.itemDescription.value(),
         detailDescription: this.itemEditor.html(),
+        monThucHanh: this.itemMonThucHanh.value(),
     });
 
     showLesson = (e, lesson) => e.preventDefault() || window.open('/user/dao-tao/bai-hoc/' + lesson._id, '_blank');
@@ -89,6 +90,7 @@ class AdminEditPage extends AdminPage {
         const componentInfo = (
             <div className='tile-body'>
                 <FormTextBox ref={e => this.itemTitle = e} label='Tên môn học' value={this.state.title} onChange={e => this.setState({ title: e.target.value })} readOnly={readOnly} />
+                <FormCheckbox ref={e => this.itemMonThucHanh = e} className={readOnly ? 'invisible' : ''} label='Môn thực hành' isSwitch={true} readOnly={readOnly} />
                 <FormRichTextBox ref={e => this.itemDescription = e} label='Mô tả ngắn gọn' rows='2' readOnly={readOnly} />
                 <FormEditor ref={e => this.itemEditor = e} label='Mô tả chi tiết' readOnly={readOnly} />
                 {permission.write ? <CirclePageButton type='save' onClick={this.saveInfo} /> : null}
@@ -104,7 +106,11 @@ class AdminEditPage extends AdminPage {
         const questions = this.props.subject && this.props.subject.item && this.props.subject.item.questions,
             componentQuestion = <QuestionView type='subject' parentId={this.state._id} className='tile-body' permission={permission} questions={questions} changeQuestions={this.props.changeSubjectQuestions} />;
 
-        const tabs = [{ title: 'Thông tin chung', component: componentInfo }, { title: 'Bài học', component: componentLesson }, { title: 'Câu hỏi', component: componentQuestion }];
+        const tabs = [
+            { title: 'Thông tin chung', component: componentInfo },
+            { title: 'Bài học', component: componentLesson },
+            { title: 'Câu hỏi', component: componentQuestion },
+        ];
         return this.renderPage({
             icon: 'fa fa-book',
             title: 'Môn học: ' + (this.state.title || '...'),

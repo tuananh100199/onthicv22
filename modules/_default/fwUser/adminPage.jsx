@@ -13,6 +13,7 @@ const UserTypeData = [
     { id: 'isStaff', text: 'Nhân viên' },
     { id: 'isLecturer', text: 'Cố vấn học tập' },
     { id: 'isRepresenter', text: 'Giáo viên' },
+    { id: 'isTrustLecturer', text: 'Cố vấn học tập tin cậy' },
 ];
 
 class UserModal extends AdminModal {
@@ -22,7 +23,7 @@ class UserModal extends AdminModal {
     }
 
     onShow = (item) => {
-        if (item == null) item = { _id: null, firstname: '', lastname: '', email: '', phoneNumber: '', sex: 'male', birthday: null, identityCard: '', division: null, roles: [], active: true, isCourseAdmin: false, isLecturer: false, isStaff: false };
+        if (item == null) item = { _id: null, firstname: '', lastname: '', email: '', phoneNumber: '', sex: 'male', birthday: null, identityCard: '', division: null, roles: [], active: true, isCourseAdmin: false, isLecturer: false, isTrustLecturer: false, isStaff: false };
         this.itemFirstname.value(item.firstname || '');
         this.itemLastname.value(item.lastname || '');
         this.itemBirthday.value(item.birthday || '');
@@ -32,6 +33,7 @@ class UserModal extends AdminModal {
         this.itemIsCourseAdmin.value(item.isCourseAdmin);
         this.itemIsStaff.value(item.isStaff);
         this.itemIsLecturer.value(item.isLecturer);
+        item.isLecturer ? this.itemIsTrustLecturer.value(item.isTrustLecturer) : null;
         this.itemIsRepresenter.value(item.isRepresenter);
         this.itemSex.value(item.sex || 'male');
         this.itemDivision.value(item.division ? { id: item.division._id, text: item.division.title + (item.division.isOutside ? ' (cơ sở ngoài)' : '') } : null);
@@ -39,7 +41,7 @@ class UserModal extends AdminModal {
         this.imageBox.setData(`user:${item._id ? item._id : 'new'}`);
 
         const allRoles = this.props.allRoles.map(item => ({ id: item._id, text: item.name }));
-        this.setState({ _id: item._id, image: item.image, allRoles }, () => {
+        this.setState({ _id: item._id, image: item.image, allRoles, isLecturer: item.isLecturer }, () => {
             this.itemRoles.value(item.roles.map(item => item._id));
         });
     }
@@ -56,6 +58,7 @@ class UserModal extends AdminModal {
             isStaff: this.itemIsStaff.value(),
             isLecturer: this.itemIsLecturer.value(),
             isRepresenter: this.itemIsRepresenter.value(),
+            isTrustLecturer: this.itemIsTrustLecturer.value(),
             roles: this.itemRoles.value(),
             birthday: this.itemBirthday.value(),
             division: this.itemDivision.value(),
@@ -124,8 +127,9 @@ class UserModal extends AdminModal {
 
                     <FormCheckbox ref={e => this.itemIsCourseAdmin = e} isSwitch={true} className='col-md-4' label='Quản trị viên khóa học' readOnly={readOnly} />
                     <FormCheckbox ref={e => this.itemIsStaff = e} isSwitch={true} className='col-md-2' label='Nhân viên' readOnly={readOnly} />
-                    <FormCheckbox ref={e => this.itemIsLecturer = e} isSwitch={true} className='col-md-4' label='Cố vấn học tập' readOnly={readOnly} />
+                    <FormCheckbox ref={e => this.itemIsLecturer = e} isSwitch={true} className='col-md-4' label='Cố vấn học tập' onChange={active => this.setState({ isLecturer: active })} readOnly={readOnly} />
                     <FormCheckbox ref={e => this.itemIsRepresenter = e} isSwitch={true} className='col-md-2' label='Giáo viên' readOnly={readOnly} />
+                    <FormCheckbox ref={e => this.itemIsTrustLecturer = e} style={{ display: this.state.isLecturer ? 'inline-block' : 'none' }} isSwitch={true} className='col-md-6' label='Cố vấn học tập tin cậy' readOnly={readOnly} />
 
                     <FormSelect ref={e => this.itemRoles = e} className='col-md-12' label='Vai trò' data={this.state.allRoles} multiple={true} readOnly={readOnly} />
                     <FormSelect ref={e => this.itemDivision = e} className='col-md-8' label='Thuộc cơ sở đào tạo' data={ajaxSelectDivision} readOnly={readOnly} required />
@@ -231,10 +235,10 @@ class UserPage extends AdminPage {
             renderHead: () => (
                 <tr>
                     <th style={{ width: 'auto', textAlign: 'center' }}>#</th>
-                    <th style={{ width: '40%' }}>Tên</th>
+                    <th style={{ width: '40%', whiteSpace: 'nowrap' }}>Tên</th>
                     <th style={{ width: 'auto' }}>Thông tin liên hệ</th>
                     <th style={{ width: '20%', textAlign: 'center' }} nowrap='true'>Hình ảnh</th>
-                    <th style={{ width: '40%' }}>Cơ sở đào tạo</th>
+                    <th style={{ width: '40%', whiteSpace: 'nowrap' }}>Cơ sở đào tạo</th>
                     <th style={{ width: 'auto' }} nowrap='true'>Thời gian tạo</th>
                     <th style={{ width: 'auto' }} nowrap='true'>Kích hoạt</th>
                     <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Thao tác</th>
@@ -242,7 +246,7 @@ class UserPage extends AdminPage {
             renderRow: (item, index) => (
                 <tr key={index}>
                     <TableCell type='number' content={(pageNumber - 1) * pageSize + index + 1} />
-                    <TableCell type='link' content={<>{item.lastname + ' ' + item.firstname}<br />{item.identityCard}</>} onClick={e => this.edit(e, item)} />
+                    <TableCell type='link' content={<>{item.lastname + ' ' + item.firstname}<br />{item.identityCard}</>} onClick={e => this.edit(e, item)} style={{ whiteSpace: 'nowrap' }} />
                     <TableCell type='text' content={<>{item.email}<br />{item.phoneNumber}</>} />
                     <TableCell type='image' content={item.image ? item.image : '/img/avatar.png'} />
                     <TableCell type='text' content={item.division ? `${item.division.title} ${item.division.isOutside ? '(ngoài)' : ''}` : ''} />

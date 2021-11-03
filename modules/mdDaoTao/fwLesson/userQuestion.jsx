@@ -118,7 +118,7 @@ class userQuestion extends AdminPage {
                     this.setState({ prevButton: 'invisible', nextButton: 'visible' });
                 }
                 setTimeout(() => {
-                    $('#submit-btn').addClass('btn-secondary');
+                    this.submitButton.classList.add('btn-secondary');
                     $('input[name="' + this.state.questions[0]._id + '"]').prop('checked', false);
                 }, 50);
             } else {
@@ -165,9 +165,12 @@ class userQuestion extends AdminPage {
             prevAnswers: { ...prevState.prevAnswers, [questionId]: null }
         }), () => {
             if (Object.keys(this.state.studentAnswer).length == this.state.questions.length) {
-                !this.state.result && $('#submit-btn').removeClass('btn-secondary').addClass('btn-success');
+                if (!this.state.result) {
+                    this.submitButton.classList.remove('btn-secondary');
+                    this.submitButton.classList.add('btn-success');
+                }
             } else {
-                $('#submit-btn').addClass('btn-secondary');
+                this.submitButton.classList.add('btn-secondary');
             }
         });
     }
@@ -234,7 +237,7 @@ class userQuestion extends AdminPage {
                                             <a role='button' className='page-link' onClick={e => this.changeQuestion(e, activeQuestionIndex + 1)}> Câu tiếp <i className='fa fa-arrow-right' aria-hidden='true' /></a>
                                         </li>
                                         {showSubmitButton ?
-                                            <button className='btn btn-secondary' disabled={!(this.state.studentAnswer && Object.keys(this.state.studentAnswer).length == questions.length)} id='submit-btn' onClick={e => this.submitAnswer(e)} >
+                                            <button className='btn btn-secondary' ref={e => this.submitButton = e} disabled={!(this.state.studentAnswer && Object.keys(this.state.studentAnswer).length == questions.length)} id='submit-btn' onClick={e => this.submitAnswer(e)} >
                                                 <i className='fa fa-lg fa-paper-plane-o' /> Nộp bài
                                             </button> :
                                             <button className='btn btn-info' id='refresh-btn' onClick={e => this.resetQuestion(e)} disabled={false}>
