@@ -3,6 +3,7 @@ module.exports = app => {
         title: String,
         content: String,
         type: String,
+        abstract: String,
     });
     const model = app.db.model('NotificationTemplate', schema);
 
