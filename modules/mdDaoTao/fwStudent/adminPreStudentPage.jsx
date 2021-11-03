@@ -26,11 +26,12 @@ class PreStudenModal extends AdminModal {
         this.itemResidence.value(residence || '');
         this.itemCourseType.value(courseType ? { id: courseType._id, text: courseType.title } : null);
         this.itemDivision.value(division ? { id: division._id, text: division.title } : null);
-        this.itemPlanLecturer.value(planLecturer ? { id: planLecturer._id, text: `${planLecturer.lastname} ${planLecturer.firstname}` } : null);
         this.itemRegularResidence.value(regularResidence || '');
         this.imageBox.setData(`pre-student:${_id || 'new'}`);
-
-        this.setState({ _id, image });
+     
+        this.setState({ _id, divisionId: division._id, image }, () => {
+            this.itemPlanLecturer.value(planLecturer ? { id: planLecturer._id, text: `${planLecturer.lastname} ${planLecturer.firstname}` } : null);
+        });
     }
 
     onSubmit = () => {
@@ -91,7 +92,12 @@ class PreStudenModal extends AdminModal {
         }
     }
 
+    onChangeDivision = (data) => data && data.id && this.setState({ divisionId: data.id }, () => {
+        this.itemPlanLecturer.value(null);
+    });
+
     render = () => {
+        const { divisionId } = this.state;
         const readOnly = this.props.readOnly;
         return this.renderModal({
             title: 'Ứng viên',
@@ -111,8 +117,8 @@ class PreStudenModal extends AdminModal {
                 <FormDatePicker className='col-md-4' ref={e => this.itemBirthday = e} label='Ngày sinh' readOnly={readOnly} type='date-mask' />
                 <FormSelect className='col-md-4' ref={e => this.itemSex = e} label='Giới tính' data={[{ id: 'female', text: 'Nữ' }, { id: 'male', text: 'Nam' }]} readOnly={readOnly} />
                 <FormSelect className='col-md-6' ref={e => this.itemCourseType = e} label='Hạng đăng ký' data={ajaxSelectCourseType} readOnly={readOnly} />
-                <FormSelect className='col-md-6' ref={e => this.itemDivision = e} label='Cơ sở đào tạo' data={ajaxSelectDivision} readOnly={readOnly} />
-                <FormSelect className='col-md-6' ref={e => this.itemPlanLecturer = e} label='Cố vấn học tập dự kiến' data={ajaxSelectLecturer} readOnly={readOnly} />
+                <FormSelect className='col-md-6' ref={e => this.itemDivision = e} label='Cơ sở đào tạo' data={ajaxSelectDivision} onChange={this.onChangeDivision} readOnly={readOnly} />
+                <FormSelect className='col-md-6' ref={e => this.itemPlanLecturer = e} label='Cố vấn học tập dự kiến' data={ajaxSelectLecturer(divisionId)} readOnly={readOnly} />
                 <FormTextBox className='col-md-6' ref={e => this.itemPlanCourse = e} label='Khóa dự kiến' readOnly={readOnly} />
                 <FormRichTextBox ref={e => this.itemResidence = e} className='col-md-12' label='Nơi cư trú' readOnly={readOnly} rows='2' />
                 <FormRichTextBox ref={e => this.itemRegularResidence = e} className='col-md-12' label='Nơi đăng ký hộ khẩu thường trú' readOnly={readOnly} rows='2' />

@@ -17,21 +17,19 @@ class AssignModal extends AdminModal {
     }
 
     onSubmit = () => {
-        const changes = {
-            maxStudent: Number(this.itemMaxStudent.value()),
-        };
-        if (changes.maxStudent == '') {
+        const maxStudent = this.itemMaxStudent.value();
+        if (maxStudent == '') {
             T.notify('Vui lòng nhập số lượng học viên tối đa cho một cố vấn!', 'danger');
             this.itemMaxStudent.focus();
         } else {
-            this.props.handleAutoAssignStudent(changes);
+            this.props.handleAutoAssignStudent(Number(maxStudent));
             this.hide();
         }
     }
 
     render = () => {
         return this.renderModal({
-            title: 'Số lượng học viên tối đa',
+            title: 'Số lượng học viên tối đa cho một cố vấn',
             body: <FormTextBox ref={e => this.itemMaxStudent = e} label='Số lượng' type='number' min='0' max='100' onChange={this.onChangeScore} />
         });
     }
@@ -87,7 +85,7 @@ class TeacherModal extends AdminModal {
 }
 
 class AdminTeacherPage extends AdminPage {
-    state = { searchStudentText: '', outsideStudentVisible: true, sortType: 'division', assignedButtonVisible: false }; // sortType = name | division
+    state = { searchStudentText: '', outsideStudentVisible: true, sortType: 'division', assignedButtonVisible: false, teacherGroups: [] }; // sortType = name | division
     students = {};
     itemDivisionSelectAll = {};
     itemDivisionDeSelectAll = {};
@@ -197,31 +195,52 @@ class AdminTeacherPage extends AdminPage {
         });
     }
 
-    // handleAutoAssignStudent = (maxStudent) => {
-    //     const { _id, teacherGroups = [], students = [] } = this.props.course.item;
-    //     const assignedStudents = [];
-    //     (teacherGroups || []).forEach(item => (item.student || []).forEach(student => assignedStudents.push(student._id)));
-    //     const isValidStudent = (student) => !assignedStudents.includes(student._id) && student.division && (!student.division.isOutside || this.state.outsideStudentVisible);
-    //     const autoAssignStudents = students.filter(student => isValidStudent(student));
-    //     let teacherGroupsClone = teacherGroups.map(item =>item), 
-    //         restStudents = []; // những học viên chưa có cố vấn học tập dự kiến
-    //     autoAssignStudents.forEach(student => { // gán cố vấn cho những học viên đã có cố vấn học tập dự kiến
-    //         const _teacherId = student.planLecturer ? student.planLecturer : null;
-    //         if (_teacherId) {
-    //             if (!teacherGroupsClone.includes(_teacherId)) {
-    //                 this.props.updateCourseTeacherGroup(_id, _teacherId, 'add');
-    //                 teacherGroupsClone.push(_teacherId);
-    //             }
-    //             this.props.updateCourseTeacherGroupStudent(_id, _teacherId, [student._id], 'add', () => !this.onSuccess || this.onAssignSuccess());
-    //         } else{
-    //             restStudents.push(student);
-    //         }
-    //     });
-    //     restStudents.forEach(student => { // gán cố vấn cho những học viên chưa có cố vấn học tập dự kiến
-    //         const studentOfTeacher = teacherGroups.forEach(teacherGroup => {
-    //         });
-    //     });
-    // }
+    handleAutoAssignStudent = (maxStudent) => {
+        let { _id, teacherGroups = [], students = [] } = this.props.course.item;
+        const assignedStudents = [];
+        (teacherGroups || []).forEach(item => (item.student || []).forEach(student => assignedStudents.push(student._id)));
+        const isValidStudent = (student) => !assignedStudents.includes(student._id) && student.division && (!student.division.isOutside || this.state.outsideStudentVisible);
+        let autoAssignStudents = students.filter(student => isValidStudent(student)).sort((a, b) => new Date(a.createdDate) - new Date (b.createdDate));
+    
+        let restStudents = autoAssignStudents.map(student => student);// những học viên không có CVHT dự kiến
+        const teacherGroupsPromise =  teacherGroups.map(teacherGroup => {// gán học viên cho những học viên đã có CVHT dự kiến
+            return new Promise(resolve => {
+                const teacherId = teacherGroup && teacherGroup.teacher ? teacherGroup.teacher._id : null;
+                let listStudentOfTeacher = [];
+                autoAssignStudents.forEach(student => {
+                    if (student && teacherId && student.planLecturer == teacherId) {// lọc danh sách các học viên thuộc cố vấn
+                        listStudentOfTeacher.push(student._id); 
+                        restStudents = restStudents.filter(x => x != student);
+                    }
+                });
+                const numberAddStudentIds = maxStudent - Number(teacherGroup.student.length); // số lượng chỗ trống còn trong mảng
+                if (numberAddStudentIds > 0){
+                    if (listStudentOfTeacher.length > 0) {
+                        this.props.updateCourseTeacherGroupStudent(_id, teacherId, listStudentOfTeacher.splice(0, numberAddStudentIds), 'add', (data) => {
+                            this.setState({ teacherGroups: data.teacherGroups });
+                            resolve();
+                        });
+                    } else {
+                        resolve();
+                    }
+                } else {
+                     resolve();
+                }
+                this.setState({ teacherGroups });
+            });
+        });
+        Promise.all(teacherGroupsPromise).then(() => {
+            let restStudentIds = restStudents.map(student => student._id);
+            
+            (this.state.teacherGroups || []).forEach(teacherGroup => {// gán học viên cho những học viên chưa có CVHT dự kiến
+            const teacherId = teacherGroup && teacherGroup.teacher ? teacherGroup.teacher._id  : null;
+            const numberStudentIds = maxStudent - Number(teacherGroup.student && teacherGroup.student.length);
+            if (restStudentIds.length < 1) return;
+            if (numberStudentIds > 0)
+                this.props.updateCourseTeacherGroupStudent(_id, teacherId, restStudentIds.splice(0, numberStudentIds), 'add');
+            });
+        });
+    }
 
     render() {
         const permission = this.getUserPermission('course'),
@@ -374,7 +393,7 @@ class AdminTeacherPage extends AdminPage {
                                     </ol> : <label style={{ color: 'black' }}>Chưa có cố vấn học tập!</label>}
                             </div>
                         </div>
-                        <CirclePageButton type='custom' customClassName='btn-success' style={{marginRight: '55px'}} customIcon='fa fa-arrow-right' onClick={e => e.preventDefault() || this.autoAssignmodal.show()} />
+                        <CirclePageButton type='custom' customClassName='btn-primary' style={{marginRight: '55px'}} customIcon='fa fa-arrow-right' onClick={e => e.preventDefault() || this.autoAssignmodal.show()} />
                         {!isOutsideCourseAdmin ? <CirclePageButton type='export' onClick={() => exportTeacherAndStudentToExcel(_courseId)} /> : null}
                         <AssignModal ref={e => this.autoAssignmodal = e} handleAutoAssignStudent={this.handleAutoAssignStudent} />
                         <AdminStudentModal ref={e => this.studentModal = e} updateStudent={this.updateStudent} />
