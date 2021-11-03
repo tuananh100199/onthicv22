@@ -317,7 +317,7 @@ module.exports = (app) => {
                 }
             });
         });
-        Promise.all(promiseList).then(() => getCourseData(_courseId, req.session.user, (error, item) => {
+        promiseList && Promise.all(promiseList).then(() => getCourseData(_courseId, req.session.user, (error, item) => {
             error = error || (item ? null : 'Lỗi khi cập nhật khóa học!');
             item = item || null;
             res.send({ error, item });

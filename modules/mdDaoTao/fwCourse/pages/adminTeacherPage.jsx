@@ -13,7 +13,7 @@ class AssignModal extends AdminModal {
     }
 
     onShow = () => {
-        this.itemMaxStudent.value(0);
+        this.itemMaxStudent.value('');
     }
 
     onSubmit = () => {
@@ -30,7 +30,7 @@ class AssignModal extends AdminModal {
     render = () => {
         return this.renderModal({
             title: 'Số lượng học viên tối đa cho một cố vấn',
-            body: <FormTextBox ref={e => this.itemMaxStudent = e} label='Số lượng' type='number' min='0' max='100' onChange={this.onChangeScore} />
+            body: <FormTextBox ref={e => this.itemMaxStudent = e} label='Số lượng' type='number' min='0' max='200' onChange={this.onChangeScore} />
         });
     }
 }
@@ -85,7 +85,7 @@ class TeacherModal extends AdminModal {
 }
 
 class AdminTeacherPage extends AdminPage {
-    state = { searchStudentText: '', outsideStudentVisible: true, sortType: 'division', assignedButtonVisible: false, teacherGroups: [] }; // sortType = name | division
+    state = { searchStudentText: '', outsideStudentVisible: true, sortType: 'division', assignedButtonVisible: false }; // sortType = name | division
     students = {};
     itemDivisionSelectAll = {};
     itemDivisionDeSelectAll = {};
@@ -371,7 +371,7 @@ class AdminTeacherPage extends AdminPage {
                                     </ol> : <label style={{ color: 'black' }}>Chưa có cố vấn học tập!</label>}
                             </div>
                         </div>
-                        <CirclePageButton type='custom' customClassName='btn-primary' style={{marginRight: '55px'}} customIcon='fa fa-arrow-right' onClick={e => e.preventDefault() || this.autoAssignmodal.show()} />
+                        {!isOutsideCourseAdmin ? <CirclePageButton type='custom' customClassName='btn-primary' style={{marginRight: '55px'}} customIcon='fa fa-arrow-right' onClick={e => e.preventDefault() || this.autoAssignmodal.show()} /> : null}
                         {!isOutsideCourseAdmin ? <CirclePageButton type='export' onClick={() => exportTeacherAndStudentToExcel(_courseId)} /> : null}
                         <AssignModal ref={e => this.autoAssignmodal = e} handleAutoAssignStudent={this.handleAutoAssignStudent} />
                         <AdminStudentModal ref={e => this.studentModal = e} updateStudent={this.updateStudent} />
