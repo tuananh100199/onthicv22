@@ -202,25 +202,22 @@ class AdminTeacherPage extends AdminPage {
         const isValidStudent = (student) => !assignedStudents.includes(student._id) && student.division && (!student.division.isOutside || this.state.outsideStudentVisible);
         let autoAssignStudents = students.filter(student => isValidStudent(student)).sort((a, b) => new Date(a.createdDate) - new Date (b.createdDate));
     
-        let restStudents = autoAssignStudents.map(student => student);// những học viên không có CVHT dự kiến
-        const teacherGroupsUpdate = teacherGroups.map(teacherGroup => {// gán học viên cho những học viên đã có CVHT dự kiến
+        const teacherGroupsUpdate = teacherGroups.map(teacherGroup => {
             const _teacherId = teacherGroup && teacherGroup.teacher ? teacherGroup.teacher._id : null;
             let listStudentOfTeacher = [];
             autoAssignStudents.forEach(student => {
-                if (student && _teacherId && student.planLecturer == _teacherId) {// lọc danh sách các học viên thuộc cố vấn
+                if (student && _teacherId && student.planLecturer == _teacherId) {
                     listStudentOfTeacher.push(student._id); 
-                    restStudents = restStudents.filter(x => x != student);
                 }
             });
-            const numberAddStudentIds = maxStudent - Number(teacherGroup.student.length); // số lượng chỗ trống còn trong mảng
+            const numberAddStudentIds = maxStudent - Number(teacherGroup.student.length); 
             const _studentIds = listStudentOfTeacher.splice(0, numberAddStudentIds);
             if (numberAddStudentIds > 0 && _studentIds.length > 0 ){
                 return { _teacherId, _studentIds };
             }   
         });
 
-        this.props.updateAutoCourseTeacherGroupStudent(_id, teacherGroupsUpdate.filter(item => item), 'add');
-        T.notify('Gán tự động học viên thành công', 'success');
+        this.props.updateAutoCourseTeacherGroupStudent(_id, teacherGroupsUpdate.filter(item => item), 'add', () => T.notify('Gán tự động học viên thành công', 'success'));
     }
 
     render() {
