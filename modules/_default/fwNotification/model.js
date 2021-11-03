@@ -6,6 +6,7 @@ module.exports = app => {
 
         title: String,
         content: String,
+        abstract: String,
         createdDate: { type: Date, default: Date.now },
         sentDate: { type: Date, default: null },
     });

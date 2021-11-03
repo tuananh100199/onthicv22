@@ -278,14 +278,29 @@ export class FormEditor extends React.Component {
 
     focus = () => this.input.focus();
 
+    // insert = (e) => {
+    //     let cursorPosition = 5;
+    //     let textBeforeCursorPosition = this.input.text().substring(0, 5);
+    //     let textAfterCursorPosition = this.input.text().substring(cursorPosition, this.input.text().length);
+    //     this.setState({
+    //         value: textBeforeCursorPosition + ' ' + e.target.innerHTML + ' ' + textAfterCursorPosition
+    //     });
+    // }
+
     render() {
-        let { height = '400px', label = '', className = '', readOnly = false, uploadUrl = '', smallText = '', required = false } = this.props;
+        let { height = '400px', label = '', className = '', readOnly = false, uploadUrl = '', smallText = '', listParams = [], required = false } = this.props;
         className = 'form-group' + (className ? ' ' + className : '');
         return (
             <div className={className}>
                 <label>{label}{!readOnly && required ? <span style={{ color: 'red' }}> *</span> : ''}</label>{readOnly && this.state.value ? <br /> : ''}
                 <p style={{ width: '100%', fontWeight: 'bold', display: readOnly ? 'block' : 'none' }} dangerouslySetInnerHTML={{ __html: this.state.value }} />
                 {!readOnly && smallText ? <small className='form-text text-muted'>{smallText}</small> : null}
+                {!readOnly && listParams.length ?
+                    <p className='form-text  mb-1 '>
+                        {listParams.map((param, index) => (<small className='text-muted ml-1' style={{ cursor: 'pointer' }} key={index}
+                        // onClick={(e) => this.insert(e)}
+                        >{param}</small>))}
+                    </p> : null}
                 <div style={{ display: readOnly ? 'none' : 'block' }}>
                     <Editor ref={e => this.input = e} height={height} placeholder={label} uploadUrl={uploadUrl} />
                 </div>

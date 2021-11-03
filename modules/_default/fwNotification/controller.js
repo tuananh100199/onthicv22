@@ -45,11 +45,11 @@ module.exports = (app) => {
             permissions = user && user.permissions && user.permissions.length ? user.permissions : [];
         if (user.isCourseAdmin || permissions.includes('notification:write')) {
             const { _id, changes } = req.body;
-            if (changes && changes.subjects && changes.subjects === 'empty') changes.subjects = [];
             app.model.notification.update(_id, changes, (error, item) => {
                 if (!error && item && item.sentDate) {
                     //TODO
                 }
+                console.log(error);
                 res.send({ error, item });
             });
         } else {
@@ -72,6 +72,9 @@ module.exports = (app) => {
             app.uploadImage('notification', app.model.notification.get, _id, files.NotificationImage[0].path, done);
         }
     };
+    app.uploadHooks.add('uploadNotificationCkEditor', (req, fields, files, params, done) =>
+        app.permission.has(req, () => app.uploadCkEditorImage('notification', fields, files, params, done), done, 'notification:write'));
+
     app.uploadHooks.add('uploadNotification', (req, fields, files, params, done) =>
         app.permission.has(req, () => uploadNotification(fields, files, done), done, 'notification:write'));
 

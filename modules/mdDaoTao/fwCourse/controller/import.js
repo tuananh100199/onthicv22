@@ -141,4 +141,7 @@ module.exports = (app) => {
             });
         }
     });
+
+    app.uploadHooks.add('uploadCourseCkEditor', (req, fields, files, params, done) =>
+        app.permission.has(req, () => app.uploadCkEditorImage('course', fields, files, params, done), done, 'course:write'));
 };

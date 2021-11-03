@@ -1,8 +1,8 @@
 module.exports = app => {
     const schema = app.db.Schema({
-        name: String,
         title: String,
         content: String,
+        type: String,
     });
     const model = app.db.model('NotificationTemplate', schema);
 

@@ -4,9 +4,12 @@ import { exportExamStudent, getStudentPage, updateStudent } from './redux';
 import { createNotification } from 'modules/_default/fwNotification/redux';
 import { ajaxSelectCourseType, getCourseTypeAll } from 'modules/mdDaoTao/fwCourseType/redux';
 import { getNotificationTemplateAll, getNotificationTemplate, ajaxSelectNotificationTemplate } from 'modules/mdTruyenThong/fwNotificationTemplate/redux';
-import { AdminPage, FormRichTextBox, FormSelect, FormDatePicker, FormTextBox, renderTable, TableCell, AdminModal, CirclePageButton } from 'view/component/AdminPage';
+import { AdminPage, FormRichTextBox, FormSelect, FormDatePicker, FormTextBox, FormEditor, renderTable, TableCell, AdminModal, CirclePageButton } from 'view/component/AdminPage';
 import Pagination from 'view/component/Pagination';
 
+const defaultTitleSatHach = 'Thông báo thời gian thi sát hạch',
+    defaultAbstractSatHach = 'Thông báo thời gian thi sát hạch khóa {khoa}',
+    defaultContentSatHach = '<p>Xin chào {ho_ten}({cmnd}),</p>\n<p>Thời gian thi sát hạch khóa {khoa} của bạn là: {ngay_thi_sat_hach}</p>';
 class StudentModal extends AdminModal {
     state = {};
     componentDidMount() {
@@ -40,26 +43,32 @@ class StudentModal extends AdminModal {
 class NotificationModal extends AdminModal {
     state = {};
     componentDidMount() {
-        $(document).ready(() => this.onShown(() => this.itemName.focus()));
+        $(document).ready(() => this.onShown(() => this.itemTitle.focus()));
     }
 
     onShow = (item) => {
-        const { _id, title, name, content } = this.props.data || { _id: '', title: '', name: '', content: '' };
-        let newContent = content.replaceAll('{ho_ten}', item.lastname + ' ' + item.firstname).replaceAll('{ngay_thi_sat_hach}', `${T.dateToText(item.ngayDuKienThiSatHach, 'dd/mm/yyyy')}`);
-        console.log(item);
+        const { _id, title, content, abstract } = this.props.data || { _id: '', title: '', content: '', abstract: '' };
+        let newAbstract = abstract.replaceAll('{ho_ten}', item.lastname + ' ' + item.firstname)
+            .replaceAll('{ngay_thi_tot_nghiep}', `${T.dateToText(item.ngayDuKienThiTotNghiep, 'dd/mm/yyyy')}`)
+            .replaceAll('{khoa}', item.course && item.course.name)
+            .replaceAll('{cmnd}', item.identityCard);
+        let newContent = content.replaceAll('{ho_ten}', item.lastname + ' ' + item.firstname)
+            .replaceAll('{ngay_thi_sat_hach}', `${T.dateToText(item.ngayDuKienThiSatHach, 'dd/mm/yyyy')}`)
+            .replaceAll('{khoa}', item.course && item.course.name)
+            .replaceAll('{cmnd}', item.identityCard);
         this.itemTitle.value(title);
-        this.itemName.value(name);
-        this.itemContent.value(newContent);
+        this.itemAbstract.value(newAbstract);
+        this.itemContent.html(newContent);
         this.setState({ _id, item });
     }
 
     onSend = () => {
         const user = this.state.item && this.state.item.user;
-        console.log(user);
         const data = {
             title: this.itemTitle.value(),
-            content: this.itemContent.value(),
-            type: '0',
+            content: this.itemContent.html(),
+            abstract: this.itemAbstract.value(),
+            type: '3',
             user: user._id,
             sentDate: new Date(),
         };
@@ -73,11 +82,11 @@ class NotificationModal extends AdminModal {
 
     render = () => this.renderModal({
         title: 'Thông báo',
+        size: 'large',
         body: <>
-            {/* <FormSelect ref={e => this.itemType = e} data={this.state.dataType} placeholder='Loại thông báo' style={{ width: '200px' }} /> */}
-            <FormTextBox ref={e => this.itemName = e} label='Tên thông báo' readOnly={this.props.readOnly} />
             <FormTextBox ref={e => this.itemTitle = e} label='Chủ đề' readOnly={this.props.readOnly} />
-            <FormRichTextBox ref={e => this.itemContent = e} label='Nội dung' readOnly={this.props.readOnly} />
+            <FormRichTextBox ref={e => this.itemAbstract = e} label='Mô tả ngắn gọn' readOnly={this.props.readOnly} />
+            <FormEditor ref={e => this.itemContent = e} uploadUrl='/user/upload?category=notification' label='Nội dung' readOnly={this.props.readOnly} />
         </>,
         buttons:
             <a className='btn btn-success' href='#' onClick={e => this.onSend(e)} style={{ color: 'white' }}>
@@ -96,10 +105,30 @@ class FailStudentPage extends AdminPage {
                 const courseTypes = data.map(item => ({ id: item._id, text: item.title }));
                 this.courseType.value(courseTypes[0]);
             });
-            // this.props.getNotificationTemplateAll({}, data => {
-            //     const notificationTemplate = data.length && data.map(item => ({ id: item._id, text: item.name }));
-            //     this.notificationTemplate.value(notificationTemplate.length ? notificationTemplate[1] : null);
-            // });
+            this.props.getNotificationTemplateAll({}, data => {
+                if (data && data.length) {
+                    const index = data.findIndex(template => template.type == '3');
+                    if (index != -1) {
+                        this.setState({ data: data[index] });
+                    } else {
+                        this.setState({
+                            data: {
+                                title: defaultTitleSatHach,
+                                abstract: defaultAbstractSatHach,
+                                content: defaultContentSatHach
+                            }
+                        });
+                    }
+                } else {
+                    this.setState({
+                        data: {
+                            title: defaultTitleSatHach,
+                            abstract: defaultAbstractSatHach,
+                            content: defaultContentSatHach
+                        }
+                    });
+                }
+            });
             T.onSearch = (searchText) => this.onSearch({ searchText });// search attach coursetype ?
         });
     }
@@ -171,11 +200,6 @@ class FailStudentPage extends AdminPage {
                             </div>
                             <FormSelect ref={e => this.courseType = e} data={ajaxSelectCourseType} placeholder='Loại khóa học'
                                 onChange={data => this.onChangeCourseType(data.id)} style={{ margin: 0, width: '200px' }} />
-                            <div className='col-auto'>
-                                <label className='col-form-label'>Template thông báo: </label>
-                            </div>
-                            <FormSelect ref={e => this.notificationTemplate = e} data={ajaxSelectNotificationTemplate} placeholder='Template thông báo'
-                                onChange={data => this.onChangeNotificationTemplate(data.id)} />
                         </div>
                         {table}
                     </div>
@@ -183,7 +207,7 @@ class FailStudentPage extends AdminPage {
                 <CirclePageButton type='import' style={{ right: 70 }} onClick={() => T.alert('todo')} />
                 <CirclePageButton type='export' onClick={() => exportExamStudent(this.state.courseId, 'HVChuaDatSatHach')} />
                 <StudentModal readOnly={!permission.write} ref={e => this.modal = e} update={this.props.updateStudent} />
-                <NotificationModal readOnly={!permission.write} ref={e => this.notiModal = e} create={this.props.createNotification} data={this.state.dataNotification} />
+                <NotificationModal readOnly={!permission.write} ref={e => this.notiModal = e} create={this.props.createNotification} data={this.state.data} />
                 <Pagination pageCondition={pageCondition} pageNumber={pageNumber} pageSize={pageSize} pageTotal={pageTotal} totalItem={totalItem} getPage={(pageNumber, pageSize) => this.onSearch({ pageNumber, pageSize })} />
             </>,
         });

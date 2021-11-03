@@ -32,7 +32,6 @@ export function getNotificationTemplateAll(condition, done) {
     return dispatch => {
         const url = '/api/notification-template/all';
         T.get(url, { condition }, data => {
-            console.log(data);
             if (data.error) {
                 T.notify('Lấy thông báo bị lỗi!', 'danger');
                 console.error('GET: ' + url + '.', data.error);
@@ -67,6 +66,7 @@ export function createNotificationTemplate(data, done) {
                 T.notify('Tạo thông báo bị lỗi!', 'danger');
                 console.error('POST: ' + url + '.', data.error);
             } else {
+                T.notify('Cập nhật template thông báo thành công!', 'success');
                 dispatch(getNotificationTemplateAll());
                 done && done(data);
             }
@@ -75,6 +75,7 @@ export function createNotificationTemplate(data, done) {
 }
 
 export function updateNotificationTemplate(_id, changes, done) {
+    console.log(_id, changes);
     return dispatch => {
         const url = '/api/notification-template';
         T.put(url, { _id, changes }, data => {

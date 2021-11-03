@@ -12,6 +12,6 @@ export default {
         {
             path: '/user/notification',
             component: Loadable({ loading: Loading, loader: () => import('./adminPage') })
-        }
+        },
     ],
 };
