@@ -13,7 +13,7 @@ class AssignModal extends AdminModal {
     }
 
     onShow = () => {
-        this.itemMaxStudent.value('');
+        this.itemMaxStudent.value(30);
     }
 
     onSubmit = () => {
