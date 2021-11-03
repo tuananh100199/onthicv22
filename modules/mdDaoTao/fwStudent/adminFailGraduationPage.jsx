@@ -83,6 +83,7 @@ class NotificationModal extends AdminModal {
     render = () => this.renderModal({
         title: 'Thông báo',
         size: 'large',
+        dataBackdrop: 'static',
         body: <>
             <FormTextBox ref={e => this.itemTitle = e} label='Chủ đề' readOnly={this.props.readOnly} />
             <FormRichTextBox ref={e => this.itemAbstract = e} label='Mô tả ngắn gọn' readOnly={this.props.readOnly} />

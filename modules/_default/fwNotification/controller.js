@@ -49,7 +49,6 @@ module.exports = (app) => {
                 if (!error && item && item.sentDate) {
                     //TODO
                 }
-                console.log(error);
                 res.send({ error, item });
             });
         } else {

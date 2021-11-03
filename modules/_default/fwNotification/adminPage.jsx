@@ -62,8 +62,13 @@ class NotificationModal extends AdminModal {
             this.content.focus();
         } else if (!data.type) {
             T.notify('Bạn vui lòng chọn loại thông báo!', 'danger');
+            this.type.focus();
         } else if (data.type == 1 && !data.course) {
             T.notify('Bạn vui lòng chọn khoá học!', 'danger');
+            this.course.focus();
+        } else if (data.type != 1 && !data.user) {
+            T.notify('Bạn vui lòng chọn người dùng nhận thông báo!', 'danger');
+            this.user.focus();
         } else if (_id) {
             this.props.update(_id, data, (data) => data.item && this.hide());
         } else {
@@ -83,6 +88,7 @@ class NotificationModal extends AdminModal {
         return this.renderModal({
             title: this.state.title ? this.state.title : 'Thông báo mới',
             size: 'large',
+            dataBackdrop: !readOnly ? 'static' : 'true',
             body: <>
                 {_id && createdDate && (!readOnly ?
                     <p>Thời gian: {new Date(createdDate).getText()}</p> :

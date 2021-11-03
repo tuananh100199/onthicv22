@@ -2,7 +2,7 @@ import T from 'view/js/common';
 
 // Reducer ------------------------------------------------------------------------------------------------------------
 const NotificationGetPage = 'NotificationGetPage';
-const NotificationGetItem = 'NotificationGetPage';
+const NotificationGetItem = 'NotificationGetItem';
 const NotificationUpdate = 'NotificationUpdate';
 
 export default function notificationReducer(state = null, data) {
@@ -59,13 +59,13 @@ export function getNotification(_id, done) {
         const url = '/api/notification';
         T.get(url, { _id }, data => {
             if (data.error) {
-                T.notify('Lấy loại thông báo bị lỗi1!', 'danger');
+                T.notify('Lấy thông báo bị lỗi!', 'danger');
                 console.error('GET: ' + url + '.', data.error);
             } else {
                 done && done(data);
                 dispatch({ type: NotificationGetItem, item: data.item });
             }
-        }, error => console.error(error) || T.notify('Lấy loại khóa học bị lỗi!', 'danger'));
+        }, error => console.error(error) || T.notify('Lấy thông báo bị lỗi!', 'danger'));
     };
 }
 

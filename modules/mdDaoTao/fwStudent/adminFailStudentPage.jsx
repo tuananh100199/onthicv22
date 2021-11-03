@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { exportExamStudent, getStudentPage, updateStudent } from './redux';
 import { createNotification } from 'modules/_default/fwNotification/redux';
 import { ajaxSelectCourseType, getCourseTypeAll } from 'modules/mdDaoTao/fwCourseType/redux';
-import { getNotificationTemplateAll, getNotificationTemplate, ajaxSelectNotificationTemplate } from 'modules/mdTruyenThong/fwNotificationTemplate/redux';
+import { getNotificationTemplateAll, getNotificationTemplate } from 'modules/mdTruyenThong/fwNotificationTemplate/redux';
 import { AdminPage, FormRichTextBox, FormSelect, FormDatePicker, FormTextBox, FormEditor, renderTable, TableCell, AdminModal, CirclePageButton } from 'view/component/AdminPage';
 import Pagination from 'view/component/Pagination';
 
@@ -83,6 +83,7 @@ class NotificationModal extends AdminModal {
     render = () => this.renderModal({
         title: 'Thông báo',
         size: 'large',
+        dataBackdrop: 'static',
         body: <>
             <FormTextBox ref={e => this.itemTitle = e} label='Chủ đề' readOnly={this.props.readOnly} />
             <FormRichTextBox ref={e => this.itemAbstract = e} label='Mô tả ngắn gọn' readOnly={this.props.readOnly} />
@@ -215,5 +216,5 @@ class FailStudentPage extends AdminPage {
 }
 
 const mapStateToProps = state => ({ system: state.system, student: state.trainning.student, notificationTemplate: state.communication.notificationTemplate });
-const mapActionsToProps = { getStudentPage, updateStudent, createNotification, getCourseTypeAll, getNotificationTemplateAll, getNotificationTemplate, ajaxSelectNotificationTemplate };
+const mapActionsToProps = { getStudentPage, updateStudent, createNotification, getCourseTypeAll, getNotificationTemplateAll, getNotificationTemplate };
 export default connect(mapStateToProps, mapActionsToProps)(FailStudentPage);

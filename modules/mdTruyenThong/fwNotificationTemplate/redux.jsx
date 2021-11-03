@@ -107,12 +107,3 @@ export function deleteNotificationTemplate(_id) {
     };
 }
 
-export const ajaxSelectNotificationTemplate = {
-    ajax: true,
-    url: '/api/notification-template/all',
-    data: {},
-    processResults: response => ({
-        results: response && response.items ? response.items.map(item => ({ id: item._id, text: item.name })) : []
-    }),
-    fetchOne: (_id, done) => getNotificationTemplate(_id, ({ item }) => done && done({ id: item._id, text: item.name }))
-};
