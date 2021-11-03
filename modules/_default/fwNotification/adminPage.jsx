@@ -8,7 +8,7 @@ import Pagination from 'view/component/Pagination';
 import './style.scss';
 
 const notificationTypes = [
-    { id: 0, text: 'Cá nhân', icon: 'fa fa-user' },
+    { id: 0, text: 'Cá nhân', icon: 'fa fa-user-circle-o' },
     { id: 1, text: 'Chung', icon: 'fa fa-users' },
     { id: 2, text: 'Thi tốt nghiệp', icon: 'fa fa-graduation-cap' },
     { id: 3, text: 'Thi sát hạch', icon: 'fa fa-id-card' },
@@ -97,7 +97,7 @@ class NotificationModal extends AdminModal {
                 <FormTextBox className={readOnly ? 'd-none' : ''} ref={e => this.title = e} label='Tiêu đề' readOnly={readOnly} />
                 <div className='row'>
                     <FormSelect className='col-md-6' ref={e => this.type = e} label='Loại thông báo' data={notificationTypes} readOnly={readOnly} onChange={data => this.onChangeType(data.id)} />
-                    <FormSelect className={'col-md-6 ' + (isCourseShow ? 'd-none' : '')} ref={e => this.user = e} label='Học viên' data={ajaxSelectUser} readOnly={readOnly} />
+                    <FormSelect className={'col-md-6 ' + ((isCourseShow || readOnly) ? 'd-none' : '')} ref={e => this.user = e} label='Học viên' data={ajaxSelectUser} readOnly={readOnly} />
                     <FormSelect className={'col-md-6 ' + (isCourseShow ? '' : 'd-none')} ref={e => this.course = e} label='Khoá học' data={ajaxSelectCourse} readOnly={readOnly} />
                 </div>
                 <FormRichTextBox ref={e => this.abstract = e} label='Mô tả ngắn gọn' readOnly={readOnly} />
