@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { getCourse, updateStudentInfoInCourse, updateCourseTeacherGroup, updateCourseTeacherGroupStudent, exportTeacherAndStudentToExcel } from '../redux';
+import { getCourse, updateStudentInfoInCourse, updateCourseTeacherGroup, updateCourseTeacherGroupStudent, updateAutoCourseTeacherGroupStudent, exportTeacherAndStudentToExcel } from '../redux';
 import { ajaxSelectUserType } from 'modules/_default/fwUser/redux';
 import { updateStudent } from 'modules/mdDaoTao/fwStudent/redux';
 import { Link } from 'react-router-dom';
@@ -203,43 +203,24 @@ class AdminTeacherPage extends AdminPage {
         let autoAssignStudents = students.filter(student => isValidStudent(student)).sort((a, b) => new Date(a.createdDate) - new Date (b.createdDate));
     
         let restStudents = autoAssignStudents.map(student => student);// những học viên không có CVHT dự kiến
-        const teacherGroupsPromise =  teacherGroups.map(teacherGroup => {// gán học viên cho những học viên đã có CVHT dự kiến
-            return new Promise(resolve => {
-                const teacherId = teacherGroup && teacherGroup.teacher ? teacherGroup.teacher._id : null;
-                let listStudentOfTeacher = [];
-                autoAssignStudents.forEach(student => {
-                    if (student && teacherId && student.planLecturer == teacherId) {// lọc danh sách các học viên thuộc cố vấn
-                        listStudentOfTeacher.push(student._id); 
-                        restStudents = restStudents.filter(x => x != student);
-                    }
-                });
-                const numberAddStudentIds = maxStudent - Number(teacherGroup.student.length); // số lượng chỗ trống còn trong mảng
-                if (numberAddStudentIds > 0){
-                    if (listStudentOfTeacher.length > 0) {
-                        this.props.updateCourseTeacherGroupStudent(_id, teacherId, listStudentOfTeacher.splice(0, numberAddStudentIds), 'add', (data) => {
-                            this.setState({ teacherGroups: data.teacherGroups });
-                            resolve();
-                        });
-                    } else {
-                        resolve();
-                    }
-                } else {
-                     resolve();
+        const teacherGroupsUpdate = teacherGroups.map(teacherGroup => {// gán học viên cho những học viên đã có CVHT dự kiến
+            const _teacherId = teacherGroup && teacherGroup.teacher ? teacherGroup.teacher._id : null;
+            let listStudentOfTeacher = [];
+            autoAssignStudents.forEach(student => {
+                if (student && _teacherId && student.planLecturer == _teacherId) {// lọc danh sách các học viên thuộc cố vấn
+                    listStudentOfTeacher.push(student._id); 
+                    restStudents = restStudents.filter(x => x != student);
                 }
-                this.setState({ teacherGroups });
             });
+            const numberAddStudentIds = maxStudent - Number(teacherGroup.student.length); // số lượng chỗ trống còn trong mảng
+            const _studentIds = listStudentOfTeacher.splice(0, numberAddStudentIds);
+            if (numberAddStudentIds > 0 && _studentIds.length > 0 ){
+                return { _teacherId, _studentIds };
+            }   
         });
-        Promise.all(teacherGroupsPromise).then(() => {
-            let restStudentIds = restStudents.map(student => student._id);
-            
-            (this.state.teacherGroups || []).forEach(teacherGroup => {// gán học viên cho những học viên chưa có CVHT dự kiến
-            const teacherId = teacherGroup && teacherGroup.teacher ? teacherGroup.teacher._id  : null;
-            const numberStudentIds = maxStudent - Number(teacherGroup.student && teacherGroup.student.length);
-            if (restStudentIds.length < 1) return;
-            if (numberStudentIds > 0)
-                this.props.updateCourseTeacherGroupStudent(_id, teacherId, restStudentIds.splice(0, numberStudentIds), 'add');
-            });
-        });
+
+        this.props.updateAutoCourseTeacherGroupStudent(_id, teacherGroupsUpdate.filter(item => item), 'add');
+        T.notify('Gán tự động học viên thành công', 'success');
     }
 
     render() {
@@ -405,5 +386,5 @@ class AdminTeacherPage extends AdminPage {
 }
 
 const mapStateToProps = state => ({ system: state.system, student: state.trainning.student, course: state.trainning.course });
-const mapActionsToProps = { getCourse, updateStudentInfoInCourse, updateCourseTeacherGroup, updateCourseTeacherGroupStudent, updateStudent, exportTeacherAndStudentToExcel };
+const mapActionsToProps = { getCourse, updateStudentInfoInCourse, updateCourseTeacherGroup, updateCourseTeacherGroupStudent, updateAutoCourseTeacherGroupStudent, updateStudent, exportTeacherAndStudentToExcel };
 export default connect(mapStateToProps, mapActionsToProps)(AdminTeacherPage);
