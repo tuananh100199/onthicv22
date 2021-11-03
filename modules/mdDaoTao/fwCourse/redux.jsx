@@ -221,6 +221,21 @@ export function updateCourseStudents(_courseId, _studentIds, type, done) {
     };
 }
 
+export function autoAssignStudent(_courseId, done) {
+    return dispatch => {
+        const url = '/api/course/student/assign-auto';
+        T.put(url, { _courseId }, data => {
+            if (data.error) {
+                T.notify(data.error, 'danger');
+                console.error('PUT: ' + url + '.', data.error);
+            } else {
+                done && done(data.item);
+                dispatch({ type: CourseGetItem, item: data.item });
+            }
+        }, error => console.error('PUT: ' + url + '.', error));
+    };
+}
+
 // Course teacherGroups -----------------------------------------------------------------------------------------------
 export function updateCourseTeacherGroup(_courseId, _teacherId, type, done) {
     return dispatch => {

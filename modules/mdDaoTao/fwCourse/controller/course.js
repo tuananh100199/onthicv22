@@ -230,6 +230,41 @@ module.exports = (app) => {
         })).catch(error => console.error(error) || res.send({ error }));
     });
 
+    app.put('/api/course/student/assign-auto', app.permission.check('course:write'), (req, res) => {
+        const { _courseId } = req.body,
+            sessionUser = req.session.user;
+        new Promise((resolve, reject) => {
+            app.model.course.get(_courseId, (error, course) => {
+                if (error || course == null) {
+                    reject('Khóa học không hợp lệ!');
+                } else if (sessionUser.permissions.includes('course:write') || (sessionUser.isCourseAdmin && course.admins.find(admin => admin._id == sessionUser._id))) { //object == string ?
+                    const condition = {
+                        course: course._id,
+                        courseType: course.courseType._id,
+                    };
+                    app.model.student.getAllPreStudent(course.maxStudent, condition, (error, listPreStudent) => {
+                        if (error) {
+                            reject(error);
+                        } else if (!listPreStudent || listPreStudent.length == 0) {
+                            reject('Chưa có ứng viên đăng ký loại của khóa học này');
+                        } else {
+                            const solve = (index = 0) => index < listPreStudent.length ?
+                                app.model.student.update(listPreStudent[index] && listPreStudent[index]._id, { course: _courseId }, error => error ? reject('Lỗi khi cập nhật khóa học!') : solve(index + 1)) :
+                                resolve();
+                            solve();
+                        }
+                    });
+                } else {
+                    reject('Khóa học không được phép truy cập!');
+                }
+            });
+        }).then(() => getCourseData(_courseId, sessionUser, (error, item) => {
+            error = error || (item ? null : 'Lỗi khi cập nhật khóa học!');
+            item = item || null;
+            res.send({ error, item });
+        })).catch(error => console.error(error) || res.send({ error }));
+    });
+
     //Representer API
     app.put('/api/course/representer-group/representer', app.permission.check('course:write'), (req, res) => {
         const { _courseId, _representerId, type } = req.body;

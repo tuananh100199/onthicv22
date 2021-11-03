@@ -94,6 +94,26 @@ module.exports = (app) => {
                 .sort({ lastname: 1, firstname: 1 }).exec(done);
         },
 
+        getAllPreStudent: (maxStudent, condition, done) => {
+            if (typeof condition == 'function') {
+                done = condition;
+                condition = {};
+            }
+            // Query Mongoose with priority query conditions: courseId => courseType
+            model.find(condition).limit(maxStudent).exec((error, listStudent) => {
+                if (error) {
+                    done(error);
+                } else {
+                    if (condition.courseType && listStudent && listStudent.length < maxStudent) {
+                        //getAllPre
+                        model.find({ courseType: condition.courseType, course: null }).limit(maxStudent - listStudent.length).sort({ createdDate: 1 }).exec(done);
+                    } else {
+                        done('Số lượng học viên của khóa học đã đạt tối đa');
+                    }
+                }
+            });
+        },
+
         getPage: (pageNumber, pageSize, condition, sort, done) => model.countDocuments(condition, (error, totalItem) => {
             if (done == undefined) {
                 done = sort;
@@ -141,8 +161,8 @@ module.exports = (app) => {
         mapToId: (condition, done) => {
             model.aggregate([{ $project: { 'name': { $concat: ['$lastname', ' ', '$firstname'] } } },
             { $match: { 'name': { $regex: condition.fullname, $options: 'i' } } }]).exec((error, list) => {
-                if (error || list.length==0) {
-                    done(error,list);
+                if (error || list.length == 0) {
+                    done(error, list);
                 } else {
                     const _ids = list.map(item => item._id);
                     delete condition.fullname;

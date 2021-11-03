@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { getCourse, updateCourseStudents, updateStudentInfoInCourse, exportStudentInfoToExcel } from '../redux';
+import { getCourse, updateCourseStudents, updateStudentInfoInCourse, exportStudentInfoToExcel,autoAssignStudent } from '../redux';
 import { getPreStudentPage, updateStudent } from 'modules/mdDaoTao/fwStudent/redux';
 import { Link } from 'react-router-dom';
 import Pagination from 'view/component/Pagination';
@@ -108,6 +108,11 @@ class AdminStudentPage extends AdminPage {
         this.props.updateStudent(studentId, changes, (data) => {
             data && this.props.updateStudentInfoInCourse(studentId, data);
         });
+    }
+
+    onAutoAssignStudent = (e,_courseId) => {
+        e.preventDefault();
+        this.props.autoAssignStudent(_courseId,() => this.onSearch({}));
     }
 
     render() {
@@ -251,6 +256,7 @@ class AdminStudentPage extends AdminPage {
                                     </ul> : 'Danh sách trống!'}
                             </div>
                         </div>
+                        {<CirclePageButton type='custom' customIcon='fa-arrow-right' style={{ right: 70 }} onClick={(e) => this.onAutoAssignStudent(e, _courseId)} />}
                         {!isOutsideCourseAdmin ? <CirclePageButton type='export' onClick={() => exportStudentInfoToExcel(_courseId)} /> : null}
                         <AdminStudentModal ref={e => this.modal = e} updateStudent={this.updateStudent} />
                     </div>
@@ -261,5 +267,5 @@ class AdminStudentPage extends AdminPage {
 }
 
 const mapStateToProps = state => ({ system: state.system, course: state.trainning.course, student: state.trainning.student });
-const mapActionsToProps = { getCourse, updateCourseStudents, getPreStudentPage, updateStudent, updateStudentInfoInCourse, exportStudentInfoToExcel };
+const mapActionsToProps = { autoAssignStudent,getCourse, updateCourseStudents, getPreStudentPage, updateStudent, updateStudentInfoInCourse, exportStudentInfoToExcel };
 export default connect(mapStateToProps, mapActionsToProps)(AdminStudentPage);
