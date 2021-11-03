@@ -207,6 +207,7 @@ export function importPreStudent(students, division, courseType, done) {
                 T.notify('Tạo học viên bị lỗi!', 'danger');
                 console.error(`POST: ${url}. ${data.error}`);
             } else {
+                console.log('data-redux', data);
                 T.notify('Tạo học viên thành công!', 'success');
                 dispatch(getPreStudentPage());
                 done && done(data);

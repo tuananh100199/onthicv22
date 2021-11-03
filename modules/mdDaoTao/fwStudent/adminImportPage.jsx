@@ -4,7 +4,7 @@ import { ajaxSelectDivision } from 'modules/mdDaoTao/fwDivision/redux';
 import { ajaxSelectCourseType } from 'modules/mdDaoTao/fwCourseType/redux';
 import { importPreStudent } from './redux';
 import { Link } from 'react-router-dom';
-import { AdminPage, AdminModal, FormFileBox, FormCheckbox, FormDatePicker, FormTextBox, FormSelect, TableCell, renderTable, CirclePageButton } from 'view/component/AdminPage';
+import { AdminPage, AdminModal, FormFileBox, FormCheckbox, FormDatePicker, FormTextBox, FormSelect, TableCell, renderTable } from 'view/component/AdminPage';
 
 class EditModal extends AdminModal {
     state = {};
@@ -145,6 +145,10 @@ class ImportPage extends AdminPage {
         }))
     );
 
+    onReUpload = () => {
+        T.confirm('Upload lại file excel', 'Bạn có chắc bạn muốn upload lại file excel ứng viên này?', true, isConfirm => isConfirm && this.setState({ data: [] }));
+    }
+
     save = () => {
         if (!this.itemDivision.value()) {
             T.notify('Chưa chọn cơ sở đào tạo!', 'danger');
@@ -153,13 +157,13 @@ class ImportPage extends AdminPage {
             T.notify('Chưa chọn loại khóa học!', 'danger');
             this.itemCourseType.focus();
         } else {
-            this.props.importPreStudent(this.state.data, this.itemDivision.value(), this.itemCourseType.value(), data => {
+            T.confirm('Lưu thông tin ứng viên', 'Bạn có chắc bạn muốn lưu file danh sách ứng viên này?', true, isConfirm => isConfirm && this.props.importPreStudent(this.state.data, this.itemDivision.value(), this.itemCourseType.value(), data => {
                 if (data.error) {
                     T.notify('Import ứng viên bị lỗi!', 'danger');
                 } else {
                     this.props.history.push('/user/pre-student');
                 }
-            });
+            }));
         }
     }
 
@@ -208,18 +212,32 @@ class ImportPage extends AdminPage {
         );
         const list = (
             <div>
-                <div className='tile'>
-                    <h3 className='tile-title'>Chọn cơ sở</h3>
-                    <FormSelect ref={e => this.itemDivision = e} className='col-md-4' labelStyle={{ display: 'none' }} label={'Chọn cơ sở'} data={ajaxSelectDivision} readOnly={readOnly} />
-                    <h3 className='tile-title'>Chọn loại khóa học</h3>
-                    <FormSelect ref={e => this.itemCourseType = e} className='col-md-4' labelStyle={{ display: 'none' }} label={'Chọn loại khóa học'} data={ajaxSelectCourseType} readOnly={readOnly} />
-                    <h3 className='tile-title'>Danh sách ứng viên</h3>
-                    <div className='tile-body' style={{ overflowX: 'auto' }}>
-                        {table}
+                <div className='tile row'>
+                    <div className='col-md-6'>
+                        <h3 className='tile-title'>Chọn cơ sở</h3>
+                        <FormSelect ref={e => this.itemDivision = e} labelStyle={{ display: 'none' }} label={'Chọn cơ sở'} data={ajaxSelectDivision} readOnly={readOnly} />
                     </div>
+                    <div className='col-md-6'>
+                        <h3 className='tile-title'>Chọn loại khóa học</h3>
+                        <FormSelect ref={e => this.itemCourseType = e} labelStyle={{ display: 'none' }} label={'Chọn loại khóa học'} data={ajaxSelectCourseType} readOnly={readOnly} />
+                    </div>
+                    <div className='col-md-12'>
+                        <h3 className='tile-title'>Danh sách ứng viên</h3>
+                        <div className='tile-body' style={{ overflowX: 'auto' }}>
+                            {table}
+                        </div>
+                        <div className='tile-footer' style={{ textAlign: 'right' }}>
+                            <button className='btn btn-danger' type='button' style={{ marginRight: 10 }} onClick={this.onReUpload}>
+                                <i className='fa fa-fw fa-lg fa-cloud-upload' /> Upload lại
+                            </button>
+                            <button className='btn btn-primary' type='button' onClick={this.save}>
+                                <i className='fa fa-fw fa-lg fa-save' /> Lưu
+                            </button>
+                        </div>
+                    </div>
+                    
                 </div>
                 <EditModal ref={e => this.modalEdit = e} readOnly={readOnly} edit={this.edit} />
-                <CirclePageButton type='save' onClick={this.save} />
             </div>
         );
         return this.renderPage({
@@ -227,8 +245,7 @@ class ImportPage extends AdminPage {
             title: 'Nhập ứng viên bằng Excel',
             breadcrumb: [<Link key={0} to='/user/pre-student'>Ứng viên</Link>, 'Nhập ứng viên bằng Excel'],
             content: <>
-                {filebox}
-                {this.state.data && this.state.data.length ? list : null}
+                {this.state.data && this.state.data.length ? list : filebox}
             </>,
             backRoute: '/user/pre-student',
         });
