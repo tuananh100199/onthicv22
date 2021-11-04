@@ -1,15 +1,15 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
-import { getCourse } from '../redux';
-import LecturerView from 'modules/mdDaoTao//fwTimeTable/lecturerView';
+import { getCourse } from 'modules/mdDaoTao/fwCourse/redux';
+import LecturerView from './lecturerView';
 import { AdminPage } from 'view/component/AdminPage';
 
-export class LecturerTimeTablePage extends AdminPage {
+export class LecturerRegisterCalendarPage extends AdminPage {
     state = {};
     componentDidMount() {
         T.ready('/user/course', () => {
-            const params = T.routeMatcher('/user/course/:_id/lecturer/calendar').parse(window.location.pathname);
+            const params = T.routeMatcher('/user/course/:_id/lecturer/register-calendar').parse(window.location.pathname);
             if (params && params._id) {
                 const course = this.props.course ? this.props.course.item : null;
                 if (!course) {
@@ -31,9 +31,9 @@ export class LecturerTimeTablePage extends AdminPage {
         const item = this.props.course && this.props.course.item ? this.props.course.item : {};
         const backRoute = `/user/course/${item._id}`;
         return this.renderPage({
-            icon: 'fa fa-calendar',
-            title: 'Thời khóa biểu: ' + item.name,
-            breadcrumb: [<Link key={0} to='/user/course'>Khóa học</Link>, item._id ? <Link key={0} to={backRoute}>{item.name}</Link> : '', 'Thời khóa biểu'],
+            icon: 'fa fa-calendar-plus-o',
+            title: 'Lịch dạy: ' + item.name,
+            breadcrumb: [<Link key={0} to='/user/course'>Khóa học</Link>, item._id ? <Link key={0} to={backRoute}>{item.name}</Link> : '', 'Lịch dạy'],
             content: (
                 <div className='tile'>
                     <div className='tile-body'>
@@ -47,4 +47,4 @@ export class LecturerTimeTablePage extends AdminPage {
 
 const mapStateToProps = state => ({ system: state.system, course: state.trainning.course });
 const mapActionsToProps = { getCourse };
-export default connect(mapStateToProps, mapActionsToProps)(LecturerTimeTablePage);
+export default connect(mapStateToProps, mapActionsToProps)(LecturerRegisterCalendarPage);

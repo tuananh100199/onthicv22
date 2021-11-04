@@ -18,6 +18,7 @@ import fwDivision from 'modules/mdDaoTao/fwDivision/index';
 import fwDriveQuestion from 'modules/mdDaoTao/fwDriveQuestion/index';
 import fwDriveTest from 'modules/mdDaoTao/fwDriveTest/index';
 import fwLesson from 'modules/mdDaoTao/fwLesson/index';
+import fwRegisterCalendar from 'modules/mdDaoTao/fwRegisterCalendar/index';
 import fwSign from 'modules/mdDaoTao/fwSign/index';
 import fwStudent from 'modules/mdDaoTao/fwStudent/index';
 import fwSubject from 'modules/mdDaoTao/fwSubject/index';
@@ -28,4 +29,4 @@ import fwForum from 'modules/mdTruyenThong/fwForum/index';
 import fwNews from 'modules/mdTruyenThong/fwNews/index';
 import fwSubscribe from 'modules/mdTruyenThong/fwSubscribe/index';
 
-export const modules = [_init, fwCategory, fwCluster, fwComment, fwEmail, fwHome, fwMenu, fwNotification, fwRate, fwRole, fwUser, fwCandidate, fwChat, fwCourse, fwCourseType, fwDivision, fwDriveQuestion, fwDriveTest, fwLesson, fwSign, fwStudent, fwSubject, fwTimeTable, fwContact, fwFeedback, fwForum, fwNews, fwSubscribe];
+export const modules = [_init, fwCategory, fwCluster, fwComment, fwEmail, fwHome, fwMenu, fwNotification, fwRate, fwRole, fwUser, fwCandidate, fwChat, fwCourse, fwCourseType, fwDivision, fwDriveQuestion, fwDriveTest, fwLesson, fwRegisterCalendar, fwSign, fwStudent, fwSubject, fwTimeTable, fwContact, fwFeedback, fwForum, fwNews, fwSubscribe];

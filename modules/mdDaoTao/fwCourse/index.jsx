@@ -100,8 +100,16 @@ export default {
             component: Loadable({ loading: Loading, loader: () => import('./pages/lecturerTimeTablePage') })
         },
         {
+            path: '/user/course/:_id/lecturer/register-calendar',
+            component: Loadable({ loading: Loading, loader: () => import('modules/mdDaoTao/fwRegisterCalendar/lecturerRegisterCalendaPage') })
+        },
+        {
             path: '/user/course/:_id/calendar',
             component: Loadable({ loading: Loading, loader: () => import('modules/mdDaoTao/fwTimeTable/adminTimeTablePage') })
+        },
+        {
+            path: '/user/course/:_id/register-calendar',
+            component: Loadable({ loading: Loading, loader: () => import('modules/mdDaoTao/fwRegisterCalendar/adminRegisterCalendarPage') })
         },
         {
             path: '/user/course/:_id/rate-subject',
