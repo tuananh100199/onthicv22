@@ -29,6 +29,7 @@
 	4010 - Loại khóa học (/user/course-type)
 	4020 - Môn học (/user/dao-tao/mon-hoc)
 	4030 - Bài học (/user/dao-tao/bai-hoc)
+	4035 - Quản lý xe (/user/car)
 	4040 - Ứng viên (/user/pre-student)
 	4045 - Khóa học (/user/course)
 	4050 - Thời khóa biểu (/user/time-table)
