@@ -203,8 +203,8 @@ module.exports = (app) => {
                             student.courseType = req.body.courseType;
                             app.model.user.get({ identityCard: student.lecturerIdentityCard, isLecturer: true }, (error, user) => {
                                 if (error || !user) {
-                                    studentError.push({ error: `Lỗi không tìm thấy cố vấn có CMND/CCCD: ${student.lecturerIdentityCard}` });
-                                    // res.send({ error: `Lỗi không tìm thấy cố vấn có CMND/CCCD: ${student.lecturerIdentityCard}` });
+                                    studentError.push({ error: `${student.lecturerIdentityCard}` });
+                                    handleCreateStudent(index + 1);
                                 } else {
                                     student.planLecturer = user._id;
                                     app.model.student.create(student, () => {
