@@ -169,7 +169,7 @@ class FailGraduationPage extends AdminPage {//TODO: Vinh
                 <tr key={index}>
                     <TableCell type='number' content={index + 1} />
                     <TableCell content={<>{`${item.lastname} ${item.firstname}`}<br />{item.identityCard}</>} style={{ whiteSpace: 'nowrap' }} />
-                    <TableCell content={item.course && item.course.name} nowrap={'true'} />
+                    <TableCell content={item.course && item.course.name} style={{ whiteSpace: 'nowrap' }} />
                     <TableCell content={item.ngayDuKienThiTotNghiep ? T.dateToText(item.ngayDuKienThiTotNghiep, 'dd/mm/yyyy') : 'Chưa có'} />
                     <TableCell content={item.liDoChuaTotNghiep || 'Chưa có'} />
                     <TableCell type='buttons' content={item} permission={permission} onEdit={this.edit}>

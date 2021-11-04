@@ -10,7 +10,7 @@ import 'react-datetime/css/react-datetime.css';
 // Table components ---------------------------------------------------------------------------------------------------
 export class TableCell extends React.Component { // type = number | date | link | image | checkbox | buttons | text (default)
     render() {
-        let { type = 'text', content = '', permission = {}, className = '', style = {}, contentStyle = {}, alt = '', display = true, rowSpan = 1, dateFormat, nowrap } = this.props;
+        let { type = 'text', content = '', permission = {}, className = '', style = {}, contentStyle = {}, alt = '', display = true, rowSpan = 1, dateFormat } = this.props;
         if (style == null) style = {};
 
         if (display != true) {
@@ -60,7 +60,7 @@ export class TableCell extends React.Component { // type = number | date | link 
                     </div>
                 </td>);
         } else {
-            return <td className={className} style={{ ...style }} nowrap={nowrap} rowSpan={rowSpan}>{content}</td>;
+            return <td className={className} style={{ ...style }} rowSpan={rowSpan}>{content}</td>;
         }
     }
 }
@@ -237,6 +237,8 @@ export class FormRichTextBox extends React.Component {
     focus = () => this.input.focus();
 
     insert = (e) => {
+        console.log(this.input);
+        console.log(this.input.selectionStart);
         let cursorPosition = this.input.selectionStart;
         let textBeforeCursorPosition = this.input.innerHTML.substring(0, cursorPosition);
         let textAfterCursorPosition = this.input.innerHTML.substring(cursorPosition, this.input.innerHTML.length);
@@ -278,14 +280,16 @@ export class FormEditor extends React.Component {
 
     focus = () => this.input.focus();
 
-    // insert = (e) => {
-    //     let cursorPosition = 5;
-    //     let textBeforeCursorPosition = this.input.text().substring(0, 5);
-    //     let textAfterCursorPosition = this.input.text().substring(cursorPosition, this.input.text().length);
-    //     this.setState({
-    //         value: textBeforeCursorPosition + ' ' + e.target.innerHTML + ' ' + textAfterCursorPosition
-    //     });
-    // }
+    insert = (e) => {
+        // let cursorPosition = this.input.getSelection().getStartElement();
+        let textBeforeCursorPosition = this.input.text().substring(0, 5);
+        console.log(this.input.editor.current.selectionStart);
+        console.log(this.input.editor.current);
+        // let textAfterCursorPosition = this.input.text().substring(cursorPosition, this.input.text().length);
+        this.setState({
+            value: textBeforeCursorPosition + ' ' + e.target.innerHTML + ' '
+        });
+    }
 
     render() {
         let { height = '400px', label = '', className = '', readOnly = false, uploadUrl = '', smallText = '', listParams = [], required = false } = this.props;
@@ -298,7 +302,7 @@ export class FormEditor extends React.Component {
                 {!readOnly && listParams.length ?
                     <p className='form-text  mb-1 '>
                         {listParams.map((param, index) => (<small className='text-muted ml-1' style={{ cursor: 'pointer' }} key={index}
-                        // onClick={(e) => this.insert(e)}
+                            onClick={(e) => this.insert(e)}
                         >{param}</small>))}
                     </p> : null}
                 <div style={{ display: readOnly ? 'none' : 'block' }}>
