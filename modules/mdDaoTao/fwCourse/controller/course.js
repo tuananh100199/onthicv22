@@ -119,7 +119,31 @@ module.exports = (app) => {
         }
 
         app.model.course.getPage(pageNumber, pageSize, condition, (error, page) => {
-            res.send({ page, error: error || page == null ? 'Danh sách trống!' : null });
+            if (error || !page) {
+                res.send({ error: error || 'Danh sách trống!' });
+            } else {
+                page = app.clone(page);
+                const promiseList = page.list && page.list.length > 0 && page.list.map(item => {
+                    return new Promise((resolve, reject) => {
+                        if (item) {
+                            app.model.student.count({ course: item._id }, (error, numberOfStudent) => {
+                                if (error) {
+                                    reject('Đếm số lượng học viên của khóa học bị lỗi!');
+                                } else {
+                                    resolve(numberOfStudent);
+                                }
+                            });
+                        }
+                    });
+                });
+                promiseList && Promise.all(promiseList).then(numberOfStudents => {
+                    page.list.forEach((item, index) => {
+                        item.numberOfStudent = numberOfStudents[index];
+                    });
+                    res.send({ page });
+                }).catch(error => console.error(error) || res.send({ error }));
+            }
+            // res.send({ page, error: error || page == null ? 'Danh sách trống!' : null });
         });
     });
 

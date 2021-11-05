@@ -1,10 +1,72 @@
 module.exports = (app) => {
-    app.permission.add({ name: 'feedback:read' }, { name: 'feedback:write' }, { name: 'feedback:delete' });
-    app.permission.add({ name: 'feedback:read', menu: { parentMenu: { index: 3030, title: 'Phản hồi', icon: 'fa-comments-o', link: '/user/feedback/system' } } });
+    app.permission.add({ name: 'feedback:read' }, { name: 'feedback:write' }, { name: 'feedback:delete' }, { name: 'feedback:system' });
+    app.permission.add({ name: 'feedback:system', menu: { parentMenu: { index: 3030, title: 'Phản hồi', icon: 'fa-comments-o', link: '/user/feedback/system' } } });
 
     app.get('/user/feedback/system', app.permission.check('feedback:read'), app.templates.admin);
     app.get('/user/feedback/system/:_id', app.permission.check('feedback:read'), app.templates.admin);
     app.get('/user/feedback', app.permission.check('user:login'), app.templates.admin);
+
+    const getFeedbackPage = (pageNumber, pageSize, condition, sessionUser, done) => {
+        const division = sessionUser.division;
+        if (sessionUser.isCourseAdmin && division && division.isOutside) {
+            // Với user là isCourseAdmin + isOutside: chỉ hiện feedback của student thuộc cơ sở của họ
+            app.model.user.getAll({ isLecturer: false, isCourseAdmin: false, isRepresenter: false, isStaff: false, division: division._id }, (error, list) => {
+                if (error || !list) {
+                    done('Tìm học viên của QTKH thuộc cơ sở ngoài bị lỗi!');
+                } else if (list.length > 0) {
+                    const users = { $in: list.map(({ _id }) => _id) };
+                    condition.user = users;
+                    app.model.feedback.getPage(pageNumber, pageSize, condition, ((error, page) => done( error, page )));
+                }
+            });
+        } else {
+            app.model.feedback.getPage(pageNumber, pageSize, condition, ((error, page) => done( error, page )));
+        }
+    };
+
+    app.get('/api/feedback/page/:pageNumber/:pageSize', app.permission.check('feedback:read'), (req, res) => {
+        const pageNumber = parseInt(req.params.pageNumber),
+            pageSize = parseInt(req.params.pageSize),
+            condition = req.query.pageCondition || {},
+            { type, _refId } = condition,
+            user = req.session.user;
+        try {
+            if (type == 'system') {
+                if (user.roles.some(role => role.name == 'admin')) {
+                    app.model.feedback.getPage(pageNumber, pageSize, condition, (error, page) => res.send({ error, page }));
+                } else res.send({ error: 'Bạn không có quyền admin' });
+            } else if (type == 'course' || type == 'teacher') {
+                if (user.roles.some(role => role.name == 'admin') || user.isCourseAdmin) {
+                    if (type == 'course')
+                        getFeedbackPage(pageNumber, pageSize, condition, user, (error, page) => {
+                            error = error || (page ? null : 'Lỗi khi lấy phản hồi!');
+                            page = page || null;
+                            res.send({ error, page });
+                        });
+                    // app.model.feedback.getPage(pageNumber, pageSize, condition, (error, page) => res.send({ error, page }));
+                    else if (type == 'teacher') {
+                        app.model.course.get(_refId, (error, course) => {
+                            if (error || !course) {
+                                res.send({ error: 'Invalid parameter!' });
+                            } else {
+                                const _teachers = course.teacherGroups.map(({ teacher }) => teacher),
+                                    _teacherIds = _teachers.map(({ _id }) => _id);
+                                condition._refId = { $in: _teacherIds };
+                                getFeedbackPage(pageNumber, pageSize, condition, user, (error, page) => {
+                                    error = error || (page ? null : 'Lỗi khi lấy phản hồi!');
+                                    page = page || null;
+                                    res.send({ error, page });
+                                });
+                                // app.model.feedback.getPage(pageNumber, pageSize, condition, (error, page) => res.send({ error, page }));
+                            }
+                        });
+                    }
+                }
+            }
+        } catch (error) {
+            res.send({ error });
+        }
+    });
 
     app.get('/api/feedback', app.permission.check('feedback:read'), (req, res) => {
         const { _id } = req.query;
@@ -50,42 +112,6 @@ module.exports = (app) => {
         } else app.model.feedback.create(app.clone(req.body.newData, { user }), (error, item) => res.send({ error, item }));
     });
 
-    app.get('/api/feedback/page/:pageNumber/:pageSize', app.permission.check('feedback:read'), (req, res) => {
-        const pageNumber = parseInt(req.params.pageNumber),
-            pageSize = parseInt(req.params.pageSize),
-            condition = req.query.pageCondition || {},
-            { type, _refId } = condition,
-            user = req.session.user;
-        try {
-            if (type == 'system') {
-                if (user.roles.some(role => role.name == 'admin')) {
-                    app.model.feedback.getPage(pageNumber, pageSize, condition, (error, page) => res.send({ error, page }));
-                } else res.send({ error: 'Bạn không có quyền admin' });
-            } else if (type == 'course' || type == 'teacher') {
-                if (user.isCourseAdmin) {
-                    if (type == 'course')
-                        app.model.feedback.getPage(pageNumber, pageSize, condition, (error, page) => res.send({ error, page }));
-                    else if (type == 'teacher') {
-                        app.model.course.get(_refId, (error, course) => {
-                            if (error || !course) {
-                                res.send({ error: 'Invalid parameter!' });
-                            } else {
-                                const _teachers = course.teacherGroups.map(({ teacher }) => teacher),
-                                    _teacherIds = _teachers.map(({ _id }) => _id);
-                                condition._refId = { $in: _teacherIds };
-                                app.model.feedback.getPage(pageNumber, pageSize, condition, (error, page) => res.send({ error, page }));
-                            }
-                        });
-                    }
-                }
-            }
-        } catch (error) {
-            res.send({ error });
-        }
-    });
-
-
-
     app.get('/api/feedback/student/page/:pageNumber/:pageSize', app.permission.check('user:login'), (req, res) => { //mobile
         const pageNumber = parseInt(req.params.pageNumber),
             pageSize = parseInt(req.params.pageSize),
@@ -106,7 +132,7 @@ module.exports = (app) => {
                                     res.send({ error: 'Invalid parameter!' });
                                 } else {
                                     const _studentId = student._id,
-                                    teacherGroups = course.teacherGroups.find(({ student }) => student.find(({ _id }) => _id == _studentId.toString()) != null),
+                                        teacherGroups = course.teacherGroups.find(({ student }) => student.find(({ _id }) => _id == _studentId.toString()) != null),
                                         _teacherId = teacherGroups && teacherGroups.teacher && teacherGroups.teacher._id;
                                     condition._refId = _teacherId;
                                     app.model.feedback.getPage(pageNumber, pageSize, app.clone(condition, { user }), (error, page) => res.send({ error, page }));

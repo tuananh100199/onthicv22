@@ -249,5 +249,6 @@ module.exports = (app) => {
                 }
             });
         },
+        count: (condition, done) => done ? model.countDocuments(condition, done) : model.countDocuments({}, condition),
     };
 };
