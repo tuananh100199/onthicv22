@@ -22,7 +22,7 @@ class NoteModal extends AdminModal {
 class StudentView extends AdminPage {
     state = {};
     componentDidMount() {
-        const route = T.routeMatcher('/user/hoc-vien/khoa-hoc/:_id/thoi-khoa-bieu'),
+        const route = T.routeMatcher('/user/course/:_id/student/register-calendar'),
             _id = route.parse(window.location.pathname)._id;
         if (_id) {
             this.setState({ courseId: _id });

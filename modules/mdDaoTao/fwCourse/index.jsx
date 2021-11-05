@@ -101,7 +101,7 @@ export default {
         },
         {
             path: '/user/course/:_id/lecturer/register-calendar',
-            component: Loadable({ loading: Loading, loader: () => import('modules/mdDaoTao/fwRegisterCalendar/lecturerRegisterCalendaPage') })
+            component: Loadable({ loading: Loading, loader: () => import('modules/mdDaoTao/fwRegisterCalendar/lecturerRegisterCalendarPage') })
         },
         {
             path: '/user/course/:_id/calendar',

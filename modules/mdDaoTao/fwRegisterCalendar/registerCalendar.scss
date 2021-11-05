@@ -51,3 +51,11 @@ img{ max-width:100%;}
 }
 
 .active_lecturer{ background:#ddd;}
+// .fc-day-header .fc-widget-header .fc-mon{background-color: 'blue'}
+// #calendar .fc-agendaWeek-view .fc-today,  #calendar .fc-agendaDay-view .fc-today {
+//     background: red !important;
+// }
+// #calendar .fc-mon {background-color: 'red'}
+.fc-today {
+    background: 'red' !important;
+    color: 'red' !important;}

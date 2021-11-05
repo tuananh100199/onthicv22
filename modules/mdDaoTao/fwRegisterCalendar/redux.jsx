@@ -28,96 +28,35 @@ export default function registerCalendarReducer(state = {}, data) {
 }
 
 // Actions ------------------------------------------------------------------------------------------------------------
-T.initCookiePage('adminRegisterCalendar');
-export function getRegisterCalendarPage(pageNumber, pageSize, pageCondition, done) {
-    const page = T.updatePage('adminRegisterCalendar', pageNumber, pageSize);
-    return dispatch => {
-        const url = `/api/register-calendar/page/${page.pageNumber}/${page.pageSize}`;
-        T.get(url, { pageCondition }, data => {
-            if (data.error) {
-                T.notify('Lấy lịch dạy bị lỗi!', 'danger');
-                console.error(`GET: ${url}. ${data.error}`);
-            } else {
-                if (pageCondition) data.page.pageCondition = pageCondition;
-                done && done(data.page);
-                dispatch({ type: RegisterCalendarGetPage, page: data.page });
-            }
-        }, error => console.error(error) || T.notify('Lấy lịch dạy bị lỗi!', 'danger'));
-    };
-}
-
 T.initCookiePage('pageRegisterCalendar');
 export function getRegisterCalendarPageByAdmin(pageNumber, pageSize, pageCondition, done) {
+    console.log('pageCondition', pageCondition);
     const page = T.updatePage('pageRegisterCalendar', pageNumber, pageSize);
     return dispatch => {
         const url = `/api/register-calendar/page/admin/${page.pageNumber}/${page.pageSize}`;
         T.get(url, { pageCondition }, data => {
             if (data.error) {
-                T.notify('Lấy lịch dạy bị lỗi!', 'danger');
+                T.notify('Lấy lịch nghỉ bị lỗi!', 'danger');
                 console.error(`GET: ${url}. ${data.error}`);
             } else {
                 done && done(data.page);
                 dispatch({ type: RegisterCalendarGetPage, page: data.page });
             }
-        }, error => console.error(error) || T.notify('Lấy lịch dạy bị lỗi!', 'danger'));
+        }, error => console.error(error) || T.notify('Lấy lịch nghỉ bị lỗi!', 'danger'));
     };
 }
 
-export function getRegisterCalendar(_id, done) {
-    return dispatch => {
-        const url = '/api/register-calendar';
-        T.get(url, { _id }, data => {
-            if (data.error) {
-                T.notify('Lấy lịch dạy bị lỗi!', 'danger');
-                console.error(`GET: ${url}. ${data.error}`);
-            } else {
-                done && done(data.item);
-                dispatch({ type: RegisterCalendarUpdate, item: data.item });
-            }
-        }, error => console.error(error) || T.notify('Lấy lịch dạy bị lỗi', 'danger'));
-    };
-}
-
-export function getRegisterCalendarDateNumber(_id, student, date, startHour, numOfHours, done) {
-    return () => {
-        const url = '/api/register-calendar/date-number';
-        T.get(url, { _id, student, date, startHour, numOfHours }, data => {
-            if (data.error) {
-                T.notify('Lấy lịch dạy bị lỗi!', 'danger');
-                console.error(`GET: ${url}. ${data.error}`);
-            } else {
-                done && done(data.dateNumber);
-            }
-        }, error => console.error(error) || T.notify('Lấy lịch dạy bị lỗi', 'danger'));
-    };
-}
 export function getRegisterCalendarOfLecturer(condition, done) {
     return () => {
         const url = '/api/register-calendar/lecturer';
         T.get(url, { condition }, data => {
             if (data.error) {
-                T.notify('Lấy lịch dạy bị lỗi!', 'danger');
+                T.notify('Lấy lịch nghỉ bị lỗi!', 'danger');
                 console.error(`GET: ${url}. ${data.error}`);
             } else {
                 done && done(data);
             }
-        }, error => console.error(error) || T.notify('Lấy lịch dạy bị lỗi', 'danger'));
-    };
-}
-
-export function createRegisterCalendar(data, done) {
-    return dispatch => {
-        const url = '/api/register-calendar';
-        T.post(url, { data }, data => {
-            if (data.error) {
-                T.notify('Tạo lịch dạy bị lỗi!', 'danger');
-                console.error(`POST: ${url}. ${data.error}`);
-            } else {
-                T.notify('Tạo lịch dạy thành công!', 'success');
-                done && done(data.item);
-                dispatch(getRegisterCalendarPage());
-            }
-        }, error => console.error(error) || T.notify('Tạo lịch dạy bị lỗi!', 'danger'));
+        }, error => console.error(error) || T.notify('Lấy lịch nghỉ bị lỗi', 'danger'));
     };
 }
 
@@ -126,30 +65,14 @@ export function createRegisterCalendarByAdmin(data, condition, done) {
         const url = '/api/register-calendar/admin';
         T.post(url, { data }, data => {
             if (data.error) {
-                T.notify('Tạo lịch dạy bị lỗi!', 'danger');
+                T.notify('Tạo lịch nghỉ bị lỗi!', 'danger');
                 console.error(`POST: ${url}. ${data.error}`);
             } else {
-                T.notify('Tạo lịch dạy thành công!', 'success');
+                T.notify('Tạo lịch nghỉ thành công!', 'success');
                 done && done(data.item);
                 dispatch(getRegisterCalendarPageByAdmin(undefined, undefined, condition));
             }
-        }, error => console.error(error) || T.notify('Tạo lịch dạy bị lỗi!', 'danger'));
-    };
-}
-export function updateRegisterCalendar(_id, changes, done) {
-    return dispatch => {
-        const url = '/api/register-calendar';
-        T.put(url, { _id, changes }, data => {
-            if (data.error) {
-                T.notify('Cập nhật lịch dạy bị lỗi!', 'danger');
-                console.error(`PUT: ${url}. ${data.error}`);
-            } else {
-                T.notify('Cập nhật lịch dạy thành công!', 'success');
-                done && done(data.item);
-                dispatch(getRegisterCalendarPage());
-            }
-            done && done(data.error);
-        }, error => console.error(error) || T.notify('Cập nhật lịch dạy bị lỗi!', 'danger'));
+        }, error => console.error(error) || T.notify('Tạo lịch nghỉ bị lỗi!', 'danger'));
     };
 }
 
@@ -158,30 +81,15 @@ export function updateRegisterCalendarByAdmin(_id, changes, condition, done) {
         const url = '/api/register-calendar/admin';
         T.put(url, { _id, changes }, data => {
             if (data.error) {
-                T.notify('Cập nhật lịch dạy bị lỗi!', 'danger');
+                T.notify('Cập nhật lịch nghỉ bị lỗi!', 'danger');
                 console.error(`PUT: ${url}. ${data.error}`);
             } else {
-                T.notify('Cập nhật lịch dạy thành công!', 'success');
+                T.notify('Cập nhật lịch nghỉ thành công!', 'success');
                 done && done(data.item);
                 dispatch(getRegisterCalendarPageByAdmin(undefined, undefined, condition));
             }
             done && done(data.error);
-        }, error => console.error(error) || T.notify('Cập nhật lịch dạy bị lỗi!', 'danger'));
-    };
-}
-
-export function deleteRegisterCalendar(_id) {
-    return dispatch => {
-        const url = '/api/register-calendar';
-        T.delete(url, { _id }, data => {
-            if (data.error) {
-                T.notify('Xóa lịch dạy bị lỗi!', 'danger');
-                console.error(`DELETE: ${url}. ${data.error}`);
-            } else {
-                T.alert('lịch dạy được xóa thành công!', 'error', false, 800);
-                dispatch(getRegisterCalendarPage());
-            }
-        }, error => console.error(error) || T.notify('Xóa lịch dạy bị lỗi!', 'danger'));
+        }, error => console.error(error) || T.notify('Cập nhật lịch nghỉ bị lỗi!', 'danger'));
     };
 }
 
@@ -190,13 +98,13 @@ export function deleteRegisterCalendarByAdmin(_id, condition) {
         const url = '/api/register-calendar/admin';
         T.delete(url, { _id }, data => {
             if (data.error) {
-                T.notify('Xóa lịch dạy bị lỗi!', 'danger');
+                T.notify('Xóa lịch nghỉ bị lỗi!', 'danger');
                 console.error(`DELETE: ${url}. ${data.error}`);
             } else {
-                T.alert('lịch dạy được xóa thành công!', 'error', false, 800);
+                T.alert('Lịch nghỉ được xóa thành công!', 'error', false, 800);
                 dispatch(getRegisterCalendarPageByAdmin(undefined, undefined, condition));
             }
-        }, error => console.error(error) || T.notify('Xóa lịch dạy bị lỗi!', 'danger'));
+        }, error => console.error(error) || T.notify('Xóa lịch nghỉ bị lỗi!', 'danger'));
     };
 }
 
@@ -206,12 +114,12 @@ export function getRegisterCalendarByStudent(done) {
         const url = '/api/register-calendar/student';
         T.get(url, data => {
             if (data.error) {
-                T.notify('Lấy lịch dạy bị lỗi!', 'danger');
+                T.notify('Lấy lịch nghỉ bị lỗi!', 'danger');
                 console.error(`GET: ${url}. ${data.error}`);
             } else {
                 done && done(data.page);
                 dispatch({ type: RegisterCalendarGetPage, page: data.page });
             }
-        }, error => console.error(error) || T.notify('Lấy lịch dạy bị lỗi', 'danger'));
+        }, error => console.error(error) || T.notify('Lấy lịch nghỉ bị lỗi', 'danger'));
     };
 }

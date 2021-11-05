@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { getCourse } from 'modules/mdDaoTao/fwCourse/redux';
 import LecturerView from './lecturerView';
-import { AdminPage } from 'view/component/AdminPage';
+import { AdminPage, FormCheckbox } from 'view/component/AdminPage';
 
 export class LecturerRegisterCalendarPage extends AdminPage {
     state = {};
@@ -20,6 +20,8 @@ export class LecturerRegisterCalendarPage extends AdminPage {
                         }
                     });
                 }
+               this.setState({ filterOn: false, key: false, list: true, calendar: false});
+
             } else {
                 this.props.history.push('/user/course/');
             }
@@ -27,17 +29,25 @@ export class LecturerRegisterCalendarPage extends AdminPage {
     }
 
     render() {
-        const userId = this.props.system.user && this.props.system.user._id;
+        const { key, calendar, list,filterOn } = this.state;
+        const { user } = this.props.system ? this.props.system : {};
         const item = this.props.course && this.props.course.item ? this.props.course.item : {};
         const backRoute = `/user/course/${item._id}`;
         return this.renderPage({
             icon: 'fa fa-calendar-plus-o',
-            title: 'Lịch dạy: ' + item.name,
-            breadcrumb: [<Link key={0} to='/user/course'>Khóa học</Link>, item._id ? <Link key={0} to={backRoute}>{item.name}</Link> : '', 'Lịch dạy'],
+            title: 'Lịch nghỉ: ' + item.name,
+            breadcrumb: [<Link key={0} to='/user/course'>Khóa học</Link>, item._id ? <Link key={0} to={backRoute}>{item.name}</Link> : '', 'Lịch nghỉ'],
             content: (
                 <div className='tile'>
                     <div className='tile-body'>
-                        {item && item._id ? <LecturerView courseId={item._id} lecturerId={userId} filterOn={false} list={true} /> : null}
+                        <div className='pb-3' style={{marginBottom: '25px'}}>
+                            <div style={{float: 'right', display: 'flex'}}>
+                                {list ? <FormCheckbox ref={e => this.course = e} style={{paddingRight: '12px'}} onChange={value => this.setState({ key: !key, filterOn: value })} label='Hiển thị ngày hiện tại' /> : null}
+                                <button style={{border: 'none', outline: 'none', marginRight: '3px', backgroundColor: list ? '#2189CF' : ''}} onClick={() => this.setState({ key: !key, calendar: false, list: true })}><i className='fa fa-bars'></i> Danh sách</button>
+                                <button style={{border: 'none', outline: 'none', backgroundColor: calendar ? '#2189CF' : ''}} onClick={() =>this.setState({ key: !key, calendar: true, list: false, filterOn: false})}><i className='fa fa-calendar'></i> Lịch</button>
+                            </div>
+                        </div>
+                        {item && item._id ? <LecturerView key={key} courseId={item._id} lecturerId={user && user._id} filterOn={filterOn} calendar={calendar} list={list} lecturerName={user && user.lastname + ' ' + user.firstname}/> : null}
                     </div>
                 </div>),
             backRoute,

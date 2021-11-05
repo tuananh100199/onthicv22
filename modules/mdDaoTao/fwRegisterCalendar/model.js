@@ -1,13 +1,9 @@
 module.exports = app => {
     const schema = app.db.Schema({
-        lecturer: { type: app.db.Schema.ObjectId, ref: 'User' },
+        lecturer: { type: app.db.Schema.ObjectId, ref: 'User' },                        // Tên giáo viên
         dateOff: { type: Date, default: Date.now },                                     // Ngày nghỉ
-        startHour: { type: Number, default: 8 },                                        // Thời gian bắt đầu học
-        numOfHours: { type: Number, default: 1 },                                       // Số giờ học, số nguyên dương.    
-        state: { type: String, enum: ['approved', 'waiting', 'reject'], default: 'waiting' },
-
-        // dateNumber: { type: Number, default: -1 },                                      // Buổi học thứ
-
+        timeOff: { type: String, enum: ['morning', 'noon', 'allDay'], default: 'allDay' }, // Buổi nghỉ
+        state: { type: String, enum: ['approved', 'waiting', 'reject', 'cancel'], default: 'waiting' },
     });
     const model = app.db.model('RegisterCalendar', schema);
 
@@ -33,7 +29,7 @@ module.exports = app => {
 
         get: (condition, done) => {
             const findTask = typeof condition == 'string' ? model.findById(condition) : model.findOne(condition);
-            findTask.populate('student').exec(done);
+            findTask.populate('lecturer', 'lastname firstname phoneNumber identityCard').exec(done);
         },
 
         // changes = { $set, $unset, $push, $pull }

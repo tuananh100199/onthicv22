@@ -11,7 +11,7 @@ export class AdminTimeTablePage extends AdminPage {
     state = {};
     componentDidMount() {
         T.ready('/user/course', () => {
-            const params = T.routeMatcher('/user/course/:_id/calendar').parse(window.location.pathname);
+            const params = T.routeMatcher('/user/course/:_id/register-calendar').parse(window.location.pathname);
             if (params && params._id) {
                     this.props.getCourse(params._id, data => {
                         if (data.error) {
@@ -39,7 +39,7 @@ export class AdminTimeTablePage extends AdminPage {
     render() {
         const { currentLecturer, listLecturer, filterOn, key, calendar, list } = this.state;
         const item = this.props.course && this.props.course.item ? this.props.course.item : {};
-        const inboxTimeTable = listLecturer && listLecturer.length && listLecturer.map((lecturer, index) => {
+        const inboxRegisterCalendar = listLecturer && listLecturer.length && listLecturer.map((lecturer, index) => {
             const isSelectedUser = currentLecturer && currentLecturer._id ==  lecturer._id;
             return (
                 <div key={index} className={'lecturer_list' + (isSelectedUser ? ' active_lecturer' : '')} style={{ cursor: 'pointer' }} onClick={e => e.preventDefault() || this.selectLecturer(lecturer)}>
@@ -67,11 +67,11 @@ export class AdminTimeTablePage extends AdminPage {
                                     </div>
                                 </div>
                                 <div>
-                                    {inboxTimeTable}
+                                    {inboxRegisterCalendar}
                                 </div>
                             </div>
                             <div className='col-sm-9' >
-                                <div className='recent_heading pb-3'>
+                                <div className='recent_heading pb-3' style={{ marginBottom: '25px'}}>
                                     <h4 style={{float: 'left'}}>{currentLecturer && currentLecturer.lastname + ' ' + currentLecturer.firstname }</h4>
                                     <div style={{float: 'right', display: 'flex'}}>
                                         {list ? <FormCheckbox ref={e => this.course = e} style={{paddingRight: '12px'}} onChange={value => this.onChange(value)} label='Hiển thị ngày hiện tại' /> : null}

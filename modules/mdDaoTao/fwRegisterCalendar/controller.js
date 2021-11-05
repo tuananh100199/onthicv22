@@ -10,6 +10,7 @@ module.exports = (app) => {
     );
 
     app.get('/user/register-calendar', app.permission.check('registerCalendar:read'), app.templates.admin);
+    app.get('/user/course/:_id/student/register-calendar', app.permission.check('registerCalendar:read'), app.templates.admin);
 
     // APIs -----------------------------------------------------------------------------------------------------------
     app.get('/api/register-calendar/page/:pageNumber/:pageSize', app.permission.check('registerCalendar:read'), (req, res) => {
@@ -90,9 +91,7 @@ module.exports = (app) => {
     });
 
     app.post('/api/register-calendar/admin', app.permission.check('registerCalendar:write'), (req, res) => {
-        const data = app.clone(req.body.data);
-        data.lecturer = req.session.user._id;
-        app.model.registerCalendar.create(data, (error, item) => {
+        app.model.registerCalendar.create(req.body.data, (error, item) => {
             if (error && !item) {
                 res.send({ error });
             } else {
@@ -125,21 +124,20 @@ module.exports = (app) => {
 
     // Course Admin && Lecturer API----------------------------------------------------------------------------------
     app.get('/api/register-calendar/page/admin/:pageNumber/:pageSize', app.permission.check('registerCalendar:read'), (req, res) => {
+        // const { isCourseAdmin } = req.session.user || {};
         let pageNumber = parseInt(req.params.pageNumber),
             pageSize = parseInt(req.params.pageSize),
             condition = req.query.pageCondition || {},
             pageCondition = {};
-    
             pageCondition = { lecturer: condition.lecturerId };
-            if (JSON.parse(condition.filterOn)){
+            // if (isCourseAdmin) {
+            //     pageCondition.state = { $in:  ['approved', 'waiting', 'reject'] };
+            // }
+            if (condition.filterOn && JSON.parse(condition.filterOn)){
                 let today  = new Date();
                 pageCondition.dateOff = new Date(today.getFullYear(), today.getMonth(), today.getDate());
             }
-            console.log('pageCondition', pageCondition);
             app.model.registerCalendar.getPage(pageNumber, pageSize, pageCondition, (error, page) =>{
-                console.log('error', error);
-                console.log('page', page);
-
                 res.send({ error, page });
             } );
     });
