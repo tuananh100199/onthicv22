@@ -98,7 +98,7 @@ class ImportPage extends AdminPage {
             title: 'Nhập học viên đạt/chưa đạt sát hạch bằng Excel ',
             breadcrumb: [<Link key={0} to='/user/student/fail-exam'>Học viên chưa đạt sát hạch</Link>, 'Nhập học viên đạt/chưa đạt sát hạch bằng Excel'],
             content: <>
-                < div className='tile' style={{ ...(this.state.data && this.state.data.length > 0 && { display: 'none' }) }}>
+                < div className='tile' style={{ display: this.state.data && this.state.data.length > 0 ? 'none':'block' }}>
                     <h3 className='tile-title'>Thông số đầu vào</h3>
                     <div className='row'>
                         <FormSelect ref={e => this.courseType = e} data={ajaxSelectCourseType} label='Loại khóa học'
