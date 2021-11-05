@@ -119,7 +119,7 @@ module.exports = app => {
                                     totalTime: item.totalTime
                                 };
                                 req.session.driveTest = driveTest;
-                                res.send({ driveTest });
+                                res.send({ driveTest, courseType: item });
                             }
                         });
                     } else {
