@@ -6,21 +6,24 @@ module.exports = (app) => {
     app.get('/user/feedback/system/:_id', app.permission.check('feedback:read'), app.templates.admin);
     app.get('/user/feedback', app.permission.check('user:login'), app.templates.admin);
 
-    const getFeedbackPage = (pageNumber, pageSize, condition, sessionUser, done) => {
+    const getFeedbackPage = (pageNumber, pageSize, condition, sessionUser, _courseId, done) => {
         const division = sessionUser.division;
         if (sessionUser.isCourseAdmin && division && division.isOutside) {
             // Với user là isCourseAdmin + isOutside: chỉ hiện feedback của student thuộc cơ sở của họ
-            app.model.user.getAll({ isLecturer: false, isCourseAdmin: false, isRepresenter: false, isStaff: false, division: division._id }, (error, list) => {
-                if (error || !list) {
+            app.model.student.getAll({ course: _courseId, division: division._id }, (error, students) => {
+                if (error || !students) {
                     done('Tìm học viên của QTKH thuộc cơ sở ngoài bị lỗi!');
-                } else if (list.length > 0) {
-                    const users = { $in: list.map(({ _id }) => _id) };
+                } else if (students.length > 0) {
+                    const users = { $in: students.map(({ user }) => user && user._id) };
                     condition.user = users;
-                    app.model.feedback.getPage(pageNumber, pageSize, condition, ((error, page) => done( error, page )));
+                    app.model.feedback.getPage(pageNumber, pageSize, condition, ((error, page) => done(error, page)));
+                } else {
+                    const page = { list: [], pageNumber: 1, pageSize: 50, pageTotal: 1, totalItem: 0 };
+                    done(null, page);
                 }
             });
         } else {
-            app.model.feedback.getPage(pageNumber, pageSize, condition, ((error, page) => done( error, page )));
+            app.model.feedback.getPage(pageNumber, pageSize, condition, ((error, page) => done(error, page)));
         }
     };
 
@@ -38,7 +41,7 @@ module.exports = (app) => {
             } else if (type == 'course' || type == 'teacher') {
                 if (user.roles.some(role => role.name == 'admin') || user.isCourseAdmin) {
                     if (type == 'course')
-                        getFeedbackPage(pageNumber, pageSize, condition, user, (error, page) => {
+                        getFeedbackPage(pageNumber, pageSize, condition, user, _refId, (error, page) => {
                             error = error || (page ? null : 'Lỗi khi lấy phản hồi!');
                             page = page || null;
                             res.send({ error, page });
@@ -52,7 +55,7 @@ module.exports = (app) => {
                                 const _teachers = course.teacherGroups.map(({ teacher }) => teacher),
                                     _teacherIds = _teachers.map(({ _id }) => _id);
                                 condition._refId = { $in: _teacherIds };
-                                getFeedbackPage(pageNumber, pageSize, condition, user, (error, page) => {
+                                getFeedbackPage(pageNumber, pageSize, condition, user, _refId, (error, page) => {
                                     error = error || (page ? null : 'Lỗi khi lấy phản hồi!');
                                     page = page || null;
                                     res.send({ error, page });

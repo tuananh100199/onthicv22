@@ -127,7 +127,8 @@ module.exports = (app) => {
                             lastname: data.lastname,
                             phoneNumber: data.phoneNumber,
                             division: data.division || req.session.user.division,
-                            password: dataPassword
+                            password: dataPassword,
+                            birthday: data.birthday,
                         };
                     app.model.user.create(newUser, (error, user) => {
                         if (error) {

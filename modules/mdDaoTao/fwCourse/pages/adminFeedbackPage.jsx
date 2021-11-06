@@ -12,16 +12,15 @@ export class AdminFeedbackPage extends AdminPage {
             const params = T.routeMatcher('/user/course/:_id/feedback').parse(window.location.pathname);
             if (params && params._id) {
                 this.course.value(true);
-                this.onChange(true, 'course');
                 const course = this.props.course ? this.props.course.item : null;
                 if (!course) {
                     this.props.getCourse(params._id, data => {
                         if (data.error) {
                             T.notify('Lấy khóa học bị lỗi!', 'danger');
                             this.props.history.push('/user/course/' + params._id);
-                        }
+                        } else this.onChange(true, 'course');
                     });
-                }
+                } else this.onChange(true, 'course');
             } else {
                 this.props.history.push('/user/course/');
             }

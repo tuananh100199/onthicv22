@@ -528,7 +528,9 @@ module.exports = (app) => {
 
     // Hook permissionHooks -------------------------------------------------------------------------------------------
     app.permissionHooks.add('courseAdmin', 'course', (user) => new Promise(resolve => {
-        app.permissionHooks.pushUserPermission(user, 'course:read', 'course:write', 'course:export', 'course:import');
+        app.permissionHooks.pushUserPermission(user, 'course:read', 'course:write');
+        // Quản lý khóa học nội bộ thì được import danh sách học viên bằng file Excel
+        if (user.division && !user.division.isOutside) app.permissionHooks.pushUserPermission(user, 'course:export', 'course:import');
         resolve();
     }));
 
