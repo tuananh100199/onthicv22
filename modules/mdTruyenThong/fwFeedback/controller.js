@@ -52,13 +52,19 @@ module.exports = (app) => {
                             if (error || !course) {
                                 res.send({ error: 'Invalid parameter!' });
                             } else {
-                                const _teachers = course.teacherGroups.map(({ teacher }) => teacher),
-                                    _teacherIds = _teachers.map(({ _id }) => _id);
+                                const teachers = course.teacherGroups.map(({ teacher }) => teacher),
+                                    _teacherIds = teachers.map(({ _id }) => _id);
                                 condition._refId = { $in: _teacherIds };
                                 getFeedbackPage(pageNumber, pageSize, condition, user, _refId, (error, page) => {
-                                    error = error || (page ? null : 'Lỗi khi lấy phản hồi!');
-                                    page = page || null;
-                                    res.send({ error, page });
+                                    if (error) {
+                                        res.send({ error });
+                                    } else {
+                                        page = app.clone(page);
+                                        page.list.forEach((item) => {
+                                            item._refId = teachers.find(({ _id }) => item._refId == _id.toString()) ;
+                                        });
+                                        res.send({ page });
+                                    }
                                 });
                                 // app.model.feedback.getPage(pageNumber, pageSize, condition, (error, page) => res.send({ error, page }));
                             }

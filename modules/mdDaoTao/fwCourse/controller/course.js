@@ -26,8 +26,8 @@ module.exports = (app) => {
     app.get('/user/course/:_id/teacher', app.permission.check('course:read'), app.templates.admin);
     app.get('/user/course/:_id/representer', app.permission.check('course:read'), app.templates.admin);
     app.get('/user/course/:_id/rate-teacher', app.permission.check('course:read'), app.templates.admin);
-    app.get('/user/course/:_id/feedback', app.permission.check('course:read'), app.templates.admin);
-    app.get('/user/course/:_id/feedback/:_feedbackId', app.permission.check('course:read'), app.templates.admin);
+    app.get('/user/course/:_id/feedback', app.permission.check('course:write'), app.templates.admin);
+    app.get('/user/course/:_id/feedback/:_feedbackId', app.permission.check('course:write'), app.templates.admin);
     app.get('/user/course/:_id/your-students', app.permission.check('course:read'), app.templates.admin);
     app.get('/user/course/:_id/learning', app.permission.check('course:read'), app.templates.admin);
     app.get('/user/course/:_id/import-graduation-exam-score', app.permission.check('course:import'), app.templates.admin);
@@ -113,7 +113,7 @@ module.exports = (app) => {
             condition.teacherGroups = { $elemMatch: { teacher: sessionUser._id } };
             condition.active = true;
         }
-        if (sessionUser.division && sessionUser.division.isOutside) {
+        if (sessionUser.isCourseAdmin && !sessionUser.isLecturer && sessionUser.division && sessionUser.division.isOutside) {
             condition.admins = sessionUser._id;
             condition.active = true;
         }
@@ -535,7 +535,8 @@ module.exports = (app) => {
     }));
 
     app.permissionHooks.add('lecturer', 'course', (user) => new Promise(resolve => {
-        app.permissionHooks.pushUserPermission(user, 'course:read', 'course:export', 'student:write', 'student:read');
+        app.permissionHooks.pushUserPermission(user, 'course:read', 'student:write', 'student:read');
+        if (user.division && !user.division.isOutside) app.permissionHooks.pushUserPermission(user, 'course:export');
         resolve();
     }));
 };

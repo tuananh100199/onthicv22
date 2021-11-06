@@ -25,6 +25,7 @@ class FeedbackSection extends React.Component {
 
     render() {
         // const permission = this.getUserPermission('feedback');
+        const { type, permission } = this.props;
         let { pageNumber, pageSize, pageTotal, pageCondition, totalItem, list } = this.props.feedback && this.props.feedback.page ?
             this.props.feedback.page : { pageNumber: 1, pageSize: 50, pageTotal: 1, pageCondition: {}, totalItem: 0, list: [] };
         const table = renderTable({
@@ -32,17 +33,19 @@ class FeedbackSection extends React.Component {
             renderHead: () => (
                 <tr>
                     <th style={{ width: 'auto', textAlign: 'center' }}>#</th>
-                    <th style={{ width: '40%' }}>Tên</th>
-                    <th style={{ width: '30%' }} nowrap='true'>Thời gian</th>
-                    <th style={{ width: '30%' }} nowrap='true'>Trạng thái</th>
+                    <th style={{ width: '100%' }}>Họ và tên học viên</th>
+                    {type == 'teacher' ? <th style={{ width: 'auto' }} nowrap='true'>Họ và tên CVHT được phản hồi</th> : null}
+                    <th style={{ width: 'auto' }} nowrap='true'>Thời gian</th>
+                    <th style={{ width: 'auto' }} nowrap='true'>Trạng thái</th>
                     {/* <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Thao tác</th> */}
                 </tr>),
             renderRow: (item, index) => (
                 <tr key={index} style={{ fontWeight: item.isSeen == true ? 'normal' : 'bold' }}>
                     <TableCell type='number' content={index + 1} />
-                    <TableCell type='link' content={`${item.user && item.user.lastname} ${item.user && item.user.firstname}`} onClick={e => this.edit(e, item)} />
-                    <TableCell content={T.dateToText(item.createdDate)} />
-                    <TableCell content={item.replies && item.replies.length ? 'Đã trả lời' : 'Chưa trả lời'} />
+                    <TableCell type={permission.write ? 'link' : 'text'} content={`${item.user && item.user.lastname} ${item.user && item.user.firstname}`} onClick={e => this.edit(e, item)} />
+                    {type == 'teacher' ? <TableCell content={`${item._refId && item._refId.lastname} ${item._refId && item._refId.firstname}`} /> : null}
+                    <TableCell content={T.dateToText(item.createdDate)} style={{ whiteSpace: 'nowrap' }} />
+                    <TableCell content={item.replies && item.replies.length ? 'Đã trả lời' : 'Chưa trả lời'} style={{ whiteSpace: 'nowrap' }} />
                     {/* <TableCell type='buttons' content={item} onEdit={this.edit} /> */}
                 </tr>),
         });
