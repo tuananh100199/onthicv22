@@ -103,7 +103,7 @@ class FailGraduationPage extends AdminPage {//TODO: Vinh
                             <FormSelect ref={e => this.courseType = e} data={ajaxSelectCourseType} placeholder='Loại khóa học'
                                 onChange={data => this.onChangeCourseType(data.id)} style={{ margin: 0, width: '200px' }} />
                         </div>
-                        {table}
+                        {this.courseType && this.courseType.value() != null ? table : null}
                     </div>
                 </div>
                 <CirclePageButton type='export' onClick={() => T.alert('todo')} />

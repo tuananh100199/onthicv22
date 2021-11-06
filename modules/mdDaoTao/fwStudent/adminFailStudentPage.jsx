@@ -30,7 +30,7 @@ class StudentModal extends AdminModal {
         title: 'Chỉnh sửa học viên chưa đạt sát hạch',
         body: (
             <div className='row'>
-                 <FormDatePicker className='col-12' ref={e => this.ngayDuKienThiSatHach = e} label='Ngày dự kiến thi sát hạch (dd/mm/yyyy)' readOnly={this.props.readOnly} type='date-mask' />
+                <FormDatePicker className='col-12' ref={e => this.ngayDuKienThiSatHach = e} label='Ngày dự kiến thi sát hạch (dd/mm/yyyy)' readOnly={this.props.readOnly} type='date-mask' />
                 <FormRichTextBox className='col-12' ref={e => this.liDoChuaDatSatHach = e} label='Lí do chưa đạt sát hạch' readOnly={this.props.readOnly} />
             </div>),
     });
@@ -120,11 +120,11 @@ class FailStudentPage extends AdminPage {
                             <FormSelect ref={e => this.courseType = e} data={ajaxSelectCourseType} placeholder='Loại khóa học'
                                 onChange={data => this.onChangeCourseType(data.id)} style={{ margin: 0, width: '200px' }} />
                         </div>
-                        {table}
+                        {this.courseType && this.courseType.value() != null ? table : null}
                     </div>
                 </div>
                 <CirclePageButton type='import' onClick={() => this.props.history.push('/user/student/import-fail-pass')} />
-                {/* <CirclePageButton type='export' style={{ right: 70 }} onClick={() => T.alert('todo')} /> */} 
+                {/* <CirclePageButton type='export' style={{ right: 70 }} onClick={() => T.alert('todo')} /> */}
                 <StudentModal readOnly={!permission.write} ref={e => this.modal = e} update={this.props.updateStudent} />
                 <Pagination pageCondition={pageCondition} pageNumber={pageNumber} pageSize={pageSize} pageTotal={pageTotal} totalItem={totalItem} getPage={(pageNumber, pageSize) => this.onSearch({ pageNumber, pageSize })} />
             </>,
