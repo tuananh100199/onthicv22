@@ -46,7 +46,7 @@ module.exports = (app) => {
         app.model.timeTable.get(req.query._id, (error, item) => res.send({ error, item }));
     });
 
-    app.get('/api/time-table/date-number', app.permission.check('timeTable:read'), (req, res) => {
+    app.get('/api/time-table/date-number', app.permission.check('user:login'), (req, res) => {
         let { _id, student, date, startHour, numOfHours } = req.query,
             dateTime = new Date(date).getTime();
         startHour = Number(startHour);
@@ -84,6 +84,7 @@ module.exports = (app) => {
                     dateNumber++;
                 }
             }
+            console.log('dateNumber', dateNumber);
             res.send({ dateNumber });
         });
     });
@@ -176,6 +177,26 @@ module.exports = (app) => {
                 app.model.timeTable.getPage(undefined, undefined, { student: item._id }, (error, page) => res.send({ error, page }));
             }
         });
+    });
+    app.post('/api/time-table/student', app.permission.check('user:login'), (req, res) => {
+        const userId = req.session.user._id,
+        data = app.clone(req.body.data);
+        data.state = 'waiting';
+        app.model.student.get({ user: userId }, (error, student) => {
+            if (error || student == null) {
+                res.send({ error: 'Lỗi khi tạo lịch học học viên' });
+            } else {
+                data.student = student._id;
+                app.model.timeTable.create(data, (error, item) => {
+                    if (error && !item) {
+                        res.send({ error });
+                    } else {
+                        app.model.timeTable.get(item._id, (error, item) => res.send({ error, item }));
+                    }
+                });
+            }
+        });
+      
     });
 
     // Hook permissionHooks -------------------------------------------------------------------------------------------

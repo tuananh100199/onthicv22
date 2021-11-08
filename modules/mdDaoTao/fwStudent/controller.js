@@ -243,6 +243,12 @@ module.exports = (app) => {
         });
     });
 
+    // User API ------------------------------------------------------------------------------------------------------
+    app.get('/api/student/user', app.permission.check('user:login'), (req, res) => {
+        console.log(req.query.condition);
+        app.model.student.get(req.query.condition, (error, item) => res.send({ error, item }));
+    });
+
     // Hook permissionHooks -------------------------------------------------------------------------------------------
     app.permissionHooks.add('courseAdmin', 'pre-student', (user) => new Promise(resolve => {
         app.permissionHooks.pushUserPermission(user, 'pre-student:read', 'pre-student:write', 'pre-student:delete');

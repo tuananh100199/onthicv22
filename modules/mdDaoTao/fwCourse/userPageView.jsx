@@ -105,7 +105,7 @@ class UserCoursePageDetail extends AdminPage {
                     <PageIcon to={`/user/hoc-vien/khoa-hoc/${courseId}/thoi-khoa-bieu`} icon='fa-calendar' iconBackgroundColor='#ffc107' text='Thời khóa biểu' />
                     <PageIcon to='#' icon='fa-graduation-cap ' iconBackgroundColor='#8d6e63' text='Xem điểm thi tốt nghiệp' onClick={(e) => { e.preventDefault(); this.viewScoreModal.show({ student, course }); }} />
                     <PageIcon to={`/user/course/${courseId}/forum`} icon='fa-users' iconBackgroundColor='#8d6e63' text='Forum' />
-                    <PageIcon to={`/user/course/${courseId}/student/register-calendar`} icon='fa-calendar-plus-o' iconBackgroundColor='#8d74aa' text='Đăng ký lịch học' />
+                    <PageIcon to={`/user/hoc-vien/khoa-hoc/${courseId}/dang-ky-lich-hoc`} icon='fa-calendar-plus-o' iconBackgroundColor='#8d74aa' text='Đăng ký lịch học' />
 
                     
 

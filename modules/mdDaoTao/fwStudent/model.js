@@ -57,6 +57,7 @@ module.exports = (app) => {
             point: Number,
         }],
         diemTrungBinhThiHetMon: Number,
+        soGioThucHanhDaHoc: Number,
 
         datSatHach: { type: Boolean, default: false },
         totNghiep: { type: Boolean, default: false },

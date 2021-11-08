@@ -2,12 +2,15 @@ import T from 'view/js/common';
 
 // Reducer ------------------------------------------------------------------------------------------------------------
 const RegisterCalendarGetPage = 'RegisterCalendarGetPage';
+const RegisterCalendarGetAll = 'RegisterCalendarGetAll';
 const RegisterCalendarUpdate = 'RegisterCalendarUpdate';
 
 export default function registerCalendarReducer(state = {}, data) {
     switch (data.type) {
         case RegisterCalendarGetPage:
             return Object.assign({}, state, { page: data.page });
+        case RegisterCalendarGetAll:
+            return Object.assign({}, state, { list: data.list });
         case RegisterCalendarUpdate: {
             let updatedPage = Object.assign({}, state.page),
                 updatedItem = data.item;
@@ -30,7 +33,6 @@ export default function registerCalendarReducer(state = {}, data) {
 // Actions ------------------------------------------------------------------------------------------------------------
 T.initCookiePage('pageRegisterCalendar');
 export function getRegisterCalendarPageByAdmin(pageNumber, pageSize, pageCondition, done) {
-    console.log('pageCondition', pageCondition);
     const page = T.updatePage('pageRegisterCalendar', pageNumber, pageSize);
     return dispatch => {
         const url = `/api/register-calendar/page/admin/${page.pageNumber}/${page.pageSize}`;
@@ -43,6 +45,21 @@ export function getRegisterCalendarPageByAdmin(pageNumber, pageSize, pageConditi
                 dispatch({ type: RegisterCalendarGetPage, page: data.page });
             }
         }, error => console.error(error) || T.notify('Lấy lịch nghỉ bị lỗi!', 'danger'));
+    };
+}
+
+export function getAllRegisterCalendars(condition, done) {
+    return dispatch => {
+        const url = '/api/register-calendar/all';
+        T.get(url, { condition }, data => {
+            if (data.error) {
+                T.notify('Lấy tất cả lịch nghỉ bị lỗi!', 'danger');
+                console.error('GET: ' + url + '. ' + data.error);
+            } else {
+                done && done(data.list);
+                dispatch({ type: RegisterCalendarGetAll, list: data.list });
+            }
+        }, error => console.error(error) || T.notify('Lấy tất cả lịch nghỉ bị lỗi!', 'danger'));
     };
 }
 
@@ -109,16 +126,15 @@ export function deleteRegisterCalendarByAdmin(_id, condition) {
 }
 
 //Student API--------------------------------------------------------------------------------------------------
-export function getRegisterCalendarByStudent(done) {
-    return dispatch => {
+export function getRegisterCalendarOfLecturerByStudent(condition, done) {
+    return () => {
         const url = '/api/register-calendar/student';
-        T.get(url, data => {
+        T.get(url, { condition }, data => {
             if (data.error) {
                 T.notify('Lấy lịch nghỉ bị lỗi!', 'danger');
                 console.error(`GET: ${url}. ${data.error}`);
             } else {
-                done && done(data.page);
-                dispatch({ type: RegisterCalendarGetPage, page: data.page });
+                done && done(data);
             }
         }, error => console.error(error) || T.notify('Lấy lịch nghỉ bị lỗi', 'danger'));
     };

@@ -20,7 +20,7 @@ export class LecturerRegisterCalendarPage extends AdminPage {
                         }
                     });
                 }
-               this.setState({ filterOn: false, key: false, list: true, calendar: false});
+               this.setState({ filterOn: false, key: false, list: false, calendar: true});
 
             } else {
                 this.props.history.push('/user/course/');

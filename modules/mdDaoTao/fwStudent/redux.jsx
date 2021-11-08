@@ -215,6 +215,26 @@ export function importPreStudent(students, division, courseType, done) {
     };
 }
 
+// User API -----------------------------------------------------------------------------------------------------------
+export function getStudentByUser(condition, done) {
+    return () => {
+        const url = '/api/student/user';
+        T.get(url, { condition }, data => {
+            console.log('data-redux', data);
+            if (data.error) {
+                T.notify('Lấy thông tin học viên bị lỗi!', 'danger');
+                console.error(`GET: ${url}. ${data.error}`);
+            } else {
+                // T.alert('Lấy thông tin học viên thành công!', 'info', false, 800);
+                done && done(data.item);
+                // dispatch({ type: StudentUpdate, item: data.item });
+            }
+        }, error => console.error(error) || T.notify('Lấy thông tin học viên bị lỗi', 'danger'));
+    };
+}
+
+
+
 // Ajax Selections ----------------------------------------------------------------------------------------------------
 export const ajaxSelectPreStudent = T.createAjaxAdapter(
     '/api/pre-student/page/1/20',

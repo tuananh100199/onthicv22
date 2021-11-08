@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import {getRegisterCalendarPageByAdmin, updateRegisterCalendarByAdmin, createRegisterCalendarByAdmin, deleteRegisterCalendarByAdmin, getRegisterCalendarOfLecturer } from './redux';
+import {getRegisterCalendarPageByAdmin, getAllRegisterCalendars, updateRegisterCalendarByAdmin, createRegisterCalendarByAdmin, deleteRegisterCalendarByAdmin, getRegisterCalendarOfLecturer } from './redux';
 import {  getCourse } from 'modules/mdDaoTao/fwCourse/redux';
 import Pagination from 'view/component/Pagination';
 import { AdminPage, AdminModal, TableCell, renderTable, FormDatePicker, FormSelect } from 'view/component/AdminPage';
@@ -89,7 +89,7 @@ class RegisterCalendarModal extends AdminModal {
         const data = {
             state: state == 'cancel' ? 'waiting' : 'cancel',
         };
-        T.confirm('Hủy lịch dạy', 'Bạn có chắc chắn muốn hủy lịch dạy này?', isConfirm => {
+        T.confirm(`${data.state == 'cancel' ? 'Hủy lịch nghỉ' : 'Bỏ hủy lịch nghỉ'}`, `Bạn có chắc chắn muốn ${data.state == 'cancel' ? 'hủy' : 'bỏ hủy'} lịch nghỉ này?`, isConfirm => {
             isConfirm && this.props.onSave(this.state._id, data, () => this.hide());
          });
     }
@@ -118,7 +118,7 @@ class RegisterCalendarModal extends AdminModal {
                 </div>
             </>,
             buttons: <>
-                { _id && this.props.calendar ? <button type='button' className='btn btn-danger' onClick={() => this.delete()}>Xóa</button> : null }
+                { _id && this.props.calendar && this.props.isCourseAdmin ? <button type='button' className='btn btn-danger' onClick={() => this.delete()}>Xóa</button> : null }
                 { _id && this.props.isLecturer && (state == 'waiting' || state == 'cancel') ? <button type='button' className='btn btn-danger' onClick={() => this.cancel()}>{state == 'cancel' ? 'Bỏ hủy' : 'Hủy' }</button> : null }
         </>
         });
@@ -175,18 +175,23 @@ class LecturerView extends AdminPage {
                         callback(items.map(item => _this.getEventObject({}, item)));
                     });
                     },
-                select: (startDate, endDate) => {
-                    this.onCalendarSelect(startDate.toDate(), endDate.toDate());
+                select: (start, end) => {
+                    if (isLecturer && start.toDate().getDay() != '5' && start.toDate().getDay() != '6') {
+                        this.onCalendarSelect(start.toDate(), end.toDate());
+                    } else {
+                        this.onCalendarSelect(start.toDate(), end.toDate());
+                    }
                 },
                 eventClick: function(calEvent) {
                     _this.eventSelect = calEvent;
-                    _this.onCalendarSelect(calEvent.start.toDate(), calEvent.end, calEvent.item);
+                    if (isLecturer && calEvent.start.toDate().getDay() != '5' && calEvent.start.toDate().getDay() != '6') {
+                        _this.onCalendarSelect(calEvent.start.toDate(), calEvent.end, calEvent.item);
+                    } else {
+                        _this.onCalendarSelect(calEvent.start.toDate(), calEvent.end, calEvent.item);
+                    }
+                   
                 },
                 aspectRatio:  isLecturer ? 3 : 2,
-                // eventRender: function (event, element) {
-                //     let dataToFind = moment(event.start).format('YYYY-MM-DD');
-                //     $("td[data-date='"+dataToFind+"']").addClass('activeDay');
-                // }
             });
         });
     }
@@ -214,8 +219,8 @@ class LecturerView extends AdminPage {
     }
     
     getData = (done) => {
-        this.props.getRegisterCalendarPageByAdmin(undefined, undefined, { courseId: this.props.courseId, lecturerId: this.props.lecturerId, filterOn: this.props.filterOn}, item => {
-           done && done(item.list);
+        this.props.getAllRegisterCalendars({ courseId: this.props.courseId, lecturerId: this.props.lecturerId, filterOn: this.props.filterOn }, list => {
+           done && done(list);
         });
     }
     
@@ -314,5 +319,5 @@ class LecturerView extends AdminPage {
 }
 
 const mapStateToProps = state => ({ system: state.system, course: state.trainning.course, registerCalendar: state.trainning.registerCalendar });
-const mapActionsToProps = { getRegisterCalendarPageByAdmin, updateRegisterCalendarByAdmin, createRegisterCalendarByAdmin, deleteRegisterCalendarByAdmin, getCourse, getRegisterCalendarOfLecturer };
+const mapActionsToProps = { getRegisterCalendarPageByAdmin, getAllRegisterCalendars, updateRegisterCalendarByAdmin, createRegisterCalendarByAdmin, deleteRegisterCalendarByAdmin, getCourse, getRegisterCalendarOfLecturer };
 export default connect(mapStateToProps, mapActionsToProps)(LecturerView);

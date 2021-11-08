@@ -7,7 +7,7 @@ module.exports = app => {
         numOfHours: { type: Number, default: 1 },                                       // Số giờ học, số nguyên dương.
         dateNumber: { type: Number, default: -1 },                                      // Buổi học thứ
         truant: { type: Boolean, default: false },                                      // Học viên không đến lớp
-
+        state: { type: String, enum: ['approved', 'waiting', 'reject', 'cancel'], default: 'waiting' }, // Trạng thái của thời khóa biểu
         licensePlates: String,                                                          // Xe học (biển số xe)
         content: String,                                                                // Nội dung học
         note: String,                                                                   // Ghi chú
@@ -21,7 +21,9 @@ module.exports = app => {
 
     app.model.timeTable = {
         create: (data, done) => model.create(data, (error, item) => {
+            console.log('item969', item);
             if (error || item == null) {
+                console.log('error',error);
                 done('Gặp lỗi khi tạo thời khóa biểu!');
             } else {
                 app.model.timeTable.updateStudentIndex(item, done);

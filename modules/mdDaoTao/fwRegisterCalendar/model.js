@@ -18,14 +18,14 @@ module.exports = app => {
                 let result = { totalItem, pageSize, pageTotal: Math.ceil(totalItem / pageSize) };
                 result.pageNumber = pageNumber === -1 ? result.pageTotal : Math.min(pageNumber, result.pageTotal);
                 const skipNumber = (result.pageNumber > 0 ? result.pageNumber - 1 : 0) * result.pageSize;
-                model.find(condition).populate('lecturer', 'lastname firstname phoneNumber identityCard').sort({ date: -1, startHour: 1 }).skip(skipNumber).limit(result.pageSize).exec((error, list) => {
+                model.find(condition).populate('lecturer', 'lastname firstname phoneNumber identityCard').sort({ dateOff: -1, }).skip(skipNumber).limit(result.pageSize).exec((error, list) => {
                     result.list = error ? [] : list;
                     done(error, result);
                 });
             }
         }),
 
-        getAll: (condition, done) => done ? model.find(condition).populate('lecturer', 'lastname firstname phoneNumber identityCard').sort({ date: 1, startHour: -1 }).exec(done) : model.find({}).populate('lecturer', 'lastname firstname phoneNumber identityCard').sort({ date: 1, startHour: -1 }).exec(condition),
+        getAll: (condition, done) => done ? model.find(condition).populate('lecturer', 'lastname firstname phoneNumber identityCard').sort({ dateOff: 1 }).exec(done) : model.find({}).populate('lecturer', 'lastname firstname phoneNumber identityCard').sort({ date: 1, startHour: -1 }).exec(condition),
 
         get: (condition, done) => {
             const findTask = typeof condition == 'string' ? model.findById(condition) : model.findOne(condition);

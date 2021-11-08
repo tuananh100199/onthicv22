@@ -215,3 +215,18 @@ export function getTimeTableByStudent(done) {
         }, error => console.error(error) || T.notify('Lấy thời khóa biểu bị lỗi', 'danger'));
     };
 }
+export function createTimeTableByStudent(data, done) {
+    return () => {
+        const url = '/api/time-table/student';
+        T.post(url, { data }, data => {
+            if (data.error) {
+                T.notify('Đăng ký lịch học bị lỗi!', 'danger');
+                console.error(`POST: ${url}. ${data.error}`);
+            } else {
+                T.notify('Đăng ký lịch học thành công!', 'success');
+                done && done(data.item);
+                // dispatch(getTimeTablePage());
+            }
+        }, error => console.error(error) || T.notify('Đăng ký lịch học bị lỗi!', 'danger'));
+    };
+}

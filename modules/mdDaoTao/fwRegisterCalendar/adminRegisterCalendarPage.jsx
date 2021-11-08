@@ -54,8 +54,8 @@ export class AdminTimeTablePage extends AdminPage {
         const backRoute = `/user/course/${item._id}`;
         return this.renderPage({
             icon: 'fa fa-calendar-plus-o',
-            title: 'Thời khóa biểu: ' + item.name,
-            breadcrumb: [<Link key={0} to='/user/course'>Khóa học</Link>, item._id ? <Link key={0} to={backRoute}>{item.name}</Link> : '', 'Thời khóa biểu'],
+            title: 'Lịch nghỉ: ' + item.name,
+            breadcrumb: [<Link key={0} to='/user/course'>Khóa học</Link>, item._id ? <Link key={0} to={backRoute}>{item.name}</Link> : '', 'Lịch nghỉ'],
             content: (
                 <div className='tile'>
                     <div className='tile-body'>
