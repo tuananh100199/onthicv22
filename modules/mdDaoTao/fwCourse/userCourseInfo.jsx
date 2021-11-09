@@ -21,8 +21,8 @@ class UserCourseInfo extends AdminPage {
                     } else if (data.notify) {
                         T.alert(data.notify, 'error', false, 2000);
                         this.props.history.push(previousRoute);
-                    } else if (data.item) {
-                        this.setState(data.item);
+                    } else if (data.item && data.student) {
+                        this.setState({ ...data.item, ngayDuKienThiSatHach: data.student.ngayDuKienThiSatHach });
                     } else {
                         this.props.history.push(previousRoute);
                     }
@@ -61,6 +61,7 @@ class UserCourseInfo extends AdminPage {
                         <label className='col-md-6'>Thời gian kết thúc môn chính thức: <b>{T.dateToText(this.state.thoiGianThiKetThucMonChinhThuc, 'dd/mm/yyyy h:mm')}</b></label>
                         <label className='col-md-6'>Thời gian tốt nghiệp dự kiến: <b>{T.dateToText(this.state.thoiGianThiTotNghiepDuKien, 'dd/mm/yyyy h:mm')}</b></label>
                         <label className='col-md-6'>Thời gian tốt nghiệp chính thức: <b>{T.dateToText(this.state.thoiGianThiTotNghiepChinhThuc, 'dd/mm/yyyy h:mm')}</b></label>
+                        <label className='col-md-6'>Thời gian thi sát hạch: <b>{this.state.ngayDuKienThiSatHach ? T.dateToText(this.state.ngayDuKienThiSatHach, 'dd/mm/yyyy h:mm') : 'Chưa có'}</b></label>
                     </div>
 
                 </>

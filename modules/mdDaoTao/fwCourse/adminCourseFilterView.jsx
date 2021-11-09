@@ -47,7 +47,8 @@ class CoursePageFilter extends AdminPage {
                     <TableCell type='date' content={item.thoiGianKhaiGiang} style={{ whiteSpace: 'nowrap' }} />
                     <TableCell type='number' content={item.admins ? item.admins.length : 0} />
                     <TableCell type='number' content={item.teacherGroups ? item.teacherGroups.length : 0} />
-                    <TableCell type='number' content={item.teacherGroups ? item.teacherGroups.reduce((sum, { student }) => (student ? student.length : 0) + sum, 0) : 0} />
+                    <TableCell type='number' content={item.numberOfStudent || 0} />
+                    {/* <TableCell type='number' content={item.teacherGroups ? item.teacherGroups.reduce((sum, { student }) => (student ? student.length : 0) + sum, 0) : 0} /> */}
                     {!readOnly && <TableCell type='checkbox' content={item.active} permission={permission} onChanged={active => this.changeActive(item, active)} />}
                     {!readOnly && <TableCell type='buttons' content={item} permission={permission} onEdit={'/user/course/' + item._id} onDelete={this.delete} />}
                 </tr>),

@@ -23,16 +23,17 @@ class FeedbackSection extends React.Component {
 
     render() {
         // const permission = this.getUserPermission('feedback');
+        const { permission } = this.props;
         const item = this.props.feedback && this.props.feedback.item;
         return item ? <>
             <div className='tile'>
                 {/* <div className='tile-body'> */}
-                <div className='row'>
+                {permission.write ? <div className='row'>
                     <FormRichTextBox ref={e => this.newFeedback = e} className='col-md-11' style={{ display: 'flex' }} />
                     <div className='col-md-1'>
                         <button className='btn btn-primary' type='button' onClick={this.replyFeedback}> Gửi </button>
                     </div>
-                </div>
+                </div> : null}
                 <div className='tile-body'>
                     <div style={{ marginRight: 100 }}>
                         <div className='row'>

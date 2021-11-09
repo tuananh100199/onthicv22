@@ -1,6 +1,6 @@
 module.exports = (app) => {
 
-    app.get('/api/course/export/:_courseId', app.permission.check('course:read'), (req, res) => {
+    app.get('/api/course/export/:_courseId', app.permission.check('course:export'), (req, res) => {
         app.model.course.get(req.params._courseId, (error, course) => {
             if (error) {
                 res.send({ error });
@@ -271,7 +271,7 @@ module.exports = (app) => {
         }).catch(error => console.error(error) || res.send({ error }));
     });
 
-    app.get('/api/course/student/export/:_courseId', app.permission.check('course:read'), (req, res) => {
+    app.get('/api/course/student/export/:_courseId', app.permission.check('course:export'), (req, res) => {
         const sessionUser = req.session.user,
             division = sessionUser.division,
             courseId = req.params._courseId;
@@ -323,7 +323,7 @@ module.exports = (app) => {
         }
     });
 
-    app.get('/api/course/representer-student/export/:_courseId', app.permission.check('course:read'), (req, res) => {
+    app.get('/api/course/representer-student/export/:_courseId', app.permission.check('course:export'), (req, res) => {
         const courseId = req.params._courseId;
         app.model.course.get(courseId, (error, course) => {
             if (error) {
@@ -392,7 +392,7 @@ module.exports = (app) => {
         });
     });
 
-    app.get('/api/course/teacher-student/export/:_courseId', app.permission.check('course:read'), (req, res) => {
+    app.get('/api/course/teacher-student/export/:_courseId', app.permission.check('course:export'), (req, res) => {
         const sessionUser = req.session.user,
             division = sessionUser.division,
             courseId = req.params._courseId;
