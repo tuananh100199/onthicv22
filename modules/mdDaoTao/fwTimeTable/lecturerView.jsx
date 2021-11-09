@@ -5,6 +5,8 @@ import { getStudent, ajaxSelectStudentOfLecturer } from 'modules/mdDaoTao/fwStud
 import {  getCourse } from 'modules/mdDaoTao/fwCourse/redux';
 import Pagination from 'view/component/Pagination';
 import { AdminPage, AdminModal, TableCell, renderTable, FormTextBox, FormCheckbox, FormRichTextBox, FormSelect, FormDatePicker } from 'view/component/AdminPage';
+import { RegisterCalendarStates, RegisterCalendarStatesMapper } from 'modules/mdDaoTao/fwRegisterCalendar/index';
+import Dropdown from 'view/component/Dropdown';
 
 class NoteModal extends AdminModal {
     state = {};
@@ -54,7 +56,7 @@ class TimeTableModal extends AdminModal {
             return `${year}-${formatDayOrMonth(month)}-${formatDayOrMonth(day)}T17:00:00.000Z`;// chuyển ngày trong calendar sang định dạng lưu trong DB
         }
 
-        const { _id, student, dateNumber, date, startHour, numOfHours, truant, licensePlates, content, note } = item.data || { date: item.start ? item.start.toISOString() : null, startHour: 8, numOfHours: 2, truant: false, licensePlates: '', content: '', note: '' },
+        const { _id, student, dateNumber, date, startHour, numOfHours, state, truant, licensePlates, content, note } = item.data || { date: item.start ? item.start.toISOString() : null, startHour: 8, numOfHours: 2, state: 'waiting', truant: false, licensePlates: '', content: '', note: '' },
             endHour = startHour + numOfHours;
         this.itemStudent.value(student ? student._id : null);
         this.itemDate.value(date);
@@ -64,6 +66,7 @@ class TimeTableModal extends AdminModal {
         this.itemTruant.value(truant);
         this.itemContent.value(content);
         this.itemNote.value(note);
+        this.itemState && this.itemState.value(state);
 
         this.setState({ loading: false, _id, student, dateNumber, date, startHour, endHour });
         date ? this.props.getTimeTableOfLecturer({courseId: this.props.courseId, lecturerId: this.props.lecturerId, date: formatDate(date)}, data => {
@@ -83,6 +86,7 @@ class TimeTableModal extends AdminModal {
                 date: this.itemDate.value(),
                 startHour: this.itemStartHour.value(),
                 numOfHours: Number(this.itemNumOfHours.value()),
+                state: this.itemState.value(),
                 truant: this.itemTruant.value(),
                 licensePlates: this.itemLicensePlates.value(),
                 content: this.itemContent.value(),
@@ -222,7 +226,8 @@ class TimeTableModal extends AdminModal {
                     </div> : ''}
 
                     <FormTextBox ref={e => this.itemLicensePlates = e} label='Xe học' className='col-md-4' style={{ textTransform: 'uppercase' }} readOnly={this.props.readOnly} required />
-                    <FormCheckbox ref={e => this.itemTruant = e} label='Học viên vắng học' className='col-md-8' readOnly={this.props.readOnly} />
+                    <FormCheckbox ref={e => this.itemTruant = e} label='Học viên vắng học' className='col-md-4' readOnly={this.props.readOnly} />
+                    <FormSelect className='col-md-4' ref={e => this.itemState = e} label='Trạng thái' data={RegisterCalendarStates} readOnly={this.props.readOnly} /> 
 
                     <FormRichTextBox ref={e => this.itemContent = e} label='Nội dung học' className='col-lg-6' readOnly={this.props.readOnly} />
                     <FormRichTextBox ref={e => this.itemNote = e} label='Ghi chú' className='col-lg-6' readOnly={this.props.readOnly} />
@@ -241,7 +246,7 @@ class LecturerView extends AdminPage {
     componentDidMount() {
         const user = this.props.system ? this.props.system.user : null,
             { isLecturer, isCourseAdmin } = user;
-        const { courseId, lecturerId, filterOn } = this.props;
+        const { courseId, lecturerId, filterOn, official } = this.props;
         const course = this.props.course ? this.props.course.item : null;
 
         if (!course) {
@@ -254,7 +259,7 @@ class LecturerView extends AdminPage {
         }
         if (courseId && lecturerId) {
             this.setState({ courseId, lecturerId, isLecturer, isCourseAdmin, filterOn });
-            this.props.getTimeTablePageByAdmin(undefined, undefined, { courseId: courseId, lecturerId: lecturerId, filterOn: filterOn});
+            this.props.getTimeTablePageByAdmin(undefined, undefined, { courseId: courseId, lecturerId: lecturerId, filterOn: filterOn, official: official });
         }
 
         const _this = this;
@@ -277,7 +282,7 @@ class LecturerView extends AdminPage {
                     right: 'month,agendaWeek,agendaDay'
                 },
                 views: {
-                    month: { timeFormat: '' },
+                    month: { timeFormat: 'H:mm' },
                     agendaWeek: { columnHeaderFormat: 'ddd DD/MM' }
                 },
                 events: function(start, end, timezone, callback) {
@@ -292,6 +297,7 @@ class LecturerView extends AdminPage {
                     _this.eventSelect = calEvent;
                     _this.onCalendarSelect(calEvent.start.toDate(), calEvent.end, calEvent.item);
                 },
+                aspectRatio:  isLecturer ? 3 : 2,
             });
         });
     }
@@ -318,7 +324,7 @@ class LecturerView extends AdminPage {
     }
     
     getData = (done) => {
-        this.props.getTimeTablePageByAdmin(undefined, undefined, { courseId: this.props.courseId, lecturerId: this.props.lecturerId, filterOn: this.props.filterOn}, item => {
+        this.props.getTimeTablePageByAdmin(undefined, undefined, { courseId: this.props.courseId, lecturerId: this.props.lecturerId, filterOn: this.props.filterOn, official: this.props.official}, item => {
            done && done(item.list);
         });
     }
@@ -361,11 +367,13 @@ class LecturerView extends AdminPage {
             this.eventSelect = null;
         }
     }
+
+    updateState = (item, state) => this.props.updateTimeTableByAdmin(item._id, { state }, {courseId: this.props.courseId, lecturerId: this.props.lecturerId, filterOn: this.props.filterOn});
     
     delete = (e, item) => e.preventDefault() || T.confirm('Xoá thời khóa biểu', 'Bạn có chắc muốn xoá thời khóa biểu này?', true, isConfirm =>
         isConfirm && this.props.deleteTimeTableByAdmin(item._id, {courseId: this.props.courseId, lecturerId: this.props.lecturerId, filterOn: this.props.filterOn} ));
         
-    getPage = (pageNumber, pageSize) => this.props.getTimeTablePageByAdmin(pageNumber, pageSize, { courseId: this.props.courseId, lecturerId: this.props.lecturerId, filterOn: this.props.filterOn });
+    getPage = (pageNumber, pageSize) => this.props.getTimeTablePageByAdmin(pageNumber, pageSize, { courseId: this.props.courseId, lecturerId: this.props.lecturerId, filterOn: this.props.filterOn, official: this.props.official });
 
     render() {
         const courseItem = this.props.course && this.props.course.item ? this.props.course.item : {};
@@ -387,24 +395,30 @@ class LecturerView extends AdminPage {
                     <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Số giờ học</th>
                     <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Xe học</th>
                     <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Nghỉ học</th>
+                    <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Trạng thái</th>
                     <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Thao tác</th>
                 </tr>),
-            renderRow: (item, index) => (
-                <tr key={index} style={{ backgroundColor: T.dateToText(item.date, 'dd/mm/yyyy') == today ? '#D9EDF7' : '' }} >
-                    <TableCell type='number' content={(pageNumber - 1) * pageSize + index + 1} />
-                    <TableCell type='link' content={<>{item.student ? item.student.lastname + ' ' + item.student.firstname : ''}<br />{item.student ? item.student.identityCard : ''}</>} style={{ whiteSpace: 'nowrap' }} onClick={e => this.edit(e, item)} />
-                    <TableCell type='text' content={item.student && item.student.user && item.student.user.phoneNumber ? T.mobileDisplay(item.student.user.phoneNumber) : ''} style={{ whiteSpace: 'nowrap' }} />
-                    <TableCell type='text' content={<><span>{item.student && item.student.course ? item.student.course.name : ''}</span><br />{item.student && item.student.courseType ? item.student.courseType.title : ''}</>} style={{ whiteSpace: 'nowrap' }} />
-                    <TableCell type='number' style={{ textAlign: 'center' }} content={item.dateNumber} />
-                    <TableCell type='text' content={item.date ? T.dateToText(item.date, 'dd/mm/yyyy') : ''} />
-                    <TableCell type='number' style={{ textAlign: 'center' }} content={item.numOfHours ? `${item.startHour}-${item.startHour + item.numOfHours}` : `${item.startHour}`} />
-                    <TableCell type='number' style={{ textAlign: 'center' }} content={item.numOfHours} />
-                    <TableCell type='number' style={{ textAlign: 'center' }} content={item.licensePlates} />
-                    <TableCell type='checkbox' content={item.truant} permission={permission} onChanged={active =>  T.confirm('Học viên vắng học', 'Bạn có chắc muốn thay đổi trạng thái học viên nghỉ học?', true, isConfirm =>
-                        isConfirm && this.props.updateTimeTableByAdmin(item._id, { truant: active }, {courseId: this.props.courseId, lecturerId: this.props.lecturerId, filterOn: this.props.filterOn} )) }/>
-                    <TableCell type='buttons' content={item} permission={permission} onEdit={this.edit} onDelete={this.delete} />
-                </tr>
-            ),
+            renderRow: (item, index) => {
+                const stateText = RegisterCalendarStatesMapper[item.state] ? RegisterCalendarStatesMapper[item.state].text : ' ',
+                    dropdownState = <Dropdown items={RegisterCalendarStates} item={stateText} onSelected={e => this.updateState(item, e.id)} />;
+                return (
+                    <tr key={index} style={{ backgroundColor: T.dateToText(item.date, 'dd/mm/yyyy') == today ? '#D9EDF7' : '' }} >
+                        <TableCell type='number' content={(pageNumber - 1) * pageSize + index + 1} />
+                        <TableCell type='link' content={<>{item.student ? item.student.lastname + ' ' + item.student.firstname : ''}<br />{item.student ? item.student.identityCard : ''}</>} style={{ whiteSpace: 'nowrap' }} onClick={e => this.edit(e, item)} />
+                        <TableCell type='text' content={item.student && item.student.user && item.student.user.phoneNumber ? T.mobileDisplay(item.student.user.phoneNumber) : ''} style={{ whiteSpace: 'nowrap' }} />
+                        <TableCell type='text' content={<><span>{item.student && item.student.course ? item.student.course.name : ''}</span><br />{item.student && item.student.courseType ? item.student.courseType.title : ''}</>} style={{ whiteSpace: 'nowrap' }} />
+                        <TableCell type='number' style={{ textAlign: 'center' }} content={item.dateNumber} />
+                        <TableCell type='text' content={item.date ? T.dateToText(item.date, 'dd/mm/yyyy') : ''} />
+                        <TableCell type='number' style={{ textAlign: 'center' }} content={item.numOfHours ? `${item.startHour}-${item.startHour + item.numOfHours}` : `${item.startHour}`} />
+                        <TableCell type='number' style={{ textAlign: 'center' }} content={item.numOfHours} />
+                        <TableCell type='number' style={{ textAlign: 'center' }} content={item.licensePlates} />
+                        <TableCell type='checkbox' content={item.truant} permission={permission} onChanged={active =>  T.confirm('Học viên vắng học', 'Bạn có chắc muốn thay đổi trạng thái học viên nghỉ học?', true, isConfirm =>
+                            isConfirm && this.props.updateTimeTableByAdmin(item._id, { truant: active }, {courseId: this.props.courseId, lecturerId: this.props.lecturerId, filterOn: this.props.filterOn} )) }/>
+                        <TableCell content={dropdownState} style={{ whiteSpace: 'nowrap', textAlign: 'center' }} />
+                        <TableCell type='buttons' content={item} permission={permission} onEdit={this.edit} onDelete={this.delete} />
+                    </tr>
+            );
+        },
         });
         return (<>
                 <div>

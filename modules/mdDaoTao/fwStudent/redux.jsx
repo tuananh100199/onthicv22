@@ -220,7 +220,6 @@ export function getStudentByUser(condition, done) {
     return () => {
         const url = '/api/student/user';
         T.get(url, { condition }, data => {
-            console.log('data-redux', data);
             if (data.error) {
                 T.notify('Lấy thông tin học viên bị lỗi!', 'danger');
                 console.error(`GET: ${url}. ${data.error}`);

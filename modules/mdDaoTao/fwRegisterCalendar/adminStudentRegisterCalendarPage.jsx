@@ -3,15 +3,15 @@ import { connect } from 'react-redux';
 import { AdminPage, FormCheckbox } from 'view/component/AdminPage';
 import { Link } from 'react-router-dom';
 import { getCourse } from '../fwCourse/redux';
-import LecturerView from './lecturerView';
+import LecturerView from 'modules/mdDaoTao/fwTimeTable/lecturerView';
 import './registerCalendar.scss';
 
 
-export class AdminRegisterCalendarPage extends AdminPage {
+export class AdminTimeTablePage extends AdminPage {
     state = {};
     componentDidMount() {
         T.ready('/user/course', () => {
-            const params = T.routeMatcher('/user/course/:_id/register-calendar').parse(window.location.pathname);
+            const params = T.routeMatcher('/user/course/:_id/student-register-calendar').parse(window.location.pathname);
             if (params && params._id) {
                     this.props.getCourse(params._id, data => {
                         if (data.error) {
@@ -53,8 +53,8 @@ export class AdminRegisterCalendarPage extends AdminPage {
         });
         const backRoute = `/user/course/${item._id}`;
         return this.renderPage({
-            icon: 'fa fa-calendar-plus-o',
-            title: 'Lịch nghỉ: ' + item.name,
+            icon: 'fa fa-list-alt',
+            title: 'Danh sách lịch học học viên đăng ký: ' + item.name,
             breadcrumb: [<Link key={0} to='/user/course'>Khóa học</Link>, item._id ? <Link key={0} to={backRoute}>{item.name}</Link> : '', 'Lịch nghỉ'],
             content: (
                 <div className='tile'>
@@ -79,7 +79,7 @@ export class AdminRegisterCalendarPage extends AdminPage {
                                         <button style={{border: 'none', outline: 'none', backgroundColor: calendar ? '#2189CF' : ''}} onClick={() =>this.setState({key: !key, calendar: true, list: false, filterOn: false})}><i className='fa fa-calendar'></i> Lịch</button>
                                     </div>
                                 </div>
-                                {currentLecturer && item && item._id ? <LecturerView key={key} courseId={item._id} lecturerId={currentLecturer && currentLecturer._id} filterOn={filterOn} list={list} calendar={calendar} lecturerName={currentLecturer && currentLecturer.lastname + ' ' + currentLecturer.firstname} /> : null}
+                                {currentLecturer && item && item._id ? <LecturerView key={key} official={false} courseId={item._id} lecturerId={currentLecturer && currentLecturer._id} filterOn={filterOn} list={list} calendar={calendar} lecturerName={currentLecturer && currentLecturer.lastname + ' ' + currentLecturer.firstname} /> : null}
                             </div>
                         </div>
                     </div>
@@ -91,4 +91,4 @@ export class AdminRegisterCalendarPage extends AdminPage {
 
 const mapStateToProps = state => ({ system: state.system, course: state.trainning.course });
 const mapActionsToProps = { getCourse };
-export default connect(mapStateToProps, mapActionsToProps)(AdminRegisterCalendarPage);
+export default connect(mapStateToProps, mapActionsToProps)(AdminTimeTablePage);

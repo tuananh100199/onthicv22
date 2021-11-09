@@ -21,9 +21,7 @@ module.exports = app => {
 
     app.model.timeTable = {
         create: (data, done) => model.create(data, (error, item) => {
-            console.log('item969', item);
             if (error || item == null) {
-                console.log('error',error);
                 done('Gặp lỗi khi tạo thời khóa biểu!');
             } else {
                 app.model.timeTable.updateStudentIndex(item, done);

@@ -2,6 +2,7 @@ import T from 'view/js/common';
 
 // Reducer ------------------------------------------------------------------------------------------------------------
 const RegisterCalendarGetPage = 'RegisterCalendarGetPage';
+const UserRegisterCalendarGet = 'UserRegisterCalendarGet';
 const RegisterCalendarGetAll = 'RegisterCalendarGetAll';
 const RegisterCalendarUpdate = 'RegisterCalendarUpdate';
 
@@ -9,8 +10,13 @@ export default function registerCalendarReducer(state = {}, data) {
     switch (data.type) {
         case RegisterCalendarGetPage:
             return Object.assign({}, state, { page: data.page });
+
+        case UserRegisterCalendarGet:
+                return Object.assign({}, state, { listTimeTable: data.listTimeTable, listRegisterCalendar: data.listRegisterCalendar });
+
         case RegisterCalendarGetAll:
             return Object.assign({}, state, { list: data.list });
+
         case RegisterCalendarUpdate: {
             let updatedPage = Object.assign({}, state.page),
                 updatedItem = data.item;
@@ -127,7 +133,7 @@ export function deleteRegisterCalendarByAdmin(_id, condition) {
 
 //Student API--------------------------------------------------------------------------------------------------
 export function getRegisterCalendarOfLecturerByStudent(condition, done) {
-    return () => {
+    return dispatch => {
         const url = '/api/register-calendar/student';
         T.get(url, { condition }, data => {
             if (data.error) {
@@ -135,7 +141,54 @@ export function getRegisterCalendarOfLecturerByStudent(condition, done) {
                 console.error(`GET: ${url}. ${data.error}`);
             } else {
                 done && done(data);
+                dispatch({ type: UserRegisterCalendarGet, listTimeTable: data.listTimeTable, listRegisterCalendar: data.listRegisterCalendar });
             }
         }, error => console.error(error) || T.notify('Lấy lịch nghỉ bị lỗi', 'danger'));
+    };
+}
+
+export function createTimeTableByStudent(data, done) {
+    return () => {
+        const url = '/api/time-table/student';
+        T.post(url, { data }, data => {
+            if (data.error) {
+                T.notify('Đăng ký lịch học bị lỗi!', 'danger');
+                console.error(`POST: ${url}. ${data.error}`);
+            } else {
+                T.notify('Đăng ký lịch học thành công!', 'success');
+                done && done(data.item);
+            }
+        }, error => console.error(error) || T.notify('Đăng ký lịch học bị lỗi!', 'danger'));
+    };
+}
+
+export function updateTimeTableByStudent(_id, changes, done) {
+    return () => {
+        const url = '/api/time-table/student';
+        T.put(url, { _id, changes }, data => {
+            if (data.error) {
+                T.notify('Cập nhật trạng thái lịch học bị lỗi!', 'danger');
+                console.error(`PUT: ${url}. ${data.error}`);
+            } else {
+                T.notify('Cập nhật trạng thái lịch học thành công!', 'success');
+                done && done(data.item);
+            }
+            done && done(data.error);
+        }, error => console.error(error) || T.notify('Cập nhật trạng thái lịch học bị lỗi!', 'danger'));
+    };
+}
+
+export function deleteTimeTableByStudent(_id, condition) {
+    return dispatch => {
+        const url = '/api/time-table/student';
+        T.delete(url, { _id }, data => {
+            if (data.error) {
+                T.notify('Xóa lịch học đăng ký bị lỗi!', 'danger');
+                console.error(`DELETE: ${url}. ${data.error}`);
+            } else {
+                T.alert('Lịch học đăng ký được xóa thành công!', 'error', false, 800);
+                dispatch(getRegisterCalendarOfLecturerByStudent(condition));
+            }
+        }, error => console.error(error) || T.notify('Xóa lịch học đăng ký bị lỗi!', 'danger'));
     };
 }

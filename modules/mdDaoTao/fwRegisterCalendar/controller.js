@@ -72,27 +72,6 @@ module.exports = (app) => {
     });
 
     // Lecturer API---------------------------------------------------------------------------------------------------
-    // app.get('/api/register-calendar/lecturer', app.permission.check('user:login'), (req, res) => {
-    //     const userId = req.session.user._id,
-    //     condition = {};
-    //     app.model.student.get({ user: userId }, (error, item) => {
-    //         if (error || item == null) {
-    //             res.send({ error: 'Lỗi khi lấy đăng ký lịch học học viên' });
-    //         } else {
-    //             item = app.clone(item);
-    //             const teacherGroups = item.course && item.course.teacherGroups && item.course.teacherGroups.length ? item.course.teacherGroups : [],
-    //                 teacherGroup = teacherGroups.find(teacherGroup => teacherGroup.student && teacherGroup.student.length && teacherGroup.student.find(i => i == item._id)); // group teacher của học viên
-                
-    //             if (teacherGroup.teacher) {
-    //                 condition.lecturer = teacherGroup.teacher;
-    //             }
-    //             condition.state = 'approved';
-    //             console.log('condition',condition);
-    //             app.model.registerCalendar.getAll(condition, (error, list) => res.send({ error, list }));
-    //             // app.model.registerCalendar.getPage(undefined, undefined, { student: item._id }, (error, page) => res.send({ error, page }));
-    //         }
-    //     });
-    // });
     app.get('/api/register-calendar/lecturer', app.permission.check('registerCalendar:read'), (req, res) => {
         const condition = req.query.condition || {};
         let lecturerCondition = {};
@@ -109,8 +88,6 @@ module.exports = (app) => {
             }
         });
     });
-    
-
 
     // Student API-----------------------------------------------------------------------------------------------------
     app.get('/api/register-calendar/student', app.permission.check('user:login'), (req, res) => {
@@ -128,15 +105,12 @@ module.exports = (app) => {
                 if (teacherGroupOfStudent && teacherGroupOfStudent.teacher) {
                     const listStudent = teacherGroups.filter(teacherGroup => teacherGroup.teacher && teacherGroup.teacher == teacherGroupOfStudent.teacher),
                     studentIds = listStudent.length ? listStudent[0].student.map(student => student) : [];
-                    // console.log('listStudent', listStudent);
                     lecturerCondition.student = { $in:  studentIds };
                     condition.date ? lecturerCondition.date = condition.date : null;
-                    console.log('lecturerCondition', lecturerCondition);
                     app.model.registerCalendar.getAll({ lecturer: teacherGroupOfStudent.teacher, state: 'approved' }, (error, list) => {
                         if(error) {
                             res.send({ error });
                         } else {
-                            console.log('lecturerCondition', lecturerCondition);
                             app.model.timeTable.getAll(lecturerCondition, (error, items) => res.send({ error, listTimeTable : items ? items : [], listRegisterCalendar: list ? list: [] }));
 
                         }

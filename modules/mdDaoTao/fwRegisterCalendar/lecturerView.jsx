@@ -3,24 +3,9 @@ import { connect } from 'react-redux';
 import {getRegisterCalendarPageByAdmin, getAllRegisterCalendars, updateRegisterCalendarByAdmin, createRegisterCalendarByAdmin, deleteRegisterCalendarByAdmin, getRegisterCalendarOfLecturer } from './redux';
 import {  getCourse } from 'modules/mdDaoTao/fwCourse/redux';
 import Pagination from 'view/component/Pagination';
+import Dropdown from 'view/component/Dropdown';
 import { AdminPage, AdminModal, TableCell, renderTable, FormDatePicker, FormSelect } from 'view/component/AdminPage';
-const RegisterCalendarStates = [
-    { id: 'approved', text: 'Đã duyệt', color: '#1488db', className: 'btn btn-primary', icon: 'fa fa-lg fa-check' },
-    { id: 'waiting', text: 'Đang chờ duyệt', color: '#ffc107', className: 'btn btn-warning', icon: 'fa fa-lg fa-clock-o' },
-    { id: 'reject', text: 'Từ chối', color: '#dc3545', className: 'btn btn-danger', icon: 'fa fa-lg fa-times' },
-    { id: 'cancel', text: 'Hủy', color: '#6C757D', className: 'btn btn-danger', icon: 'fa fa-ban' },
-];
-const RegisterCalendarStatesMapper = {};
-RegisterCalendarStates.forEach(({ id, text, color }) => RegisterCalendarStatesMapper[id] = { text, color });
-
-const timeOffStates = [
-    { id: 'morning', text: 'Buổi sáng', color: 'black', className: 'btn btn-primary', icon: 'fa fa-lg fa-check' },
-    { id: 'noon', text: 'Buổi chiều', color: 'black', className: 'btn btn-warning', icon: 'fa fa-lg fa-clock-o' },
-    { id: 'allDay', text: 'Cả ngày', color: 'green', className: 'btn btn-success', icon: 'fa fa-lg fa-clock-o' },
-];
-const timeOffStatesMapper = {};
-timeOffStates.forEach(({ id, text, color }) => timeOffStatesMapper[id] = { text, color });
-
+import { RegisterCalendarStates, RegisterCalendarStatesMapper, timeOffStates, timeOffStatesMapper } from './index';
 class RegisterCalendarModal extends AdminModal {
     state = {listRegisterCalendar: null};
     onShow = (item) => {
@@ -167,7 +152,7 @@ class LecturerView extends AdminPage {
                     right: 'month,agendaWeek,agendaDay'
                 },
                 views: {
-                    month: { timeFormat: '' },
+                    month: { timeFormat: 'H:mm' },
                     agendaWeek: { columnHeaderFormat: 'ddd DD/MM' }
                 },
                 events: function(start, end, timezone, callback) {
@@ -212,8 +197,8 @@ class LecturerView extends AdminPage {
         start: `${year}-${formatTime(month)}-${formatTime(day)}T${newItem.timeOff == 'noon' ? '13' : '07'}:00:00`,
         end: `${year}-${formatTime(month)}-${formatTime(day)}T${newItem.timeOff == 'morning' ? '11' : '17'}:00:00`,
         item: newItem,
-        cotextColor:'white',
-        backgroundColor:  RegisterCalendarStatesMapper[newItem.state] && RegisterCalendarStatesMapper[newItem.state].color,
+        textColor:'white',
+        color: newItem.state ==  'approved' ? 'red' : RegisterCalendarStatesMapper[newItem.state] && RegisterCalendarStatesMapper[newItem.state].color,
     };
         return newEvent;
     }
@@ -251,6 +236,8 @@ class LecturerView extends AdminPage {
         this.modalCourseAdmin.show(data);
     }
 
+    updateState = (item, state) => this.props.updateRegisterCalendarByAdmin(item._id, { state }, {courseId: this.props.courseId, lecturerId: this.props.lecturerId, filterOn: this.props.filterOn});
+
     deleteCalendar = (_id) => {
         this.props.deleteRegisterCalendarByAdmin(_id, {courseId: this.props.courseId, lecturerId: this.props.lecturerId, filterOn: this.props.filterOn});
         if (this.eventSelect) {
@@ -265,7 +252,6 @@ class LecturerView extends AdminPage {
     getPage = (pageNumber, pageSize) => this.props.getRegisterCalendarPageByAdmin(pageNumber, pageSize, { courseId: this.props.courseId, lecturerId: this.props.lecturerId, filterOn: this.props.filterOn });
 
     render() {
-        console.log(this.props);
         const courseItem = this.props.course && this.props.course.item ? this.props.course.item : {};
         const today = T.dateToText(new Date().toISOString(), 'dd/mm/yyyy');
         const permission = this.getUserPermission('registerCalendar');
@@ -277,27 +263,34 @@ class LecturerView extends AdminPage {
                 <tr>
                     <th style={{ width: 'auto', textAlign: 'center' }}>#</th>
                     <th style={{ width: '60%' }} nowrap='true'>Giáo viên</th>
+                    <th style={{ width: '40%' }} nowrap='true'>Khóa học</th>
                     <th style={{ width: 'auto' }} nowrap='true'>CMND/CCCD</th>
-                    <th style={{ width: '30%' }} nowrap='true'>Khóa học</th>
                     <th style={{ width: 'auto' }} nowrap='true'>Số điện thoại</th>
                     <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Ngày nghỉ</th>
                     <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Buổi nghỉ</th>
                     <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Trạng thái</th>
                     <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Thao tác</th>
                 </tr>),
-            renderRow: (item, index) => (
+            renderRow: (item, index) => {
+                const stateText = RegisterCalendarStatesMapper[item.state] ? RegisterCalendarStatesMapper[item.state].text : ' ',
+                dropdownState = <Dropdown items={RegisterCalendarStates} item={stateText} onSelected={e => this.updateState(item, e.id)} />;
+                return (
                 <tr key={index} style={{ backgroundColor: T.dateToText(item.dateOff, 'dd/mm/yyyy') == today ? '#D9EDF7' : '' }} >
                     <TableCell type='number' content={(pageNumber - 1) * pageSize + index + 1} />
                     <TableCell type='link' content={<>{item.lecturer ? item.lecturer.lastname + ' ' + item.lecturer.firstname : ''}<br />{item.lecturer ? item.lecturer.identityCard : ''}</>} style={{ whiteSpace: 'nowrap' }} onClick={e => this.edit(e, item)} />
-                    <TableCell type='text' content={item.lecturer ? item.lecturer.identityCard : ''} style={{ whiteSpace: 'nowrap' }} onClick={e => this.edit(e, item)} />
                     <TableCell type='text' content={courseItem && courseItem.name ? courseItem.name : ''} style={{ whiteSpace: 'nowrap' }} />
+                    <TableCell type='text' content={item.lecturer ? item.lecturer.identityCard : ''} style={{ whiteSpace: 'nowrap' }} onClick={e => this.edit(e, item)} />
                     <TableCell type='text' content={item.lecturer && item.lecturer.phoneNumber ? T.mobileDisplay(item.lecturer.phoneNumber) : ''} style={{ whiteSpace: 'nowrap' }} />
                     <TableCell type='text' content={item.dateOff ? T.dateToText(item.dateOff, 'dd/mm/yyyy') : ''} />
                     <TableCell type='text' content={timeOffStatesMapper[item.timeOff] && timeOffStatesMapper[item.timeOff].text} style={{ whiteSpace: 'nowrap', textAlign: 'center', color: timeOffStatesMapper[item.timeOff] && timeOffStatesMapper[item.timeOff].color }}  nowrap='true'/>
+                    {this.state.isCourseAdmin ? 
+                    <TableCell content={dropdownState} style={{ whiteSpace: 'nowrap', textAlign: 'center' }} />:
                     <TableCell type='text' content={RegisterCalendarStatesMapper[item.state] && RegisterCalendarStatesMapper[item.state].text} style={{ whiteSpace: 'nowrap', textAlign: 'center', color: RegisterCalendarStatesMapper[item.state] && RegisterCalendarStatesMapper[item.state].color }}  nowrap='true'/>
+                    }
                     <TableCell type='buttons' content={item} permission={permission} onEdit={this.edit} onDelete={this.delete} />
                 </tr>
-            ),
+            ); 
+        },
         });
         return (<>
                 <div>
@@ -317,7 +310,6 @@ class LecturerView extends AdminPage {
         );
     }
 }
-
 const mapStateToProps = state => ({ system: state.system, course: state.trainning.course, registerCalendar: state.trainning.registerCalendar });
 const mapActionsToProps = { getRegisterCalendarPageByAdmin, getAllRegisterCalendars, updateRegisterCalendarByAdmin, createRegisterCalendarByAdmin, deleteRegisterCalendarByAdmin, getCourse, getRegisterCalendarOfLecturer };
 export default connect(mapStateToProps, mapActionsToProps)(LecturerView);

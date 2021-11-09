@@ -84,7 +84,6 @@ module.exports = (app) => {
                     dateNumber++;
                 }
             }
-            console.log('dateNumber', dateNumber);
             res.send({ dateNumber });
         });
     });
@@ -131,8 +130,7 @@ module.exports = (app) => {
         let pageNumber = parseInt(req.params.pageNumber),
             pageSize = parseInt(req.params.pageSize),
             condition = req.query.pageCondition || {},
-            pageCondition = {},
-            filterOn = JSON.parse(condition.filterOn);
+            pageCondition = {};
         app.model.course.get(condition.courseId, (error, item) => {
             if (error || !item) {
                 res.send({ error });
@@ -141,9 +139,12 @@ module.exports = (app) => {
                 const listStudent = item.teacherGroups.filter(teacherGroup => teacherGroup.teacher && teacherGroup.teacher._id == condition.lecturerId),
                 studentIds = listStudent.length && listStudent[0].student.map(student => student._id);
                 pageCondition = { student: { $in:  studentIds } };
-                if (filterOn){
+                if (condition.filterOn && JSON.parse(condition.filterOn)){
                     let today  = new Date();
                     pageCondition.date = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+                }
+                if (condition.official && JSON.parse(condition.official)) {
+                    pageCondition.state = 'approved';
                 }
                 app.model.timeTable.getPage(pageNumber, pageSize, pageCondition, (error, page) => res.send({ error, page }));
             }
@@ -174,10 +175,11 @@ module.exports = (app) => {
             if (error || item == null) {
                 res.send({ error: 'Lỗi khi lấy thời khóa biểu học viên' });
             } else {
-                app.model.timeTable.getPage(undefined, undefined, { student: item._id }, (error, page) => res.send({ error, page }));
+                app.model.timeTable.getPage(undefined, undefined, { student: item._id, state: 'approved' }, (error, page) => res.send({ error, page }));
             }
         });
     });
+
     app.post('/api/time-table/student', app.permission.check('user:login'), (req, res) => {
         const userId = req.session.user._id,
         data = app.clone(req.body.data);
@@ -196,8 +198,22 @@ module.exports = (app) => {
                 });
             }
         });
-      
     });
+
+    app.put('/api/time-table/student', app.permission.check('user:login'), (req, res) => {
+        app.model.timeTable.update(req.body._id, req.body.changes, (error, item) => {
+            if (error && !item) {
+                res.send({ error });
+            } else {
+                app.model.timeTable.get(item._id, (error, item) => res.send({ error, item }));
+            }
+        });
+    });
+
+    app.delete('/api/time-table/student', app.permission.check('user:login'), (req, res) => {
+        app.model.timeTable.delete(req.body._id, (error) => res.send({ error }));
+    });
+
 
     // Hook permissionHooks -------------------------------------------------------------------------------------------
     app.permissionHooks.add('lecturer', 'timeTable', (user) => new Promise(resolve => {

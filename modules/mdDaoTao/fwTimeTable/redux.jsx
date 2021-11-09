@@ -199,8 +199,7 @@ export function deleteTimeTableByAdmin(_id, condition) {
         }, error => console.error(error) || T.notify('Xóa thời khóa biểu bị lỗi!', 'danger'));
     };
 }
-
-//Student API--------------------------------------------------------------------------------------------------
+// Student API --------------------------------------------------------------------------------------
 export function getTimeTableByStudent(done) {
     return dispatch => {
         const url = '/api/time-table/student';
@@ -213,20 +212,5 @@ export function getTimeTableByStudent(done) {
                 dispatch({ type: TimeTableGetPage, page: data.page });
             }
         }, error => console.error(error) || T.notify('Lấy thời khóa biểu bị lỗi', 'danger'));
-    };
-}
-export function createTimeTableByStudent(data, done) {
-    return () => {
-        const url = '/api/time-table/student';
-        T.post(url, { data }, data => {
-            if (data.error) {
-                T.notify('Đăng ký lịch học bị lỗi!', 'danger');
-                console.error(`POST: ${url}. ${data.error}`);
-            } else {
-                T.notify('Đăng ký lịch học thành công!', 'success');
-                done && done(data.item);
-                // dispatch(getTimeTablePage());
-            }
-        }, error => console.error(error) || T.notify('Đăng ký lịch học bị lỗi!', 'danger'));
     };
 }
