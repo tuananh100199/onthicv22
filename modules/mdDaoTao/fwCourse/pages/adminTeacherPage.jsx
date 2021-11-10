@@ -1,12 +1,39 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { getCourse, updateStudentInfoInCourse, updateCourseTeacherGroup, updateCourseTeacherGroupStudent, exportTeacherAndStudentToExcel } from '../redux';
+import { getCourse, updateStudentInfoInCourse, updateCourseTeacherGroup, updateCourseTeacherGroupStudent, updateAutoCourseTeacherGroupStudent, exportTeacherAndStudentToExcel } from '../redux';
 import { ajaxSelectUserType } from 'modules/_default/fwUser/redux';
 import { updateStudent } from 'modules/mdDaoTao/fwStudent/redux';
 import { Link } from 'react-router-dom';
 import { AdminPage, AdminModal, CirclePageButton, FormSelect, FormTextBox, FormCheckbox } from 'view/component/AdminPage';
 import AdminStudentModal from '../adminStudentModal';
+class AssignModal extends AdminModal {
+    state = {};
+    componentDidMount() {
+        $(document).ready(() => this.onShown(() => this.itemMaxStudent.focus()));
+    }
 
+    onShow = () => {
+        this.itemMaxStudent.value(30);
+    }
+
+    onSubmit = () => {
+        const maxStudent = this.itemMaxStudent.value();
+        if (maxStudent == '') {
+            T.notify('Vui lòng nhập số lượng học viên tối đa cho một cố vấn!', 'danger');
+            this.itemMaxStudent.focus();
+        } else {
+            this.props.handleAutoAssignStudent(Number(maxStudent));
+            this.hide();
+        }
+    }
+
+    render = () => {
+        return this.renderModal({
+            title: 'Số lượng học viên tối đa cho một cố vấn',
+            body: <FormTextBox ref={e => this.itemMaxStudent = e} label='Số lượng' type='number' min='0' max='200' onChange={this.onChangeScore} />
+        });
+    }
+}
 class TeacherModal extends AdminModal {
     state = { teachers: [] };
     onShow = ({ course, _divisionId, _studentIds }) => {
@@ -168,6 +195,31 @@ class AdminTeacherPage extends AdminPage {
         });
     }
 
+    handleAutoAssignStudent = (maxStudent) => {
+        let { _id, teacherGroups = [], students = [] } = this.props.course.item;
+        const assignedStudents = [];
+        (teacherGroups || []).forEach(item => (item.student || []).forEach(student => assignedStudents.push(student._id)));
+        const isValidStudent = (student) => !assignedStudents.includes(student._id) && student.division && (!student.division.isOutside || this.state.outsideStudentVisible);
+        let autoAssignStudents = students.filter(student => isValidStudent(student)).sort((a, b) => new Date(a.createdDate) - new Date (b.createdDate));
+    
+        const teacherGroupsUpdate = teacherGroups.map(teacherGroup => {
+            const _teacherId = teacherGroup && teacherGroup.teacher ? teacherGroup.teacher._id : null;
+            let listStudentOfTeacher = [];
+            autoAssignStudents.forEach(student => {
+                if (student && _teacherId && student.planLecturer == _teacherId) {
+                    listStudentOfTeacher.push(student._id); 
+                }
+            });
+            const numberAddStudentIds = maxStudent - Number(teacherGroup.student.length); 
+            const _studentIds = listStudentOfTeacher.splice(0, numberAddStudentIds);
+            if (numberAddStudentIds > 0 && _studentIds.length > 0 ){
+                return { _teacherId, _studentIds };
+            }   
+        });
+
+        this.props.updateAutoCourseTeacherGroupStudent(_id, teacherGroupsUpdate.filter(item => item), 'add', () => T.notify('Gán tự động học viên thành công', 'success'));
+    }
+
     render() {
         const permission = this.getUserPermission('course'),
             item = this.props.course && this.props.course.item ? this.props.course.item : { admins: [] },
@@ -319,7 +371,9 @@ class AdminTeacherPage extends AdminPage {
                                     </ol> : <label style={{ color: 'black' }}>Chưa có cố vấn học tập!</label>}
                             </div>
                         </div>
+                        {!isOutsideCourseAdmin ? <CirclePageButton type='custom' customClassName='btn-primary' style={{marginRight: '55px'}} customIcon='fa fa-arrow-right' onClick={e => e.preventDefault() || this.autoAssignmodal.show()} /> : null}
                         {!isOutsideCourseAdmin ? <CirclePageButton type='export' onClick={() => exportTeacherAndStudentToExcel(_courseId)} /> : null}
+                        <AssignModal ref={e => this.autoAssignmodal = e} handleAutoAssignStudent={this.handleAutoAssignStudent} />
                         <AdminStudentModal ref={e => this.studentModal = e} updateStudent={this.updateStudent} />
                     </div>
                 </div>),
@@ -329,5 +383,5 @@ class AdminTeacherPage extends AdminPage {
 }
 
 const mapStateToProps = state => ({ system: state.system, student: state.trainning.student, course: state.trainning.course });
-const mapActionsToProps = { getCourse, updateStudentInfoInCourse, updateCourseTeacherGroup, updateCourseTeacherGroupStudent, updateStudent, exportTeacherAndStudentToExcel };
+const mapActionsToProps = { getCourse, updateStudentInfoInCourse, updateCourseTeacherGroup, updateCourseTeacherGroupStudent, updateAutoCourseTeacherGroupStudent, updateStudent, exportTeacherAndStudentToExcel };
 export default connect(mapStateToProps, mapActionsToProps)(AdminTeacherPage);

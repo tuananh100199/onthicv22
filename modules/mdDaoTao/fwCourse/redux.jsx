@@ -267,6 +267,21 @@ export function updateCourseTeacherGroupStudent(_courseId, _teacherId, _studentI
     };
 }
 
+export function updateAutoCourseTeacherGroupStudent(_courseId, teacherGroupsUpdate, type, done) {
+    return dispatch => {
+        const url = '/api/course/teacher-group/student/auto';
+        T.put(url, { _courseId, teacherGroupsUpdate, type }, data => {
+            if (data.error) {
+                T.notify('Gán học viên bị lỗi!', 'danger');
+                console.error('PUT: ' + url + '.', data.error);
+            } else {
+                done && done(data.item);
+                dispatch({ type: CourseGetItem, item: data.item });
+            }
+        }, error => console.error('PUT: ' + url + '.', error));
+    };
+}
+
 // Course representerGroups -------------------------------------------------------------------------------------------
 export function updateCourseRepresenterGroup(_courseId, _representerId, type, done) {
     return dispatch => {
