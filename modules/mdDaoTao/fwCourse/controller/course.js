@@ -13,7 +13,7 @@ module.exports = (app) => {
         { name: 'course:write' },
         { name: 'course:delete' },
         { name: 'course:lock' },
-        { name: 'course:export' },
+        { name: 'course:export' }, { name: 'course:import' },
     );
 
     app.get('/user/course', app.permission.check('course:read'), app.templates.admin);
@@ -26,11 +26,11 @@ module.exports = (app) => {
     app.get('/user/course/:_id/teacher', app.permission.check('course:read'), app.templates.admin);
     app.get('/user/course/:_id/representer', app.permission.check('course:read'), app.templates.admin);
     app.get('/user/course/:_id/rate-teacher', app.permission.check('course:read'), app.templates.admin);
-    app.get('/user/course/:_id/feedback', app.permission.check('course:read'), app.templates.admin);
-    app.get('/user/course/:_id/feedback/:_feedbackId', app.permission.check('course:read'), app.templates.admin);
+    app.get('/user/course/:_id/feedback', app.permission.check('course:write'), app.templates.admin);
+    app.get('/user/course/:_id/feedback/:_feedbackId', app.permission.check('course:write'), app.templates.admin);
     app.get('/user/course/:_id/your-students', app.permission.check('course:read'), app.templates.admin);
     app.get('/user/course/:_id/learning', app.permission.check('course:read'), app.templates.admin);
-    app.get('/user/course/:_id/import-graduation-exam-score', app.permission.check('course:write'), app.templates.admin);
+    app.get('/user/course/:_id/import-graduation-exam-score', app.permission.check('course:import'), app.templates.admin);
     app.get('/user/course/:_id/calendar', app.permission.check('course:read'), app.templates.admin);
     app.get('/user/course/:_id/register-calendar', app.permission.check('course:read'), app.templates.admin);
     app.get('/user/course/:_id/student-register-calendar', app.permission.check('course:read'), app.templates.admin);
@@ -40,7 +40,7 @@ module.exports = (app) => {
     app.get('/user/course/:_id/rate-subject', app.permission.check('course:read'), app.templates.admin);
     app.get('/user/course/:_id/chat-all', app.permission.check('user:login'), app.templates.admin);
     app.get('/user/course/:_id/chat', app.permission.check('user:login'), app.templates.admin);
-    app.get('/user/course/:_id/import-final-score', app.permission.check('course:write'), app.templates.admin);
+    app.get('/user/course/:_id/import-final-score', app.permission.check('course:import'), app.templates.admin);
 
     app.get('/user/hoc-vien/khoa-hoc/:_id', app.permission.check('user:login'), app.templates.admin);
     app.get('/user/hoc-vien/khoa-hoc/thong-tin/:_id', app.permission.check('user:login'), app.templates.admin);
@@ -117,13 +117,37 @@ module.exports = (app) => {
             condition.teacherGroups = { $elemMatch: { teacher: sessionUser._id } };
             condition.active = true;
         }
-        if (sessionUser.division && sessionUser.division.isOutside) {
+        if (sessionUser.isCourseAdmin && !sessionUser.isLecturer && sessionUser.division && sessionUser.division.isOutside) {
             condition.admins = sessionUser._id;
             condition.active = true;
         }
 
         app.model.course.getPage(pageNumber, pageSize, condition, (error, page) => {
-            res.send({ page, error: error || page == null ? 'Danh sách trống!' : null });
+            if (error || !page) {
+                res.send({ error: error || 'Danh sách trống!' });
+            } else {
+                page = app.clone(page);
+                const promiseList = page.list && page.list.length > 0 && page.list.map(item => {
+                    return new Promise((resolve, reject) => {
+                        if (item) {
+                            app.model.student.count({ course: item._id }, (error, numberOfStudent) => {
+                                if (error) {
+                                    reject('Đếm số lượng học viên của khóa học bị lỗi!');
+                                } else {
+                                    resolve(numberOfStudent);
+                                }
+                            });
+                        }
+                    });
+                });
+                promiseList && Promise.all(promiseList).then(numberOfStudents => {
+                    page.list.forEach((item, index) => {
+                        item.numberOfStudent = numberOfStudents[index];
+                    });
+                    res.send({ page });
+                }).catch(error => console.error(error) || res.send({ error }));
+            }
+            // res.send({ page, error: error || page == null ? 'Danh sách trống!' : null });
         });
     });
 
@@ -229,7 +253,42 @@ module.exports = (app) => {
             });
         }).then(() => getCourseData(_courseId, sessionUser, (error, item) => {
             error = error || (item ? null : 'Lỗi khi cập nhật khóa học!');
-            item = item ? { students: item.students, ...(type == 'remove' && { teacherGroups: item.teacherGroups, representerGroups: item.representerGroups }) } : null;
+            item = item || null;
+            res.send({ error, item });
+        })).catch(error => console.error(error) || res.send({ error }));
+    });
+
+    app.put('/api/course/student/assign-auto', app.permission.check('course:write'), (req, res) => {
+        const { _courseId } = req.body,
+            sessionUser = req.session.user;
+        new Promise((resolve, reject) => {
+            app.model.course.get(_courseId, (error, course) => {
+                if (error || course == null) {
+                    reject('Khóa học không hợp lệ!');
+                } else if (sessionUser.permissions.includes('course:write') || (sessionUser.isCourseAdmin && course.admins.find(admin => admin._id == sessionUser._id))) { //object == string ?
+                    const condition = {
+                        course: course._id,
+                        courseType: course.courseType._id,
+                    };
+                    app.model.student.getAllPreStudent(course.maxStudent, condition, (error, listPreStudent) => {
+                        if (error) {
+                            reject(error);
+                        } else if (!listPreStudent || listPreStudent.length == 0) {
+                            reject('Chưa có ứng viên đăng ký loại của khóa học này');
+                        } else {
+                            const solve = (index = 0) => index < listPreStudent.length ?
+                                app.model.student.update(listPreStudent[index] && listPreStudent[index]._id, { course: _courseId }, error => error ? reject('Lỗi khi cập nhật khóa học!') : solve(index + 1)) :
+                                resolve();
+                            solve();
+                        }
+                    });
+                } else {
+                    reject('Khóa học không được phép truy cập!');
+                }
+            });
+        }).then(() => getCourseData(_courseId, sessionUser, (error, item) => {
+            error = error || (item ? null : 'Lỗi khi cập nhật khóa học!');
+            item = item || null;
             res.send({ error, item });
         })).catch(error => console.error(error) || res.send({ error }));
     });
@@ -247,7 +306,7 @@ module.exports = (app) => {
             }
         }).then(() => getCourseData(_courseId, req.session.user, (error, item) => {
             error = error || (item ? null : 'Lỗi khi cập nhật khóa học!');
-            item = item ? { representerGroups: item.representerGroups } : null;
+            item = item || null;
             res.send({ error, item });
         })).catch(error => console.error(error) || res.send({ error }));
     });
@@ -265,7 +324,7 @@ module.exports = (app) => {
             }
         }).then(() => getCourseData(_courseId, req.session.user, (error, item) => {
             error = error || (item ? null : 'Lỗi khi cập nhật khóa học!');
-            item = item ? { representerGroups: item.representerGroups } : null;
+            item = item || null;
             res.send({ error, item });
         })).catch(error => console.error(error) || res.send({ error }));
     });
@@ -283,7 +342,7 @@ module.exports = (app) => {
             }
         }).then(() => getCourseData(_courseId, req.session.user, (error, item) => {
             error = error || (item ? null : 'Lỗi khi cập nhật khóa học!');
-            item = item ? { teacherGroups: item.teacherGroups } : null;
+            item = item || null;
             res.send({ error, item });
         })).catch(error => console.error(error) || res.send({ error }));
     });
@@ -301,10 +360,33 @@ module.exports = (app) => {
             }
         }).then(() => getCourseData(_courseId, req.session.user, (error, item) => {
             error = error || (item ? null : 'Lỗi khi cập nhật khóa học!');
-            item = item ? { teacherGroups: item.teacherGroups } : null;
+            item = item || null;
             res.send({ error, item });
         })).catch(error => console.error(error) || res.send({ error }));
     });
+
+    app.put('/api/course/teacher-group/student/auto', app.permission.check('course:write'), (req, res) => {
+        const { _courseId, teacherGroupsUpdate = [], type } = req.body;
+        const promiseList = teacherGroupsUpdate.length && teacherGroupsUpdate.map(teacherGroup => {
+            const { _teacherId, _studentIds = [] } = teacherGroup;
+            return new Promise((resolve, reject) => {
+                if (type == 'add' || type == 'remove') {
+                    const changeGroup = type == 'add' ? app.model.course.addStudentToTeacherGroup : app.model.course.removeStudentFromTeacherGroup;
+                    const solve = (index = 0) => (index < _studentIds.length) ?
+                        changeGroup(_courseId, _teacherId, _studentIds[index], error => error ? reject(error) : solve(index + 1)) : resolve();
+                    solve();
+                } else {
+                    reject('Dữ liệu không hợp lệ!');
+                }
+            });
+        });
+        promiseList && Promise.all(promiseList).then(() => getCourseData(_courseId, req.session.user, (error, item) => {
+            error = error || (item ? null : 'Lỗi khi cập nhật khóa học!');
+            item = item || null;
+            res.send({ error, item });
+        })).catch(error => console.error(error) || res.send({ error }));
+    });
+
 
     // Lecturer API
     app.get('/api/course/lecturer/student', app.permission.check('course:read'), (req, res) => {
@@ -473,12 +555,15 @@ module.exports = (app) => {
 
     // Hook permissionHooks -------------------------------------------------------------------------------------------
     app.permissionHooks.add('courseAdmin', 'course', (user) => new Promise(resolve => {
-        app.permissionHooks.pushUserPermission(user, 'course:read', 'course:write', 'course:export');
+        app.permissionHooks.pushUserPermission(user, 'course:read', 'course:write');
+        // Quản lý khóa học nội bộ thì được import danh sách học viên bằng file Excel
+        if (user.division && !user.division.isOutside) app.permissionHooks.pushUserPermission(user, 'course:export', 'course:import');
         resolve();
     }));
 
     app.permissionHooks.add('lecturer', 'course', (user) => new Promise(resolve => {
-        app.permissionHooks.pushUserPermission(user, 'course:read', 'course:export', 'student:write', 'student:read');
+        app.permissionHooks.pushUserPermission(user, 'course:read', 'student:write', 'student:read');
+        if (user.division && !user.division.isOutside) app.permissionHooks.pushUserPermission(user, 'course:export');
         resolve();
     }));
 };

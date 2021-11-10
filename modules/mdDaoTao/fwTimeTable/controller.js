@@ -46,11 +46,6 @@ module.exports = (app) => {
         app.model.timeTable.get(req.query._id, (error, item) => res.send({ error, item }));
     });
 
-    app.get('/api/time-table/all', app.permission.check('timeTable:read'), (req, res) => {
-        const condition = req.query.condition;
-        app.model.timeTable.getAll({ lecturer: condition.lecturerId }, (error, list) => res.send({ error, list }));
-    });
-
     app.get('/api/time-table/date-number', app.permission.check('user:login'), (req, res) => {
         let { _id, student, date, startHour, numOfHours } = req.query,
             dateTime = new Date(date).getTime();
@@ -167,7 +162,12 @@ module.exports = (app) => {
                 const listStudent = item.teacherGroups.filter(teacherGroup => teacherGroup.teacher && teacherGroup.teacher._id == condition.lecturerId),
                 studentIds = listStudent.length && listStudent[0].student.map(student => student._id);
                 lecturerCondition.student = { $in:  studentIds };
-                lecturerCondition.date = condition.date;
+                if (condition.date) {
+                    lecturerCondition.date = condition.date;
+                }
+                if (condition.official && JSON.parse(condition.official)) {
+                    lecturerCondition.state = 'approved';
+                }
                 app.model.timeTable.getAll(lecturerCondition, (error, items) => res.send({ error, items }));
             }
         });
@@ -222,7 +222,7 @@ module.exports = (app) => {
 
     // Hook permissionHooks -------------------------------------------------------------------------------------------
     app.permissionHooks.add('lecturer', 'timeTable', (user) => new Promise(resolve => {
-        app.permissionHooks.pushUserPermission(user, 'timeTable:read', 'timeTable:write');
+        app.permissionHooks.pushUserPermission(user, 'timeTable:read', 'timeTable:write', 'timeTable:delete');
         resolve();
     }));
 

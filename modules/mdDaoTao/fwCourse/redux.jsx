@@ -221,6 +221,21 @@ export function updateCourseStudents(_courseId, _studentIds, type, done) {
     };
 }
 
+export function autoAssignStudent(_courseId, done) {
+    return dispatch => {
+        const url = '/api/course/student/assign-auto';
+        T.put(url, { _courseId }, data => {
+            if (data.error) {
+                T.notify(data.error, 'danger');
+                console.error('PUT: ' + url + '.', data.error);
+            } else {
+                done && done(data.item);
+                dispatch({ type: CourseGetItem, item: data.item });
+            }
+        }, error => console.error('PUT: ' + url + '.', error));
+    };
+}
+
 // Course teacherGroups -----------------------------------------------------------------------------------------------
 export function updateCourseTeacherGroup(_courseId, _teacherId, type, done) {
     return dispatch => {
@@ -241,6 +256,21 @@ export function updateCourseTeacherGroupStudent(_courseId, _teacherId, _studentI
     return dispatch => {
         const url = '/api/course/teacher-group/student';
         T.put(url, { _courseId, _teacherId, _studentIds, type }, data => {
+            if (data.error) {
+                T.notify('Gán học viên bị lỗi!', 'danger');
+                console.error('PUT: ' + url + '.', data.error);
+            } else {
+                done && done(data.item);
+                dispatch({ type: CourseGetItem, item: data.item });
+            }
+        }, error => console.error('PUT: ' + url + '.', error));
+    };
+}
+
+export function updateAutoCourseTeacherGroupStudent(_courseId, teacherGroupsUpdate, type, done) {
+    return dispatch => {
+        const url = '/api/course/teacher-group/student/auto';
+        T.put(url, { _courseId, teacherGroupsUpdate, type }, data => {
             if (data.error) {
                 T.notify('Gán học viên bị lỗi!', 'danger');
                 console.error('PUT: ' + url + '.', data.error);

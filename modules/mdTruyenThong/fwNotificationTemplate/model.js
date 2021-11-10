@@ -1,19 +1,16 @@
 module.exports = app => {
     const schema = app.db.Schema({
-        type: String,                                               // Loại notification
-        course: { type: app.db.Schema.ObjectId, ref: 'Course' },    // Khóa học
-        user: { type: app.db.Schema.ObjectId, ref: 'User' },        // Thông báo đến đúng cá nhân
-
         title: String,
         content: String,
+        type: String,
         abstract: String,
-        createdDate: { type: Date, default: Date.now },
-        sentDate: { type: Date, default: null },
     });
-    const model = app.db.model('Notification', schema);
+    const model = app.db.model('NotificationTemplate', schema);
 
-    app.model.notification = {
+    app.model.notificationTemplate = {
         create: (data, done) => model.create(data, done),
+
+        getAll: (condition, done) => model.find(condition).sort({ priority: -1 }).exec(done),
 
         getPage: (pageNumber, pageSize, condition, done) => model.countDocuments(condition, (error, totalItem) => {
             if (error) {
@@ -23,7 +20,7 @@ module.exports = app => {
                 result.pageNumber = pageNumber === -1 ? result.pageTotal : Math.min(pageNumber, result.pageTotal);
 
                 const skipNumber = (result.pageNumber > 0 ? result.pageNumber - 1 : 0) * result.pageSize;
-                model.find(condition).sort({ createdDate: -1 }).skip(skipNumber).populate('user', 'firstname lastname identityCard').limit(result.pageSize).exec((error, list) => {
+                model.find(condition).sort({ createdDate: -1 }).skip(skipNumber).limit(result.pageSize).exec((error, list) => {
                     result.list = list;
                     done(error, result);
                 });

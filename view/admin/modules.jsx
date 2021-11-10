@@ -27,6 +27,7 @@ import fwContact from 'modules/mdTruyenThong/fwContact/index';
 import fwFeedback from 'modules/mdTruyenThong/fwFeedback/index';
 import fwForum from 'modules/mdTruyenThong/fwForum/index';
 import fwNews from 'modules/mdTruyenThong/fwNews/index';
+import fwNotificationTemplate from 'modules/mdTruyenThong/fwNotificationTemplate/index';
 import fwSubscribe from 'modules/mdTruyenThong/fwSubscribe/index';
 
-export const modules = [_init, fwCategory, fwCluster, fwComment, fwEmail, fwHome, fwMenu, fwNotification, fwRate, fwRole, fwUser, fwCandidate, fwChat, fwCourse, fwCourseType, fwDivision, fwDriveQuestion, fwDriveTest, fwLesson, fwRegisterCalendar, fwSign, fwStudent, fwSubject, fwTimeTable, fwContact, fwFeedback, fwForum, fwNews, fwSubscribe];
+export const modules = [_init, fwCategory, fwCluster, fwComment, fwEmail, fwHome, fwMenu, fwNotification, fwRate, fwRole, fwUser, fwCandidate, fwChat, fwCourse, fwCourseType, fwDivision, fwDriveQuestion, fwDriveTest, fwLesson, fwRegisterCalendar, fwSign, fwStudent, fwSubject, fwTimeTable, fwContact, fwFeedback, fwForum, fwNews, fwNotificationTemplate, fwSubscribe];

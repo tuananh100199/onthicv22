@@ -52,7 +52,7 @@ class ContentEditPage extends AdminPage {
                             <FormRichTextBox ref={e => this.itemAbstract = e} label='Mô tả ngắn' readOnly={!permission.write} />
                         </div>
                         <FormImageBox ref={e => this.imageBox = e} className='col-md-4' label='Hình đại diện' uploadType='ContentImage' image={this.state.image} readOnly={!permission.write} />
-                        <FormEditor className='col-md-12' ref={e => this.editor = e} height='400px' label='Nội dung' readOnly={!permission.write} />
+                        <FormEditor className='col-md-12' ref={e => this.editor = e} height='400px' label='Nội dung' uploadUrl='/user/upload?category=content' readOnly={!permission.write} />
                     </div>
                 </div>),
             backRoute: '/user/component',

@@ -28,6 +28,7 @@ class AdminFeedbackSystemDetailPage extends AdminPage {
     }
 
     render() {
+        const permission = this.getUserPermission('feedback');
         const item = this.props.course && this.props.course.item || {};
         const backRoute = `/user/course/${item._id}/feedback`;
         const { _feedbackId } = this.state;
@@ -36,7 +37,7 @@ class AdminFeedbackSystemDetailPage extends AdminPage {
             title: 'Phản hồi chi tiết: ' + item.name,
             breadcrumb: [<Link key={0} to='/user/course'>Khóa học</Link>, item._id ? <Link key={1} to={`/user/course/${item._id}`}>{item.name}</Link> : '',
             _feedbackId ? <Link key={2} to={backRoute}>Phản hồi</Link>:'' ,'Phản hồi chi tiết'],
-            content: _feedbackId && <FeedbackSection _id={_feedbackId} />,
+            content: _feedbackId && <FeedbackSection permission={permission} _id={_feedbackId} />,
             backRoute,
         });
     }

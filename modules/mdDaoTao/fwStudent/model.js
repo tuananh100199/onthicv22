@@ -95,6 +95,26 @@ module.exports = (app) => {
                 .sort({ lastname: 1, firstname: 1 }).exec(done);
         },
 
+        getAllPreStudent: (maxStudent, condition, done) => {
+            if (typeof condition == 'function') {
+                done = condition;
+                condition = {};
+            }
+            // Query Mongoose with priority query conditions: courseId => courseType
+            model.find(condition).limit(maxStudent).exec((error, listStudent) => {
+                if (error) {
+                    done(error);
+                } else {
+                    if (condition.courseType && listStudent && listStudent.length < maxStudent) {
+                        //getAllPre
+                        model.find({ courseType: condition.courseType, course: null }).limit(maxStudent - listStudent.length).sort({ createdDate: 1 }).exec(done);
+                    } else {
+                        done('Số lượng học viên của khóa học đã đạt tối đa');
+                    }
+                }
+            });
+        },
+
         getPage: (pageNumber, pageSize, condition, sort, done) => model.countDocuments(condition, (error, totalItem) => {
             if (done == undefined) {
                 done = sort;
@@ -139,6 +159,19 @@ module.exports = (app) => {
             }
         }),
 
+        mapToId: (condition, done) => {
+            model.aggregate([{ $project: { 'name': { $concat: ['$lastname', ' ', '$firstname'] } } },
+            { $match: { 'name': { $regex: condition.fullname, $options: 'i' } } }]).exec((error, list) => {
+                if (error || list.length == 0) {
+                    done(error, list);
+                } else {
+                    const _ids = list.map(item => item._id);
+                    delete condition.fullname;
+                    model.find({ _id: { $in: _ids }, ...condition }).exec(done);
+                }
+            });
+        },
+
         // changes = { $set, $unset, $push, $pull }
         update: (_id, changes, done) => {
             if (changes.course) {
@@ -163,6 +196,11 @@ module.exports = (app) => {
                 changes.modifiedDate = new Date();
                 model.findOneAndUpdate({ _id }, changes, { new: true }).populate('user', 'email phoneNumber').populate('division', 'id title').populate('course', 'name').exec(done);
             }
+        },
+
+        updateMany: (condition, changes, done) => {
+            changes.modifiedDate = new Date();
+            model.updateMany(condition, { $set: changes }, { new: true }, done);
         },
 
         resetLesson: (_id, changes, done) => {
@@ -212,5 +250,6 @@ module.exports = (app) => {
                 }
             });
         },
+        count: (condition, done) => done ? model.countDocuments(condition, done) : model.countDocuments({}, condition),
     };
 };

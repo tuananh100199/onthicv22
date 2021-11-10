@@ -86,6 +86,9 @@ module.exports = (app) => {
     // Hook upload images ---------------------------------------------------------------------------------------------
     app.createFolder(app.path.join(app.publicPath, '/img/course-type'));
 
+    app.uploadHooks.add('uploadCourseTypeCkEditor', (req, fields, files, params, done) =>
+        app.permission.has(req, () => app.uploadCkEditorImage('courseType', fields, files, params, done), done, 'courseType:write'));
+
     const uploadCourseType = (fields, files, done) => {
         if (fields.userData && fields.userData[0].startsWith('course-type:') && files.CourseTypeImage && files.CourseTypeImage.length > 0) {
             console.log('Hook: uploadCourseType => course type image upload');

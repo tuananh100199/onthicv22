@@ -1,11 +1,15 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { getStudentPage, updateStudent } from './redux';
+import { exportExamStudent, getStudentPage, updateStudent } from './redux';
 import { createNotification } from 'modules/_default/fwNotification/redux';
-import { ajaxSelectCourseType } from 'modules/mdDaoTao/fwCourseType/redux';
-import { AdminPage, FormRichTextBox, FormSelect, FormDatePicker, renderTable, TableCell, AdminModal, CirclePageButton } from 'view/component/AdminPage';
+import { ajaxSelectCourseType, getCourseTypeAll } from 'modules/mdDaoTao/fwCourseType/redux';
+import { getNotificationTemplateAll, getNotificationTemplate } from 'modules/mdTruyenThong/fwNotificationTemplate/redux';
+import { AdminPage, FormRichTextBox, FormSelect, FormDatePicker, FormTextBox, FormEditor, renderTable, TableCell, AdminModal, CirclePageButton } from 'view/component/AdminPage';
 import Pagination from 'view/component/Pagination';
 
+const defaultTitleSatHach = 'Thông báo thời gian thi sát hạch',
+    defaultAbstractSatHach = 'Thông báo thời gian thi sát hạch khóa {khoa}',
+    defaultContentSatHach = '<p>Xin chào {ho_ten}({cmnd}),</p>\n<p>Thời gian thi sát hạch khóa {khoa} của bạn là: {ngay_thi_sat_hach}</p>';
 class StudentModal extends AdminModal {
     state = {};
     componentDidMount() {
@@ -30,9 +34,65 @@ class StudentModal extends AdminModal {
         title: 'Chỉnh sửa học viên chưa đạt sát hạch',
         body: (
             <div className='row'>
-                 <FormDatePicker className='col-12' ref={e => this.ngayDuKienThiSatHach = e} label='Ngày dự kiến thi sát hạch (dd/mm/yyyy)' readOnly={this.props.readOnly} type='date-mask' />
+                <FormDatePicker className='col-12' ref={e => this.ngayDuKienThiSatHach = e} label='Ngày dự kiến thi sát hạch (dd/mm/yyyy)' readOnly={this.props.readOnly} type='date-mask' />
                 <FormRichTextBox className='col-12' ref={e => this.liDoChuaDatSatHach = e} label='Lí do chưa đạt sát hạch' readOnly={this.props.readOnly} />
             </div>),
+    });
+}
+
+class NotificationModal extends AdminModal {
+    state = {};
+    componentDidMount() {
+        $(document).ready(() => this.onShown(() => this.itemTitle.focus()));
+    }
+
+    onShow = (item) => {
+        const { _id, title, content, abstract } = this.props.data || { _id: '', title: '', content: '', abstract: '' };
+        let newAbstract = abstract.replaceAll('{ho_ten}', item.lastname + ' ' + item.firstname)
+            .replaceAll('{ngay_thi_tot_nghiep}', `${T.dateToText(item.ngayDuKienThiTotNghiep, 'dd/mm/yyyy')}`)
+            .replaceAll('{khoa}', item.course && item.course.name)
+            .replaceAll('{cmnd}', item.identityCard);
+        let newContent = content.replaceAll('{ho_ten}', item.lastname + ' ' + item.firstname)
+            .replaceAll('{ngay_thi_sat_hach}', `${T.dateToText(item.ngayDuKienThiSatHach, 'dd/mm/yyyy')}`)
+            .replaceAll('{khoa}', item.course && item.course.name)
+            .replaceAll('{cmnd}', item.identityCard);
+        this.itemTitle.value(title);
+        this.itemAbstract.value(newAbstract);
+        this.itemContent.html(newContent);
+        this.setState({ _id, item });
+    }
+
+    onSend = () => {
+        const user = this.state.item && this.state.item.user;
+        const data = {
+            title: this.itemTitle.value(),
+            content: this.itemContent.html(),
+            abstract: this.itemAbstract.value(),
+            type: '3',
+            user: user._id,
+            sentDate: new Date(),
+        };
+        this.props.create(data, () => {
+            T.notify('Gửi thông báo thành công!', 'success');
+            this.hide();
+        });
+    }
+
+
+
+    render = () => this.renderModal({
+        title: 'Thông báo',
+        size: 'large',
+        dataBackdrop: 'static',
+        body: <>
+            <FormTextBox ref={e => this.itemTitle = e} label='Chủ đề' readOnly={this.props.readOnly} />
+            <FormRichTextBox ref={e => this.itemAbstract = e} label='Mô tả ngắn gọn' readOnly={this.props.readOnly} />
+            <FormEditor ref={e => this.itemContent = e} uploadUrl='/user/upload?category=notification' label='Nội dung' readOnly={this.props.readOnly} />
+        </>,
+        buttons:
+            <a className='btn btn-success' href='#' onClick={e => this.onSend(e)} style={{ color: 'white' }}>
+                <i className='fa fa-lg fa-paper-plane' /> Gửi thông báo
+            </a>
     });
 }
 
@@ -42,6 +102,34 @@ class FailStudentPage extends AdminPage {
     componentDidMount() {
         T.ready('/user/student/fail-exam', () => {
             T.showSearchBox();
+            this.props.getCourseTypeAll(data => {
+                const courseTypes = data.map(item => ({ id: item._id, text: item.title }));
+                this.courseType.value(courseTypes[0]);
+            });
+            this.props.getNotificationTemplateAll({}, data => {
+                if (data && data.length) {
+                    const index = data.findIndex(template => template.type == '3');
+                    if (index != -1) {
+                        this.setState({ data: data[index] });
+                    } else {
+                        this.setState({
+                            data: {
+                                title: defaultTitleSatHach,
+                                abstract: defaultAbstractSatHach,
+                                content: defaultContentSatHach
+                            }
+                        });
+                    }
+                } else {
+                    this.setState({
+                        data: {
+                            title: defaultTitleSatHach,
+                            abstract: defaultAbstractSatHach,
+                            content: defaultContentSatHach
+                        }
+                    });
+                }
+            });
             T.onSearch = (searchText) => this.onSearch({ searchText });// search attach coursetype ?
         });
     }
@@ -54,27 +142,21 @@ class FailStudentPage extends AdminPage {
     }
 
     onChangeCourseType = (courseType) => {
+        this.setState({ courseId: courseType });
         this.onSearch({ courseType });
+    }
+
+    onChangeNotificationTemplate = (_id) => {
+        this.props.getNotificationTemplate(_id, data => {
+            this.setState({
+                dataNotification: data,
+            });
+        });
     }
 
     edit = (e, item) => e.preventDefault() || this.modal.show(item);
 
-    //TODO: TAM  sendNotification
-    sendNotification = (e, item) => e.preventDefault() ||
-        T.confirm('Gửi thông báo', `Bạn có chắc muốn gửi thông báo Ngày thi sát hạch dự kiến đến học viên ${item.lastname} ${item.firstname} là ${T.dateToText(item.ngayDuKienThiSatHach, 'dd/mm/yyyy')} ?`,
-            true, isConfirm => {
-                if (isConfirm) {
-                    const data = {
-                        title: 'Ngày thi sát hạch dự kiến',
-                        content: `Ngày thi sát hạch dự kiến của bạn là ${T.dateToText(item.ngayDuKienThiSatHach, 'dd/mm/yyyy')}`,
-                        type: '0',
-                        course: item.course && item.course._id,
-                        user: item.user && item.user._id,
-                        sentDate: new Date(),
-                    };
-                    this.props.createNotification(data, () => T.notify('Gửi thông báo thành công!', 'success'));
-                }
-            });
+    sendNotification = (e, item) => e.preventDefault() || this.notiModal.show(item);
 
     render() {
         const permission = this.getUserPermission('student', ['read', 'write']);
@@ -95,7 +177,7 @@ class FailStudentPage extends AdminPage {
                 <tr key={index}>
                     <TableCell type='number' content={index + 1} />
                     <TableCell content={<>{`${item.lastname} ${item.firstname}`}<br />{item.identityCard}</>} style={{ whiteSpace: 'nowrap' }} />
-                    <TableCell content={item.course && item.course.name} />
+                    <TableCell content={item.course && item.course.name} style={{ whiteSpace: 'nowrap' }} />
                     <TableCell content={item.ngayDuKienThiSatHach ? T.dateToText(item.ngayDuKienThiSatHach, 'dd/mm/yyyy') : 'Chưa có'} />
                     <TableCell content={item.liDoChuaDatSatHach || 'Chưa có'} />
                     <TableCell type='buttons' content={item} permission={permission} onEdit={this.edit}>
@@ -120,18 +202,21 @@ class FailStudentPage extends AdminPage {
                             <FormSelect ref={e => this.courseType = e} data={ajaxSelectCourseType} placeholder='Loại khóa học'
                                 onChange={data => this.onChangeCourseType(data.id)} style={{ margin: 0, width: '200px' }} />
                         </div>
-                        {table}
+                        {this.courseType && this.courseType.value() != null ? table : null}
                     </div>
                 </div>
-                <CirclePageButton type='import' style={{ right: 70 }} onClick={() => T.alert('todo')} />
-                <CirclePageButton type='export' onClick={() => T.alert('todo')} />
+
+                <CirclePageButton type='import' onClick={() => this.props.history.push('/user/student/import-fail-pass')} />
+                <CirclePageButton type='export' onClick={() => exportExamStudent(this.state.courseId, 'HVChuaDatSatHach')} />
+                
                 <StudentModal readOnly={!permission.write} ref={e => this.modal = e} update={this.props.updateStudent} />
+                <NotificationModal readOnly={!permission.write} ref={e => this.notiModal = e} create={this.props.createNotification} data={this.state.data} />
                 <Pagination pageCondition={pageCondition} pageNumber={pageNumber} pageSize={pageSize} pageTotal={pageTotal} totalItem={totalItem} getPage={(pageNumber, pageSize) => this.onSearch({ pageNumber, pageSize })} />
             </>,
         });
     }
 }
 
-const mapStateToProps = state => ({ system: state.system, student: state.trainning.student });
-const mapActionsToProps = { getStudentPage, updateStudent, createNotification };
+const mapStateToProps = state => ({ system: state.system, student: state.trainning.student, notificationTemplate: state.communication.notificationTemplate });
+const mapActionsToProps = { getStudentPage, updateStudent, createNotification, getCourseTypeAll, getNotificationTemplateAll, getNotificationTemplate };
 export default connect(mapStateToProps, mapActionsToProps)(FailStudentPage);

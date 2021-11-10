@@ -69,7 +69,7 @@ class TimeTableModal extends AdminModal {
         this.itemState && this.itemState.value(state);
 
         this.setState({ loading: false, _id, student, dateNumber, date, startHour, endHour });
-        date ? this.props.getTimeTableOfLecturer({courseId: this.props.courseId, lecturerId: this.props.lecturerId, date: formatDate(date)}, data => {
+        date ? this.props.getTimeTableOfLecturer({courseId: this.props.courseId, lecturerId: this.props.lecturerId, date: formatDate(date), official: this.props.official }, data => {
             if (data.items && data.items.length){
                 this.setState({ listTimeTable: data.items }, () => this.getDateNumber());
             } else {
@@ -137,7 +137,7 @@ class TimeTableModal extends AdminModal {
 
     onSelectDate = (date => { 
         if(date) {
-            this.props.getTimeTableOfLecturer({courseId: this.props.courseId, lecturerId: this.props.lecturerId, date: date }, data => {
+            this.props.getTimeTableOfLecturer({courseId: this.props.courseId, lecturerId: this.props.lecturerId, date, official: this.props.official }, data => {
                 this.setState({ date, listTimeTable: data.items &&  data.items.length ? data.items : null }, () => this.getDateNumber());
             });
         }
@@ -318,14 +318,14 @@ class LecturerView extends AdminPage {
         start: `${year}-${formatTime(month)}-${formatTime(day)}T${formatTime(newItem.startHour)}:00:00`,
         end: `${year}-${formatTime(month)}-${formatTime(day)}T${formatTime(newItem.startHour + newItem.numOfHours)}:00:00`,
         item: newItem,
-        color: '#1488DB',
+        color: RegisterCalendarStatesMapper[newItem.state] && RegisterCalendarStatesMapper[newItem.state].color,
     };
         return newEvent;
     }
     
     getData = (done) => {
-        this.getTimeTablePage(undefined, undefined, item => {
-           done && done(item.list);
+        this.props.getTimeTableOfLecturer({ courseId: this.props.courseId, lecturerId: this.props.lecturerId, official: this.props.official }, data => {
+           done && done(data.items);
         });
     }
     
@@ -379,8 +379,10 @@ class LecturerView extends AdminPage {
         this.props.getTimeTablePageByAdmin(pageNumber, pageSize, { courseId: this.props.courseId, lecturerId: this.props.lecturerId, filterOn: this.props.filterOn, official: this.props.official });
     }
 
-    updateTimeTable = (_id, data) => {
-        this.props.updateTimeTableByAdmin(_id, data, { courseId: this.props.courseId, lecturerId: this.props.lecturerId, filterOn: this.props.filterOn, official: this.props.official });
+    updateTimeTable = (_id, data, done) => {
+        this.props.updateTimeTableByAdmin(_id, data, { courseId: this.props.courseId, lecturerId: this.props.lecturerId, filterOn: this.props.filterOn, official: this.props.official }, item => {
+            done && done(item);
+        });
     }
 
     render() {

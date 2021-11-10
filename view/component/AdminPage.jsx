@@ -169,13 +169,13 @@ export class FormCheckbox extends React.Component {
                     </label>
                 </div>
             </div>) : (
-            <div className={'animated-checkbox ' + className} style={style}>
-                <label>
-                    <input type='checkbox' checked={this.state.checked} onChange={this.onCheck} />
-                    <span className={'label-text ' + (this.state.checked ? trueClassName : falseClassName)}>{label}</span>
-                </label>
-            </div>
-        );
+                <div className={'animated-checkbox ' + className} style={style}>
+                    <label>
+                        <input type='checkbox' checked={this.state.checked} onChange={this.onCheck} />
+                        <span className={'label-text ' + (this.state.checked ? trueClassName : falseClassName)}>{label}</span>
+                    </label>
+                </div>
+            );
     }
 }
 
@@ -236,11 +236,26 @@ export class FormRichTextBox extends React.Component {
 
     focus = () => this.input.focus();
 
+    insert = (e) => {
+        console.log(this.input);
+        console.log(this.input.selectionStart);
+        let cursorPosition = this.input.selectionStart;
+        let textBeforeCursorPosition = this.input.innerHTML.substring(0, cursorPosition);
+        let textAfterCursorPosition = this.input.innerHTML.substring(cursorPosition, this.input.innerHTML.length);
+        this.setState({
+            value: textBeforeCursorPosition + ' ' + e.target.innerHTML + ' ' + textAfterCursorPosition
+        });
+    }
+
     render() {
-        const { style = {}, rows = 3, label = '', className = '', readOnly = false, onChange = null, required = false } = this.props;
+        const { style = {}, rows = 3, label = '', className = '', readOnly = false, onChange = null, listParams = [], required = false } = this.props;
         return (
             <div className={'form-group ' + (className ? className : '')} style={style}>
                 <label onClick={this.focus}>{label}{!readOnly && required ? <span style={{ color: 'red' }}> *</span> : ''}</label>{readOnly && this.state.value ? <>: <br /><b>{this.state.value}</b></> : ''}
+                {!readOnly && listParams.length ?
+                    <p className='form-text  mb-1 '>
+                        {listParams.map((param, index) => (<small className='text-muted ml-1' style={{ cursor: 'pointer' }} key={index} onClick={(e) => this.insert(e)}>{param}</small>))}
+                    </p> : null}
                 <textarea ref={e => this.input = e} className='form-control' style={{ display: readOnly ? 'none' : 'block' }} placeholder={label} value={this.state.value} rows={rows}
                     onChange={e => this.setState({ value: e.target.value }) || onChange && onChange(e)} />
             </div>);
@@ -265,14 +280,31 @@ export class FormEditor extends React.Component {
 
     focus = () => this.input.focus();
 
+    insert = (e) => {
+        // let cursorPosition = this.input.getSelection().getStartElement();
+        let textBeforeCursorPosition = this.input.text().substring(0, 5);
+        console.log(this.input.editor.current.selectionStart);
+        console.log(this.input.editor.current);
+        // let textAfterCursorPosition = this.input.text().substring(cursorPosition, this.input.text().length);
+        this.setState({
+            value: textBeforeCursorPosition + ' ' + e.target.innerHTML + ' '
+        });
+    }
+
     render() {
-        let { height = '400px', label = '', className = '', readOnly = false, uploadUrl = '', smallText = '', required = false } = this.props;
+        let { height = '400px', label = '', className = '', readOnly = false, uploadUrl = '', smallText = '', listParams = [], required = false } = this.props;
         className = 'form-group' + (className ? ' ' + className : '');
         return (
             <div className={className}>
                 <label>{label}{!readOnly && required ? <span style={{ color: 'red' }}> *</span> : ''}</label>{readOnly && this.state.value ? <br /> : ''}
                 <p style={{ width: '100%', fontWeight: 'bold', display: readOnly ? 'block' : 'none' }} dangerouslySetInnerHTML={{ __html: this.state.value }} />
                 {!readOnly && smallText ? <small className='form-text text-muted'>{smallText}</small> : null}
+                {!readOnly && listParams.length ?
+                    <p className='form-text  mb-1 '>
+                        {listParams.map((param, index) => (<small className='text-muted ml-1' style={{ cursor: 'pointer' }} key={index}
+                            onClick={(e) => this.insert(e)}
+                        >{param}</small>))}
+                    </p> : null}
                 <div style={{ display: readOnly ? 'none' : 'block' }}>
                     <Editor ref={e => this.input = e} height={height} placeholder={label} uploadUrl={uploadUrl} />
                 </div>
@@ -462,11 +494,11 @@ export class FormDatePicker extends React.Component {
                         formatChars={{ '2': '[12]', '0': '[09]', '1': '[01]', '3': '[0-3]', '9': '[0-9]', '5': '[0-5]', 'h': '[0-2]' }}
                         value={this.state.value} readOnly={readOnly} placeholder={label} />
                 ) : (
-                    <Datetime ref={e => this.input = e} timeFormat={type == 'time' ? 'HH:mm' : false} dateFormat='DD/MM/YYYY'
-                        inputProps={{ placeholder: label, ref: e => this.inputRef = e, readOnly, style: { display: readOnly ? 'none' : '' } }}
-                        value={this.state.value} onChange={this.handleChange} closeOnSelect={true} />
-                    // value={this.state.value} onChange={e => this.setState({ value: new Date(e) })} closeOnSelect={true} />
-                )}
+                        <Datetime ref={e => this.input = e} timeFormat={type == 'time' ? 'HH:mm' : false} dateFormat='DD/MM/YYYY'
+                            inputProps={{ placeholder: label, ref: e => this.inputRef = e, readOnly, style: { display: readOnly ? 'none' : '' } }}
+                            value={this.state.value} onChange={this.handleChange} closeOnSelect={true} />
+                        // value={this.state.value} onChange={e => this.setState({ value: new Date(e) })} closeOnSelect={true} />
+                    )}
             </div>);
     }
 }
@@ -503,7 +535,7 @@ export class FormFileBox extends React.Component {
 // Page components ----------------------------------------------------------------------------------------------------
 export class CirclePageButton extends React.Component {
     render() {
-        const { type = 'back', style = {}, to = '', tooltip = '', customIcon = '', customClassName = 'btn-warning', onClick = () => { } } = this.props; // type = back | save | create | delete | export | import | custom
+        const { type = 'back', style = {}, to = '', tooltip = '', customIcon = '', customClassName = 'btn-warning', onClick } = this.props; // type = back | save | create | delete | export | import | custom
         const properties = {
             type: 'button',
             style: { position: 'fixed', right: '10px', bottom: '10px', zIndex: 500, ...style },
@@ -526,7 +558,7 @@ export class CirclePageButton extends React.Component {
         } else if (type == 'custom') {
             result = <button {...properties} className={'btn btn-circle ' + customClassName}><i className={'fa fa-lg ' + customIcon} /></button>;
         } else { // back
-            if (!onClick) {
+            if (onClick) {
                 result = (
                     <a href='#' onClick={onClick} className='btn btn-secondary btn-circle' style={{ position: 'fixed', bottom: '10px', zIndex: 500, ...style }}>
                         <i className='fa fa-lg fa-reply' />
@@ -597,10 +629,10 @@ export class AdminModal extends React.Component {
         }
     }
 
-    renderModal = ({ title, body, size, buttons, isLoading = false }) => {
+    renderModal = ({ title, body, size, dataBackdrop, buttons, isLoading = false }) => {
         const { readOnly = false } = this.props;
         return (
-            <div className='modal fade' role='dialog' ref={e => this.modal = e}>
+            <div className='modal fade' role='dialog' data-backdrop={dataBackdrop} ref={e => this.modal = e}>
                 <form className={'modal-dialog' + (size == 'small' ? ' modal-sm' : (size == 'large' ? ' modal-lg' : (size == 'extra-large' ? ' modal-xl' : '')))} role='document' onSubmit={e => { e.preventDefault() || this.onSubmit && this.onSubmit(e); }}>
                     <div className='modal-content'>
                         <div className='modal-header'>

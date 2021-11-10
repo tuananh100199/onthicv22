@@ -68,21 +68,6 @@ export function getTimeTablePageByAdmin(pageNumber, pageSize, pageCondition, don
     };
 }
 
-export function getAllTimeTableByAdmin(condition, done) {
-    return dispatch => {
-        const url = '/api/time-table/all';
-        T.get(url, { condition }, data => {
-            if (data.error) {
-                T.notify('Lấy tất cả thời khóa biểu bị lỗi!', 'danger');
-                console.error('GET: ' + url + '. ' + data.error);
-            } else {
-                done && done(data.list);
-                dispatch({ type: TimeTableGetAll, list: data.list });
-            }
-        }, error => console.error(error) || T.notify('Lấy tất cả lịch nghỉ bị lỗi!', 'danger'));
-    };
-}
-
 export function getTimeTable(_id, done) {
     return dispatch => {
         const url = '/api/time-table';
