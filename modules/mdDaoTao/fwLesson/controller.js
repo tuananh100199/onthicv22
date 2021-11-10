@@ -253,6 +253,10 @@ module.exports = (app) => {
             app.uploadImage('lesson-video', app.model.lessonVideo.get, _id, files.lessonVideoImage[0].path, done);
         }
     };
+
+    app.uploadHooks.add('uploadLessonCkEditor', (req, fields, files, params, done) =>
+        app.permission.has(req, () => app.uploadCkEditorImage('lesson', fields, files, params, done), done, 'lesson:write'));
+
     app.uploadHooks.add('uploadLessonVideo', (req, fields, files, params, done) =>
         app.permission.has(req, () => uploadLessonVideo(fields, files, done), done, 'lesson:write'));
 };

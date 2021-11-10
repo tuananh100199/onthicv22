@@ -23,14 +23,14 @@ module.exports = (app) => {
             app.model.student.getAll({ user: user._id }, (error, students) => {
                 const _courseIds = [];
                 (students || []).forEach(student => student.course && _courseIds.push(student.course._id));
-                app.model.notification.getPage(pageNumber, pageSize, { course: { $in: _courseIds }, sentDate: { $ne: null } }, (error, page) => {
+                app.model.notification.getPage(pageNumber, pageSize, { $or: [{ course: { $in: _courseIds } }, { user: user._id }], sentDate: { $ne: null } }, (error, page) => {
                     res.send({ page, error: error ? 'Danh sách thông báo không sẵn sàng!' : null });
                 });
             });
         }
     });
 
-    app.post('/api/notification', app.permission.check('user:login'), (req, res) => { //TODO
+    app.post('/api/notification', app.permission.check('user:login'), (req, res) => { //TODO: Hùng
         const user = req.session.user,
             permissions = user && user.permissions && user.permissions.length ? user.permissions : [];
         if (user.isCourseAdmin || permissions.includes('notification:write')) {
@@ -45,7 +45,6 @@ module.exports = (app) => {
             permissions = user && user.permissions && user.permissions.length ? user.permissions : [];
         if (user.isCourseAdmin || permissions.includes('notification:write')) {
             const { _id, changes } = req.body;
-            if (changes && changes.subjects && changes.subjects === 'empty') changes.subjects = [];
             app.model.notification.update(_id, changes, (error, item) => {
                 if (!error && item && item.sentDate) {
                     //TODO
@@ -72,6 +71,16 @@ module.exports = (app) => {
             app.uploadImage('notification', app.model.notification.get, _id, files.NotificationImage[0].path, done);
         }
     };
+    app.uploadHooks.add('uploadNotificationCkEditor', (req, fields, files, params, done) =>
+        app.permission.has(req, () => app.uploadCkEditorImage('notification', fields, files, params, done), done, 'notification:write'));
+
     app.uploadHooks.add('uploadNotification', (req, fields, files, params, done) =>
         app.permission.has(req, () => uploadNotification(fields, files, done), done, 'notification:write'));
+
+    // Hook permissionHooks -------------------------------------------------------------------------------------------
+    app.permissionHooks.add('courseAdmin', 'notification', (user) => new Promise(resolve => {
+        app.permissionHooks.pushUserPermission(user, 'notification:read', 'notification:write', 'notification:delete');
+        resolve();
+    }));
+
 };

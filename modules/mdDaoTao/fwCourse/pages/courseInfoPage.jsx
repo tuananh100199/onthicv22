@@ -127,7 +127,7 @@ class EditCoursePage extends AdminPage {
                         <FormCheckbox ref={e => this.commentActive = e} className={'col-md-6 ' + (readOnly ? 'invisible' : '')} label='Kích hoạt bình luận bài học' isSwitch={true} readOnly={readOnly} />
 
                         <FormRichTextBox ref={e => this.shortDescription = e} label='Mô tả ngắn khóa học' className='col-md-12' readOnly={readOnly} />
-                        <FormEditor ref={e => this.detailDescription = e} label='Mô tả chi tiết khóa học' className='col-md-12' readOnly={readOnly} style={{ height: '400px' }} />
+                        <FormEditor ref={e => this.detailDescription = e} label='Mô tả chi tiết khóa học' uploadUrl='/user/upload?category=course' className='col-md-12' readOnly={readOnly} style={{ height: '400px' }} />
                     </div>
                 </div>
                 {!readOnly ? <CirclePageButton type='save' onClick={this.saveInfo} /> : null}

@@ -236,11 +236,26 @@ export class FormRichTextBox extends React.Component {
 
     focus = () => this.input.focus();
 
+    insert = (e) => {
+        console.log(this.input);
+        console.log(this.input.selectionStart);
+        let cursorPosition = this.input.selectionStart;
+        let textBeforeCursorPosition = this.input.innerHTML.substring(0, cursorPosition);
+        let textAfterCursorPosition = this.input.innerHTML.substring(cursorPosition, this.input.innerHTML.length);
+        this.setState({
+            value: textBeforeCursorPosition + ' ' + e.target.innerHTML + ' ' + textAfterCursorPosition
+        });
+    }
+
     render() {
-        const { style = {}, rows = 3, label = '', className = '', readOnly = false, onChange = null, required = false } = this.props;
+        const { style = {}, rows = 3, label = '', className = '', readOnly = false, onChange = null, listParams = [], required = false } = this.props;
         return (
             <div className={'form-group ' + (className ? className : '')} style={style}>
                 <label onClick={this.focus}>{label}{!readOnly && required ? <span style={{ color: 'red' }}> *</span> : ''}</label>{readOnly && this.state.value ? <>: <br /><b>{this.state.value}</b></> : ''}
+                {!readOnly && listParams.length ?
+                    <p className='form-text  mb-1 '>
+                        {listParams.map((param, index) => (<small className='text-muted ml-1' style={{ cursor: 'pointer' }} key={index} onClick={(e) => this.insert(e)}>{param}</small>))}
+                    </p> : null}
                 <textarea ref={e => this.input = e} className='form-control' style={{ display: readOnly ? 'none' : 'block' }} placeholder={label} value={this.state.value} rows={rows}
                     onChange={e => this.setState({ value: e.target.value }) || onChange && onChange(e)} />
             </div>);
@@ -265,14 +280,31 @@ export class FormEditor extends React.Component {
 
     focus = () => this.input.focus();
 
+    insert = (e) => {
+        // let cursorPosition = this.input.getSelection().getStartElement();
+        let textBeforeCursorPosition = this.input.text().substring(0, 5);
+        console.log(this.input.editor.current.selectionStart);
+        console.log(this.input.editor.current);
+        // let textAfterCursorPosition = this.input.text().substring(cursorPosition, this.input.text().length);
+        this.setState({
+            value: textBeforeCursorPosition + ' ' + e.target.innerHTML + ' '
+        });
+    }
+
     render() {
-        let { height = '400px', label = '', className = '', readOnly = false, uploadUrl = '', smallText = '', required = false } = this.props;
+        let { height = '400px', label = '', className = '', readOnly = false, uploadUrl = '', smallText = '', listParams = [], required = false } = this.props;
         className = 'form-group' + (className ? ' ' + className : '');
         return (
             <div className={className}>
                 <label>{label}{!readOnly && required ? <span style={{ color: 'red' }}> *</span> : ''}</label>{readOnly && this.state.value ? <br /> : ''}
                 <p style={{ width: '100%', fontWeight: 'bold', display: readOnly ? 'block' : 'none' }} dangerouslySetInnerHTML={{ __html: this.state.value }} />
                 {!readOnly && smallText ? <small className='form-text text-muted'>{smallText}</small> : null}
+                {!readOnly && listParams.length ?
+                    <p className='form-text  mb-1 '>
+                        {listParams.map((param, index) => (<small className='text-muted ml-1' style={{ cursor: 'pointer' }} key={index}
+                            onClick={(e) => this.insert(e)}
+                        >{param}</small>))}
+                    </p> : null}
                 <div style={{ display: readOnly ? 'none' : 'block' }}>
                     <Editor ref={e => this.input = e} height={height} placeholder={label} uploadUrl={uploadUrl} />
                 </div>
@@ -597,10 +629,10 @@ export class AdminModal extends React.Component {
         }
     }
 
-    renderModal = ({ title, body, size, buttons, isLoading = false }) => {
+    renderModal = ({ title, body, size, dataBackdrop, buttons, isLoading = false }) => {
         const { readOnly = false } = this.props;
         return (
-            <div className='modal fade' role='dialog' ref={e => this.modal = e}>
+            <div className='modal fade' role='dialog' data-backdrop={dataBackdrop} ref={e => this.modal = e}>
                 <form className={'modal-dialog' + (size == 'small' ? ' modal-sm' : (size == 'large' ? ' modal-lg' : (size == 'extra-large' ? ' modal-xl' : '')))} role='document' onSubmit={e => { e.preventDefault() || this.onSubmit && this.onSubmit(e); }}>
                     <div className='modal-content'>
                         <div className='modal-header'>
