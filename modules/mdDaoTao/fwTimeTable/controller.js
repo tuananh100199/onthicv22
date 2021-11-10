@@ -46,6 +46,11 @@ module.exports = (app) => {
         app.model.timeTable.get(req.query._id, (error, item) => res.send({ error, item }));
     });
 
+    app.get('/api/time-table/all', app.permission.check('timeTable:read'), (req, res) => {
+        const condition = req.query.condition;
+        app.model.timeTable.getAll({ lecturer: condition.lecturerId }, (error, list) => res.send({ error, list }));
+    });
+
     app.get('/api/time-table/date-number', app.permission.check('user:login'), (req, res) => {
         let { _id, student, date, startHour, numOfHours } = req.query,
             dateTime = new Date(date).getTime();

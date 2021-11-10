@@ -1,12 +1,6 @@
 module.exports = (app) => {
-    const menu = {
-        parentMenu: app.parentMenu.trainning,
-        menus: {
-            4050: { title: 'Lịch dạy', link: '/user/register-calendar' },
-        }
-    };
     app.permission.add(
-        { name: 'registerCalendar:read' }, { name: 'registerCalendar:write' }, { name: 'registerCalendar:delete' }, { name: 'registerCalendar:create', menu }
+        { name: 'registerCalendar:read' }, { name: 'registerCalendar:write' }, { name: 'registerCalendar:delete' }
     );
 
     app.get('/user/register-calendar', app.permission.check('registerCalendar:read'), app.templates.admin);
@@ -14,7 +8,7 @@ module.exports = (app) => {
 
     // APIs -----------------------------------------------------------------------------------------------------------
 
-    app.get('/api/register-calendar/all', (req, res) => {
+    app.get('/api/register-calendar/all', app.permission.check('registerCalendar:read'), (req, res) => {
         const condition = req.query.condition;
         app.model.registerCalendar.getAll({ lecturer: condition.lecturerId }, (error, list) => res.send({ error, list }));
     });

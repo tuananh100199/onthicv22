@@ -20,6 +20,7 @@ function formatDate(item) {
 }
 class RegisterTimeTableModal extends AdminModal {
     state = { listTimeTable: null };
+    sectionHour = {};
 
     onShow = (item) => {
         const { _id, dateNumber, date, startHour, numOfHours, state } = item.data || { date: item.start ? item.start.toISOString() : null, startHour: 7, numOfHours: 1, state: 'waiting' },
@@ -156,7 +157,7 @@ class RegisterTimeTableModal extends AdminModal {
                             <>Thời gian học: <span className='text-primary'>{`${startHour}h - ${endHour}h`}</span>.</> : null}
                         </p>
                         <div className='row col-md-12' style={{marginBottom: '25px'}}>
-                            <p className='col-md-12'>Chọng khung giờ đăng ký: </p>
+                            <p className='col-md-12'>Chọn khung giờ đăng ký: </p>
                             {avaiableHours && avaiableHours.length ? avaiableHours.map((sectionHour) =>
                             (
                                 <div key={sectionHour.id} className='col-md-6'>

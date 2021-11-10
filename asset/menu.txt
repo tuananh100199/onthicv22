@@ -30,7 +30,7 @@
 	4030 - Bài học (/user/dao-tao/bai-hoc)
 	4040 - Ứng viên (/user/pre-student)
 	4045 - Khóa học (/user/course)
-	4050 - Lịch dạy (/user/register-calendar)
+	4050 - Thời khóa biểu (/user/time-table)
 	4055 - Học viên chưa tốt nghiệp (/user/student/fail-graduation)
 	4060 - Học viên chưa đạt sát hạch (/user/student/fail-exam)
 6000. Ôn tập (undefined)

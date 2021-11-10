@@ -40,7 +40,7 @@ export class LecturerTimeTablePage extends AdminPage {
             content: (
                 <div className='tile'>
                     <div className='tile-body'>
-                    <div className='pb-3' style={{marginBottom: '25px'}}>
+                        <div className='pb-3' style={{marginBottom: '25px'}}>
                             <div style={{float: 'right', display: 'flex'}}>
                                 {list ? <FormCheckbox ref={e => this.course = e} style={{paddingRight: '12px'}} onChange={value => this.setState({ key: !key, filterOn: value })} label='Hiển thị ngày hiện tại' /> : null}
                                 <button style={{border: 'none', outline: 'none', marginRight: '3px', backgroundColor: list ? '#2189CF' : ''}} onClick={() => this.setState({ key: !key, calendar: false, list: true })}><i className='fa fa-bars'></i> Danh sách</button>

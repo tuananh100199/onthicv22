@@ -115,7 +115,8 @@ class TimeTableModal extends AdminModal {
                     T.notify('Ngày học không được nhỏ hơn ngày hiện tại!', 'danger');
                     this.itemDate.focus();
                 } else {
-                    this.props.onSave(_id, data, () => this.hide());
+                    this.props.onSave(_id, data);
+                    this.hide();
                 }
             }
         }
@@ -246,7 +247,7 @@ class LecturerView extends AdminPage {
     componentDidMount() {
         const user = this.props.system ? this.props.system.user : null,
             { isLecturer, isCourseAdmin } = user;
-        const { courseId, lecturerId, filterOn, official } = this.props;
+        const { courseId, lecturerId } = this.props;
         const course = this.props.course ? this.props.course.item : null;
 
         if (!course) {
@@ -258,8 +259,8 @@ class LecturerView extends AdminPage {
             });
         }
         if (courseId && lecturerId) {
-            this.setState({ courseId, lecturerId, isLecturer, isCourseAdmin, filterOn });
-            this.props.getTimeTablePageByAdmin(undefined, undefined, { courseId: courseId, lecturerId: lecturerId, filterOn: filterOn, official: official });
+            this.setState({ isLecturer, isCourseAdmin });
+            this.getTimeTablePage(undefined, undefined);
         }
 
         const _this = this;
@@ -303,7 +304,6 @@ class LecturerView extends AdminPage {
     }
 
     getEventObject = (currentEnvent = {}, newItem) => {
-
         function formatTime(item){
             return ('0' + item).slice(-2);
         }
@@ -324,7 +324,7 @@ class LecturerView extends AdminPage {
     }
     
     getData = (done) => {
-        this.props.getTimeTablePageByAdmin(undefined, undefined, { courseId: this.props.courseId, lecturerId: this.props.lecturerId, filterOn: this.props.filterOn, official: this.props.official}, item => {
+        this.getTimeTablePage(undefined, undefined, item => {
            done && done(item.list);
         });
     }
@@ -335,7 +335,7 @@ class LecturerView extends AdminPage {
     }
 
     onModalFormSave = (_id, data, done) => {
-        _id ? this.props.updateTimeTableByAdmin(_id, data, {courseId: this.props.courseId, lecturerId: this.props.lecturerId, filterOn: this.props.filterOn}, item => {
+        _id ? this.updateTimeTable(_id, data, item => {
             done && done();
             if (this.eventSelect) {
                 const eventSelect = this.getEventObject(this.eventSelect, item);
@@ -368,12 +368,20 @@ class LecturerView extends AdminPage {
         }
     }
 
-    updateState = (item, state) => this.props.updateTimeTableByAdmin(item._id, { state }, {courseId: this.props.courseId, lecturerId: this.props.lecturerId, filterOn: this.props.filterOn});
+    updateState = (item, state) => this.updateTimeTable(item._id, { state });
     
     delete = (e, item) => e.preventDefault() || T.confirm('Xoá thời khóa biểu', 'Bạn có chắc muốn xoá thời khóa biểu này?', true, isConfirm =>
         isConfirm && this.props.deleteTimeTableByAdmin(item._id, {courseId: this.props.courseId, lecturerId: this.props.lecturerId, filterOn: this.props.filterOn} ));
         
-    getPage = (pageNumber, pageSize) => this.props.getTimeTablePageByAdmin(pageNumber, pageSize, { courseId: this.props.courseId, lecturerId: this.props.lecturerId, filterOn: this.props.filterOn, official: this.props.official });
+    getPage = (pageNumber, pageSize) => this.getTimeTablePage(pageNumber, pageSize);
+
+    getTimeTablePage = (pageNumber, pageSize) => {
+        this.props.getTimeTablePageByAdmin(pageNumber, pageSize, { courseId: this.props.courseId, lecturerId: this.props.lecturerId, filterOn: this.props.filterOn, official: this.props.official });
+    }
+
+    updateTimeTable = (_id, data) => {
+        this.props.updateTimeTableByAdmin(_id, data, { courseId: this.props.courseId, lecturerId: this.props.lecturerId, filterOn: this.props.filterOn, official: this.props.official });
+    }
 
     render() {
         const courseItem = this.props.course && this.props.course.item ? this.props.course.item : {};
@@ -413,7 +421,7 @@ class LecturerView extends AdminPage {
                         <TableCell type='number' style={{ textAlign: 'center' }} content={item.numOfHours} />
                         <TableCell type='number' style={{ textAlign: 'center' }} content={item.licensePlates} />
                         <TableCell type='checkbox' content={item.truant} permission={permission} onChanged={active =>  T.confirm('Học viên vắng học', 'Bạn có chắc muốn thay đổi trạng thái học viên nghỉ học?', true, isConfirm =>
-                            isConfirm && this.props.updateTimeTableByAdmin(item._id, { truant: active }, {courseId: this.props.courseId, lecturerId: this.props.lecturerId, filterOn: this.props.filterOn} )) }/>
+                            isConfirm && this.updateTimeTable(item._id, { truant: active })) }/>
                         <TableCell content={dropdownState} style={{ whiteSpace: 'nowrap', textAlign: 'center' }} />
                         <TableCell type='buttons' content={item} permission={permission} onEdit={this.edit} onDelete={this.delete} />
                     </tr>

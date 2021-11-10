@@ -2,12 +2,17 @@ import T from 'view/js/common';
 
 // Reducer ------------------------------------------------------------------------------------------------------------
 const TimeTableGetPage = 'TimeTableGetPage';
+const TimeTableGetAll = 'TimeTableGetAll';
 const TimeTableUpdate = 'TimeTableUpdate';
 
 export default function timeTableReducer(state = {}, data) {
     switch (data.type) {
         case TimeTableGetPage:
             return Object.assign({}, state, { page: data.page });
+
+        case TimeTableGetAll:
+            return Object.assign({}, state, { list: data.list });
+
         case TimeTableUpdate: {
             let updatedPage = Object.assign({}, state.page),
                 updatedItem = data.item;
@@ -60,6 +65,21 @@ export function getTimeTablePageByAdmin(pageNumber, pageSize, pageCondition, don
                 dispatch({ type: TimeTableGetPage, page: data.page });
             }
         }, error => console.error(error) || T.notify('Lấy thời khóa biểu bị lỗi!', 'danger'));
+    };
+}
+
+export function getAllTimeTableByAdmin(condition, done) {
+    return dispatch => {
+        const url = '/api/time-table/all';
+        T.get(url, { condition }, data => {
+            if (data.error) {
+                T.notify('Lấy tất cả thời khóa biểu bị lỗi!', 'danger');
+                console.error('GET: ' + url + '. ' + data.error);
+            } else {
+                done && done(data.list);
+                dispatch({ type: TimeTableGetAll, list: data.list });
+            }
+        }, error => console.error(error) || T.notify('Lấy tất cả lịch nghỉ bị lỗi!', 'danger'));
     };
 }
 
