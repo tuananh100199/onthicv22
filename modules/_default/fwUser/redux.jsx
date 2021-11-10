@@ -4,6 +4,7 @@ import T from 'view/js/common';
 const UserGetPage = 'UserGetPage';
 const UserUpdate = 'UserUpdate';
 const StaffGetAll = 'StaffGetAll';
+const LecturerGetAll = 'LecturerGetAll';
 const StaffGetPage = 'StaffGetPage';
 
 export default function userReducer(state = null, data) {
@@ -103,6 +104,21 @@ export function getUser(_id, done) {
         done && done(data);
         // dispatch({ type: UserGetItem, item: data.user });
     });
+}
+
+export function getAllLecturer(done) {
+    return dispatch => {
+        const url = '/api/user/lecturer';
+        T.get(url, data => {
+            if (data.error) {
+                T.notify('Lấy danh sách cố vấn học tập bị lỗi!', 'danger');
+                console.error('GET: ' + url + '. ' + data.error);
+            } else {
+                done && done(data.list);
+                dispatch({ type: LecturerGetAll, list: data.list });
+            }
+        }, error => console.error(error) || T.notify('Lấy danh sách cố vấn học tập bị lỗi!', 'danger'));
+    };
 }
 
 export function createUser(user, done) {

@@ -42,11 +42,15 @@ export class TableCell extends React.Component { // type = number | date | link 
                     </label>
                 </td>);
         } else if (type == 'buttons') {
-            const { onSwap, onEdit, onDelete, children } = this.props;
+            console.log(permission);
+            console.log(this.props);
+            const { onFuel, onSwap, onEdit, onDelete, children } = this.props;
             return (
                 <td className={className} style={{ ...style }} rowSpan={rowSpan}>
                     <div className='btn-group'>
                         {children}
+                        {permission.fuel && typeof onFuel == 'string' ?
+                            <Link to={onFuel} className='btn btn-warning'><i className='fa fa-lg fa-thermometer-empty' /></Link> : null}
                         {permission.write && onSwap ?
                             <a className='btn btn-warning' href='#' onClick={e => onSwap(e, content, true)}><i className='fa fa-lg fa-arrow-up' /></a> : null}
                         {permission.write && onSwap ?

@@ -112,7 +112,6 @@ class AdminImportDiemThiTotNghiepPage extends AdminPage {
             item.totNghiep = totNghiep;
         });
         this.setState({ data, isFileBoxHide: true });
-
     }
 
 
