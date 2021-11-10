@@ -204,6 +204,39 @@ export function deleteTimeTableByAdmin(_id, condition) {
         }, error => console.error(error) || T.notify('Xóa thời khóa biểu bị lỗi!', 'danger'));
     };
 }
+
+// Car Calendar API ------------------------------------------------------------------------------------------
+T.initCookiePage('pageTimeTableCar');
+export function getTimeTableCarPage(pageNumber, pageSize, pageCondition, done) {
+    const page = T.updatePage('pageTimeTableCar', pageNumber, pageSize);
+    return dispatch => {
+        const url = `/api/time-table/car/page/${page.pageNumber}/${page.pageSize}`;
+        T.get(url, { pageCondition }, data => {
+            if (data.error) {
+                T.notify('Lấy lịch xe bị lỗi!', 'danger');
+                console.error(`GET: ${url}. ${data.error}`);
+            } else {
+                done && done(data.page);
+                dispatch({ type: TimeTableGetPage, page: data.page });
+            }
+        }, error => console.error(error) || T.notify('Lấy lịch xe bị lỗi!', 'danger'));
+    };
+}
+
+export function getTimeTableCar(condition, done) {
+    return () => {
+        const url = '/api/time-table/car';
+        T.get(url, { condition }, data => {
+            if (data.error) {
+                T.notify('Lấy thời lịch xe bị lỗi!', 'danger');
+                console.error(`GET: ${url}. ${data.error}`);
+            } else {
+                done && done(data);
+            }
+        }, error => console.error(error) || T.notify('Lấy lịch xe bị lỗi', 'danger'));
+    };
+}
+
 // Student API --------------------------------------------------------------------------------------
 export function getTimeTableByStudent(done) {
     return dispatch => {

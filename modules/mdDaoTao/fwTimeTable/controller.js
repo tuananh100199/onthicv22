@@ -172,6 +172,37 @@ module.exports = (app) => {
             }
         });
     });
+
+   
+    // Car Calendar API -------------------------------------------------------------------------------------------
+    app.get('/api/time-table/car/page/:pageNumber/:pageSize', app.permission.check('timeTable:read'), (req, res) => {
+        let pageNumber = parseInt(req.params.pageNumber),
+            pageSize = parseInt(req.params.pageSize),
+            condition = req.query.pageCondition || {},
+            pageCondition = {};
+        if (condition.filterOn && JSON.parse(condition.filterOn)){
+            let today  = new Date();
+            pageCondition.date = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+        }
+        if (condition.official && JSON.parse(condition.official)) {
+            pageCondition.state = 'approved';
+        }
+        pageCondition.car = condition.carId;
+        app.model.timeTable.getPage(pageNumber, pageSize, pageCondition, (error, page) => res.send({ error, page }));
+    });
+
+    app.get('/api/time-table/car', app.permission.check('timeTable:read'), (req, res) => {
+        const condition = req.query.condition || {};
+        let carCondition = {};
+        if (condition.date) {
+            carCondition.date = condition.date;
+        }
+        if (condition.official && JSON.parse(condition.official)) {
+            carCondition.state = 'approved';
+        }
+        carCondition.car = condition.carId;
+        app.model.timeTable.getAll(carCondition, (error, items) => res.send({ error, items }));
+    });
     
     // Student API-----------------------------------------------------------------------------------------------------
     app.get('/api/time-table/student', app.permission.check('user:login'), (req, res) => {

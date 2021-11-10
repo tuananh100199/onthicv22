@@ -2,7 +2,8 @@ import React from 'react';
 import { connect } from 'react-redux';
 import {getTimeTablePageByAdmin, updateTimeTableByAdmin, createTimeTableByAdmin, deleteTimeTableByAdmin, getTimeTableDateNumber, getTimeTableOfLecturer } from './redux';
 import { getStudent, ajaxSelectStudentOfLecturer } from 'modules/mdDaoTao/fwStudent/redux';
-import {  getCourse } from 'modules/mdDaoTao/fwCourse/redux';
+import { getCourse } from 'modules/mdDaoTao/fwCourse/redux';
+import { getCarOfLecturer } from 'modules/mdDaoTao/fwCar/redux';
 import Pagination from 'view/component/Pagination';
 import { AdminPage, AdminModal, TableCell, renderTable, FormTextBox, FormCheckbox, FormRichTextBox, FormSelect, FormDatePicker } from 'view/component/AdminPage';
 import { RegisterCalendarStates, RegisterCalendarStatesMapper } from 'modules/mdDaoTao/fwRegisterCalendar/index';
@@ -42,6 +43,15 @@ class NoteModal extends AdminModal {
 
 class TimeTableModal extends AdminModal {
     state = {listTimeTable: null};
+
+    componentDidMount() {
+        this.props.getCarOfLecturer({ user: this.props.lecturerId }, car => {
+            if (car) {
+                this.setState({car: car});
+            }
+        });
+    }
+
     onShow = (item) => {
         function formatDayOrMonth(item){
             return ('0' + item).slice(-2);
@@ -56,13 +66,13 @@ class TimeTableModal extends AdminModal {
             return `${year}-${formatDayOrMonth(month)}-${formatDayOrMonth(day)}T17:00:00.000Z`;// chuyển ngày trong calendar sang định dạng lưu trong DB
         }
 
-        const { _id, student, dateNumber, date, startHour, numOfHours, state, truant, licensePlates, content, note } = item.data || { date: item.start ? item.start.toISOString() : null, startHour: 8, numOfHours: 2, state: 'waiting', truant: false, licensePlates: '', content: '', note: '' },
+        const { _id, student, dateNumber, date, startHour, numOfHours, state, truant, car, content, note } = item.data || { date: item.start ? item.start.toISOString() : null, startHour: 8, numOfHours: 2, state: 'waiting', truant: false, car: this.state.car ? this.state.car : '', content: '', note: '' },
             endHour = startHour + numOfHours;
         this.itemStudent.value(student ? student._id : null);
         this.itemDate.value(date);
         this.itemStartHour.value(startHour);
         this.itemNumOfHours.value(numOfHours);
-        this.itemLicensePlates.value(licensePlates);
+        this.itemCar.value(car && car.licensePlates);
         this.itemTruant.value(truant);
         this.itemContent.value(content);
         this.itemNote.value(note);
@@ -79,7 +89,7 @@ class TimeTableModal extends AdminModal {
     }
 
     onSubmit = () => {
-        const { _id, student } = this.state;
+        const { _id, student, car } = this.state;
         if (student) {
             const data = {
                 student: student ? student._id : null,
@@ -88,7 +98,7 @@ class TimeTableModal extends AdminModal {
                 numOfHours: Number(this.itemNumOfHours.value()),
                 state: this.itemState.value(),
                 truant: this.itemTruant.value(),
-                licensePlates: this.itemLicensePlates.value(),
+                car: car ? car._id : null,
                 content: this.itemContent.value(),
                 note: this.itemNote.value(),
             };
@@ -101,9 +111,9 @@ class TimeTableModal extends AdminModal {
             } else if (data.numOfHours == '') {
                 T.notify('Số giờ học chưa được chọn!', 'danger');
                 this.itemNumOfHours.focus();
-            } else if (data.licensePlates == '') {
+            } else if (data.car == '') {
                 T.notify('Xe học chưa được chọn!', 'danger');
-                this.itemLicensePlates.focus();
+                this.itemCar.focus();
             } else if (!_id && this.state.dateNumber == -1) {
                 T.notify('Trùng thời khóa biểu!', 'danger');
                 this.itemStartHour.focus();
@@ -226,7 +236,7 @@ class TimeTableModal extends AdminModal {
                         {table}
                     </div> : ''}
 
-                    <FormTextBox ref={e => this.itemLicensePlates = e} label='Xe học' className='col-md-4' style={{ textTransform: 'uppercase' }} readOnly={this.props.readOnly} required />
+                    <FormTextBox ref={e => this.itemCar = e} label='Xe học' className='col-md-4' style={{ textTransform: 'uppercase' }} readOnly={true} />
                     <FormCheckbox ref={e => this.itemTruant = e} label='Học viên vắng học' className='col-md-4' readOnly={this.props.readOnly} />
                     <FormSelect className='col-md-4' ref={e => this.itemState = e} label='Trạng thái' data={RegisterCalendarStates} readOnly={this.props.readOnly} /> 
 
@@ -258,7 +268,7 @@ class LecturerView extends AdminPage {
                 }
             });
         }
-        if (courseId && lecturerId) {
+        if (lecturerId) {
             this.setState({ isLecturer, isCourseAdmin });
             this.getTimeTablePage(undefined, undefined);
         }
@@ -343,7 +353,7 @@ class LecturerView extends AdminPage {
                 $(this.calendar).fullCalendar('renderEvent', eventSelect);
                 this.eventSelect = null;
             }
-        }) : this.props.createTimeTableByAdmin(data, {courseId: this.props.courseId, lecturerId: this.props.lecturerId, filterOn: this.props.filterOn}, data => {
+        }) : this.props.createTimeTableByAdmin(data, {courseId: this.props.courseId, lecturerId: this.props.lecturerId, filterOn: this.props.filterOn, official: this.props.official}, data => {
             done && done();
             const newEvent = this.getEventObject({}, data);
             $(this.calendar).fullCalendar('renderEvent', newEvent);
@@ -371,7 +381,7 @@ class LecturerView extends AdminPage {
     updateState = (item, state) => this.updateTimeTable(item._id, { state });
     
     delete = (e, item) => e.preventDefault() || T.confirm('Xoá thời khóa biểu', 'Bạn có chắc muốn xoá thời khóa biểu này?', true, isConfirm =>
-        isConfirm && this.props.deleteTimeTableByAdmin(item._id, {courseId: this.props.courseId, lecturerId: this.props.lecturerId, filterOn: this.props.filterOn} ));
+        isConfirm && this.props.deleteTimeTableByAdmin(item._id, {courseId: this.props.courseId, lecturerId: this.props.lecturerId, filterOn: this.props.filterOn, official: this.props.official} ));
         
     getPage = (pageNumber, pageSize) => this.getTimeTablePage(pageNumber, pageSize);
 
@@ -421,7 +431,7 @@ class LecturerView extends AdminPage {
                         <TableCell type='text' content={item.date ? T.dateToText(item.date, 'dd/mm/yyyy') : ''} />
                         <TableCell type='number' style={{ textAlign: 'center' }} content={item.numOfHours ? `${item.startHour}-${item.startHour + item.numOfHours}` : `${item.startHour}`} />
                         <TableCell type='number' style={{ textAlign: 'center' }} content={item.numOfHours} />
-                        <TableCell type='number' style={{ textAlign: 'center' }} content={item.licensePlates} />
+                        <TableCell type='number' style={{ textAlign: 'center', whiteSpace: 'nowrap' }} content={item.car && item.car.licensePlates} />
                         <TableCell type='checkbox' content={item.truant} permission={permission} onChanged={active =>  T.confirm('Học viên vắng học', 'Bạn có chắc muốn thay đổi trạng thái học viên nghỉ học?', true, isConfirm =>
                             isConfirm && this.updateTimeTable(item._id, { truant: active })) }/>
                         <TableCell content={dropdownState} style={{ whiteSpace: 'nowrap', textAlign: 'center' }} />
@@ -440,7 +450,7 @@ class LecturerView extends AdminPage {
                 <NoteModal ref={e => this.modalLecturer = e} readOnly={!permission.write} courseId={this.props.courseId} lecturerId={this.props.lecturerId} filterOn={this.props.filterOn} 
                     update={this.props.updateTimeTableByAdmin} />
                 <TimeTableModal ref={e => this.modalCourseAdmin = e} readOnly={!permission.write} courseItem={courseItem} getStudent={this.props.getStudent} courseId={this.props.courseId} lecturerId={this.props.lecturerId} filterOn={this.props.filterOn} calendar={this.props.calendar} lecturerName={this.props.lecturerName}
-                    create={this.props.createTimeTableByAdmin} update={this.props.updateTimeTableByAdmin} delete={this.deleteCalendar} getDateNumber={this.props.getTimeTableDateNumber} getPage={this.props.getTimeTablePageByAdmin} getTimeTableOfLecturer={this.props.getTimeTableOfLecturer} onSave={this.onModalFormSave}  /> 
+                    create={this.props.createTimeTableByAdmin} update={this.props.updateTimeTableByAdmin} delete={this.deleteCalendar} getDateNumber={this.props.getTimeTableDateNumber} getPage={this.props.getTimeTablePageByAdmin} getTimeTableOfLecturer={this.props.getTimeTableOfLecturer} onSave={this.onModalFormSave} getCarOfLecturer={this.props.getCarOfLecturer}  /> 
                  <Pagination name='pageTimeTable' pageNumber={pageNumber} pageSize={pageSize} pageTotal={pageTotal} totalItem={totalItem} style={{ left: 320 }}
                         getPage={this.getPage} />
                 {this.state.isCourseAdmin ?
@@ -453,6 +463,6 @@ class LecturerView extends AdminPage {
 }
 
 const mapStateToProps = state => ({ system: state.system, course: state.trainning.course, timeTable: state.trainning.timeTable });
-const mapActionsToProps = { getTimeTablePageByAdmin, updateTimeTableByAdmin, createTimeTableByAdmin, deleteTimeTableByAdmin, getTimeTableDateNumber, getCourse, getStudent, getTimeTableOfLecturer };
+const mapActionsToProps = { getTimeTablePageByAdmin, updateTimeTableByAdmin, createTimeTableByAdmin, deleteTimeTableByAdmin, getTimeTableDateNumber, getCourse, getStudent, getTimeTableOfLecturer, getCarOfLecturer };
 export default connect(mapStateToProps, mapActionsToProps)(LecturerView);
 
