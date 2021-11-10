@@ -36,11 +36,11 @@ module.exports = app => {
                 result.pageNumber = pageNumber === -1 ? result.pageTotal : Math.min(pageNumber, result.pageTotal);
 
                 const skipNumber = (result.pageNumber > 0 ? result.pageNumber - 1 : 0) * result.pageSize;
-                model.find(condition).populate('user', 'lastname firstname image').populate('replies.adminUser', 'lastname firstname image')
-                .sort({ createdDate: -1 }).skip(skipNumber).limit(result.pageSize).exec((error, list) => {
-                    result.list = list;
-                    done(error, result);
-                });
+                model.find(condition).populate({ path: 'user', select: '-password', populate: { path: 'division' } }).populate('replies.adminUser', 'lastname firstname image')
+                    .sort({ createdDate: -1 }).skip(skipNumber).limit(result.pageSize).exec((error, list) => {
+                        result.list = list;
+                        done(error, result);
+                    });
             }
         }),
 

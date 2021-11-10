@@ -134,6 +134,10 @@ export function getStudentScore(courseId, done) {
     };
 }
 
+export function exportExamStudent(_courseId, filter) {
+    T.download(T.url(`/api/student/export/${_courseId}/${filter}`));
+}
+
 // Pre-student Actions ------------------------------------------------------------------------------------------------
 T.initCookiePage('adminPreStudent');
 export function getPreStudentPage(pageNumber, pageSize, pageCondition, sort, done) {
@@ -215,6 +219,25 @@ export function importPreStudent(students, division, courseType, done) {
     };
 }
 
+export function importFailPassStudent(student, type, done) {
+    return () => {
+        const url = '/api/student/import-fail-pass';
+        T.put(url, { student, type }, data => {
+            if (data.error) {
+                T.notify('Lưu danh sách học viên bị lỗi!', 'danger');
+                console.error(`PUT: ${url}. ${data.error}`);
+            } else {
+                T.notify('Lưu danh sách học viên thành công!', 'success');
+                done && done(data);
+            }
+        }, error => console.error(error) || T.notify('Lưu danh sách học viên bị lỗi!', 'danger'));
+    };
+}
+
+export function downloadFailPassStudentFile() {
+    T.download(T.url('/api/student/download-fail-pass'));
+}
+
 // Ajax Selections ----------------------------------------------------------------------------------------------------
 export const ajaxSelectPreStudent = T.createAjaxAdapter(
     '/api/pre-student/page/1/20',
@@ -233,7 +256,7 @@ export const ajaxSelectStudentByCourse = (course) => ({
 export const ajaxSelectStudentOfLecturer = (courseId, lecturerId) => ({
     ajax: true,
     url: '/api/course/lecturer/student',
-    data: params => ({ condition: { courseId, lecturerId, title: params.term }}),
+    data: params => ({ condition: { courseId, lecturerId, title: params.term } }),
     processResults: response => ({ results: response && response.list ? response.list.map(student => ({ id: student._id, text: `${student.lastname} ${student.firstname}` })) : [] }),
     fetchOne: (_id, done) => (getStudent(_id, student => done && done({ id: student._id, text: `${student.lastname} ${student.firstname}` })))()
 });

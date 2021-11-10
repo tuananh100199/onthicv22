@@ -1,6 +1,6 @@
 module.exports = (app) => {
 
-    app.put('/api/course/import-final-score', app.permission.check('course:write'), (req, res) => {
+    app.put('/api/course/import-final-score', app.permission.check('course:import'), (req, res) => {
         const sessionUser = req.session.user, division = sessionUser.division;
         if (sessionUser && sessionUser.isCourseAdmin && division && !division.isOutside) {
             const { scores, course } = req.body;
@@ -39,7 +39,7 @@ module.exports = (app) => {
 
     });
 
-    app.put('/api/course/import-score', app.permission.check('student:write'), (req, res) => {
+    app.put('/api/course/import-score', app.permission.check('course:import'), (req, res) => {
         const { score, courseId } = req.body;
         let err = null;
         if (score && score.length) {
@@ -141,4 +141,7 @@ module.exports = (app) => {
             });
         }
     });
+
+    app.uploadHooks.add('uploadCourseCkEditor', (req, fields, files, params, done) =>
+        app.permission.has(req, () => app.uploadCkEditorImage('course', fields, files, params, done), done, 'course:write'));
 };

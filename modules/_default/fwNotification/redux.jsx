@@ -2,12 +2,16 @@ import T from 'view/js/common';
 
 // Reducer ------------------------------------------------------------------------------------------------------------
 const NotificationGetPage = 'NotificationGetPage';
+const NotificationGetItem = 'NotificationGetItem';
 const NotificationUpdate = 'NotificationUpdate';
 
 export default function notificationReducer(state = null, data) {
     switch (data.type) {
         case NotificationGetPage:
             return Object.assign({}, state, { page: data.page });
+
+        case NotificationGetItem:
+            return Object.assign({}, state, { item: data.item });
 
         case NotificationUpdate: {
             if (state) {
@@ -47,6 +51,21 @@ export function getNotificationPage(pageNumber, pageSize, done) {
                 dispatch({ type: NotificationGetPage, page: data.page });
             }
         }, error => console.error(error) || T.notify('Lấy danh sách thông báo bị lỗi!', 'danger'));
+    };
+}
+
+export function getNotification(_id, done) {
+    return dispatch => {
+        const url = '/api/notification';
+        T.get(url, { _id }, data => {
+            if (data.error) {
+                T.notify('Lấy thông báo bị lỗi!', 'danger');
+                console.error('GET: ' + url + '.', data.error);
+            } else {
+                done && done(data);
+                dispatch({ type: NotificationGetItem, item: data.item });
+            }
+        }, error => console.error(error) || T.notify('Lấy thông báo bị lỗi!', 'danger'));
     };
 }
 

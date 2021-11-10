@@ -32,6 +32,9 @@ module.exports = (app, http, appConfig) => {
             key: 'hiep-phat',
             resave: false,
             saveUninitialized: true,
+            cookie: {
+                maxAge: 3600000 * 24 * 7// one week
+            }
         };
     if (appConfig && app.redis) {
         // console.log(` - #${process.pid}: The system used Redis session!`);

@@ -113,7 +113,7 @@ class ImportPage extends AdminPage {
             breadcrumb: [<Link key={0} to='/user/course'>Khóa học</Link>, ...(_id ? [<Link key={1} to={`/user/course/${_id}`}>{name}</Link>,
             <Link key={2} to={backRoute}>Tiến độ học tập</Link>, 'Nhập điểm thi hết môn bằng Excel'] : [])],
             content: <>
-                <div className='tile'>
+                <div className='tile' style={{ display: this.state.data && this.state.data.length > 0 ? 'none':'block' }}>
                     <h3 className='tile-title'>Thông số đầu vào</h3>
                     <div className='row'>
                         <FormTextBox ref={e => this.startRow = e} onChange={e => this.onChange(e)} label='Dòng bắt đầu' className='col-md-4' type='number' min={2} max={this.endRow ? parseInt(this.endRow.value()) : ''} />

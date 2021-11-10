@@ -12,16 +12,15 @@ export class AdminFeedbackPage extends AdminPage {
             const params = T.routeMatcher('/user/course/:_id/feedback').parse(window.location.pathname);
             if (params && params._id) {
                 this.course.value(true);
-                this.onChange(true, 'course');
                 const course = this.props.course ? this.props.course.item : null;
                 if (!course) {
                     this.props.getCourse(params._id, data => {
                         if (data.error) {
                             T.notify('Lấy khóa học bị lỗi!', 'danger');
                             this.props.history.push('/user/course/' + params._id);
-                        }
+                        } else this.onChange(true, 'course');
                     });
-                }
+                } else this.onChange(true, 'course');
             } else {
                 this.props.history.push('/user/course/');
             }
@@ -36,6 +35,7 @@ export class AdminFeedbackPage extends AdminPage {
     }
 
     render() {
+        const permission = this.getUserPermission('feedback');
         const item = this.props.course && this.props.course.item ? this.props.course.item : {};
         const backRoute = `/user/course/${item._id}`;
         return this.renderPage({
@@ -49,7 +49,7 @@ export class AdminFeedbackPage extends AdminPage {
                             <FormCheckbox ref={e => this.course = e} onChange={value => this.onChange(value, 'course')} label='Phản hồi khóa học' />&nbsp; &nbsp; &nbsp; &nbsp;
                             <FormCheckbox ref={e => this.teacher = e} onChange={value => this.onChange(value, 'teacher')} label='Phản hồi cố vấn học tập' />
                         </div>
-                        {this.state.type && <FeedbackSection history={this.props.history} detailPageUrl={`/user/course/${item._id}/feedback`} type={this.state.type} _refId={item._id} />}
+                        {this.state.type && <FeedbackSection permission={permission} history={this.props.history} detailPageUrl={`/user/course/${item._id}/feedback`} type={this.state.type} _refId={item._id} />}
                     </div>
                 </div>),
             backRoute,

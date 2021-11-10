@@ -1,16 +1,16 @@
-//TEMPLATES: admin|home
+//TEMPLATES: admin
 import Loadable from 'react-loadable';
 import Loading from 'view/component/Loading';
-import notification from './redux';
+import notificationTemplate from './redux';
 
 export default {
     redux: {
-        parent: 'framework',
-        reducers: { notification },
+        parent: 'communication',
+        reducers: { notificationTemplate },
     },
     routes: [
         {
-            path: '/user/notification',
+            path: '/user/notification/template',
             component: Loadable({ loading: Loading, loader: () => import('./adminPage') })
         },
     ],
