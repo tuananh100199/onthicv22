@@ -16,7 +16,7 @@ module.exports = (app, appName) => {
         }
         return result;
     };
-
+    
     // Response template - html file ---------------------------------------------------------------------------------------------------------------------------
     app.templates = {};
     app.createTemplate = function () {

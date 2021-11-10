@@ -175,7 +175,7 @@ class AdminImportDiemThiTotNghiepPage extends AdminPage {
             title: 'Nhập điểm thi tốt nghiệp: ' + item.name,
             breadcrumb: [<Link key={0} to='/user/course'>Khóa học</Link>, item._id ? <Link key={0} to={backRouteCourse}>{item.name}</Link> : '', item._id ? <Link key={0} to={backRoute}>Tiến độ học tập</Link> : '', 'Nhập điểm thi tốt nghiệp'],
             content: <>
-                <div className='tile'>
+                <div className='tile' style={{ display: this.state.data && this.state.data.length > 0 ? 'none':'block' }}>
                     <div className='tile-body'>
                         {componentSetting}
                     </div>

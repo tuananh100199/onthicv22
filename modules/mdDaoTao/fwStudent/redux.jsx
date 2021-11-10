@@ -219,6 +219,25 @@ export function importPreStudent(students, division, courseType, done) {
     };
 }
 
+export function importFailPassStudent(student, type, done) {
+    return () => {
+        const url = '/api/student/import-fail-pass';
+        T.put(url, { student, type }, data => {
+            if (data.error) {
+                T.notify('Lưu danh sách học viên bị lỗi!', 'danger');
+                console.error(`PUT: ${url}. ${data.error}`);
+            } else {
+                T.notify('Lưu danh sách học viên thành công!', 'success');
+                done && done(data);
+            }
+        }, error => console.error(error) || T.notify('Lưu danh sách học viên bị lỗi!', 'danger'));
+    };
+}
+
+export function downloadFailPassStudentFile() {
+    T.download(T.url('/api/student/download-fail-pass'));
+}
+
 // Ajax Selections ----------------------------------------------------------------------------------------------------
 export const ajaxSelectPreStudent = T.createAjaxAdapter(
     '/api/pre-student/page/1/20',

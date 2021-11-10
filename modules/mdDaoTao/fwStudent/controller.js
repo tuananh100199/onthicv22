@@ -13,10 +13,11 @@ module.exports = (app) => {
     };
 
     app.permission.add(
-        { name: 'student:read', menu: menuFailStudent }, { name: 'student:write' }, { name: 'student:delete', menu }, { name: 'student:import' },//TODO: Thầy TÙNG
+        { name: 'student:read' }, { name: 'student:write' }, { name: 'student:delete', menu }, { name: 'student:import', menu: menuFailStudent },//TODO: Thầy TÙNG
         { name: 'pre-student:read', menu }, { name: 'pre-student:write' }, { name: 'pre-student:delete' }, { name: 'pre-student:import' },
     );
 
+    app.get('/user/student/import-fail-pass', app.permission.check('student:import'), app.templates.admin);
     app.get('/user/student/fail-exam', app.permission.check('student:read'), app.templates.admin);
     app.get('/user/student/fail-graduation', app.permission.check('student:read'), app.templates.admin);
     app.get('/user/pre-student', app.permission.check('pre-student:read'), app.templates.admin);
@@ -222,7 +223,8 @@ module.exports = (app) => {
                             lastname: data.lastname,
                             phoneNumber: data.phoneNumber,
                             division: data.division || req.session.user.division,
-                            password: dataPassword
+                            password: dataPassword,
+                            birthday: data.birthday,
                         };
                     app.model.user.create(newUser, (error, user) => {
                         if (error) {
@@ -296,8 +298,15 @@ module.exports = (app) => {
                             }
                             student.user = user._id;   // assign id of user to user field of prestudent
                             student.courseType = req.body.courseType;
-                            app.model.student.create(student, () => {
-                                handleCreateStudent(index + 1);
+                            app.model.user.get({ identityCard: student.lecturerIdentityCard }, (error, user) => {
+                                if (error || !user) {
+                                    res.send({ error: `Lỗi không tìm thấy cố vấn có CMND/CCCD: ${student.lecturerIdentityCard}` });
+                                } else {
+                                    student.planLecturer = user._id;
+                                    app.model.student.create(student, () => {
+                                        handleCreateStudent(index + 1);
+                                    });
+                                }
                             });
                         }
                     });
@@ -406,6 +415,8 @@ module.exports = (app) => {
                                 giayKhamSucKhoeNgayKham: values[17] && values[17].toLowerCase().trim() == 'x' ? stringToDate(values[18]) : null,
                                 hinhThe3x4: values[19] && values[19].toLowerCase().trim() == 'x' ? true : false,
                                 hinhChupTrucTiep: values[20] && values[20].toLowerCase().trim() == 'x' ? true : false,
+                                lecturerIdentityCard: values[21],
+                                lecturerName: values[22],
                             });
                             handleUpload(index + 1);
                         }
@@ -418,9 +429,186 @@ module.exports = (app) => {
         }
     });
 
+    // Hook upload fail pass student excel---------------------------------------------------------------------------------------
+    app.uploadHooks.add('uploadExcelFailPassStudentFile', (req, fields, files, params, done) => {
+        if (files.FailPassStudentFile && files.FailPassStudentFile.length > 0 && fields.userData && fields.userData.length > 0 && fields.userData[0].startsWith('FailPassStudentFile:')) {
+            console.log('Hook: uploadExcelFailPassStudentFile => your excel fail pass student file upload');
+            const srcPath = files.FailPassStudentFile[0].path;
+            app.excel.readFile(srcPath, workbook => {
+                app.deleteFile(srcPath);
+                if (workbook) {
+                    const userData = fields.userData[0], userDatas = userData.split(':'), worksheet = workbook.getWorksheet(1), data = [],
+                        getCellValue = (row, col) => worksheet.getCell(`${col}${row}`).text,
+                        setCellValue = (row, col, value) => {
+                            worksheet.getCell(`${col}${row}`).value = value;
+                        },
+                        startRow = parseInt(userDatas[1]), endRow = parseInt(userDatas[2]),
+                        // totalRow = endRow - startRow + 1,
+                        colCourseType = userDatas[6], courseTypeSelected = userDatas[7], colIdCard = userDatas[8];
+
+                    const handleUpload = (index = startRow) => {
+                        if (index > endRow) { // end loop  
+                            if (data.some(({ identityCard }) => identityCard == undefined)) { //check map not 100%, map fail then not push identityCard to data
+                                const tempFolderName = app.date.getDateFolderName(), tempFilePath = app.path.join(app.assetPath, 'temp', tempFolderName);
+                                if (!app.fs.existsSync(tempFilePath)) {
+                                    app.createFolder(tempFilePath);
+                                }
+                                setCellValue(startRow - 6, colIdCard, 'CMND/CCCD');
+                                const colIdCardValues = worksheet.getColumn(colIdCard);
+                                colIdCardValues.width = 20;
+                                colIdCardValues.eachCell({ includeEmpty: false }, (cell) => { //highlight nhap cmnd 
+                                    if (cell.text == '\'') {
+                                        cell.fill = {
+                                            type: 'pattern',
+                                            pattern: 'solid',
+                                            fgColor: { argb: 'FFFFFF00' },
+                                        };
+                                    }
+                                });
+                                workbook.xlsx.writeFile(app.path.join(tempFilePath, 'abc.xlsx')).then(() => { //wait for write file done, then resolve,if not, file res maybe empty
+                                    done({ fileName: 'abc.xlsx', notify: 'Vui lòng chờ file được tải về máy' });
+                                });
+                            } else {
+                                done({ data, notify: 'Tải lên file thành công' });
+                            }
+                        } else {
+                            if (getCellValue(index, colCourseType).trim() == courseTypeSelected) {
+                                let identityCard = getCellValue(index, colIdCard); //check getCellValue null
+                                const fullname = getCellValue(index, userDatas[3]).trim(),
+                                    birthday = getCellValue(index, userDatas[4]),
+                                    course = getCellValue(index, userDatas[5]).trim(),
+                                    toDateObject = str => {
+                                        const dateParts = str.split('/');
+                                        return new Date(+dateParts[2], dateParts[1] - 1, +dateParts[0]);
+                                    },
+                                    name = { $regex: course, $options: 'i' };
+                                identityCard = typeof identityCard == 'string' ? identityCard.trim() : '';
+                                if (identityCard == '' || identityCard == '\'') { // find identitycard = '' => map
+                                    app.model.course.get({ name }, (error, item) => {
+                                        if (error || !item) {
+                                            setCellValue(index, colIdCard, '\''); //Nhập CMND/CCCD
+                                            data.push({ fullname, birthday, courseName: course });
+                                            handleUpload(index + 1);
+                                        } else {
+                                            const condition = {
+                                                fullname,
+                                                birthday: typeof birthday == 'object' ? birthday : toDateObject(birthday.trim()),
+                                                course: item._id,
+                                            };
+                                            app.model.student.mapToId(condition, (error, list) => {
+                                                if (error || list.length == 0 || list.length > 2) {
+                                                    setCellValue(index, colIdCard, '\''); //Nhập CMND/CCCD
+                                                    data.push({ fullname, birthday, courseName: course });
+                                                    handleUpload(index + 1);
+                                                } else if (list.length == 1 && list[0]) { //map success
+                                                    const { identityCard } = list[0];
+                                                    setCellValue(index, colIdCard, `'${identityCard}`); // add ' before it to check 00..
+                                                    data.push({ fullname, birthday, courseName: course, course: item._id, identityCard });
+                                                    handleUpload(index + 1);
+                                                }
+                                            });
+
+                                        }
+                                    });
+                                } else { // available identity card
+                                    app.model.course.get({ name }, (error, item) => {
+                                        if (error || !item) {
+                                            data.push({ fullname, birthday, courseName: course }); // course shoud be push ?
+                                            handleUpload(index + 1);
+                                        } else {
+                                            data.push({
+                                                fullname, birthday, courseName: course, course: item._id, identityCard
+                                            });
+                                            handleUpload(index + 1);
+                                        }
+                                    });
+                                }
+                            } else {
+                                handleUpload(index + 1);
+                            }
+                        }
+                    };
+                    handleUpload();
+                } else {
+                    done({ error: 'Đọc file Excel bị lỗi!' });
+                }
+            });
+        }
+    });
+
+    app.put('/api/student/import-fail-pass', app.permission.check('student:import'), (req, res) => {
+        const sessionUser = req.session.user, division = sessionUser.division;
+        if (sessionUser && !sessionUser.isLecturer && division && !division.isOutside) {
+            const { student, type } = req.body,
+                changes = [
+                    { datSatHach: true, liDoChuaDatSatHach: '' }, //Pass
+                    { datSatHach: false, liDoChuaDatSatHach: '' }, //Fail liDoChuaDatSatHach for admin define
+                    { datSatHach: false, liDoChuaDatSatHach: 'Vắng thi' }, //Absence 
+                ];
+            let err = null;
+            if (student && student.length > 0) {
+                if (type) {
+                    const handleImport = (index = 0) => {
+                        if (index == student.length) {
+                            res.send({ error: err });
+                        } else {
+                            const { identityCard, course } = student[index];
+                            app.model.student.get({ identityCard, course }, (error, item) => {
+                                if (error || !item) {
+                                    err = error;
+                                    handleImport(index + 1);
+                                } else {
+                                    Object.entries(changes[parseInt(type)]).forEach(([key, value]) => {
+                                        item[key] = value;
+                                    });
+                                    item.modifiedDate = new Date();
+                                    item.save((error, student) => {
+                                        if (error || !student) {
+                                            err = error;
+                                        }
+                                        handleImport(index + 1);
+                                    });
+                                }
+                            });
+                        }
+                    };
+                    handleImport();
+                } else {
+                    res.send({ error: 'Kiểu import file trống!' });
+                }
+            } else {
+                res.send({ error: 'Danh sách học viên trống!' });
+            }
+        } else {
+            res.send({ error: 'Bạn không có quyền import danh sách học viên!' });
+        }
+    });
+
+    app.get('/api/student/download-fail-pass', app.permission.check('student:import'), (req, res) => {
+        const sessionUser = req.session.user,
+            tempFolderName = app.date.getDateFolderName(), tempFolderPath = app.path.join(app.assetPath, 'temp', tempFolderName),
+            division = sessionUser.division;
+        if (sessionUser && sessionUser.isLecturer && division && division.isOutside) {
+            res.send({ error: 'Bạn không có quyền tải file excel này!' });
+        } else {
+            if (app.fs.existsSync(app.path.join(tempFolderPath, 'abc.xlsx'))) {
+                res.download(app.path.join(tempFolderPath, 'abc.xlsx'), 'Danh sách học viên.xlsx', (error) => {
+                    if (error) {
+                        res.send({ error });
+                    } else {
+                        app.deleteFile(app.path.join(tempFolderPath, 'abc.xlsx'));
+                    }
+                });
+            } else res.send({ error: 'File không tồn tại trên server' });
+
+        }
+    });
+
     // Hook permissionHooks -------------------------------------------------------------------------------------------
     app.permissionHooks.add('courseAdmin', 'student', (user) => new Promise(resolve => {
         app.permissionHooks.pushUserPermission(user, 'student:read', 'student:write');
+        // Quản lý khóa học nội bộ thì được import danh sách học viên bằng file Excel
+        if (user.division && !user.division.isOutside) app.permissionHooks.pushUserPermission(user, 'student:import');
         resolve();
     }));
 };

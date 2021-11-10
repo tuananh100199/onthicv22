@@ -1,6 +1,6 @@
 module.exports = (app) => {
 
-    app.get('/api/course/export/:_courseId', app.permission.check('course:read'), (req, res) => {
+    app.get('/api/course/export/:_courseId', app.permission.check('course:export'), (req, res) => {
         app.model.course.get(req.params._courseId, (error, course) => {
             if (error) {
                 res.send({ error });
@@ -153,13 +153,16 @@ module.exports = (app) => {
                 students = [];
             listStudent.forEach((student => {
                 student = app.clone(student, { subject: {} });
+                let tongDiemLyThuyet = 0;
                 subjects.forEach(subject => {
                     let diemMonHoc = 0, completedLessons = 0, numberLessons = subject.lessons ? subject.lessons.length : 0;
                     if (numberLessons) {
                         if (student && student.tienDoHocTap && student.tienDoHocTap[subject._id] && !subject.monThucHanh) {
-                            const tongDiemMonHoc = Object.entries(student.tienDoHocTap[subject._id]).reduce((lessonNext, lesson) => {
-                                return lesson[1].trueAnswers ? Number(lesson[1].score) / Object.keys(lesson[1].trueAnswers).length * 10 + lessonNext : 0;
-                            }, 0);
+                            const listLessons = Object.entries(student.tienDoHocTap[subject._id]);
+                            let tongDiemMonHoc = 0;
+                            (listLessons || []).forEach(lesson => {
+                                tongDiemMonHoc += lesson[1].trueAnswers ? Number(lesson[1].score) / Object.keys(lesson[1].trueAnswers).length * 10 : 0;
+                            });
                             diemMonHoc = Number(tongDiemMonHoc / numberLessons).toFixed(1);
                         }
                         if (subject && student.tienDoHocTap && student.tienDoHocTap[subject._id]) {
@@ -168,26 +171,19 @@ module.exports = (app) => {
                                 Object.keys(student.tienDoHocTap[subject._id]).length);
                         }
                     }
+                    
+                    if (!subject.monThucHanh) {
+                        tongDiemLyThuyet += Number(diemMonHoc);
+                    }
 
                     const obj = {};
                     obj[subject._id] = { completedLessons, diemMonHoc, numberLessons };
                     student.subject = app.clone(student.subject, obj);
                 });
 
-                let tongDiemLyThuyet = monLyThuyet.reduce((subjectNext, subject) => {
-                    let subjectPoint = 0;
-                    if (subject && student.tienDoHocTap && student.tienDoHocTap[subject._id] && Object.keys(student.tienDoHocTap[subject._id]).length) {
-                        const subjectTotalPoint = Object.entries(student.tienDoHocTap[subject._id]).reduce((lessonNext, lesson) => {
-                            return lesson[1].trueAnswers ? Number(lesson[1].score) / Object.keys(lesson[1].trueAnswers).length * 10 + lessonNext : 0;
-                        }, 0);
-                        subjectPoint = subject.lessons.length ? subjectTotalPoint / subject.lessons.length : 0;
-                    }
-                    return Number(subjectPoint.toFixed(1)) + subjectNext;
-                }, 0);
-
                 const diemLyThuyet = Number((tongDiemLyThuyet / monLyThuyet.length).toFixed(1));
-
                 const diemThucHanh = student.diemThucHanh ? Number(student.diemThucHanh) : 0;
+
                 let filterTotNghiep = true,
                     filterThiTotNghiep = true;
                 if (isAdmin) {
@@ -275,7 +271,7 @@ module.exports = (app) => {
         }).catch(error => console.error(error) || res.send({ error }));
     });
 
-    app.get('/api/course/student/export/:_courseId', app.permission.check('course:read'), (req, res) => {
+    app.get('/api/course/student/export/:_courseId', app.permission.check('course:export'), (req, res) => {
         const sessionUser = req.session.user,
             division = sessionUser.division,
             courseId = req.params._courseId;
@@ -327,7 +323,7 @@ module.exports = (app) => {
         }
     });
 
-    app.get('/api/course/representer-student/export/:_courseId', app.permission.check('course:read'), (req, res) => {
+    app.get('/api/course/representer-student/export/:_courseId', app.permission.check('course:export'), (req, res) => {
         const courseId = req.params._courseId;
         app.model.course.get(courseId, (error, course) => {
             if (error) {
@@ -396,7 +392,7 @@ module.exports = (app) => {
         });
     });
 
-    app.get('/api/course/teacher-student/export/:_courseId', app.permission.check('course:read'), (req, res) => {
+    app.get('/api/course/teacher-student/export/:_courseId', app.permission.check('course:export'), (req, res) => {
         const sessionUser = req.session.user,
             division = sessionUser.division,
             courseId = req.params._courseId;

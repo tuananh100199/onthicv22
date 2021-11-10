@@ -202,11 +202,13 @@ class FailStudentPage extends AdminPage {
                             <FormSelect ref={e => this.courseType = e} data={ajaxSelectCourseType} placeholder='Loại khóa học'
                                 onChange={data => this.onChangeCourseType(data.id)} style={{ margin: 0, width: '200px' }} />
                         </div>
-                        {table}
+                        {this.courseType && this.courseType.value() != null ? table : null}
                     </div>
                 </div>
-                <CirclePageButton type='import' style={{ right: 70 }} onClick={() => T.alert('todo')} />
+
+                <CirclePageButton type='import' onClick={() => this.props.history.push('/user/student/import-fail-pass')} />
                 <CirclePageButton type='export' onClick={() => exportExamStudent(this.state.courseId, 'HVChuaDatSatHach')} />
+                
                 <StudentModal readOnly={!permission.write} ref={e => this.modal = e} update={this.props.updateStudent} />
                 <NotificationModal readOnly={!permission.write} ref={e => this.notiModal = e} create={this.props.createNotification} data={this.state.data} />
                 <Pagination pageCondition={pageCondition} pageNumber={pageNumber} pageSize={pageSize} pageTotal={pageTotal} totalItem={totalItem} getPage={(pageNumber, pageSize) => this.onSearch({ pageNumber, pageSize })} />

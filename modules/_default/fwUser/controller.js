@@ -67,6 +67,16 @@ module.exports = app => {
         }
     });
 
+    app.get('/api/user/lecturer', app.permission.check('user:read'), (_, res) => {
+        app.model.user.getAll({ isLecturer: true }, (error, list) => {
+            if (error || list && list.length < 1) {
+                res.send({ error: 'Lấy thông tin cố vấn học tập bị lỗi' });
+            } else {
+                res.send({ error, list });
+            }
+        });
+    });
+
     app.post('/api/user', app.permission.check('user:write'), (req, res) => {
         const data = req.body.user;
         function convert(str) {
@@ -117,7 +127,7 @@ module.exports = app => {
                         }
 
                         const password = changes.password;
-                        changes.division = changes.division || req.session.user.division;
+                        // changes.division = changes.division || req.session.user.division;
                         app.model.user.update(req.body._id, changes, (error, user) => {
                             if (error) {
                                 res.send({ error });
@@ -223,10 +233,6 @@ module.exports = app => {
             }
         });
     });
-
-    // app.post('/get_user_on_mobile', app.getUserOnMobile);
-    app.post('/login_on_mobile', app.loginUserOnMobile);
-    // app.post('/logout_on_mobile', app.logoutUserOnMobile);
 
     // Hook upload images ---------------------------------------------------------------------------------------------------------------------------
     app.createFolder(app.path.join(app.publicPath, '/img/user'));
