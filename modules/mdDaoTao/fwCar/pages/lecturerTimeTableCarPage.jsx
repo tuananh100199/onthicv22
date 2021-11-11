@@ -18,7 +18,7 @@ export class LecturerTimeTablePage extends AdminPage {
     }
 
     render() {
-        const { user, key, calendar, list, filterOn } = this.state;
+        const { car, user, key, calendar, list, filterOn } = this.state;
         return this.renderPage({
             icon: 'fa fa-calendar',
             title: 'Lịch xe: ',
@@ -33,7 +33,7 @@ export class LecturerTimeTablePage extends AdminPage {
                                 <button style={{border: 'none', outline: 'none', backgroundColor: calendar ? '#2189CF' : ''}} onClick={() =>this.setState({ key: !key, calendar: true, list: false, filterOn: false})}><i className='fa fa-calendar'></i> Lịch</button>
                             </div>
                         </div>
-                        <LecturerCarView key={key} official={true} lecturerId={user && user._id} filterOn={filterOn} calendar={calendar} list={list} lecturerName={user && user.lastname + ' ' + user.firstname}/>
+                        <LecturerCarView key={key} official={true} car={car} filterOn={filterOn} calendar={calendar} list={list} lecturerName={user && user.lastname + ' ' + user.firstname}/>
                     </div>
                 </div>),
             backRoute: '/user/car',

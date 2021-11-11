@@ -18,7 +18,7 @@ module.exports = app => {
         }],
         calendarHistory: [{
             thoiGianBatDau: { type: Date, default: Date.now }, 
-            thoiGianKetThuc: { type: Date, default: Date.now }, 
+            thoiGianKetThuc: { type: Date }, 
             user: { type: app.db.Schema.ObjectId, ref: 'User' },
         }],
         brand: { type: app.db.Schema.ObjectId, ref: 'Category' },
@@ -51,6 +51,8 @@ module.exports = app => {
             path: 'courseHistory.course', populate: { path: 'course', select: 'name thoiGianBatDau thoiGianKetThuc' }
         }).populate({
             path: 'courseHistory.user', populate: { path: 'user', select: 'firstname lastname' }
+        }).populate({
+            path: 'calendarHistory.user', populate: { path: 'user', select: 'firstname lastname' }
         }).exec(done) : model.findOne(condition).populate('brand', 'title').exec(done),
 
         update: (condition, changes, $unset, done) => {
@@ -77,8 +79,19 @@ module.exports = app => {
             model.findOneAndUpdate(_id, { $push: { fuel: data } }, { new: true }).exec(done);
         },
         addCourseHistory: (_id, data, done) => {
-            console.log(data);
             model.findOneAndUpdate(_id, { $push: { courseHistory: data } }, { new: true }).exec(done);
+        },
+        addCalendarHistory: (_id, data, done) => {
+            model.findOneAndUpdate(_id, { $push: { calendarHistory: data } }, { new: true }).exec(done);
+        },
+        updateCalendarHistory: (_id, done) => {
+            model.findById(_id).exec((error, item) => {
+                if (item.calendarHistory.at(-1)) {
+                    model.findOneAndUpdate({ _id, 'calendarHistory._id': item.calendarHistory.at(-1)._id }, { '$set': {
+                        'calendarHistory.$.thoiGianKetThuc': new Date(),
+                    }}, { new: true }).exec(done);
+                }
+            });
         },
         deleteFuel: (_id, _fuelId, done) => {
             model.findOneAndUpdate({ _id }, { $pull: { fuel: { _id: _fuelId } } }, { new: true }).exec(done);

@@ -84,7 +84,6 @@ module.exports = (app) => {
             let year = newDate.getFullYear();
             let month = (1 + newDate.getMonth()).toString().padStart(2, '0');
             let day = newDate.getDate().toString().padStart(2, '0');
-            console.log(month);
             return day + '/' + month + '/' + year;
         }
         try {

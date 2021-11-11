@@ -127,7 +127,6 @@ class ImportPage extends AdminPage {
     }
 
     onUploadSuccess = (data) => {
-        console.log('data', data);
         this.itemDivision.value(null);
         this.itemCourseType.value(null);
 
@@ -167,7 +166,6 @@ class ImportPage extends AdminPage {
     }
 
     render() {
-        console.log(this.state);
         const permission = this.getUserPermission('pre-student', ['read', 'write', 'delete', 'import']),
             readOnly = !permission.write;
 

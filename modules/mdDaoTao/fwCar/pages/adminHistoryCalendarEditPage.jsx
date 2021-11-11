@@ -1,8 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { createCar, addCarFuel, deleteCarFuel, deleteCar, getCar, addCarCourse, deleteCarCourse, exportFuelCar } from '../redux';
-import { getAllLecturer } from 'modules/_default/fwUser/redux';
-import { AdminPage, CirclePageButton, AdminModal, FormDatePicker, FormTextBox, FormSelect } from 'view/component/AdminPage';
+import { getCar, addCarCalendar, deleteCarCalendar, exportCarCalendar } from '../redux';
+import { AdminPage, CirclePageButton, AdminModal, FormDatePicker, FormTextBox } from 'view/component/AdminPage';
 import T from 'view/js/common';
 
 const adminPageLink = 'user/car/history-calendar';
@@ -14,15 +13,14 @@ class HistoryCalendarEditModal extends AdminModal {
     }
 
     onShow = (item) => {
-        const { name, thoiGianKetThuc, thoiGianBatDau } = item && item.course || { _id: null, name: '' },
+        const { thoiGianKetThuc, thoiGianBatDau } = item || { _id: null },
             { licensePlates, _id } = this.props.data,
             user = item && item.user,
             calendarHistoryId = item && item._id;
         this.itemLicensePlates.value(licensePlates);
-        this.itemName.value(name);
-        this.itemUser.value(user ? user._id : '0');
-        this.itemNgayKetThucKhoa.value(thoiGianKetThuc ? thoiGianKetThuc : null);
-        this.itemNgayBatDauKhoa.value(thoiGianBatDau ? thoiGianBatDau : null);
+        this.itemUser.value(user ? user.lastname + ' ' + user.firstname : 'Trống');
+        this.itemNgayKetThuc.value(thoiGianKetThuc ? thoiGianKetThuc : null);
+        this.itemNgayBatDau.value(thoiGianBatDau ? thoiGianBatDau : null);
         this.setState({ _id, calendarHistoryId });
     }
 
@@ -35,18 +33,16 @@ class HistoryCalendarEditModal extends AdminModal {
     }
 
     render = () => {
-        const readOnly = this.props.readOnly;
         return this.renderModal({
-            title: 'Quản lý lịch sử đi khóa',
+            title: 'Quản lý lịch sử lịch xe',
             size: 'large',
             body:
                 <>
                     <div className='row'>
                         <FormTextBox className='col-md-4' ref={e => this.itemLicensePlates = e} label='Biển số xe' readOnly={true} />
-                        <FormTextBox className='col-md-4' ref={e => this.itemName = e} label='Khóa' readOnly={true} />
-                        <FormSelect className='col-md-4' ref={e => this.itemUser = e} label='Chủ xe' data={this.props.dataLecturer} readOnly={readOnly} />
-                        <FormDatePicker ref={e => this.itemNgayBatDauKhoa = e} className='col-md-6' label='Ngày kết bắt đầu' readOnly={true} type='date-mask' />
-                        <FormDatePicker ref={e => this.itemNgayKetThucKhoa = e} className='col-md-6' label='Ngày kết thúc khóa' readOnly={true} type='date-mask' />
+                        <FormTextBox className='col-md-4' ref={e => this.itemUser = e} label='Giáo viên' readOnly={true} />
+                        <FormDatePicker ref={e => this.itemNgayBatDau = e} className='col-md-6' label='Ngày bắt đầu' readOnly={true} type='date-mask' />
+                        <FormDatePicker ref={e => this.itemNgayKetThuc = e} className='col-md-6' label='Ngày kết thúc' readOnly={true} type='date-mask' />
                     </div >
                 </>
         });
@@ -61,7 +57,6 @@ class HistoryCalendarEditPage extends AdminPage {
             const params = T.routeMatcher('/user/car/history-calendar/:_id').parse(window.location.pathname);
             if (params._id) {
                 this.props.getCar(params._id, data => {
-                    console.log('data123', data);
                     if (data.error) {
                         T.notify('Lấy thông tin xe bị lỗi!', 'danger');
                         this.props.history.push(adminPageLink);
@@ -72,13 +67,6 @@ class HistoryCalendarEditPage extends AdminPage {
                         this.props.history.push(adminPageLink);
                     }
                 });
-                this.props.getAllLecturer(data => {
-                    if (data && data.length) {
-                        const listLecturer = [{ id: 0, text: 'Trống' }];
-                        data.forEach(lecturer => listLecturer.push({ id: lecturer._id, text: lecturer.lastname + ' ' + lecturer.firstname }));
-                        this.setState({ listLecturer });
-                    }
-                });
             } else {
                 this.props.history.push(adminPageLink);
             }
@@ -87,17 +75,17 @@ class HistoryCalendarEditPage extends AdminPage {
 
     edit = (e, item) => e.preventDefault() || this.modal.show(item);
 
-    delete = (e, item) => e.preventDefault() || T.confirm('Xoá lịch sử khóa', `Bạn có chắc muốn xoá lịch sử khóa ${item.course.name}?`, true, isConfirm =>
-        isConfirm && this.props.deleteCarCourse(this.state.data._id, item._id));
+    delete = (e, item) => e.preventDefault() || T.confirm('Xoá lịch sử lịch xe', 'Bạn có chắc muốn xoá lịch sử lịch xe này không?', true, isConfirm =>
+        isConfirm && this.props.deleteCarCalendar(this.state.data._id, item._id));
 
     render() {
         const permission = this.getUserPermission('car', ['read', 'write', 'delete', 'fuel']),
             car = this.props.car && this.props.car.item,
-            list = car && car.calendarHistory && car.calendarHistory.sort((a, b) => new Date(b.course && b.course.thoiGianKetThuc) - new Date(a.course && a.course.thoiGianKetThuc));
+            list = car && car.calendarHistory && car.calendarHistory.sort((a, b) => new Date(b.thoiGianBatDau) - new Date(a.thoiGianBatDau));
         return this.renderPage({
             icon: 'fa fa-thermometer-empty',
             title: 'Quản lý lịch sử lịch xe: ' + (car && car.licensePlates),
-            breadcrumb: ['Quản lý lịch sử đi khóa'],
+            breadcrumb: ['Quản lý lịch sử lịch xe'],
             content: <>
                 <div className='tile'>
                     {list && list.length ?
@@ -107,16 +95,17 @@ class HistoryCalendarEditPage extends AdminPage {
                                     {index + 1}. &nbsp;
                                     <a href='#' className='text-secondary d-inline' onClick={e => e.preventDefault() || this.modal.show(item)}>
                                         <div className='pl-2'>
-                                            <span style={{ fontSize: '1rem' }}>Khóa: {item && item.course && item.course.name ? item.course.name : ''} </span>
-                                            <p className='text-muted'>Thời gian kết thúc: {item && item.course ? T.dateToText(item.course.thoiGianKetThuc, 'dd/mm/yyyy') : ''}</p>
+                                            <span style={{ fontSize: '1rem' }}>Giáo viên: <b>{item && item.user  ? item.user.lastname + ' ' + item.user.firstname : 'Trống'}</b> </span>
+                                            <p className='text-muted'>Thời gian bắt đầu: {item && item.thoiGianBatDau ? T.dateToText(item.thoiGianBatDau, 'dd/mm/yyyy') : ''}</p>
+                                            <p className='text-muted'>Thời gian kết thúc: {item && item.thoiGianKetThuc ? T.dateToText(item.thoiGianKetThuc, 'dd/mm/yyyy') : ''}</p>
                                         </div>
                                     </a>
                                     {permission.fuel ? <a href='#' className='notification-button text-danger' onClick={e => this.delete(e, item)}><i className='fa fa-lg fa-trash' /></a> : null}
                                 </li>))}
                         </ul> : 'Chưa có thông tin!'}
                 </div>
-                <HistoryCalendarEditModal readOnly={!permission.fuel} ref={e => this.modal = e} update={this.props.addCarCourse} data={this.state.data} dataLecturer={this.state.listLecturer} />
-                <CirclePageButton type='export' onClick={() => exportFuelCar(this.state.data._id)} />
+                <HistoryCalendarEditModal readOnly={!permission.fuel} ref={e => this.modal = e} update={this.props.addCarCalendar} data={this.state.data} />
+                <CirclePageButton type='export' onClick={() => exportCarCalendar(this.state.data._id)} />
             </>,
             backRoute: '/user/car/history-calendar',
         });
@@ -124,5 +113,5 @@ class HistoryCalendarEditPage extends AdminPage {
 }
 
 const mapStateToProps = state => ({ system: state.system, car: state.trainning.car });
-const mapActionsToProps = { getCar, deleteCar, createCar, addCarFuel, deleteCarFuel, addCarCourse, deleteCarCourse, getAllLecturer };
+const mapActionsToProps = { getCar, addCarCalendar, deleteCarCalendar };
 export default connect(mapStateToProps, mapActionsToProps)(HistoryCalendarEditPage);

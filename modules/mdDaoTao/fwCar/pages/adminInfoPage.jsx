@@ -95,6 +95,7 @@ class CarPage extends AdminPage {
         T.ready('/user/car', () => T.showSearchBox(() => this.setState({ dateStart: '', dateEnd: '' })));
         this.props.getCarPage(1, 50, undefined);
         this.props.getAllLecturer(data => {
+            console.log('data', data);
             if (data && data.length) {
                 const listLecturer = [{ id: 0, text: 'Trống' }];
                 data.forEach(lecturer => listLecturer.push({ id: lecturer._id, text: lecturer.lastname + ' ' + lecturer.firstname }));

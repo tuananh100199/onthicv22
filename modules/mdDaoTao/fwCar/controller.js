@@ -86,18 +86,100 @@ module.exports = app => {
         const data = req.body.data;
         if (data && data.user == 0) delete data.user;
         app.model.car.create(data, (error, item) => {
-            res.send({ error, item });
+            if (item && item.user) {
+                const calendarHistory = {
+                    user: item.user,
+                    thoiGianBatDau: new Date(), 
+                };
+                app.model.car.addCalendarHistory({ _id: item._id }, calendarHistory, (error, item) => res.send({ error, item }));
+            } else {
+                res.send({ error, item });
+            }
         });
     });
 
     app.put('/api/car', app.permission.check('car:write'), (req, res) => {
-        const changes = req.body.changes,
+        const { _id, changes } = req.body,
             $unset = {};
         if (changes.user == '0') {
             $unset.user = '';
             delete changes.user;
-        }
-        app.model.car.update(req.body._id, changes, $unset, (error, item) => res.send({ error, item }));
+        } 
+        app.model.car.get( _id, (error, item) => {
+            if (error || !item) {
+                res.send({ error: 'Lỗi khi lấy thông tin xe!' });
+            } else {
+                if (item.user != changes.user) {
+                    const data = {};
+                    if (changes.user) {
+                        data.user = changes.user;
+                        const condition = {}, lecturerCondition= {};
+                        condition.thoiGianKetThuc = {
+                            $gte: new Date(),
+                        };
+                        app.model.course.get(condition, (error, item) => {
+                          if (item) {
+                                item = app.clone(item);
+                                const listStudent = item.teacherGroups.filter(teacherGroup => teacherGroup.teacher && teacherGroup.teacher._id == changes.user),
+                                studentIds = listStudent.length && listStudent[0].student.map(student => student._id);
+                                lecturerCondition.student = { $in:  studentIds };
+                                lecturerCondition.date = {
+                                    $gte: new Date(),
+                                };
+                                lecturerCondition.state = 'approved';
+                                app.model.timeTable.getAll(lecturerCondition, (error, list) => {
+                                    if (list && list.length) {
+                                        const timeTables = list.map(item => app.clone(item));
+                                        const handleUpdateTimeTable = (index = 0) => {
+                                            if (index == timeTables.length) {
+                                                app.model.car.update(_id, changes, $unset, (error, item) => res.send({ error, item }));
+                                            } else {
+                                                const timeTable = timeTables[index];
+                                                timeTable.car = _id;
+                                                app.model.timeTable.update({ _id: timeTable._id }, timeTable, () => {
+                                                    handleUpdateTimeTable(index + 1);
+                                                });
+                                            }
+                                        };
+                                        handleUpdateTimeTable();
+                                    }
+                                });
+                            }
+                        });
+                    }
+                    app.model.car.updateCalendarHistory({ _id: _id }, (error, ite) => {
+                        if (ite) {
+                            app.model.car.addCalendarHistory({ _id: _id }, data);
+                        }
+                    });
+                    // Nếu đổi giáo viên chủ xe => update lại xe trong timeTable những học viên của giáo viên phụ trách
+                    const condition = {};
+                    condition.date = {
+                        $gte: new Date(),
+                    };
+                    condition.car = _id;
+                    app.model.timeTable.getAll(condition, (error, list) => {
+                        if (list && list.length) {
+                            const timeTables = list.map(item => app.clone(item));
+                            const handleUpdateTimeTable = (index = 0) => {
+                                if (index == timeTables.length) {
+                                    app.model.car.update(_id, changes, $unset, (error, item) => res.send({ error, item }));
+                                } else {
+                                    const timeTable = timeTables[index];
+                                    timeTable.car = undefined;
+                                    app.model.timeTable.update({ _id: timeTable._id }, timeTable, () => {
+                                        handleUpdateTimeTable(index + 1);
+                                    });
+                                }
+                            };
+                            handleUpdateTimeTable();
+                        } else {
+                            app.model.car.update(_id, changes, $unset, (error, item) => res.send({ error, item }));
+                        }
+                    });
+                }
+            }   
+        });
     });
 
 
@@ -203,10 +285,30 @@ module.exports = app => {
                             err = error;
                             handleCreateCar(index + 1);
                         } else if (!item) {
-                            app.model.car.create(car, () => {
+                            app.model.car.create(car, (error, newItem) => {
+                                if (error) {
+                                    err = error;
+                                } else if (newItem) {
+                                    let calendarHistory = { thoiGianBatDau: new Date() };
+                                    if (newItem.user) {
+                                        calendarHistory.user = newItem.user;
+                                    }  
+                                    app.model.car.addCalendarHistory({ _id : newItem._id }, calendarHistory);
+                                }
                                 handleCreateCar(index + 1);
                             });
                         } else {
+                            if (item.user != car.user) {
+                                const data = {};
+                                if (car.user) {
+                                    data.user = car.user;
+                                }
+                                app.model.car.updateCalendarHistory({ _id: item._id }, (error, ite) => {
+                                    if (ite) {
+                                        app.model.car.addCalendarHistory({ _id: item._id }, data);
+                                    }
+                                });
+                            }
                             app.model.car.update({ _id: item._id }, car, () => {
                                 handleCreateCar(index + 1);
                             });
@@ -397,6 +499,45 @@ module.exports = app => {
     }
     );
 
+    app.get('/api/car/calendar/export/:_carId', app.permission.check('car:export'), (req, res) => {
+        let { _carId } = req.params;
+        const sessionUser = req.session.user,
+            division = sessionUser.division;
+        if (sessionUser && sessionUser.isCourseAdmin && division && division.isOutside) {
+            res.send({ error: 'Bạn không có quyền xuất file excel này!' });
+        } else {
+            app.model.car.get(_carId, (error, car) => {
+                if (error || !car) {
+                    res.send({ error: 'Hệ thống bị lỗi!' });
+                } else {
+                    const workbook = app.excel.create(), worksheet = workbook.addWorksheet(car.licensePlates);
+                    const cells = [
+                        { cell: 'A1', value: 'STT', bold: true, border: '1234' },
+                        { cell: 'B1', value: 'Giáo viên', bold: true, border: '1234' },
+                        { cell: 'C1', value: 'Ngày bắt đầu', bold: true, border: '1234' },
+                        { cell: 'D1', value: 'Ngày kết thúc', bold: true, border: '1234' },
+                    ];
+                    worksheet.columns = [
+                        { header: 'STT', key: '_id', width: 15 },
+                        { header: 'Giáo viên', key: 'user', width: 15 },
+                        { header: 'Ngày bắt đầu', key: 'thoiGianBatDau', width: 20 },
+                        { header: 'Ngày kết thúc', key: 'thoiGianKetThuc', width: 20 },
+                    ];
+                    car && car.calendarHistory.forEach((item, index) => {
+                        worksheet.addRow({
+                            _id: index + 1,
+                            user: item.user ? item.user.lastname + ' ' + item.user.firstname : '',
+                            thoiGianBatDau: item.thoiGianBatDau,
+                            thoiGianKetThuc: item.thoiGianKetThuc
+                        });
+                    });
+                    app.excel.write(worksheet, cells);
+                    app.excel.attachment(workbook, res, 'Lịch sử lịch xe.xlsx');
+                }
+            });
+        }
+    }
+    );
 
     // Hook permissionHooks -------------------------------------------------------------------------------------------
     app.permissionHooks.add('courseAdmin', 'car', (user) => new Promise(resolve => {

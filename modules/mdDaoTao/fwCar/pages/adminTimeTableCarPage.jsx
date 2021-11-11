@@ -1,6 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { AdminPage, FormCheckbox } from 'view/component/AdminPage';
+import { AdminPage, FormCheckbox, FormSelect } from 'view/component/AdminPage';
+import { getCourseTypeAll } from 'modules/mdDaoTao/fwCourseType/redux';
 import { getAllCars, getCar } from '../redux';
 import LecturerCarView from './lecturerCarView';
 import 'modules/mdDaoTao/fwTimeTable/timeTable.scss';
@@ -17,11 +18,16 @@ export class AdminTimeTableCarPage extends AdminPage {
         T.onSearch = (searchText) => this.props.getCarPage(undefined, undefined, searchText ? { searchText } : {}, () => {
             this.setState({ searchText, isSearching: searchText != '' });
         });
+        this.props.getCourseTypeAll(list => {
+            const courseTypes = list.map(item => ({ id: item._id, text: item.title }));
+            this.setState({ currentCourseType: courseTypes.length && courseTypes[0].id, courseTypes });
+            this.courseType.value(courseTypes.length && courseTypes[0].id);
 
-        this.props.getAllCars({}, listCar => {
-            console.log('listCar', listCar);
-            this.setState({ currentLecturer: listCar[0].user, currentCar: listCar[0], listCar, filterOn: false, key: listCar[0], list: true, calendar: false});
+            this.props.getAllCars({courseType: courseTypes.length && courseTypes[0].id}, listCar => {
+                this.setState({ currentLecturer: listCar[0].user, currentCar: listCar[0], listCar, filterOn: false, key: listCar[0], list: true, calendar: false});
+            });
         });
+       
     }
 
     onChange = (value) => {
@@ -29,11 +35,22 @@ export class AdminTimeTableCarPage extends AdminPage {
         this.forceUpdate();
     }
 
+    onChangeCourseType = (condition) => {
+        this.props.getAllCars(condition, listCar => {
+            this.setState({ key: !this.state.key, currentCar: listCar[0], listCar, filterOn: false,  list: true, calendar: false});
+        });
+        this.forceUpdate();
+    }
+
     selectCar = (car) => {
         this.setState({ currentLecturer: car.user, currentCar: car, key: !this.state.key});
     }
     render() {
-        const { currentLecturer, currentCar, listCar, filterOn, key, calendar, list } = this.state;
+        const { courseTypes, currentLecturer, currentCar, listCar, filterOn, key, calendar, list } = this.state;
+        const header = <>
+            <label style={{ lineHeight: '40px', marginBottom: 0 }}>Loại khóa học:</label>&nbsp;&nbsp;
+            <FormSelect ref={e => this.courseType = e} data={courseTypes} onChange={value => this.onChangeCourseType({ courseType: value.id })} style={{ minWidth: '200px', marginBottom: 0, marginRight: 12 }} />
+        </>;
         const inboxTimeTable = listCar && listCar.length && listCar.map((car, index) => {
             const isSelectedCar = currentCar && currentCar._id ==  car._id;
             return (
@@ -49,6 +66,7 @@ export class AdminTimeTableCarPage extends AdminPage {
         return this.renderPage({
             icon: 'fa fa-calendar',
             title: 'Lịch xe',
+            header: header,
             breadcrumb: ['Lịch xe'],
             content: (
                 <div className='tile'>
@@ -84,5 +102,5 @@ export class AdminTimeTableCarPage extends AdminPage {
 }
 
 const mapStateToProps = state => ({ system: state.system });
-const mapActionsToProps = { getAllCars,getCar };
+const mapActionsToProps = { getAllCars, getCar, getCourseTypeAll };
 export default connect(mapStateToProps, mapActionsToProps)(AdminTimeTableCarPage);

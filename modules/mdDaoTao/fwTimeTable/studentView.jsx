@@ -104,7 +104,6 @@ class StudentView extends AdminPage {
     
     getData = (done) => {
         this.props.getTimeTableByStudent(item => {
-            console.log('item', item);
            done && done(item.list);
         });
     }

@@ -238,3 +238,7 @@ export function exportFuelCar(_carId) {
     T.download(T.url(`/api/car/fuel/export/${_carId}`));
 }
 
+export function exportCarCalendar(_carId) {
+    T.download(T.url(`/api/car/calendar/export/${_carId}`));
+}
+

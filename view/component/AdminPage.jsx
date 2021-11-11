@@ -42,8 +42,6 @@ export class TableCell extends React.Component { // type = number | date | link 
                     </label>
                 </td>);
         } else if (type == 'buttons') {
-            console.log(permission);
-            console.log(this.props);
             const { onFuel, onSwap, onEdit, onDelete, children } = this.props;
             return (
                 <td className={className} style={{ ...style }} rowSpan={rowSpan}>

@@ -38,7 +38,7 @@ class EditCoursePage extends AdminPage {
                     {car && car._id ? <PageIcon visible={permission.fuel} to={'/user/car/fuel/' + car._id} icon='fa-thermometer-empty' iconBackgroundColor='#900' text='Cấp phát nhiên liệu' /> : null}
                     <PageIcon visible={isLecturer} to={'/user/car/lecturer/calendar'} icon='fa-calendar' iconBackgroundColor='#3e24aa' text='Lịch xe' />
                     <PageIcon visible={isCourseAdmin} to={'/user/car/calendar'} icon='fa-calendar' iconBackgroundColor='#64b5f6' text='Tổng quan lịch xe' />
-                    <PageIcon visible={isCourseAdmin} to={'/user/car/history-calendar'} icon='fa-history' iconBackgroundColor='#be231b' text='Lịch sử thời khóa biểu xe' />
+                    <PageIcon visible={isCourseAdmin} to={'/user/car/history-calendar'} icon='fa-history' iconBackgroundColor='#be231b' text='Lịch sử lịch xe' />
                 </div>
             ),
         });

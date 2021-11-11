@@ -18,7 +18,6 @@ class TimeTableCarModal extends AdminModal {
     }
 
     onShow = (item) => {
-        console.log('item', item);
         function formatDayOrMonth(item){
             return ('0' + item).slice(-2);
         }
@@ -45,7 +44,6 @@ class TimeTableCarModal extends AdminModal {
         this.itemState && this.itemState.value(state);
 
         this.setState({ loading: false, _id, student, dateNumber, date, startHour, endHour });
-        console.log('date', date);
         date ? this.props.getTimeTableCar({ carId: car._id, date: formatDate(date), official: this.props.official }, data => {
             if (data.items && data.items.length){
                 this.setState({ listTimeTable: data.items });
@@ -237,8 +235,6 @@ class LecturerCarView extends AdminPage {
                     <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Giờ học</th>
                     <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Số giờ học</th>
                     <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Xe học</th>
-                    <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Nghỉ học</th>
-                    <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Trạng thái</th>
                     <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Thao tác</th>
                 </tr>),
             renderRow: (item, index) =>  (
@@ -252,9 +248,6 @@ class LecturerCarView extends AdminPage {
                     <TableCell type='number' style={{ textAlign: 'center' }} content={item.numOfHours ? `${item.startHour}-${item.startHour + item.numOfHours}` : `${item.startHour}`} />
                     <TableCell type='number' style={{ textAlign: 'center' }} content={item.numOfHours} />
                     <TableCell type='number' style={{ textAlign: 'center', whiteSpace: 'nowrap' }} content={item.car && item.car.licensePlates} />
-                    <TableCell type='checkbox' content={item.truant} permission={permission} onChanged={active =>  T.confirm('Học viên vắng học', 'Bạn có chắc muốn thay đổi trạng thái học viên nghỉ học?', true, isConfirm =>
-                        isConfirm && this.updateTimeTable(item._id, { truant: active })) }/>
-                    <TableCell type='text' content={RegisterCalendarStatesMapper[item.state] && RegisterCalendarStatesMapper[item.state].text} style={{ whiteSpace: 'nowrap', textAlign: 'center', color: RegisterCalendarStatesMapper[item.state] ?  RegisterCalendarStatesMapper[item.state].color : ''}} />
                     <TableCell type='buttons' content={item} permission={permission} onEdit={this.edit} onDelete={this.delete} />
                 </tr>
             ),
