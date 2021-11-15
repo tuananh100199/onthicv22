@@ -330,7 +330,23 @@ module.exports = (app) => {
         const { _courseId, _teacherId, type } = req.body;
         new Promise((resolve, reject) => {
             if (type == 'add') {
-                app.model.course.addTeacherGroup(_courseId, _teacherId, error => error ? reject(error) : resolve());
+                app.model.course.addTeacherGroup(_courseId, _teacherId, error => error ? reject(error) :
+                    app.model.course.get(_courseId, (error, course) => {
+                        if (error || !course) reject(error);
+                        else {
+                            const courseType = course.courseType;
+                            app.model.car.get({ user: _teacherId, courseType: courseType._id }, (error, item) => {
+                                if (error) {
+                                    reject(error);
+                                } else if (!item || item.status == 'daThanhLy') {
+                                    resolve();
+                                } else {
+                                    app.model.car.addCourseHistory({ _id: item._id }, { course: course._id, user: _teacherId }, error => error ? reject(error) : resolve());
+                                }
+                            });
+                        }
+                    })
+                );
             } else if (type == 'remove') {
                 app.model.course.removeTeacherGroup(_courseId, _teacherId, error => error ? reject(error) : resolve());
             } else {

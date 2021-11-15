@@ -83,7 +83,7 @@ class EditModal extends AdminModal {
             this.itemGiayKhamSucKhoeNgayKham.focus();
         } else {
             this.props.edit(this.state.id, data);
-            T.notify('Cập nhật thông tin bài học thành công!', 'success');
+            T.notify('Cập nhật thông tin ứng viên thành công!', 'success');
             this.hide();
         }
     }
