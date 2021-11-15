@@ -98,10 +98,10 @@ export function updateCar(_id, changes, done) {
     };
 }
 
-export function deleteCar(_id) {
+export function deleteCar(item) {
     return dispatch => {
         const url = '/api/car';
-        T.delete(url, { _id }, data => {
+        T.delete(url, { item }, data => {
             if (data.error) {
                 T.notify('Xóa thông tin xe bị lỗi!', 'danger');
                 console.error('DELETE: ' + url + '.', data.error);
@@ -130,16 +130,18 @@ export function addCarFuel(_carId, data, done) {
     };
 }
 
-export function deleteCarFuel(_carId, _fuelId, done) {
+export function addCarRepair(_carId, data, done) {
     return dispatch => {
-        const url = '/api/car/fuel';
-        T.delete(url, { _carId, _fuelId }, data => {
+        const url = '/api/car/repair';
+        T.post(url, { _carId, data }, data => {
             if (data.error) {
-                T.notify('Xóa lịch sử tiếp nhiên liệu bị lỗi!', 'danger');
-                console.error('DELETE: ' + url + '.', data.error);
+                T.notify('Thêm lịch sử sửa chữa bị lỗi!', 'danger');
+                console.error('POST: ' + url + '.', data.error);
+            } else if (data.check) {
+                T.notify(data.check, 'danger');
             } else {
                 dispatch({ type: CarGetItem, item: data.item });
-                done && done();
+                done && done(data.item);
             }
         }, error => console.error('POST: ' + url + '.', error));
     };
@@ -162,20 +164,56 @@ export function addCarCourse(_carId, data, done) {
     };
 }
 
-export function deleteCarCourse(_carId, _courseHistoryId, done) {
+export function addCarRegistration(_carId, data, done) {
     return dispatch => {
-        const url = '/api/car/course';
-        T.delete(url, { _carId, _courseHistoryId }, data => {
+        const url = '/api/car/registration';
+        T.post(url, { _carId, data }, data => {
             if (data.error) {
-                T.notify('Xóa lịch sử khóa bị lỗi!', 'danger');
+                T.notify('Thêm lịch sử đăng kiểm bị lỗi!', 'danger');
+                console.error('POST: ' + url + '.', data.error);
+            } else if (data.check) {
+                T.notify(data.check, 'danger');
+            } else {
+                dispatch({ type: CarGetItem, item: data.item });
+                done && done(data.item);
+            }
+        }, error => console.error('POST: ' + url + '.', error));
+    };
+}
+
+export function addCarPractice(_carId, data, done) {
+    return dispatch => {
+        const url = '/api/car/practice';
+        T.post(url, { _carId, data }, data => {
+            if (data.error) {
+                T.notify('Thêm lịch sử đăng ký bị lỗi!', 'danger');
+                console.error('POST: ' + url + '.', data.error);
+            } else if (data.check) {
+                T.notify(data.check, 'danger');
+            } else {
+                dispatch({ type: CarGetItem, item: data.item });
+                done && done(data.item);
+            }
+        }, error => console.error('POST: ' + url + '.', error));
+    };
+}
+
+export function deleteCarElement(_carId, data, done) {
+    return dispatch => {
+        const url = '/api/car/element';
+        T.delete(url, { _carId, data }, data => {
+            if (data.error) {
+                T.notify('Xóa lịch sử xe bị lỗi!', 'danger');
                 console.error('DELETE: ' + url + '.', data.error);
             } else {
+                T.notify('Xóa lịch sử xe thành công!', 'success');
                 dispatch({ type: CarGetItem, item: data.item });
                 done && done();
             }
         }, error => console.error('POST: ' + url + '.', error));
     };
 }
+
 
 export function importCar(cars, division, courseType, done) {
     return dispatch => {
@@ -194,17 +232,34 @@ export function importCar(cars, division, courseType, done) {
 }
 
 // Export to Excel ----------------------------------------------------------------------------------------------------
+export function exportInfoCar(filterKey) {
+    if (filterKey == undefined) filterKey = 1;
+    T.download(T.url(`/api/car/info/export/${filterKey}`));
+}
+
 export function exportExpiredCar(fileType, carType) {
     const filterType = (carType == undefined ? 0 : carType);
     T.download(T.url(`/api/car/expired/export/${fileType}/${filterType}`));
 }
 
-export function exportRepairCar(carType) {
+export function exportListRepairCar(carType) {
     const filterType = (carType == undefined ? 'tatCa' : carType);
-    T.download(T.url(`/api/car/repair/export/${filterType}`));
+    T.download(T.url(`/api/car/list-repair/export/${filterType}`));
 }
 
 export function exportFuelCar(_carId) {
     T.download(T.url(`/api/car/fuel/export/${_carId}`));
+}
+
+export function exportRepairCar(_carId) {
+    T.download(T.url(`/api/car/repair/export/${_carId}`));
+}
+
+export function exportPracticeCar(_carId) {
+    T.download(T.url(`/api/car/practice/export/${_carId}`));
+}
+
+export function exportRegistrationCar(_carId) {
+    T.download(T.url(`/api/car/registration/export/${_carId}`));
 }
 

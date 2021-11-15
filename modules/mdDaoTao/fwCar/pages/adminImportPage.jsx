@@ -74,9 +74,9 @@ class CarModal extends AdminModal {
             size: 'large',
             body:
                 <div className='row'>
-                    <FormTextBox className='col-md-6' ref={e => this.itemLicensePlates = e} label='Biển số xe' readOnly={readOnly} />
+                    <FormTextBox className='col-md-5' ref={e => this.itemLicensePlates = e} label='Biển số xe' readOnly={readOnly} />
                     <FormSelect ref={e => this.itemBrand = e} className='col-md-4' data={this.props.brandTypes} label='Nhãn hiệu xe' readOnly={readOnly} />
-                    <FormCheckbox ref={e => this.itemIsPersonalCar = e} isSwitch={true} className='col-md-2' label='Xe cá nhân' readOnly={readOnly} />
+                    <FormCheckbox ref={e => this.itemIsPersonalCar = e} isSwitch={true} className='col-md-3' label='Xe cá nhân' readOnly={readOnly} />
                     <FormDatePicker ref={e => this.itemNgayHetHanDangKiem = e} className='col-md-6' label='Ngày hết hạn đăng kiểm' readOnly={readOnly} type='date-mask' />
                     <FormDatePicker ref={e => this.itemNgayHetHanTapLai = e} className='col-md-6' label='Ngày hết hạn tập lái' readOnly={readOnly} type='date-mask' />
                     <FormDatePicker ref={e => this.itemNgayDangKy = e} className='col-md-6' label='Ngày đăng ký' readOnly={readOnly} type='date-mask' />

@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { createCar, addCarFuel, deleteCarFuel, deleteCar, getCar, exportFuelCar } from '../redux';
+import { createCar, addCarFuel, deleteCarElement, deleteCar, getCar, exportFuelCar } from '../redux';
 import { AdminPage, CirclePageButton, AdminModal, FormDatePicker, FormTextBox } from 'view/component/AdminPage';
 import T from 'view/js/common';
 
@@ -40,14 +40,11 @@ class CarFuelModal extends AdminModal {
         const readOnly = this.props.readOnly;
         return this.renderModal({
             title: 'Quản lý cấp phát nhiên liệu',
-            size: 'large',
             body:
                 <>
-                    <FormTextBox className='col-md-6' ref={e => this.itemLicensePlates = e} label='Biển số xe' readOnly={true} />
-                    <div className='row'>
-                        <FormTextBox type='number' className='col-md-6' ref={e => this.itemChiPhi = e} label='Chi phí tiếp nhiên liệu' readOnly={readOnly} />
-                        <FormDatePicker ref={e => this.itemNgayTiepNhienLieu = e} className='col-md-6' label='Ngày tiếp nhiên liệu' readOnly={readOnly} type='date-mask' />
-                    </div >
+                    <FormTextBox ref={e => this.itemLicensePlates = e} label='Biển số xe' readOnly={true} />
+                    <FormTextBox type='number' ref={e => this.itemChiPhi = e} label='Chi phí tiếp nhiên liệu' readOnly={readOnly} />
+                    <FormDatePicker ref={e => this.itemNgayTiepNhienLieu = e} label='Ngày tiếp nhiên liệu' readOnly={readOnly} type='date-mask' />
                 </>
         });
     }
@@ -80,7 +77,7 @@ class CarFuelPage extends AdminPage {
     edit = (e, item) => e.preventDefault() || this.modal.show(item);
 
     delete = (e, item) => e.preventDefault() || T.confirm('Xoá lịch sử tiếp nhiên liệu', `Bạn có chắc muốn xoá lịch sử tiếp nhiên liệu ngày ${T.dateToText(item.date, 'dd/mm/yyyy')}?`, true, isConfirm =>
-        isConfirm && this.props.deleteCarFuel(this.state.data._id, item._id));
+        isConfirm && this.props.deleteCarElement(this.state.data._id, { _fuelId: item._id }));
 
     render() {
         const permission = this.getUserPermission('car', ['read', 'write', 'delete', 'fuel']),
@@ -99,8 +96,10 @@ class CarFuelPage extends AdminPage {
                                     {index + 1}. &nbsp;
                                     <a href='#' className='text-secondary d-inline' onClick={e => e.preventDefault() || this.modal.show(item)}>
                                         <div className='pl-2'>
-                                            <span style={{ fontSize: '1rem' }}>Ngày tiếp nhiên liệu: {T.dateToText(item.date, 'dd/mm/yyyy')} </span>
-                                            <p className='text-muted'>Chi phí: {item.fee}</p>
+                                            <span style={{ fontSize: '1rem' }}>
+                                                Ngày tiếp nhiên liệu: {T.dateToText(item.date, 'dd/mm/yyyy')}
+                                                - Chi phí: {T.numberDisplay(item.fee) + ' đồng'} &nbsp;
+                                            </span>
                                         </div>
                                     </a>
                                     {permission.fuel ? <a href='#' className='notification-button text-danger' onClick={e => this.delete(e, item)}><i className='fa fa-lg fa-trash' /></a> : null}
@@ -117,5 +116,5 @@ class CarFuelPage extends AdminPage {
 }
 
 const mapStateToProps = state => ({ system: state.system, car: state.trainning.car });
-const mapActionsToProps = { getCar, deleteCar, createCar, addCarFuel, deleteCarFuel };
+const mapActionsToProps = { getCar, deleteCar, createCar, addCarFuel, deleteCarElement };
 export default connect(mapStateToProps, mapActionsToProps)(CarFuelPage);

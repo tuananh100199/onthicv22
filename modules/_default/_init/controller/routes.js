@@ -134,7 +134,13 @@ module.exports = (app) => {
                             if (error) {
                                 res.send({ error });
                             } else {
-                                res.send({ numberOfUser: numberOfUser || 0, numberOfCourse: numberOfCourse || 0, numberOfNews: numberOfNews || 0 });
+                                app.model.car.count({ status: { $ne: 'daThanhLy' } }, (error, numberOfCar) => {
+                                    if (error) {
+                                        res.send({ error });
+                                    } else {
+                                        res.send({ numberOfUser: numberOfUser || 0, numberOfCourse: numberOfCourse || 0, numberOfNews: numberOfNews || 0, numberOfCar: numberOfCar || 0 });
+                                    }
+                                });
                             }
                         });
                     }
@@ -142,6 +148,10 @@ module.exports = (app) => {
             }
         });
     });
+
+    // app.get('/api/statistic/car', app.permission.check('statistic:read'), (req, res) => {
+
+    // });
 
 
     // Hook upload images ---------------------------------------------------------------------------------------------------------------------------

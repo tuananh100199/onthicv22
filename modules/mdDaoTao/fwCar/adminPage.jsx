@@ -29,12 +29,13 @@ class EditCoursePage extends AdminPage {
                 <div className='row user-course'>
                     {car && car._id ? null : <PageIconHeader text='Thông tin chung' />}
                     <PageIcon visible={permission.write} to={'/user/car/manager'} icon='fa-info' iconBackgroundColor='#17a2b8' text='Danh sách xe' />
-                    <PageIcon visible={permission.write} to={'/user/car/repair'} icon='fa-wrench' iconBackgroundColor='#8e24aa' text='Danh sách xe sửa chữa, thanh lý' />
                     <PageIcon visible={permission.write} to={'/user/car/category'} icon='fa-list' iconBackgroundColor='#8e24aa' text='Danh mục nhãn hiệu xe ' />
                     <PageIconHeader text='Quản lý hồ sơ' />
-                    <PageIcon visible={permission.write} to={'/user/car/practice'} icon='fa-road' iconBackgroundColor='#dc143c' text='Đăng ký xe tập lái' />
+                    <PageIcon visible={permission.write} to={'/user/car/practice'} icon='fa-road' iconBackgroundColor='#dc143c' text='Theo dõi giấy phép xe tập lái' />
                     <PageIcon visible={permission.write} to={'/user/car/registration'} icon='fa-file-text-o' iconBackgroundColor='#CC0' text='Đăng kiểm xe' />
-                    <PageIcon visible={permission.write} to={'/user/car/course'} icon='fa-cubes' iconBackgroundColor='#D00' text='Xe đi khóa' />
+                    <PageIcon visible={permission.write} to={'/user/car/repair'} icon='fa-wrench' iconBackgroundColor='#900' text='Theo dõi sửa chữa, bảo dưỡng' />
+                    {/* <PageIcon visible={permission.write} to={'/user/car/course'} icon='fa-cubes' iconBackgroundColor='#D00' text='Xe đi khóa' /> */}
+                    {car && car._id ? <PageIcon visible={permission.repair} to={'/user/car/repair/' + car._id} icon='fa-wrench' iconBackgroundColor='#8e24aa' text='Sửa chữa xe' /> : null}
                     {car && car._id ? <PageIcon visible={permission.fuel} to={'/user/car/fuel/' + car._id} icon='fa-thermometer-empty' iconBackgroundColor='#900' text='Cấp phát nhiên liệu' /> : null}
                 </div>
             ),
