@@ -8,7 +8,7 @@ import { AdminPage, FormDatePicker, AdminModal, FormTextBox, FormSelect, TableCe
 import T from 'view/js/common';
 
 
-const dataCarType = [{ id: 'dangSuDung', text: 'Xe đang sử dụng' }, { id: 'dangSuaChua', text: 'Xe đang sửa chữa' }];
+// const dataCarType = [{ id: 'dangSuDung', text: 'Xe đang sử dụng' }, { id: 'dangSuaChua', text: 'Xe đang sửa chữa' }];
 const dataFilterType = [{ id: 'tatCa', text: 'Tất cả xe' }, { id: 'dangSuDung', text: 'Xe đang sử dụng' }, { id: 'dangSuaChua', text: 'Xe đang sửa chữa' }];
 class CarRepairModal extends AdminModal {
     state = {};
@@ -99,22 +99,6 @@ class CarRepairPage extends AdminPage {
             condition = { status: carType };
             this.setState({ isAll: false });
         } else {
-            const d = new Date();
-            d.setMonth(d.getMonth() - parseInt(1)); //1 month ago
-            condition = {
-                $or:
-                    [{
-                        'repair.dateStart':
-                        {
-                            $gte: d,
-                            $lt: new Date()
-                        }
-                    },
-                    {
-                        status: 'dangSuaChua'
-                    }
-                    ]
-            };
             this.setState({ isAll: true });
         }
         this.setState({ isSearching: true }, () => this.props.getCarPage(pageNumber, pageSize, condition, (page) => {
@@ -123,20 +107,18 @@ class CarRepairPage extends AdminPage {
         }));
     }
 
-    edit = (e, item) => e.preventDefault() || this.modal.show(item);
+    edit = (e, item) => e.preventDefault() || this.modal.show(item.car ? item.car : item);
 
     render() {
         const permission = this.getUserPermission('car', ['read', 'write', 'delete', 'import']);
         let { pageNumber, pageSize, pageTotal, pageCondition, totalItem, list } = this.props.car && this.props.car.page ?
             this.props.car.page : { pageNumber: 1, pageSize: 50, pageTotal: 1, pageCondition: {}, totalItem: 0, list: [] };
         if (this.state.isAll) {
-            let d = new Date();
-            d = (d.getMonth() - parseInt(1)); //1 month ago
             let data = [];
             list && list.length && list.forEach(car => {
-                car && car.repair && car.repair.forEach((repair) => {
-                    const dateStart = new Date(repair.dateStart);
-                    (dateStart.getMonth() > d || !repair.dateEnd) && data.push(car);
+                const sortArr = car && car.repair && car.repair.sort((a, b) => new Date(b.dateStart) - new Date(a.dateStart));
+                sortArr.forEach((repair) => {
+                    data.push({ car, repair });
                 });
             });
             list = data;
@@ -145,7 +127,6 @@ class CarRepairPage extends AdminPage {
             <label style={{ lineHeight: '40px', marginBottom: 0 }}>Loại xe:</label>&nbsp;&nbsp;
             <FormSelect ref={e => this.carType = e} data={dataFilterType} onChange={value => this.onSearch({ carType: value.id })} style={{ minWidth: '200px', marginBottom: 0, marginRight: 12 }} />
         </>;
-        console.log(list);
         const table = renderTable({
             getDataSource: () => list,
             renderHead: () => (
@@ -154,16 +135,16 @@ class CarRepairPage extends AdminPage {
                     <th style={{ width: '100%' }} nowrap='true'>Biển số xe</th>
                     <th style={{ width: 'auto' }} nowrap='true'>Nhãn hiệu xe</th>
                     <th style={{ width: 'auto' }} nowrap='true'>Người quản lý</th>
-                    <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Tình trạng xe</th>
+                    <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Ngày bắt đầu sửa chữa</th>
                     <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Thao tác</th>
                 </tr>),
             renderRow: (item, index) => (
                 <tr key={index}>
                     <TableCell type='number' content={(pageNumber - 1) * pageSize + index + 1} />
-                    <TableCell type='link' style={{ whiteSpace: 'nowrap' }} content={item.licensePlates} />
-                    <TableCell type='text' content={item.brand && item.brand.title} />
-                    <TableCell type='text' style={{ whiteSpace: 'nowrap' }} content={item.user && (item.user.lastname + ' ' + item.user.firstname)} />
-                    <TableCell type='text' style={{ whiteSpace: 'nowrap' }} content={item.status ? dataCarType[dataCarType.findIndex(carType => carType.id == item.status)].text : 'Đang sử dụng'} />
+                    <TableCell type='link' style={{ whiteSpace: 'nowrap' }} content={item.car ? item.car.licensePlates : item.licensePlates} />
+                    <TableCell type='text' content={item.car ? (item.car.brand && item.car.brand.title) : item.brand && item.brand.title} />
+                    <TableCell type='text' style={{ whiteSpace: 'nowrap' }} content={item.car ? (item.car.user && (item.car.user.lastname + ' ' + item.car.user.firstname)) : item.user && (item.user.lastname + ' ' + item.user.firstname)} />
+                    <TableCell type='text' style={{ whiteSpace: 'nowrap' }} content={item.car ? T.dateToText(item.repair.dateStart, 'dd/mm/yyyy') : (item.repair && item.repair.length ? T.dateToText((item.repair.sort((a, b) => new Date(b.dateStart) - new Date(a.dateStart)) && item.repair.sort((a, b) => new Date(b.dateStart) - new Date(a.dateStart))[0].dateStart), 'dd/mm/yyyy') : '')} />
                     <TableCell type='buttons' content={item} permission={permission} onEdit={this.edit} />
                 </tr >),
         });
@@ -174,7 +155,7 @@ class CarRepairPage extends AdminPage {
             breadcrumb: ['Xe sữa chữa, thanh lý'],
             content: <>
                 <div className='tile'>
-                    <p>Số lượng xe: {totalItem}</p>
+                    {/* <p>Số lượng xe: {totalItem}</p> */}
                     {table}
                 </div>
                 <Pagination name='adminCar' style={{ marginLeft: 60 }} pageCondition={pageCondition} pageNumber={pageNumber} pageSize={pageSize} pageTotal={pageTotal} totalItem={totalItem}

@@ -5,6 +5,7 @@ import CountUp from 'view/js/countUp';
 import { Link } from 'react-router-dom';
 import { AdminPage } from 'view/component/AdminPage';
 
+
 class DashboardIcon extends React.Component {
     componentDidMount() {
         setTimeout(() => {
@@ -36,41 +37,94 @@ class DashboardPage extends AdminPage {
     render() {
         // eslint-disable-next-line no-unused-vars
         const year = new Date().getFullYear();
-        const data = {
-            labels: [year - 4, year - 3, year - 2, year - 1, year],
-            datasets: [
-                {
-                    label: 'Tổng số xe',
-                    backgroundColor: 'rgba(220,220,220,0.2)',
-                    borderColor: 'rgba(220,220,220,1)',
-                    pointBackgroundColor: 'rgba(220,220,220,1)',
-                    pointBorderColor: '#fff',
-                    pointHoverBackgroundColor: '#fff',
-                    pointHoverBorderColor: 'rgba(220,220,220,1)',
-                    data: [65, 79, 80, 81, 56]
-                },
-                {
-                    label: 'Xe đăng ký mới',
-                    backgroundColor: 'rgba(151,187,205,0.2)',
-                    borderColor: 'rgba(151,187,205,1)',
-                    pointBackgroundColor: 'rgba(151,187,205,1)',
-                    pointBorderColor: '#fff',
-                    pointHoverBackgroundColor: '#fff',
-                    pointHoverBorderColor: 'rgba(151,187,205,1)',
-                    data: [28, 48, 40, 19, 15]
-                },
-                {
-                    label: 'Xe thanh lý',
-                    backgroundColor: 'rgba(39, 143, 0,0.2)',
-                    borderColor: 'rgba(39, 143, 0,1)',
-                    pointBackgroundColor: 'rgba(39, 143, 0,1)',
-                    pointBorderColor: '#fff',
-                    pointHoverBackgroundColor: '#fff',
-                    pointHoverBorderColor: 'rgba(39, 143, 0,1)',
-                    data: [12, 15, 15, 14, 17]
+        const { numberOfUser = 0, numberOfNews = 0, numberOfCourse = 0, numberOfCar = 0, carData } = this.props.system || {};
+        let data = {};
+        if (carData && carData.car) {
+            const item = carData.car.split(';');
+            const labels = [], dataTotal = [], dataNewCar = [], dataRemoveCar = [];
+            item.forEach(year => {
+                if (year != '') {
+                    const newItem = year.split(':');
+                    labels.push(newItem[0]);
+                    dataTotal.push(parseInt(newItem[2]));
+                    dataNewCar.push(parseInt(newItem[4]));
+                    dataRemoveCar.push(parseInt(newItem[6]));
                 }
-            ]
-        };
+            });
+            console.log(labels);
+            data = {
+                labels: labels,
+                datasets: [
+                    {
+                        label: 'Tổng số xe',
+                        backgroundColor: 'rgba(220,220,220,0.2)',
+                        borderColor: 'rgba(220,220,220,1)',
+                        pointBackgroundColor: 'rgba(220,220,220,1)',
+                        pointBorderColor: '#fff',
+                        pointHoverBackgroundColor: '#fff',
+                        pointHoverBorderColor: 'rgba(220,220,220,1)',
+                        data: dataTotal
+                    },
+                    {
+                        label: 'Xe đăng ký mới',
+                        backgroundColor: 'rgba(151,187,205,0.2)',
+                        borderColor: 'rgba(151,187,205,1)',
+                        pointBackgroundColor: 'rgba(151,187,205,1)',
+                        pointBorderColor: '#fff',
+                        pointHoverBackgroundColor: '#fff',
+                        pointHoverBorderColor: 'rgba(151,187,205,1)',
+                        data: dataNewCar
+                    },
+                    {
+                        label: 'Xe thanh lý',
+                        backgroundColor: 'rgba(39, 143, 0,0.2)',
+                        borderColor: 'rgba(39, 143, 0,1)',
+                        pointBackgroundColor: 'rgba(39, 143, 0,1)',
+                        pointBorderColor: '#fff',
+                        pointHoverBackgroundColor: '#fff',
+                        pointHoverBorderColor: 'rgba(39, 143, 0,1)',
+                        data: dataRemoveCar
+                    }
+                ]
+            };
+        } else {
+            data = {
+                labels: [year - 4, year - 3, year - 2, year - 1, year],
+                datasets: [
+                    {
+                        label: 'Tổng số xe',
+                        backgroundColor: 'rgba(220,220,220,0.2)',
+                        borderColor: 'rgba(220,220,220,1)',
+                        pointBackgroundColor: 'rgba(220,220,220,1)',
+                        pointBorderColor: '#fff',
+                        pointHoverBackgroundColor: '#fff',
+                        pointHoverBorderColor: 'rgba(220,220,220,1)',
+                        data: [65, 79, 80, 81, 56]
+                    },
+                    {
+                        label: 'Xe đăng ký mới',
+                        backgroundColor: 'rgba(151,187,205,0.2)',
+                        borderColor: 'rgba(151,187,205,1)',
+                        pointBackgroundColor: 'rgba(151,187,205,1)',
+                        pointBorderColor: '#fff',
+                        pointHoverBackgroundColor: '#fff',
+                        pointHoverBorderColor: 'rgba(151,187,205,1)',
+                        data: [28, 48, 40, 19, 15]
+                    },
+                    {
+                        label: 'Xe thanh lý',
+                        backgroundColor: 'rgba(39, 143, 0,0.2)',
+                        borderColor: 'rgba(39, 143, 0,1)',
+                        pointBackgroundColor: 'rgba(39, 143, 0,1)',
+                        pointBorderColor: '#fff',
+                        pointHoverBackgroundColor: '#fff',
+                        pointHoverBorderColor: 'rgba(39, 143, 0,1)',
+                        data: [12, 15, 15, 14, 17]
+                    }
+                ]
+            };
+        }
+
 
         const ctxl = $('#lineChartDemo') && $('#lineChartDemo').get(0) && $('#lineChartDemo').get(0).getContext('2d');
         const lineChart = ctxl && new Chart(ctxl, {
@@ -79,7 +133,6 @@ class DashboardPage extends AdminPage {
         });
         console.log(lineChart);
 
-        const { numberOfUser = 0, numberOfNews = 0, numberOfCourse = 0, numberOfCar = 0 } = this.props.system || {};
         //todayViews = 0, allViews = 0
         const permission = this.getUserPermission('system', ['settings']);
         return this.renderPage({

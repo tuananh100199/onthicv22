@@ -4,6 +4,7 @@ import { createCar, addCarRepair, deleteCarElement, deleteCar, getCar, exportRep
 import { AdminPage, CirclePageButton, AdminModal, FormDatePicker, FormTextBox, FormRichTextBox } from 'view/component/AdminPage';
 import T from 'view/js/common';
 
+
 const adminPageLink = 'user/car/repair';
 
 class CarRepairModal extends AdminModal {
@@ -159,18 +160,18 @@ class CarRepairEditPage extends AdminPage {
                     {list && list.length ?
                         <ul style={{ paddingLeft: 12, listStyleType: 'none' }}>
                             {list.map((item, index) => (
-                                <li key={index} className='d-flex'>
+                                <li key={index} className='d-flex' style={{ textDecoration: 'none' }}>
                                     {index + 1}. &nbsp;
                                     <a href='#' className='text-secondary d-inline' onClick={e => e.preventDefault() || this.modal.show(item)}>
                                         <div className='pl-2'>
                                             <span style={{ fontSize: '1rem' }}>
                                                 Ngày sửa chữa: {T.dateToText(item.dateStart, 'dd/mm/yyyy')} &nbsp;
-                                                - Chi phí: {item.fee ? T.numberDisplay(item.fee) + 'đồng' : '_'}  &nbsp;
+                                                - Chi phí: {item.fee ? T.numberDisplay(item.fee) + 'đồng' : '_'}
                                             </span>
                                         </div>
                                     </a>
-                                    {permission.write ? <a href='#' className='notification-button text-success' onClick={e => this.complete(e, item)}><i className='fa fa-lg fa-check' />&nbsp;&nbsp;</a> : null}
-                                    {permission.write ? <a href='#' className='notification-button text-danger' onClick={e => this.delete(e, item)}><i className='fa fa-lg fa-trash' /></a> : null}
+                                    {(permission.write && !item.dateEnd) ? <a href='#' style={{ textDecoration: 'none', marginLeft: '1rem' }} className='notification-button text-success' onClick={e => this.complete(e, item)}><i className='fa fa-lg fa-check' />&nbsp;&nbsp;</a> : null}
+                                    {/* {permission.write ? <a href='#' className='notification-button text-danger' onClick={e => this.delete(e, item)}><i className='fa fa-lg fa-trash' /></a> : null} */}
                                 </li>))}
                         </ul> : 'Chưa có thông tin!'}
                 </div>
