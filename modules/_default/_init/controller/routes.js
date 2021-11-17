@@ -138,7 +138,7 @@ module.exports = (app) => {
                                     if (error) {
                                         res.send({ error });
                                     } else {
-                                        res.send({ numberOfUser: numberOfUser || 0, numberOfCourse: numberOfCourse || 0, numberOfNews: numberOfNews || 0, numberOfCar: numberOfCar || 0 });
+                                        app.model.setting.get('car', data => res.send({ numberOfUser: numberOfUser || 0, numberOfCourse: numberOfCourse || 0, numberOfNews: numberOfNews || 0, numberOfCar: numberOfCar || 0, carData: data || null }));
                                     }
                                 });
                             }

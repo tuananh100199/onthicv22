@@ -28,7 +28,6 @@ module.exports = app => {
             pageSize = parseInt(req.params.pageSize);
         let pageCondition = req.query.pageCondition,
             searchText = pageCondition && pageCondition.searchText;
-        console.log(pageCondition);
         if (pageCondition && pageCondition.filterType) {
             pageCondition = pageCondition.filterType;
         }
@@ -51,20 +50,49 @@ module.exports = app => {
         const data = req.body.data;
         if (data && data.user == 0) delete data.user;
         app.model.car.create(data, (error, item) => {
-            const year = 'newCar' + (item && item.ngayDangKy ? item.ngayDangKy.getFullYear() : null);
-            let numOfCar = 0;
-            app.model.setting.get(year, result => {
-                if (result[year]) numOfCar = parseInt(result[year]) + 1;
-                else numOfCar = 1;
-                const condition = {};
-                condition[year] = numOfCar;
-                app.model.setting.set(condition, err => {
-                    if (err) {
-                        res.send({ error: 'Update số xe hàng năm bị lỗi' });
+            const year = (item && item.ngayDangKy ? item.ngayDangKy.getFullYear() : null);
+            let data = {};
+            app.model.setting.get('car', result => {
+                if (result && Object.keys(result).length != 0) {
+                    const value = result.car && result.car.split(';'),
+                        indexYear = value.findIndex(item => item.startsWith(year));
+                    if (indexYear != -1) {
+                        const newItem = value[indexYear].split(':');
+                        newItem[2] = parseInt(newItem[2]);
+                        newItem[2]++;
+                        newItem[4] = parseInt(newItem[4]);
+                        newItem[4]++;
+                        value[indexYear] = newItem.join(':');
+                        data.car = value.join(';');
                     } else {
-                        res.send({ error, item });
+                        const indexPreviousYear = value.findIndex(item => item.startsWith(year - 1));
+                        if (indexPreviousYear != -1) {
+                            const newItem = value[indexPreviousYear].split(':');
+                            newItem[2] = parseInt(newItem[2]);
+                            newItem[2]++;
+                            data.car = result.car + year + ':totalCar:' + newItem[2] + ':newCar:' + 1 + ':removeCar:0;';
+                        } else {
+                            data.car = result.car + year + ':totalCar:' + 1 + ':newCar:' + 1 + ':removeCar:0;';
+                        }
                     }
-                });
+                    app.model.setting.set(data, err => {
+                        if (err) {
+                            res.send({ error: 'Update số xe hàng năm bị lỗi' });
+                        } else {
+                            res.send({ error, item });
+                        }
+                    });
+                } else {
+                    data.car = year + ':totalCar:' + 1 + ':newCar:' + 1 + ':removeCar:0;';
+                    app.model.setting.set(data, err => {
+                        if (err) {
+                            res.send({ error: 'Update số xe hàng năm bị lỗi' });
+                        } else {
+                            res.send({ error, item });
+                        }
+                    });
+                }
+
             });
         });
     });
@@ -83,17 +111,42 @@ module.exports = app => {
     app.delete('/api/car', app.permission.check('car:write'), (req, res) => {
         const car = req.body.item;
         app.model.car.delete(car._id, () => {
+            let data = {};
             const d = new Date(car && car.ngayDangKy);
-            const year = 'newCar' + (d ? d.getFullYear() : null);
-            let numOfCar = 0;
-            app.model.setting.get(year, result => {
-                if (result[year] && result[year] > 0) numOfCar = parseInt(result[year]) - 1;
-                else numOfCar = 0;
-                const condition = {};
-                condition[year] = numOfCar;
-                app.model.setting.set(condition, error => {
-                    res.send(error);
-                });
+            const year = (d ? d.getFullYear() : null);
+            app.model.setting.get('car', result => {
+                if (result && Object.keys(result).length != 0) {
+                    const value = result.car && result.car.split(';'),
+                        indexYear = value.findIndex(item => item.startsWith(year));
+                    if (indexYear != -1) {
+                        const newItem = value[indexYear].split(':');
+                        newItem[2] = parseInt(newItem[2]);
+                        newItem[2]--;
+                        newItem[6] = parseInt(newItem[6]);
+                        newItem[6]++;
+                        value[indexYear] = newItem.join(':');
+                        data.car = value.join(';');
+                    } else {
+                        const indexPreviousYear = value.findIndex(item => item.startsWith(year - 1));
+                        if (indexPreviousYear != -1) {
+                            const newItem = value[indexPreviousYear].split(':');
+                            newItem[2] = parseInt(newItem[2]);
+                            newItem[2]--;
+                            data.car = result.car + year + ':totalCar:' + newItem[2] + ':newCar:' + 1 + ':removeCar:1;';
+                        } else {
+                            data.car = result.car + year + ':totalCar:' + 1 + ':newCar:' + 1 + ':removeCar:0;';
+                        }
+                    }
+                    app.model.setting.set(data, error => {
+                        if (error) {
+                            res.send({ error: 'Update số xe hàng năm bị lỗi' });
+                        } else {
+                            res.end();
+                        }
+                    });
+                } else {
+                    res.end();
+                }
             });
         });
     });
@@ -143,7 +196,6 @@ module.exports = app => {
                         item.repair[indexRepair].dateEnd = data.dateEnd;
                         item.repair[indexRepair].fee = data.fee;
                         item.repair[indexRepair].content = data.content;
-                        console.log(item.repair);
                         app.model.car.update(carId, item, (error, item) => {
                             res.send({ error, item });
                         }
@@ -276,16 +328,42 @@ module.exports = app => {
                         } else if (!item) {
                             app.model.car.create(car, () => {
                                 const d = new Date(car && car.ngayDangKy);
-                                const year = 'newCar' + (d ? d.getFullYear() : null);
-                                let numOfCar = 0;
-                                app.model.setting.get(year, result => {
-                                    if (result[year]) numOfCar = parseInt(result[year]) + 1;
-                                    else numOfCar = 1;
-                                    const condition = {};
-                                    condition[year] = numOfCar;
-                                    app.model.setting.set(condition, error => {
-                                        err = error;
-                                        handleCreateCar(index + 1);
+                                const year = d ? d.getFullYear() : null;
+                                let data = {};
+                                app.model.setting.get('car', result => {
+                                    if (result && Object.keys(result).length != 0) {
+                                        let value = result.car && result.car.split(';');
+                                        value = value.sort((a, b) => parseInt(a.slice(0, 3)) - parseInt(b.slice(0, 3)));
+                                        const indexYear = value.findIndex(item => item.startsWith(year));
+                                        if (indexYear != -1) {
+                                            const newItem = value[indexYear].split(':');
+                                            newItem[2] = parseInt(newItem[2]);
+                                            newItem[2]++;
+                                            newItem[4] = parseInt(newItem[4]);
+                                            newItem[4]++;
+                                            value[indexYear] = newItem.join(':');
+                                            data.car = value.join(';');
+                                        } else {
+                                            const indexPreviousYear = value.findIndex(item => item.startsWith(year - 1));
+                                            if (indexPreviousYear != -1) {
+                                                const newItem = value[indexPreviousYear].split(':');
+                                                newItem[2] = parseInt(newItem[2]);
+                                                newItem[2]++;
+                                                data.car = result.car + year + ':totalCar:' + newItem[2] + ':newCar:' + 1 + ':removeCar:0;';
+                                            } else {
+                                                data.car = result.car + year + ':totalCar:' + 1 + ':newCar:' + 1 + ':removeCar:0;';
+                                            }
+                                        }
+                                    } else {
+                                        data.car = year + ':totalCar:' + 1 + ':newCar:' + 1 + ':removeCar:0;';
+                                    }
+                                    app.model.setting.set(data, error => {
+                                        if (error) {
+                                            err = error;
+                                            handleCreateCar(index + 1);
+                                        } else {
+                                            handleCreateCar(index + 1);
+                                        }
                                     });
                                 });
                             });

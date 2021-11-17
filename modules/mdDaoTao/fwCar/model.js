@@ -23,7 +23,7 @@ module.exports = app => {
             ngayHetHanDangKiem: { type: Date },
         }],
         lichSuDangKy: [{
-            daNopCongVan: { type: Boolean, default: false },
+            progress: String,
             ngayDangKy: { type: Date },
             fee: { type: Number, default: 0 },
             ngayHetHanDangKy: { type: Date },
