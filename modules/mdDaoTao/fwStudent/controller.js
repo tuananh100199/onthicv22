@@ -342,7 +342,6 @@ module.exports = (app) => {
 
     // User API ------------------------------------------------------------------------------------------------------
     app.get('/api/student/user', app.permission.check('user:login'), (req, res) => {
-        console.log(req.query.condition);
         app.model.student.get(req.query.condition, (error, item) => res.send({ error, item }));
     });
 
@@ -422,6 +421,7 @@ module.exports = (app) => {
                                 hinhChupTrucTiep: values[20] && values[20].toLowerCase().trim() == 'x' ? true : false,
                                 lecturerIdentityCard: values[21],
                                 lecturerName: values[22],
+                                hocPhiPhaiDong: values[23],
                             });
                             handleUpload(index + 1);
                         }

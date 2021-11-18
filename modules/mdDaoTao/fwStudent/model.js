@@ -34,7 +34,9 @@ module.exports = (app) => {
         division: { type: app.db.Schema.ObjectId, ref: 'Division' },                                // Cơ sở đào tạo
         course: { type: app.db.Schema.ObjectId, ref: 'Course' },                                    // Khóa học
         courseType: { type: app.db.Schema.ObjectId, ref: 'CourseType' },                            // Hạng đăng ký
-
+        
+        goiHocVien: { type: String, enum: ['coban', 'tuchon'], default: 'coban' },                  // Gói đăng ký của học viên => được học vào T7, CN, ngoài giờ
+        
         hocPhiPhaiDong: Number,                                                                     // Học phí phải đóng
         hocPhiMienGiam: Number,                                                                     // Số tiền được miễn giảm
         hocPhiDaDong: Number,                                                                       // Học phí đã đóng
@@ -57,7 +59,7 @@ module.exports = (app) => {
             point: Number,
         }],
         diemTrungBinhThiHetMon: Number,
-        soGioThucHanhDaHoc: Number,
+        soGioThucHanhDaHoc: { type: Number, default: 0 },
 
         datSatHach: { type: Boolean, default: false },
         totNghiep: { type: Boolean, default: false },

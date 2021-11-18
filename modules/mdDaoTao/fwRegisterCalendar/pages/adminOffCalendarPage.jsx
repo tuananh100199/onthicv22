@@ -2,9 +2,9 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { AdminPage, FormCheckbox } from 'view/component/AdminPage';
 import { Link } from 'react-router-dom';
-import { getCourse } from '../fwCourse/redux';
-import LecturerView from './lecturerView';
-import './registerCalendar.scss';
+import { getCourse } from '../../fwCourse/redux';
+import LecturerView from '../lecturerView';
+import '../registerCalendar.scss';
 
 
 export class AdminRegisterCalendarPage extends AdminPage {

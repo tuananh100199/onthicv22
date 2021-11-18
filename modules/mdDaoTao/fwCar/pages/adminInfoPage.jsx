@@ -1,7 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { getCarPage, createCar, updateCar, deleteCar } from '../redux';
-import { getAllLecturer } from 'modules/_default/fwUser/redux';
+import { getCarPage, createCar, updateCar, deleteCar, ajaxSelectAvaiableLecturer } from '../redux';
 import { getCategoryAll } from 'modules/_default/fwCategory/redux';
 import { ajaxSelectCourseType } from 'modules/mdDaoTao/fwCourseType/redux';
 import Pagination from 'view/component/Pagination';
@@ -21,14 +20,14 @@ class CarModal extends AdminModal {
         this.itemDivision.value(division ? { id: division._id, text: division.title } : null);
         this.itemCourseType.value(courseType ? { id: courseType._id, text: courseType.title } : null);
         this.itemLicensePlates.value(licensePlates);
-        this.itemUser.value(user ? user._id : '0');
+        
         this.itemBrand.value(brand ? brand._id : null);
         this.itemIsPersonalCar.value(isPersonalCar);
         this.itemNgayHetHanDangKiem.value(ngayHetHanDangKiem);
         this.itemNgayHetHanTapLai.value(ngayHetHanTapLai);
         this.itemNgayDangKy.value(ngayDangKy);
         this.itemNgayThanhLy.value(ngayThanhLy);
-        this.setState({ _id });
+        this.setState({ _id, user });
     }
 
     onSubmit = () => {
@@ -57,7 +56,7 @@ class CarModal extends AdminModal {
             T.notify('Cơ sở đào tạo không được trống!', 'danger');
             this.itemDivision.focus();
         } else if (!data.user) {
-            T.notify('Vui lòng chọn chủ xe!', 'danger');
+            T.notify('Vui lòng chọn Quản lý phụ trách xe!', 'danger');
             this.itemUser.focus();
         }
         else {
@@ -81,7 +80,7 @@ class CarModal extends AdminModal {
                     <FormDatePicker ref={e => this.itemNgayThanhLy = e} className='col-md-6' label='Ngày thanh lý' readOnly={readOnly} type='date-mask' />
                     <FormSelect className='col-md-3' ref={e => this.itemCourseType = e} label='Hạng đào tạo' data={ajaxSelectCourseType} readOnly={readOnly} />
                     <FormSelect className='col-md-5' ref={e => this.itemDivision = e} label='Cơ sở đào tạo' data={ajaxSelectDivision} readOnly={readOnly} />
-                    <FormSelect className='col-md-4' ref={e => this.itemUser = e} label='Chủ xe' data={this.props.dataLecturer} readOnly={readOnly} />
+                    <FormSelect className='col-md-4' ref={e => this.itemUser = e} label='Quản lý phụ trách xe' data={ajaxSelectAvaiableLecturer(this.state.user)} readOnly={readOnly} />
 
                 </div >
         });
@@ -94,14 +93,6 @@ class CarPage extends AdminPage {
     componentDidMount() {
         T.ready('/user/car', () => T.showSearchBox(() => this.setState({ dateStart: '', dateEnd: '' })));
         this.props.getCarPage(1, 50, undefined);
-        this.props.getAllLecturer(data => {
-            console.log('data', data);
-            if (data && data.length) {
-                const listLecturer = [{ id: 0, text: 'Trống' }];
-                data.forEach(lecturer => listLecturer.push({ id: lecturer._id, text: lecturer.lastname + ' ' + lecturer.firstname }));
-                this.setState({ listLecturer });
-            }
-        });
         this.props.getCategoryAll('car', null, (items) =>
             this.setState({ brandTypes: (items || []).map(item => ({ id: item._id, text: item.title })) }));
         T.onSearch = (searchText) => {
@@ -168,7 +159,7 @@ class CarPage extends AdminPage {
                     <th style={{ width: 'auto', textAlign: 'center' }}>#</th>
                     <th style={{ width: 'auto' }} nowrap='true'>Biển số xe</th>
                     <th style={{ width: 'auto' }} nowrap='true'>Nhãn hiệu xe</th>
-                    <th style={{ width: 'auto' }} nowrap='true'>Chủ xe</th>
+                    <th style={{ width: 'auto' }} nowrap='true'>Quản lý phụ trách xe</th>
                     <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Hạng đào tạo</th>
                     <th style={{ width: '100%' }} nowrap='true'>Cơ sở đào tạo</th>
                     <th style={{ width: 'auto' }} nowrap='true'>Ngày hết hạn đăng kiểm</th>
@@ -215,7 +206,7 @@ class CarPage extends AdminPage {
                 </div>
                 <Pagination name='adminCar' style={{ marginLeft: 60 }} pageCondition={pageCondition} pageNumber={pageNumber} pageSize={pageSize} pageTotal={pageTotal} totalItem={totalItem}
                     getPage={this.props.getCarPage} />
-                <CarModal readOnly={!permission.write} ref={e => this.modal = e} brandTypes={this.state.brandTypes} create={this.props.createCar} update={this.props.updateCar} dataLecturer={this.state.listLecturer} />
+                <CarModal readOnly={!permission.write} ref={e => this.modal = e} brandTypes={this.state.brandTypes} create={this.props.createCar} update={this.props.updateCar} />
                 {permission.import ? <CirclePageButton type='import' style={{ right: '70px' }} onClick={() => this.props.history.push('/user/car/import')} /> : null}
             </>,
             backRoute: '/user/car',
@@ -225,5 +216,5 @@ class CarPage extends AdminPage {
 }
 
 const mapStateToProps = state => ({ system: state.system, car: state.trainning.car });
-const mapActionsToProps = { getCarPage, deleteCar, createCar, updateCar, getAllLecturer, getCategoryAll };
+const mapActionsToProps = { getCarPage, deleteCar, createCar, updateCar, getCategoryAll };
 export default connect(mapStateToProps, mapActionsToProps)(CarPage);

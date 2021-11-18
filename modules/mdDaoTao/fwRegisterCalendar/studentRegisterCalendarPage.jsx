@@ -4,7 +4,7 @@ import { getRegisterCalendarOfLecturerByStudent, createTimeTableByStudent, delet
 import { getStudentByUser } from 'modules/mdDaoTao/fwStudent/redux';
 import { AdminPage, AdminModal, TableCell, renderTable, FormDatePicker, FormSelect, FormCheckbox } from 'view/component/AdminPage';
 import { Link } from 'react-router-dom';
-import { RegisterCalendarStates, RegisterCalendarStatesMapper, timeOffStatesMapper, sectionHours } from './index';
+import { RegisterCalendarStates, RegisterCalendarStatesMapper, timeOffStatesMapper, sectionHours, sectionOverTimeHours } from './index';
 
 function formatDayOrMonth(item){
     return ('0' + item).slice(-2);
@@ -14,21 +14,27 @@ function formatDate(item) {
     let date = new Date(item);
     const year = date.getFullYear(),
         month = date.getMonth() + 1,
-        day = date.getDate()-1;
+        day = date.getDate();
 
-    return `${year}-${formatDayOrMonth(month)}-${formatDayOrMonth(day)}T17:00:00.000Z`;// chuyển ngày trong calendar sang định dạng lưu trong DB
+    return `${year}-${formatDayOrMonth(month)}-${formatDayOrMonth(day)}T00:00:00.000Z`;// chuyển ngày trong calendar sang định dạng lưu trong DB
 }
 class RegisterTimeTableModal extends AdminModal {
     state = { listTimeTable: null };
     sectionHour = {};
 
+    componentDidMount() {
+        this.state = {};
+    }
+    
     onShow = (item) => {
         const { _id, dateNumber, date, startHour, numOfHours, state } = item.data || { date: item.start ? item.start.toISOString() : null, startHour: 7, numOfHours: 1, state: 'waiting' },
             endHour = startHour + numOfHours;
         this.itemDate.value(date);
         this.itemState && this.itemState.value(state);
-        let avaiableHours = sectionHours || [], currentStudentTimeTables = [];
+        let avaiableHours = sectionHours || [], currentStudentTimeTables = [], 
+        avaiableOverTimeHours = sectionOverTimeHours;
         const OffCalendar = this.props.listRegisterCalendar.find(calendar => formatDate(calendar.dateOff) == formatDate(date));
+
         this.props.getRegisterCalendarOfLecturerByStudent({ date: formatDate(date) }, data => {  //lấy lịch nghỉ và thời khóa biểu theo date
             if (data.listTimeTable && data.listRegisterCalendar){
                 if (OffCalendar && OffCalendar.timeOff == 'morning') {
@@ -44,6 +50,13 @@ class RegisterTimeTableModal extends AdminModal {
                                 avaiableHours = avaiableHours.filter(item => item != sectionHour);
                             }
                         });
+                        
+                        avaiableOverTimeHours.forEach(sectionHour => { // loại bỏ những giờ học đã có khung giờ ngoài giờ hành chính
+                            if (sectionHour.startHour == timeTable.startHour) {
+                                avaiableOverTimeHours = avaiableOverTimeHours.filter(item => item != sectionHour);
+                            }
+                        });
+
                         if (timeTable && timeTable.student && this.props.student && timeTable.student._id == this.props.student._id) {
                             currentStudentTimeTables.push(timeTable);
                         }
@@ -51,38 +64,67 @@ class RegisterTimeTableModal extends AdminModal {
                 } else {
                     currentStudentTimeTables = [];
                 }
+                
                 avaiableHours.forEach(avaiableHour => this.sectionHour[avaiableHour.id] && this.sectionHour[avaiableHour.id].value(false));
-                this.setState({ currentStudentTimeTables, listRegisterCalendar: data.listRegisterCalendar, avaiableHours });
+                avaiableOverTimeHours.forEach(avaiableHour => this.sectionHour[avaiableHour.id] && this.sectionHour[avaiableHour.id].value(false));
+
+                this.setState({ currentStudentTimeTables, listRegisterCalendar: data.listRegisterCalendar, avaiableHours, avaiableOverTimeHours }, () => {
+                    currentStudentTimeTables.forEach(timeTable => {
+                        if (timeTable.state == 'waiting') {
+                            const countDownDate = new Date(timeTable.createdAt).getTime() + 1000*3600*24;
+                            let x = window.onload = setInterval(function() {
+                            
+                                const now = new Date().getTime();
+                                const distance = countDownDate - now;
+                                
+                                const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                                const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+                                const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+                                
+                                document.getElementById(`timeRemain${timeTable._id}`) ? document.getElementById(`timeRemain${timeTable._id}`).innerHTML = `Thời gian còn lại: ${hours}:${minutes}:${seconds}` : null;
+                                
+                                if (distance < 0) {
+                                    clearInterval(x);
+                                    document.getElementById(`timeRemain${timeTable._id}`).innerHTML = null;
+                                }
+                            }, 1000);
+                        }
+                    });
+                });
             } else {
                 this.setState({ currentStudentTimeTables: null });
             }
         });
-
-        this.setState({ loading: false, _id, dateNumber, date, startHour, endHour, state, OffCalendar, selectedSectionHours: [] });
+       
+        this.setState({ loading: false, _id, dateNumber, date, startHour, endHour, state, OffCalendar, selectedSectionHours: [], selectedSectionOverTimeHours: [] });
     }
 
     onSubmit = () => {
-        const { _id, selectedSectionHours } = this.state;
-            const data = {
-                date: this.itemDate.value(),
-                selectedSectionHours: selectedSectionHours,
-            };
+        const { _id, selectedSectionHours, selectedSectionOverTimeHours } = this.state;
+        const data = {
+            date: this.itemDate.value(),
+            selectedSectionHours: selectedSectionHours,
+            selectedSectionOverTimeHours: selectedSectionOverTimeHours
+        };
            
-            let today  = new Date();
-            const currentDate = new Date(today.getFullYear(), today.getMonth(), today.getDate());
-            data.date = new Date(data.date.getFullYear(), data.date.getMonth(), data.date.getDate());
-            if (!_id && data.date <= currentDate) {
-                T.notify('Thời gian tối thiểu đăng ký là trước 1 ngày!', 'danger');
-                this.itemDate.focus();
-            } else if (data.selectedSectionHours && this.state.currentStudentTimeTables && (Number(this.state.currentStudentTimeTables.length) +  Number(data.selectedSectionHours.length)) > 2) {
-                T.notify('Số giờ học tối đa cho một ngày là 2!', 'danger');
-                return;
-            } else if (data.selectedSectionHours && data.selectedSectionHours.length < 1) {
-                T.notify('Khung thời gian học chưa chọn!', 'danger');
-                return;
-            } else {
-                this.props.onSave(_id, data, () => this.hide());
-            }
+        let today  = new Date();
+        const currentDate = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+        data.date = new Date(data.date.getFullYear(), data.date.getMonth(), data.date.getDate(), '07', '00', '00');
+        if (!_id && data.date <= currentDate) {
+            T.notify('Thời gian tối thiểu đăng ký là trước 1 ngày!', 'danger');
+            this.itemDate.focus();
+        } 
+        // else if (data.selectedSectionHours && this.state.currentStudentTimeTables && (Number(this.state.currentStudentTimeTables.length) +  Number(data.selectedSectionHours.length)) > 2) {
+        //     T.notify('Số giờ học tối đa cho một ngày là 2!', 'danger');
+        //     return;
+        // } 
+        else if ((data.selectedSectionHours && data.selectedSectionHours.length < 1) && (data.selectedSectionOverTimeHours && data.selectedSectionOverTimeHours.length < 1)) {
+            T.notify('Khung thời gian học chưa chọn!', 'danger');
+            return;
+        }
+         else {
+            this.props.onSave(_id, data, () => this.hide());
+        }
     }
 
     selectHours = (e, index) => {
@@ -99,13 +141,27 @@ class RegisterTimeTableModal extends AdminModal {
         this.setState({ selectedSectionHours: selectedSectionHours.filter(item => item) });
     }
 
+    selectOverTimeHours = (e, index) => {
+        let { avaiableOverTimeHours, selectedSectionOverTimeHours } = this.state;
+        if (e) {
+            selectedSectionOverTimeHours.push(avaiableOverTimeHours.find(sectionHour => sectionHour.id == index));
+        } else {
+            selectedSectionOverTimeHours = selectedSectionOverTimeHours.map(selectedStartHour => {
+                if (selectedStartHour.id != index) {
+                    return selectedStartHour;
+                }
+            });
+        }
+        this.setState({ selectedSectionOverTimeHours: selectedSectionOverTimeHours.filter(item => item) });
+    }
+
     delete = (_id, condition) => T.confirm('Xóa lịch học', 'Bạn có chắc chắn muốn xóa lịch học đã đăng ký này?', isConfirm => {
         isConfirm && this.props.delete(_id, condition);
         this.hide();
     })
 
     render = () => {
-        const { _id, loading, date, dateNumber, startHour, endHour, state, currentStudentTimeTables, OffCalendar, avaiableHours } = this.state;
+        const { _id, loading, date, dateNumber, startHour, endHour, state, currentStudentTimeTables, OffCalendar, avaiableHours, avaiableOverTimeHours } = this.state;
         const student = this.props.student;
         const table = renderTable({
             getDataSource: () => currentStudentTimeTables,
@@ -120,6 +176,7 @@ class RegisterTimeTableModal extends AdminModal {
                     <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Trạng thái</th>
                 </tr>),
             renderRow: (item, index) => {
+                
                 return (
                     <tr key={index} >
                         <TableCell type='number' content={index + 1} />
@@ -128,7 +185,7 @@ class RegisterTimeTableModal extends AdminModal {
                         <TableCell type='text' content={ item.date ? T.dateToText(item.date, 'dd/mm/yyyy') : ''} />
                         <TableCell type='number' style={{ textAlign: 'center' }} content={item.numOfHours ? `${item.startHour}-${item.startHour + item.numOfHours}` : `${item.startHour}`} />
                         <TableCell type='number' style={{ textAlign: 'center' }} content={item.numOfHours} />
-                        <TableCell type='text' content={RegisterCalendarStatesMapper[item.state] && RegisterCalendarStatesMapper[item.state].text} style={{ whiteSpace: 'nowrap', textAlign: 'center', color: RegisterCalendarStatesMapper[item.state] && RegisterCalendarStatesMapper[item.state].color }}  nowrap='true'/>
+                        <TableCell type='text' content={ <>{RegisterCalendarStatesMapper[item.state] && RegisterCalendarStatesMapper[item.state].text} {item.state == 'waiting' ? <div id={`timeRemain${item._id}`} ></div> : null}</>} style={{ whiteSpace: 'nowrap', textAlign: 'center', color: RegisterCalendarStatesMapper[item.state] && RegisterCalendarStatesMapper[item.state].color }}  nowrap='true'/>
                     </tr>
                 );
             },
@@ -157,18 +214,25 @@ class RegisterTimeTableModal extends AdminModal {
                             <>Thời gian học: <span className='text-primary'>{`${startHour}h - ${endHour}h`}</span>.</> : null}
                         </p>
                         <div className='row col-md-12' style={{marginBottom: '25px'}}>
-                            <p className='col-md-12'>Chọn khung giờ đăng ký: </p>
+                            <p className='col-md-12'>Chọn khung giờ hành chính: </p>
                             {avaiableHours && avaiableHours.length ? avaiableHours.map((sectionHour) =>
                             (
                                 <div key={sectionHour.id} className='col-md-6'>
                                     <FormCheckbox ref={e => this.sectionHour[sectionHour.id] = e} label={'Khung giờ: ' + sectionHour.text} onChange={e => this.selectHours(e, sectionHour.id)} />
                                 </div>
                             )) : null}
+                            <p className='col-md-12'>Chọn khung giờ ngoài hành chính: </p>
+                            {avaiableOverTimeHours && avaiableOverTimeHours.length ? avaiableOverTimeHours.map((sectionHour) =>
+                            (
+                                <div key={sectionHour.id} className='col-md-6'>
+                                    <FormCheckbox ref={e => this.sectionHour[sectionHour.id] = e} label={'Khung giờ: ' + sectionHour.text} onChange={e => this.selectOverTimeHours(e, sectionHour.id)} />
+                                </div>
+                            )) : null}
                         </div>
                         {currentStudentTimeTables && currentStudentTimeTables.length && date != null ? 
                         <div className='col-md-12'>
                             <p>
-                                Lịch học đã đăng ký ngày <span className='text-success'>{new Date(date).getDayText()} {new Date(date).getDateText()}</span><span> của học viên: </span>
+                                Lịch học đã đăng ký ngày <span className='text-success'>{new Date(date).getDateText()}</span><span> của học viên: </span>
                             </p>
                             {table}
                         </div> : ''}
@@ -192,7 +256,7 @@ class StudentView extends AdminPage {
                 this.props.getStudentByUser({ user: this.props.system.user && this.props.system.user._id }, student => {
                     this.setState({ student });
                     if (student) {
-                        this.props.getRegisterCalendarOfLecturerByStudent({ courseId: this.state.courseId }, data => {
+                        this.props.getRegisterCalendarOfLecturerByStudent({}, data => {
                             if (data.error) {
                                 this.props.history.push(`/user/hoc-vien/khoa-hoc/${this.state.courseId}`);
                             } else {
@@ -259,14 +323,16 @@ class StudentView extends AdminPage {
             const year = date.getFullYear(),
                 month = date.getMonth() + 1,
                 day = date.getDate();
-            if (newItem.student && this.state.student && newItem.student._id == this.state.student._id) {
+            if (newItem.student && this.
+                state.student && newItem.student._id == this.state.student._id) {
                 newEvent = {
                     ...currentEnvent,
                     title: `${newItem.student ? newItem.student.lastname + ' ' + newItem.student.firstname : ''}`,
                     start: `${year}-${formatTime(month)}-${formatTime(day)}T${formatTime(newItem.startHour)}:00:00`,
                     end: `${year}-${formatTime(month)}-${formatTime(day)}T${formatTime(newItem.startHour + newItem.numOfHours)}:00:00`,
                     item: newItem,
-                    color: newItem.startHour  > 12 ? '#1488DB' : '#218838',
+                    textColor:'white',
+                    color: RegisterCalendarStatesMapper[newItem.state] && RegisterCalendarStatesMapper[newItem.state].color,
                 };
             }
         } else { // render lịch nghỉ của giáo viên
@@ -280,7 +346,7 @@ class StudentView extends AdminPage {
                 start: `${year}-${formatTime(month)}-${formatTime(day)}T${newItem.timeOff == 'noon' ? '13' : '07'}:00:00`,
                 end: `${year}-${formatTime(month)}-${formatTime(day)}T${newItem.timeOff == 'morning' ? '11' : '17'}:00:00`,
                 item: newItem,
-                cotextColor:'white',
+                textColor:'white',
                 backgroundColor: 'red'
             };
         }
@@ -288,7 +354,7 @@ class StudentView extends AdminPage {
     }
     
     getData = (done) => {
-        this.props.getRegisterCalendarOfLecturerByStudent({ courseId: this.state.courseId }, data => {
+        this.props.getRegisterCalendarOfLecturerByStudent({}, data => {
             done && done(data);
         });
     }
@@ -299,17 +365,16 @@ class StudentView extends AdminPage {
     }
 
     onModalFormSave = (_id, data, done) => {
-        const { selectedSectionHours } = data;
-        if (selectedSectionHours && selectedSectionHours.length) {
-            selectedSectionHours.forEach(selectedSectionHour => {
-                
+        const { selectedSectionHours, selectedSectionOverTimeHours } = data;
+        // if (selectedSectionHours && selectedSectionHours.length) {
+            selectedSectionHours.concat(selectedSectionOverTimeHours).forEach(selectedSectionHour => {
                 this.props.createTimeTableByStudent({ date: data.date,startHour: selectedSectionHour.startHour, numOfHours: 1 }, item => {
                     done && done();
                     const newEvent = this.getEventObject({}, item);
                     $(this.calendar).fullCalendar('renderEvent', newEvent);
                 });
             });
-        }
+        // }
     }
 
     deleteCalendar = (_id, condition) => {

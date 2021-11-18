@@ -105,7 +105,17 @@ module.exports = (app) => {
                         if(error) {
                             res.send({ error });
                         } else {
-                            app.model.timeTable.getAll(lecturerCondition, (error, items) => res.send({ error, listTimeTable : items ? items : [], listRegisterCalendar: list ? list: [] }));
+                            app.model.timeTable.getAll(lecturerCondition, (error, items) =>{
+                                let listTimeTable = [];
+                                items.forEach(item => {
+                                    const expiredDate = new Date(item.createdAt).getTime() + 1000*3600*24;
+                                    const now = new Date().getTime();
+                                    if (item.state != 'waiting' || (item.state == 'waiting' && expiredDate > now)) {
+                                        listTimeTable.push(item);
+                                    }
+                                });
+                                res.send({ error, listTimeTable, listRegisterCalendar: list ? list: [] });
+                            });
 
                         }
                     });

@@ -26,9 +26,9 @@ class TimeTableCarModal extends AdminModal {
             let date = new Date(item);
             const year = date.getFullYear(),
                 month = date.getMonth() + 1,
-                day = date.getDate()-1;
+                day = date.getDate();
 
-            return `${year}-${formatDayOrMonth(month)}-${formatDayOrMonth(day)}T17:00:00.000Z`;// chuyển ngày trong calendar sang định dạng lưu trong DB
+            return `${year}-${formatDayOrMonth(month)}-${formatDayOrMonth(day)}T00:00:00.000Z`;// chuyển ngày trong calendar sang định dạng lưu trong DB
         }
 
         const { _id, student, dateNumber, date, startHour, numOfHours, state, truant, car, content, note } = item.data || { date: item.start ? item.start.toISOString() : null, startHour: 8, numOfHours: 2, state: 'waiting', truant: false, car: this.props.car ? this.props.car : '', content: '', note: '' },

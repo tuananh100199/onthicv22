@@ -47,13 +47,13 @@ module.exports = app => {
             }
         }),
 
-        get: (condition, done) => typeof condition == 'string' ? model.findById(condition).populate('brand', 'title').populate({
+        get: (condition, done) => typeof condition == 'string' ? model.findById(condition).populate('division', 'title').populate('courseType', 'title').populate('brand', 'title').populate({
             path: 'courseHistory.course', populate: { path: 'course', select: 'name thoiGianBatDau thoiGianKetThuc' }
         }).populate({
             path: 'courseHistory.user', populate: { path: 'user', select: 'firstname lastname' }
         }).populate({
             path: 'calendarHistory.user', populate: { path: 'user', select: 'firstname lastname' }
-        }).exec(done) : model.findOne(condition).populate('brand', 'title').exec(done),
+        }).exec(done) : model.findOne(condition).populate('division', 'title').populate('courseType', 'title').populate('brand', 'title').exec(done),
 
         update: (condition, changes, $unset, done) => {
             if (!done) {

@@ -7,8 +7,9 @@ module.exports = app => {
         numOfHours: { type: Number, default: 1 },                                       // Số giờ học, số nguyên dương.
         dateNumber: { type: Number, default: -1 },                                      // Buổi học thứ
         truant: { type: Boolean, default: false },                                      // Học viên không đến lớp
-        state: { type: String, enum: ['approved', 'waiting', 'reject', 'cancel'], default: 'waiting' }, // Trạng thái của thời khóa biểu
+        state: { type: String, enum: ['approved', 'waiting', 'reject', 'cancel', 'autoCancel'], default: 'waiting' }, // Trạng thái của thời khóa biểu
         car: { type: app.db.Schema.ObjectId, ref: 'Car' },                              // Xe học
+        createdAt: { type: Date, default: Date.now },                                   // Thời gian tạo thời khóa biểu
         content: String,                                                                // Nội dung học
         note: String,                                                                   // Ghi chú
     });
@@ -46,7 +47,13 @@ module.exports = app => {
 
         get: (condition, done) => {
             const findTask = typeof condition == 'string' ? model.findById(condition) : model.findOne(condition);
-            findTask.populate('student').exec(done);
+            findTask.populate('student').populate({
+                path : 'student',
+                populate : {
+                  path : 'course',
+                  select: 'practiceNumOfHours'
+                }
+              }).exec(done);
         },
 
         // changes = { $set, $unset, $push, $pull }

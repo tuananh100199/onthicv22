@@ -2,9 +2,9 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { AdminPage, FormCheckbox } from 'view/component/AdminPage';
 import { Link } from 'react-router-dom';
-import { getCourse } from '../fwCourse/redux';
+import { getCourse } from 'modules/mdDaoTao/fwCourse/redux';
 import LecturerView from 'modules/mdDaoTao/fwTimeTable/lecturerView';
-import './registerCalendar.scss';
+import '../registerCalendar.scss';
 
 
 export class AdminTimeTablePage extends AdminPage {

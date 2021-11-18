@@ -53,8 +53,8 @@ class HistoryCalendarPage extends AdminPage {
         });
         return this.renderPage({
             icon: 'fa fa-car',
-            title: 'Quản lý lịch sử lịch xe',
-            breadcrumb: ['Quản lý lịch sử lịch xe'],
+            title: 'Giáo viên phụ trách xe',
+            breadcrumb: ['Giáo viên phụ trách xe'],
             content: <>
                 <div className='tile'>
                     <FormCheckbox onChange={value => this.props.getCarPage(undefined, undefined, value ? { user: { $exists: false } } : {})} label='Xe đang trống' />

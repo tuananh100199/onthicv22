@@ -170,7 +170,7 @@ export function updateTimeTableByAdmin(_id, changes, condition, done) {
                 done && done(data.item);
                 dispatch(getTimeTablePageByAdmin(undefined, undefined, condition));
             }
-            done && done(data.error);
+            done && done(data.item);
         }, error => console.error(error) || T.notify('Cập nhật thời khóa biểu bị lỗi!', 'danger'));
     };
 }

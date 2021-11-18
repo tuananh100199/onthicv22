@@ -239,8 +239,6 @@ export class FormRichTextBox extends React.Component {
     focus = () => this.input.focus();
 
     insert = (e) => {
-        console.log(this.input);
-        console.log(this.input.selectionStart);
         let cursorPosition = this.input.selectionStart;
         let textBeforeCursorPosition = this.input.innerHTML.substring(0, cursorPosition);
         let textAfterCursorPosition = this.input.innerHTML.substring(cursorPosition, this.input.innerHTML.length);
@@ -285,8 +283,6 @@ export class FormEditor extends React.Component {
     insert = (e) => {
         // let cursorPosition = this.input.getSelection().getStartElement();
         let textBeforeCursorPosition = this.input.text().substring(0, 5);
-        console.log(this.input.editor.current.selectionStart);
-        console.log(this.input.editor.current);
         // let textAfterCursorPosition = this.input.text().substring(cursorPosition, this.input.text().length);
         this.setState({
             value: textBeforeCursorPosition + ' ' + e.target.innerHTML + ' '

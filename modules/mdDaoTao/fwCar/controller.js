@@ -77,6 +77,30 @@ module.exports = app => {
         app.model.car.getAll(condition, (error, list) => res.send({ error, list }));
     });
 
+    app.get('/api/car/avaiable-lecturer', (req, res) => {
+        app.model.user.getAll({ isLecturer: true }, (error, lecturers) => {
+            if (error) {
+                res.send({ error: 'Lấy thông tin giáo viên bị lỗi'});
+            } else {
+                app.model.car.getAll({}, (error, cars) => {
+                    let avaiableLecturers = [];
+                    lecturers.forEach(lecturer => {
+                        let isExisted = false;
+                        cars.forEach(car => {
+                            if (car.user && lecturer._id.toString() == car.user._id.toString()) {
+                                isExisted = true;
+                            }
+                        });
+                        if (!isExisted) {
+                            avaiableLecturers.push(lecturer);
+                        }
+                    });
+                    res.send({ error, list : avaiableLecturers });
+                });
+            }
+        });
+    });
+
     app.get('/api/car/lecturer', (req, res) => {
         const condition = req.query.condition;
         app.model.car.get(condition, (error, item) => res.send({ error, item }));
@@ -532,7 +556,7 @@ module.exports = app => {
                         });
                     });
                     app.excel.write(worksheet, cells);
-                    app.excel.attachment(workbook, res, 'Lịch sử lịch xe.xlsx');
+                    app.excel.attachment(workbook, res, 'Giáo viên phụ trách xe.xlsx');
                 }
             });
         }

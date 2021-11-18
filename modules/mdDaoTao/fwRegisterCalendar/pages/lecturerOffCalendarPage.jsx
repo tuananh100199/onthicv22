@@ -2,7 +2,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { getCourse } from 'modules/mdDaoTao/fwCourse/redux';
-import LecturerView from './lecturerView';
+import LecturerView from '../lecturerView';
 import { AdminPage, FormCheckbox } from 'view/component/AdminPage';
 
 export class LecturerRegisterCalendarPage extends AdminPage {

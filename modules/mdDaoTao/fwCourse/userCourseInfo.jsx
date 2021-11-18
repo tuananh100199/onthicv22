@@ -22,7 +22,7 @@ class UserCourseInfo extends AdminPage {
                         T.alert(data.notify, 'error', false, 2000);
                         this.props.history.push(previousRoute);
                     } else if (data.item && data.student) {
-                        this.setState({ ...data.item, ngayDuKienThiSatHach: data.student.ngayDuKienThiSatHach });
+                        this.setState({ ...data.item, ngayDuKienThiSatHach: data.student.ngayDuKienThiSatHach, hocPhiPhaiDong: data.student.hocPhiPhaiDong });
                     } else {
                         this.props.history.push(previousRoute);
                     }
@@ -46,7 +46,7 @@ class UserCourseInfo extends AdminPage {
                         <div className='tile-body row'>
                             <label className='col-md-6'>Tên khóa học: <b>{this.state.name}</b></label>
                             <label className='col-md-3'>Loại khóa học: <b>{this.state.courseType ? this.state.courseType.title : ''}</b></label>
-                            <label className='col-md-3'>Học phí:  <b>{this.state.courseFee ? T.numberDisplay(this.state.courseFee) + ' đồng' : ''}</b></label>
+                            <label className='col-md-3'>Học phí:  <b>{this.state.hocPhiPhaiDong ? T.numberDisplay(this.state.hocPhiPhaiDong) + ' đồng' : ''}</b></label>
                             {this.state.shortDescription ? <div className='col-md-12'><label>Giới thiệu ngắn khóa học:</label> <b>{this.state.shortDescription}</b></div> : <></>}
                             {this.state.detailDescription ? <div className='col-md-12'><label>Mô tả chi tiết: </label><p dangerouslySetInnerHTML={{ __html: this.state.detailDescription }} /> </div> : <></>}
                         </div>

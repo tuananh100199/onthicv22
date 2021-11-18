@@ -65,6 +65,20 @@ export function getAllCars(condition, done) {
     };
 }
 
+export function getAvaiableLecturers(condition, done) {
+    return () => {
+        const url = '/api/car/avaiable-lecturer';
+        T.get(url, { condition }, data => {
+            if (data.error) {
+                T.notify('Lấy giáo viên chưa có xe bị lỗi!', 'danger');
+                console.error('GET: ' + url + '. ' + data.error);
+            } else {
+                done && done(data.list);
+            }
+        }, error => console.error(error) || T.notify('Lấy giáo viên chưa có xe bị lỗi!', 'danger'));
+    };
+}
+
 export function getCar(_id, done) {
     return dispatch => {
         const url = '/api/car';
@@ -222,6 +236,19 @@ export function importCar(cars, division, courseType, done) {
         }, error => console.error(error) || T.notify('Tạo xe bị lỗi!', 'danger'));
     };
 }
+
+// Ajax ---------------------------------------------------------------------------------------------------------------
+export const ajaxSelectAvaiableLecturer = (currentLecturer) => T.createAjaxAdapter(
+    '/api/car/avaiable-lecturer',
+    params => ({ condition: { searchText: params.term } }),
+    response => {
+        let list =  [];
+        list = response && response.list ?
+        response.list.map(user => ({ id: user._id, text: user.lastname + ' ' + user.firstname })) : [];
+        currentLecturer ? list.push({ id: currentLecturer._id, text: currentLecturer.lastname + ' ' + currentLecturer.firstname }) : null;
+        return list;
+    },
+);
 
 // Export to Excel ----------------------------------------------------------------------------------------------------
 export function exportExpiredCar(fileType, carType) {
