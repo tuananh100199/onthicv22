@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { getCarPage, createCar, updateCar, deleteCar, exportInfoCar } from '../redux';
+import { getCarPage, createCar, updateCar, deleteCar,liquidateCar, exportInfoCar } from '../redux';
 import { getAllLecturer } from 'modules/_default/fwUser/redux';
 import { getCategoryAll } from 'modules/_default/fwCategory/redux';
 import { ajaxSelectCourseType } from 'modules/mdDaoTao/fwCourseType/redux';
@@ -14,7 +14,7 @@ const dataFilterType = [
     { id: 1, text: 'Xe đang sử dụng', condition: { status: 'dangSuDung' } },
     { id: 2, text: 'Xe đang sửa chữa', condition: { status: 'dangSuaChua' } },
     { id: 3, text: 'Xe chờ thanh lý', condition: { status: 'choThanhLy' } },
-    { id: 4, text: 'Xe đã thanh lý', condition: { status: 'thanhLy' } },
+    { id: 4, text: 'Xe đã thanh lý', condition: { status: 'daThanhLy' } },
     { id: 5, text: 'Xe đã có giáo viên', condition: { user: { $exists: true } } },
     { id: 6, text: 'Xe đang trống giáo viên', condition: { user: { $exists: false } } },
 ];
@@ -125,6 +125,9 @@ class CarPage extends AdminPage {
         };
     }
 
+    liquidate = (e, item) => e.preventDefault() || T.confirm('Thanh lý xe', 'Bạn có chắc muốn thanh lý xe này ?', true, isConfirm =>
+    isConfirm && this.props.liquidateCar(item));
+
     // handleFilterByTime = () => {
     //     const { searchText, filterType, user } = this.state.condition;
     //     const dateStart = this.dateStart ? this.dateStart.value() : '';
@@ -191,7 +194,7 @@ class CarPage extends AdminPage {
                     <TableCell type='text' style={{ whiteSpace: 'nowrap' }} content={T.dateToText(item.ngayHetHanDangKiem, 'dd/mm/yyyy')} />
                     <TableCell type='text' style={{ whiteSpace: 'nowrap' }} content={T.dateToText(item.ngayHetHanTapLai, 'dd/mm/yyyy')} />
                     {/* <TableCell type='text' style={{ whiteSpace: 'nowrap', textAlign: 'center' }} content={item.isPersonalCar ? 'X' : ''} /> */}
-                    <TableCell type='buttons' content={item} permission={permission} onEdit={this.edit} onDelete={this.delete} onEditFuel={'/user/car/fuel/' + item._id} onEditRepair={'/user/car/repair/' + item._id} onEditCourseHistory={'/user/car/course/' + item._id} />
+                    <TableCell type='buttons' content={item} permission={permission} onEdit={this.edit} onLiquidate={this.liquidate} onDelete={this.delete} onEditFuel={'/user/car/fuel/' + item._id} onEditRepair={'/user/car/repair/' + item._id} onEditCourseHistory={'/user/car/course/' + item._id} />
                 </tr >),
         });
         return this.renderPage({
@@ -231,5 +234,5 @@ class CarPage extends AdminPage {
 }
 
 const mapStateToProps = state => ({ system: state.system, car: state.trainning.car });
-const mapActionsToProps = { getCarPage, deleteCar, createCar, updateCar, getAllLecturer, getCategoryAll };
+const mapActionsToProps = { getCarPage, deleteCar, createCar, updateCar, getAllLecturer, getCategoryAll,liquidateCar };
 export default connect(mapStateToProps, mapActionsToProps)(CarPage);

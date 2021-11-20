@@ -138,7 +138,25 @@ module.exports = (app) => {
                                     if (error) {
                                         res.send({ error });
                                     } else {
-                                        app.model.setting.get('car', data => res.send({ numberOfUser: numberOfUser || 0, numberOfCourse: numberOfCourse || 0, numberOfNews: numberOfNews || 0, numberOfCar: numberOfCar || 0, carData: data || null }));
+                                        app.model.car.count({ status: 'dangSuaChua'}, (error, numberOfRepairCar) => {
+                                            if (error) {
+                                                res.send({ error });
+                                            } else {
+                                                app.model.car.count({ ngayHetHanTapLai: {$gte: new Date()}, status: { $ne: 'daThanhLy' }}, (error, numberOfPracticeCar) => {
+                                                    if (error) {
+                                                        res.send({ error });
+                                                    } else {
+                                                        app.model.user.count({ isLecturer: true}, (error, numberOfLecturer) => {
+                                                            if (error) {
+                                                                res.send({ error });
+                                                            } else {
+                                                                app.model.setting.get('car', data => res.send({ numberOfUser: numberOfUser || 0, numberOfCourse: numberOfCourse || 0, numberOfNews: numberOfNews || 0, numberOfCar: numberOfCar || 0,numberOfRepairCar: numberOfRepairCar || 0,numberOfPracticeCar: numberOfPracticeCar || 0,numberOfLecturer: numberOfLecturer || 0, carData: data || null }));
+                                                            }
+                                                        });
+                                                    }
+                                                });
+                                            }
+                                        });
                                     }
                                 });
                             }
@@ -149,9 +167,10 @@ module.exports = (app) => {
         });
     });
 
-    // app.get('/api/statistic/car', app.permission.check('statistic:read'), (req, res) => {
-
-    // });
+    app.get('/api/statistic/dashboard/student', app.permission.check('statistic:read'), (req, res) => {
+        const {dateStart, dateEnd} = req.query;
+        app.model.student.getAll({ createdDate: {$lt :dateEnd, $gte: dateStart }}, (error, list) => res.send({error, list}));
+    });
 
 
     // Hook upload images ---------------------------------------------------------------------------------------------------------------------------

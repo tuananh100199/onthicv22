@@ -57,6 +57,20 @@ export function getStatistic(done) {
     };
 }
 
+export function getStatisticStudent(dateStart, dateEnd,done) {
+    return dispatch => {
+        const url = '/api/statistic/dashboard/student';
+        T.get(url,{dateStart, dateEnd}, data => {
+            data && dispatch({ type: SystemUpdateState});
+            done && done(data);
+        }, error => {
+            console.error(error);
+            T.notify('Lấy thông tin thống kê hệ thống lỗi!', 'danger');
+            done && done();
+        });
+    };
+}
+
 export function login(data, done) {
     return () => {
         T.post('/login', data, res => {

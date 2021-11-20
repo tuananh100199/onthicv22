@@ -74,7 +74,7 @@ export function createCar(data, done) {
                 console.error('POST: ' + url + '.', data.error);
             } else {
                 T.notify('Cập nhật thông tin xe thành công!', 'success');
-                dispatch(getCarPage());
+                dispatch(getCarPage(undefined,undefined,{status: 'dangSuDung'}));
                 done && done(data);
             }
         }, error => console.error(error) || T.notify('Tạo thông báo bị lỗi!', 'danger'));
@@ -91,7 +91,7 @@ export function updateCar(_id, changes, done) {
                 done && done(data.error);
             } else {
                 T.notify('Cập nhật thông tin xe thành công!', 'success');
-                dispatch(getCarPage());
+                dispatch(getCarPage(undefined,undefined,{status: 'dangSuDung'}));
                 done && done();
             }
         }, error => console.error(error) || T.notify('Cập nhật thông tin xe bị lỗi!', 'danger'));
@@ -107,9 +107,24 @@ export function deleteCar(item) {
                 console.error('DELETE: ' + url + '.', data.error);
             } else {
                 T.alert('Xóa thông tin xe thành công!', 'success', false, 800);
-                dispatch(getCarPage());
+                dispatch(getCarPage(undefined,undefined,{status: 'dangSuDung'}));
             }
         }, error => console.error(error) || T.notify('Xóa thông tin xe bị lỗi!', 'danger'));
+    };
+}
+
+export function liquidateCar(item) {
+    return dispatch => {
+        const url = '/api/car/liquidate';
+        T.put(url, { item }, data => {
+            if (data.error) {
+                T.notify('Thanh lý xe bị lỗi!', 'danger');
+                console.error('DELETE: ' + url + '.', data.error);
+            } else {
+                T.alert('Thanh lý xe thành công!', 'success', false, 800);
+                dispatch(getCarPage(undefined,undefined,{status: 'dangSuDung'}));
+            }
+        }, error => console.error(error) || T.notify('Thanh lý xe bị lỗi!', 'danger'));
     };
 }
 
@@ -224,7 +239,7 @@ export function importCar(cars, division, courseType, done) {
                 console.error(`POST: ${url}. ${data.error}`);
             } else {
                 T.notify('Tạo xe thành công!', 'success');
-                dispatch(getCarPage());
+                dispatch(getCarPage(undefined,undefined,{status: 'dangSuDung'}));
                 done && done(data);
             }
         }, error => console.error(error) || T.notify('Tạo xe bị lỗi!', 'danger'));

@@ -467,13 +467,14 @@ module.exports = (app) => {
                 student = app.clone(student, { subject: {} });
                 let tongDiemLyThuyet = 0;
                 subjects.forEach(subject => {
-                    let diemMonHoc = 0, completedLessons = 0, numberLessons = subject.lessons ? subject.lessons.length : 0;
+                    let diemMonHoc = 0,thoiGianHoc = 0, completedLessons = 0, numberLessons = subject.lessons ? subject.lessons.length : 0;
                     if (numberLessons) {
                         if (student && student.tienDoHocTap && student.tienDoHocTap[subject._id] && !subject.monThucHanh) {
                             const listLessons = Object.entries(student.tienDoHocTap[subject._id]);
                             let tongDiemMonHoc = 0;
                             (listLessons || []).forEach(lesson => {
                                 tongDiemMonHoc += lesson[1].trueAnswers ? Number(lesson[1].score) / Object.keys(lesson[1].trueAnswers).length * 10 : 0;
+                                thoiGianHoc +=  lesson[1].totalSeconds ? parseInt(lesson[1].totalSeconds) : 0;
                             });
                             diemMonHoc = Number(tongDiemMonHoc / numberLessons).toFixed(1);
                         }
@@ -488,7 +489,7 @@ module.exports = (app) => {
                     }
 
                     const obj = {};
-                    obj[subject._id] = { completedLessons, diemMonHoc, numberLessons };
+                    obj[subject._id] = { completedLessons, diemMonHoc, numberLessons, thoiGianHoc };
                     student.subject = app.clone(student.subject, obj);
                 });
 

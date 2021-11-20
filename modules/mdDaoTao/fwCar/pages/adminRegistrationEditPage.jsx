@@ -110,11 +110,13 @@ class CarRegistrationPage extends AdminPage {
                                     {index + 1}. &nbsp;
                                     <a href='#' className='text-secondary d-inline' onClick={e => e.preventDefault() || this.modal.show(item)}>
                                         <div className='pl-2'>
-                                            <span style={{ fontSize: '1rem' }}>Ngày đăng kiểm: {T.dateToText(item.ngayDangKiem, 'dd/mm/yyyy')} </span>
-                                            <p className='text-muted'>Chi phí: {T.numberDisplay(item.fee) + ' đồng'}</p>
+                                            <span style={{ fontSize: '1rem' }}>
+                                                Ngày đăng kiểm: {T.dateToText(item.ngayDangKiem, 'dd/mm/yyyy')} 
+                                                - Chi phí: {T.numberDisplay(item.fee) + ' đồng'}
+                                            </span>
                                         </div>
                                     </a>
-                                    {permission.registration ? <a href='#' className='notification-button text-danger' onClick={e => this.delete(e, item)}><i className='fa fa-lg fa-trash' /></a> : null}
+                                    {/* {permission.registration ? <a href='#' className='notification-button text-danger' onClick={e => this.delete(e, item)}><i className='fa fa-lg fa-trash' /></a> : null} */}
                                 </li>))}
                         </ul> : 'Chưa có thông tin!'}
                 </div>

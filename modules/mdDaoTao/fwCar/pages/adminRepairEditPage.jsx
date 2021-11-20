@@ -165,8 +165,8 @@ class CarRepairEditPage extends AdminPage {
                                     <a href='#' className='text-secondary d-inline' onClick={e => e.preventDefault() || this.modal.show(item)}>
                                         <div className='pl-2'>
                                             <span style={{ fontSize: '1rem' }}>
-                                                Ngày sửa chữa: {T.dateToText(item.dateStart, 'dd/mm/yyyy')} &nbsp;
-                                                - Chi phí: {item.fee ? T.numberDisplay(item.fee) + 'đồng' : '_'}
+                                                Ngày sửa chữa: {T.dateToText(item.dateStart, 'dd/mm/yyyy')}
+                                                - Chi phí: {item.fee ? T.numberDisplay(item.fee) + ' đồng' : '_'}
                                             </span>
                                         </div>
                                     </a>

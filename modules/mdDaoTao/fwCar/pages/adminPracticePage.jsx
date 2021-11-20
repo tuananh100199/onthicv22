@@ -94,9 +94,9 @@ class CarPage extends AdminPage {
         });
         return this.renderPage({
             icon: 'fa fa-file-text-o',
-            title: 'Đăng ký xe tập lái',
+            title: 'Theo dõi giấy phép xe tập lái',
             header: header,
-            breadcrumb: ['Đăng ký xe tập lái'],
+            breadcrumb: ['Theo dõi giấy phép xe tập lái'],
             content: <>
                 <div className='tile'>
                     <p>Số lượng xe: {totalItem}</p>

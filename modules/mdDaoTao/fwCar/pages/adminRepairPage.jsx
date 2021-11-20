@@ -141,7 +141,7 @@ class CarRepairPage extends AdminPage {
             renderRow: (item, index) => (
                 <tr key={index}>
                     <TableCell type='number' content={(pageNumber - 1) * pageSize + index + 1} />
-                    <TableCell type='link' style={{ whiteSpace: 'nowrap' }} content={item.car ? item.car.licensePlates : item.licensePlates} />
+                    <TableCell type='text' style={{ whiteSpace: 'nowrap' }} content={item.car ? item.car.licensePlates : item.licensePlates} />
                     <TableCell type='text' content={item.car ? (item.car.brand && item.car.brand.title) : item.brand && item.brand.title} />
                     <TableCell type='text' style={{ whiteSpace: 'nowrap' }} content={item.car ? (item.car.user && (item.car.user.lastname + ' ' + item.car.user.firstname)) : item.user && (item.user.lastname + ' ' + item.user.firstname)} />
                     <TableCell type='text' style={{ whiteSpace: 'nowrap' }} content={item.car ? T.dateToText(item.repair.dateStart, 'dd/mm/yyyy') : (item.repair && item.repair.length ? T.dateToText((item.repair.sort((a, b) => new Date(b.dateStart) - new Date(a.dateStart)) && item.repair.sort((a, b) => new Date(b.dateStart) - new Date(a.dateStart))[0].dateStart), 'dd/mm/yyyy') : '')} />

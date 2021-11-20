@@ -120,7 +120,7 @@ class CarRegistrationPage extends AdminPage {
                                             {<span style={{ fontSize: '1rem', marginRight: '1rem' }}>- Tiến độ: {item.progress ? item.progress : 'Chưa xử lý'} </span>}
                                         </div>
                                     </a>
-                                    {permission.practice ? <a href='#' className='notification-button text-danger' onClick={e => this.delete(e, item)}><i className='fa fa-lg fa-trash' /></a> : null}
+                                    {/* {permission.practice ? <a href='#' className='notification-button text-danger' onClick={e => this.delete(e, item)}><i className='fa fa-lg fa-trash' /></a> : null} */}
                                 </li>))}
                         </ul> : 'Chưa có thông tin!'}
                 </div>

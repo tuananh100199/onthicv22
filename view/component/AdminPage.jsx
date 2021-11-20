@@ -42,7 +42,7 @@ export class TableCell extends React.Component { // type = number | date | link 
                     </label>
                 </td>);
         } else if (type == 'buttons') {
-            const { onEditCourseHistory, onEditFuel, onEditRepair, onSwap, onEdit, onDelete, children } = this.props;
+            const { onEditCourseHistory, onEditFuel, onEditRepair, onSwap, onEdit,onLiquidate, onDelete, children } = this.props;
             return (
                 <td className={className} style={{ ...style }} rowSpan={rowSpan}>
                     <div className='btn-group'>
@@ -61,6 +61,8 @@ export class TableCell extends React.Component { // type = number | date | link 
                             <a className='btn btn-primary' href='#' onClick={e => onEdit(e, content)}><i className='fa fa-lg fa-edit' /></a> : null}
                         {onEdit && typeof onEdit == 'string' ?
                             <Link to={onEdit} className='btn btn-primary'><i className='fa fa-lg fa-edit' /></Link> : null}
+                        {onLiquidate  ?
+                            <a className='btn' style={{ backgroundColor: 'gold', borderColor: 'gold'}} href='#' onClick={e => onLiquidate(e, content)}><i className='fa fa-lg fa-money' /></a> : null}
                         {permission.delete && onDelete ?
                             <a className='btn btn-danger' href='#' onClick={e => onDelete(e, content)}><i className='fa fa-lg fa-trash' /></a> : null}
                     </div>
