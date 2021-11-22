@@ -8,8 +8,16 @@ module.exports = app => {
     app.get('/user/payment', app.permission.check('payment:read'), app.templates.admin);
 
     app.post('/api/payment', app.permission.check(), (req, res) => { // todo: check token sent from app SMSChecker
-        console.log(req.body.data,'tesf');
-        if(req.body.data){
+        console.log(req.body.data,req.body.token,'tesf');
+        const prefixKey = `${app.appName}:state:`;
+        const key = `${prefixKey}smsAPIToken`;
+        app.redis.get(key, (error, value) => {
+            if(error ||!value){
+                res.send({error:'Error when get token'});
+            } else {
+                 console.log(value,'value');
+                if(req.body.token == value){
+                    if(req.body.data){
             const {originatingAddress, body, timestamp} = req.body.data; // check timestamp ?
             const BANK=['OCB'], HIEPPHAT='hiepphat'; // let ?  because it's dynamic 
             if(originatingAddress && BANK.includes(originatingAddress.toUpperCase()) && body && body.includes('+') && body.includes(HIEPPHAT)){ // parse sms
@@ -78,6 +86,11 @@ module.exports = app => {
                 res.send({ error: 'Invalid SMS' });
         } else 
             res.send({ error:'Null data in req.body' });
+                } else {
+                    res.send({error:'Invalid token'});
+                }
+            }
+        });
     });
 
     app.get('/api/payment/page/:pageNumber/:pageSize', app.permission.check('payment:read'), (req, res) => {
