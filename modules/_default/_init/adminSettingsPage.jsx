@@ -1,14 +1,15 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { saveSystemState } from './redux';
+import QRCode from 'react-qr-code';
 import { AdminPage, FormTextBox, FormImageBox } from 'view/component/AdminPage';
 
 class SettingsPage extends AdminPage {
     state = {};
     componentDidMount() {
         T.ready(() => {
-            let { address, email, mobile, fax, facebook, youtube, twitter, instagram, logo, footer, contact, subscribe } = this.props.system ?
-                this.props.system : { address: '', email: '', mobile: '', fax: '', facebook: '', youtube: '', twitter: '', instagram: '', logo: '/img/logo.jpg', footer: '/img/footer.jpg', contact: '/img/contact.jpg', subscribe: '/img/subscribe.jpg' };
+            let { address, email, mobile, fax, facebook, youtube, twitter, instagram, logo, footer, contact, subscribe, smsAPIToken } = this.props.system ?
+                this.props.system : { address: '', email: '', mobile: '', fax: '', facebook: '', youtube: '', twitter: '', instagram: '', logo: '/img/logo.jpg', footer: '/img/footer.jpg', contact: '/img/contact.jpg', subscribe: '/img/subscribe.jpg', smsAPIToken:'' };
             this.systemAddress.value(address);
             this.systemEmail.value(email);
             this.systemMobile.value(mobile);
@@ -20,7 +21,7 @@ class SettingsPage extends AdminPage {
             this.systemLogo.setData('logo', logo);
             this.systemContact.setData('contact', contact);
             this.systemSubscribe.setData('subscribe', subscribe);
-            this.setState({ logo, footer, contact, subscribe });
+            this.setState({ logo, footer, contact, subscribe, smsAPIToken });
         });
     }
 
@@ -85,6 +86,20 @@ class SettingsPage extends AdminPage {
                                     </button>
                                 </div>}
                         </div>
+
+                        {this.state.smsAPIToken  ? <div className='tile'>
+                            <h3 className='tile-title'>SMS API Token</h3>
+                            <div className='tile-body'>
+                            <QRCode value={this.state.smsAPIToken} size={200}/>
+                            {/* <QRCode ref={e => this.systemSMSAPIToken = e} value="hey" size={200}/> */}
+                            </div>
+                            {/* {readOnly ? null :
+                                <div className='tile-footer' style={{ textAlign: 'right' }}>
+                                    <button className='btn btn-primary' type='button' onClick={this.saveCommonInfo}>
+                                        <i className='fa fa-fw fa-lg fa-save' /> Lưu
+                                    </button>
+                                </div>} */}
+                        </div>: null}
                     </div>
 
                     <div className='col-md-6'>

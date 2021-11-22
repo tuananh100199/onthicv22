@@ -1,4 +1,12 @@
 module.exports = app => {
+    app.permission.add(
+        { name: 'payment:read', menu: { parentMenu: app.parentMenu.trainning, menus: {5000: { title: 'Thu công nợ', link: '/user/payment' }} } },
+        { name: 'payment:write' },
+        { name: 'payment:delete' },
+    );
+
+    app.get('/user/payment', app.permission.check('payment:read'), app.templates.admin);
+
     app.post('/api/payment', app.permission.check(), (req, res) => { // todo: check token sent from app SMSChecker
         console.log(req.body.data,'tesf');
         if(req.body.data){
@@ -32,13 +40,13 @@ module.exports = app => {
                             payment.moneyAmount = money;
                         }
                     }
-                    if(contentLine){ //'hiepphat_029493094_A1_' //42354769_A1
+                    if(contentLine){ //'hiepphat_029493094_A1_' //42354769_K17
                         const hiepPhatIndex = contentLine.indexOf(HIEPPHAT);
                         if(hiepPhatIndex !=-1){
                             const contentBody = contentLine.substring(hiepPhatIndex);
-                            const contentBodys = contentBody.split('_'); // _ is dynamic ?
+                            const contentBodys = contentBody.split(' '); // _ is dynamic ?
                             if(contentBodys && contentBodys.length > 0){
-                                const identityCard = contentBodys[1].trim(), courseName = contentBodys[2];
+                                const identityCard = contentBodys[1].trim(), courseName = contentBodys[2].trim();
                                 payment.creditObject = identityCard;
                                 payment.courseName = courseName;
                                 app.model.course.get({ name:  { $regex: courseName, $options: 'i' } }, (error, item) => {
@@ -70,5 +78,16 @@ module.exports = app => {
                 res.send({ error: 'Invalid SMS' });
         } else 
             res.send({ error:'Null data in req.body' });
+    });
+
+    app.get('/api/payment/page/:pageNumber/:pageSize', app.permission.check('payment:read'), (req, res) => {
+        let pageNumber = parseInt(req.params.pageNumber),
+            pageSize = parseInt(req.params.pageSize),
+            condition = req.query.pageCondition || {};
+        try {
+            app.model.payment.getPage(pageNumber, pageSize, condition, (error, page) => res.send({ error, page }));
+        } catch (error) {
+            res.send({ error });
+        }
     });
 };
