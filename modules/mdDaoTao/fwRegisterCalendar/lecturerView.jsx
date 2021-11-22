@@ -192,14 +192,14 @@ class LecturerView extends AdminPage {
             day = dateOff.getDate();
         
         const newEvent = {
-        ...currentEnvent,
-        title: `${newItem.lecturer ? newItem.lecturer.lastname + ' ' + newItem.lecturer.firstname : ''}`,
-        start: `${year}-${formatTime(month)}-${formatTime(day)}T${newItem.timeOff == 'noon' ? '13' : '07'}:00:00`,
-        end: `${year}-${formatTime(month)}-${formatTime(day)}T${newItem.timeOff == 'morning' ? '11' : '17'}:00:00`,
-        item: newItem,
-        textColor:'white',
-        color: newItem.state ==  'approved' ? 'red' : RegisterCalendarStatesMapper[newItem.state] && RegisterCalendarStatesMapper[newItem.state].color,
-    };
+            ...currentEnvent,
+            title: `${newItem.lecturer ? newItem.lecturer.lastname + ' ' + newItem.lecturer.firstname : ''}`,
+            start: `${year}-${formatTime(month)}-${formatTime(day)}T${newItem.timeOff == 'noon' ? '13' : '07'}:00:00`,
+            end: `${year}-${formatTime(month)}-${formatTime(day)}T${newItem.timeOff == 'morning' ? '11' : '17'}:00:00`,
+            item: newItem,
+            textColor:'white',
+            color: newItem.state ==  'approved' ? 'red' : RegisterCalendarStatesMapper[newItem.state] && RegisterCalendarStatesMapper[newItem.state].color,
+        };
         return newEvent;
     }
     

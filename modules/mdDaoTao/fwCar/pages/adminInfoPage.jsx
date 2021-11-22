@@ -20,7 +20,6 @@ class CarModal extends AdminModal {
         this.itemDivision.value(division ? { id: division._id, text: division.title } : null);
         this.itemCourseType.value(courseType ? { id: courseType._id, text: courseType.title } : null);
         this.itemLicensePlates.value(licensePlates);
-        
         this.itemBrand.value(brand ? brand._id : null);
         this.itemIsPersonalCar.value(isPersonalCar);
         this.itemNgayHetHanDangKiem.value(ngayHetHanDangKiem);

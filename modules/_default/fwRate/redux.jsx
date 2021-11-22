@@ -15,6 +15,22 @@ export default function rateReducer(state = {}, data) {
 }
 
 // Actions ------------------------------------------------------------------------------------------------------------
+export function getRatePageByAdmin(pageNumber, pageSize, pageCondition, done) {
+    return dispatch => {
+        const url = `/api/rate/admin/page/${pageNumber}/${pageSize}`;
+        T.get(url, { pageCondition }, data => {
+            if (data.error) {
+                T.notify('Lấy đánh giá bị lỗi!', 'danger');
+                console.error(`GET: ${url}. ${data.error}`);
+            } else {
+                if (pageCondition) data.page.pageCondition = pageCondition;
+                done && done(data.page);
+                dispatch({ type: RateGetPage, page: data.page });
+            }
+        }, error => console.error(error) || T.notify('Lấy đánh giá bị lỗi!', 'danger'));
+    };
+}
+
 export function getRatePage(pageNumber, pageSize, pageCondition, done) {
     return dispatch => {
         const url = `/api/rate/page/${pageNumber}/${pageSize}`;

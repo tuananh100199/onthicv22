@@ -171,8 +171,8 @@ module.exports = app => {
                             }
                         });
                     }
-                    app.model.car.updateCalendarHistory({ _id: _id }, (error, ite) => {
-                        if (ite) {
+                    app.model.car.updateCalendarHistory({ _id: _id }, (error, item) => {
+                        if (item) {
                             app.model.car.addCalendarHistory({ _id: _id }, data);
                         }
                     });
@@ -201,6 +201,8 @@ module.exports = app => {
                             app.model.car.update(_id, changes, $unset, (error, item) => res.send({ error, item }));
                         }
                     });
+                } else {
+                    app.model.car.update(_id, changes, $unset, (error, item) => res.send({ error, item }));
                 }
             }   
         });

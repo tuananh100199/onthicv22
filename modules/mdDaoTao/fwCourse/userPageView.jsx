@@ -1,10 +1,11 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { getCourseByStudent } from './redux';
+import { createChangeLecturer } from 'modules/mdDaoTao/fwChangeLecturer/redux';
 import { getRateByUser } from 'modules/_default/fwRate/redux';
 import { getStudent } from 'modules/mdDaoTao/fwStudent/redux';
 import RateModal from 'modules/_default/fwRate/RateModal';
-import { AdminPage, CirclePageButton, PageIconHeader, PageIcon, AdminModal } from 'view/component/AdminPage';
+import { AdminPage, CirclePageButton, PageIconHeader, PageIcon, AdminModal, FormTextBox, FormRichTextBox, FormDatePicker } from 'view/component/AdminPage';
 
 class ViewScoreModal extends AdminModal {
     state = {};
@@ -26,6 +27,66 @@ class ViewScoreModal extends AdminModal {
                     {!isLoading ? monThiTotNghiep.map((monThi, i) => (
                         <p key={i}>{monThi.title + ': '}<span className={diemThiTotNghiep[i].diemLiet ? 'text-danger' : ''}>{diemThiTotNghiep[i].point}</span></p>
                     )) : null}
+                </>
+        });
+    }
+}
+
+class ChangeLecturerModal extends AdminModal {
+    state = {};
+
+    componentDidMount() {
+        $(document).ready(() => this.onShown(() => this.itemReason.focus()));
+    }
+
+    onShow = (data) => {
+        const { student, course } = data,
+        studentId = student._id,
+        teacherGroups = course.teacherGroups.find(({ student }) => student.find(({ _id }) => _id == studentId.toString()) != null),
+        currentLecturer = teacherGroups && teacherGroups.teacher;
+       
+        this.itemCurrentName.value(currentLecturer ? currentLecturer.lastname + ' ' + currentLecturer.firstname : '');
+        this.itemPhoneNumber.value(currentLecturer ? currentLecturer.phoneNumber : '');
+        this.itemIdentityCard.value(currentLecturer ? currentLecturer.identityCard : '');
+        this.setState({ student, course, currentLecturer });
+    };
+
+    onSubmit = () => {
+        const data = { 
+            student: this.state.student && this.state.student._id,
+            requestedLecturer: this.itemRequestedLecturer.value(),
+            startDate: this.itemStartDate.value(),
+            reason: this.itemReason.value() 
+        };
+        if (data.startDate == '') {
+            T.notify('Ngày đổi bị trống!', 'danger');
+            this.itemStartDate.focus();
+        } else if (data.reason == '') {
+            T.notify('Lý do đổi bị trống!', 'danger');
+            this.itemReason.focus();
+        } else {
+            this.props.create(data, () => this.hide());
+        }
+    }
+
+    render = () => {
+        return this.renderModal({
+            title: 'Thay đổi giáo viên',
+            size: 'large',
+            body:
+                <>
+                <div className='row'>
+                    <h6 className='col-md-12'> Thông tin giáo viên hiện tại: </h6>
+                    <FormTextBox ref={e => this.itemCurrentName = e} label='Họ tên giáo viên hiện tại' className='col-md-4' readOnly={true} />
+                    <FormTextBox ref={e => this.itemIdentityCard = e} label='CMND,CCCD' className='col-md-4' readOnly={true} />
+                    <FormTextBox ref={e => this.itemPhoneNumber = e} label='Điện thoại' className='col-md-4' readOnly={true} />
+                </div>
+                <div className='row'>
+                    <h6 className='col-md-12'> Thông tin thay đổi giáo viên: </h6>
+                    <FormTextBox className='col-md-4' ref={e => this.itemRequestedLecturer = e} label='Giáo viên thay đổi' readOnly={false} />
+                    <FormDatePicker ref={e => this.itemStartDate = e} label='Ngày bắt đầu đổi' className='col-md-6' />
+                    <FormRichTextBox ref={e => this.itemReason = e} label='Lý do' className='col-md-12' readOnly={false} />
+                </div>
                 </>
         });
     }
@@ -104,16 +165,13 @@ class UserCoursePageDetail extends AdminPage {
                     <PageIcon to={`/user/hoc-vien/khoa-hoc/thong-tin/${courseId}`} icon='fa-info' iconBackgroundColor='#17a2b8' text='Thông tin khóa học' />
                     <PageIcon to={`/user/hoc-vien/khoa-hoc/${courseId}/thoi-khoa-bieu`} icon='fa-calendar' iconBackgroundColor='#ffc107' text='Thời khóa biểu' />
                     <PageIcon to='#' icon='fa-graduation-cap ' iconBackgroundColor='#8d6e63' text='Xem điểm thi tốt nghiệp' onClick={(e) => { e.preventDefault(); this.viewScoreModal.show({ student, course }); }} />
-                    <PageIcon to={`/user/course/${courseId}/forum`} icon='fa-users' iconBackgroundColor='#8d6e63' text='Forum' />
+                    <PageIcon to={`/user/course/${courseId}/forum`} icon='fa-users' iconBackgroundColor='#3e24aa' text='Forum' />
                     <PageIcon to={`/user/hoc-vien/khoa-hoc/${courseId}/dang-ky-lich-hoc`} icon='fa-calendar-plus-o' iconBackgroundColor='#8d74aa' text='Đăng ký lịch học' />
-
-                    
-
                     <PageIcon to={''} icon='fa-star' iconBackgroundColor='orange' text='Đánh giá cố vấn học tập' visible={teacher != null}
                         onClick={(e) => { e.preventDefault(); this.modal.show(); }} subtitle={rate ? rate + ' sao' : 'Chưa đánh giá'} />
                     {/* check render */}
                     {teacher && <RateModal ref={e => this.modal = e} title='Đánh giá cố vấn học tập' type='teacher' _refId={teacher._id} />}
-
+                    <PageIcon to='#' icon='fa-refresh' iconBackgroundColor='#D00' text='Thay đổi giáo viên' onClick={(e) => { e.preventDefault(); this.changeLecturerModal.show({ student, course }); }} />
                     {subjects.length ? <>
                         <PageIconHeader text='Môn học lý thuyết' />
                         {subjects.map((subject, index) =>
@@ -134,6 +192,7 @@ class UserCoursePageDetail extends AdminPage {
                     <CirclePageButton type='custom' customClassName='btn-success' customIcon='fa-comments-o' onClick={() => this.props.history.push('/user/chat/' + this.state.courseId)} />
 
                     <ViewScoreModal ref={e => this.viewScoreModal = e} />
+                    <ChangeLecturerModal ref={e => this.changeLecturerModal = e} create={this.props.createChangeLecturer} />
                 </div>
             ),
         });
@@ -141,5 +200,5 @@ class UserCoursePageDetail extends AdminPage {
 }
 
 const mapStateToProps = state => ({ system: state.system, course: state.trainning.course, driveTest: state.trainning.driveTest, rate: state.framework.rate });
-const mapActionsToProps = { getCourseByStudent, getRateByUser, getStudent };
+const mapActionsToProps = { getCourseByStudent, getRateByUser, getStudent, createChangeLecturer };
 export default connect(mapStateToProps, mapActionsToProps)(UserCoursePageDetail);

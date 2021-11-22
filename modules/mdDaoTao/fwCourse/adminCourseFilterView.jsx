@@ -12,7 +12,6 @@ class CoursePageFilter extends AdminPage {
             this.props.getCoursePage(courseType, undefined, undefined, {});
             this.setState({ courseType });
         });
-
     }
 
     changeActive = (item, active) => this.props.updateCourse(item._id, { active, courseType: item.courseType }, () => {

@@ -99,7 +99,6 @@ class PreStudenModal extends AdminModal {
     });
 
     render = () => {
-        const { divisionId } = this.state;
         const readOnly = this.props.readOnly;
         return this.renderModal({
             title: 'Ứng viên',
@@ -121,7 +120,7 @@ class PreStudenModal extends AdminModal {
                 <FormSelect className='col-md-4' ref={e => this.itemCourseType = e} label='Hạng đăng ký' data={ajaxSelectCourseType} readOnly={readOnly} required />
                 <FormSelect className='col-md-4' ref={e => this.itemDivision = e} label='Cơ sở đào tạo' data={ajaxSelectDivision} onChange={this.onChangeDivision} readOnly={readOnly} required />
                 <FormTextBox className='col-md-4' ref={e => this.itemHocPhiPhaiDong = e} label='Học phí' readOnly={readOnly} required/>
-                <FormSelect className='col-md-6' ref={e => this.itemPlanLecturer = e} label='Cố vấn học tập dự kiến' data={ajaxSelectLecturer(divisionId)} readOnly={readOnly} required />
+                <FormSelect className='col-md-6' ref={e => this.itemPlanLecturer = e} label='Cố vấn học tập dự kiến' data={ajaxSelectLecturer()} readOnly={readOnly} required />
                 <FormTextBox className='col-md-6' ref={e => this.itemPlanCourse = e} label='Khóa dự kiến' readOnly={readOnly} />
                 <FormRichTextBox ref={e => this.itemResidence = e} className='col-md-12' label='Nơi cư trú' readOnly={readOnly} rows='2' />
                 <FormRichTextBox ref={e => this.itemRegularResidence = e} className='col-md-12' label='Nơi đăng ký hộ khẩu thường trú' readOnly={readOnly} rows='2' />

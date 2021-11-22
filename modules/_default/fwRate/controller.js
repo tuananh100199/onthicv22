@@ -1,6 +1,25 @@
 module.exports = (app) => {
     app.permission.add({ name: 'rate:read' }, { name: 'rate:write' });
 
+    app.get('/api/rate/admin/page/:pageNumber/:pageSize', (req, res) => {
+        const pageNumber = parseInt(req.params.pageNumber),
+            pageSize = parseInt(req.params.pageSize),
+            pageCondition = req.query.pageCondition || {};
+        if (pageCondition._refId) {
+            app.model.user.get({ _id: pageCondition._refId }, (error, user) => {
+                if (error || !user) {
+                    res.send({ error: 'Lấy thông tin giáo viên bị lỗi!'});
+                } else {
+                    app.model.rate.getPage(pageNumber, pageSize, pageCondition, (error, page) => {
+                        page = app.clone(page);
+                        page.lecturer = user;
+                        res.send({ error, page });
+                    });
+                }
+            });
+        }
+    });
+
     app.get('/api/rate/page/:pageNumber/:pageSize', app.permission.check('rate:read'), (req, res) => {
         const pageNumber = parseInt(req.params.pageNumber),
             pageSize = parseInt(req.params.pageSize),
