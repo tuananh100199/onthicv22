@@ -8,7 +8,7 @@ class SettingsPage extends AdminPage {
     state = {};
     componentDidMount() {
         T.ready(() => {
-            let { address, email, mobile, fax, facebook, youtube, twitter, instagram, logo, footer, contact, subscribe, smsAPIToken } = this.props.system ?
+            let { address, email, mobile, fax, facebook, youtube, twitter, instagram, logo, footer, contact, subscribe, smsAPIToken, moneyLineIndex, contentLineIndex } = this.props.system ?
                 this.props.system : { address: '', email: '', mobile: '', fax: '', facebook: '', youtube: '', twitter: '', instagram: '', logo: '/img/logo.jpg', footer: '/img/footer.jpg', contact: '/img/contact.jpg', subscribe: '/img/subscribe.jpg', smsAPIToken:'' };
             this.systemAddress.value(address);
             this.systemEmail.value(email);
@@ -18,6 +18,8 @@ class SettingsPage extends AdminPage {
             this.systemYoutube.value(youtube);
             this.systemTwitter.value(twitter);
             this.systemInstagram.value(instagram);
+            this.systemMoneyLineIndex.value(moneyLineIndex || 0);
+            this.systemContentLineIndex.value(contentLineIndex || 0);
             this.systemLogo.setData('logo', logo);
             this.systemContact.setData('contact', contact);
             this.systemSubscribe.setData('subscribe', subscribe);
@@ -35,6 +37,13 @@ class SettingsPage extends AdminPage {
             youtube: this.systemYoutube.value(),
             twitter: this.systemTwitter.value(),
             instagram: this.systemInstagram.value(),
+        });
+    }
+
+    saveSMS = () => {
+        this.props.saveSystemState({
+            moneyLineIndex: this.systemMoneyLineIndex.value(),
+            contentLineIndex: this.systemContentLineIndex.value(),
         });
     }
 
@@ -87,19 +96,23 @@ class SettingsPage extends AdminPage {
                                 </div>}
                         </div>
 
-                        {this.state.smsAPIToken  ? <div className='tile'>
-                            <h3 className='tile-title'>SMS API Token</h3>
+                        <div className='tile'>
+                            <h3 className='tile-title'>SMS</h3>
                             <div className='tile-body'>
-                            <QRCode value={this.state.smsAPIToken} size={200}/>
+                            <p>API Token QR Code</p>
+                            {this.state.smsAPIToken ? <QRCode value={this.state.smsAPIToken} size={200}/>: null}
+                            <p style={{ fontWeight:'bold', marginTop: 10 }} >Dòng đầu tiên trong SMS là 0</p>
+                            <FormTextBox ref={e => this.systemMoneyLineIndex = e} type='number' label='Dòng biến động số dư' readOnly={readOnly} />
+                            <FormTextBox ref={e => this.systemContentLineIndex = e} type='number' label='Dòng nội dung giao dịch' readOnly={readOnly} />
                             {/* <QRCode ref={e => this.systemSMSAPIToken = e} value="hey" size={200}/> */}
                             </div>
-                            {/* {readOnly ? null :
+                            {readOnly ? null :
                                 <div className='tile-footer' style={{ textAlign: 'right' }}>
-                                    <button className='btn btn-primary' type='button' onClick={this.saveCommonInfo}>
+                                    <button className='btn btn-primary' type='button' onClick={this.saveSMS}>
                                         <i className='fa fa-fw fa-lg fa-save' /> Lưu
                                     </button>
-                                </div>} */}
-                        </div>: null}
+                                </div>}
+                        </div>
                     </div>
 
                     <div className='col-md-6'>

@@ -53,7 +53,7 @@ class PaymentPage extends AdminPage {
                 </tr >),
         });
         return this.renderPage({
-            icon: 'fa fa-file-invoice',
+            icon: 'fa fa-file-text-o',
             title: 'Thu công nợ',
             breadcrumb: ['Thu công nợ'],
             content: <>

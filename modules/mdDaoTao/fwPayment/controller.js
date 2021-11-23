@@ -8,21 +8,19 @@ module.exports = app => {
     app.get('/user/payment', app.permission.check('payment:read'), app.templates.admin);
 
     app.post('/api/payment', app.permission.check(), (req, res) => { // todo: check token sent from app SMSChecker
-        console.log(req.body.data,req.body.token,'tesf');
-        const prefixKey = `${app.appName}:state:`;
-        const key = `${prefixKey}smsAPIToken`;
-        app.redis.get(key, (error, value) => {
-            if(error ||!value){
+        const suffixKeys= ['smsAPIToken', 'moneyLineIndex', 'contentLineIndex'];
+        const keys = suffixKeys.map(item => `${app.appName}:state:${item}`);
+        app.redis.mget(keys, (error, values) => {
+            if(error ||!values || values.length == 0){
                 res.send({error:'Error when get token'});
             } else {
-                 console.log(value,'value');
-                if(req.body.token == value){
+                if(req.body.token == values[0]){
                     if(req.body.data){
             const {originatingAddress, body, timestamp} = req.body.data; // check timestamp ?
             const BANK=['OCB'], HIEPPHAT='hiepphat'; // let ?  because it's dynamic 
             if(originatingAddress && BANK.includes(originatingAddress.toUpperCase()) && body && body.includes('+') && body.includes(HIEPPHAT)){ // parse sms
                 const TYPE='BC', DEBITACCOUNT='1121', CREDITACCOUNT = '131', CONTENT = 'Thu công nợ online'; 
-                const moneyLineIndex = 2, contentLineIndex = 3;
+                const moneyLineIndex = parseInt(values[1]), contentLineIndex = parseInt(values[2]);
                 const timeReceived = new Date(timestamp); // Date(timestamp * 1000) if length < 13 digit, second not milisecond 
                 const mongoose = require('mongoose');
                 const objectId = mongoose.Types.ObjectId(); // var id = new mongoose.Types.ObjectId();
@@ -69,11 +67,19 @@ module.exports = app => {
                                             if (error || !item) {
                                                 res.send({ error: 'Nonexist student' });
                                             } else {
+                                                item.hocPhiDaDong = (item.hocPhiDaDong || 0) + payment.moneyAmount; // plus fee paid
+                                                item.save((error, student) => {
+                                                    if (error || !student) {
+                                                        res.send({ error });
+                                                    } else {
                                                 payment.student = item._id;
                                                 payment.firstname = item.firstname;
                                                 payment.lastname = item.lastname;
                                                 payment.course = item.course && item.course._id;
-                                                app.model.payment.create(payment, (error, item) => res.send({ error, item }));
+                                                app.model.payment.create(payment, (error, item) => res.send({ error, item }));                                                        
+                                                    }
+                                                    
+                                                });
                                             }
                                         });
                                     }
