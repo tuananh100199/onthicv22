@@ -95,7 +95,6 @@ module.exports = app => {
     app.get('/api/user/lecturer', app.permission.check('user:read'), (req, res) => {
         let condition = req.query.condition || {},
             searchCondition = {};
-        console.log('condition', condition);
         if (condition.searchText) {
             searchCondition.$or = [];
             const value = { $regex: `.*${condition.searchText}.*`, $options: 'i' };

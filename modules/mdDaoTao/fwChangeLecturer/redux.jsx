@@ -62,7 +62,6 @@ export function createChangeLecturer(data, done) {
     return () => {
         const url = '/api/change-lecturer';
         T.post(url, { data }, data => {
-            console.log('data', data);
             if (data.error) {
                 T.notify('Tạo thay đổi giáo viên bị lỗi!', 'danger');
                 console.error('POST: ' + url + '. ' + data.error);
@@ -78,7 +77,6 @@ export function updateChangeLecturer(_id, changes, done) {
     return dispatch => {
         const url = '/api/change-lecturer';
         T.put(url, { _id, changes }, data => {
-            console.log('data-redux', data);
             if (data.error) {
                 T.notify('Cập nhật thay đổi giáo viên bị lỗi!', 'danger');
                 console.error('PUT: ' + url + '. ' + data.error);

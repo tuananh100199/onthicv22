@@ -13,11 +13,9 @@ class CertificateModal extends AdminModal {
         this.itemCourseType.value(courseType ? courseType.title : '');
         this.itemCourse.value(course ? course.name : '');
         this.itemNgayNhanChungChiHoanThanhKhoaHoc.value(ngayNhanChungChiHoanThanhKhoaHoc);
-        this.itemDaNhanChungChiHoanThanhKhoaHoc.value(ngayNhanChungChiHoanThanhKhoaHoc ? 'Đã nhận' : 'Chưa nhận');
         this.itemNgayNhanGiayPhepLaiXe.value(ngayNhanGiayPhepLaiXe);
-        this.itemDaNhanGiayPhepLaiXe.value(ngayNhanGiayPhepLaiXe ? 'Đã nhận' : 'Chưa nhận');
 
-        this.setState({ _id });
+        this.setState({ _id, ngayNhanChungChiHoanThanhKhoaHoc, ngayNhanGiayPhepLaiXe });
     };
 
     onSubmit = () => {
@@ -40,9 +38,10 @@ class CertificateModal extends AdminModal {
                     <FormTextBox className='col-md-6' ref={e => this.itemIdentityCard = e} label='CMND/CCCD' readOnly={true} />
                     <FormTextBox className='col-md-6' ref={e => this.itemCourseType = e} label='Loại khóa học' readOnly={true} />
                     <FormTextBox className='col-md-6' ref={e => this.itemCourse = e} label='Khóa học' readOnly={true} />
-                    <FormTextBox className='col-md-6' ref={e => this.itemDaNhanChungChiHoanThanhKhoaHoc = e} label='Đã nhận chứng chỉ hoàn thành khóa học' readOnly={true} />
+                    <p className='col-md-6'>Đã nhận chứng chỉ hoàn thành khóa học: {this.state.ngayNhanChungChiHoanThanhKhoaHoc ? <b style={{color: 'green'}}>Đã nhận</b> : <b>Chưa nhận</b>}</p> 
                     <FormDatePicker className='col-md-6' ref={e => this.itemNgayNhanChungChiHoanThanhKhoaHoc = e} label='Ngày nhận chứng chỉ hoàn thành khóa học' readOnly={readOnly}/>
-                    <FormTextBox className='col-md-6' ref={e => this.itemDaNhanGiayPhepLaiXe = e} label='Đã nhận giấy phép lái xe' readOnly={true} />
+                    <p className='col-md-6'>Đã nhận giấy phép lái xe: {this.state.ngayNhanGiayPhepLaiXe ? <b style={{color: 'green'}}>Đã nhận</b> : <b>Chưa nhận</b>}</p> 
+
                     <FormDatePicker className='col-md-6' ref={e => this.itemNgayNhanGiayPhepLaiXe = e} label='Ngày nhận giấy phép lái xe' readOnly={readOnly} />
                 </div>
                 </>
@@ -95,14 +94,14 @@ class CertificatePage extends AdminPage {
             renderRow: (item, index) => (
                 <tr key={index}>
                     <TableCell type='number' content={index + 1} />
-                    <TableCell type='text' content={`${item.lastname} ${item.firstname}`} />
-                    <TableCell type='text' content={item.identityCard} />
+                    <TableCell type='link' content={`${item.lastname} ${item.firstname}`} onClick={e => this.edit(e, item)} />
+                    <TableCell type='link' content={item.identityCard} onClick={e => this.edit(e, item)} />
                     <TableCell type='text' content={item.courseType && item.courseType.title} />
                     <TableCell type='text' content={item.course && item.course.name} />
-                    <TableCell type='text' style={{ textAlign: 'center' }} content={item.ngayNhanChungChiHoanThanhKhoaHoc ? 'Đã nhận' : 'Chưa nhận'} />
-                    <TableCell type='text' content={item.ngayNhanChungChiHoanThanhKhoaHoc ? new Date(item.ngayNhanChungChiHoanThanhKhoaHoc).getShortText() : ''} />
-                    <TableCell type='text' style={{ textAlign: 'center' }} content={item.ngayNhanGiayPhepLaiXe ? 'Đã nhận' : 'Chưa nhận'} />
-                    <TableCell type='text' content={item.ngayNhanGiayPhepLaiXe ? new Date(item.ngayNhanGiayPhepLaiXe).getShortText() : ''} />
+                    <TableCell type='link' style={{ textAlign: 'center', backgroundColor: item.ngayNhanChungChiHoanThanhKhoaHoc ? 'lightblue' : '' }} content={item.ngayNhanChungChiHoanThanhKhoaHoc ? 'Đã nhận' : 'Chưa nhận'} onClick={e => this.edit(e, item)} />
+                    <TableCell type='link' content={item.ngayNhanChungChiHoanThanhKhoaHoc ? new Date(item.ngayNhanChungChiHoanThanhKhoaHoc).getShortText() : ''} onClick={e => this.edit(e, item)} />
+                    <TableCell type='link' style={{ textAlign: 'center', backgroundColor: item.ngayNhanGiayPhepLaiXe ? 'lightblue' : ''  }} content={item.ngayNhanGiayPhepLaiXe ? 'Đã nhận' : 'Chưa nhận'} onClick={e => this.edit(e, item)} />
+                    <TableCell type='link' content={item.ngayNhanGiayPhepLaiXe ? new Date(item.ngayNhanGiayPhepLaiXe).getShortText() : ''} onClick={e => this.edit(e, item)} />
                     <TableCell type='buttons' content={item} permission={permission} onEdit={this.edit} onDelete={this.delete} />
                 </tr>),
         });
