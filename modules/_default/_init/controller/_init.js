@@ -128,7 +128,7 @@ module.exports = (app) => {
             moneyStartStr: '(+)',
             moneyEndStr: 'VND',
             contentStartStr: 'hiepphat',
-            contentEndStr: '',
+            contentEndStr: '\n',
         },
 
         init: () => app.redis.keys(`${app.appName}:state:*`, (_, keys) => {

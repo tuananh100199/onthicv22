@@ -40,7 +40,7 @@ module.exports = app => {
                 // const lines = body.split(/\r\n|\n\r|\n|\r/); // It works on all operating systems, only for line format content
                 // Gen regex to parse
                 const reEscape = /[\-\[\]{}()+?.,\\\^$|#\s]/g;
-                const preRegex = str => str == '' ? '\n' : str.replace(reEscape, '\\$&');
+                const preRegex = str => str.replace(reEscape, '\\$&');
                 const moneyRegex = new RegExp(preRegex(moneyStartStr) + '.+' + preRegex(values[2]),  'i');
                 const moneyPart = body.match(moneyRegex).toString();
                  console.log(moneyPart,'part');
@@ -50,7 +50,9 @@ module.exports = app => {
                             payment.moneyAmount = money;
                         }
                 const contentRegex = new RegExp(preRegex(HIEPPHAT) + '.+' + preRegex(values[4]),  'i');
-                const contentPart = body.match(contentRegex).toString();
+                 console.log(contentRegex,'pdsdsart');
+                const contentPart = body.match(contentRegex).toString(); //check null
+                  console.log(preRegex(values[4]),'sdsdk');
                  console.log(contentPart,'part');
                 const contentBodys = contentPart.split(' ');
                             if(contentBodys && contentBodys.length > 0){

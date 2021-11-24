@@ -43,7 +43,7 @@ module.exports = (app) => {
             if (moneyStartStr) changes.push('moneyStartStr', moneyStartStr || '(+)');
             if (moneyEndStr) changes.push('moneyEndStr', moneyEndStr|| 'VND');
             if (contentStartStr) changes.push('contentStartStr', contentStartStr || 'hiepphat');
-            if (contentEndStr) changes.push('contentEndStr', contentEndStr || '');
+            if (contentEndStr) changes.push('contentEndStr', contentEndStr || '\n');
             app.state.set(...changes, error => {
                 error && console.log('Error when save system state!', error);
                 app.state.get((error, data) => {

@@ -21,7 +21,7 @@ class SettingsPage extends AdminPage {
             this.systemMoneyStartStr.value(moneyStartStr || '(+)');
             this.systemMoneyEndStr.value(moneyEndStr|| 'VND');
             this.systemContentStartStr.value(contentStartStr || 'hiepphat');
-            this.systemContentEndStr.value(contentEndStr|| '');
+            this.systemContentEndStr.value(contentEndStr|| '\n');
             this.systemLogo.setData('logo', logo);
             this.systemContact.setData('contact', contact);
             this.systemSubscribe.setData('subscribe', subscribe);
@@ -47,7 +47,7 @@ class SettingsPage extends AdminPage {
             moneyStartStr: this.systemMoneyStartStr.value(),
             moneyEndStr: this.systemMoneyEndStr.value(),
             contentStartStr: this.systemContentStartStr.value(),
-            contentEndStr: this.systemContentEndStr.value(),
+            contentEndStr: this.systemContentEndStr.value() == '' ? '\n' : this.systemContentEndStr.value(),
         });
     }
 
@@ -109,7 +109,7 @@ class SettingsPage extends AdminPage {
                             <FormTextBox ref={e => this.systemMoneyStartStr = e} label='CKT bắt đầu phần biến động số dư' readOnly={readOnly} />
                             <FormTextBox ref={e => this.systemMoneyEndStr = e} label='CKT kết thúc phần biến động số dư' readOnly={readOnly} />
                             <FormTextBox ref={e => this.systemContentStartStr = e} label='CKT nhận biết GD nhận tiền từ học viên Hiệp Phát trong nội dung GD' readOnly={readOnly} />
-                            <FormTextBox ref={e => this.systemContentEndStr = e} label='CKT kết thúc phần nội dung GD' readOnly={readOnly} />                           
+                            <FormTextBox ref={e => this.systemContentEndStr = e} smallText='Nếu kí tự kết thúc là xuống dòng thì để trống' label='CKT kết thúc phần nội dung GD' readOnly={readOnly} />                           
                             {/* <QRCode ref={e => this.systemSMSAPIToken = e} value="hey" size={200}/> */}
                             </div>
                             {readOnly ? null :
