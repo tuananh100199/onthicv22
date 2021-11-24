@@ -59,7 +59,7 @@ export function getChangeLecturerAll(searchText, done) {
 }
 
 export function createChangeLecturer(data, done) {
-    return dispatch => {
+    return () => {
         const url = '/api/change-lecturer';
         T.post(url, { data }, data => {
             console.log('data', data);
@@ -69,7 +69,6 @@ export function createChangeLecturer(data, done) {
             } else {
                 done && done(data);
                 T.notify('Tạo thay đổi giáo thành công!', 'success');
-                dispatch(getChangeLecturerAll());
             }
         }, error => console.error(error) || T.notify('Tạo thay đổi giáo viên bị lỗi!', 'danger'));
     };

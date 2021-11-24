@@ -1,10 +1,8 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { getUserPage, createUser, updateUser, deleteUser, changeUser } from './redux';
-import { changeSystemState } from 'modules/_default/_init/redux';
-import { getRoleAll } from 'modules/_default/fwRole/redux';
+import { getUserPage } from './redux';
 import Pagination from 'view/component/Pagination';
-import { AdminPage, FormDatePicker, TableCell, renderTable } from 'view/component/AdminPage';
+import { AdminPage, TableCell, renderTable } from 'view/component/AdminPage';
 
 class UserPage extends AdminPage {
     state = { isSearching: false, searchText: '', userType: 'isLecturer', dateStart: '', dateEnd: '' };
@@ -14,21 +12,14 @@ class UserPage extends AdminPage {
             T.showSearchBox(() => this.setState({ dateStart: '', dateEnd: '' }));
             T.onSearch = (searchText) => this.onSearch({ searchText });
         });
-        this.props.getRoleAll();
-        this.onSearch({}, (page) => {
-            const urlParams = new URLSearchParams(window.location.search);
-            if (urlParams.has('user')) {
-                const _userId = urlParams.get('user');
-                page && page.list && page.list.forEach(user => user._id == _userId && this.userModal.show(user));
-            }
-        });
+        this.onSearch({});
     }
 
     onSearch = ({ pageNumber, pageSize, searchText, userType }, done) => {
         if (searchText == undefined) searchText = this.state.searchText;
         if (userType == undefined) userType = this.state.userType;
         const dateStart = this.state.dateStart, dateEnd = this.state.dateEnd;
-        this.setState({ isSearching: true }, () => this.props.getUserPage(pageNumber, pageSize, { searchText, userType, dateStart, dateEnd }, (page) => {
+        this.setState({ isSearching: true }, () => this.props.getUserPage(pageNumber, pageSize, { searchText: 'teacherPage'.concat(searchText), userType, dateStart, dateEnd }, (page) => {
             this.setState({ searchText, userType, isSearching: false, dateStart, dateEnd });
             done && done(page);
         }));
@@ -79,18 +70,6 @@ class UserPage extends AdminPage {
             icon: 'fa fa-users',
             title: 'Quản lý giáo viên',
             breadcrumb: ['Quản lý giáo viên'],
-            advanceSearch: <>
-                <h6 className='tile-title mt-3'>Lọc theo thời gian</h6>
-                <div className='tile-body row'>
-                    <FormDatePicker ref={e => this.dateStart = e} label='Thời gian bắt đầu' className='col-md-5' />
-                    <FormDatePicker ref={e => this.dateEnd = e} label='Thời gian kết thúc' className='col-md-5' />
-                    <div className='m-auto'>
-                        <button className='btn btn-success' style={{ marginTop: '11px' }} type='button' onClick={this.handleFilterByTime}>
-                            <i className='fa fa-filter' /> Lọc danh sách
-                        </button>
-                    </div>
-                </div>
-            </>,
             content: <>
                 <div className='tile'>{table}</div>
                 <Pagination name='adminUser' pageCondition={pageCondition} pageNumber={pageNumber} pageSize={pageSize} pageTotal={pageTotal} totalItem={totalItem}
@@ -101,5 +80,5 @@ class UserPage extends AdminPage {
 }
 
 const mapStateToProps = state => ({ system: state.system, user: state.framework.user, role: state.framework.role });
-const mapActionsToProps = { getUserPage, createUser, updateUser, deleteUser, changeUser, changeSystemState, getRoleAll };
+const mapActionsToProps = { getUserPage };
 export default connect(mapStateToProps, mapActionsToProps)(UserPage);

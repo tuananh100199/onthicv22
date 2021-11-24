@@ -5,12 +5,12 @@ import { getChangeLecturerPage, deleteChangeLecturer, updateChangeLecturer } fro
 import Pagination from 'view/component/Pagination';
 import { AdminPage, AdminModal, FormTextBox, TableCell, renderTable, FormSelect, FormDatePicker, FormRichTextBox } from 'view/component/AdminPage';
 
-export const ChangeLecturerStates = [
+const ChangeLecturerStates = [
     { id: 'approved', text: 'Đã duyệt', color: '#1488db', className: 'btn btn-primary', icon: 'fa fa-lg fa-check' },
     { id: 'waiting', text: 'Đang chờ duyệt', color: '#ffc107', className: 'btn btn-warning', icon: 'fa fa-lg fa-clock-o' },
     { id: 'reject', text: 'Từ chối', color: 'black', className: 'btn btn-danger', icon: 'fa fa-lg fa-times' },
 ];
-export const ChangeLecturerStatesMapper = {};
+const ChangeLecturerStatesMapper = {};
 ChangeLecturerStates.forEach(({ id, text, color }) => ChangeLecturerStatesMapper[id] = { text, color });
 
 class ChangeLecturerModal extends AdminModal {
@@ -21,13 +21,13 @@ class ChangeLecturerModal extends AdminModal {
     }
 
     onShow = (item) => {
-        this.itemStudent.value(item && item.student ? item.student.lastname + ' ' + item.student.firstname : '');
-        this.itemRequestedLecturer.value(item.requestedLecturer ? item.requestedLecturer : 'Chưa có');
-        this.itemLecturer.value(item.lecturer ? { id: item.lecturer._id, text: item.lecturer.lastname + ' ' + item.lecturer.firstname } : null);
-        this.itemStartDate.value(item ? item.startDate : '');
-        this.itemReason.value(item ? item.reason : '');
-        this.itemState.value(item ? item.state : '');
-        this.setState({ _id: item._id });
+        let { _id, student, requestedLecturer, lecturer, startDate, reason, state } = item || { _id: null, student: null, lecturer: null, startDate: '', reason: '', state: 'waiting' };
+        this.itemStudent.value(student ? student.lastname + ' ' + student.firstname : '');
+        this.itemRequestedLecturer.value(requestedLecturer ? requestedLecturer : 'Chưa có');
+        this.itemStartDate.value(startDate);
+        this.itemReason.value(reason);
+        this.itemState.value(state);
+        this.setState({ _id, divisionId: student.division }, () => { this.itemLecturer.value(lecturer ? { id: lecturer._id, text: lecturer.lastname + ' ' + lecturer.firstname } : null); });
     };
 
     onSubmit = () => {
@@ -49,6 +49,7 @@ class ChangeLecturerModal extends AdminModal {
     }
 
     render = () => {
+        const readOnly = this.props.readOnly;
         return this.renderModal({
             title: 'Thay đổi giáo viên',
             size: 'large',
@@ -57,10 +58,10 @@ class ChangeLecturerModal extends AdminModal {
                 <div className='row'>
                     <FormTextBox className='col-md-6' ref={e => this.itemStudent = e} label='Học viên' readOnly={true} />
                     <FormTextBox className='col-md-6' ref={e => this.itemRequestedLecturer = e} label='Giáo viên học viên yêu cầu' readOnly={true} />
-                    <FormSelect className='col-md-4' ref={e => this.itemLecturer = e} label='Giáo viên thay đổi' data={ajaxSelectLecturer()} readOnly={false} />
-                    <FormDatePicker className='col-md-4' ref={e => this.itemStartDate = e} label='Ngày bắt đầu đổi' />
-                    <FormSelect className='col-md-4' ref={e => this.itemState = e} label='Trạng thái' data={ChangeLecturerStates} readOnly={this.props.readOnly} /> 
-                    <FormRichTextBox className='col-md-12' ref={e => this.itemReason = e} label='Lý do' readOnly={false} />
+                    <FormSelect className='col-md-4' ref={e => this.itemLecturer = e} label='Giáo viên thay đổi' data={ajaxSelectLecturer(this.state.divisionId)} readOnly={readOnly} />
+                    <FormDatePicker className='col-md-4' ref={e => this.itemStartDate = e} label='Ngày bắt đầu đổi' readOnly={readOnly}/>
+                    <FormSelect className='col-md-4' ref={e => this.itemState = e} label='Trạng thái' data={ChangeLecturerStates} readOnly={readOnly} /> 
+                    <FormRichTextBox className='col-md-12' ref={e => this.itemReason = e} label='Lý do' readOnly={readOnly} />
                 </div>
                 </>
         });
@@ -70,7 +71,7 @@ class ChangeLecturerModal extends AdminModal {
 class ChangeLecturerPage extends AdminPage {
     state = {};
     componentDidMount() {
-        T.ready('/user/manage-lecturer', () => {
+        T.ready('/user/change-lecturer', () => {
             this.props.getChangeLecturerPage(1, 50, {});
         });
     }
@@ -78,8 +79,6 @@ class ChangeLecturerPage extends AdminPage {
         e.preventDefault();
         this.modal.show(item);
     }
-
-    updateState = (item, state) => this.props.updateRegisterCalendarByAdmin(item._id, { state }, {courseId: this.props.courseId, lecturerId: this.props.lecturerId, filterOn: this.props.filterOn});
 
     delete = (e, item) => e.preventDefault() || T.confirm('Xoá thay đổi giáo viên', 'Bạn có chắc muốn xoá thay đổi giáo viên này?', true, isConfirm =>
         isConfirm && this.props.deleteChangeLecturer(item._id));
@@ -128,7 +127,6 @@ class ChangeLecturerPage extends AdminPage {
                     <ChangeLecturerModal ref={e => this.modal = e} update={this.props.updateChangeLecturer} readOnly={!permission.write} />
                 </div>
             ),
-            backRoute: '/user/manage-lecturer',
         });
     }
 }

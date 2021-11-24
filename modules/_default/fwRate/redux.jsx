@@ -15,15 +15,15 @@ export default function rateReducer(state = {}, data) {
 }
 
 // Actions ------------------------------------------------------------------------------------------------------------
-export function getRatePageByAdmin(pageNumber, pageSize, pageCondition, done) {
+export function getRatePageByAdmin(pageNumber, pageSize, condition, done) {
     return dispatch => {
         const url = `/api/rate/admin/page/${pageNumber}/${pageSize}`;
-        T.get(url, { pageCondition }, data => {
+        T.get(url, { condition }, data => {
             if (data.error) {
                 T.notify('Lấy đánh giá bị lỗi!', 'danger');
                 console.error(`GET: ${url}. ${data.error}`);
             } else {
-                if (pageCondition) data.page.pageCondition = pageCondition;
+                if (condition) data.page.pageCondition = condition;
                 done && done(data.page);
                 dispatch({ type: RateGetPage, page: data.page });
             }

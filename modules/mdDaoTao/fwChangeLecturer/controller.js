@@ -48,13 +48,13 @@ module.exports = app => {
             } else {
                 if (changes.state == 'approved' && changes.lecturer && (changes.lecturer != item.lecturer)) {
                     const condition= {};
-
+                    const teacherGroups = item.student && item.student.course && item.student.course.teacherGroups.find(({ student }) => student.find(({ _id }) => _id == _studentId.toString()) != null),
+                        _oldTeacherId = (teacherGroups && teacherGroups.teacher) || null;
+                        
                     const _courseId = item && item.student && item.student.course && item.student.course._id,
                     _newTeacherId = changes.lecturer,
                     _studentId = item && item.student && item && item.student._id;
 
-                    const teacherGroups = item.student && item.student.course && item.student.course.teacherGroups.find(({ student }) => student.find(({ _id }) => _id == _studentId.toString()) != null),
-                        _oldTeacherId = (teacherGroups && teacherGroups.teacher) || null;
                     app.model.course.removeStudentFromTeacherGroup(_courseId, _oldTeacherId, _studentId, () => {
                         app.model.course.addStudentToTeacherGroup(_courseId, _newTeacherId, _studentId, () => {
                             condition.student = _studentId;

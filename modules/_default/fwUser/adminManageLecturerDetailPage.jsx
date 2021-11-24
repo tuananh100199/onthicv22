@@ -9,10 +9,22 @@ class AdminTeacherRatePage extends AdminPage {
     state = {};
     componentDidMount() {
         T.ready('/user/manage-lecturer', () => {
+            T.showSearchBox();
+            T.onSearch = (searchText) => this.onSearch({ searchText });
             const params = T.routeMatcher('/user/manage-lecturer/:_id/rating').parse(window.location.pathname),
                 lecturerId = params._id;
-            this.props.getRatePageByAdmin(1, 50, { _refId: lecturerId, type: 'teacher' });
+            this.props.getRatePageByAdmin(1, 50, { _refId: lecturerId });
+            this.setState({ lecturerId });
         });
+    }
+
+    
+    onSearch = ({ pageNumber, pageSize, searchText, userType }, done) => {
+        if (searchText == undefined) searchText = this.state.searchText;
+        this.setState({ isSearching: true }, () => this.props.getRatePageByAdmin(pageNumber, pageSize, { searchText, _refId: this.state.lecturerId }, (page) => {
+            this.setState({ searchText, userType, isSearching: false });
+            done && done(page);
+        }));
     }
 
     render() {
@@ -24,7 +36,6 @@ class AdminTeacherRatePage extends AdminPage {
                 <tr>
                     <th style={{ width: 'auto' }}>#</th>
                     <th style={{ width: 'auto' }} nowrap='true'>Học viên đánh giá</th>
-                    <th style={{ width: 'auto' }} nowrap='true'>Cố vấn học tập được đánh giá</th>
                     <th style={{ width: 'auto' }} nowrap='true'>Số sao</th>
                     <th style={{ width: '80%' }}>Nội dung đánh giá</th>
                     <th style={{ width: '20%' }}>Ngày đánh giá</th>
@@ -33,7 +44,6 @@ class AdminTeacherRatePage extends AdminPage {
                 <tr key={index}>
                     <TableCell type='number' content={index + 1} />
                     <TableCell type='text' content={`${item.user && item.user.lastname} ${item.user && item.user.firstname}`} />
-                    <TableCell type='text' content={`${lecturer && lecturer.lastname} ${lecturer && lecturer.firstname}`} />
                     <TableCell type='number' content={item.value} />
                     <TableCell type='text' content={item.note || ''} />
                     <TableCell type='date' content={new Date(item.createdDate).getShortText()} />
@@ -42,7 +52,7 @@ class AdminTeacherRatePage extends AdminPage {
 
         return this.renderPage({
             icon: 'fa fa-star',
-            title: 'Đánh giá giáo viên: ',
+            title: `Đánh giá giáo viên: ${lecturer && lecturer.lastname + ' ' + lecturer.firstname}`,
             breadcrumb: [<Link key={0} to='/user/manage-lecturer'>Giáo viên</Link>, 'Đánh giá giáo viên'],
             content: (
                 <div className='tile'>

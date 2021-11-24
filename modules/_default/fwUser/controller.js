@@ -31,7 +31,18 @@ module.exports = app => {
             condition = req.query.condition || {},
             pageCondition = {};
         try {
-            if (condition) {
+            if (condition && condition.searchText && condition.searchText.startsWith('teacherPage')){
+                let teacherCondition = {};
+                teacherCondition.$or = [];
+                const value = { $regex: `.*${condition.searchText.substring(11)}.*`, $options: 'i' };
+                teacherCondition.$or.push(
+                    { firstname: value },
+                    { lastname: value },
+                );
+                pageCondition =  {
+                    $and: [ teacherCondition, { isLecturer: true } ]
+                };
+            } else {
                 pageCondition.$or = [];
                 if (condition.searchText) {
                     const value = { $regex: `.*${condition.searchText}.*`, $options: 'i' };
@@ -58,6 +69,7 @@ module.exports = app => {
 
                 if (pageCondition.$or.length == 0) delete pageCondition.$or;
             }
+
             if (req.session.user.division && req.session.user.division.isOutside) pageCondition.division = req.session.user.division._id;
             app.model.user.getPage(pageNumber, pageSize, pageCondition, (error, page) => res.send({ error, page }));
         } catch (error) {
@@ -83,7 +95,7 @@ module.exports = app => {
     app.get('/api/user/lecturer', app.permission.check('user:read'), (req, res) => {
         let condition = req.query.condition || {},
             searchCondition = {};
-            
+        console.log('condition', condition);
         if (condition.searchText) {
             searchCondition.$or = [];
             const value = { $regex: `.*${condition.searchText}.*`, $options: 'i' };
@@ -93,7 +105,7 @@ module.exports = app => {
             );
         }
         let lecturerCondition =  {
-            $and: [ searchCondition, { isLecturer: true } ]
+            $and: [ searchCondition, { isLecturer: true }, { division: condition.divisionId } ]
         };
         app.model.user.getAll(lecturerCondition, (error, list) => {
             if (error || list && list.length < 1) {

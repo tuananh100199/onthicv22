@@ -232,9 +232,9 @@ export function ajaxGetUser(_id, done) {
     });
 }
 
-export const ajaxSelectLecturer = () => T.createAjaxAdapter(
+export const ajaxSelectLecturer = (divisionId) => T.createAjaxAdapter(
     '/api/user/lecturer',
-    params => ({ condition: { searchText: params.term } }),
+    params => ({ condition: { divisionId, searchText: params.term } }),
     response => response && response.list ?
         response.list.map(user => ({ id: user._id, text: `${user.lastname} ${user.firstname}` })) : [],
 );

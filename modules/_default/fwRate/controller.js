@@ -4,20 +4,29 @@ module.exports = (app) => {
     app.get('/api/rate/admin/page/:pageNumber/:pageSize', (req, res) => {
         const pageNumber = parseInt(req.params.pageNumber),
             pageSize = parseInt(req.params.pageSize),
-            pageCondition = req.query.pageCondition || {};
-        if (pageCondition._refId) {
-            app.model.user.get({ _id: pageCondition._refId }, (error, user) => {
-                if (error || !user) {
-                    res.send({ error: 'Lấy thông tin giáo viên bị lỗi!'});
-                } else {
-                    app.model.rate.getPage(pageNumber, pageSize, pageCondition, (error, page) => {
-                        page = app.clone(page);
-                        page.lecturer = user;
-                        res.send({ error, page });
-                    });
-                }
-            });
+            condition = req.query.condition || {},
+            pageCondition = {};
+            pageCondition.$or = [];
+        if (condition.searchText) {
+            const value = { $regex: `.*${condition.searchText}.*`, $options: 'i' };
+            pageCondition.$or.push(
+                { note: value },
+            );
         }
+
+        if (pageCondition.$or.length == 0) delete pageCondition.$or;
+        
+        app.model.user.get({ _id: condition._refId }, (error, user) => {
+            if (error || !user) {
+                res.send({ error: 'Lấy thông tin giáo viên bị lỗi!'});
+            } else {
+                app.model.rate.getPage(pageNumber, pageSize, pageCondition, (error, page) => {
+                    page = app.clone(page);
+                    page.lecturer = user;
+                    res.send({ error, page });
+                });
+            }
+        });
     });
 
     app.get('/api/rate/page/:pageNumber/:pageSize', app.permission.check('rate:read'), (req, res) => {
