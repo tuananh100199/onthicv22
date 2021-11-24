@@ -122,8 +122,8 @@ class EditModal extends AdminModal {
 }
 
 class ImportPage extends AdminPage {
-    // fileBox = React.createRef();
-    state = { data: null };
+    fileBox = React.createRef();
+    state = {};
     componentDidMount() {
         T.ready('/user/pre-student');
     }

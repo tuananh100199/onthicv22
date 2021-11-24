@@ -206,9 +206,9 @@ class FailStudentPage extends AdminPage {
                     </div>
                 </div>
 
-                <CirclePageButton type='import' onClick={() => this.props.history.push('/user/student/import-fail-pass')} />
+                <CirclePageButton type='custom' customIcon='fa-cloud-upload' style={{ right: 70 }} customClassName='btn-primary' onClick={() => this.props.history.push('/user/student/import-fail-pass')} />
                 <CirclePageButton type='export' onClick={() => exportExamStudent(this.state.courseId, 'HVChuaDatSatHach')} />
-                
+
                 <StudentModal readOnly={!permission.write} ref={e => this.modal = e} update={this.props.updateStudent} />
                 <NotificationModal readOnly={!permission.write} ref={e => this.notiModal = e} create={this.props.createNotification} data={this.state.data} />
                 <Pagination pageCondition={pageCondition} pageNumber={pageNumber} pageSize={pageSize} pageTotal={pageTotal} totalItem={totalItem} getPage={(pageNumber, pageSize) => this.onSearch({ pageNumber, pageSize })} />
