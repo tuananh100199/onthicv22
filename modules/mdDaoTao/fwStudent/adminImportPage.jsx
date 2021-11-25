@@ -10,11 +10,11 @@ class EditModal extends AdminModal {
     state = {};
     onShow = (item) => {
         let { id, firstname, lastname, email, phoneNumber, sex, birthday, nationality, residence, regularResidence, identityCard, identityIssuedBy, identityDate,
-            giayPhepLaiXe2BanhSo, giayPhepLaiXe2BanhNgay, giayPhepLaiXe2BanhNoiCap, giayKhamSucKhoe, giayKhamSucKhoeNgayKham, hinhThe3x4, hinhChupTrucTiep, lecturerIdentityCard, lecturerName } = item || {
+            giayPhepLaiXe2BanhSo, giayPhepLaiXe2BanhNgay, giayPhepLaiXe2BanhNoiCap, giayKhamSucKhoe, giayKhamSucKhoeNgayKham, hinhThe3x4, hinhChupTrucTiep, lecturerIdentityCard, lecturerName, hocPhiPhaiDong } = item || {
                 firstname: '', lastname: '', email: '', phoneNumber: '', sex: '', birthday: '', nationality: '', residence: '', regularResidence: '', identityCard: '', identityIssuedBy: '', identityDate: '',
-                giayPhepLaiXe2BanhSo: '', giayPhepLaiXe2BanhNgay: '', giayPhepLaiXe2BanhNoiCap: '', giayKhamSucKhoe: '', giayKhamSucKhoeNgayKham: '', hinhThe3x4: '', hinhChupTrucTiep: '', lecturerIdentityCard: '', lecturerName: ''
+                giayPhepLaiXe2BanhSo: '', giayPhepLaiXe2BanhNgay: '', giayPhepLaiXe2BanhNoiCap: '', giayKhamSucKhoe: '', giayKhamSucKhoeNgayKham: '', hinhThe3x4: '', hinhChupTrucTiep: '', lecturerIdentityCard: '', lecturerName: '', hocPhiPhaiDong: ''
             };
-        this.setState({ id: id, className: giayKhamSucKhoe ? 'col-md-6' : 'invisible' });
+        this.setState({ id: id, className: giayKhamSucKhoe ? 'col-md-4' : 'invisible' });
         this.itemFirstname.value(firstname);
         this.itemLastname.value(lastname);
         this.itemEmail.value(email);
@@ -36,10 +36,11 @@ class EditModal extends AdminModal {
         this.itemHinhChupTrucTiep.value(hinhChupTrucTiep);
         this.itemLecturerIdentityCard.value(lecturerIdentityCard);
         this.itemLecturerName.value(lecturerName);
+        this.itemHocPhiPhaiDong.value(hocPhiPhaiDong);
     }
 
     isChecked = (checked) => {
-        this.setState({ className: checked ? 'col-md-6' : 'invisible' });
+        this.setState({ className: checked ? 'col-md-4' : 'invisible' });
     }
 
     onSubmit = () => {
@@ -64,7 +65,8 @@ class EditModal extends AdminModal {
             giayKhamSucKhoeNgayKham: this.itemGiayKhamSucKhoe.value() ? this.itemGiayKhamSucKhoeNgayKham.value() : null,
             hinhThe3x4: this.itemHinhThe3x4.value(),
             hinhChupTrucTiep: this.itemHinhChupTrucTiep.value(),
-            lecturerIdentityCard: this.itemLecturerIdentityCard.value()
+            lecturerIdentityCard: this.itemLecturerIdentityCard.value(),
+            hocPhiPhaiDong: this.itemHocPhiPhaiDong.value()
         };
         if (data.lastname == '') {
             T.notify('Họ không được trống!', 'danger');
@@ -83,7 +85,7 @@ class EditModal extends AdminModal {
             this.itemGiayKhamSucKhoeNgayKham.focus();
         } else {
             this.props.edit(this.state.id, data);
-            T.notify('Cập nhật thông tin bài học thành công!', 'success');
+            T.notify('Cập nhật thông tin ứng viên thành công!', 'success');
             this.hide();
         }
     }
@@ -108,8 +110,9 @@ class EditModal extends AdminModal {
                 <FormTextBox ref={e => this.itemLincenseNumber = e} className='col-md-4' label='Số giấy phép lái xe 2 bánh' readOnly={this.props.readOnly} />
                 <FormDatePicker ref={e => this.itemLincenseDate = e} className='col-md-4' label='Ngày trúng tuyển' readOnly={this.props.readOnly} />
                 <FormTextBox ref={e => this.itemLincenseIssuedBy = e} className='col-md-4' label='Nơi cấp' readOnly={this.props.readOnly} />
-                <FormCheckbox ref={e => this.itemGiayKhamSucKhoe = e} className='col-md-6' label='Đã có giấy khám sức khỏe' readOnly={this.props.readOnly} onChange={this.isChecked} />
+                <FormCheckbox ref={e => this.itemGiayKhamSucKhoe = e} className='col-md-4' label='Đã có giấy khám sức khỏe' readOnly={this.props.readOnly} onChange={this.isChecked} />
                 <FormDatePicker ref={e => this.itemGiayKhamSucKhoeNgayKham = e} className={this.state.className} label='Ngày khám sức khỏe' readOnly={this.props.readOnly} />
+                <FormTextBox ref={e => this.itemHocPhiPhaiDong = e} className='col-md-4' label='Học phí' readOnly={this.props.readOnly} />
                 <FormCheckbox ref={e => this.itemHinhThe3x4 = e} className='col-md-6' label='Hình thẻ 3x4' readOnly={this.props.readOnly} />
                 <FormCheckbox ref={e => this.itemHinhChupTrucTiep = e} className='col-md-6' label='Hình chụp trực tiếp' readOnly={this.props.readOnly} />
                 <FormTextBox ref={e => this.itemLecturerIdentityCard = e} className='col-md-6' label='Số CMND,CCCD của cố vấn học tập dự kiến' readOnly={this.props.readOnly} />

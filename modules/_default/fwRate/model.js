@@ -1,7 +1,8 @@
 module.exports = app => {
     const schema = app.db.Schema({
         user: { type: app.db.Schema.ObjectId, ref: 'User' },        // Người đánh giá
-        _refId: app.db.Schema.ObjectId,                             // Đối tượng đánh giá
+        _refId: app.db.Schema.ObjectId,      // Đối tượng được đánh giá
+        createdDate: { type: Date, default: Date.now },
         value: Number,
         note: String,
         type: String,
@@ -19,7 +20,7 @@ module.exports = app => {
                 result.pageNumber = pageNumber === -1 ? result.pageTotal : Math.min(pageNumber, result.pageTotal);
 
                 const skipNumber = (result.pageNumber > 0 ? result.pageNumber - 1 : 0) * result.pageSize;
-                model.find(condition).populate('user', 'lastname firstname phoneNumber identityCard')
+                model.find(condition).populate('user', 'lastname firstname phoneNumber identityCard').populate('_refId', 'lastname firstname phoneNumber identityCard')
                     .sort({ value: -1 }).skip(skipNumber).limit(result.pageSize).exec((error, list) => {
                         result.list = list;
                         done(error, result);

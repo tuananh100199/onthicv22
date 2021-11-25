@@ -42,11 +42,13 @@ export class TableCell extends React.Component { // type = number | date | link 
                     </label>
                 </td>);
         } else if (type == 'buttons') {
-            const { onSwap, onEdit, onDelete, children } = this.props;
+            const { onFuel, onSwap, onEdit, onDelete, children } = this.props;
             return (
                 <td className={className} style={{ ...style }} rowSpan={rowSpan}>
                     <div className='btn-group'>
                         {children}
+                        {permission.fuel && typeof onFuel == 'string' ?
+                            <Link to={onFuel} className='btn btn-warning'><i className='fa fa-lg fa-thermometer-empty' /></Link> : null}
                         {permission.write && onSwap ?
                             <a className='btn btn-warning' href='#' onClick={e => onSwap(e, content, true)}><i className='fa fa-lg fa-arrow-up' /></a> : null}
                         {permission.write && onSwap ?
@@ -237,8 +239,6 @@ export class FormRichTextBox extends React.Component {
     focus = () => this.input.focus();
 
     insert = (e) => {
-        console.log(this.input);
-        console.log(this.input.selectionStart);
         let cursorPosition = this.input.selectionStart;
         let textBeforeCursorPosition = this.input.innerHTML.substring(0, cursorPosition);
         let textAfterCursorPosition = this.input.innerHTML.substring(cursorPosition, this.input.innerHTML.length);
@@ -283,8 +283,6 @@ export class FormEditor extends React.Component {
     insert = (e) => {
         // let cursorPosition = this.input.getSelection().getStartElement();
         let textBeforeCursorPosition = this.input.text().substring(0, 5);
-        console.log(this.input.editor.current.selectionStart);
-        console.log(this.input.editor.current);
         // let textAfterCursorPosition = this.input.text().substring(cursorPosition, this.input.text().length);
         this.setState({
             value: textBeforeCursorPosition + ' ' + e.target.innerHTML + ' '

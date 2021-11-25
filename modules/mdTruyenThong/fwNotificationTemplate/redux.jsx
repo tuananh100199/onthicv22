@@ -75,7 +75,6 @@ export function createNotificationTemplate(data, done) {
 }
 
 export function updateNotificationTemplate(_id, changes, done) {
-    console.log(_id, changes);
     return dispatch => {
         const url = '/api/notification-template';
         T.put(url, { _id, changes }, data => {

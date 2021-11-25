@@ -16,6 +16,8 @@ module.exports = app => {
             score: Number,
             diemLiet: { type: Boolean, default: false },
         }],
+       
+        practiceNumOfHours: {type: Number},                                 // Tổng số giờ học thực hành
 
         subjects: [{ type: app.db.Schema.ObjectId, ref: 'Subject' }],       // Danh sách môn học
         maxStudent: { type: Number, default: 100 },                         // Số lượng học viên tối đa
@@ -32,7 +34,7 @@ module.exports = app => {
         thoiGianThiKetThucMonChinhThuc: { type: Date, default: Date.now },
         thoiGianThiTotNghiepDuKien: { type: Date, default: Date.now },
         thoiGianThiTotNghiepChinhThuc: { type: Date, default: Date.now },
-
+ 
         admins: [{ type: app.db.Schema.ObjectId, ref: 'User' }],            // Quản trị viên khóa học
         teacherGroups: [{
             teacher: { type: app.db.Schema.Types.ObjectId, ref: 'User' },
@@ -60,6 +62,7 @@ module.exports = app => {
                 detailDescription: item.detailDescription,
                 subjects: item.subjects,
                 monThiTotNghiep: item.monThiTotNghiep,
+                practiceNumOfHours: item.practiceNumOfHours
             }, done)),
 
         getPage: (pageNumber, pageSize, condition, done) => model.countDocuments(condition, (error, totalItem) => {

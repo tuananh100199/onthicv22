@@ -342,6 +342,11 @@ module.exports = (app) => {
         });
     });
 
+    // User API ------------------------------------------------------------------------------------------------------
+    app.get('/api/student/user', app.permission.check('user:login'), (req, res) => {
+        app.model.student.get(req.query.condition, (error, item) => res.send({ error, item }));
+    });
+
     // Hook permissionHooks -------------------------------------------------------------------------------------------
     app.permissionHooks.add('courseAdmin', 'pre-student', (user) => new Promise(resolve => {
         app.permissionHooks.pushUserPermission(user, 'pre-student:read', 'pre-student:write', 'pre-student:delete');
@@ -418,6 +423,7 @@ module.exports = (app) => {
                                 hinhChupTrucTiep: values[20] && values[20].toLowerCase().trim() == 'x' ? true : false,
                                 lecturerIdentityCard: values[21],
                                 lecturerName: values[22],
+                                hocPhiPhaiDong: values[23],
                             });
                             handleUpload(index + 1);
                         }

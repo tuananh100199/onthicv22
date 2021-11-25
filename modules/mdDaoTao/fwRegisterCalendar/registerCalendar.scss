@@ -1,0 +1,61 @@
+.container{max-width:1170px; margin:auto;}
+img{ max-width:100%;}
+.box_people {
+    float: left;
+    overflow: hidden;
+    width: 40%; border-right:1px solid #c4c4c4;
+}
+.box_time_table {
+    clear: both;
+    overflow: hidden;
+}
+.top_spac{ margin: 20px 0 0;}
+
+
+.recent_heading { width:100%;}
+.headind_srch{ padding:10px 29px 10px 20px; overflow:hidden; border-bottom:1px solid #c4c4c4;}
+
+.recent_heading h4 {
+  color: #05728f;
+  font-size: 17px;
+  margin: auto;
+}
+.srch_bar input{ border:1px solid #cdcdcd; border-width:0 0 1px 0; width:80%; padding:2px 0 4px 6px; background:none;}
+.srch_bar .input-group-addon button {
+  background: rgba(0, 0, 0, 0) none repeat scroll 0 0;
+  border: medium none;
+  padding: 0;
+  color: #707070;
+  font-size: 18px;
+}
+.srch_bar .input-group-addon { margin: 0 0 0 -27px;}
+
+.lecturer_info h5{ font-size:15px; color:#464646; margin:0 0 8px 0;}
+.lecturer_info h5 span{ font-size:13px; float:right;}
+.lecturer_info p{ font-size:14px; color:#989898; margin:auto}
+.lecturer_img {
+  float: left;
+  width: 11%;
+}
+.lecturer_info {
+  float: left;
+  padding: 0 0 0 15px;
+  width: 88%;
+}
+
+.lecturer{ overflow:hidden; clear:both;}
+.lecturer_list {
+  border-bottom: 1px solid #c4c4c4;
+  margin: 0;
+  padding: 18px 16px 10px;
+}
+
+.active_lecturer{ background:#ddd;}
+// .fc-day-header .fc-widget-header .fc-mon{background-color: 'blue'}
+// #calendar .fc-agendaWeek-view .fc-today,  #calendar .fc-agendaDay-view .fc-today {
+//     background: red !important;
+// }
+// #calendar .fc-mon {background-color: 'red'}
+.fc-today {
+    background: 'red' !important;
+    color: 'red' !important;}
