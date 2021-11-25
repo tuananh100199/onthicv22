@@ -26,16 +26,17 @@ class AdminFeedbackSystemDetailPage extends AdminPage {
 
     render() {
         const { _id } = this.state;
+        const permission = this.getUserPermission('feedback');
         return this.renderPage({
             icon: 'fa fa-comments-o',
             title: 'Phản hồi chi tiết',
             breadcrumb:[<Link key={0} to={backRoute}>Phản hồi</Link>, 'Phản hồi chi tiết'],
-            content: _id && <FeedbackSection _id={_id} />,
+            content: _id && <FeedbackSection permission={permission} _id={_id} />,
             backRoute,
         });
     }
 }
 
-const mapStateToProps = () => ({});
+const mapStateToProps = (state) => ({ system: state.system });
 const mapActionsToProps = {};
 export default connect(mapStateToProps, mapActionsToProps)(AdminFeedbackSystemDetailPage);
