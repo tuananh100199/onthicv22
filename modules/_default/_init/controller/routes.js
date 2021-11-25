@@ -19,7 +19,7 @@ module.exports = (app) => {
 
     // API ------------------------------------------------------------------------------------------------------------------------------------------
     app.put('/api/system', app.permission.check('system:settings'), (req, res) => {
-        let { emailPassword, email, address, mobile, fax, facebook, youtube, twitter, instagram } = req.body;
+        let { emailPassword, email, address, mobile, fax, facebook, youtube, twitter, instagram, moneyStartStr, moneyEndStr,contentStartStr,contentEndStr } = req.body;
         if (emailPassword) {
             app.model.setting.set({ emailPassword }, error => {
                 if (error) {
@@ -40,6 +40,10 @@ module.exports = (app) => {
             if (youtube || youtube == '') changes.push('youtube', youtube.trim() || '');
             if (twitter || twitter == '') changes.push('twitter', twitter.trim() || '');
             if (instagram || instagram == '') changes.push('instagram', instagram.trim() || '');
+            if (moneyStartStr) changes.push('moneyStartStr', moneyStartStr || '(+)');
+            if (moneyEndStr) changes.push('moneyEndStr', moneyEndStr|| 'VND');
+            if (contentStartStr) changes.push('contentStartStr', contentStartStr || 'hiepphat');
+            if (contentEndStr) changes.push('contentEndStr', contentEndStr || '\n');
             app.state.set(...changes, error => {
                 error && console.log('Error when save system state!', error);
                 app.state.get((error, data) => {

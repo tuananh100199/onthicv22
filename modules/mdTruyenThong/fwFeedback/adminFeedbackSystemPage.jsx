@@ -8,15 +8,16 @@ class AdminFeedbackSystemPage extends AdminPage {
         T.ready('/user/feedback/system');
     }
     render() {
+        const permission = this.getUserPermission('feedback');
         return this.renderPage({
             icon: 'fa fa-comments-o',
             title: 'Phản hồi',
             breadcrumb: ['Phản hồi'],
-            content:<div className='tile'><FeedbackSection history={this.props.history} detailPageUrl='/user/feedback/system' type='system'/></div>,
+            content:<div className='tile'><FeedbackSection permission={permission} history={this.props.history} detailPageUrl='/user/feedback/system' type='system'/></div>,
         });
     }
 }
 
-const mapStateToProps = () => ({ });
+const mapStateToProps = (state) => ({ system: state.system });
 const mapActionsToProps = { };
 export default connect(mapStateToProps, mapActionsToProps)(AdminFeedbackSystemPage);
