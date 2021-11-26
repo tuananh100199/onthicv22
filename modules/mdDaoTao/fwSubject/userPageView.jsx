@@ -50,7 +50,7 @@ class AdminEditPage extends AdminPage {
             });
         } else {
             lessons.length && lessons.forEach((lesson, index) => {
-                if (tienDoHocTap && tienDoHocTap[lesson._id]) {
+                if (tienDoHocTap && tienDoHocTap[lesson._id] && tienDoHocTap[lesson._id].answers) {
                     finishedLesson = index + 1;
                 } else if (!lesson.questions.length) {
                     if (index == 0)
@@ -81,7 +81,7 @@ class AdminEditPage extends AdminPage {
                             <i className='icon fa fa-3x fa fa-briefcase' style={{ backgroundColor: (finishedLesson == index ? '#007bff' : (finishedLesson > index ? '#17a2b8' : '#6c757d')) }} />
                             <div className='info'>
                                 <h4>{lesson && lesson.title}</h4>
-                                {tienDoHocTap && tienDoHocTap[lesson._id] ? <div><p>Đã hoàn thành</p>{!monThucHanh && <p> Số câu đúng:{((tienDoHocTap[lesson._id].score ? tienDoHocTap[lesson._id].score : 0) + '/' + Math.min(lesson.numQuestion, lesson.questions.length))}</p>}</div> : (lesson.questions.length || monThucHanh ? <p>Chưa hoàn thành</p> : <p>Đã hoàn thành</p>)}
+                                {tienDoHocTap && tienDoHocTap[lesson._id] && tienDoHocTap[lesson._id].answers ? <div><p>Đã hoàn thành</p>{!monThucHanh && <p> Số câu đúng:{((tienDoHocTap[lesson._id].score ? tienDoHocTap[lesson._id].score : 0) + '/' + Math.min(lesson.numQuestion, lesson.questions.length))}</p>}</div> : (lesson.questions.length || monThucHanh ? <p>Chưa hoàn thành</p> : <p>Đã hoàn thành</p>)}
                             </div>
                         </div>);
                         const show = (

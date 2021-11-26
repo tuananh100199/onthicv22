@@ -57,8 +57,12 @@ class EditCoursePage extends AdminPage {
                     <PageIcon visible={isLecturer} to={`/user/course/${item._id}/your-students`} icon='fa-graduation-cap' iconBackgroundColor='#18ffff' text='Học viên của bạn' />
                     <PageIcon visible={isLecturer || isCourseAdmin} to={`/user/course/${item._id}/learning`} icon='fa-line-chart' iconBackgroundColor='#69f0ae' text='Tiến độ học tập' />
                     <PageIcon visible={isLecturer || isCourseAdmin} to={`/user/course/${item._id}/rate-subject`} icon='fa-folder-open' iconBackgroundColor='#900' text='Đánh giá bài học' />
-                    <PageIcon visible={isLecturer} to={`/user/course/${item._id}/lecturer/calendar`} icon='fa-calendar' iconBackgroundColor='#8e24aa' text='Thời khoá biểu' />
+                    <PageIcon visible={isLecturer} to={`/user/course/${item._id}/lecturer/calendar`} icon='fa-calendar' iconBackgroundColor='#3e24aa' text='Thời khoá biểu' />
+                    <PageIcon visible={isLecturer} to={`/user/course/${item._id}/lecturer/register-calendar`} icon='fa-calendar-plus-o' iconBackgroundColor='#8d74aa' text='Đăng ký lịch nghỉ' />
+                    <PageIcon visible={isLecturer} to={`/user/course/${item._id}/lecturer/student-register-calendar`} icon='fa fa-list-alt' iconBackgroundColor='#4e25a2' text='Danh sách lịch học học viên đăng ký' />
                     <PageIcon visible={isCourseAdmin} to={`/user/course/${item._id}/calendar`} icon='fa-calendar' iconBackgroundColor='#64b5f6' text='Thời khoá biểu toàn khoá' />
+                    <PageIcon visible={isCourseAdmin} to={`/user/course/${item._id}/register-calendar`} icon='fa-calendar-plus-o' iconBackgroundColor='#8d74aa' text='Lịch nghỉ giáo viên' />
+                    <PageIcon visible={isCourseAdmin} to={`/user/course/${item._id}/student-register-calendar`} icon='fa fa-list-alt' iconBackgroundColor='#4e25a2' text='Danh sách lịch học học viên đăng ký' />
                 </div>
             ),
             backRoute,

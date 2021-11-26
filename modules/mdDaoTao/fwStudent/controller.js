@@ -77,14 +77,13 @@ module.exports = (app) => {
         let pageNumber = parseInt(req.params.pageNumber),
             pageSize = parseInt(req.params.pageSize),
             condition = req.query.pageCondition || {},
-            pageCondition = { courseType: req.params._courseId || { $ne: null } },
+            pageCondition = { courseType: req.params._courseId || { $ne: null }, course: { $ne: null } },
             filter = req.params.filter;
         function dateToText(date) {
             const newDate = new Date(date);
             let year = newDate.getFullYear();
             let month = (1 + newDate.getMonth()).toString().padStart(2, '0');
             let day = newDate.getDate().toString().padStart(2, '0');
-            console.log(month);
             return day + '/' + month + '/' + year;
         }
         try {
@@ -157,7 +156,7 @@ module.exports = (app) => {
                         obj['liDoChuaTotNghiep'] = student.liDoChuaTotNghiep ? student.liDoChuaTotNghiep : '';
                     } else if (filter == 'HVChuaDatSatHach') {
                         obj['ngayDuKienThiSatHach'] = student.ngayDuKienThiSatHach;
-                        obj['liDoChuaTotNghiep'] = student.liDoChuaDatSatHach ? student.liDoChuaTotNghiep.liDoChuaDatSatHach : '';
+                        obj['liDoChuaDatSatHach'] = student.liDoChuaDatSatHach ? student.liDoChuaDatSatHach : '';
                     }
                     worksheet.addRow(obj);
                 });
@@ -263,6 +262,7 @@ module.exports = (app) => {
 
     app.post('/api/pre-student/import', app.permission.check('pre-student:write'), (req, res) => {
         let students = req.body.students;
+        let studentError = []; // những học viên có số CMND,CCCD của cố vấn dự kiến sai
         let err = null;
         function convert(str) {
             let date = new Date(str),
@@ -273,7 +273,7 @@ module.exports = (app) => {
         if (students && students.length) {
             const handleCreateStudent = (index = 0) => {
                 if (index == students.length) {
-                    res.send({ error: err });
+                    res.send({ error: err, studentError });
                 } else {
                     const student = students[index];
                     student.division = req.body.division;
@@ -298,9 +298,10 @@ module.exports = (app) => {
                             }
                             student.user = user._id;   // assign id of user to user field of prestudent
                             student.courseType = req.body.courseType;
-                            app.model.user.get({ identityCard: student.lecturerIdentityCard }, (error, user) => {
+                            app.model.user.get({ identityCard: student.lecturerIdentityCard, isLecturer: true }, (error, user) => {
                                 if (error || !user) {
-                                    res.send({ error: `Lỗi không tìm thấy cố vấn có CMND/CCCD: ${student.lecturerIdentityCard}` });
+                                    studentError.push({ error: `${student.lecturerIdentityCard}` });
+                                    handleCreateStudent(index + 1);
                                 } else {
                                     student.planLecturer = user._id;
                                     app.model.student.create(student, () => {
@@ -339,6 +340,11 @@ module.exports = (app) => {
                 res.send({ error: error ? 'Hệ thống gặp lỗi!' : 'Ứng viên không tồn tại!' });
             }
         });
+    });
+
+    // User API ------------------------------------------------------------------------------------------------------
+    app.get('/api/student/user', app.permission.check('user:login'), (req, res) => {
+        app.model.student.get(req.query.condition, (error, item) => res.send({ error, item }));
     });
 
     // Hook permissionHooks -------------------------------------------------------------------------------------------
@@ -417,6 +423,7 @@ module.exports = (app) => {
                                 hinhChupTrucTiep: values[20] && values[20].toLowerCase().trim() == 'x' ? true : false,
                                 lecturerIdentityCard: values[21],
                                 lecturerName: values[22],
+                                hocPhiPhaiDong: values[23],
                             });
                             handleUpload(index + 1);
                         }

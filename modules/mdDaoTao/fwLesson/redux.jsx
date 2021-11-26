@@ -246,3 +246,19 @@ export function viewLesson(lessonId, subjectId, courseId, view, done) {
         }, error => console.error(error) || T.notify('Cập nhật bài thực hành bị lỗi!', 'danger'));
     };
 }
+
+// Lesson Time ----------------------------------------------------------------------------------------------------
+
+export function timeLesson(lessonId, subjectId, courseId, totalSeconds, done) {
+    return () => {
+        const url = '/api/lesson/time';
+        T.post(url, { lessonId, subjectId, courseId, totalSeconds }, data => {
+            if (data.error) {
+                T.notify('Cập nhật thời gian học bị lỗi!', 'danger');
+                console.error('GET: ' + url + '.', data.error);
+            } else {
+                done && done(data);
+            }
+        }, error => console.error(error) || T.notify('Cập nhật thời gian học bị lỗi!', 'danger'));
+    };
+}

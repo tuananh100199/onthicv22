@@ -32,7 +32,11 @@ module.exports = (app) => {
     app.get('/user/course/:_id/learning', app.permission.check('course:read'), app.templates.admin);
     app.get('/user/course/:_id/import-graduation-exam-score', app.permission.check('course:import'), app.templates.admin);
     app.get('/user/course/:_id/calendar', app.permission.check('course:read'), app.templates.admin);
+    app.get('/user/course/:_id/register-calendar', app.permission.check('course:read'), app.templates.admin);
+    app.get('/user/course/:_id/student-register-calendar', app.permission.check('course:read'), app.templates.admin);
     app.get('/user/course/:_id/lecturer/calendar', app.permission.check('course:read'), app.templates.admin);
+    app.get('/user/course/:_id/lecturer/register-calendar', app.permission.check('course:read'), app.templates.admin);
+    app.get('/user/course/:_id/lecturer/student-register-calendar', app.permission.check('course:read'), app.templates.admin);
     app.get('/user/course/:_id/rate-subject', app.permission.check('course:read'), app.templates.admin);
     app.get('/user/course/:_id/chat-all', app.permission.check('user:login'), app.templates.admin);
     app.get('/user/course/:_id/chat', app.permission.check('user:login'), app.templates.admin);
@@ -330,9 +334,43 @@ module.exports = (app) => {
         const { _courseId, _teacherId, type } = req.body;
         new Promise((resolve, reject) => {
             if (type == 'add') {
-                app.model.course.addTeacherGroup(_courseId, _teacherId, error => error ? reject(error) : resolve());
+                app.model.course.addTeacherGroup(_courseId, _teacherId, error => error ? reject(error) :
+                    app.model.course.get(_courseId, (error, course) => {
+                        if (error || !course) reject(error);
+                        else {
+                            const courseType = course.courseType;
+                            console.log(course.close);
+                            app.model.car.get({ user: _teacherId, courseType: courseType._id }, (error, item) => {
+                                if (error) {
+                                    reject(error);
+                                } else if (!item || item.status == 'daThanhLy') {
+                                    resolve();
+                                } else {
+                                    app.model.car.addCourseHistory({ _id: item._id }, { course: course._id, user: _teacherId }, error => {
+                                        console.log(error);
+                                        if(error) reject(error);
+                                        else app.model.car.update({ _id: item._id }, {currentCourseClose: course.close},error => error ? reject(error) : resolve());
+                                    });
+                                }
+                            });
+                        }
+                    })
+                );
             } else if (type == 'remove') {
-                app.model.course.removeTeacherGroup(_courseId, _teacherId, error => error ? reject(error) : resolve());
+                app.model.course.removeTeacherGroup(_courseId, _teacherId, error => error ? reject(error) :
+                app.model.car.get({ user: _teacherId}, (error, item) => {
+                    if (error) {
+                        reject(error);
+                    } else if (!item || item.status == 'daThanhLy') {
+                        resolve();
+                    } else {
+                        app.model.car.deleteCar({ _id: item._id }, { _courseId }, error => {
+                            if(error) reject(error);
+                            else resolve();
+                        });
+                    }
+                })
+                );
             } else {
                 reject('Dữ liệu không hợp lệ!');
             }
@@ -451,13 +489,14 @@ module.exports = (app) => {
                 student = app.clone(student, { subject: {} });
                 let tongDiemLyThuyet = 0;
                 subjects.forEach(subject => {
-                    let diemMonHoc = 0, completedLessons = 0, numberLessons = subject.lessons ? subject.lessons.length : 0;
+                    let diemMonHoc = 0,thoiGianHoc = 0, completedLessons = 0, numberLessons = subject.lessons ? subject.lessons.length : 0;
                     if (numberLessons) {
                         if (student && student.tienDoHocTap && student.tienDoHocTap[subject._id] && !subject.monThucHanh) {
                             const listLessons = Object.entries(student.tienDoHocTap[subject._id]);
                             let tongDiemMonHoc = 0;
                             (listLessons || []).forEach(lesson => {
                                 tongDiemMonHoc += lesson[1].trueAnswers ? Number(lesson[1].score) / Object.keys(lesson[1].trueAnswers).length * 10 : 0;
+                                thoiGianHoc +=  lesson[1].totalSeconds ? parseInt(lesson[1].totalSeconds) : 0;
                             });
                             diemMonHoc = Number(tongDiemMonHoc / numberLessons).toFixed(1);
                         }
@@ -472,7 +511,7 @@ module.exports = (app) => {
                     }
 
                     const obj = {};
-                    obj[subject._id] = { completedLessons, diemMonHoc, numberLessons };
+                    obj[subject._id] = { completedLessons, diemMonHoc, numberLessons, thoiGianHoc };
                     student.subject = app.clone(student.subject, obj);
                 });
 

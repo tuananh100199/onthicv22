@@ -80,7 +80,7 @@ export class AdminTimeTablePage extends AdminPage {
                                         <button style={{border: 'none', outline: 'none', backgroundColor: calendar ? '#2189CF' : ''}} onClick={() =>this.setState({key: !key, calendar: true, list: false, filterOn: false})}><i className='fa fa-calendar'></i> Lịch</button>
                                     </div>
                                 </div>
-                                {currentLecturer && item && item._id ? <LecturerView key={key} courseId={item._id} lecturerId={currentLecturer && currentLecturer._id} filterOn={filterOn} list={list} calendar={calendar} lecturerName={currentLecturer && currentLecturer.lastname + ' ' + currentLecturer.firstname} /> : null}
+                                {currentLecturer && item && item._id ? <LecturerView key={key} official={true} courseId={item._id} lecturerId={currentLecturer && currentLecturer._id} filterOn={filterOn} list={list} calendar={calendar} lecturerName={currentLecturer && currentLecturer.lastname + ' ' + currentLecturer.firstname} /> : null}
                             </div>
                         </div>
                     </div>

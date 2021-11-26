@@ -34,7 +34,9 @@ module.exports = (app) => {
         division: { type: app.db.Schema.ObjectId, ref: 'Division' },                                // Cơ sở đào tạo
         course: { type: app.db.Schema.ObjectId, ref: 'Course' },                                    // Khóa học
         courseType: { type: app.db.Schema.ObjectId, ref: 'CourseType' },                            // Hạng đăng ký
-
+        
+        goiHocVien: { type: String, enum: ['coban', 'tuchon'], default: 'coban' },                  // Gói đăng ký của học viên => được học vào T7, CN, ngoài giờ
+        
         hocPhiPhaiDong: Number,                                                                     // Học phí phải đóng
         hocPhiMienGiam: Number,                                                                     // Số tiền được miễn giảm
         hocPhiDaDong: Number,                                                                       // Học phí đã đóng
@@ -57,6 +59,7 @@ module.exports = (app) => {
             point: Number,
         }],
         diemTrungBinhThiHetMon: Number,
+        soGioThucHanhDaHoc: { type: Number, default: 0 },
 
         datSatHach: { type: Boolean, default: false },
         totNghiep: { type: Boolean, default: false },
@@ -65,6 +68,9 @@ module.exports = (app) => {
 
         ngayDuKienThiTotNghiep: Date,
         liDoChuaTotNghiep: String,
+
+        ngayNhanChungChiHoanThanhKhoaHoc: Date,
+        ngayNhanGiayPhepLaiXe: Date,
 
         createdDate: { type: Date, default: Date.now },                                             // Ngày tạo
         modifiedDate: { type: Date, default: Date.now },                                            // Ngày cập nhật cuối cùng
@@ -229,9 +235,19 @@ module.exports = (app) => {
                         Object.assign(student.tienDoHocTap[data.subjectId], obj);
                     }
                     model.findOneAndUpdate({ _id: data.studentId }, { tienDoHocTap: student.tienDoHocTap }, { new: true }).exec(done);
-                } else {
+                } else if(data.totalSeconds){
                     const obj = {};
-                    obj[data.lessonId] = { score: data.score, trueAnswers: data.trueAnswer, answers: data.answers };
+                    if (student.tienDoHocTap[data.subjectId] && student.tienDoHocTap[data.subjectId][data.lessonId]) {
+                        student.tienDoHocTap[data.subjectId][data.lessonId].totalSeconds = data.totalSeconds;
+                    } else {
+                        obj[data.lessonId] = { totalSeconds: data.totalSeconds };
+                        Object.assign(student.tienDoHocTap[data.subjectId], obj);
+                    }
+                    model.findOneAndUpdate({ _id: data.studentId }, { tienDoHocTap: student.tienDoHocTap }, { new: true }).exec(done);
+                } else {
+                    const obj = {},
+                    totalSeconds = student.tienDoHocTap[data.subjectId] && student.tienDoHocTap[data.subjectId][data.lessonId] && student.tienDoHocTap[data.subjectId][data.lessonId].totalSeconds;
+                    obj[data.lessonId] = { score: data.score, trueAnswers: data.trueAnswer, answers: data.answers, totalSeconds };
                     Object.assign(student.tienDoHocTap[data.subjectId], obj);
                     model.findOneAndUpdate({ _id: data.studentId }, { tienDoHocTap: student.tienDoHocTap }, { new: true }).exec(done);
                 }

@@ -14,7 +14,7 @@ class PreStudenModal extends AdminModal {
     }
 
     onShow = (item) => {
-        const { _id, firstname, lastname, birthday, user, image, residence, regularResidence, courseType, sex, division, planLecturer, identityCard, planCourse } = item || { _id: null, firstname: '', lastname: '', birthday: '', user: {}, image, residence: '', regularResidence: '', identityCard: '', planCourse: '' };
+        const { _id, firstname, lastname, birthday, user, image, residence, regularResidence, courseType, sex, division, planLecturer, identityCard, planCourse, hocPhiPhaiDong } = item || { _id: null, firstname: '', lastname: '', birthday: '', user: {}, image, residence: '', regularResidence: '', identityCard: '', planCourse: '', hocPhiPhaiDong: '' };
         this.itemFirstname.value(firstname || '');
         this.itemLastname.value(lastname || '');
         this.itemBirthday.value(birthday);
@@ -26,10 +26,11 @@ class PreStudenModal extends AdminModal {
         this.itemResidence.value(residence || '');
         this.itemCourseType.value(courseType ? { id: courseType._id, text: courseType.title } : null);
         this.itemDivision.value(division ? { id: division._id, text: division.title } : null);
+        this.itemHocPhiPhaiDong.value(hocPhiPhaiDong || '');
         this.itemRegularResidence.value(regularResidence || '');
         this.imageBox.setData(`pre-student:${_id || 'new'}`);
      
-        this.setState({ _id, divisionId: division._id, image }, () => {
+        this.setState({ _id, divisionId: division && division._id, image }, () => {
             this.itemPlanLecturer.value(planLecturer ? { id: planLecturer._id, text: `${planLecturer.lastname} ${planLecturer.firstname}` } : null);
         });
     }
@@ -50,6 +51,7 @@ class PreStudenModal extends AdminModal {
             courseType: this.itemCourseType.value(),
             division: this.itemDivision.value(),
             planLecturer: this.itemPlanLecturer.value(),
+            hocPhiPhaiDong: this.itemHocPhiPhaiDong.value(),
         };
         if (data.lastname == '') {
             T.notify('Họ không được trống!', 'danger');
@@ -60,24 +62,24 @@ class PreStudenModal extends AdminModal {
         } else if (data.phoneNumber == '') {
             T.notify('Số điện thoại không được trống!', 'danger');
             this.itemPhoneNumber.focus();
-        } else if (!data.courseType) {
-            T.notify('Hạng đăng ký không được trống!', 'danger');
-            this.itemCourseType.focus();
-        } else if (!data.division) {
-            T.notify('Cơ sở đào tạo không được trống!', 'danger');
-            this.itemDivision.focus();
-        } else if (!data.planLecturer) {
-            T.notify('Cố vấn học tập dự kiến không được trống!', 'danger');
-            this.itemPlanLecturer.focus();
         } else if (data.identityCard == '') {
             T.notify('Số CMND/CCCD không được trống!', 'danger');
             this.itemIdentityCard.focus();
         } else if (data.birthday == '') {
             T.notify('Ngày sinh người dùng bị trống!', 'danger');
             this.itemBirthday.focus();
-            // } else if (data.planCourse == '') {
-            //     T.notify('Khóa dự kiến không được trống!', 'danger');
-            //     this.itemPlanCourse.focus();
+        } else if (!data.courseType) {
+            T.notify('Hạng đăng ký không được trống!', 'danger');
+            this.itemCourseType.focus();
+        } else if (!data.division) {
+            T.notify('Cơ sở đào tạo không được trống!', 'danger');
+            this.itemDivision.focus();
+        } else if (!data.hocPhiPhaiDong) {
+            T.notify('Học phí không được trống!', 'danger');
+            this.itemHocPhiPhaiDong.focus();
+        } else if (!data.planLecturer) {
+            T.notify('Cố vấn học tập dự kiến không được trống!', 'danger');
+            this.itemPlanLecturer.focus();
         } else {
             this.state._id ? this.props.update(this.state._id, data, this.hide()) : T.notify('Tạo ứng viên thành công!', 'success') && this.props.create(data, this.hide());
         }
@@ -97,7 +99,6 @@ class PreStudenModal extends AdminModal {
     });
 
     render = () => {
-        const { divisionId } = this.state;
         const readOnly = this.props.readOnly;
         return this.renderModal({
             title: 'Ứng viên',
@@ -105,20 +106,21 @@ class PreStudenModal extends AdminModal {
             body: <div className='row'>
                 <div className='col-md-8'>
                     <div className='row'>
-                        <FormTextBox className='col-md-8' ref={e => this.itemLastname = e} label='Họ & tên đệm' readOnly={readOnly} />
-                        <FormTextBox className='col-md-4' ref={e => this.itemFirstname = e} label='Tên' readOnly={readOnly} />
+                        <FormTextBox className='col-md-8' ref={e => this.itemLastname = e} label='Họ & tên đệm' readOnly={readOnly} required />
+                        <FormTextBox className='col-md-4' ref={e => this.itemFirstname = e} label='Tên' readOnly={readOnly} required />
                         <FormTextBox className='col-md-6' ref={e => this.itemEmail = e} label='Email' readOnly={this.state._id ? true : readOnly} type='email' />
-                        <FormTextBox className='col-md-6' type='phone' ref={e => this.itemPhoneNumber = e}  label='Số điện thoại' />
+                        <FormTextBox className='col-md-6' type='phone' ref={e => this.itemPhoneNumber = e}  label='Số điện thoại' required />
                     </div>
                 </div>
                 <FormImageBox ref={e => this.imageBox = e} className='col-md-4' label='Hình đại diện' uploadType='PreStudentImage' image={this.state.image} readOnly={readOnly}
                     onSuccess={this.onUploadSuccess} />
-                <FormTextBox className='col-md-4' ref={e => this.itemIdentityCard = e} label='CMND/CCCD' readOnly={readOnly} />
-                <FormDatePicker className='col-md-4' ref={e => this.itemBirthday = e} label='Ngày sinh' readOnly={readOnly} type='date-mask' />
+                <FormTextBox className='col-md-4' ref={e => this.itemIdentityCard = e} label='CMND/CCCD' readOnly={readOnly} required />
+                <FormDatePicker className='col-md-4' ref={e => this.itemBirthday = e} label='Ngày sinh' readOnly={readOnly} type='date-mask' required />
                 <FormSelect className='col-md-4' ref={e => this.itemSex = e} label='Giới tính' data={[{ id: 'female', text: 'Nữ' }, { id: 'male', text: 'Nam' }]} readOnly={readOnly} />
-                <FormSelect className='col-md-6' ref={e => this.itemCourseType = e} label='Hạng đăng ký' data={ajaxSelectCourseType} readOnly={readOnly} />
-                <FormSelect className='col-md-6' ref={e => this.itemDivision = e} label='Cơ sở đào tạo' data={ajaxSelectDivision} onChange={this.onChangeDivision} readOnly={readOnly} />
-                <FormSelect className='col-md-6' ref={e => this.itemPlanLecturer = e} label='Cố vấn học tập dự kiến' data={ajaxSelectLecturer(divisionId)} readOnly={readOnly} />
+                <FormSelect className='col-md-4' ref={e => this.itemCourseType = e} label='Hạng đăng ký' data={ajaxSelectCourseType} readOnly={readOnly} required />
+                <FormSelect className='col-md-4' ref={e => this.itemDivision = e} label='Cơ sở đào tạo' data={ajaxSelectDivision} onChange={this.onChangeDivision} readOnly={readOnly} required />
+                <FormTextBox className='col-md-4' ref={e => this.itemHocPhiPhaiDong = e} label='Học phí' readOnly={readOnly} required/>
+                <FormSelect className='col-md-6' ref={e => this.itemPlanLecturer = e} label='Cố vấn học tập dự kiến' data={ajaxSelectLecturer(this.state.divisionId)} readOnly={readOnly} required />
                 <FormTextBox className='col-md-6' ref={e => this.itemPlanCourse = e} label='Khóa dự kiến' readOnly={readOnly} />
                 <FormRichTextBox ref={e => this.itemResidence = e} className='col-md-12' label='Nơi cư trú' readOnly={readOnly} rows='2' />
                 <FormRichTextBox ref={e => this.itemRegularResidence = e} className='col-md-12' label='Nơi đăng ký hộ khẩu thường trú' readOnly={readOnly} rows='2' />
@@ -142,7 +144,8 @@ class PreStudentPage extends AdminPage {
 
     delete = (e, item) => e.preventDefault() || T.confirm('Xoá ứng viên', 'Bạn có chắc muốn xoá ứng viên này?', true, isConfirm =>
         isConfirm && this.props.deletePreStudent(item._id));
-    // create = (e) => e.preventDefault() || this.modal.show();
+
+    create = (e) => e.preventDefault() || this.modal.show();
 
     render() {
         const permission = this.getUserPermission('pre-student', ['read', 'write', 'delete', 'import']),

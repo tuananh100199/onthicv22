@@ -10,11 +10,11 @@ class EditModal extends AdminModal {
     state = {};
     onShow = (item) => {
         let { id, firstname, lastname, email, phoneNumber, sex, birthday, nationality, residence, regularResidence, identityCard, identityIssuedBy, identityDate,
-            giayPhepLaiXe2BanhSo, giayPhepLaiXe2BanhNgay, giayPhepLaiXe2BanhNoiCap, giayKhamSucKhoe, giayKhamSucKhoeNgayKham, hinhThe3x4, hinhChupTrucTiep, lecturerIdentityCard, lecturerName } = item || {
+            giayPhepLaiXe2BanhSo, giayPhepLaiXe2BanhNgay, giayPhepLaiXe2BanhNoiCap, giayKhamSucKhoe, giayKhamSucKhoeNgayKham, hinhThe3x4, hinhChupTrucTiep, lecturerIdentityCard, lecturerName, hocPhiPhaiDong } = item || {
                 firstname: '', lastname: '', email: '', phoneNumber: '', sex: '', birthday: '', nationality: '', residence: '', regularResidence: '', identityCard: '', identityIssuedBy: '', identityDate: '',
-                giayPhepLaiXe2BanhSo: '', giayPhepLaiXe2BanhNgay: '', giayPhepLaiXe2BanhNoiCap: '', giayKhamSucKhoe: '', giayKhamSucKhoeNgayKham: '', hinhThe3x4: '', hinhChupTrucTiep: '', lecturerIdentityCard: '', lecturerName: ''
+                giayPhepLaiXe2BanhSo: '', giayPhepLaiXe2BanhNgay: '', giayPhepLaiXe2BanhNoiCap: '', giayKhamSucKhoe: '', giayKhamSucKhoeNgayKham: '', hinhThe3x4: '', hinhChupTrucTiep: '', lecturerIdentityCard: '', lecturerName: '', hocPhiPhaiDong: ''
             };
-        this.setState({ id: id, className: giayKhamSucKhoe ? 'col-md-6' : 'invisible' });
+        this.setState({ id: id, className: giayKhamSucKhoe ? 'col-md-4' : 'invisible' });
         this.itemFirstname.value(firstname);
         this.itemLastname.value(lastname);
         this.itemEmail.value(email);
@@ -36,10 +36,11 @@ class EditModal extends AdminModal {
         this.itemHinhChupTrucTiep.value(hinhChupTrucTiep);
         this.itemLecturerIdentityCard.value(lecturerIdentityCard);
         this.itemLecturerName.value(lecturerName);
+        this.itemHocPhiPhaiDong.value(hocPhiPhaiDong);
     }
 
     isChecked = (checked) => {
-        this.setState({ className: checked ? 'col-md-6' : 'invisible' });
+        this.setState({ className: checked ? 'col-md-4' : 'invisible' });
     }
 
     onSubmit = () => {
@@ -64,7 +65,8 @@ class EditModal extends AdminModal {
             giayKhamSucKhoeNgayKham: this.itemGiayKhamSucKhoe.value() ? this.itemGiayKhamSucKhoeNgayKham.value() : null,
             hinhThe3x4: this.itemHinhThe3x4.value(),
             hinhChupTrucTiep: this.itemHinhChupTrucTiep.value(),
-            lecturerIdentityCard: this.itemLecturerIdentityCard.value()
+            lecturerIdentityCard: this.itemLecturerIdentityCard.value(),
+            hocPhiPhaiDong: this.itemHocPhiPhaiDong.value()
         };
         if (data.lastname == '') {
             T.notify('Họ không được trống!', 'danger');
@@ -83,7 +85,7 @@ class EditModal extends AdminModal {
             this.itemGiayKhamSucKhoeNgayKham.focus();
         } else {
             this.props.edit(this.state.id, data);
-            T.notify('Cập nhật thông tin bài học thành công!', 'success');
+            T.notify('Cập nhật thông tin ứng viên thành công!', 'success');
             this.hide();
         }
     }
@@ -108,8 +110,9 @@ class EditModal extends AdminModal {
                 <FormTextBox ref={e => this.itemLincenseNumber = e} className='col-md-4' label='Số giấy phép lái xe 2 bánh' readOnly={this.props.readOnly} />
                 <FormDatePicker ref={e => this.itemLincenseDate = e} className='col-md-4' label='Ngày trúng tuyển' readOnly={this.props.readOnly} />
                 <FormTextBox ref={e => this.itemLincenseIssuedBy = e} className='col-md-4' label='Nơi cấp' readOnly={this.props.readOnly} />
-                <FormCheckbox ref={e => this.itemGiayKhamSucKhoe = e} className='col-md-6' label='Đã có giấy khám sức khỏe' readOnly={this.props.readOnly} onChange={this.isChecked} />
+                <FormCheckbox ref={e => this.itemGiayKhamSucKhoe = e} className='col-md-4' label='Đã có giấy khám sức khỏe' readOnly={this.props.readOnly} onChange={this.isChecked} />
                 <FormDatePicker ref={e => this.itemGiayKhamSucKhoeNgayKham = e} className={this.state.className} label='Ngày khám sức khỏe' readOnly={this.props.readOnly} />
+                <FormTextBox ref={e => this.itemHocPhiPhaiDong = e} className='col-md-4' label='Học phí' readOnly={this.props.readOnly} />
                 <FormCheckbox ref={e => this.itemHinhThe3x4 = e} className='col-md-6' label='Hình thẻ 3x4' readOnly={this.props.readOnly} />
                 <FormCheckbox ref={e => this.itemHinhChupTrucTiep = e} className='col-md-6' label='Hình chụp trực tiếp' readOnly={this.props.readOnly} />
                 <FormTextBox ref={e => this.itemLecturerIdentityCard = e} className='col-md-6' label='Số CMND,CCCD của cố vấn học tập dự kiến' readOnly={this.props.readOnly} />
@@ -119,19 +122,16 @@ class EditModal extends AdminModal {
 }
 
 class ImportPage extends AdminPage {
-    // fileBox = React.createRef();
-    state = { isFileBoxHide: false };
-
+    fileBox = React.createRef();
+    state = {};
     componentDidMount() {
         T.ready('/user/pre-student');
     }
 
     onUploadSuccess = (data) => {
-        console.log('data', data);
+        this.setState(data);
         this.itemDivision.value(null);
         this.itemCourseType.value(null);
-
-        this.setState({ data, isFileBoxHide: true });      
     }
 
     showEditModal = (e, item) => e.preventDefault() || this.modalEdit.show(item);
@@ -148,6 +148,10 @@ class ImportPage extends AdminPage {
         }))
     );
 
+    onReUpload = () => {
+        T.confirm('Upload lại file excel', 'Bạn có chắc bạn muốn upload lại file excel ứng viên này?', true, isConfirm => isConfirm && this.setState({ data: [] }));
+    }
+
     save = () => {
         if (!this.itemDivision.value()) {
             T.notify('Chưa chọn cơ sở đào tạo!', 'danger');
@@ -156,33 +160,22 @@ class ImportPage extends AdminPage {
             T.notify('Chưa chọn loại khóa học!', 'danger');
             this.itemCourseType.focus();
         } else {
-            this.props.importPreStudent(this.state.data, this.itemDivision.value(), this.itemCourseType.value(), data => {
+            T.confirm('Lưu thông tin ứng viên', 'Bạn có chắc bạn muốn lưu file danh sách ứng viên này?', true, isConfirm => isConfirm && this.props.importPreStudent(this.state.data, this.itemDivision.value(), this.itemCourseType.value(), data => {
                 if (data.error) {
                     T.notify('Import ứng viên bị lỗi!', 'danger');
                 } else {
+                    if (data.studentError && data.studentError.length) {
+                        T.alert(`Không tìm thấy cố vấn có CMND/CCCD:  ${ data.studentError.reduce((a, b) => `${b.error + ', ' + a}`, ' ')}!`, 'error', false, 8000);
+                    }
                     this.props.history.push('/user/pre-student');
                 }
-            });
+            }));
         }
     }
 
     render() {
-        console.log(this.state);
         const permission = this.getUserPermission('pre-student', ['read', 'write', 'delete', 'import']),
             readOnly = !permission.write;
-
-        const filebox = !this.state.isFileBoxHide && (
-            <div className='tile'>
-                <h3 className='tile-title'>Import danh sách ứng viên</h3>
-                <FormFileBox ref={e => this.fileBox = e} uploadType='CandidateFile'
-                    onSuccess={this.onUploadSuccess} readOnly={readOnly} />
-                <div className='tile-footer' style={{ textAlign: 'right' }}>
-                    <button className='btn btn-primary' type='button'>
-                        <a href='/download/candidate.xlsx' style={{ textDecoration: 'none', color: 'white' }}><i className='fa-fw fa-lg fa fa-download' /> Tải xuống file mẫu</a>
-                    </button>
-                </div>
-            </div >
-        );
         const table = renderTable({
             getDataSource: () => this.state.data && this.state.data.length > 0 ? this.state.data : [],
             renderHead: () => (
@@ -211,46 +204,46 @@ class ImportPage extends AdminPage {
                 </tr>),
         });
 
-        // const filebox = (
-        //     <div className='tile'>
-        //         <h3 className='tile-title'>Import danh sách ứng viên</h3>
-        //         <FormFileBox ref={e => this.fileBox = e} uploadType='CandidateFile'
-        //             onSuccess={this.onUploadSuccess} readOnly={readOnly} />
-        //         <div className='tile-footer' style={{ textAlign: 'right' }}>
-        //             <button className='btn btn-primary' type='button'>
-        //                 <a href='/download/candidate.xlsx' style={{ textDecoration: 'none', color: 'white' }}><i className='fa-fw fa-lg fa fa-download' /> Tải xuống file mẫu</a>
-        //             </button>
-        //         </div>
-        //     </div >
-        // );
+        const filebox = (
+            <div className='tile'>
+                <h3 className='tile-title'>Import danh sách ứng viên</h3>
+                <FormFileBox ref={e => this.fileBox = e} uploadType='CandidateFile'
+                    onSuccess={this.onUploadSuccess} readOnly={readOnly} />
+                <div className='tile-footer' style={{ textAlign: 'right' }}>
+                    <button className='btn btn-primary' type='button'>
+                        <a href='/download/candidate.xlsx' style={{ textDecoration: 'none', color: 'white' }}><i className='fa-fw fa-lg fa fa-download' /> Tải xuống file mẫu</a>
+                    </button>
+                </div>
+            </div >
+        );
         const list = (
             <div>
                 <div className='tile row'>
                     <div className='col-md-6'>
                         <h3 className='tile-title'>Chọn cơ sở</h3>
-                        <FormSelect ref={e => this.itemDivision = e}  labelStyle={{ display: 'none' }} label={'Chọn cơ sở'} data={ajaxSelectDivision} readOnly={readOnly} />
+                        <FormSelect ref={e => this.itemDivision = e} labelStyle={{ display: 'none' }} label={'Chọn cơ sở'} data={ajaxSelectDivision} readOnly={readOnly} />
                     </div>
                     <div className='col-md-6'>
                         <h3 className='tile-title'>Chọn loại khóa học</h3>
-                        <FormSelect ref={e => this.itemCourseType = e}labelStyle={{ display: 'none' }} label={'Chọn loại khóa học'} data={ajaxSelectCourseType} readOnly={readOnly} />
+                        <FormSelect ref={e => this.itemCourseType = e} labelStyle={{ display: 'none' }} label={'Chọn loại khóa học'} data={ajaxSelectCourseType} readOnly={readOnly} />
                     </div>
                     <div className='col-md-12'>
                         <h3 className='tile-title'>Danh sách ứng viên</h3>
                         <div className='tile-body' style={{ overflowX: 'auto' }}>
                             {table}
                         </div>
+                        <div className='tile-footer' style={{ textAlign: 'right' }}>
+                            <button className='btn btn-danger' type='button' style={{ marginRight: 10 }} onClick={this.onReUpload}>
+                                <i className='fa fa-fw fa-lg fa-cloud-upload' /> Upload lại
+                            </button>
+                            <button className='btn btn-primary' type='button' onClick={this.save}>
+                                <i className='fa fa-fw fa-lg fa-save' /> Lưu
+                            </button>
+                        </div>
                     </div>
+                    
                 </div>
                 <EditModal ref={e => this.modalEdit = e} readOnly={readOnly} edit={this.edit} />
-                {/* <CirclePageButton type='save' onClick={this.save} /> */}
-                <div className='tile-footer' style={{ textAlign: 'right' }}>
-                        <button className='btn btn-danger' type='button' style={{ marginRight: 10 }} onClick={this.onReUpload}>
-                            <i className='fa fa-fw fa-lg fa-cloud-upload' /> Upload lại
-                        </button>
-                        <button className='btn btn-primary' type='button' onClick={this.save}>
-                            <i className='fa fa-fw fa-lg fa-save' /> Lưu
-                        </button>
-                    </div>
             </div>
         );
         return this.renderPage({
@@ -258,8 +251,7 @@ class ImportPage extends AdminPage {
             title: 'Nhập ứng viên bằng Excel',
             breadcrumb: [<Link key={0} to='/user/pre-student'>Ứng viên</Link>, 'Nhập ứng viên bằng Excel'],
             content: <>
-                {filebox}
-                {this.state.data && this.state.data.length ? list : null}
+                {this.state.data && this.state.data.length ? list : filebox}
             </>,
             backRoute: '/user/pre-student',
         });
