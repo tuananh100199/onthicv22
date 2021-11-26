@@ -335,20 +335,38 @@ module.exports = (app) => {
                         if (error || !course) reject(error);
                         else {
                             const courseType = course.courseType;
+                            console.log(course.close);
                             app.model.car.get({ user: _teacherId, courseType: courseType._id }, (error, item) => {
                                 if (error) {
                                     reject(error);
                                 } else if (!item || item.status == 'daThanhLy') {
                                     resolve();
                                 } else {
-                                    app.model.car.addCourseHistory({ _id: item._id }, { course: course._id, user: _teacherId }, error => error ? reject(error) : resolve());
+                                    app.model.car.addCourseHistory({ _id: item._id }, { course: course._id, user: _teacherId }, error => {
+                                        console.log(error);
+                                        if(error) reject(error);
+                                        else app.model.car.update({ _id: item._id }, {currentCourseClose: course.close},error => error ? reject(error) : resolve());
+                                    });
                                 }
                             });
                         }
                     })
                 );
             } else if (type == 'remove') {
-                app.model.course.removeTeacherGroup(_courseId, _teacherId, error => error ? reject(error) : resolve());
+                app.model.course.removeTeacherGroup(_courseId, _teacherId, error => error ? reject(error) :
+                app.model.car.get({ user: _teacherId}, (error, item) => {
+                    if (error) {
+                        reject(error);
+                    } else if (!item || item.status == 'daThanhLy') {
+                        resolve();
+                    } else {
+                        app.model.car.deleteCar({ _id: item._id }, { _courseId }, error => {
+                            if(error) reject(error);
+                            else resolve();
+                        });
+                    }
+                })
+                );
             } else {
                 reject('Dữ liệu không hợp lệ!');
             }

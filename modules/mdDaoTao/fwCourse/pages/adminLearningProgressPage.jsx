@@ -292,8 +292,8 @@ class AdminLearningProgressPage extends AdminPage {
                                     <FormCheckbox ref={e => this.course = e} onChange={value => { const data = value ? 'thiHetMon' : 'all'; this.getPage(undefined, undefined, data); }} label='Học viên đủ điều kiện thi hết môn' />
                                 }
                             </div>
-                            {isCourseAdmin && <Link style={{ textAlign: 'right' }} className='col-md-3' to={`${backRoute}/import-final-score`}><button className='btn btn-primary'> Nhập điểm thi hết môn </button></Link>}
-                            {isCourseAdmin && <Link  to={'/user/course/' + item._id + '/import-graduation-exam-score'} className='col-md-3'><button className='btn btn-primary'>Nhập điểm thi tốt nghiệp</button></Link>}
+                            {isCourseAdmin && !item.lock &&  <Link style={{ textAlign: 'right' }} className='col-md-3' to={`${backRoute}/import-final-score`}><button className='btn btn-primary'> Nhập điểm thi hết môn </button></Link>}
+                            {isCourseAdmin && !item.lock && <Link  to={'/user/course/' + item._id + '/import-graduation-exam-score'} className='col-md-3'><button className='btn btn-primary'>Nhập điểm thi tốt nghiệp</button></Link>}
                         </div>
                         {table}
                         {!isLecturer ? <Pagination name='adminLearningProgress' pageNumber={pageNumber} pageSize={pageSize} pageTotal={pageTotal} totalItem={totalItem} getPage={this.getPage} style={{ marginLeft: 45 }} /> : null}

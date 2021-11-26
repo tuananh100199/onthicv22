@@ -15,8 +15,9 @@ const dataFilterType = [
     { id: 2, text: 'Xe đang sửa chữa', condition: { status: 'dangSuaChua' } },
     { id: 3, text: 'Xe chờ thanh lý', condition: { status: 'choThanhLy' } },
     { id: 4, text: 'Xe đã thanh lý', condition: { status: 'daThanhLy' } },
-    { id: 5, text: 'Xe đã có giáo viên', condition: { user: { $exists: true } } },
-    { id: 6, text: 'Xe đang trống giáo viên', condition: { user: { $exists: false } } },
+    { id: 5, text: 'Xe đi khóa', condition: { currentCourseClose: true} },
+    { id: 6, text: 'Xe đã có giáo viên', condition: { user: { $exists: true } } },
+    { id: 7, text: 'Xe đang trống giáo viên', condition: { user: { $exists: false } } },
 ];
 const dataRepairType = [{ id: 'dangSuDung', text: 'Xe đang sử dụng' }, { id: 'dangSuaChua', text: 'Xe đang sửa chữa' }, { id: 'dangThanhLy', text: 'Xe chờ thanh lý' }, { id: 'daThanhLy', text: 'Xe thanh lý' }];
 class CarModal extends AdminModal {

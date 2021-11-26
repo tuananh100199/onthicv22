@@ -21,6 +21,33 @@ module.exports = (app) => {
                         }
                     });
                 }
+                // Hủy đăng ký lịch học của học viên cách 1 ngày
+                if (app.primaryWorker) {
+                    app.model.timeTable.getAll({ state: 'waiting' }, (error, items) =>{
+                        let timeTables = [];
+                        (items||[]).forEach(item => {
+                            const expiredDate = new Date(item.createdAt).getTime() + 1000*3600*24;
+                            const now = new Date().getTime();
+                            if (expiredDate < now) {
+                                timeTables.push(item);
+                            }
+                        });
+                        if (timeTables && timeTables.length) {
+                            const handleDeleteTimeTable = (index = 0) => {
+                                if (index == timeTables.length) {
+                                    return;
+                                } else {
+                                    const timeTable = timeTables[index];
+                                    app.model.timeTable.update(timeTable._id, { state: 'autoCancel' }, () => {
+                                        handleDeleteTimeTable(index + 1);
+                                    });
+                                }
+                            };
+                            handleDeleteTimeTable();
+                        }
+                    });
+                }
+                
             });
         },
     });

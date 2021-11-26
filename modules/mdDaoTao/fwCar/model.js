@@ -30,6 +30,7 @@ module.exports = app => {
             ngayHetHanDangKy: { type: Date },
         }],
         status: { type: String, enum: ['dangSuDung', 'dangSuaChua', 'dangThanhLy', 'daThanhLy'], default: 'dangSuDung' },
+        currentCourseClose: { type: Boolean, default: false },
         courseHistory: [{
             course: { type: app.db.Schema.ObjectId, ref: 'Course' },
             user: { type: app.db.Schema.ObjectId, ref: 'User' },
@@ -44,7 +45,7 @@ module.exports = app => {
     app.model.car = {
         create: (data, done) => model.create(data, done),
 
-        getAll: (condition, done) => model.find(condition).sort({ priority: -1 }).exec(done),
+        getAll: (condition, done) => model.find(condition).sort({ ngayDangKy: -1 }).exec(done),
 
         getPage: (pageNumber, pageSize, condition, done) => model.countDocuments(condition, (error, totalItem) => {
             if (error) {
@@ -60,6 +61,8 @@ module.exports = app => {
                 });
             }
         }),
+
+        getOld: (done) => model.find({}).sort({ ngayDangKy: 1 }).limit(1).exec(done),
 
         get: (condition, done) => typeof condition == 'string' ? model.findById(condition).populate('brand', 'title').populate({
             path: 'courseHistory.course', populate: { path: 'course', select: 'name thoiGianBatDau thoiGianKetThuc' }
@@ -105,6 +108,8 @@ module.exports = app => {
         deleteCar: (_id, data, done) => {
             if (data._courseHistoryId) {
                 model.findOneAndUpdate({ _id }, { $pull: { courseHistory: { _id: data._courseHistoryId } } }, { new: true }).exec(done);
+            }if (data._courseId) {
+                model.findOneAndUpdate({ _id }, { $pull: { courseHistory: { course: data._courseId } } }, { new: true }).exec(done);
             } else if (data._repairId) {
                 model.findOneAndUpdate({ _id }, { $pull: { repair: { _id: data._repairId } } }, { new: true }).exec(done);
             } else if (data._registrationId) {
