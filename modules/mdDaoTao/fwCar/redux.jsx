@@ -50,18 +50,62 @@ export function getCarPage(pageNumber, pageSize, pageCondition, done) {
     };
 }
 
+export function getAllCars(condition, done) {
+    return dispatch => {
+        const url = '/api/car/all';
+        T.get(url, { condition }, data => {
+            if (data.error) {
+                T.notify('Lấy tất cả xe bị lỗi!', 'danger');
+                console.error('GET: ' + url + '. ' + data.error);
+            } else {
+                done && done(data.list);
+                dispatch({ type: CarGetAll, items: data.list });
+            }
+        }, error => console.error(error) || T.notify('Lấy tất cả xe bị lỗi!', 'danger'));
+    };
+}
+
+export function getAvaiableLecturers(condition, done) {
+    return () => {
+        const url = '/api/car/avaiable-lecturer';
+        T.get(url, { condition }, data => {
+            if (data.error) {
+                T.notify('Lấy giáo viên chưa có xe bị lỗi!', 'danger');
+                console.error('GET: ' + url + '. ' + data.error);
+            } else {
+                done && done(data.list);
+            }
+        }, error => console.error(error) || T.notify('Lấy giáo viên chưa có xe bị lỗi!', 'danger'));
+    };
+}
+
 export function getCar(_id, done) {
     return dispatch => {
         const url = '/api/car';
         T.get(url, { _id }, data => {
             if (data.error) {
-                T.notify('Lấy thông báo bị lỗi!', 'danger');
+                T.notify('Lấy thông tin xe bị lỗi!', 'danger');
                 console.error('GET: ' + url + '.', data.error);
             } else {
                 dispatch({ type: CarGetItem, item: data.item });
                 done && done(data.item);
             }
-        }, error => console.error(error) || T.notify('Lấy thông báo bị lỗi!', 'danger'));
+        }, error => console.error(error) || T.notify('Lấy thông tin xe bị lỗi!', 'danger'));
+    };
+}
+
+export function getCarOfLecturer(condition, done) {
+    return () => {
+        const url = '/api/car/lecturer';
+        T.get(url, { condition }, data => {
+            if (data.error) {
+                T.notify('Lấy thông tin xe bị lỗi!', 'danger');
+                console.error('GET: ' + url + '.', data.error);
+            } else {
+                // dispatch({ type: CarGetItem, item: data.item });
+                done && done(data.item);
+            }
+        }, error => console.error(error) || T.notify('Lấy thông tin xe bị lỗi!', 'danger'));
     };
 }
 
@@ -70,14 +114,14 @@ export function createCar(data, done) {
         const url = '/api/car';
         T.post(url, { data }, data => {
             if (data.error) {
-                T.notify('Tạo thông báo bị lỗi!', 'danger');
+                T.notify('Tạo xe bị lỗi!', 'danger');
                 console.error('POST: ' + url + '.', data.error);
             } else {
                 T.notify('Cập nhật thông tin xe thành công!', 'success');
                 dispatch(getCarPage(undefined,undefined,{status: 'dangSuDung'}));
                 done && done(data);
             }
-        }, error => console.error(error) || T.notify('Tạo thông báo bị lỗi!', 'danger'));
+        }, error => console.error(error) || T.notify('Tạo xe bị lỗi!', 'danger'));
     };
 }
 
@@ -246,6 +290,19 @@ export function importCar(cars, division, courseType, done) {
     };
 }
 
+// Ajax ---------------------------------------------------------------------------------------------------------------
+export const ajaxSelectAvaiableLecturer = (currentLecturer) => T.createAjaxAdapter(
+    '/api/car/avaiable-lecturer',
+    params => ({ condition: { searchText: params.term } }),
+    response => {
+        let list =  [];
+        list = response && response.list ?
+        response.list.map(user => ({ id: user._id, text: user.lastname + ' ' + user.firstname })) : [];
+        currentLecturer ? list.push({ id: currentLecturer._id, text: currentLecturer.lastname + ' ' + currentLecturer.firstname }) : null;
+        return list;
+    },
+);
+
 // Export to Excel ----------------------------------------------------------------------------------------------------
 export function exportInfoCar(filterKey) {
     if (filterKey == undefined) filterKey = 1;
@@ -276,5 +333,8 @@ export function exportPracticeCar(_carId) {
 
 export function exportRegistrationCar(_carId) {
     T.download(T.url(`/api/car/registration/export/${_carId}`));
+}
+export function exportCarCalendar(_carId) {
+    T.download(T.url(`/api/car/calendar/export/${_carId}`));
 }
 

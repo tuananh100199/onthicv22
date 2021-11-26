@@ -2,12 +2,17 @@ import T from 'view/js/common';
 
 // Reducer ------------------------------------------------------------------------------------------------------------
 const TimeTableGetPage = 'TimeTableGetPage';
+const TimeTableGetAll = 'TimeTableGetAll';
 const TimeTableUpdate = 'TimeTableUpdate';
 
 export default function timeTableReducer(state = {}, data) {
     switch (data.type) {
         case TimeTableGetPage:
             return Object.assign({}, state, { page: data.page });
+
+        case TimeTableGetAll:
+            return Object.assign({}, state, { list: data.list });
+
         case TimeTableUpdate: {
             let updatedPage = Object.assign({}, state.page),
                 updatedItem = data.item;
@@ -165,7 +170,7 @@ export function updateTimeTableByAdmin(_id, changes, condition, done) {
                 done && done(data.item);
                 dispatch(getTimeTablePageByAdmin(undefined, undefined, condition));
             }
-            done && done(data.error);
+            done && done(data.item);
         }, error => console.error(error) || T.notify('Cập nhật thời khóa biểu bị lỗi!', 'danger'));
     };
 }
@@ -200,7 +205,39 @@ export function deleteTimeTableByAdmin(_id, condition) {
     };
 }
 
-//Student API--------------------------------------------------------------------------------------------------
+// Car Calendar API ------------------------------------------------------------------------------------------
+T.initCookiePage('pageTimeTableCar');
+export function getTimeTableCarPage(pageNumber, pageSize, pageCondition, done) {
+    const page = T.updatePage('pageTimeTableCar', pageNumber, pageSize);
+    return dispatch => {
+        const url = `/api/time-table/car/page/${page.pageNumber}/${page.pageSize}`;
+        T.get(url, { pageCondition }, data => {
+            if (data.error) {
+                T.notify('Lấy lịch xe bị lỗi!', 'danger');
+                console.error(`GET: ${url}. ${data.error}`);
+            } else {
+                done && done(data.page);
+                dispatch({ type: TimeTableGetPage, page: data.page });
+            }
+        }, error => console.error(error) || T.notify('Lấy lịch xe bị lỗi!', 'danger'));
+    };
+}
+
+export function getTimeTableCar(condition, done) {
+    return () => {
+        const url = '/api/time-table/car';
+        T.get(url, { condition }, data => {
+            if (data.error) {
+                T.notify('Lấy thời lịch xe bị lỗi!', 'danger');
+                console.error(`GET: ${url}. ${data.error}`);
+            } else {
+                done && done(data);
+            }
+        }, error => console.error(error) || T.notify('Lấy lịch xe bị lỗi', 'danger'));
+    };
+}
+
+// Student API --------------------------------------------------------------------------------------
 export function getTimeTableByStudent(done) {
     return dispatch => {
         const url = '/api/time-table/student';

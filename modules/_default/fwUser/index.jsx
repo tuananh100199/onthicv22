@@ -14,6 +14,14 @@ export default {
             component: Loadable({ loading: Loading, loader: () => import('./adminPage') }),
         },
         {
+            path: '/user/manage-lecturer',
+            component: Loadable({ loading: Loading, loader: () => import('./adminManageLecturerPage') }),
+        },
+        {
+            path: '/user/manage-lecturer/:_id/rating',
+            component: Loadable({ loading: Loading, loader: () => import('./adminManageLecturerDetailPage') }),
+        },
+        {
             path: '/registered',
             component: Loadable({ loading: Loading, loader: () => import('view/component/MessagePage') }),
         },

@@ -7,8 +7,9 @@ module.exports = app => {
         numOfHours: { type: Number, default: 1 },                                       // Số giờ học, số nguyên dương.
         dateNumber: { type: Number, default: -1 },                                      // Buổi học thứ
         truant: { type: Boolean, default: false },                                      // Học viên không đến lớp
-
-        licensePlates: String,                                                          // Xe học (biển số xe)
+        state: { type: String, enum: ['approved', 'waiting', 'reject', 'cancel', 'autoCancel'], default: 'waiting' }, // Trạng thái của thời khóa biểu
+        car: { type: app.db.Schema.ObjectId, ref: 'Car' },                              // Xe học
+        createdAt: { type: Date, default: Date.now },                                   // Thời gian tạo thời khóa biểu
         content: String,                                                                // Nội dung học
         note: String,                                                                   // Ghi chú
     });
@@ -35,18 +36,24 @@ module.exports = app => {
                 let result = { totalItem, pageSize, pageTotal: Math.ceil(totalItem / pageSize) };
                 result.pageNumber = pageNumber === -1 ? result.pageTotal : Math.min(pageNumber, result.pageTotal);
                 const skipNumber = (result.pageNumber > 0 ? result.pageNumber - 1 : 0) * result.pageSize;
-                model.find(condition).populate(populateStudent).sort({ date: -1, startHour: 1 }).skip(skipNumber).limit(result.pageSize).exec((error, list) => {
+                model.find(condition).populate(populateStudent).populate('car', 'licensePlates').sort({ date: -1, startHour: 1 }).skip(skipNumber).limit(result.pageSize).exec((error, list) => {
                     result.list = error ? [] : list;
                     done(error, result);
                 });
             }
         }),
 
-        getAll: (condition, done) => done ? model.find(condition).populate(populateStudent).sort({ date: 1, startHour: -1 }).exec(done) : model.find({}).populate(populateStudent).sort({ date: 1, startHour: -1 }).exec(condition),
+        getAll: (condition, done) => done ? model.find(condition).populate(populateStudent).populate('car', 'licensePlates').sort({ date: 1, startHour: -1 }).exec(done) : model.find({}).populate(populateStudent).populate('car', 'licensePlates').sort({ date: 1, startHour: -1 }).exec(condition),
 
         get: (condition, done) => {
             const findTask = typeof condition == 'string' ? model.findById(condition) : model.findOne(condition);
-            findTask.populate('student').exec(done);
+            findTask.populate('student').populate({
+                path : 'student',
+                populate : {
+                  path : 'course',
+                  select: 'practiceNumOfHours'
+                }
+              }).exec(done);
         },
 
         // changes = { $set, $unset, $push, $pull }

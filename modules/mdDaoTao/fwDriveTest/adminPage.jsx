@@ -51,8 +51,8 @@ class DriveTestContent extends AdminPage {
             this.props.getDriveTestPage(undefined, undefined, {}, courseType);
             this.setState({ courseType });
         });
-
     }
+
     getPage = (pageNumber, pageSize) => {
         this.props.getDriveTestPage(pageNumber, pageSize, {}, this.state.courseType);
     }

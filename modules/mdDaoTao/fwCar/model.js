@@ -36,6 +36,11 @@ module.exports = app => {
             user: { type: app.db.Schema.ObjectId, ref: 'User' },
         }],
         owner: String,
+        calendarHistory: [{
+            thoiGianBatDau: { type: Date, default: Date.now }, 
+            thoiGianKetThuc: { type: Date }, 
+            user: { type: app.db.Schema.ObjectId, ref: 'User' },
+        }],
         brand: { type: app.db.Schema.ObjectId, ref: 'Category' },
         isPersonalCar: { type: Boolean, default: false },                   // Xe cá nhân hay xe của trung tâm
         division: { type: app.db.Schema.ObjectId, ref: 'Division' },        // Xe thuộc cơ sở nào
@@ -45,7 +50,7 @@ module.exports = app => {
     app.model.car = {
         create: (data, done) => model.create(data, done),
 
-        getAll: (condition, done) => model.find(condition).sort({ ngayDangKy: -1 }).exec(done),
+        getAll: (condition, done) => model.find(condition).populate('user', 'lastname firstname').sort({ priority: -1 }).exec(done),
 
         getPage: (pageNumber, pageSize, condition, done) => model.countDocuments(condition, (error, totalItem) => {
             if (error) {
@@ -64,11 +69,13 @@ module.exports = app => {
 
         getOld: (done) => model.find({}).sort({ ngayDangKy: 1 }).limit(1).exec(done),
 
-        get: (condition, done) => typeof condition == 'string' ? model.findById(condition).populate('brand', 'title').populate({
+        get: (condition, done) => typeof condition == 'string' ? model.findById(condition).populate('division', 'title').populate('courseType', 'title').populate('brand', 'title').populate({
             path: 'courseHistory.course', populate: { path: 'course', select: 'name thoiGianBatDau thoiGianKetThuc' }
         }).populate({
             path: 'courseHistory.user', populate: { path: 'user', select: 'firstname lastname' }
-        }).exec(done) : model.findOne(condition).populate('brand', 'title').exec(done),
+        }).populate({
+            path: 'calendarHistory.user', populate: { path: 'user', select: 'firstname lastname' }
+        }).exec(done) : model.findOne(condition).populate('division', 'title').populate('courseType', 'title').populate('brand', 'title').exec(done),
 
         update: (condition, changes, $unset, done) => {
             if (!done) {
@@ -101,6 +108,21 @@ module.exports = app => {
         },
         addLichSuDangKiem: (_id, data, done) => {
             model.findOneAndUpdate(_id, { $push: { lichSuDangKiem: data } }, { new: true }).exec(done);
+        },
+        addCalendarHistory: (_id, data, done) => {
+            model.findOneAndUpdate(_id, { $push: { calendarHistory: data } }, { new: true }).exec(done);
+        },
+        updateCalendarHistory: (_id, done) => {
+            model.findById(_id).exec((error, item) => {
+                if (item.calendarHistory.at(-1)) {
+                    model.findOneAndUpdate({ _id, 'calendarHistory._id': item.calendarHistory.at(-1)._id }, { '$set': {
+                        'calendarHistory.$.thoiGianKetThuc': new Date(),
+                    }}, { new: true }).exec(done);
+                }
+            });
+        },
+        deleteFuel: (_id, _fuelId, done) => {
+            model.findOneAndUpdate({ _id }, { $pull: { fuel: { _id: _fuelId } } }, { new: true }).exec(done);
         },
         addLichSuDangKy: (_id, data, done) => {
             model.findOneAndUpdate(_id, { $push: { lichSuDangKy: data } }, { new: true }).exec(done);

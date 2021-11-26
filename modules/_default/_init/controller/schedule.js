@@ -21,8 +21,9 @@ module.exports = (app) => {
                         }
                     });
                 }
-                // Hủy đăng ký lịch học của học viên cách 1 ngày
-                if (app.primaryWorker) {
+                 
+                 // Hủy đăng ký lịch học của học viên cách 1 ngày
+                 if (app.primaryWorker) {
                     app.model.timeTable.getAll({ state: 'waiting' }, (error, items) =>{
                         let timeTables = [];
                         (items||[]).forEach(item => {
@@ -47,7 +48,6 @@ module.exports = (app) => {
                         }
                     });
                 }
-                
             });
         },
     });

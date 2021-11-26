@@ -61,5 +61,21 @@ export default {
             path: '/user/car/import',
             component: Loadable({ loading: Loading, loader: () => import('./pages/adminImportPage') })
         },
+        {
+            path: '/user/car/lecturer/calendar',
+            component: Loadable({ loading: Loading, loader: () => import('./pages/lecturerTimeTableCarPage') })
+        },
+        {
+            path: '/user/car/calendar',
+            component: Loadable({ loading: Loading, loader: () => import('./pages/adminTimeTableCarPage') })
+        },
+        {
+            path: '/user/car/history-calendar',
+            component: Loadable({ loading: Loading, loader: () => import('./pages/adminHistoryCalendarPage') })
+        },
+        {
+            path: '/user/car/history-calendar/:_id',
+            component: Loadable({ loading: Loading, loader: () => import('./pages/adminHistoryCalendarEditPage') })
+        },
     ],
 };

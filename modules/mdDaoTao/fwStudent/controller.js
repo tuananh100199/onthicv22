@@ -77,14 +77,13 @@ module.exports = (app) => {
         let pageNumber = parseInt(req.params.pageNumber),
             pageSize = parseInt(req.params.pageSize),
             condition = req.query.pageCondition || {},
-            pageCondition = { courseType: req.params._courseId || { $ne: null } },
+            pageCondition = { courseType: req.params._courseId || { $ne: null }, course: { $ne: null } },
             filter = req.params.filter;
         function dateToText(date) {
             const newDate = new Date(date);
             let year = newDate.getFullYear();
             let month = (1 + newDate.getMonth()).toString().padStart(2, '0');
             let day = newDate.getDate().toString().padStart(2, '0');
-            console.log(month);
             return day + '/' + month + '/' + year;
         }
         try {
@@ -157,7 +156,7 @@ module.exports = (app) => {
                         obj['liDoChuaTotNghiep'] = student.liDoChuaTotNghiep ? student.liDoChuaTotNghiep : '';
                     } else if (filter == 'HVChuaDatSatHach') {
                         obj['ngayDuKienThiSatHach'] = student.ngayDuKienThiSatHach;
-                        obj['liDoChuaTotNghiep'] = student.liDoChuaDatSatHach ? student.liDoChuaTotNghiep.liDoChuaDatSatHach : '';
+                        obj['liDoChuaDatSatHach'] = student.liDoChuaDatSatHach ? student.liDoChuaDatSatHach : '';
                     }
                     worksheet.addRow(obj);
                 });
@@ -343,6 +342,11 @@ module.exports = (app) => {
         });
     });
 
+    // User API ------------------------------------------------------------------------------------------------------
+    app.get('/api/student/user', app.permission.check('user:login'), (req, res) => {
+        app.model.student.get(req.query.condition, (error, item) => res.send({ error, item }));
+    });
+
     // Hook permissionHooks -------------------------------------------------------------------------------------------
     app.permissionHooks.add('courseAdmin', 'pre-student', (user) => new Promise(resolve => {
         app.permissionHooks.pushUserPermission(user, 'pre-student:read', 'pre-student:write', 'pre-student:delete');
@@ -419,6 +423,7 @@ module.exports = (app) => {
                                 hinhChupTrucTiep: values[20] && values[20].toLowerCase().trim() == 'x' ? true : false,
                                 lecturerIdentityCard: values[21],
                                 lecturerName: values[22],
+                                hocPhiPhaiDong: values[23],
                             });
                             handleUpload(index + 1);
                         }

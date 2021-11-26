@@ -111,6 +111,7 @@ export function getAllLecturer(done) {
         const url = '/api/user/lecturer';
         T.get(url, data => {
             if (data.error) {
+                
                 T.notify('Lấy danh sách cố vấn học tập bị lỗi!', 'danger');
                 console.error('GET: ' + url + '. ' + data.error);
             } else {
@@ -232,9 +233,9 @@ export function ajaxGetUser(_id, done) {
     });
 }
 
-export const ajaxSelectLecturer = (divisionId) => ({
-    ajax: true,
-    url: '/api/user/lecturer',
-    data: params => ({ condition: { divisionId, title: params.term }}),
-    processResults: response => ({ results: response && response.list ? response.list.map(user => ({ id: user._id, text: `${user.lastname} ${user.firstname}` })) : [] }),
-});
+export const ajaxSelectLecturer = (divisionId) => T.createAjaxAdapter(
+    '/api/user/lecturer',
+    params => ({ condition: { divisionId, searchText: params.term } }),
+    response => response && response.list ?
+        response.list.map(user => ({ id: user._id, text: `${user.lastname} ${user.firstname}` })) : [],
+);

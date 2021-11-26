@@ -97,11 +97,27 @@ export default {
         },
         {
             path: '/user/course/:_id/lecturer/calendar',
-            component: Loadable({ loading: Loading, loader: () => import('./pages/lecturerTimeTablePage') })
+            component: Loadable({ loading: Loading, loader: () => import('modules/mdDaoTao/fwTimeTable/lecturerTimeTablePage') })
+        },
+        {
+            path: '/user/course/:_id/lecturer/register-calendar',
+            component: Loadable({ loading: Loading, loader: () => import('modules/mdDaoTao/fwRegisterCalendar/pages/lecturerOffCalendarPage') })
+        },
+        {
+            path: '/user/course/:_id/lecturer/student-register-calendar',
+            component: Loadable({ loading: Loading, loader: () => import('modules/mdDaoTao/fwRegisterCalendar/pages/lecturerStudentRegisterCalendarPage') })
         },
         {
             path: '/user/course/:_id/calendar',
             component: Loadable({ loading: Loading, loader: () => import('modules/mdDaoTao/fwTimeTable/adminTimeTablePage') })
+        },
+        {
+            path: '/user/course/:_id/register-calendar',
+            component: Loadable({ loading: Loading, loader: () => import('modules/mdDaoTao/fwRegisterCalendar/pages/adminOffCalendarPage') })
+        },
+        {
+            path: '/user/course/:_id/student-register-calendar',
+            component: Loadable({ loading: Loading, loader: () => import('modules/mdDaoTao/fwRegisterCalendar/pages/adminStudentRegisterCalendarPage') })
         },
         {
             path: '/user/course/:_id/rate-subject',

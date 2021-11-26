@@ -2,7 +2,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { getCourse, getLearningProgressPage, exportLearningProgressToExcel } from '../redux';
-import { updateStudent, getStudentPage } from 'modules/mdDaoTao/fwStudent/redux';
+import { updateStudent } from 'modules/mdDaoTao/fwStudent/redux';
 import { AdminPage, AdminModal, CirclePageButton, TableCell, renderTable, FormTextBox, FormSelect, FormCheckbox } from 'view/component/AdminPage';
 import Pagination from 'view/component/Pagination';
 import './style.scss';
@@ -309,5 +309,5 @@ class AdminLearningProgressPage extends AdminPage {
 }
 
 const mapStateToProps = state => ({ system: state.system, course: state.trainning.course });
-const mapActionsToProps = { getCourse, getLearningProgressPage, updateStudent, getStudentPage };
+const mapActionsToProps = { getCourse, getLearningProgressPage, updateStudent };
 export default connect(mapStateToProps, mapActionsToProps)(AdminLearningProgressPage);

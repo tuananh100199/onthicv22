@@ -238,6 +238,21 @@ export function downloadFailPassStudentFile() {
     T.download(T.url('/api/student/download-fail-pass'));
 }
 
+// User API -----------------------------------------------------------------------------------------------------------
+export function getStudentByUser(condition, done) {
+    return () => {
+        const url = '/api/student/user';
+        T.get(url, { condition }, data => {
+            if (data.error) {
+                T.notify('Lấy thông tin học viên bị lỗi!', 'danger');
+                console.error(`GET: ${url}. ${data.error}`);
+            } else {
+                done && done(data.item);
+            }
+        }, error => console.error(error) || T.notify('Lấy thông tin học viên bị lỗi', 'danger'));
+    };
+}
+
 // Ajax Selections ----------------------------------------------------------------------------------------------------
 export const ajaxSelectPreStudent = T.createAjaxAdapter(
     '/api/pre-student/page/1/20',

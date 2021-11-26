@@ -5,11 +5,24 @@ module.exports = app => {
             2060: { title: 'Người dùng', link: '/user/member', icon: 'fa-users', backgroundColor: '#2e7d32' },
         },
     };
-    app.permission.add({ name: 'user:read', menu }, { name: 'user:write' }, { name: 'user:delete' });
+    
+    const menuLecturer = {
+        parentMenu: app.parentMenu.setting,
+        menus: {
+            2070: { title: 'Quản lý giáo viên', link: '/user/manage-lecturer', icon: 'fa-bars', backgroundColor: '#00b0ff' }
+        }
+    };
+
+    app.permission.add(
+        { name: 'user:read', menu }, { name: 'user:write' }, { name: 'user:delete' },
+        { name: 'manageLecturer:read', menu: menuLecturer }, { name: 'manageLecturer:write' }, { name: 'manageLecturer:delete' },
+    );
 
     ['/registered(.htm(l)?)?', '/active-user/:userId', '/forgot-password/:userId/:userToken'].forEach((route) => app.get(route, app.templates.home));
     app.get('/user/profile', app.permission.check(), app.templates.admin);
     app.get('/user/member', app.permission.check('user:read'), app.templates.admin);
+    app.get('/user/manage-lecturer', app.permission.check('user:read'), app.templates.admin);
+    app.get('/user/manage-lecturer/:_id/rating', app.permission.check('user:read'), app.templates.admin);
 
     // APIs -----------------------------------------------------------------------------------------------------------------------------------------
     app.get('/api/user/page/:pageNumber/:pageSize', (req, res, next) => app.isDebug ? next() : app.permission.check('user:read')(req, res, next), (req, res) => {
@@ -18,7 +31,18 @@ module.exports = app => {
             condition = req.query.condition || {},
             pageCondition = {};
         try {
-            if (condition) {
+            if (condition && condition.searchText && condition.searchText.startsWith('teacherPage')){
+                let teacherCondition = {};
+                teacherCondition.$or = [];
+                const value = { $regex: `.*${condition.searchText.substring(11)}.*`, $options: 'i' };
+                teacherCondition.$or.push(
+                    { firstname: value },
+                    { lastname: value },
+                );
+                pageCondition =  {
+                    $and: [ teacherCondition, { isLecturer: true } ]
+                };
+            } else {
                 pageCondition.$or = [];
                 if (condition.searchText) {
                     const value = { $regex: `.*${condition.searchText}.*`, $options: 'i' };
@@ -45,6 +69,7 @@ module.exports = app => {
 
                 if (pageCondition.$or.length == 0) delete pageCondition.$or;
             }
+
             if (req.session.user.division && req.session.user.division.isOutside) pageCondition.division = req.session.user.division._id;
             app.model.user.getPage(pageNumber, pageSize, pageCondition, (error, page) => res.send({ error, page }));
         } catch (error) {
@@ -67,9 +92,23 @@ module.exports = app => {
         }
     });
 
-    app.get('/api/user/lecturer', app.permission.check('user:read'), (_, res) => {
-        app.model.user.getAll({ isLecturer: true }, (error, list) => {
-            if (error || list && list.length < 1) {
+    app.get('/api/user/lecturer', app.permission.check('user:read'), (req, res) => {
+        let condition = req.query.condition || {},
+            searchCondition = {};
+        if (condition.searchText) {
+            searchCondition.$or = [];
+            const value = { $regex: `.*${condition.searchText}.*`, $options: 'i' };
+            searchCondition.$or.push(
+                { firstname: value },
+                { lastname: value },
+            );
+        }
+        let lecturerCondition =  condition.divisionId ? {
+            $and: [ searchCondition, { isLecturer: true }, { division: condition.divisionId } ]
+        } : {$and: [ searchCondition, { isLecturer: true }]};
+        app.model.user.getAll(lecturerCondition, (error, list) => {
+            console.log(list);
+            if (error) {
                 res.send({ error: 'Lấy thông tin cố vấn học tập bị lỗi' });
             } else {
                 res.send({ error, list });

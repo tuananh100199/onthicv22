@@ -14,7 +14,6 @@ class CarModal extends AdminModal {
     }
 
     onShow = (item) => {
-        console.log(item);
         const { _id, licensePlates, brand, ngayHetHanDangKiem, ngayHetHanTapLai } = item || { _id: null, licensePlates: '', ngayThanhLy: '' };
         this.itemLicensePlates.value(licensePlates);
         this.itemNgayHetHanDangKiem.value(ngayHetHanDangKiem);

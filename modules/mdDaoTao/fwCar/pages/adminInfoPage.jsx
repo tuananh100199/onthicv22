@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { getCarPage, createCar, updateCar, deleteCar,liquidateCar, exportInfoCar } from '../redux';
+import { getCarPage, createCar, updateCar, deleteCar,liquidateCar, exportInfoCar, ajaxSelectAvaiableLecturer } from '../redux';
 import { getAllLecturer } from 'modules/_default/fwUser/redux';
 import { getCategoryAll } from 'modules/_default/fwCategory/redux';
 import { ajaxSelectCourseType } from 'modules/mdDaoTao/fwCourseType/redux';
@@ -27,19 +27,17 @@ class CarModal extends AdminModal {
     }
 
     onShow = (item) => {
-        const { _id, licensePlates, courseType, user, ngayHetHanDangKiem, ngayHetHanTapLai, ngayDangKy, ngayThanhLy, brand, status, division, isPersonalCar } = item || { _id: null, licensePlates: '', ngayHetHanDangKiem: '', ngayHetHanTapLai: '', ngayDangKy: '', ngayThanhLy: '', brand: {} };
+        const { _id, licensePlates, courseType, user, ngayHetHanDangKiem, ngayHetHanTapLai, ngayDangKy,  brand, status, division, isPersonalCar } = item || { _id: null, licensePlates: '', ngayHetHanDangKiem: '', ngayHetHanTapLai: '', ngayDangKy: '', ngayThanhLy: '', brand: {} };
         this.itemDivision.value(division ? { id: division._id, text: division.title } : null);
         this.itemCourseType.value(courseType ? { id: courseType._id, text: courseType.title } : null);
         this.itemLicensePlates.value(licensePlates);
-        this.itemUser.value(user ? user._id : '0');
         this.itemBrand.value(brand ? brand._id : null);
         this.itemIsPersonalCar.value(isPersonalCar);
         this.itemNgayHetHanDangKiem.value(ngayHetHanDangKiem);
         this.itemNgayHetHanTapLai.value(ngayHetHanTapLai);
         this.itemNgayDangKy.value(ngayDangKy);
         this.itemStatus.value(status ? status : 'dangSuDung');
-        this.itemNgayThanhLy.value(ngayThanhLy);
-        this.setState({ _id, className: status == 'daThanhLy' ? 'col-md-6' : 'invisible' });
+        this.setState({ _id ,user });
     }
 
     onSubmit = () => {
@@ -52,7 +50,6 @@ class CarModal extends AdminModal {
             ngayHetHanDangKiem: this.itemNgayHetHanDangKiem.value(),
             ngayHetHanTapLai: this.itemNgayHetHanTapLai.value(),
             ngayDangKy: this.itemNgayDangKy.value(),
-            ngayThanhLy: this.itemNgayThanhLy.value(),
             status: this.itemStatus.value(),
             division: this.itemDivision.value()
         };
@@ -69,7 +66,7 @@ class CarModal extends AdminModal {
             T.notify('Cơ sở đào tạo không được trống!', 'danger');
             this.itemDivision.focus();
         } else if (!data.user) {
-            T.notify('Vui lòng chọn chủ xe!', 'danger');
+            T.notify('Vui lòng chọn Quản lý phụ trách xe!', 'danger');
             this.itemUser.focus();
         }
         else {
@@ -90,11 +87,11 @@ class CarModal extends AdminModal {
                     <FormDatePicker ref={e => this.itemNgayHetHanDangKiem = e} className='col-md-6' label='Ngày hết hạn đăng kiểm' readOnly={true} type='date-mask' />
                     <FormDatePicker ref={e => this.itemNgayHetHanTapLai = e} className='col-md-6' label='Ngày hết hạn tập lái' readOnly={true} type='date-mask' />
                     <FormDatePicker ref={e => this.itemNgayDangKy = e} className='col-md-6' label='Ngày đăng ký' readOnly={readOnly} type='date-mask' />
-                    <FormSelect className='col-md-6' ref={e => this.itemCourseType = e} label='Hạng đào tạo' data={ajaxSelectCourseType} readOnly={readOnly} />
-                    <FormSelect className='col-md-6' ref={e => this.itemDivision = e} label='Cơ sở đào tạo' data={ajaxSelectDivision} readOnly={readOnly} />
-                    <FormSelect className='col-md-6' ref={e => this.itemUser = e} label='Chủ xe' data={this.props.dataLecturer} readOnly={readOnly} />
                     <FormSelect className='col-md-6' ref={e => this.itemStatus = e} label='Tình trạng xe' onChange={value => this.setState({ className: (value.id == 'daThanhLy') ? 'col-md-6' : 'invisible' })} data={dataRepairType} readOnly={true} />
-                    <FormDatePicker ref={e => this.itemNgayThanhLy = e} className={this.state.className} label='Ngày thanh lý' readOnly={readOnly} type='date-mask' />
+                    <FormSelect className='col-md-3' ref={e => this.itemCourseType = e} label='Hạng đào tạo' data={ajaxSelectCourseType} readOnly={readOnly} />
+                    <FormSelect className='col-md-5' ref={e => this.itemDivision = e} label='Cơ sở đào tạo' data={ajaxSelectDivision} readOnly={readOnly} />
+                    <FormSelect className='col-md-4' ref={e => this.itemUser = e} label='Quản lý phụ trách xe' data={ajaxSelectAvaiableLecturer(this.state.user)} readOnly={readOnly} />
+                    
                 </div >
         });
     }
@@ -175,8 +172,7 @@ class CarPage extends AdminPage {
                 <tr>
                     <th style={{ width: 'auto', textAlign: 'center' }}>#</th>
                     <th style={{ width: 'auto' }} nowrap='true'>Xe</th>
-                    {/* <th style={{ width: 'auto' }} nowrap='true'>Nhãn hiệu xe</th> */}
-                    <th style={{ width: 'auto' }} nowrap='true'>Chủ xe</th>
+                    <th style={{ width: 'auto' }} nowrap='true'>Quản lý phụ trách xe</th>
                     <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Hạng đào tạo</th>
                     <th style={{ width: '100%' }} nowrap='true'>Cơ sở</th>
                     <th style={{ width: 'auto' }} nowrap='true'>Ngày hết hạn đăng kiểm</th>

@@ -29,8 +29,6 @@ class LecturerStudentPage extends AdminPage {
         const currentUser = this.props.system ? this.props.system.user : null,
             item = this.props.course && this.props.course.item ? this.props.course.item : {};
         const teacherGroup = item && item.teacherGroups ? item.teacherGroups.find(group => group.teacher && group.teacher._id == currentUser._id) : null;
-        console.log(teacherGroup);
-
         const table = renderTable({
             getDataSource: () => teacherGroup ? teacherGroup.student : [], stickyHead: true,
             renderHead: () => (
