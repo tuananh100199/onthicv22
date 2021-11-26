@@ -223,10 +223,10 @@ class DashboardPage extends AdminPage {
                     <DashboardIcon iconBackgroundColor='#8A0'  icon='fa-wrench' title='Xe đang sửa chữa' value={numberOfRepairCar} link='/user/car/repair' readOnly={permission.settings} />
                     <DashboardIcon iconBackgroundColor='#CC0'  icon='fa-road' title='Xe đã đăng ký tập lái' value={numberOfPracticeCar} link='/user/car/practice' readOnly={permission.settings} />
                     <DashboardIcon iconBackgroundColor='#9ced65'  icon='fa-briefcase' title='Xe đang đi khóa' value={numberOfCourseCar} link='/user/car/manager' readOnly={permission.settings} />
-                    <DashboardIcon iconBackgroundColor='coral' icon='fa-user-secret' title='Giáo viên' value={numberOfLecturer} link='/user/car' readOnly={permission.settings} />
-                    <DashboardIcon iconBackgroundColor='#900' icon='fa-address-card-o' title='Giáo viên đi khóa' value={numberOfLecturer} link='/user/car' readOnly={permission.settings} />
-                    <DashboardIcon iconBackgroundColor='#64b5f6' icon='fa-calendar' title='Lịch dạy' link='/user/car' readOnly={permission.settings} />
-                    <DashboardIcon iconBackgroundColor='#8e24aa' icon='fa-star' title='Đánh giá giáo viên' link='/user/car' readOnly={permission.settings} />
+                    <DashboardIcon iconBackgroundColor='coral' icon='fa-user-secret' title='Giáo viên' value={numberOfLecturer} link='/user/manage-lecturer' readOnly={permission.settings} />
+                    <DashboardIcon iconBackgroundColor='#900' icon='fa-address-card-o' title='Giáo viên đi khóa' value={numberOfLecturer} link='/user/manage-lecturer' readOnly={permission.settings} />
+                    <DashboardIcon iconBackgroundColor='#64b5f6' icon='fa-calendar' title='Lịch dạy' link='/user/course' readOnly={permission.settings} />
+                    <DashboardIcon iconBackgroundColor='#8e24aa' icon='fa-star' title='Đánh giá giáo viên' link='/user/manage-lecturer' readOnly={permission.settings} />
                 </div>),
         });
     }
