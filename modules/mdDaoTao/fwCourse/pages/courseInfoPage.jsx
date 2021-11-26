@@ -6,9 +6,10 @@ import { Link } from 'react-router-dom';
 import { AdminPage, FormTextBox, FormDatePicker, FormEditor, FormSelect, FormRichTextBox, CirclePageButton, FormCheckbox } from 'view/component/AdminPage';
 
 class EditCoursePage extends AdminPage {
+    state={};
     componentDidMount() {
         const setData = (course) => {
-            const { name, maxStudent, courseFee, shortDescription, detailDescription, courseType,
+            const { name, maxStudent, courseFee, shortDescription, detailDescription, courseType, close, lock,
                 thoiGianKhaiGiang, thoiGianBatDau, thoiGianKetThuc, thoiGianThiKetThucMonDuKien, thoiGianThiKetThucMonChinhThuc, thoiGianThiTotNghiepDuKien, thoiGianThiTotNghiepChinhThuc, active, chatActive, commentActive } = course;
 
             this.name.value(name);
@@ -25,9 +26,11 @@ class EditCoursePage extends AdminPage {
             this.thoiGianThiKetThucMonChinhThuc.value(thoiGianThiKetThucMonChinhThuc);
             this.thoiGianThiTotNghiepDuKien.value(thoiGianThiTotNghiepDuKien);
             this.thoiGianThiTotNghiepChinhThuc.value(thoiGianThiTotNghiepChinhThuc);
+            this.close.value(close);
             this.active.value(active);
             this.chatActive.value(chatActive);
             this.commentActive.value(commentActive);
+            this.setState({lock});
         };
 
         T.ready('/user/course', () => {
@@ -65,8 +68,12 @@ class EditCoursePage extends AdminPage {
                 shortDescription: this.shortDescription.value(),
                 detailDescription: this.detailDescription.html(),
                 active: this.active.value(),
+                close: this.close.value(),
                 chatActive: this.chatActive.value(),
                 commentActive: this.commentActive.value(),
+                thoiGianKetThuc: this.thoiGianKetThuc.value(),
+                thoiGianBatDau: this.thoiGianBatDau.value(),
+                
             };
             this.setState({ chatActive: changes.chatActive, commentActive: changes.commentActive });
             if (changes.courseFee == null) changes.courseFee = 0;
@@ -79,12 +86,20 @@ class EditCoursePage extends AdminPage {
         }
     }
 
+    lock = (e) => {
+        const course = this.props.course ? this.props.course.item || {} : {},
+        lock = this.state.lock;
+        e.preventDefault() || T.confirm('Khóa thông tin khóa học', `Bạn có chắc muốn ${lock ? 'mở ' : 'khóa'} thông tin khóa học này ?`, true, isConfirm =>
+        isConfirm && this.props.updateCourse(course._id, { lock: !lock }, () => this.setState({lock: !lock})));
+    } 
+
     render() {
         const course = this.props.course ? this.props.course.item || {} : {};
         const currentUser = this.props.system ? this.props.system.user : null,
             permission = this.getUserPermission('course'),
             previousRoute = '/user/course/' + (course ? course._id || '' : ''),
             { isLecturer, isCourseAdmin } = currentUser,
+            lock = this.state.lock,
             readOnly = (!permission.write || isLecturer) && !isCourseAdmin; //TODO: xem lại !isCourseAdmin
 
         return this.renderPage({
@@ -94,8 +109,9 @@ class EditCoursePage extends AdminPage {
             content: <>
                 <div className='tile'>
                     <div className='row'>
-                        <h3 className='tile-title col-md-9' style={{ paddingLeft: 15, marginBottom: 5 }}>Thông tin chung</h3>
-                        <FormCheckbox ref={e => this.active = e} className={'col-md-3 ' + (readOnly ? 'invisible' : '')} label='Kích hoạt' isSwitch={true} readOnly={readOnly} />
+                        <h3 className='tile-title col-md-8' style={{ paddingLeft: 15, marginBottom: 5 }}>Thông tin chung</h3>
+                        <FormCheckbox ref={e => this.active = e} className={'col-md-2 ' + (readOnly ? 'invisible' : '')} label='Kích hoạt' isSwitch={true} readOnly={readOnly} />
+                        <FormCheckbox ref={e => this.close = e} className={'col-md-2 ' + (readOnly ? 'invisible' : '')} label='Kết thúc khóa học' isSwitch={true} readOnly={readOnly} />
                         <FormTextBox ref={e => this.name = e} label='Tên khóa học' className='col-md-3' value={course.name} onChange={e => this.setState({ title: e.target.value })} readOnly={readOnly} />
                         <FormSelect ref={e => this.courseType = e} label='Loại khóa học' data={ajaxSelectCourseType} className='col-md-3' readOnly={readOnly} />
                         <FormTextBox ref={e => this.maxStudent = e} label='Số  học viên tối đa' className='col-md-3' type='number' readOnly={readOnly} />
@@ -122,7 +138,8 @@ class EditCoursePage extends AdminPage {
 
                 <div className='tile'>
                     <div className='row'>
-                        <h3 className='tile-title col-12' style={{ paddingLeft: 15, marginBottom: 5 }}>Mô tả khóa học</h3>
+                        <h3 className='tile-title col-9' style={{ paddingLeft: 15, marginBottom: 5 }}>Mô tả khóa học</h3>
+                        <p className='col-3' style={{ paddingLeft: 15, marginBottom: 5 }}>Trạng thái khóa học: {lock ? 'Đã khóa' : 'Chưa khóa'}</p>
                         <FormCheckbox ref={e => this.chatActive = e} className={'col-md-3 ' + (readOnly ? 'invisible' : '')} label='Kích hoạt chat' isSwitch={true} readOnly={readOnly} />
                         <FormCheckbox ref={e => this.commentActive = e} className={'col-md-6 ' + (readOnly ? 'invisible' : '')} label='Kích hoạt bình luận bài học' isSwitch={true} readOnly={readOnly} />
 
@@ -131,6 +148,7 @@ class EditCoursePage extends AdminPage {
                     </div>
                 </div>
                 {!readOnly ? <CirclePageButton type='save' onClick={this.saveInfo} /> : null}
+                {!permission.lock ? <CirclePageButton type='custom' style={{right: '75px'}} customClassName={lock ? 'btn-success' : 'btn-danger'} customIcon={lock ? 'fa-unlock' : 'fa-lock'} onClick={(e) => this.lock(e)} /> : null}
             </>,
             backRoute: previousRoute,
         });

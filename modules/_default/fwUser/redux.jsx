@@ -111,6 +111,7 @@ export function getAllLecturer(done) {
         const url = '/api/user/lecturer';
         T.get(url, data => {
             if (data.error) {
+                
                 T.notify('Lấy danh sách cố vấn học tập bị lỗi!', 'danger');
                 console.error('GET: ' + url + '. ' + data.error);
             } else {

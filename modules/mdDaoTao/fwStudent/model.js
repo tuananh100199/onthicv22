@@ -235,9 +235,19 @@ module.exports = (app) => {
                         Object.assign(student.tienDoHocTap[data.subjectId], obj);
                     }
                     model.findOneAndUpdate({ _id: data.studentId }, { tienDoHocTap: student.tienDoHocTap }, { new: true }).exec(done);
-                } else {
+                } else if(data.totalSeconds){
                     const obj = {};
-                    obj[data.lessonId] = { score: data.score, trueAnswers: data.trueAnswer, answers: data.answers };
+                    if (student.tienDoHocTap[data.subjectId] && student.tienDoHocTap[data.subjectId][data.lessonId]) {
+                        student.tienDoHocTap[data.subjectId][data.lessonId].totalSeconds = data.totalSeconds;
+                    } else {
+                        obj[data.lessonId] = { totalSeconds: data.totalSeconds };
+                        Object.assign(student.tienDoHocTap[data.subjectId], obj);
+                    }
+                    model.findOneAndUpdate({ _id: data.studentId }, { tienDoHocTap: student.tienDoHocTap }, { new: true }).exec(done);
+                } else {
+                    const obj = {},
+                    totalSeconds = student.tienDoHocTap[data.subjectId] && student.tienDoHocTap[data.subjectId][data.lessonId] && student.tienDoHocTap[data.subjectId][data.lessonId].totalSeconds;
+                    obj[data.lessonId] = { score: data.score, trueAnswers: data.trueAnswer, answers: data.answers, totalSeconds };
                     Object.assign(student.tienDoHocTap[data.subjectId], obj);
                     model.findOneAndUpdate({ _id: data.studentId }, { tienDoHocTap: student.tienDoHocTap }, { new: true }).exec(done);
                 }

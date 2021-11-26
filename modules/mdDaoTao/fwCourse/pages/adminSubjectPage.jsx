@@ -80,8 +80,9 @@ class AdminSubjectPage extends AdminPage {
     render() {
         const currentUser = this.props.system ? this.props.system.user : null,
             permission = this.getUserPermission('course');
-        const readOnly = (!permission.write || currentUser.isLecturer) && !currentUser.isCourseAdmin,
-            item = this.props.course && this.props.course.item ? this.props.course.item : { subjects: [] };
+        const item = this.props.course && this.props.course.item ? this.props.course.item : { subjects: [] },
+        readOnly = item.lock || ((!permission.write || currentUser.isLecturer) && !currentUser.isCourseAdmin);
+
         const table = renderTable({
             getDataSource: () => item && item.subjects,
             renderHead: () => (
@@ -89,7 +90,7 @@ class AdminSubjectPage extends AdminPage {
                     <th style={{ width: 'auto' }}>#</th>
                     <th style={{ width: '100%' }}>Tên môn học</th>
                     <th style={{ width: 'auto' }} nowrap='true'>Số bài học</th>
-                    {!readOnly && <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Thao tác</th>}
+                    {!readOnly &&  <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Thao tác</th>}
                 </tr>),
             renderRow: (item, index) => (
                 <tr key={index}>

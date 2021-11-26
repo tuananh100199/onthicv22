@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { getLessonByStudent, checkQuestion, resetStudentScore } from './redux';
+import { getLessonByStudent, checkQuestion, resetStudentScore, timeLesson } from './redux';
 import { getStudentScore } from '../fwStudent/redux';
 import { Link } from 'react-router-dom';
 import { AdminPage } from 'view/component/AdminPage';
@@ -18,19 +18,32 @@ class userQuestion extends AdminPage {
                     T.notify('Lấy bài học bị lỗi!', 'danger');
                     this.props.history.push('/user/hoc-vien/khoa-hoc/' + params.courseId + '/mon-hoc/' + params.subjectId + '/bai-hoc/' + params._id);
                 } else if (data.item) {
+                    let totalSeconds = 0;
                     this.props.getStudentScore(params.courseId, item => {
                         if (item) {
+                            totalSeconds = item[params.subjectId] && item[params.subjectId][params._id] && item[params.subjectId][params._id].totalSeconds ? parseInt(item[params.subjectId][params._id].totalSeconds) : 0;
                             this.setState({
                                 activeQuestionIndex: 0,
                                 subjectId: params.subjectId,
                                 courseId: params.courseId,
-                                prevTrueAnswers: item[params.subjectId][params._id] ? item[params.subjectId][params._id].trueAnswers : null,
-                                prevAnswers: item[params.subjectId][params._id] ? item[params.subjectId][params._id].answers : null,
-                                showSubmitButton: item[params.subjectId][params._id] ? false : true
+                                prevTrueAnswers: item[params.subjectId][params._id] && item[params.subjectId][params._id].trueAnswers ? item[params.subjectId][params._id].trueAnswers : null,
+                                prevAnswers: item[params.subjectId][params._id] &&  item[params.subjectId][params._id].answers ? item[params.subjectId][params._id].answers : null,
+                                showSubmitButton: item[params.subjectId][params._id] && item[params.subjectId][params._id].score ? false : true
                             });
                         }
                     });
                     T.ready('/user/hoc-vien/khoa-hoc/' + params.courseId);
+                    let hours = 0;
+                    let minutes = 0;
+                    let seconds = 0;
+                    window.interval = setInterval(() => {
+                        ++totalSeconds;
+                        this.setState({totalSeconds});
+                        hours = parseInt( totalSeconds / 3600 ) % 24 ;
+                        minutes = parseInt( totalSeconds / 60 ) % 60 ;
+                        seconds = totalSeconds % 60;
+                        $('#time').text((hours < 10 ? '0' + hours : hours) + ':' + (minutes < 10 ? '0' + minutes : minutes) + ':' + (seconds  < 10 ? '0' + seconds : seconds));
+                    }, 1000);
                     const { _id, title, shortDescription, detailDescription, questions } = data.item;
                     if (questions && questions.length == 1) {
                         this.setState({ prevButton: 'invisible', nextButton: 'invisible' });
@@ -46,8 +59,11 @@ class userQuestion extends AdminPage {
             this.props.history.push('/user/hoc-vien/khoa-hoc/' + params.courseId + '/mon-hoc/' + params.subjectId + '/bai-hoc/' + params._id);
         }
     }
-
+    
     componentWillUnmount() {
+        const {lessonId,subjectId,courseId,totalSeconds} = this.state;
+        clearInterval(window.interval);
+        this.props.timeLesson(lessonId, subjectId, courseId, totalSeconds);
         window.removeEventListener('keydown', this.logKey);
     }
 
@@ -100,7 +116,7 @@ class userQuestion extends AdminPage {
             if (data.error) {
                 T.notify('Lấy bài học bị lỗi!', 'danger');
                 this.props.history.push('/user/hoc-vien/khoa-hoc/' + courseId + '/mon-hoc/' + subjectId + '/bai-hoc/' + lessonId);
-            } else if (data.item) {
+            } else if (data.item && data.item.score) {
                 T.ready('/user/hoc-vien/khoa-hoc/' + courseId);
                 const { _id, title, shortDescription, detailDescription, questions } = data.item;
                 this.setState({
@@ -193,8 +209,9 @@ class userQuestion extends AdminPage {
             content: (<>
                 {questions && questions.length ? (
                     <div className='tile'>
-                        <div className='tile-header'>
+                        <div className='tile-header d-flex justify-content-between'>
                             {questions.map((question, index) => (<span key={index} style={{ cursor: 'pointer' }} onClick={e => this.changeQuestion(e, index)}><i className={'fa fa-square ' + (prevAnswers && prevTrueAnswers && prevAnswers[question._id] ? (prevAnswers[question._id] == prevTrueAnswers[question._id] ? 'text-primary' : 'text-danger') : 'text-secondary')} aria-hidden='true'></i>&nbsp;&nbsp;</span>))}
+                            <h3 id='time' ref={e => this.time = e}></h3>
                         </div>
                         <div className='tile-body row'>
                             {activeQuestion ? (
@@ -256,5 +273,5 @@ class userQuestion extends AdminPage {
 }
 
 const mapStateToProps = state => ({ system: state.system, lesson: state.trainning.lesson });
-const mapActionsToProps = { getLessonByStudent, checkQuestion, getStudentScore, resetStudentScore };
+const mapActionsToProps = { getLessonByStudent, checkQuestion, getStudentScore, resetStudentScore, timeLesson };
 export default connect(mapStateToProps, mapActionsToProps)(userQuestion);

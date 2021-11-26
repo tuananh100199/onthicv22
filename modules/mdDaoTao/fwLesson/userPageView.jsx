@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { getLessonByStudent, viewLesson } from './redux';
+import { getLessonByStudent, viewLesson, timeLesson } from './redux';
 import { getStudentScore } from '../fwStudent/redux';
 import YouTube from 'react-youtube';
 import { Link } from 'react-router-dom';
@@ -29,7 +29,8 @@ class adminEditPage extends AdminPage {
                     T.notify('Lấy bài học bị lỗi!', 'danger');
                     this.props.history.push('/user');
                 } else if (data.item) {
-                    if (data.item.questions && !data.item.questions.length) {
+                    let totalSeconds = 0;
+                    if (data.item.questions) {
                         this.props.viewLesson(params._id, params.subjectId, params.courseId, true);
                     }
                     T.ready('/user/hoc-vien/khoa-hoc/' + params.courseId);
@@ -37,9 +38,21 @@ class adminEditPage extends AdminPage {
                         if (data.error) {
                             this.props.history.push('/user');
                         } else {
-                            this.setState({ tienDoHocTap: data[params.subjectId] });
+                            totalSeconds = data[params.subjectId] && data[params.subjectId][params._id] && data[params.subjectId][params._id].totalSeconds ? parseInt(data[params.subjectId][params._id].totalSeconds) : 0;
+                            this.setState({ tienDoHocTap: data[params.subjectId], isView: data[params.subjectId] && data[params.subjectId][params._id] && data[params.subjectId][params._id].view });
                         }
                     });
+                    let hours = 0;
+                    let minutes = 0;
+                    let seconds = 0;
+                    window.interval = setInterval(() => {
+                        ++totalSeconds;
+                        this.setState({totalSeconds});
+                        hours = parseInt( totalSeconds / 3600 ) % 24 ;
+                        minutes = parseInt( totalSeconds / 60 ) % 60 ;
+                        seconds = totalSeconds % 60;
+                        $('#time').text((hours < 10 ? '0' + hours : hours) + ':' + (minutes < 10 ? '0' + minutes : minutes) + ':' + (seconds  < 10 ? '0' + seconds : seconds));
+                    }, 1000);
                     this.setState({ lessonId: params._id, subjectId: params.subjectId, courseId: params.courseId, ...data.item });
                 } else {
                     this.props.history.push('/user');
@@ -50,23 +63,31 @@ class adminEditPage extends AdminPage {
         }
     }
 
+    componentWillUnmount(){
+        const {lessonId,subjectId,courseId,totalSeconds} = this.state;
+        clearInterval(window.interval);
+        this.props.timeLesson(lessonId, subjectId, courseId, totalSeconds);
+        
+    }
+
     saveRating = (value) => {
         this.props.rateLesson(this.state.lessonId, this.state.subjectId, this.state.courseId, value);
     }
 
     render() {
-        const { lessonId, subjectId, title, courseId, tienDoHocTap } = this.state,
+        console.log('object');
+        const { lessonId, subjectId, title, courseId, tienDoHocTap,isView } = this.state,
             lesson = this.props.lesson && this.props.lesson.item,
             videos = lesson && lesson.videos ? lesson.videos : [],
             taiLieuThamKhao = lesson && lesson.taiLieuThamKhao;
         const rate = this.props.rate && this.props.rate.item;
+        const isShowRating = tienDoHocTap && tienDoHocTap[lessonId] || (lesson && lesson.questions && !lesson.questions.length);
         const videosRender = videos.length ? videos.map((video, index) => (
             <div key={index} className='d-flex justify-content-center pb-5'>
                 <div className='embed-responsive embed-responsive-16by9' style={{ width: '70%', display: 'block' }} onClick={e => this.onView(e, video._id, index)}>
-                    <YouTube videoId={video.link} containerClassName='embed embed-youtube' />
+                    <YouTube opts={{playerVars: {'autoplay': 0, 'controls': isView ? 1 : 0, 'rel':0}}} videoId={video.link} containerClassName='embed embed-youtube' />
                 </div>
             </div>)) : 'Chưa có video bài giảng!';
-        const isShowRating = tienDoHocTap && tienDoHocTap[lessonId] || (lesson && lesson.questions && !lesson.questions.length);
         const userPageLink = '/user/hoc-vien/khoa-hoc/' + courseId + '/mon-hoc/' + subjectId;
         if (tienDoHocTap && tienDoHocTap[lessonId]) {
             $('#' + tienDoHocTap[lessonId].rating).prop('checked', true);
@@ -77,7 +98,10 @@ class adminEditPage extends AdminPage {
             breadcrumb: [<Link key={0} to={userPageLink}>Môn học</Link>, 'Bài học'],
             content: lessonId ? <>
                 <div className='tile'>
-                    <a href={'/user/hoc-vien/khoa-hoc/' + courseId + '/mon-hoc/' + subjectId + '/bai-hoc/thong-tin/' + lessonId} style={{ color: 'black' }}><h5>Thông tin bài học</h5></a>
+                    <div className='d-flex justify-content-between'>
+                        <a href={'/user/hoc-vien/khoa-hoc/' + courseId + '/mon-hoc/' + subjectId + '/bai-hoc/thong-tin/' + lessonId} style={{ color: 'black' }}><h5>Thông tin bài học</h5></a>
+                        <h3 id='time' ref={e => this.time = e}></h3>
+                    </div>
                     <h3 className='tile-title'>Bài giảng</h3>
                     <div className='tile-body'>
                         {videosRender}
@@ -113,5 +137,5 @@ class adminEditPage extends AdminPage {
 }
 
 const mapStateToProps = state => ({ system: state.system, lesson: state.trainning.lesson, rate: state.framework.rate });
-const mapActionsToProps = { getLessonByStudent, getStudentScore, viewLesson };
+const mapActionsToProps = { getLessonByStudent, getStudentScore, viewLesson, timeLesson };
 export default connect(mapStateToProps, mapActionsToProps)(adminEditPage);

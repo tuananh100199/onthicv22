@@ -38,6 +38,7 @@ module.exports = app => {
     app.createFolder(app.path.join(app.publicPath, '/img/category'),
         app.path.join(app.publicPath, '/img/newsCategory'), app.path.join(app.publicPath, '/img/forumCategory'),
         app.path.join(app.publicPath, '/img/driveQuestionCategory'), app.path.join(app.publicPath, '/img/signCategory'),
+        app.path.join(app.publicPath, '/img/carCategory')
     );
 
     const uploadCategoryImage = (fields, files, done) => {
@@ -57,6 +58,10 @@ module.exports = app => {
             console.log('Hook: uploadCategoryImage => forum');
             const _id = fields.userData[0].substring('forumCategoryImage:'.length);
             app.uploadImage('forumCategory', app.model.category.get, _id, files.CategoryImage[0].path, done);
+        } else if (fields.userData && fields.userData[0].startsWith('carCategoryImage:') && files.CategoryImage && files.CategoryImage.length > 0) {
+            console.log('Hook: uploadCategoryImage => car');
+            const _id = fields.userData[0].substring('carCategoryImage:'.length);
+            app.uploadImage('carCategory', app.model.category.get, _id, files.CategoryImage[0].path, done);
         }
     };
 

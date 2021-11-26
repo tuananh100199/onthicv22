@@ -120,7 +120,7 @@ module.exports = (app) => {
             } else {
                 const key = 'tienDoHocTap.' + subjectId + '.' + lessonId,
                     changes = {};
-                changes[key] = {};
+                changes[key] = {score: '', trueAnswers: '', answers: ''};
                 app.model.student.resetLesson({ _id: students[0]._id }, changes, (error, item) => {
                     res.send({ error, item });
                 });
@@ -223,6 +223,21 @@ module.exports = (app) => {
                 res.send({ error });
             } else {
                 const data = { studentId: student._id, subjectId, lessonId, view };
+                app.model.student.updateLearningProgress(data, (error, item) => {
+                    res.send({ error, item });
+                });
+            }
+        });
+    });
+
+    app.post('/api/lesson/time', app.permission.check('user:login'), (req, res) => {
+        const { courseId, subjectId, lessonId, totalSeconds } = req.body;
+        app.model.student.get({ user: req.session.user._id, course: courseId }, (error, student) => {
+            if (error) {
+                res.send({ error });
+            } else {
+                const data = { studentId: student._id, subjectId, lessonId, totalSeconds };
+                console.log(data);
                 app.model.student.updateLearningProgress(data, (error, item) => {
                     res.send({ error, item });
                 });

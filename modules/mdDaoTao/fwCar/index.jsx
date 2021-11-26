@@ -19,11 +19,11 @@ export default {
         },
         {
             path: '/user/car/practice',
-            component: Loadable({ loading: Loading, loader: () => import('./pages/adminXeTapLai') })
+            component: Loadable({ loading: Loading, loader: () => import('./pages/adminPracticePage') })
         },
         {
-            path: '/user/car/course',
-            component: Loadable({ loading: Loading, loader: () => import('./pages/adminCoursePage') })
+            path: '/user/car/practice/:_id',
+            component: Loadable({ loading: Loading, loader: () => import('./pages/adminPracticeEditPage') })
         },
         {
             path: '/user/car/course/:_id',
@@ -32,6 +32,10 @@ export default {
         {
             path: '/user/car/registration',
             component: Loadable({ loading: Loading, loader: () => import('./pages/adminRegistrationPage') })
+        },
+        {
+            path: '/user/car/registration/:_id',
+            component: Loadable({ loading: Loading, loader: () => import('./pages/adminRegistrationEditPage') })
         },
         {
             path: '/user/car/category',
@@ -48,6 +52,10 @@ export default {
         {
             path: '/user/car/repair',
             component: Loadable({ loading: Loading, loader: () => import('./pages/adminRepairPage') })
+        },
+        {
+            path: '/user/car/repair/:_id',
+            component: Loadable({ loading: Loading, loader: () => import('./pages/adminRepairEditPage') })
         },
         {
             path: '/user/car/import',
