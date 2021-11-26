@@ -35,8 +35,6 @@ class EditCoursePage extends AdminPage {
                     <PageIcon visible={permission.write} to={'/user/car/registration'} icon='fa-file-text-o' iconBackgroundColor='#CC0' text='Đăng kiểm xe' />
                     <PageIcon visible={permission.write} to={'/user/car/repair'} icon='fa-wrench' iconBackgroundColor='#900' text='Theo dõi sửa chữa, bảo dưỡng' />
                     {/* <PageIcon visible={permission.write} to={'/user/car/course'} icon='fa-cubes' iconBackgroundColor='#D00' text='Xe đi khóa' /> */}
-                    {car && car._id ? <PageIcon visible={permission.repair} to={'/user/car/repair/' + car._id} icon='fa-wrench' iconBackgroundColor='#8e24aa' text='Sửa chữa xe' /> : null}
-                    {car && car._id ? <PageIcon visible={permission.fuel} to={'/user/car/fuel/' + car._id} icon='fa-thermometer-empty' iconBackgroundColor='#900' text='Cấp phát nhiên liệu' /> : null}
                     <PageIcon visible={isLecturer} to={'/user/car/lecturer/calendar'} icon='fa-calendar' iconBackgroundColor='#3e24aa' text='Lịch xe' />
                     <PageIcon visible={isCourseAdmin} to={'/user/car/calendar'} icon='fa-calendar' iconBackgroundColor='#64b5f6' text='Tổng quan lịch xe' />
                     <PageIcon visible={isCourseAdmin} to={'/user/car/history-calendar'} icon='fa-history' iconBackgroundColor='#be231b' text='Giáo viên phụ trách xe' />

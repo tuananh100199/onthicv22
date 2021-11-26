@@ -169,7 +169,6 @@ module.exports = (app) => {
                                                                         app.model.setting.get('car', data => res.send({ numberOfUser: numberOfUser || 0, numberOfCourse: numberOfCourse || 0, numberOfNews: numberOfNews || 0, numberOfCar: numberOfCar || 0,numberOfRepairCar: numberOfRepairCar || 0,numberOfPracticeCar: numberOfPracticeCar || 0,numberOfLecturer: numberOfLecturer || 0,numberOfCourseCar: numberOfCourseCar || 0, carData: data || null }));
                                                                     }
                                                                 });
-                                                                // app.model.setting.get('car', data => res.send({ numberOfUser: numberOfUser || 0, numberOfCourse: numberOfCourse || 0, numberOfNews: numberOfNews || 0, numberOfCar: numberOfCar || 0,numberOfRepairCar: numberOfRepairCar || 0,numberOfPracticeCar: numberOfPracticeCar || 0,numberOfLecturer: numberOfLecturer || 0, carData: data || null }));
                                                             }
                                                         });
                                                     }

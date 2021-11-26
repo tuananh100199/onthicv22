@@ -107,7 +107,6 @@ module.exports = app => {
             $and: [ searchCondition, { isLecturer: true }, { division: condition.divisionId } ]
         } : {$and: [ searchCondition, { isLecturer: true }]};
         app.model.user.getAll(lecturerCondition, (error, list) => {
-            console.log(list);
             if (error) {
                 res.send({ error: 'Lấy thông tin cố vấn học tập bị lỗi' });
             } else {
