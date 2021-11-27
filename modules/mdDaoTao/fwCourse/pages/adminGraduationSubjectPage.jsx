@@ -125,8 +125,8 @@ class AdmingGraduationSubjectPage extends AdminPage {
     render() {
         const currentUser = this.props.system ? this.props.system.user : null,
             permission = this.getUserPermission('course');
-        const readOnly = (!permission.write || currentUser.isLecturer) && !currentUser.isCourseAdmin,
-            item = this.props.course && this.props.course.item ? this.props.course.item : { subjects: [] };
+        const item = this.props.course && this.props.course.item ? this.props.course.item : { subjects: [] },
+        readOnly = item.lock || ((!permission.write || currentUser.isLecturer) && !currentUser.isCourseAdmin);
         const monThiTotNghiep = item.monThiTotNghiep;
         const table = renderTable({
             getDataSource: () => item && item.monThiTotNghiep,

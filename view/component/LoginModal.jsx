@@ -1,26 +1,24 @@
 import React from 'react';
 export default class LoginModal extends React.Component {
-    txtUser = React.createRef();
-    txtPassword = React.createRef();
-    errorMessage = React.createRef();
     showLogin = () => {
-        $('input').val('');
-        $(this.errorMessage.current).html('&nbsp;');
-        // $(this.signUpErrorMessage.current).html('&nbsp;');
+        this.username.value = '';
+        this.password.value = '';
+        this.errorMessage.innerHTML = '';
         $(this.modal).modal('show');
     }
+
     hide = () => $(this.modal).modal('hide');
+
     onLogin = (e) => {
         e.preventDefault();
-        let errorMessage = $(this.errorMessage.current),
-            data = {
-                username: this.txtUser.current.value.trim(),
-                password: this.txtPassword.current.value
-            };
+        const data = {
+            username: this.username.value.trim(),
+            password: this.password.value
+        };
 
         if (data.username !== '' && data.password !== '') {
             this.props.login(data, result => {
-                errorMessage.html(result.error);
+                this.errorMessage.innerHTML = result.error;
                 if (result.user) {
                     $(this.modal.current).modal('hide');
                     window.location = '/user';
@@ -30,11 +28,10 @@ export default class LoginModal extends React.Component {
             T.notify('error', 'danger');
         }
     }
+
     render() {
         return (
-
-            <div ref={e => this.modal = e} className='modal fade' id='modalLoginForm' tabIndex='-1' role='dialog' aria-labelledby='myModalLabel'
-                aria-hidden='true'>
+            <div ref={e => this.modal = e} className='modal fade' tabIndex='-1' role='dialog' aria-hidden='true'>
                 <div className='modal-dialog ' role='document'>
                     <div className='modal-content d-flex justify-content-center'>
                         <div className='modal-header text-center'>
@@ -43,29 +40,19 @@ export default class LoginModal extends React.Component {
                         <div className='modal-body mx-3'>
                             <div className='form-group'>
                                 <label htmlFor='username'>CMND/CCCD</label>
-                                <input id='username' className='form-control text-secondary' type='text' ref={this.txtUser} placeholder='CMND/CCCD' autoComplete='off' />
+                                <input id='username' className='form-control text-secondary' type='text' ref={e => this.username = e} placeholder='CMND/CCCD' autoComplete='off' />
                             </div>
                             <div className='form-group'>
                                 <label htmlFor='password'>Mật khẩu</label>
-                                <input id='password' className='form-control text-secondary' type='password' ref={this.txtPassword} placeholder='Mật khẩu' />
+                                <input id='password' className='form-control text-secondary' type='password' ref={e => this.password = e} placeholder='Mật khẩu' />
                             </div>
 
-                            <p ref={this.errorMessage} className='text-danger text-center'>&nbsp;</p>
+                            <p ref={e => this.errorMessage = e} className='text-danger text-center'></p>
                             <div className='float-right'>
-                                <button className='btn btn-success mr-2' type='submit' onClick={this.onLogin}>Đăng nhập</button>
+                                <button type='submit' className='btn btn-success mr-2' onClick={this.onLogin}>Đăng nhập</button>
                                 <button type='button' className='btn btn-secondary' data-dismiss='modal'>Đóng</button>
                             </div>
-
-                            {/* <div className='text-center p-t-12'>
-                                <a className='text-secondary' href='#' onClick={this.onForgotPasswordClick} >Quên mật khẩu</a>
-                            </div> */}
-
-
                         </div>
-                        {/* <div className='modal-footer' style={{ display: 'block' }}>
-                            <button type='button' className='btn btn-secondary' data-dismiss='modal'
-                                style={{ width: '100px', float: 'right' }}>Đóng</button>
-                        </div> */}
                     </div>
                 </div>
             </div>

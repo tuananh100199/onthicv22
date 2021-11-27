@@ -10,12 +10,32 @@ module.exports = app => {
         fuel: [{
             date: { type: Date, default: Date.now },
             fee: { type: Number, default: 0 },
+            quantity: { type: Number, default: 0 },
+        }],
+        repair: [{
+            dateStart: { type: Date, default: Date.now },
+            dateEnd: { type: Date },
+            fee: { type: Number, default: 0 },
+            content: String,
+        }],
+        lichSuDangKiem: [{
+            ngayDangKiem: { type: Date },
+            fee: { type: Number, default: 0 },
+            ngayHetHanDangKiem: { type: Date },
+        }],
+        lichSuDangKy: [{
+            progress: String,
+            ngayDangKy: { type: Date },
+            fee: { type: Number, default: 0 },
+            ngayHetHanDangKy: { type: Date },
         }],
         status: { type: String, enum: ['dangSuDung', 'dangSuaChua', 'dangThanhLy', 'daThanhLy'], default: 'dangSuDung' },
+        currentCourseClose: { type: Boolean, default: false },
         courseHistory: [{
             course: { type: app.db.Schema.ObjectId, ref: 'Course' },
             user: { type: app.db.Schema.ObjectId, ref: 'User' },
         }],
+        owner: String,
         calendarHistory: [{
             thoiGianBatDau: { type: Date, default: Date.now }, 
             thoiGianKetThuc: { type: Date }, 
@@ -40,12 +60,14 @@ module.exports = app => {
                 result.pageNumber = pageNumber === -1 ? result.pageTotal : Math.min(pageNumber, result.pageTotal);
 
                 const skipNumber = (result.pageNumber > 0 ? result.pageNumber - 1 : 0) * result.pageSize;
-                model.find(condition).sort({ ngayDangKy: 1 }).skip(skipNumber).limit(result.pageSize).populate('division', 'title').populate('user', 'firstname lastname').populate('courseType', 'title').populate('brand', 'title').exec((error, list) => {
+                model.find(condition).sort({ licensePlates: 1 }).skip(skipNumber).limit(result.pageSize).populate('division', 'title').populate('user', 'firstname lastname').populate('courseType', 'title').populate('brand', 'title').exec((error, list) => {
                     result.list = list;
                     done(error, result);
                 });
             }
         }),
+
+        getOld: (done) => model.find({}).sort({ ngayDangKy: 1 }).limit(1).exec(done),
 
         get: (condition, done) => typeof condition == 'string' ? model.findById(condition).populate('division', 'title').populate('courseType', 'title').populate('brand', 'title').populate({
             path: 'courseHistory.course', populate: { path: 'course', select: 'name thoiGianBatDau thoiGianKetThuc' }
@@ -78,8 +100,14 @@ module.exports = app => {
         addFuel: (_id, data, done) => {
             model.findOneAndUpdate(_id, { $push: { fuel: data } }, { new: true }).exec(done);
         },
+        addRepair: (_id, data, done) => {
+            model.findOneAndUpdate(_id, { $push: { repair: data } }, { new: true }).exec(done);
+        },
         addCourseHistory: (_id, data, done) => {
             model.findOneAndUpdate(_id, { $push: { courseHistory: data } }, { new: true }).exec(done);
+        },
+        addLichSuDangKiem: (_id, data, done) => {
+            model.findOneAndUpdate(_id, { $push: { lichSuDangKiem: data } }, { new: true }).exec(done);
         },
         addCalendarHistory: (_id, data, done) => {
             model.findOneAndUpdate(_id, { $push: { calendarHistory: data } }, { new: true }).exec(done);
@@ -96,8 +124,23 @@ module.exports = app => {
         deleteFuel: (_id, _fuelId, done) => {
             model.findOneAndUpdate({ _id }, { $pull: { fuel: { _id: _fuelId } } }, { new: true }).exec(done);
         },
-        deleteCourseHistory: (_id, _courseHistoryId, done) => {
-            model.findOneAndUpdate({ _id }, { $pull: { courseHistory: { _id: _courseHistoryId } } }, { new: true }).exec(done);
+        addLichSuDangKy: (_id, data, done) => {
+            model.findOneAndUpdate(_id, { $push: { lichSuDangKy: data } }, { new: true }).exec(done);
         },
+        deleteCar: (_id, data, done) => {
+            if (data._courseHistoryId) {
+                model.findOneAndUpdate({ _id }, { $pull: { courseHistory: { _id: data._courseHistoryId } } }, { new: true }).exec(done);
+            }if (data._courseId) {
+                model.findOneAndUpdate({ _id }, { $pull: { courseHistory: { course: data._courseId } } }, { new: true }).exec(done);
+            } else if (data._repairId) {
+                model.findOneAndUpdate({ _id }, { $pull: { repair: { _id: data._repairId } } }, { new: true }).exec(done);
+            } else if (data._registrationId) {
+                model.findOneAndUpdate({ _id }, { $pull: { lichSuDangKiem: { _id: data._registrationId } } }, { new: true }).exec(done);
+            } else if (data._practiceId) {
+                model.findOneAndUpdate({ _id }, { $pull: { lichSuDangKy: { _id: data._practiceId } } }, { new: true }).exec(done);
+            } else model.findOneAndUpdate({ _id }, { $pull: { fuel: { _id: data._fuelId } } }, { new: true }).exec(done);
+        },
+
+        count: (condition, done) => done ? model.countDocuments(condition, done) : model.countDocuments({}, condition),
     };
 };

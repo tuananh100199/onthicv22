@@ -103,9 +103,9 @@ module.exports = app => {
                 { lastname: value },
             );
         }
-        let lecturerCondition =  {
+        let lecturerCondition =  condition.divisionId ? {
             $and: [ searchCondition, { isLecturer: true }, { division: condition.divisionId } ]
-        };
+        } : {$and: [ searchCondition, { isLecturer: true }]};
         app.model.user.getAll(lecturerCondition, (error, list) => {
             if (error || list && list.length < 1) {
                 res.send({ error: 'Lấy thông tin cố vấn học tập bị lỗi' });
@@ -114,6 +114,7 @@ module.exports = app => {
             }
         });
     });
+
 
     app.post('/api/user', app.permission.check('user:write'), (req, res) => {
         const data = req.body.user;
