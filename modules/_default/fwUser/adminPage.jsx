@@ -12,7 +12,6 @@ const UserTypeData = [
     { id: 'isCourseAdmin', text: 'Quản trị viên khóa học' },
     { id: 'isStaff', text: 'Nhân viên' },
     { id: 'isLecturer', text: 'Cố vấn học tập' },
-    { id: 'isRepresenter', text: 'Giáo viên' },
     { id: 'isTrustLecturer', text: 'Cố vấn học tập tin cậy' },
 ];
 
@@ -34,7 +33,6 @@ class UserModal extends AdminModal {
         this.itemIsStaff.value(item.isStaff);
         this.itemIsLecturer.value(item.isLecturer);
         item.isLecturer ? this.itemIsTrustLecturer.value(item.isTrustLecturer) : null;
-        this.itemIsRepresenter.value(item.isRepresenter);
         this.itemSex.value(item.sex || 'male');
         this.itemDivision.value(item.division ? { id: item.division._id, text: item.division.title + (item.division.isOutside ? ' (cơ sở ngoài)' : '') } : null);
         this.itemActive.value(item.active);
@@ -57,7 +55,6 @@ class UserModal extends AdminModal {
             isCourseAdmin: this.itemIsCourseAdmin.value(),
             isStaff: this.itemIsStaff.value(),
             isLecturer: this.itemIsLecturer.value(),
-            isRepresenter: this.itemIsRepresenter.value(),
             isTrustLecturer: this.itemIsTrustLecturer.value(),
             roles: this.itemRoles.value(),
             birthday: this.itemBirthday.value(),
@@ -128,7 +125,6 @@ class UserModal extends AdminModal {
                     <FormCheckbox ref={e => this.itemIsCourseAdmin = e} isSwitch={true} className='col-md-4' label='Quản trị viên khóa học' readOnly={readOnly} />
                     <FormCheckbox ref={e => this.itemIsStaff = e} isSwitch={true} className='col-md-2' label='Nhân viên' readOnly={readOnly} />
                     <FormCheckbox ref={e => this.itemIsLecturer = e} isSwitch={true} className='col-md-4' label='Cố vấn học tập' onChange={active => this.setState({ isLecturer: active })} readOnly={readOnly} />
-                    <FormCheckbox ref={e => this.itemIsRepresenter = e} isSwitch={true} className='col-md-2' label='Giáo viên' readOnly={readOnly} />
                     <FormCheckbox ref={e => this.itemIsTrustLecturer = e} style={{ display: this.state.isLecturer ? 'inline-block' : 'none' }} isSwitch={true} className='col-md-6' label='Cố vấn học tập tin cậy' readOnly={readOnly} />
 
                     <FormSelect ref={e => this.itemRoles = e} className='col-md-12' label='Vai trò' data={this.state.allRoles} multiple={true} readOnly={readOnly} />
