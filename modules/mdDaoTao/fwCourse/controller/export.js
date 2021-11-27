@@ -336,7 +336,7 @@ module.exports = (app) => {
                 } else {
                     const workbook = app.excel.create(), worksheet = workbook.addWorksheet('Teacher and student');
                     const cells = [
-                        { cell: 'A1', value: 'Cố vấn học tập', bold: true, border: '1234' },
+                        { cell: 'A1', value: 'Giáo viên', bold: true, border: '1234' },
                         { cell: 'B1', value: 'STT', bold: true, border: '1234' },
                         { cell: 'C1', value: 'Họ', bold: true, border: '1234' },
                         { cell: 'D1', value: 'Tên', bold: true, border: '1234' },
@@ -347,7 +347,7 @@ module.exports = (app) => {
                         { cell: 'I1', value: 'Khóa học', bold: true, border: '1234' },
                     ];
                     worksheet.columns = [
-                        { header: 'Cố vấn học tập', key: 'teacher', width: 30 },
+                        { header: 'Giáo viên', key: 'teacher', width: 30 },
                         { header: 'STT', key: '_id', width: 15 },
                         { header: 'Họ', key: 'lastname', width: 15 },
                         { header: 'Tên', key: 'firstname', width: 15 },

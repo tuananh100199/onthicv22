@@ -212,7 +212,7 @@ export function updateCourseTeacherGroup(_courseId, _teacherId, type, done) {
         const url = '/api/course/teacher-group/teacher';
         T.put(url, { _courseId, _teacherId, type }, data => {
             if (data.error) {
-                T.notify('Gán cố vấn học tập bị lỗi!', 'danger');
+                T.notify('Gán giáo viên bị lỗi!', 'danger');
                 console.error('PUT: ' + url + '.', data.error);
             } else {
                 done && done(data.item);

@@ -29,7 +29,7 @@ class PreStudenModal extends AdminModal {
         this.itemHocPhiPhaiDong.value(hocPhiPhaiDong || '');
         this.itemRegularResidence.value(regularResidence || '');
         this.imageBox.setData(`pre-student:${_id || 'new'}`);
-     
+
         this.setState({ _id, divisionId: division && division._id, image }, () => {
             this.itemPlanLecturer.value(planLecturer ? { id: planLecturer._id, text: `${planLecturer.lastname} ${planLecturer.firstname}` } : null);
         });
@@ -78,7 +78,7 @@ class PreStudenModal extends AdminModal {
             T.notify('Học phí không được trống!', 'danger');
             this.itemHocPhiPhaiDong.focus();
         } else if (!data.planLecturer) {
-            T.notify('Cố vấn học tập dự kiến không được trống!', 'danger');
+            T.notify('Giáo viên dự kiến không được trống!', 'danger');
             this.itemPlanLecturer.focus();
         } else {
             this.state._id ? this.props.update(this.state._id, data, this.hide()) : T.notify('Tạo ứng viên thành công!', 'success') && this.props.create(data, this.hide());
@@ -109,7 +109,7 @@ class PreStudenModal extends AdminModal {
                         <FormTextBox className='col-md-8' ref={e => this.itemLastname = e} label='Họ & tên đệm' readOnly={readOnly} required />
                         <FormTextBox className='col-md-4' ref={e => this.itemFirstname = e} label='Tên' readOnly={readOnly} required />
                         <FormTextBox className='col-md-6' ref={e => this.itemEmail = e} label='Email' readOnly={this.state._id ? true : readOnly} type='email' />
-                        <FormTextBox className='col-md-6' type='phone' ref={e => this.itemPhoneNumber = e}  label='Số điện thoại' required />
+                        <FormTextBox className='col-md-6' type='phone' ref={e => this.itemPhoneNumber = e} label='Số điện thoại' required />
                     </div>
                 </div>
                 <FormImageBox ref={e => this.imageBox = e} className='col-md-4' label='Hình đại diện' uploadType='PreStudentImage' image={this.state.image} readOnly={readOnly}
@@ -119,8 +119,8 @@ class PreStudenModal extends AdminModal {
                 <FormSelect className='col-md-4' ref={e => this.itemSex = e} label='Giới tính' data={[{ id: 'female', text: 'Nữ' }, { id: 'male', text: 'Nam' }]} readOnly={readOnly} />
                 <FormSelect className='col-md-4' ref={e => this.itemCourseType = e} label='Hạng đăng ký' data={ajaxSelectCourseType} readOnly={readOnly} required />
                 <FormSelect className='col-md-4' ref={e => this.itemDivision = e} label='Cơ sở đào tạo' data={ajaxSelectDivision} onChange={this.onChangeDivision} readOnly={readOnly} required />
-                <FormTextBox className='col-md-4' ref={e => this.itemHocPhiPhaiDong = e} label='Học phí' readOnly={readOnly} required/>
-                <FormSelect className='col-md-6' ref={e => this.itemPlanLecturer = e} label='Cố vấn học tập dự kiến' data={ajaxSelectLecturer(this.state.divisionId)} readOnly={readOnly} required />
+                <FormTextBox className='col-md-4' ref={e => this.itemHocPhiPhaiDong = e} label='Học phí' readOnly={readOnly} required />
+                <FormSelect className='col-md-6' ref={e => this.itemPlanLecturer = e} label='Giáo viên dự kiến' data={ajaxSelectLecturer(this.state.divisionId)} readOnly={readOnly} required />
                 <FormTextBox className='col-md-6' ref={e => this.itemPlanCourse = e} label='Khóa dự kiến' readOnly={readOnly} />
                 <FormRichTextBox ref={e => this.itemResidence = e} className='col-md-12' label='Nơi cư trú' readOnly={readOnly} rows='2' />
                 <FormRichTextBox ref={e => this.itemRegularResidence = e} className='col-md-12' label='Nơi đăng ký hộ khẩu thường trú' readOnly={readOnly} rows='2' />

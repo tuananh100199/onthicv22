@@ -5,7 +5,7 @@ module.exports = app => {
             2060: { title: 'Người dùng', link: '/user/member', icon: 'fa-users', backgroundColor: '#2e7d32' },
         },
     };
-    
+
     const menuLecturer = {
         parentMenu: app.parentMenu.setting,
         menus: {
@@ -31,7 +31,7 @@ module.exports = app => {
             condition = req.query.condition || {},
             pageCondition = {};
         try {
-            if (condition && condition.searchText && condition.searchText.startsWith('teacherPage')){
+            if (condition && condition.searchText && condition.searchText.startsWith('teacherPage')) {
                 let teacherCondition = {};
                 teacherCondition.$or = [];
                 const value = { $regex: `.*${condition.searchText.substring(11)}.*`, $options: 'i' };
@@ -39,8 +39,8 @@ module.exports = app => {
                     { firstname: value },
                     { lastname: value },
                 );
-                pageCondition =  {
-                    $and: [ teacherCondition, { isLecturer: true } ]
+                pageCondition = {
+                    $and: [teacherCondition, { isLecturer: true }]
                 };
             } else {
                 pageCondition.$or = [];
@@ -103,12 +103,12 @@ module.exports = app => {
                 { lastname: value },
             );
         }
-        let lecturerCondition =  condition.divisionId ? {
-            $and: [ searchCondition, { isLecturer: true }, { division: condition.divisionId } ]
-        } : {$and: [ searchCondition, { isLecturer: true }]};
+        let lecturerCondition = condition.divisionId ? {
+            $and: [searchCondition, { isLecturer: true }, { division: condition.divisionId }]
+        } : { $and: [searchCondition, { isLecturer: true }] };
         app.model.user.getAll(lecturerCondition, (error, list) => {
             if (error || list && list.length < 1) {
-                res.send({ error: 'Lấy thông tin cố vấn học tập bị lỗi' });
+                res.send({ error: 'Lấy thông tin giáo viên bị lỗi' });
             } else {
                 res.send({ error, list });
             }

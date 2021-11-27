@@ -47,7 +47,7 @@ export class AdminFeedbackPage extends AdminPage {
                     <div className='tile-body'>
                         <div style={{ display: 'flex' }}>
                             <FormCheckbox ref={e => this.course = e} onChange={value => this.onChange(value, 'course')} label='Phản hồi khóa học' />&nbsp; &nbsp; &nbsp; &nbsp;
-                            <FormCheckbox ref={e => this.teacher = e} onChange={value => this.onChange(value, 'teacher')} label='Phản hồi cố vấn học tập' />
+                            <FormCheckbox ref={e => this.teacher = e} onChange={value => this.onChange(value, 'teacher')} label='Phản hồi giáo viên' />
                         </div>
                         {this.state.type && <FeedbackSection permission={permission} history={this.props.history} detailPageUrl={`/user/course/${item._id}/feedback`} type={this.state.type} _refId={item._id} />}
                     </div>
