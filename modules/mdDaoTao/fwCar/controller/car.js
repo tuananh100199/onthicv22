@@ -486,14 +486,11 @@ module.exports = app => {
     
 
 
-    // Hook permissionHooks -------------------------------------------------------------------------------------------
-    app.permissionHooks.add('courseAdmin', 'car', (user) => new Promise(resolve => {
-        app.permissionHooks.pushUserPermission(user, 'car:read', 'car:fuel');
-        resolve();
-    }));
-    // app.permissionHooks.add('lecturer', 'car', (user) => new Promise(resolve => {
+    // // Hook permissionHooks -------------------------------------------------------------------------------------------
+    // app.permissionHooks.add('courseAdmin', 'car', (user) => new Promise(resolve => {
     //     app.permissionHooks.pushUserPermission(user, 'car:read', 'car:fuel');
     //     resolve();
     // }));
+
 
 };
