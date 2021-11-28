@@ -41,10 +41,10 @@ class ChangeLecturerModal extends AdminModal {
 
     onShow = (data) => {
         const { student, course } = data,
-        studentId = student._id,
-        teacherGroups = course.teacherGroups.find(({ student }) => student.find(({ _id }) => _id == studentId.toString()) != null),
-        currentLecturer = teacherGroups && teacherGroups.teacher;
-       
+            studentId = student._id,
+            teacherGroups = course.teacherGroups.find(({ student }) => student.find(({ _id }) => _id == studentId.toString()) != null),
+            currentLecturer = teacherGroups && teacherGroups.teacher;
+
         this.itemCurrentName.value(currentLecturer ? currentLecturer.lastname + ' ' + currentLecturer.firstname : '');
         this.itemPhoneNumber.value(currentLecturer ? currentLecturer.phoneNumber : '');
         this.itemIdentityCard.value(currentLecturer ? currentLecturer.identityCard : '');
@@ -52,11 +52,11 @@ class ChangeLecturerModal extends AdminModal {
     };
 
     onSubmit = () => {
-        const data = { 
+        const data = {
             student: this.state.student && this.state.student._id,
             requestedLecturer: this.itemRequestedLecturer.value(),
             startDate: this.itemStartDate.value(),
-            reason: this.itemReason.value() 
+            reason: this.itemReason.value()
         };
         if (data.startDate == '') {
             T.notify('Ngày đổi bị trống!', 'danger');
@@ -75,18 +75,18 @@ class ChangeLecturerModal extends AdminModal {
             size: 'large',
             body:
                 <>
-                <div className='row'>
-                    <h6 className='col-md-12'> Thông tin giáo viên hiện tại: </h6>
-                    <FormTextBox ref={e => this.itemCurrentName = e} label='Họ tên giáo viên hiện tại' className='col-md-4' readOnly={true} />
-                    <FormTextBox ref={e => this.itemIdentityCard = e} label='CMND,CCCD' className='col-md-4' readOnly={true} />
-                    <FormTextBox ref={e => this.itemPhoneNumber = e} label='Điện thoại' className='col-md-4' readOnly={true} />
-                </div>
-                <div className='row'>
-                    <h6 className='col-md-12'> Thông tin thay đổi giáo viên: </h6>
-                    <FormTextBox className='col-md-4' ref={e => this.itemRequestedLecturer = e} label='Giáo viên thay đổi' readOnly={false} />
-                    <FormDatePicker ref={e => this.itemStartDate = e} label='Ngày bắt đầu đổi' className='col-md-6' />
-                    <FormRichTextBox ref={e => this.itemReason = e} label='Lý do' className='col-md-12' readOnly={false} />
-                </div>
+                    <div className='row'>
+                        <h6 className='col-md-12'> Thông tin giáo viên hiện tại: </h6>
+                        <FormTextBox ref={e => this.itemCurrentName = e} label='Họ tên giáo viên hiện tại' className='col-md-4' readOnly={true} />
+                        <FormTextBox ref={e => this.itemIdentityCard = e} label='CMND,CCCD' className='col-md-4' readOnly={true} />
+                        <FormTextBox ref={e => this.itemPhoneNumber = e} label='Điện thoại' className='col-md-4' readOnly={true} />
+                    </div>
+                    <div className='row'>
+                        <h6 className='col-md-12'> Thông tin thay đổi giáo viên: </h6>
+                        <FormTextBox className='col-md-4' ref={e => this.itemRequestedLecturer = e} label='Giáo viên thay đổi' readOnly={false} />
+                        <FormDatePicker ref={e => this.itemStartDate = e} label='Ngày bắt đầu đổi' className='col-md-6' />
+                        <FormRichTextBox ref={e => this.itemReason = e} label='Lý do' className='col-md-12' readOnly={false} />
+                    </div>
                 </>
         });
     }
@@ -167,10 +167,10 @@ class UserCoursePageDetail extends AdminPage {
                     <PageIcon to='#' icon='fa-graduation-cap ' iconBackgroundColor='#8d6e63' text='Xem điểm thi tốt nghiệp' onClick={(e) => { e.preventDefault(); this.viewScoreModal.show({ student, course }); }} />
                     <PageIcon to={`/user/course/${courseId}/forum`} icon='fa-users' iconBackgroundColor='#3e24aa' text='Forum' />
                     <PageIcon to={`/user/hoc-vien/khoa-hoc/${courseId}/dang-ky-lich-hoc`} icon='fa-calendar-plus-o' iconBackgroundColor='#8d74aa' text='Đăng ký lịch học' />
-                    <PageIcon to={''} icon='fa-star' iconBackgroundColor='orange' text='Đánh giá cố vấn học tập' visible={teacher != null}
+                    <PageIcon to={''} icon='fa-star' iconBackgroundColor='orange' text='Đánh giá giáo viên' visible={teacher != null}
                         onClick={(e) => { e.preventDefault(); this.modal.show(); }} subtitle={rate ? rate + ' sao' : 'Chưa đánh giá'} />
                     {/* check render */}
-                    {teacher && <RateModal ref={e => this.modal = e} title='Đánh giá cố vấn học tập' type='teacher' _refId={teacher._id} />}
+                    {teacher && <RateModal ref={e => this.modal = e} title='Đánh giá giáo viên' type='teacher' _refId={teacher._id} />}
                     <PageIcon to='#' icon='fa-refresh' iconBackgroundColor='#D00' text='Thay đổi giáo viên' onClick={(e) => { e.preventDefault(); this.changeLecturerModal.show({ student, course }); }} />
                     {subjects.length ? <>
                         <PageIconHeader text='Môn học lý thuyết' />

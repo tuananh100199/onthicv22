@@ -21,7 +21,6 @@ export default function studentReducer(state = {}, data) {
                 courseList: {
                     all: data.all,
                     teachers: data.teachers,
-                    representers: data.representers
                 }
             });
 

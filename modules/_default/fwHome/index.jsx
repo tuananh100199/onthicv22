@@ -18,6 +18,7 @@ import SectionStaffGroup from './sectionStaffGroup';
 import SectionStatistic from './sectionStatistic';
 import SectionVideo from './sectionVideo';
 import SectionListVideo from './sectionListVideo';
+import SectionLoginForm from './SectionLoginForm';
 
 export default {
     init: () => {
@@ -69,6 +70,11 @@ export default {
             backgroundColor: '#e6ee9c',
             adapter: ajaxSelectStaffGroup,
             getItem: ajaxGetStaffGroup,
+        };
+        T.component['login form'] = {
+            render: (viewId) => <SectionLoginForm viewId={viewId} />,
+            text: 'Đăng nhập',
+            backgroundColor: '#36ee99',
         };
     },
     redux: {

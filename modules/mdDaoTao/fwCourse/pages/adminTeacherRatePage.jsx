@@ -52,7 +52,7 @@ class AdminTeacherRatePage extends AdminPage {
                 <tr>
                     <th style={{ width: 'auto' }}>#</th>
                     <th style={{ width: 'auto' }} nowrap='true'>Học viên đánh giá</th>
-                    <th style={{ width: 'auto' }} nowrap='true'>Cố vấn học tập được đánh giá</th>
+                    <th style={{ width: 'auto' }} nowrap='true'>Giáo viên được đánh giá</th>
                     <th style={{ width: 'auto' }} nowrap='true'>Số sao</th>
                     <th style={{ width: '100%' }}>Nội dung đánh giá</th>
                 </tr>),
@@ -69,7 +69,7 @@ class AdminTeacherRatePage extends AdminPage {
         const backRoute = `/user/course/${item._id}`;
         return this.renderPage({
             icon: 'fa fa-star',
-            title: 'Đánh giá Cố vấn học tập: ' + item.name,
+            title: 'Đánh giá Giáo viên: ' + item.name,
             breadcrumb: [<Link key={0} to='/user/course'>Khóa học</Link>, item._id ? <Link key={0} to={backRoute}>{item.name}</Link> : '', 'Đánh giá CVHT'],
             content: (
                 <div className='tile'>
