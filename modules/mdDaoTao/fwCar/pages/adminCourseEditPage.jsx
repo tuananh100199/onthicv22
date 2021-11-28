@@ -1,8 +1,8 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { createCar, addCarFuel, deleteCarFuel, deleteCar, getCar, addCarCourse, deleteCarCourse, exportFuelCar } from '../redux';
+import { createCar, deleteCar, getCar, addCarCourse, deleteCarElement } from '../redux';
 import { getAllLecturer } from 'modules/_default/fwUser/redux';
-import { AdminPage, CirclePageButton, AdminModal, FormDatePicker, FormTextBox, FormSelect } from 'view/component/AdminPage';
+import { AdminPage, AdminModal, FormDatePicker, FormTextBox, FormSelect } from 'view/component/AdminPage';
 import T from 'view/js/common';
 
 const adminPageLink = 'user/car/course';
@@ -87,7 +87,7 @@ class CarCourseEditPage extends AdminPage {
     edit = (e, item) => e.preventDefault() || this.modal.show(item);
 
     delete = (e, item) => e.preventDefault() || T.confirm('Xoá lịch sử khóa', `Bạn có chắc muốn xoá lịch sử khóa ${item.course.name}?`, true, isConfirm =>
-        isConfirm && this.props.deleteCarCourse(this.state.data._id, item._id));
+        isConfirm && this.props.deleteCarElement(this.state.data._id, { _courseHistoryId: item._id }));
 
     render() {
         const permission = this.getUserPermission('car', ['read', 'write', 'delete', 'fuel']),
@@ -106,8 +106,11 @@ class CarCourseEditPage extends AdminPage {
                                     {index + 1}. &nbsp;
                                     <a href='#' className='text-secondary d-inline' onClick={e => e.preventDefault() || this.modal.show(item)}>
                                         <div className='pl-2'>
-                                            <span style={{ fontSize: '1rem' }}>Khóa: {item && item.course && item.course.name ? item.course.name : ''} </span>
-                                            <p className='text-muted'>Thời gian kết thúc: {item && item.course ? T.dateToText(item.course.thoiGianKetThuc, 'dd/mm/yyyy') : ''}</p>
+                                            <span style={{ fontSize: '1rem' }}>
+                                                Khóa: {item && item.course && item.course.name ? item.course.name : ''}
+                                                - Thời gian kết thúc: {item && item.course ? T.dateToText(item.course.thoiGianKetThuc, 'dd/mm/yyyy') : ''}
+                                            </span>
+
                                         </div>
                                     </a>
                                     {permission.fuel ? <a href='#' className='notification-button text-danger' onClick={e => this.delete(e, item)}><i className='fa fa-lg fa-trash' /></a> : null}
@@ -115,13 +118,13 @@ class CarCourseEditPage extends AdminPage {
                         </ul> : 'Chưa có thông tin!'}
                 </div>
                 <CarCourseEditModal readOnly={!permission.fuel} ref={e => this.modal = e} update={this.props.addCarCourse} data={this.state.data} dataLecturer={this.state.listLecturer} />
-                <CirclePageButton type='export' onClick={() => exportFuelCar(this.state.data._id)} />
+                {/* <CirclePageButton type='export' onClick={() => exportFuelCar(this.state.data._id)} /> */}
             </>,
-            backRoute: '/user/car/course',
+            backRoute: '/user/car/manager',
         });
     }
 }
 
 const mapStateToProps = state => ({ system: state.system, car: state.trainning.car });
-const mapActionsToProps = { getCar, deleteCar, createCar, addCarFuel, deleteCarFuel, addCarCourse, deleteCarCourse, getAllLecturer };
+const mapActionsToProps = { getCar, deleteCar, createCar, addCarCourse, deleteCarElement, getAllLecturer };
 export default connect(mapStateToProps, mapActionsToProps)(CarCourseEditPage);

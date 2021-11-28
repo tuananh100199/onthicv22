@@ -22,5 +22,9 @@ export default {
             path: '/user/setting',
             component: Loadable({ loading: Loading, loader: () => import('./adminSettingsPage') })
         },
+        {
+            path: '/user/statistic',
+            component: Loadable({ loading: Loading, loader: () => import('./adminStatisticPage') })
+        },
     ],
 };

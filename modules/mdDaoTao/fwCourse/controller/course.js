@@ -24,7 +24,6 @@ module.exports = (app) => {
     app.get('/user/course/:_id/manager', app.permission.check('course:read'), app.templates.admin);
     app.get('/user/course/:_id/student', app.permission.check('course:read'), app.templates.admin);
     app.get('/user/course/:_id/teacher', app.permission.check('course:read'), app.templates.admin);
-    app.get('/user/course/:_id/representer', app.permission.check('course:read'), app.templates.admin);
     app.get('/user/course/:_id/rate-teacher', app.permission.check('course:read'), app.templates.admin);
     app.get('/user/course/:_id/feedback', app.permission.check('course:write'), app.templates.admin);
     app.get('/user/course/:_id/feedback/:_feedbackId', app.permission.check('course:write'), app.templates.admin);
@@ -57,7 +56,7 @@ module.exports = (app) => {
                 delete item.courseFees;
 
                 if (item && sessionUser.isCourseAdmin && division && division.isOutside) {
-                    // Với user là isCourseAdmin + isOutside: chỉ hiện teacherGroups, representerGroups, students thuộc cơ sở của họ
+                    // Với user là isCourseAdmin + isOutside: chỉ hiện teacherGroups, students thuộc cơ sở của họ
                     app.model.student.getAll({ course: _id, division: division._id }, (error, students) => {
                         if (error) {
                             done('Hệ thống bị lỗi!');
@@ -72,17 +71,6 @@ module.exports = (app) => {
                                 const teacher = item.teacherGroups[i].teacher;
                                 if (!teacher.division || teacher.division._id != division._id) {
                                     item.teacherGroups.splice(i, 1);
-                                } else {
-                                    i++;
-                                }
-                            }
-
-                            i = 0;
-                            if (!item.representerGroups) item.representerGroups = [];
-                            while (i < item.representerGroups.length) {
-                                const teacher = item.representerGroups[i].teacher;
-                                if (teacher && !teacher.division || teacher && teacher.division._id != division._id) {
-                                    item.representerGroups.splice(i, 1);
                                 } else {
                                     i++;
                                 }
@@ -232,7 +220,6 @@ module.exports = (app) => {
                                         reject('Lỗi khi cập nhật khóa học!');
                                     } else if (student) {
                                         course.teacherGroups.forEach(group => group.student.forEach((item, index) => item._id == student._id.toString() && group.student.splice(index, 1)));
-                                        course.representerGroups.forEach(group => group.student.forEach((item, index) => item._id == student._id.toString() && group.student.splice(index, 1)));
                                         student.course = null;
                                         student.save(error => error ? reject('Lỗi khi cập nhật khóa học!') : solve(index + 1));
                                     } else {
@@ -293,42 +280,6 @@ module.exports = (app) => {
         })).catch(error => console.error(error) || res.send({ error }));
     });
 
-    //Representer API
-    app.put('/api/course/representer-group/representer', app.permission.check('course:write'), (req, res) => {
-        const { _courseId, _representerId, type } = req.body;
-        new Promise((resolve, reject) => {
-            if (type == 'add') {
-                app.model.course.addRepresenterGroup(_courseId, _representerId, error => error ? reject(error) : resolve());
-            } else if (type == 'remove') {
-                app.model.course.removeRepresenterGroup(_courseId, _representerId, error => error ? reject(error) : resolve());
-            } else {
-                reject('Dữ liệu không hợp lệ!');
-            }
-        }).then(() => getCourseData(_courseId, req.session.user, (error, item) => {
-            error = error || (item ? null : 'Lỗi khi cập nhật khóa học!');
-            item = item || null;
-            res.send({ error, item });
-        })).catch(error => console.error(error) || res.send({ error }));
-    });
-
-    app.put('/api/course/representer-group/student', app.permission.check('course:write'), (req, res) => {
-        const { _courseId, _representerId, _studentIds, type } = req.body;
-        new Promise((resolve, reject) => {
-            if (type == 'add' || type == 'remove') {
-                const changeGroup = type == 'add' ? app.model.course.addStudentToRepresenterGroup : app.model.course.removeStudentFromRepresenterGroup;
-                const solve = (index = 0) => (index < _studentIds.length) ?
-                    changeGroup(_courseId, _representerId, _studentIds[index], error => error ? reject(error) : solve(index + 1)) : resolve();
-                solve();
-            } else {
-                reject('Dữ liệu không hợp lệ!');
-            }
-        }).then(() => getCourseData(_courseId, req.session.user, (error, item) => {
-            error = error || (item ? null : 'Lỗi khi cập nhật khóa học!');
-            item = item || null;
-            res.send({ error, item });
-        })).catch(error => console.error(error) || res.send({ error }));
-    });
-
     //Teacher API
     app.put('/api/course/teacher-group/teacher', app.permission.check('course:write'), (req, res) => {
         const { _courseId, _teacherId, type } = req.body;
@@ -339,20 +290,38 @@ module.exports = (app) => {
                         if (error || !course) reject(error);
                         else {
                             const courseType = course.courseType;
+                            console.log(course.close);
                             app.model.car.get({ user: _teacherId, courseType: courseType._id }, (error, item) => {
                                 if (error) {
                                     reject(error);
                                 } else if (!item || item.status == 'daThanhLy') {
                                     resolve();
                                 } else {
-                                    app.model.car.addCourseHistory({ _id: item._id }, { course: course._id, user: _teacherId }, error => error ? reject(error) : resolve());
+                                    app.model.car.addCourseHistory({ _id: item._id }, { course: course._id, user: _teacherId }, error => {
+                                        console.log(error);
+                                        if (error) reject(error);
+                                        else app.model.car.update({ _id: item._id }, { currentCourseClose: course.close }, error => error ? reject(error) : resolve());
+                                    });
                                 }
                             });
                         }
                     })
                 );
             } else if (type == 'remove') {
-                app.model.course.removeTeacherGroup(_courseId, _teacherId, error => error ? reject(error) : resolve());
+                app.model.course.removeTeacherGroup(_courseId, _teacherId, error => error ? reject(error) :
+                    app.model.car.get({ user: _teacherId }, (error, item) => {
+                        if (error) {
+                            reject(error);
+                        } else if (!item || item.status == 'daThanhLy') {
+                            resolve();
+                        } else {
+                            app.model.car.deleteCar({ _id: item._id }, { _courseId }, error => {
+                                if (error) reject(error);
+                                else resolve();
+                            });
+                        }
+                    })
+                );
             } else {
                 reject('Dữ liệu không hợp lệ!');
             }
@@ -471,13 +440,14 @@ module.exports = (app) => {
                 student = app.clone(student, { subject: {} });
                 let tongDiemLyThuyet = 0;
                 subjects.forEach(subject => {
-                    let diemMonHoc = 0, completedLessons = 0, numberLessons = subject.lessons ? subject.lessons.length : 0;
+                    let diemMonHoc = 0, thoiGianHoc = 0, completedLessons = 0, numberLessons = subject.lessons ? subject.lessons.length : 0;
                     if (numberLessons) {
                         if (student && student.tienDoHocTap && student.tienDoHocTap[subject._id] && !subject.monThucHanh) {
                             const listLessons = Object.entries(student.tienDoHocTap[subject._id]);
                             let tongDiemMonHoc = 0;
                             (listLessons || []).forEach(lesson => {
                                 tongDiemMonHoc += lesson[1].trueAnswers ? Number(lesson[1].score) / Object.keys(lesson[1].trueAnswers).length * 10 : 0;
+                                thoiGianHoc += lesson[1].totalSeconds ? parseInt(lesson[1].totalSeconds) : 0;
                             });
                             diemMonHoc = Number(tongDiemMonHoc / numberLessons).toFixed(1);
                         }
@@ -492,7 +462,7 @@ module.exports = (app) => {
                     }
 
                     const obj = {};
-                    obj[subject._id] = { completedLessons, diemMonHoc, numberLessons };
+                    obj[subject._id] = { completedLessons, diemMonHoc, numberLessons, thoiGianHoc };
                     student.subject = app.clone(student.subject, obj);
                 });
 

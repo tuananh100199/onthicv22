@@ -82,14 +82,7 @@ class SectionCarousel extends React.Component {
             elements = this.state.items.map((item, index) => {
                 return (
                     this.state.single ?
-                        <div key={index} className='slider-content'
-                            style={{
-                                background: `url('${item.image}')`,
-                                backgroundRepeat: 'no-repeat',
-                                backgroundPosition: 'center',
-                                backgroundSize: 'cover'
-                            }}
-                        >
+                        <div key={index} className='slider-content' style={{ background: `url('${item.image}')`, backgroundRepeat: 'no-repeat', backgroundPosition: 'center', backgroundSize: 'cover' }}>
                             <div className='home_container'>
                                 <div className='container'>
                                     <div className='row'>
@@ -102,10 +95,10 @@ class SectionCarousel extends React.Component {
                                                         <p>{item.description}</p>
                                                     </div>
                                                 </div>
-                                                <div className='home_buttons d-flex flex-row align-items-center justify-content-start'>
-                                                    <div className='button button_4 trans_200'><a href={item.link}>Xem thêm</a></div>
-                                                    {/* <div className='button button_2 trans_200'><a href='#'>Make an appointment</a></div> */}
-                                                </div>
+                                                {item.link ?
+                                                    <div className='home_buttons d-flex flex-row align-items-center justify-content-start'>
+                                                        <div className='button button_4 trans_200'><a href={item.link}>Xem thêm</a></div>
+                                                    </div> : null}
                                             </div>
                                         </div>
                                     </div>
@@ -116,16 +109,8 @@ class SectionCarousel extends React.Component {
                         <div key={index}
                             style={{ width: '100%', height: '600px' }}>
                             <div style={{
-                                overflow: 'hidden',
-                                position: 'absolute',
-                                left: 0,
-                                right: 0,
-                                top: 0,
-                                bottom: 0,
-                                backgroundImage: 'url(' + item.image + ')',
-                                backgroundRepeat: 'no-repeat',
-                                backgroundPosition: 'center',
-                                backgroundSize: 'cover'
+                                overflow: 'hidden', position: 'absolute', left: 0, right: 0, top: 0, bottom: 0,
+                                backgroundImage: 'url(' + item.image + ')', backgroundRepeat: 'no-repeat', backgroundPosition: 'center', backgroundSize: 'cover'
                             }}>
                                 <div className='home_container'>
                                     <div className='container'>
@@ -160,8 +145,7 @@ class SectionCarousel extends React.Component {
                     {elements}
                 </div>
                 <div className='nav-container' />
-            </div>
-            :
+            </div> :
             <div className='row'>
                 <div className='follow-us-instagram' style={{ width: '100%', overflow: 'hidden' }}>
                     <div className='instagram-content d-flex flex-wrap align-items-center owl-carousel '

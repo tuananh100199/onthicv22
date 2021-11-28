@@ -42,13 +42,17 @@ export class TableCell extends React.Component { // type = number | date | link 
                     </label>
                 </td>);
         } else if (type == 'buttons') {
-            const { onFuel, onSwap, onEdit, onDelete, children } = this.props;
+            const { onEditCourseHistory, onEditFuel, onEditRepair, onSwap, onEdit,onLiquidate, onDelete, children } = this.props;
             return (
                 <td className={className} style={{ ...style }} rowSpan={rowSpan}>
                     <div className='btn-group'>
                         {children}
-                        {permission.fuel && typeof onFuel == 'string' ?
-                            <Link to={onFuel} className='btn btn-warning'><i className='fa fa-lg fa-thermometer-empty' /></Link> : null}
+                        {permission.fuel && typeof onEditCourseHistory == 'string' ?
+                            <Link to={onEditCourseHistory} className='btn btn-dark'><i className='fa fa-lg fa-briefcase' /></Link> : null}
+                        {permission.fuel && typeof onEditFuel == 'string' ?
+                            <Link to={onEditFuel} className='btn btn-info'><i className='fa fa-lg fa-thermometer-empty' /></Link> : null}
+                        {permission.write && typeof onEditRepair == 'string' ?
+                            <Link to={onEditRepair} className='btn btn-warning'><i className='fa fa-lg fa-wrench' /></Link> : null}
                         {permission.write && onSwap ?
                             <a className='btn btn-warning' href='#' onClick={e => onSwap(e, content, true)}><i className='fa fa-lg fa-arrow-up' /></a> : null}
                         {permission.write && onSwap ?
@@ -57,6 +61,8 @@ export class TableCell extends React.Component { // type = number | date | link 
                             <a className='btn btn-primary' href='#' onClick={e => onEdit(e, content)}><i className='fa fa-lg fa-edit' /></a> : null}
                         {onEdit && typeof onEdit == 'string' ?
                             <Link to={onEdit} className='btn btn-primary'><i className='fa fa-lg fa-edit' /></Link> : null}
+                        {onLiquidate  ?
+                            <a className='btn' style={{ backgroundColor: 'gold', borderColor: 'gold'}} href='#' onClick={e => onLiquidate(e, content)}><i className='fa fa-lg fa-money' /></a> : null}
                         {permission.delete && onDelete ?
                             <a className='btn btn-danger' href='#' onClick={e => onDelete(e, content)}><i className='fa fa-lg fa-trash' /></a> : null}
                     </div>

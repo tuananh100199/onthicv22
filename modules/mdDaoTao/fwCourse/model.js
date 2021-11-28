@@ -16,8 +16,8 @@ module.exports = app => {
             score: Number,
             diemLiet: { type: Boolean, default: false },
         }],
-       
-        practiceNumOfHours: {type: Number},                                 // Tổng số giờ học thực hành
+
+        practiceNumOfHours: { type: Number },                                 // Tổng số giờ học thực hành
 
         subjects: [{ type: app.db.Schema.ObjectId, ref: 'Subject' }],       // Danh sách môn học
         maxStudent: { type: Number, default: 100 },                         // Số lượng học viên tối đa
@@ -34,14 +34,10 @@ module.exports = app => {
         thoiGianThiKetThucMonChinhThuc: { type: Date, default: Date.now },
         thoiGianThiTotNghiepDuKien: { type: Date, default: Date.now },
         thoiGianThiTotNghiepChinhThuc: { type: Date, default: Date.now },
- 
+
         admins: [{ type: app.db.Schema.ObjectId, ref: 'User' }],            // Quản trị viên khóa học
         teacherGroups: [{
             teacher: { type: app.db.Schema.Types.ObjectId, ref: 'User' },
-            student: [{ type: app.db.Schema.Types.ObjectId, ref: 'Student' }],
-        }],
-        representerGroups: [{
-            representer: { type: app.db.Schema.Types.ObjectId, ref: 'User' },
             student: [{ type: app.db.Schema.Types.ObjectId, ref: 'Student' }],
         }],
 
@@ -88,10 +84,6 @@ module.exports = app => {
             }).populate({
                 path: 'teacherGroups.student', populate: { path: 'user division courseType course', select: 'email title name image phoneNumber' }
             }).populate({
-                path: 'representerGroups.representer', select: '-password', populate: { path: 'user division' }
-            }).populate({
-                path: 'representerGroups.student', populate: { path: 'user division courseType course', select: 'email title name' }
-            }).populate({
                 path: 'admins', select: '-password', populate: { path: 'division' }
             }).exec(done);
         },
@@ -101,7 +93,7 @@ module.exports = app => {
         },
 
         // changes = { $set, $unset, $push, $pull }
-        update: (_id, changes, done) => { // Không cập nhật teacherGroups, representerGroups
+        update: (_id, changes, done) => { // Không cập nhật teacherGroups
             let isError = false;
             new Promise((resolve, reject) => {
                 app.model.division.getAll({ isOutside: true }, (error, list) => {
@@ -152,22 +144,6 @@ module.exports = app => {
 
         removeStudentFromTeacherGroup: (_id, _teacherId, _studentId, done) => {
             model.findOneAndUpdate({ _id, 'teacherGroups.teacher': _teacherId }, { $pull: { 'teacherGroups.$.student': _studentId } }, { new: true }).exec(done);
-        },
-
-        addRepresenterGroup: (_id, _representerId, done) => {
-            model.findOneAndUpdate({ _id }, { $push: { representerGroups: { representer: _representerId, student: [] } } }, { new: true }).exec(done);
-        },
-
-        removeRepresenterGroup: (_id, _representerId, done) => {
-            model.findOneAndUpdate({ _id }, { $pull: { representerGroups: { representer: _representerId } } }, { new: true }).exec(done);
-        },
-
-        addStudentToRepresenterGroup: (_id, _representerId, _studentId, done) => {
-            model.findOneAndUpdate({ _id, 'representerGroups.representer': _representerId }, { $push: { 'representerGroups.$.student': _studentId } }, { new: true }).exec(done);
-        },
-
-        removeStudentFromRepresenterGroup: (_id, _representerId, _studentId, done) => {
-            model.findOneAndUpdate({ _id, 'representerGroups.representer': _representerId }, { $pull: { 'representerGroups.$.student': _studentId } }, { new: true }).exec(done);
         },
 
 

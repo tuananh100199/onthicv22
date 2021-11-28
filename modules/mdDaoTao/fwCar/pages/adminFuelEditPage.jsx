@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { createCar, addCarFuel, deleteCarFuel, deleteCar, getCar, exportFuelCar } from '../redux';
+import { createCar, addCarFuel, deleteCarElement, deleteCar, getCar, exportFuelCar } from '../redux';
 import { AdminPage, CirclePageButton, AdminModal, FormDatePicker, FormTextBox } from 'view/component/AdminPage';
 import T from 'view/js/common';
 
@@ -13,11 +13,12 @@ class CarFuelModal extends AdminModal {
     }
 
     onShow = (item) => {
-        const { date, fee } = item || { _id: null, licensePlates: '', fee: '' },
+        const { date, fee, quantity } = item || { _id: null, licensePlates: '', fee: '',quantity:'' },
             { licensePlates, _id } = this.props.data,
             fuelId = item && item._id;
         this.itemLicensePlates.value(licensePlates);
         this.itemNgayTiepNhienLieu.value(date ? date : new Date());
+        this.itemSoLuong.value(quantity);
         this.itemChiPhi.value(fee);
         this.setState({ _id, fuelId });
     }
@@ -26,11 +27,12 @@ class CarFuelModal extends AdminModal {
         const data = {
             date: this.itemNgayTiepNhienLieu.value(),
             fee: this.itemChiPhi.value(),
+            quantity: this.itemSoLuong.value(),
             fuelId: this.state.fuelId
         };
-        if (data.fee == '') {
+        if (data.fee == '' && data.quantity=='') {
             T.notify('Chi phí không được trống!', 'danger');
-            this.itemBrand.focus();
+            this.itemChiPhi.focus();
         } else {
             this.props.update(this.state._id, data, this.hide());
         }
@@ -40,14 +42,12 @@ class CarFuelModal extends AdminModal {
         const readOnly = this.props.readOnly;
         return this.renderModal({
             title: 'Quản lý cấp phát nhiên liệu',
-            size: 'large',
             body:
                 <>
-                    <FormTextBox className='col-md-6' ref={e => this.itemLicensePlates = e} label='Biển số xe' readOnly={true} />
-                    <div className='row'>
-                        <FormTextBox type='number' className='col-md-6' ref={e => this.itemChiPhi = e} label='Chi phí tiếp nhiên liệu' readOnly={readOnly} />
-                        <FormDatePicker ref={e => this.itemNgayTiepNhienLieu = e} className='col-md-6' label='Ngày tiếp nhiên liệu' readOnly={readOnly} type='date-mask' />
-                    </div >
+                    <FormTextBox ref={e => this.itemLicensePlates = e} label='Biển số xe' readOnly={true} />
+                    <FormTextBox type='number' ref={e => this.itemChiPhi = e} label='Chi phí tiếp nhiên liệu' readOnly={readOnly} />
+                    <FormTextBox type='number' ref={e => this.itemSoLuong = e} label='Số lượng xăng (L)' readOnly={readOnly} />
+                    <FormDatePicker ref={e => this.itemNgayTiepNhienLieu = e} label='Ngày tiếp nhiên liệu' readOnly={readOnly} type='date-mask' />
                 </>
         });
     }
@@ -80,12 +80,20 @@ class CarFuelPage extends AdminPage {
     edit = (e, item) => e.preventDefault() || this.modal.show(item);
 
     delete = (e, item) => e.preventDefault() || T.confirm('Xoá lịch sử tiếp nhiên liệu', `Bạn có chắc muốn xoá lịch sử tiếp nhiên liệu ngày ${T.dateToText(item.date, 'dd/mm/yyyy')}?`, true, isConfirm =>
-        isConfirm && this.props.deleteCarFuel(this.state.data._id, item._id));
+        isConfirm && this.props.deleteCarElement(this.state.data._id, { _fuelId: item._id }));
 
     render() {
         const permission = this.getUserPermission('car', ['read', 'write', 'delete', 'fuel']),
             car = this.props.car && this.props.car.item,
             list = car && car.fuel && car.fuel.sort((a, b) => new Date(b.date) - new Date(a.date));
+            let total = 0;
+            if(list && list.length){
+                console.log(list);
+                for(let i=0; i<list.length;i++){
+                    console.log(list[i].quantity);
+                    total+= list[i].quantity;
+                }
+            }
         return this.renderPage({
             icon: 'fa fa-thermometer-empty',
             title: 'Quản lý cấp phát nhiên liệu: ' + (car && car.licensePlates),
@@ -94,16 +102,20 @@ class CarFuelPage extends AdminPage {
                 <div className='tile'>
                     {list && list.length ?
                         <ul style={{ paddingLeft: 12, listStyleType: 'none' }}>
+                            <li key={0}>Tổng số lượng xăng đã đổ: {total} (L) </li>
                             {list.map((item, index) => (
                                 <li key={index} className='d-flex'>
                                     {index + 1}. &nbsp;
                                     <a href='#' className='text-secondary d-inline' onClick={e => e.preventDefault() || this.modal.show(item)}>
                                         <div className='pl-2'>
-                                            <span style={{ fontSize: '1rem' }}>Ngày tiếp nhiên liệu: {T.dateToText(item.date, 'dd/mm/yyyy')} </span>
-                                            <p className='text-muted'>Chi phí: {item.fee}</p>
+                                            <span style={{ fontSize: '1rem' }}>
+                                                Ngày tiếp nhiên liệu: {T.dateToText(item.date, 'dd/mm/yyyy')}
+                                            </span>
+                                            {item.fee ? <span>- Chi phí: {T.numberDisplay(item.fee) + ' đồng'} &nbsp;</span> : null}
+                                            {item.quantity ? <span>- Số lượng xăng: {item.quantity +' lít' } &nbsp;</span> : null}
                                         </div>
                                     </a>
-                                    {permission.fuel ? <a href='#' className='notification-button text-danger' onClick={e => this.delete(e, item)}><i className='fa fa-lg fa-trash' /></a> : null}
+                                    {permission.fuel ? <a href='#' className='notification-button text-danger ml-4' onClick={e => this.delete(e, item)}><i className='fa fa-lg fa-trash' /></a> : null}
                                 </li>))}
                         </ul> : 'Chưa có thông tin!'}
                 </div>
@@ -117,5 +129,5 @@ class CarFuelPage extends AdminPage {
 }
 
 const mapStateToProps = state => ({ system: state.system, car: state.trainning.car });
-const mapActionsToProps = { getCar, deleteCar, createCar, addCarFuel, deleteCarFuel };
+const mapActionsToProps = { getCar, deleteCar, createCar, addCarFuel, deleteCarElement };
 export default connect(mapStateToProps, mapActionsToProps)(CarFuelPage);

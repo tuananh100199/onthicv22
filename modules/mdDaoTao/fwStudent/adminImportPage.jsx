@@ -115,8 +115,8 @@ class EditModal extends AdminModal {
                 <FormTextBox ref={e => this.itemHocPhiPhaiDong = e} className='col-md-4' label='Học phí' readOnly={this.props.readOnly} />
                 <FormCheckbox ref={e => this.itemHinhThe3x4 = e} className='col-md-6' label='Hình thẻ 3x4' readOnly={this.props.readOnly} />
                 <FormCheckbox ref={e => this.itemHinhChupTrucTiep = e} className='col-md-6' label='Hình chụp trực tiếp' readOnly={this.props.readOnly} />
-                <FormTextBox ref={e => this.itemLecturerIdentityCard = e} className='col-md-6' label='Số CMND,CCCD của cố vấn học tập dự kiến' readOnly={this.props.readOnly} />
-                <FormTextBox ref={e => this.itemLecturerName = e} className='col-md-6' label='Tên cố vấn học tập dự kiến' readOnly={this.props.readOnly} />
+                <FormTextBox ref={e => this.itemLecturerIdentityCard = e} className='col-md-6' label='Số CMND,CCCD của giáo viên dự kiến' readOnly={this.props.readOnly} />
+                <FormTextBox ref={e => this.itemLecturerName = e} className='col-md-6' label='Tên giáo viên dự kiến' readOnly={this.props.readOnly} />
             </div>),
     });
 }
@@ -165,7 +165,7 @@ class ImportPage extends AdminPage {
                     T.notify('Import ứng viên bị lỗi!', 'danger');
                 } else {
                     if (data.studentError && data.studentError.length) {
-                        T.alert(`Không tìm thấy cố vấn có CMND/CCCD:  ${ data.studentError.reduce((a, b) => `${b.error + ', ' + a}`, ' ')}!`, 'error', false, 8000);
+                        T.alert(`Không tìm thấy cố vấn có CMND/CCCD:  ${data.studentError.reduce((a, b) => `${b.error + ', ' + a}`, ' ')}!`, 'error', false, 8000);
                     }
                     this.props.history.push('/user/pre-student');
                 }
@@ -241,7 +241,7 @@ class ImportPage extends AdminPage {
                             </button>
                         </div>
                     </div>
-                    
+
                 </div>
                 <EditModal ref={e => this.modalEdit = e} readOnly={readOnly} edit={this.edit} />
             </div>

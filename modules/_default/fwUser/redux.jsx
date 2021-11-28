@@ -111,13 +111,14 @@ export function getAllLecturer(done) {
         const url = '/api/user/lecturer';
         T.get(url, data => {
             if (data.error) {
-                T.notify('Lấy danh sách cố vấn học tập bị lỗi!', 'danger');
+
+                T.notify('Lấy danh sách giáo viên bị lỗi!', 'danger');
                 console.error('GET: ' + url + '. ' + data.error);
             } else {
                 done && done(data.list);
                 dispatch({ type: LecturerGetAll, list: data.list });
             }
-        }, error => console.error(error) || T.notify('Lấy danh sách cố vấn học tập bị lỗi!', 'danger'));
+        }, error => console.error(error) || T.notify('Lấy danh sách giáo viên bị lỗi!', 'danger'));
     };
 }
 
