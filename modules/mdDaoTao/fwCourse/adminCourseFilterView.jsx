@@ -34,7 +34,7 @@ class CoursePageFilter extends AdminPage {
                     <th style={{ width: '100%' }}>Tên khóa học</th>
                     <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Khai giảng</th>
                     <th style={{ width: 'auto' }} nowrap='true'>Quản trị viên</th>
-                    <th style={{ width: 'auto' }} nowrap='true'>Cố vấn học tập</th>
+                    <th style={{ width: 'auto' }} nowrap='true'>Giáo viên</th>
                     <th style={{ width: 'auto' }} nowrap='true'>Học viên</th>
                     {!readOnly && <th style={{ width: 'auto' }} nowrap='true'>Kích hoạt</th>}
                     {!readOnly && <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Thao tác</th>}

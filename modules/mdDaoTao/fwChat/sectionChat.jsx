@@ -233,7 +233,7 @@ class SectionChat extends AdminPage {
                         <div className='inbox_people col-sm-3'>
                             <div className='headind_srch'>
                                 <div className='recent_heading'>
-                                    <h4>{this.props.type && this.props.type == 'student' ? 'Cố vấn học tập' : 'Học viên'}</h4>
+                                    <h4>{this.props.type && this.props.type == 'student' ? 'Giáo viên' : 'Học viên'}</h4>
                                 </div>
                             </div>
                             <div className='inbox_chat'>

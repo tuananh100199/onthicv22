@@ -62,14 +62,14 @@ class TeacherModal extends AdminModal {
         if (_teacherId) {
             this.props.add(_courseId, _teacherId, _studentIds, 'add', () => this.hide() || !this.props.onSuccess || this.props.onSuccess());
         } else {
-            T.notify('Chưa chọn Cố vấn học tập', 'danger');
+            T.notify('Chưa chọn Giáo viên', 'danger');
         }
     }
 
     render = () => {
         const { teachers } = this.state;
         return this.renderModal({
-            title: 'Gán Cố vấn học tập',
+            title: 'Gán Giáo viên',
             body: teachers && teachers.length ?
                 <ol style={{ width: '100%', paddingLeft: 20, margin: 0 }}>
                     {teachers.map((teacher, index) =>
@@ -79,7 +79,7 @@ class TeacherModal extends AdminModal {
                             </a>
                         </li>)
                     }
-                </ol> : 'Không có Cố vấn học tập',
+                </ol> : 'Không có Giáo viên',
         });
     }
 }
@@ -115,13 +115,13 @@ class AdminTeacherPage extends AdminPage {
         if (_teacherId && teacherGroups.find(({ teacher }) => teacher && (teacher._id == _teacherId)) == null) {
             this.props.updateCourseTeacherGroup(_id, _teacherId, 'add', () => this.selectTeacher.value(null));
         } else {
-            T.notify('Bạn chọn trùng cố vấn học tập', 'danger');
+            T.notify('Bạn chọn trùng giáo viên', 'danger');
         }
     }
-    removeTeacher = (e, teacher) => e.preventDefault() || T.confirm('Xoá Cố vấn học tập', `Bạn có chắc muốn xoá ${teacher.lastname} ${teacher.firstname} khỏi khóa học này?`, true, isConfirm =>
+    removeTeacher = (e, teacher) => e.preventDefault() || T.confirm('Xoá Giáo viên', `Bạn có chắc muốn xoá ${teacher.lastname} ${teacher.firstname} khỏi khóa học này?`, true, isConfirm =>
         isConfirm && this.props.course && this.props.course.item && this.props.updateCourseTeacherGroup(this.props.course.item._id, teacher._id, 'remove'));
 
-    removeStudent = (e, teacher, student) => e.preventDefault() || T.confirm('Xoá học viên', `Bạn có chắc muốn xoá học viên '${student.lastname} ${student.firstname}' khỏi cố vấn học tập '${teacher.lastname} ${teacher.firstname}'?`, true, isConfirm =>
+    removeStudent = (e, teacher, student) => e.preventDefault() || T.confirm('Xoá học viên', `Bạn có chắc muốn xoá học viên '${student.lastname} ${student.firstname}' khỏi giáo viên '${teacher.lastname} ${teacher.firstname}'?`, true, isConfirm =>
         isConfirm && this.props.updateCourseTeacherGroupStudent(this.props.course.item._id, teacher._id, [student._id], 'remove'));
 
     showStudentInfo = (e, student) => e.preventDefault() || this.studentModal.show(student);
@@ -200,21 +200,21 @@ class AdminTeacherPage extends AdminPage {
         const assignedStudents = [];
         (teacherGroups || []).forEach(item => (item.student || []).forEach(student => assignedStudents.push(student._id)));
         const isValidStudent = (student) => !assignedStudents.includes(student._id) && student.division && (!student.division.isOutside || this.state.outsideStudentVisible);
-        let autoAssignStudents = students.filter(student => isValidStudent(student)).sort((a, b) => new Date(a.createdDate) - new Date (b.createdDate));
-    
+        let autoAssignStudents = students.filter(student => isValidStudent(student)).sort((a, b) => new Date(a.createdDate) - new Date(b.createdDate));
+
         const teacherGroupsUpdate = teacherGroups.map(teacherGroup => {
             const _teacherId = teacherGroup && teacherGroup.teacher ? teacherGroup.teacher._id : null;
             let listStudentOfTeacher = [];
             autoAssignStudents.forEach(student => {
                 if (student && _teacherId && student.planLecturer == _teacherId) {
-                    listStudentOfTeacher.push(student._id); 
+                    listStudentOfTeacher.push(student._id);
                 }
             });
-            const numberAddStudentIds = maxStudent - Number(teacherGroup.student.length); 
+            const numberAddStudentIds = maxStudent - Number(teacherGroup.student.length);
             const _studentIds = listStudentOfTeacher.splice(0, numberAddStudentIds);
-            if (numberAddStudentIds > 0 && _studentIds.length > 0 ){
+            if (numberAddStudentIds > 0 && _studentIds.length > 0) {
                 return { _teacherId, _studentIds };
-            }   
+            }
         });
 
         this.props.updateAutoCourseTeacherGroupStudent(_id, teacherGroupsUpdate.filter(item => item), 'add', () => T.notify('Gán tự động học viên thành công', 'success'));
@@ -295,7 +295,7 @@ class AdminTeacherPage extends AdminPage {
         const backRoute = `/user/course/${item._id}`;
         return this.renderPage({
             icon: 'fa fa-user-circle',
-            title: 'Gán Cố vấn học tập: ' + item.name,
+            title: 'Gán Giáo viên: ' + item.name,
             breadcrumb: [<Link key={0} to='/user/course'>Khóa học</Link>, item._id ? <Link key={0} to={backRoute}>{item.name}</Link> : '', 'Gán CVHT'],
             content: (
                 <div className='tile'>
@@ -326,9 +326,9 @@ class AdminTeacherPage extends AdminPage {
                         </div>
 
                         <div className='col-md-6'>
-                            <h3 className='tile-title'>Cố vấn học tập</h3>
+                            <h3 className='tile-title'>Giáo viên</h3>
                             <div style={{ borderWidth: 1, borderStyle: 'solid', borderColor: '#ddd', borderRadius: 5, padding: 12 }}>
-                                <label>Tìm kiếm cố vấn học tập</label>
+                                <label>Tìm kiếm giáo viên</label>
                                 <div style={{ display: permissionTeacherWrite ? 'flex' : 'none' }}>
                                     <FormSelect ref={e => this.selectTeacher = e} data={ajaxSelectUserType(['isLecturer'])} style={{ width: '100%' }} />
                                     <div style={{ width: 'auto', paddingLeft: 8 }}>
@@ -368,10 +368,10 @@ class AdminTeacherPage extends AdminPage {
                                                     )) : <label style={{ color: 'black' }}>Chưa có học viên!</label>}
                                                 </ul>
                                             </li> : null)}
-                                    </ol> : <label style={{ color: 'black' }}>Chưa có cố vấn học tập!</label>}
+                                    </ol> : <label style={{ color: 'black' }}>Chưa có giáo viên!</label>}
                             </div>
                         </div>
-                        {!isOutsideCourseAdmin ? <CirclePageButton type='custom' customClassName='btn-primary' style={{marginRight: '55px'}} customIcon='fa fa-arrow-right' onClick={e => e.preventDefault() || this.autoAssignmodal.show()} /> : null}
+                        {!isOutsideCourseAdmin ? <CirclePageButton type='custom' customClassName='btn-primary' style={{ marginRight: '55px' }} customIcon='fa fa-arrow-right' onClick={e => e.preventDefault() || this.autoAssignmodal.show()} /> : null}
                         {!isOutsideCourseAdmin ? <CirclePageButton type='export' onClick={() => exportTeacherAndStudentToExcel(_courseId)} /> : null}
                         <AssignModal ref={e => this.autoAssignmodal = e} handleAutoAssignStudent={this.handleAutoAssignStudent} />
                         <AdminStudentModal ref={e => this.studentModal = e} updateStudent={this.updateStudent} />

@@ -32,23 +32,12 @@ export default function courseReducer(state = {}, data) {
             const studentId = data.studentId;
             const currentCoursePage = state,
                 students = currentCoursePage.item.students ? currentCoursePage.item.students : [],
-                representerGroups = currentCoursePage.item.representerGroups ? currentCoursePage.item.representerGroups : [],
                 teacherGroups = currentCoursePage.item.teacherGroups ? currentCoursePage.item.teacherGroups : [];
 
             for (let i = 0; i < students.length; i++) {
                 if (students[i]._id == studentId) {
                     students.splice(i, 1, data.item);
                     currentCoursePage.item.students = students;
-
-                    representerGroups.forEach(representerGroup => {
-                        for (let i = 0; i < representerGroup.student.length; i++) {
-                            if (representerGroup.student[i]._id == studentId) {
-                                representerGroup.student.splice(i, 1, data.item);
-                                currentCoursePage.item.representerGroups = representerGroups;
-                                break;
-                            }
-                        }
-                    });
 
                     teacherGroups.forEach(teacherGroup => {
                         for (let i = 0; i < teacherGroup.student.length; i++) {
@@ -116,8 +105,6 @@ const fetchCourse = (_id, done) => {
             if (data.item) {
                 if (data.item.admins) data.item.admins = data.item.admins.sort((a, b) =>
                     (a.firstname + ' ' + a.lastname).toLowerCase() > (b.firstname + ' ' + b.lastname).toLowerCase() ? +1 : -1);
-                if (data.item.representerGroups) data.item.representerGroups = data.item.representerGroups.sort((a, b) =>
-                    a.teacher == null || b.teacher == null || (a.teacher.firstname + ' ' + a.teacher.lastname).toLowerCase() > (b.teacher.firstname + ' ' + b.teacher.lastname).toLowerCase() ? +1 : -1);
             }
             done && done(data);
         }
@@ -129,23 +116,6 @@ export function getCourse(_id, done) {
             dispatch && dispatch({ type: CourseGetItem, item: data.item });
             done && done(data);
         });
-
-        // const url = '/api/course';
-        // T.get(url, { _id }, data => {
-        //     if (data.error) {
-        //         T.notify('Lấy khóa học bị lỗi!', 'danger');
-        //         console.error('GET: ' + url + '.', data.error);
-        //     } else {
-        //         if (data.item) {
-        //             if (data.item.admins) data.item.admins = data.item.admins.sort((a, b) =>
-        //                 (a.firstname + ' ' + a.lastname).toLowerCase() > (b.firstname + ' ' + b.lastname).toLowerCase() ? +1 : -1);
-        //             if (data.item.representerGroups) data.item.representerGroups = data.item.representerGroups.sort((a, b) =>
-        //                 a.teacher == null || b.teacher == null || (a.teacher.firstname + ' ' + a.teacher.lastname).toLowerCase() > (b.teacher.firstname + ' ' + b.teacher.lastname).toLowerCase() ? +1 : -1);
-        //         }
-        //         dispatch && dispatch({ type: CourseGetItem, item: data.item });
-        //         done && done(data);
-        //     }
-        // }, error => console.error(error) || T.notify('Lấy khóa học bị lỗi!', 'danger'));
     };
 }
 
@@ -242,7 +212,7 @@ export function updateCourseTeacherGroup(_courseId, _teacherId, type, done) {
         const url = '/api/course/teacher-group/teacher';
         T.put(url, { _courseId, _teacherId, type }, data => {
             if (data.error) {
-                T.notify('Gán cố vấn học tập bị lỗi!', 'danger');
+                T.notify('Gán giáo viên bị lỗi!', 'danger');
                 console.error('PUT: ' + url + '.', data.error);
             } else {
                 done && done(data.item);
@@ -271,37 +241,6 @@ export function updateAutoCourseTeacherGroupStudent(_courseId, teacherGroupsUpda
     return dispatch => {
         const url = '/api/course/teacher-group/student/auto';
         T.put(url, { _courseId, teacherGroupsUpdate, type }, data => {
-            if (data.error) {
-                T.notify('Gán học viên bị lỗi!', 'danger');
-                console.error('PUT: ' + url + '.', data.error);
-            } else {
-                done && done(data.item);
-                dispatch({ type: CourseGetItem, item: data.item });
-            }
-        }, error => console.error('PUT: ' + url + '.', error));
-    };
-}
-
-// Course representerGroups -------------------------------------------------------------------------------------------
-export function updateCourseRepresenterGroup(_courseId, _representerId, type, done) {
-    return dispatch => {
-        const url = '/api/course/representer-group/representer';
-        T.put(url, { _courseId, _representerId, type }, data => {
-            if (data.error) {
-                T.notify('Gán cố vấn học tập bị lỗi!', 'danger');
-                console.error('PUT: ' + url + '.', data.error);
-            } else {
-                done && done(data.item);
-                dispatch({ type: CourseGetItem, item: data.item });
-            }
-        }, error => console.error('PUT: ' + url + '.', error));
-    };
-}
-
-export function updateCourseRepresenterGroupStudent(_courseId, _representerId, _studentIds, type, done) {
-    return dispatch => {
-        const url = '/api/course/representer-group/student';
-        T.put(url, { _courseId, _representerId, _studentIds, type }, data => {
             if (data.error) {
                 T.notify('Gán học viên bị lỗi!', 'danger');
                 console.error('PUT: ' + url + '.', data.error);
@@ -445,9 +384,6 @@ export function importFinalScore(scores, course, done) {
 // Export to Excel ----------------------------------------------------------------------------------------------------
 export function exportStudentInfoToExcel(_courseId) {
     T.download(T.url(`/api/course/student/export/${_courseId}`));
-}
-export function exportRepresenterAndStudentToExcel(_courseId) {
-    T.download(T.url(`/api/course/representer-student/export/${_courseId}`));
 }
 export function exportTeacherAndStudentToExcel(_courseId) {
     T.download(T.url(`/api/course/teacher-student/export/${_courseId}`));
