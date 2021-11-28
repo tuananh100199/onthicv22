@@ -136,6 +136,10 @@ module.exports = (app) => {
 
     app.put('/api/time-table/admin', app.permission.check('timeTable:write'), (req, res) => {
         const { _id,  changes } = req.body;
+        if (changes.car == '') {
+            delete changes.car;
+        }
+        
         app.model.timeTable.get(_id, (error, item) => {
             if (error) {
                 res.send({ error });

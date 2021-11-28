@@ -150,7 +150,6 @@ module.exports = app => {
                                 lecturerCondition.date = {
                                     $gte: new Date(),
                                 };
-                                lecturerCondition.state = 'approved';
                                 app.model.timeTable.getAll(lecturerCondition, (error, list) => {
                                     if (list && list.length) {
                                         const timeTables = list.map(item => app.clone(item));
