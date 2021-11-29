@@ -299,6 +299,7 @@ export const ajaxSelectAvaiableLecturer = (currentLecturer) => T.createAjaxAdapt
         list = response && response.list ?
         response.list.map(user => ({ id: user._id, text: user.lastname + ' ' + user.firstname })) : [];
         currentLecturer ? list.push({ id: currentLecturer._id, text: currentLecturer.lastname + ' ' + currentLecturer.firstname }) : null;
+        list.push({id: 0, text: 'Trống'});
         return list;
     },
 );
