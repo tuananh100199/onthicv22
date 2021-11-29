@@ -29,7 +29,6 @@ class EditCoursePage extends AdminPage {
             item = this.props.course && this.props.course.item ? this.props.course.item : {};
         const permission = this.getUserPermission('course',['read', 'write', 'delete', 'lock']),
             permissionFeedback = this.getUserPermission('feedback');
-        console.log(permission);
         return this.renderPage({
             icon: 'fa fa-cubes',
             title: 'Khóa học: ' + item.name,

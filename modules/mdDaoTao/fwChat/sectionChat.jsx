@@ -11,7 +11,6 @@ class SectionChat extends AdminPage {
         const { courseId, listUser, _selectedUserId } = this.props,
             user = this.props.system.user;
         this.setState({ courseId, user, listUser, _selectedUserId });
-        console.log(this.props.oldMessageAll);
         this.props.oldMessageAll && this.setState({
             oldMessageAll: this.props.oldMessageAll
         });

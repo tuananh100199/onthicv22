@@ -109,7 +109,6 @@ module.exports = (app) => {
             condition.admins = sessionUser._id;
             condition.active = true;
         }
-        console.log(condition);
         app.model.course.getPage(pageNumber, pageSize, condition, (error, page) => {
             if (error || !page) {
                 res.send({ error: error || 'Danh sách trống!' });
