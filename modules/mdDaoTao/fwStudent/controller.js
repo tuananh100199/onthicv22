@@ -13,7 +13,7 @@ module.exports = (app) => {
     };
 
     app.permission.add(
-        { name: 'student:read' }, { name: 'student:write' }, { name: 'student:delete', menu }, { name: 'student:import', menu: menuFailStudent },//TODO: Thầy TÙNG
+        { name: 'student:read' }, { name: 'student:write' }, { name: 'student:delete', menu }, { name: 'student:import' },{name: 'student: notify', menu: menuFailStudent },//TODO: Thầy TÙNG
         { name: 'pre-student:read', menu }, { name: 'pre-student:write' }, { name: 'pre-student:delete' }, { name: 'pre-student:import' },
     );
 
