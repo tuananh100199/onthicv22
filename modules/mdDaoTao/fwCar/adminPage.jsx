@@ -20,7 +20,7 @@ class EditCoursePage extends AdminPage {
 
     render() {
         const permission = this.getUserPermission('car', ['read', 'write', 'delete', 'fuel']);
-        const { car, isLecturer, isCourseAdmin } = this.state;
+        const { car } = this.state;
         return this.renderPage({
             icon: 'fa fa-car',
             title: 'Quản lý xe',
@@ -35,9 +35,9 @@ class EditCoursePage extends AdminPage {
                     <PageIcon visible={permission.write} to={'/user/car/registration'} icon='fa-file-text-o' iconBackgroundColor='#CC0' text='Đăng kiểm xe' />
                     <PageIcon visible={permission.write} to={'/user/car/repair'} icon='fa-wrench' iconBackgroundColor='#900' text='Theo dõi sửa chữa, bảo dưỡng' />
                     {/* <PageIcon visible={permission.write} to={'/user/car/course'} icon='fa-cubes' iconBackgroundColor='#D00' text='Xe đi khóa' /> */}
-                    <PageIcon visible={isLecturer} to={'/user/car/lecturer/calendar'} icon='fa-calendar' iconBackgroundColor='#3e24aa' text='Lịch xe' />
-                    <PageIcon visible={isCourseAdmin} to={'/user/car/calendar'} icon='fa-calendar' iconBackgroundColor='#64b5f6' text='Tổng quan lịch xe' />
-                    <PageIcon visible={isCourseAdmin} to={'/user/car/history-calendar'} icon='fa-history' iconBackgroundColor='#be231b' text='Giáo viên phụ trách xe' />
+                    <PageIcon visible={permission.write} to={'/user/car/lecturer/calendar'} icon='fa-calendar' iconBackgroundColor='#3e24aa' text='Lịch xe' />
+                    <PageIcon visible={permission.write} to={'/user/car/calendar'} icon='fa-calendar' iconBackgroundColor='#64b5f6' text='Tổng quan lịch xe' />
+                    <PageIcon visible={permission.write} to={'/user/car/history-calendar'} icon='fa-history' iconBackgroundColor='#be231b' text='Giáo viên phụ trách xe' />
                 </div>
             ),
         });
