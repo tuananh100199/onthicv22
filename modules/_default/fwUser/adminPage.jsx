@@ -159,7 +159,7 @@ class UserPasswordModal extends AdminModal {
             T.notify('Mật khẩu không trùng nhau!', 'danger');
             this.password1.focus();
         } else {
-            this.props.updateUser(this.data('_id'), { password: password1 }, error => error || this.hide());
+            this.props.updateUser(this.data('_id'), { password: password1 }, ({error}) => error || this.hide());
         }
     }
 

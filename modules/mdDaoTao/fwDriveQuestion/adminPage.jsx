@@ -1,7 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { getCategoryAll } from 'modules/_default/fwCategory/redux';
-import { getDriveQuestionPage, createDriveQuestion, updateDriveQuestion, swapDriveQuestion, deleteDriveQuestion, deleteDriveQuestionImage, changeDriveQuestion } from './redux';
+import { getDriveQuestionPage, createDriveQuestion, updateDriveQuestion, swapDriveQuestion, deleteDriveQuestion, deleteDriveQuestionImage, changeDriveQuestion, getDriveQuestionItem } from './redux';
 import Pagination from 'view/component/Pagination';
 import { AdminPage, AdminModal, FormCheckbox, FormRichTextBox, FormImageBox, FormSelect, TableCell, renderTable } from 'view/component/AdminPage';
 
@@ -16,7 +16,7 @@ class QuestionModal extends AdminModal {
         this.itemTitle.value(title);
         this.itemImage.setData(`driveQuestion:${_id || 'new'}`);
         this.itemAnswers.value(answers);
-        this.itemCategories.value(categories);
+        this.itemCategories.value(categories.some(item => item._id) ? categories.map(({_id})=> _id) : categories);
         this.itemIsImportance.value(importance);
         this.itemIsActive.value(active);
         this.setState({ _id, image, answers, trueAnswer });
@@ -100,11 +100,18 @@ class QuestionModal extends AdminModal {
 class AdminQuestionPage extends AdminPage {
     state = { questionTypes: [] };
     componentDidMount() {
-        T.ready(() => T.showSearchBox());
+        T.ready('/user/drive-question', () => T.showSearchBox());
         this.props.getCategoryAll('drive-question', null, (items) =>
             this.setState({ questionTypes: (items || []).map(item => ({ id: item._id, text: item.title })) }));
         this.props.getDriveQuestionPage(1);
         T.onSearch = (searchText) => this.props.getDriveQuestionPage(1, 50, searchText);
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.has('modal')) {
+            const _id = urlParams.get('modal');
+            if(_id && typeof _id == 'string'){
+                this.props.getDriveQuestionItem(_id, ({item}) => item && this.modal.show(item));
+            }
+        }
     }
 
     edit = (e, item) => e.preventDefault() || this.modal.show(item);
@@ -155,5 +162,5 @@ class AdminQuestionPage extends AdminPage {
 }
 
 const mapStateToProps = state => ({ system: state.system, driveQuestion: state.trainning.driveQuestion, category: state.framework.category });
-const mapActionsToProps = { getCategoryAll, getDriveQuestionPage, createDriveQuestion, updateDriveQuestion, swapDriveQuestion, deleteDriveQuestion, deleteDriveQuestionImage, changeDriveQuestion };
+const mapActionsToProps = { getCategoryAll, getDriveQuestionPage, createDriveQuestion, updateDriveQuestion, swapDriveQuestion, deleteDriveQuestion, deleteDriveQuestionImage, changeDriveQuestion, getDriveQuestionItem };
 export default connect(mapStateToProps, mapActionsToProps)(AdminQuestionPage);
