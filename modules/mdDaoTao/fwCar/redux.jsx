@@ -126,6 +126,8 @@ export function createCar(data, done) {
 }
 
 export function updateCar(_id, changes, done) {
+    console.log('_id', _id);
+    console.log('changes', changes);
     return dispatch => {
         const url = '/api/car';
         T.put(url, { _id, changes }, data => {
@@ -299,7 +301,8 @@ export const ajaxSelectAvaiableLecturer = (currentLecturer) => T.createAjaxAdapt
         list = response && response.list ?
         response.list.map(user => ({ id: user._id, text: user.lastname + ' ' + user.firstname })) : [];
         currentLecturer ? list.push({ id: currentLecturer._id, text: currentLecturer.lastname + ' ' + currentLecturer.firstname }) : null;
-        return list;
+        list.push({ id: 0, text: 'Trống' });
+        return list;    
     },
 );
 

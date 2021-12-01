@@ -62,9 +62,14 @@ module.exports = app => {
                 ];
                 list.forEach((item, index) => {
                     worksheet.addRow({
-                        ...item,
                         id: index + 1,
+                        lastname: item.lastname,
+                        firstname: item.firstname,
+                        email: item.email,
+                        phoneNumber: item.phoneNumber,
                         courseType: item.courseType ? item.courseType.title : 'Chưa đăng ký',
+                        state: item.state,
+                        createdDate: item.createdDate
                     });
                 });
                 app.excel.write(worksheet, cells);

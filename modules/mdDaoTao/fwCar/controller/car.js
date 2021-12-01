@@ -21,6 +21,10 @@ module.exports = app => {
     app.get('/user/car/practice', app.permission.check('car:read'), app.templates.admin);
     app.get('/user/car/practice/:_id', app.permission.check('car:read'), app.templates.admin);
     app.get('/user/car/import', app.permission.check('car:read'), app.templates.admin);
+    app.get('/user/car/lecturer/calendar', app.permission.check('car:read'), app.templates.admin);
+    app.get('/user/car/calendar', app.permission.check('car:read'), app.templates.admin);
+    app.get('/user/car/history-calendar', app.permission.check('car:read'), app.templates.admin);
+    app.get('/user/car/history-calendar/:_id', app.permission.check('car:read'), app.templates.admin);
 
     // APIs -----------------------------------------------------------------------------------------------------------------------------------------
     app.get('/api/car/page/:pageNumber/:pageSize', app.permission.check('car:read'), (req, res) => {
@@ -46,10 +50,46 @@ module.exports = app => {
         app.model.car.get(req.query._id, (error, item) => res.send({ error, item }));
     });
 
+    app.get('/api/car/avaiable-lecturer', (req, res) => {
+        app.model.user.getAll({ isLecturer: true }, (error, lecturers) => {
+            if (error) {
+                res.send({ error: 'Lấy thông tin giáo viên bị lỗi'});
+            } else {
+                app.model.car.getAll({}, (error, cars) => {
+                    let avaiableLecturers = [];
+                    lecturers.forEach(lecturer => {
+                        let isExisted = false;
+                        cars.forEach(car => {
+                            if (car.user && lecturer._id.toString() == car.user._id.toString()) {
+                                isExisted = true;
+                            }
+                        });
+                        if (!isExisted) {
+                            avaiableLecturers.push(lecturer);
+                        }
+                    });
+                    res.send({ error, list : avaiableLecturers });
+                });
+            }
+        });
+    });
+
+    app.get('/api/car/lecturer', (req, res) => {
+        const condition = req.query.condition;
+        app.model.car.get(condition, (error, item) => res.send({ error, item }));
+    });
+
     app.post('/api/car', app.permission.check('car:write'), (req, res) => {
         const data = req.body.data;
         if (data && data.user == 0) delete data.user;
         app.model.car.create(data, (error, item) => {
+            if (item && item.user) {
+                const calendarHistory = {
+                    user: item.user,
+                    thoiGianBatDau: new Date(), 
+                };
+                app.model.car.addCalendarHistory({ _id: item._id }, calendarHistory);
+            }
             const year = (item && item.ngayDangKy ? item.ngayDangKy.getFullYear() : null);
             let data = {},
             currentYear = new Date().getFullYear();
@@ -110,16 +150,106 @@ module.exports = app => {
         });
     });
 
+    // app.put('/api/car', app.permission.check('car:write'), (req, res) => {
+    //     const changes = req.body.changes,
+    //         $unset = {};
+    //     if (changes.user == '0') {
+    //         $unset.user = '';
+    //         delete changes.user;
+    //     }
+    //     app.model.car.update(req.body._id, changes, $unset, (error, item) => res.send({ error, item }));
+    // });
     app.put('/api/car', app.permission.check('car:write'), (req, res) => {
-        const changes = req.body.changes,
+        const { _id, changes } = req.body,
             $unset = {};
-        if (changes.user == '0') {
-            $unset.user = '';
-            delete changes.user;
-        }
-        app.model.car.update(req.body._id, changes, $unset, (error, item) => res.send({ error, item }));
-    });
+        // if (changes.user == '0') {
+        //     $unset.user = '';
+        //     delete changes.user;
+        // } 
+        app.model.car.get( _id, (error, item) => {
+            if (error || !item) {
+                res.send({ error: 'Lỗi khi lấy thông tin xe!' });
+            } else {
+                // if (changes.user == '0' && !item.user) {
+                //     app.model.car.update(_id, changes, $unset, (error, item) => res.send({ error, item }));
+                // } else if (changes.user == '0' && item.user) {
+                    
+                // } else if (changes.user != '0' && item.user )
 
+
+                if (item.user != changes.user) {
+                    const data = {};
+                    if (changes.user) {
+                        data.user = changes.user;
+                        const condition = {}, lecturerCondition= {};
+                        condition.thoiGianKetThuc = {
+                            $gte: new Date(),
+                        };
+                        app.model.course.get(condition, (error, item) => {
+                          if (item) {
+                                item = app.clone(item);
+                                const listStudent = item.teacherGroups.filter(teacherGroup => teacherGroup.teacher && teacherGroup.teacher._id == changes.user),
+                                studentIds = listStudent.length && listStudent[0].student.map(student => student._id);
+                                lecturerCondition.student = { $in:  studentIds };
+                                lecturerCondition.date = {
+                                    $gte: new Date(),
+                                };
+                                app.model.timeTable.getAll(lecturerCondition, (error, list) => {
+                                    if (list && list.length) {
+                                        const timeTables = list.map(item => app.clone(item));
+                                        const handleUpdateTimeTable = (index = 0) => {
+                                            if (index == timeTables.length) {
+                                                app.model.car.update(_id, changes, $unset, (error, item) => res.send({ error, item }));
+                                            } else {
+                                                const timeTable = timeTables[index];
+                                                timeTable.car = _id;
+                                                app.model.timeTable.update({ _id: timeTable._id }, timeTable, () => {
+                                                    handleUpdateTimeTable(index + 1);
+                                                });
+                                            }
+                                        };
+                                        handleUpdateTimeTable();
+                                    }
+                                });
+                            }
+                        });
+                    }
+                    app.model.car.updateCalendarHistory({ _id: _id }, (error, item) => {
+                        if (item) {
+                            app.model.car.addCalendarHistory({ _id: _id }, data);
+                        }
+                    });
+                    // Nếu đổi giáo viên chủ xe => update lại xe trong timeTable những học viên của giáo viên phụ trách
+                    const condition = {};
+                    condition.date = {
+                        $gte: new Date(),
+                    };
+                    condition.car = _id;
+                    app.model.timeTable.getAll(condition, (error, list) => {
+                        if (list && list.length) {
+                            const timeTables = list.map(item => app.clone(item));
+                            const handleUpdateTimeTable = (index = 0) => {
+                                if (index == timeTables.length) {
+                                    app.model.car.update(_id, changes, $unset, (error, item) => res.send({ error, item }));
+                                } else {
+                                    const timeTable = timeTables[index];
+                                    timeTable.car = undefined;
+                                    app.model.timeTable.update({ _id: timeTable._id }, timeTable, () => {
+                                        handleUpdateTimeTable(index + 1);
+                                    });
+                                }
+                            };
+                            handleUpdateTimeTable();
+                        } else {
+                            app.model.car.update(_id, changes, $unset, (error, item) => res.send({ error, item }));
+                        }
+                    });
+                } else {
+                    app.model.car.update(_id, changes, $unset, (error, item) => res.send({ error, item }));
+                }
+            }   
+        });
+    });
 
     app.delete('/api/car', app.permission.check('car:write'), (req, res) => {
         const car = req.body.item;
