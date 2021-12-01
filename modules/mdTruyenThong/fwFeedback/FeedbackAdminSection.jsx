@@ -34,7 +34,7 @@ class FeedbackSection extends React.Component {
                 <tr>
                     <th style={{ width: 'auto', textAlign: 'center' }}>#</th>
                     <th style={{ width: '100%' }}>Họ và tên học viên</th>
-                    {type == 'teacher' ? <th style={{ width: 'auto' }} nowrap='true'>Họ và tên CVHT được phản hồi</th> : null}
+                    {type == 'teacher' ? <th style={{ width: 'auto' }} nowrap='true'>Họ và tên Giáo viên được phản hồi</th> : null}
                     <th style={{ width: 'auto' }} nowrap='true'>Thời gian</th>
                     <th style={{ width: 'auto' }} nowrap='true'>Trạng thái</th>
                     {/* <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Thao tác</th> */}

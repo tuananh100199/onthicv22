@@ -105,7 +105,7 @@ class DriveTestEditPage extends AdminPage {
             renderRow: (item, index) => (
                 <tr key={index}>
                     <TableCell type='number' content={index + 1} />
-                    <TableCell type={permission.read ? 'link' : 'text'} content={item.title} url={`/user/drive-question/${item._id}`} />
+                    <TableCell type={permission.read ? 'link' : 'text'} content={item.title} url={`/user/drive-question/?modal=${item._id}`} />
                     <TableCell type='buttons' content={item} permission={permission} onSwap={this.swap} onDelete={this.delete} />
                 </tr>),
         });

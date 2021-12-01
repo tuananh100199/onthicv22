@@ -12,8 +12,8 @@ module.exports = app => {
         moneyAmount: Number,
         creditObject: String,  //đối tượng có = identityCard?
         debitObject: String, //đối tượng nợ , should create new bank model ?
-        courseName: String, 
-        course: { type: app.db.Schema.ObjectId, ref: 'Course' }, 
+        courseTypeName: String, 
+        courseType: { type: app.db.Schema.ObjectId, ref: 'CourseType' }, 
     });
     const model = app.db.model('Payment', schema);
 

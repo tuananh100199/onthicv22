@@ -43,7 +43,6 @@ class DashboardPage extends AdminPage {
             T.notify('Ngày bắt đầu phải nhỏ hơn ngày kết thúc !', 'danger');
         } else {
             this.props.getStatisticStudent( dateStart, dateEnd , (data) => {
-                console.log(data);
                 this.setState({ isSearching: false, dateStart, dateEnd, dataStudent: data && data.item });
             });
         }
@@ -181,7 +180,7 @@ class DashboardPage extends AdminPage {
             data: dataChartStudent,
         });
         console.log(lineChart);
-        console.log(lineChartStudent);
+        console.log(lineChartStudent);       
 
         //todayViews = 0, allViews = 0
         const permission = this.getUserPermission('system', ['settings']);
@@ -191,7 +190,7 @@ class DashboardPage extends AdminPage {
             breadcrumb: ['Dashboard'],
             content: (
                 <div className='row'>
-                    <DashboardIcon  iconBackgroundColor='orange'  icon='fa-users' title='Nguời dùng' value={numberOfUser} link='/user/member' readOnly={permission.settings} />
+                    <DashboardIcon iconBackgroundColor='orange'  icon='fa-users' title='Người dùng' value={numberOfUser} link='/user/member' readOnly={permission.settings} />
                     <DashboardIcon iconBackgroundColor='#17a2b8'  icon='fa-file' title='Tin tức' value={numberOfNews} link='/user/news' readOnly={permission.settings} />
                     <DashboardIcon iconBackgroundColor='#1488db'  icon='fa-book' title='Khóa học' value={numberOfCourse} link='/user/course' readOnly={permission.settings} />
                     <div className='col-md-6'>

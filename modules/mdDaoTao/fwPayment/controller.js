@@ -56,16 +56,16 @@ module.exports = app => {
                  console.log(contentPart,'part');
                 const contentBodys = contentPart.split(' ');
                             if(contentBodys && contentBodys.length > 0){
-                                const identityCard = contentBodys[1].trim(), courseName = contentBodys[2].trim();
+                                const identityCard = contentBodys[1].trim(), courseTypeName = contentBodys[2].trim();
                                 payment.creditObject = identityCard;
-                                payment.courseName = courseName;
-                                app.model.course.get({ name:  { $regex: courseName, $options: 'i' } }, (error, item) => {
+                                payment.courseTypeName = courseTypeName;
+                                app.model.courseType.get({ title:  { $regex: courseTypeName, $options: 'i' } }, (error, item) => {
                                     if (error || !item) {
-                                        res.send({ error: 'Nonexist course' });
+                                        res.send({ error: 'Nonexist courseType' });
                                     } else {
                                         const condition = {
                                             identityCard,
-                                            course: item._id,
+                                            courseType: item._id,
                                         };
                                         app.model.student.get(condition,(error,item)=>{
                                             if (error || !item) {
@@ -79,7 +79,7 @@ module.exports = app => {
                                                 payment.student = item._id;
                                                 payment.firstname = item.firstname;
                                                 payment.lastname = item.lastname;
-                                                payment.course = item.course && item.course._id;
+                                                payment.courseType = item.courseType && item.courseType._id;
                                                 app.model.payment.create(payment, (error, item) => res.send({ error, item }));                                                        
                                                     }
                                                     
@@ -98,7 +98,7 @@ module.exports = app => {
                 //             payment.moneyAmount = money;
                 //         }
                 //     }
-                //     if(contentLine){ //'hiepphat_029493094_A1_' //42354769_K17
+                //     if(contentLine){ //42354769 A1
                 //         const hiepPhatIndex = contentLine.indexOf(HIEPPHAT);
                 //         if(hiepPhatIndex !=-1){
                 //             const contentBody = contentLine.substring(hiepPhatIndex);
