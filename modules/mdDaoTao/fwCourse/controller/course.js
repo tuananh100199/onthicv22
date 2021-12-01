@@ -105,11 +105,10 @@ module.exports = (app) => {
             condition.teacherGroups = { $elemMatch: { teacher: sessionUser._id } };
             condition.active = true;
         }
-        if (sessionUser.isCourseAdmin && !sessionUser.isLecturer && sessionUser.division && sessionUser.division.isOutside) {
+        if (sessionUser.isCourseAdmin && !sessionUser.isLecturer ) {
             condition.admins = sessionUser._id;
             condition.active = true;
         }
-
         app.model.course.getPage(pageNumber, pageSize, condition, (error, page) => {
             if (error || !page) {
                 res.send({ error: error || 'Danh sách trống!' });
