@@ -1,12 +1,12 @@
 module.exports = (app) => {
-    const menu = {
-        parentMenu: app.parentMenu.trainning,
-        menus: {
-            4050: { title: 'Thời khóa biểu', link: '/user/time-table' },
-        }
-    };
+    // const menu = {
+    //     parentMenu: app.parentMenu.trainning,
+    //     menus: {
+    //         4050: { title: 'Thời khóa biểu', link: '/user/time-table' },
+    //     }
+    // };
     app.permission.add(
-        { name: 'timeTable:read' }, { name: 'timeTable:write' }, { name: 'timeTable:delete' }, { name: 'timeTable:create', menu }
+        { name: 'timeTable:read' }, { name: 'timeTable:write' }, { name: 'timeTable:delete' }, { name: 'timeTable:create' }
     );
 
     app.get('/user/time-table', app.permission.check('timeTable:read'), app.templates.admin);
