@@ -184,7 +184,7 @@ const T = {
         }
         const content = document.createElement('div');
         content.innerHTML = html;
-        swal({ icon, title, content, dangerMode, buttons: { cancel: true, confirm: true }, }).then(done);
+        swal({ icon, title, content, dangerMode, buttons: { cancel: { visible: true, text: 'Đóng' }, confirm: { visible: true, text: 'Lưu' } }, }).then(done);
     },
 
     formatDate: str => {

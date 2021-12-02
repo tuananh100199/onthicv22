@@ -70,7 +70,7 @@ class AdminTeacherRatePage extends AdminPage {
         return this.renderPage({
             icon: 'fa fa-star',
             title: 'Đánh giá Giáo viên: ' + item.name,
-            breadcrumb: [<Link key={0} to='/user/course'>Khóa học</Link>, item._id ? <Link key={0} to={backRoute}>{item.name}</Link> : '', 'Đánh giá CVHT'],
+            breadcrumb: [<Link key={0} to='/user/course'>Khóa học</Link>, item._id ? <Link key={0} to={backRoute}>{item.name}</Link> : '', 'Đánh giá Giáo viên'],
             content: (
                 <div className='tile'>
                     <div className='tile-body'>{table}</div>
