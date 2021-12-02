@@ -296,7 +296,7 @@ class AdminTeacherPage extends AdminPage {
         return this.renderPage({
             icon: 'fa fa-user-circle',
             title: 'Gán Giáo viên: ' + item.name,
-            breadcrumb: [<Link key={0} to='/user/course'>Khóa học</Link>, item._id ? <Link key={0} to={backRoute}>{item.name}</Link> : '', 'Gán CVHT'],
+            breadcrumb: [<Link key={0} to='/user/course'>Khóa học</Link>, item._id ? <Link key={0} to={backRoute}>{item.name}</Link> : '', 'Gán Giáo viên'],
             content: (
                 <div className='tile'>
                     <div className='tile-body row'>
