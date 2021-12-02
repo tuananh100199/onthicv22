@@ -169,7 +169,7 @@ class UserCoursePageDetail extends AdminPage {
                         onClick={(e) => { e.preventDefault(); this.modal.show(); }} subtitle={rate ? rate + ' sao' : 'Chưa đánh giá'} />
                     {/* check render */}
                     {teacher && <RateModal ref={e => this.modal = e} title='Đánh giá giáo viên' type='teacher' _refId={teacher._id} />}
-                    <PageIcon to='#' icon='fa-refresh' iconBackgroundColor='#D00' text='Thay đổi giáo viên' onClick={(e) => { e.preventDefault(); this.changeLecturerModal.show({ student, course }); }} />
+                    {teacher && <PageIcon to='#' icon='fa-refresh' iconBackgroundColor='#D00' text='Thay đổi giáo viên' onClick={(e) => { e.preventDefault(); this.changeLecturerModal.show({ student, course }); }} />}
                     {subjects.length ? <>
                         <PageIconHeader text='Môn học lý thuyết' />
                         {subjects.map((subject, index) =>
@@ -182,7 +182,7 @@ class UserCoursePageDetail extends AdminPage {
                         {subjects.map((subject, index) =>
                             subject.monThucHanh && <PageIcon key={index} to={`/user/hoc-vien/khoa-hoc/${courseId}/mon-hoc/${subject._id}`} icon='fa-briefcase' iconBackgroundColor='#1488db' text={subject ? subject.title : ''} />
                         )}
-                        <PageIcon to={`/user/hoc-vien/khoa-hoc/${courseId}/dang-ky-lich-hoc`} icon='fa-calendar-plus-o' iconBackgroundColor='#8d74aa' text='Đăng ký lịch học' />
+                        {teacher && <PageIcon to={`/user/hoc-vien/khoa-hoc/${courseId}/dang-ky-lich-hoc`} icon='fa-calendar-plus-o' iconBackgroundColor='#8d74aa' text='Đăng ký lịch học' />}
                         <PageIcon to={`/user/hoc-vien/khoa-hoc/${courseId}/thoi-khoa-bieu`} icon='fa-calendar' iconBackgroundColor='#ffc107' text='Thời khóa biểu' />
                     </> : null}
 

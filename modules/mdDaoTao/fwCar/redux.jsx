@@ -126,8 +126,6 @@ export function createCar(data, done) {
 }
 
 export function updateCar(_id, changes, done) {
-    console.log('_id', _id);
-    console.log('changes', changes);
     return dispatch => {
         const url = '/api/car';
         T.put(url, { _id, changes }, data => {

@@ -83,11 +83,11 @@ module.exports = app => {
         const data = req.body.data;
         if (data && data.user == 0) delete data.user;
         app.model.car.create(data, (error, item) => {
-            if (item && item.user) {
-                const calendarHistory = {
-                    user: item.user,
-                    thoiGianBatDau: new Date(), 
-                };
+            if (item) {
+                let calendarHistory = { thoiGianBatDau: new Date() };
+                if (item.user) {
+                    calendarHistory.user = item.user;
+                }
                 app.model.car.addCalendarHistory({ _id: item._id }, calendarHistory);
             }
             const year = (item && item.ngayDangKy ? item.ngayDangKy.getFullYear() : null);
@@ -150,37 +150,21 @@ module.exports = app => {
         });
     });
 
-    // app.put('/api/car', app.permission.check('car:write'), (req, res) => {
-    //     const changes = req.body.changes,
-    //         $unset = {};
-    //     if (changes.user == '0') {
-    //         $unset.user = '';
-    //         delete changes.user;
-    //     }
-    //     app.model.car.update(req.body._id, changes, $unset, (error, item) => res.send({ error, item }));
-    // });
     app.put('/api/car', app.permission.check('car:write'), (req, res) => {
         const { _id, changes } = req.body,
             $unset = {};
-        // if (changes.user == '0') {
-        //     $unset.user = '';
-        //     delete changes.user;
-        // } 
+        if (changes.user == '0') {
+            $unset.user = '';
+            delete changes.user;
+        } 
         app.model.car.get( _id, (error, item) => {
             if (error || !item) {
                 res.send({ error: 'Lỗi khi lấy thông tin xe!' });
             } else {
-                // if (changes.user == '0' && !item.user) {
-                //     app.model.car.update(_id, changes, $unset, (error, item) => res.send({ error, item }));
-                // } else if (changes.user == '0' && item.user) {
-                    
-                // } else if (changes.user != '0' && item.user )
-
-
                 if (item.user != changes.user) {
-                    const data = {};
+                    const calendarHistory = {};
                     if (changes.user) {
-                        data.user = changes.user;
+                        calendarHistory.user = changes.user;
                         const condition = {}, lecturerCondition= {};
                         condition.thoiGianKetThuc = {
                             $gte: new Date(),
@@ -216,7 +200,7 @@ module.exports = app => {
                     }
                     app.model.car.updateCalendarHistory({ _id: _id }, (error, item) => {
                         if (item) {
-                            app.model.car.addCalendarHistory({ _id: _id }, data);
+                            app.model.car.addCalendarHistory({ _id: _id }, calendarHistory);
                         }
                     });
                     // Nếu đổi giáo viên chủ xe => update lại xe trong timeTable những học viên của giáo viên phụ trách
@@ -507,7 +491,16 @@ module.exports = app => {
                             err = error;
                             handleCreateCar(index + 1);
                         } else if (!item) {
-                            app.model.car.create(car, () => {
+                            app.model.car.create(car, (error, newItem) => {
+                                if (error) {
+                                    err = error;
+                                } else if (newItem) {
+                                    let calendarHistory = { thoiGianBatDau: new Date() };
+                                    if (newItem.user) {
+                                        calendarHistory.user = newItem.user;
+                                    }  
+                                    app.model.car.addCalendarHistory({ _id : newItem._id }, calendarHistory);
+                                }
                                 const d = new Date(car && car.ngayDangKy),
                                 year = d ? d.getFullYear() : null,
                                 currentYear = new Date().getFullYear();
@@ -561,6 +554,17 @@ module.exports = app => {
                                 });
                             });
                         } else {
+                            if (item.user != car.user) {
+                                const data = {};
+                                if (car.user) {
+                                    data.user = car.user;
+                                }
+                                app.model.car.updateCalendarHistory({ _id: item._id }, (error, ite) => {
+                                    if (ite) {
+                                        app.model.car.addCalendarHistory({ _id: item._id }, data);
+                                    }
+                                });
+                            }
                             app.model.car.update({ _id: item._id }, car, () => {
                                 handleCreateCar(index + 1);
                             });
