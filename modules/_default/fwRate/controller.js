@@ -13,8 +13,8 @@ module.exports = (app) => {
                 { note: value },
             );
         }
-
         if (pageCondition.$or.length == 0) delete pageCondition.$or;
+        pageCondition._refId = condition._refId;
         
         app.model.user.get({ _id: condition._refId }, (error, user) => {
             if (error || !user) {

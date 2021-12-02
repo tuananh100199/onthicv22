@@ -96,7 +96,7 @@ class HistoryCalendarEditPage extends AdminPage {
                 renderRow: (item, index) => (
                     <tr key={index}>
                         <TableCell type='number' content={index + 1} />
-                        <TableCell type='link' style={{ whiteSpace: 'nowrap' }} content={car.licensePlates} url={'/user/car/history-calendar/' + car._id} />
+                        <TableCell type='link' style={{ whiteSpace: 'nowrap' }} content={car.licensePlates} onClick={e => this.edit(e, item)} />
                         <TableCell type='text' content={car.brand && car.brand.title} />
                         <TableCell type='text' style={{ whiteSpace: 'nowrap' }} content={item.user && (item.user.lastname + ' ' + item.user.firstname)} />
                         <TableCell type='text' style={{ whiteSpace: 'nowrap' }} content={car.courseType && car.courseType.title} />

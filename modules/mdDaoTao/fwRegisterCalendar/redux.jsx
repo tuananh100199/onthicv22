@@ -12,7 +12,7 @@ export default function registerCalendarReducer(state = {}, data) {
             return Object.assign({}, state, { page: data.page });
 
         case UserRegisterCalendarGet:
-                return Object.assign({}, state, { listTimeTable: data.listTimeTable, listRegisterCalendar: data.listRegisterCalendar });
+                return Object.assign({}, state, { listTimeTable: data.listTimeTable, listRegisterCalendar: data.listRegisterCalendar, car: data.car });
 
         case RegisterCalendarGetAll:
             return Object.assign({}, state, { list: data.list });
@@ -141,7 +141,7 @@ export function getRegisterCalendarOfLecturerByStudent(condition, done) {
                 console.error(`GET: ${url}. ${data.error}`);
             } else {
                 done && done(data);
-                dispatch({ type: UserRegisterCalendarGet, listTimeTable: data.listTimeTable, listRegisterCalendar: data.listRegisterCalendar });
+                dispatch({ type: UserRegisterCalendarGet, listTimeTable: data.listTimeTable, listRegisterCalendar: data.listRegisterCalendar, car: data.car });
             }
         }, error => console.error(error) || T.notify('Lấy lịch nghỉ bị lỗi', 'danger'));
     };

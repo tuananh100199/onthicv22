@@ -114,7 +114,9 @@ module.exports = (app) => {
                                         listTimeTable.push(item);
                                     }
                                 });
-                                res.send({ error, listTimeTable, listRegisterCalendar: list ? list: [] });
+                                app.model.car.get({ user: teacherGroupOfStudent.teacher, courseType: item.course && item.course.courseType }, (error, car) => {
+                                    res.send({ error, listTimeTable, listRegisterCalendar: list ? list: [], car: car });
+                                });
                             });
 
                         }
