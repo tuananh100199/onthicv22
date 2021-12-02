@@ -110,8 +110,11 @@ module.exports = (app) => {
             condition.active = true;
         }
         app.model.course.getPage(pageNumber, pageSize, condition, (error, page) => {
-            if (error || !page) {
-                res.send({ error: error || 'Danh sách trống!' });
+            console.log(page);
+            if (error || !page ) {
+                res.send({ error });
+            } else if(page.list && !page.list.length) {
+                res.send({page});
             } else {
                 page = app.clone(page);
                 const promiseList = page.list && page.list.length > 0 && page.list.map(item => {
