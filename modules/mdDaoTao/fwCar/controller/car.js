@@ -21,7 +21,7 @@ module.exports = app => {
     app.get('/user/car/practice', app.permission.check('car:read'), app.templates.admin);
     app.get('/user/car/practice/:_id', app.permission.check('car:read'), app.templates.admin);
     app.get('/user/car/import', app.permission.check('car:read'), app.templates.admin);
-    app.get('/user/car/lecturer/calendar', app.permission.check('car:read'), app.templates.admin);
+    // app.get('/user/car/lecturer/calendar', app.permission.check('car:read'), app.templates.admin);
     app.get('/user/car/calendar', app.permission.check('car:read'), app.templates.admin);
     app.get('/user/car/history-calendar', app.permission.check('car:read'), app.templates.admin);
     app.get('/user/car/history-calendar/:_id', app.permission.check('car:read'), app.templates.admin);
@@ -157,67 +157,29 @@ module.exports = app => {
             $unset.user = '';
             delete changes.user;
         } 
-        app.model.car.get( _id, (error, item) => {
-            if (error || !item) {
-                res.send({ error: 'Lỗi khi lấy thông tin xe!' });
-            } else {
-                if (item.user != changes.user) {
-                    const calendarHistory = {};
-                    if (changes.user) {
-                        calendarHistory.user = changes.user;
-                        const condition = {}, lecturerCondition= {};
-                        condition.thoiGianKetThuc = {
-                            $gte: new Date(),
-                        };
-                        app.model.course.get(condition, (error, item) => {
-                          if (item) {
-                                item = app.clone(item);
-                                const listStudent = item.teacherGroups.filter(teacherGroup => teacherGroup.teacher && teacherGroup.teacher._id == changes.user),
-                                studentIds = listStudent.length && listStudent[0].student.map(student => student._id);
-                                lecturerCondition.student = { $in:  studentIds };
-                                lecturerCondition.date = {
-                                    $gte: new Date(),
-                                };
-                                app.model.timeTable.getAll(lecturerCondition, (error, list) => {
-                                    if (list && list.length) {
-                                        const timeTables = list.map(item => app.clone(item));
-                                        const handleUpdateTimeTable = (index = 0) => {
-                                            if (index == timeTables.length) {
-                                                app.model.car.update(_id, changes, $unset, (error, item) => res.send({ error, item }));
-                                            } else {
-                                                const timeTable = timeTables[index];
-                                                timeTable.car = _id;
-                                                app.model.timeTable.update({ _id: timeTable._id }, timeTable, () => {
-                                                    handleUpdateTimeTable(index + 1);
-                                                });
-                                            }
-                                        };
-                                        handleUpdateTimeTable();
-                                    }
-                                });
-                            }
-                        });
-                    }
-                    app.model.car.updateCalendarHistory({ _id: _id }, (error, item) => {
-                        if (item) {
-                            app.model.car.addCalendarHistory({ _id: _id }, calendarHistory);
-                        }
-                    });
-                    // Nếu đổi giáo viên chủ xe => update lại xe trong timeTable những học viên của giáo viên phụ trách
-                    const condition = {};
-                    condition.date = {
+        const handleChangeLecturer = (lecturer, carId, done) => {
+            const condition = {}, lecturerCondition= {};
+            condition.thoiGianKetThuc = {
+                $gte: new Date(),
+            };
+            app.model.course.get(condition, (error, course) => {
+              if (course) {
+                    course = app.clone(course);
+                    const listStudent = course.teacherGroups && course.teacherGroups.length ? course.teacherGroups.filter(teacherGroup => teacherGroup.teacher && teacherGroup.teacher._id == lecturer) : [],
+                    studentIds = listStudent.length && listStudent[0].student.map(student => student._id);
+                    lecturerCondition.student = { $in:  studentIds };
+                    lecturerCondition.date = {
                         $gte: new Date(),
                     };
-                    condition.car = _id;
-                    app.model.timeTable.getAll(condition, (error, list) => {
+                    app.model.timeTable.getAll(lecturerCondition, (error, list) => {
                         if (list && list.length) {
                             const timeTables = list.map(item => app.clone(item));
                             const handleUpdateTimeTable = (index = 0) => {
                                 if (index == timeTables.length) {
-                                    app.model.car.update(_id, changes, $unset, (error, item) => res.send({ error, item }));
+                                    done && done();
                                 } else {
                                     const timeTable = timeTables[index];
-                                    timeTable.car = undefined;
+                                    timeTable.car = carId ? carId : undefined;
                                     app.model.timeTable.update({ _id: timeTable._id }, timeTable, () => {
                                         handleUpdateTimeTable(index + 1);
                                     });
@@ -228,6 +190,43 @@ module.exports = app => {
                             app.model.car.update(_id, changes, $unset, (error, item) => res.send({ error, item }));
                         }
                     });
+                } else {
+                    app.model.car.update(_id, changes, $unset, (error, item) => res.send({ error, item }));
+                }
+            });
+        };
+
+        app.model.car.get( _id, (error, item) => {
+            if (error || !item) {
+                res.send({ error: 'Lỗi khi lấy thông tin xe!' });
+            } else {
+                if (item.user != changes.user) {
+                    const calendarHistory = {};
+                    if (changes.user) {
+                        calendarHistory.user = changes.user;
+                    }
+                    app.model.car.updateCalendarHistory({ _id: _id }, (error, item) => {
+                        if (item) {
+                            app.model.car.addCalendarHistory({ _id: _id }, calendarHistory);
+                        }
+                    });
+
+                    if (item.user == undefined && changes.user) {
+                        handleChangeLecturer(changes.user, _id, () => {
+                            app.model.car.update(_id, changes, $unset, (error, item) => res.send({ error, item }));
+                        } );
+
+                    } else if (item.user && changes.user == undefined) {
+                        handleChangeLecturer(item.user, null, () => {
+                            app.model.car.update(_id, changes, $unset, (error, item) => res.send({ error, item }));
+                        });
+                    } else {
+                        handleChangeLecturer(item.user, null, () => {
+                            handleChangeLecturer(changes.user, _id, () => {
+                                app.model.car.update(_id, changes, $unset, (error, item) => res.send({ error, item }));
+                            });
+                        });
+                    }
                 } else {
                     app.model.car.update(_id, changes, $unset, (error, item) => res.send({ error, item }));
                 }

@@ -267,4 +267,46 @@ app.get('/api/car/registration/export/:_carId', app.permission.check('car:export
         });
     }
 }
-);};
+);
+
+app.get('/api/car/calendar/export/:_carId', app.permission.check('car:export'), (req, res) => {
+    let { _carId } = req.params;
+    const sessionUser = req.session.user,
+        division = sessionUser.division;
+    if (sessionUser && sessionUser.isCourseAdmin && division && division.isOutside) {
+        res.send({ error: 'Bạn không có quyền xuất file excel này!' });
+    } else {
+        app.model.car.get(_carId, (error, car) => {
+            if (error || !car) {
+                res.send({ error: 'Hệ thống bị lỗi!' });
+            } else {
+                const workbook = app.excel.create(), worksheet = workbook.addWorksheet(car.licensePlates);
+                const cells = [
+                    { cell: 'A1', value: 'STT', bold: true, border: '1234' },
+                    { cell: 'B1', value: 'Giáo viên', bold: true, border: '1234' },
+                    { cell: 'C1', value: 'Ngày bắt đầu', bold: true, border: '1234' },
+                    { cell: 'D1', value: 'Ngày kết thúc', bold: true, border: '1234' },
+                ];
+                worksheet.columns = [
+                    { header: 'STT', key: '_id', width: 15 },
+                    { header: 'Giáo viên', key: 'user', width: 15 },
+                    { header: 'Ngày bắt đầu', key: 'thoiGianBatDau', width: 20 },
+                    { header: 'Ngày kết thúc', key: 'thoiGianKetThuc', width: 20 },
+                ];
+                car && car.calendarHistory.forEach((item, index) => {
+                    worksheet.addRow({
+                        _id: index + 1,
+                        user: item.user ? item.user.lastname + ' ' + item.user.firstname : '',
+                        thoiGianBatDau: item.thoiGianBatDau,
+                        thoiGianKetThuc: item.thoiGianKetThuc
+                    });
+                });
+                app.excel.write(worksheet, cells);
+                app.excel.attachment(workbook, res, 'Giáo viên phụ trách xe.xlsx');
+            }
+        });
+    }
+}
+);
+
+};

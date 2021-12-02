@@ -46,40 +46,43 @@ module.exports = app => {
             if (error || !item) {
                 res.send({ error: 'Lỗi khi lấy thông tin thay đổi giáo viên'});
             } else {
-                if (changes.state == 'approved' && changes.lecturer && (changes.lecturer != item.lecturer)) {
+                if (changes.state == 'approved' && changes.lecturer) {
                     const condition= {},
                         _courseId = item && item.student && item.student.course && item.student.course._id,
                     _newTeacherId = changes.lecturer,
                     _studentId = item && item.student && item && item.student._id;
 
                     const teacherGroups = item.student && item.student.course && item.student.course.teacherGroups.find(({ student }) => student.find(({ _id }) => _id == _studentId.toString()) != null),
-                    _oldTeacherId = (teacherGroups && teacherGroups.teacher) || null;
-                    
+                    _oldTeacherId = (teacherGroups && teacherGroups.teacher) || null;  
 
                     app.model.course.removeStudentFromTeacherGroup(_courseId, _oldTeacherId, _studentId, () => {
                         app.model.course.addStudentToTeacherGroup(_courseId, _newTeacherId, _studentId, () => {
-                            condition.student = _studentId;
-                            condition.date = {
-                                $gte: new Date(),
-                            };
-                            app.model.timeTable.getAll(condition, (error, list) => {
-                                if (list && list.length && (_newTeacherId != _oldTeacherId)) {
-                                    const timeTables = list.map(item => app.clone(item));
-                                    const handleUpdateTimeTable = (index = 0) => {
-                                        if (index == timeTables.length) {
-                                            app.model.changeLecturer.update(_id, changes, (error, item) => res.send({ error, item }));
-                                        } else {
-                                            const timeTable = timeTables[index];
-                                            app.model.timeTable.delete({ _id: timeTable._id }, () => {
-                                                handleUpdateTimeTable(index + 1);
-                                            });
-                                        }
-                                    };
-                                    handleUpdateTimeTable();
-                                } else {
-                                    app.model.changeLecturer.update(_id, changes, (error, item) => res.send({ error, item }));
-                                }
-                            });
+                            if (changes.lecturer != item.lecturer) {
+                                condition.student = _studentId;
+                                condition.date = {
+                                    $gte: new Date(),
+                                };
+                                app.model.timeTable.getAll(condition, (error, list) => {
+                                    if (list && list.length && (_newTeacherId != _oldTeacherId)) {
+                                        const timeTables = list.map(item => app.clone(item));
+                                        const handleUpdateTimeTable = (index = 0) => {
+                                            if (index == timeTables.length) {
+                                                app.model.changeLecturer.update(_id, changes, (error, item) => res.send({ error, item }));
+                                            } else {
+                                                const timeTable = timeTables[index];
+                                                app.model.timeTable.delete({ _id: timeTable._id }, () => {
+                                                    handleUpdateTimeTable(index + 1);
+                                                });
+                                            }
+                                        };
+                                        handleUpdateTimeTable();
+                                    } else {
+                                        app.model.changeLecturer.update(_id, changes, (error, item) => res.send({ error, item }));
+                                    }
+                                });
+                            } else {
+                                app.model.changeLecturer.update(_id, changes, (error, item) => res.send({ error, item }));
+                            }
                         });
                     });
                 } else {
