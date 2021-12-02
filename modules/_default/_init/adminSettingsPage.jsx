@@ -8,7 +8,7 @@ class SettingsPage extends AdminPage {
     state = {};
     componentDidMount() {
         T.ready(() => {
-            let { address, email, mobile, fax, facebook, youtube, twitter, instagram, logo, footer, contact, subscribe, smsAPIToken, moneyStartStr, moneyEndStr, contentStartStr, contentEndStr } = this.props.system ?
+            let { address, email, mobile, fax, facebook, youtube, twitter, instagram, logo, footer, contact, subscribe, smsAPIToken, moneyLine, moneyStr, contentLine, contentStr } = this.props.system ?
                 this.props.system : { address: '', email: '', mobile: '', fax: '', facebook: '', youtube: '', twitter: '', instagram: '', logo: '/img/logo.jpg', footer: '/img/footer.jpg', contact: '/img/contact.jpg', subscribe: '/img/subscribe.jpg', smsAPIToken:'' };
             this.systemAddress.value(address);
             this.systemEmail.value(email);
@@ -18,10 +18,10 @@ class SettingsPage extends AdminPage {
             this.systemYoutube.value(youtube);
             this.systemTwitter.value(twitter);
             this.systemInstagram.value(instagram);
-            this.systemMoneyStartStr.value(moneyStartStr || '(+)');
-            this.systemMoneyEndStr.value(moneyEndStr|| 'VND');
-            this.systemContentStartStr.value(contentStartStr || 'hiepphat');
-            this.systemContentEndStr.value(contentEndStr|| '\n');
+            this.systemMoneyStartStr.value(moneyLine || 2);
+            this.systemMoneyEndStr.value(moneyStr || '(+)/:money/VND');
+            this.systemContentStartStr.value(contentLine || 3);
+            this.systemContentEndStr.value(contentStr|| 'N/dung:/:content/');
             this.systemLogo.setData('logo', logo);
             this.systemContact.setData('contact', contact);
             this.systemSubscribe.setData('subscribe', subscribe);
@@ -44,10 +44,10 @@ class SettingsPage extends AdminPage {
 
     saveSMS = () => {
         this.props.saveSystemState({
-            moneyStartStr: this.systemMoneyStartStr.value(),
-            moneyEndStr: this.systemMoneyEndStr.value(),
-            contentStartStr: this.systemContentStartStr.value(),
-            contentEndStr: this.systemContentEndStr.value() == '' ? '\n' : this.systemContentEndStr.value(),
+            moneyLine: this.systemMoneyStartStr.value(),
+            moneyStr: this.systemMoneyEndStr.value(),
+            contentLine: this.systemContentStartStr.value(),
+            contentStr: this.systemContentEndStr.value() //== '' ? '\n' : this.systemContentEndStr.value(),
         });
     }
 
@@ -106,10 +106,10 @@ class SettingsPage extends AdminPage {
                             <p>API Token QR Code</p>
                             {this.state.smsAPIToken ? <QRCode value={this.state.smsAPIToken} size={200}/>: null}
                             <p style={{ fontWeight:'bold', marginTop: 10 }} >CKT: Chuỗi ký tự; GD: Giao dịch</p>
-                            <FormTextBox ref={e => this.systemMoneyStartStr = e} label='CKT bắt đầu phần biến động số dư' readOnly={readOnly} />
-                            <FormTextBox ref={e => this.systemMoneyEndStr = e} label='CKT kết thúc phần biến động số dư' readOnly={readOnly} />
-                            <FormTextBox ref={e => this.systemContentStartStr = e} label='CKT nhận biết GD nhận tiền từ học viên Hiệp Phát trong nội dung GD' readOnly={readOnly} />
-                            <FormTextBox ref={e => this.systemContentEndStr = e} smallText='Nếu kí tự kết thúc là xuống dòng thì để trống' label='CKT kết thúc phần nội dung GD' readOnly={readOnly} />                           
+                            <FormTextBox ref={e => this.systemMoneyStartStr = e} label='Dòng biến động số dư' readOnly={readOnly} />
+                            <FormTextBox ref={e => this.systemMoneyEndStr = e} label='CKT phần biến động số dư' readOnly={readOnly} />
+                            <FormTextBox ref={e => this.systemContentStartStr = e} label='Dòng nội dung GD' readOnly={readOnly} />
+                            <FormTextBox ref={e => this.systemContentEndStr = e} smallText='Nếu kí tự kết thúc là xuống dòng thì để trống' label='CKT phần nội dung GD' readOnly={readOnly} />                           
                             {/* <QRCode ref={e => this.systemSMSAPIToken = e} value="hey" size={200}/> */}
                             </div>
                             {readOnly ? null :

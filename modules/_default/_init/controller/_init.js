@@ -125,10 +125,14 @@ module.exports = (app) => {
             mobile: '(08) 2214 6555',
             address: '',
             smsAPIToken: app.getToken(32),
-            moneyStartStr: '(+)',
-            moneyEndStr: 'VND',
-            contentStartStr: 'hiepphat',
-            contentEndStr: '\n',
+            moneyLine: 2,
+            moneyStr: '(+)/:money/VND',
+            contentLine: 3,
+            contentStr: 'N/dung:/:content/',
+            // moneyStartStr: '(+)',
+            // moneyEndStr: 'VND',
+            // contentStartStr: 'hiepphat',
+            // contentEndStr: '\n',
         },
 
         init: () => app.redis.keys(`${app.appName}:state:*`, (_, keys) => {
