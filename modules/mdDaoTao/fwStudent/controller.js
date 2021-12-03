@@ -35,6 +35,7 @@ module.exports = (app) => {
             }
 
             if (condition.courseType) pageCondition.courseType = condition.courseType;
+            if (condition.course) pageCondition.course = condition.course;
             if (condition.datSatHach) pageCondition.datSatHach = condition.datSatHach;
             if (condition.totNghiep) pageCondition.totNghiep = condition.totNghiep;
             if (condition.searchText) {

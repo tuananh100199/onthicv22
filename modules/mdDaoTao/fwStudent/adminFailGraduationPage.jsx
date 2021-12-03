@@ -4,6 +4,7 @@ import { exportExamStudent, getStudentPage, updateStudent } from './redux';
 import { createNotification } from 'modules/_default/fwNotification/redux';
 import { getNotificationTemplateAll, getNotificationTemplate } from 'modules/mdTruyenThong/fwNotificationTemplate/redux';
 import { getCourseTypeAll, ajaxSelectCourseType } from 'modules/mdDaoTao/fwCourseType/redux';
+import { getCoursePage } from 'modules/mdDaoTao/fwCourse/redux';
 import { AdminPage, FormRichTextBox, FormTextBox, FormSelect, FormDatePicker, renderTable, TableCell, AdminModal, CirclePageButton, FormEditor } from 'view/component/AdminPage';
 import Pagination from 'view/component/Pagination';
 
@@ -47,19 +48,21 @@ class NotificationModal extends AdminModal {
     }
 
     onShow = (item) => {
-        const { _id, title, content, abstract } = this.props.data || { _id: '', title: '', content: '', abstract: '' };
+        const { _id, title, content, abstract,ngayDuKienThiTotNghiep } = this.props.data || { _id: '', title: '', content: '', abstract: '', ngayDuKienThiTotNghiep:'' };
+        const thoiGianThiTotNghiepDuKien = T.dateToText(item && item.course && item.course.thoiGianThiTotNghiepDuKien, 'dd/mm/yyyy');
         let newAbstract = abstract.replaceAll('{ho_ten}', item.lastname + ' ' + item.firstname)
-            .replaceAll('{ngay_thi_tot_nghiep}', `${T.dateToText(item.ngayDuKienThiTotNghiep, 'dd/mm/yyyy')}`)
+            .replaceAll('{ngay_thi_tot_nghiep}',item.ngayDuKienThiTotNghiep ?  `${T.dateToText(item.ngayDuKienThiTotNghiep, 'dd/mm/yyyy')}` : thoiGianThiTotNghiepDuKien)
             .replaceAll('{khoa}', item.course && item.course.name)
             .replaceAll('{cmnd}', item.identityCard);
         let newContent = content.replaceAll('{ho_ten}', item.lastname + ' ' + item.firstname)
-            .replaceAll('{ngay_thi_tot_nghiep}', `${T.dateToText(item.ngayDuKienThiTotNghiep, 'dd/mm/yyyy')}`)
+            .replaceAll('{ngay_thi_tot_nghiep}', item.ngayDuKienThiTotNghiep ?  `${T.dateToText(item.ngayDuKienThiTotNghiep, 'dd/mm/yyyy')}` : thoiGianThiTotNghiepDuKien)
             .replaceAll('{khoa}', item.course && item.course.name)
             .replaceAll('{cmnd}', item.identityCard);
         this.itemTitle.value(title);
+        this.itemNgayDuKien.value(ngayDuKienThiTotNghiep);
         this.itemAbstract.value(newAbstract);
         this.itemContent.html(newContent);
-        this.setState({ _id, item });
+        this.setState({ _id, item,content, abstract, thoiGianThiTotNghiepDuKien });
     }
 
     onSend = () => {
@@ -78,6 +81,20 @@ class NotificationModal extends AdminModal {
         });
     }
 
+    changeDate = (date) => {
+        let {content, abstract, item} = this.state;
+        let newAbstract = abstract.replaceAll('{ho_ten}', item.lastname + ' ' + item.firstname)
+            .replaceAll('{ngay_thi_tot_nghiep}', date)
+            .replaceAll('{khoa}', item.course && item.course.name)
+            .replaceAll('{cmnd}', item.identityCard);
+        let newContent = content.replaceAll('{ho_ten}', item.lastname + ' ' + item.firstname)
+            .replaceAll('{ngay_thi_tot_nghiep}', date)
+            .replaceAll('{khoa}', item.course && item.course.name)
+            .replaceAll('{cmnd}', item.identityCard);
+        this.itemAbstract.value(newAbstract);
+        this.itemContent.html(newContent);
+    }
+
 
 
     render = () => this.renderModal({
@@ -86,6 +103,7 @@ class NotificationModal extends AdminModal {
         dataBackdrop: 'static',
         body: <>
             <FormTextBox ref={e => this.itemTitle = e} label='Chủ đề' readOnly={this.props.readOnly} />
+            <FormTextBox ref={e => this.itemNgayDuKien = e} smallText={'Ngày thi dự kiến của khóa: '} listParams={[this.state.thoiGianThiTotNghiepDuKien]} label='Ngày dự kiến thi tốt nghiệp' onChange={(e) => this.changeDate(e.target.value)} readOnly={this.props.readOnly} />
             <FormRichTextBox ref={e => this.itemAbstract = e} label='Mô tả ngắn gọn' readOnly={this.props.readOnly} />
             <FormEditor ref={e => this.itemContent = e} uploadUrl='/user/upload?category=notification' label='Nội dung' readOnly={this.props.readOnly} />
         </>,
@@ -97,7 +115,7 @@ class NotificationModal extends AdminModal {
 }
 
 
-class FailGraduationPage extends AdminPage {//TODO: Vinh
+class FailGraduationPage extends AdminPage {
     state = { searchText: '' };
     componentDidMount() {
         T.ready('/user/student/fail-graduation', () => {
@@ -105,6 +123,17 @@ class FailGraduationPage extends AdminPage {//TODO: Vinh
             this.props.getCourseTypeAll(data => {
                 const courseTypes = data.length && data.map(item => ({ id: item._id, text: item.title }));
                 this.courseType.value(courseTypes.length ? courseTypes[0] : null);
+                // this.course.value({id: 0, text: 'Tất cả khóa học'});
+                let listCourse = [];
+                listCourse.push({id: 0, text: 'Tất cả khóa học'});
+                if(courseTypes[0] && courseTypes[0]._id){
+                    this.props.getCoursePage( courseTypes[0]._id , undefined, undefined, {close: false}, data =>{
+                        if(data && data.page && data.page.list && data.page.list.length){
+                            data.page.list.forEach(course => listCourse.push({ id: course._id, text: course.name }));
+                         }
+                    });
+                }
+                this.setState({listCourse});
             });
             this.props.getNotificationTemplateAll({}, data => {
                 if (data && data.length) {
@@ -134,16 +163,27 @@ class FailGraduationPage extends AdminPage {//TODO: Vinh
         });
     }
 
-    onSearch = ({ pageNumber, pageSize, searchText = this.state.searchText, courseType = this.courseType.value() }, done) => {
-        this.props.getStudentPage(pageNumber, pageSize, { searchText, courseType, totNghiep: false }, () => {
+    onSearch = ({ pageNumber, pageSize, searchText = this.state.searchText, course = this.course.value() }, done) => {
+        const courseType = this.state.courseTypeId;
+        const condition = course == '0' ? { searchText,courseType, totNghiep: false } : { searchText, course , totNghiep: false };
+        console.log(condition);
+        this.props.getStudentPage(pageNumber, pageSize,condition , () => {
             this.setState({ searchText });
             done && done();
         });
     }
 
     onChangeCourseType = (courseType) => {
-        this.setState({ courseId: courseType });
-        this.onSearch({ courseType });
+        let listCourse = [];
+        listCourse.push({id: 0, text: 'Tất cả khóa học'});
+        this.props.getCoursePage(courseType, undefined, undefined, {close: false}, data =>{
+            if(data && data.page && data.page.list && data.page.list.length){
+               data.page.list.forEach(course => listCourse.push({ id: course._id, text: course.name }));
+            }
+        });
+        this.setState({ courseTypeId: courseType, listCourse  });
+        this.course.value({id: 0, text:'Tất cả khóa học'});
+        // this.onSearch({ courseType });
     }
 
     edit = (e, item) => e.preventDefault() || this.modal.show(item);
@@ -154,6 +194,8 @@ class FailGraduationPage extends AdminPage {//TODO: Vinh
         const permission = this.getUserPermission('student', ['read', 'write']);
         let { pageNumber, pageSize, pageTotal, pageCondition, totalItem, list } = this.props.student && this.props.student.page ?
             this.props.student.page : { pageNumber: 1, pageSize: 50, pageTotal: 1, pageCondition: {}, totalItem: 0, list: [] };
+        const listCourse = this.state.listCourse;
+        console.log(listCourse);
         const table = renderTable({
             getDataSource: () => list, stickyHead: true,
             renderHead: () => (
@@ -173,7 +215,7 @@ class FailGraduationPage extends AdminPage {//TODO: Vinh
                     <TableCell content={item.ngayDuKienThiTotNghiep ? T.dateToText(item.ngayDuKienThiTotNghiep, 'dd/mm/yyyy') : 'Chưa có'} />
                     <TableCell content={item.liDoChuaTotNghiep || 'Chưa có'} />
                     <TableCell type='buttons' content={item} permission={permission} onEdit={this.edit}>
-                        {permission.write && item.ngayDuKienThiTotNghiep ?
+                        {permission.write ?
                             <a className='btn btn-success' href='#' onClick={(e) => this.sendNotification(e, item)}>
                                 <i className='fa fa-lg fa-paper-plane' />
                             </a> : null}
@@ -193,11 +235,16 @@ class FailGraduationPage extends AdminPage {//TODO: Vinh
                             </div>
                             <FormSelect ref={e => this.courseType = e} data={ajaxSelectCourseType} placeholder='Loại khóa học'
                                 onChange={data => this.onChangeCourseType(data.id)} style={{ margin: 0, width: '200px' }} />
+                            <div className='col-auto'>
+                                <label className='col-form-label'>Khóa học: </label>
+                            </div>
+                            <FormSelect ref={e => this.course = e} data={listCourse} placeholder='Khóa học'
+                                onChange={data => this.onSearch(data.id)} style={{ margin: 0, width: '200px' }} />
                         </div>
                         {this.courseType && this.courseType.value() != null ? table : null}
                     </div>
                 </div>
-                {this.state.courseId ? <CirclePageButton type='export' onClick={() => exportExamStudent(this.state.courseId, 'HVChuaTotNghiep')} /> : null}
+                {this.state.courseTypeId ? <CirclePageButton type='export' onClick={() => exportExamStudent(this.state.courseTypeId, 'HVChuaTotNghiep')} /> : null}
                 <StudentModal readOnly={!permission.write} ref={e => this.modal = e} update={this.props.updateStudent} />
                 <NotificationModal readOnly={!permission.write} ref={e => this.notiModal = e} create={this.props.createNotification} data={this.state.data} />
                 <Pagination pageCondition={pageCondition} pageNumber={pageNumber} pageSize={pageSize} pageTotal={pageTotal} totalItem={totalItem} getPage={(pageNumber, pageSize) => this.onSearch({ pageNumber, pageSize })} />
@@ -207,5 +254,5 @@ class FailGraduationPage extends AdminPage {//TODO: Vinh
 }
 
 const mapStateToProps = state => ({ system: state.system, student: state.trainning.student, notificationTemplate: state.communication.notificationTemplate });
-const mapActionsToProps = { getStudentPage, updateStudent, createNotification, getCourseTypeAll, getNotificationTemplateAll, getNotificationTemplate };
+const mapActionsToProps = { getStudentPage, updateStudent, createNotification, getCourseTypeAll, getNotificationTemplateAll, getNotificationTemplate, getCoursePage };
 export default connect(mapStateToProps, mapActionsToProps)(FailGraduationPage);
