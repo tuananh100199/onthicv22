@@ -21,6 +21,10 @@ module.exports = app => {
     app.get('/user/car/practice', app.permission.check('car:read'), app.templates.admin);
     app.get('/user/car/practice/:_id', app.permission.check('car:read'), app.templates.admin);
     app.get('/user/car/import', app.permission.check('car:read'), app.templates.admin);
+    // app.get('/user/car/lecturer/calendar', app.permission.check('car:read'), app.templates.admin);
+    app.get('/user/car/calendar', app.permission.check('car:read'), app.templates.admin);
+    app.get('/user/car/history-calendar', app.permission.check('car:read'), app.templates.admin);
+    app.get('/user/car/history-calendar/:_id', app.permission.check('car:read'), app.templates.admin);
 
     // APIs -----------------------------------------------------------------------------------------------------------------------------------------
     app.get('/api/car/page/:pageNumber/:pageSize', app.permission.check('car:read'), (req, res) => {
@@ -46,10 +50,46 @@ module.exports = app => {
         app.model.car.get(req.query._id, (error, item) => res.send({ error, item }));
     });
 
+    app.get('/api/car/avaiable-lecturer', (req, res) => {
+        app.model.user.getAll({ isLecturer: true }, (error, lecturers) => {
+            if (error) {
+                res.send({ error: 'Lấy thông tin giáo viên bị lỗi'});
+            } else {
+                app.model.car.getAll({}, (error, cars) => {
+                    let avaiableLecturers = [];
+                    lecturers.forEach(lecturer => {
+                        let isExisted = false;
+                        cars.forEach(car => {
+                            if (car.user && lecturer._id.toString() == car.user._id.toString()) {
+                                isExisted = true;
+                            }
+                        });
+                        if (!isExisted) {
+                            avaiableLecturers.push(lecturer);
+                        }
+                    });
+                    res.send({ error, list : avaiableLecturers });
+                });
+            }
+        });
+    });
+
+    app.get('/api/car/lecturer', (req, res) => {
+        const condition = req.query.condition;
+        app.model.car.get(condition, (error, item) => res.send({ error, item }));
+    });
+
     app.post('/api/car', app.permission.check('car:write'), (req, res) => {
         const data = req.body.data;
         if (data && data.user == 0) delete data.user;
         app.model.car.create(data, (error, item) => {
+            if (item) {
+                let calendarHistory = { thoiGianBatDau: new Date() };
+                if (item.user) {
+                    calendarHistory.user = item.user;
+                }
+                app.model.car.addCalendarHistory({ _id: item._id }, calendarHistory);
+            }
             const year = (item && item.ngayDangKy ? item.ngayDangKy.getFullYear() : null);
             let data = {},
             currentYear = new Date().getFullYear();
@@ -111,15 +151,88 @@ module.exports = app => {
     });
 
     app.put('/api/car', app.permission.check('car:write'), (req, res) => {
-        const changes = req.body.changes,
+        const { _id, changes } = req.body,
             $unset = {};
         if (changes.user == '0') {
             $unset.user = '';
             delete changes.user;
-        }
-        app.model.car.update(req.body._id, changes, $unset, (error, item) => res.send({ error, item }));
-    });
+        } 
+        const handleChangeLecturer = (lecturer, carId, done) => {
+            const condition = {}, lecturerCondition= {};
+            condition.thoiGianKetThuc = {
+                $gte: new Date(),
+            };
+            app.model.course.get(condition, (error, course) => {
+              if (course) {
+                    course = app.clone(course);
+                    const listStudent = course.teacherGroups && course.teacherGroups.length ? course.teacherGroups.filter(teacherGroup => teacherGroup.teacher && teacherGroup.teacher._id == lecturer) : [],
+                    studentIds = listStudent.length && listStudent[0].student.map(student => student._id);
+                    lecturerCondition.student = { $in:  studentIds };
+                    lecturerCondition.date = {
+                        $gte: new Date(),
+                    };
+                    app.model.timeTable.getAll(lecturerCondition, (error, list) => {
+                        if (list && list.length) {
+                            const timeTables = list.map(item => app.clone(item));
+                            const handleUpdateTimeTable = (index = 0) => {
+                                if (index == timeTables.length) {
+                                    done && done();
+                                } else {
+                                    const timeTable = timeTables[index];
+                                    timeTable.car = carId ? carId : undefined;
+                                    app.model.timeTable.update({ _id: timeTable._id }, timeTable, () => {
+                                        handleUpdateTimeTable(index + 1);
+                                    });
+                                }
+                            };
+                            handleUpdateTimeTable();
+                        } else {
+                            app.model.car.update(_id, changes, $unset, (error, item) => res.send({ error, item }));
+                        }
+                    });
+                } else {
+                    app.model.car.update(_id, changes, $unset, (error, item) => res.send({ error, item }));
+                }
+            });
+        };
 
+        app.model.car.get( _id, (error, item) => {
+            if (error || !item) {
+                res.send({ error: 'Lỗi khi lấy thông tin xe!' });
+            } else {
+                if (item.user != changes.user) {
+                    const calendarHistory = {};
+                    if (changes.user) {
+                        calendarHistory.user = changes.user;
+                    }
+                    app.model.car.updateCalendarHistory({ _id: _id }, (error, item) => {
+                        if (item) {
+                            app.model.car.addCalendarHistory({ _id: _id }, calendarHistory);
+                        }
+                    });
+
+                    if (item.user == undefined && changes.user) {
+                        handleChangeLecturer(changes.user, _id, () => {
+                            app.model.car.update(_id, changes, $unset, (error, item) => res.send({ error, item }));
+                        } );
+
+                    } else if (item.user && changes.user == undefined) {
+                        handleChangeLecturer(item.user, null, () => {
+                            app.model.car.update(_id, changes, $unset, (error, item) => res.send({ error, item }));
+                        });
+                    } else {
+                        handleChangeLecturer(item.user, null, () => {
+                            handleChangeLecturer(changes.user, _id, () => {
+                                app.model.car.update(_id, changes, $unset, (error, item) => res.send({ error, item }));
+                            });
+                        });
+                    }
+                } else {
+                    app.model.car.update(_id, changes, $unset, (error, item) => res.send({ error, item }));
+                }
+            }   
+        });
+    });
 
     app.delete('/api/car', app.permission.check('car:write'), (req, res) => {
         const car = req.body.item;
@@ -377,7 +490,16 @@ module.exports = app => {
                             err = error;
                             handleCreateCar(index + 1);
                         } else if (!item) {
-                            app.model.car.create(car, () => {
+                            app.model.car.create(car, (error, newItem) => {
+                                if (error) {
+                                    err = error;
+                                } else if (newItem) {
+                                    let calendarHistory = { thoiGianBatDau: new Date() };
+                                    if (newItem.user) {
+                                        calendarHistory.user = newItem.user;
+                                    }  
+                                    app.model.car.addCalendarHistory({ _id : newItem._id }, calendarHistory);
+                                }
                                 const d = new Date(car && car.ngayDangKy),
                                 year = d ? d.getFullYear() : null,
                                 currentYear = new Date().getFullYear();
@@ -431,6 +553,17 @@ module.exports = app => {
                                 });
                             });
                         } else {
+                            if (item.user != car.user) {
+                                const data = {};
+                                if (car.user) {
+                                    data.user = car.user;
+                                }
+                                app.model.car.updateCalendarHistory({ _id: item._id }, (error, ite) => {
+                                    if (ite) {
+                                        app.model.car.addCalendarHistory({ _id: item._id }, data);
+                                    }
+                                });
+                            }
                             app.model.car.update({ _id: item._id }, car, () => {
                                 handleCreateCar(index + 1);
                             });

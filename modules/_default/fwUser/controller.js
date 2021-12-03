@@ -165,24 +165,24 @@ module.exports = app => {
                             delete changes.email;
                         }
 
-                        const password = changes.password;
+                        // const password = changes.password;
                         // changes.division = changes.division || req.session.user.division;
                         app.model.user.update(req.body._id, changes, (error, user) => {
                             if (error) {
                                 res.send({ error });
                             } else {
-                                if (changes.password) {
-                                    app.model.setting.get('email', 'emailPassword', 'emailNewPasswordTitle', 'emailNewPasswordText', 'emailNewPasswordHtml', result => {
-                                        let mailTitle = result.emailNewPasswordTitle,
-                                            mailText = result.emailNewPasswordText.replaceAll('{name}', user.firstname + ' ' + user.lastname)
-                                                .replaceAll('{firstname}', user.firstname).replaceAll('{lastname}', user.lastname)
-                                                .replaceAll('{email}', user.email).replaceAll('{password}', password),
-                                            mailHtml = result.emailNewPasswordHtml.replaceAll('{name}', user.firstname + ' ' + user.lastname)
-                                                .replaceAll('{firstname}', user.firstname).replaceAll('{lastname}', user.lastname)
-                                                .replaceAll('{email}', user.email).replaceAll('{password}', password);
-                                        app.email.sendEmail(result.email, result.emailPassword, user.email, [], mailTitle, mailText, mailHtml, null);
-                                    });
-                                }
+                                // if (changes.password) {
+                                //     app.model.setting.get('email', 'emailPassword', 'emailNewPasswordTitle', 'emailNewPasswordText', 'emailNewPasswordHtml', result => {
+                                //         let mailTitle = result.emailNewPasswordTitle,
+                                //             mailText = result.emailNewPasswordText.replaceAll('{name}', user.firstname + ' ' + user.lastname)
+                                //                 .replaceAll('{firstname}', user.firstname).replaceAll('{lastname}', user.lastname)
+                                //                 .replaceAll('{email}', user.email).replaceAll('{password}', password),
+                                //             mailHtml = result.emailNewPasswordHtml.replaceAll('{name}', user.firstname + ' ' + user.lastname)
+                                //                 .replaceAll('{firstname}', user.firstname).replaceAll('{lastname}', user.lastname)
+                                //                 .replaceAll('{email}', user.email).replaceAll('{password}', password);
+                                //         app.email.sendEmail(result.email, result.emailPassword, user.email, [], mailTitle, mailText, mailHtml, null);
+                                //     });
+                                // }
 
                                 if (error) {
                                     res.send({ error });
@@ -257,14 +257,14 @@ module.exports = app => {
                     if (error) {
                         res.send({ error });
                     } else {
-                        app.model.setting.get('email', 'emailPassword', 'emailForgotPasswordTitle', 'emailForgotPasswordText', 'emailForgotPasswordHtml', result => {
-                            let name = user.firstname + ' ' + user.lastname,
-                                url = (app.isDebug ? app.debugUrl : app.rootUrl) + '/forgot-password/' + user._id + '/' + user.token,
-                                mailTitle = result.emailForgotPasswordTitle,
-                                mailText = result.emailForgotPasswordText.replaceAll('{name}', name).replaceAll('{firstname}', user.firstname).replaceAll('{lastname}', user.lastname).replaceAll('{email}', user.email).replaceAll('{url}', url),
-                                mailHtml = result.emailForgotPasswordHtml.replaceAll('{name}', name).replaceAll('{firstname}', user.firstname).replaceAll('{lastname}', user.lastname).replaceAll('{email}', user.email).replaceAll('{url}', url);
-                            app.email.sendEmail(result.email, result.emailPassword, user.email, [], mailTitle, mailText, mailHtml, null);
-                        });
+                        // app.model.setting.get('email', 'emailPassword', 'emailForgotPasswordTitle', 'emailForgotPasswordText', 'emailForgotPasswordHtml', result => {
+                        //     let name = user.firstname + ' ' + user.lastname,
+                        //         url = (app.isDebug ? app.debugUrl : app.rootUrl) + '/forgot-password/' + user._id + '/' + user.token,
+                        //         mailTitle = result.emailForgotPasswordTitle,
+                        //         mailText = result.emailForgotPasswordText.replaceAll('{name}', name).replaceAll('{firstname}', user.firstname).replaceAll('{lastname}', user.lastname).replaceAll('{email}', user.email).replaceAll('{url}', url),
+                        //         mailHtml = result.emailForgotPasswordHtml.replaceAll('{name}', name).replaceAll('{firstname}', user.firstname).replaceAll('{lastname}', user.lastname).replaceAll('{email}', user.email).replaceAll('{url}', url);
+                        //     app.email.sendEmail(result.email, result.emailPassword, user.email, [], mailTitle, mailText, mailHtml, null);
+                        // });
 
                         res.send({ error: null });
                     }

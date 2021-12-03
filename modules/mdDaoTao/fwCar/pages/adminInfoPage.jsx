@@ -37,7 +37,7 @@ class CarModal extends AdminModal {
         this.itemNgayHetHanTapLai.value(ngayHetHanTapLai);
         this.itemNgayDangKy.value(ngayDangKy);
         this.itemStatus.value(status ? status : 'dangSuDung');
-        this.setState({ _id ,user });
+        this.setState({ _id ,user }, () => this.itemUser.value(user ? { id: user._id, text: user.lastname + ' ' + user.firstname } : { id: 0, text: 'Trống'}));
     }
 
     onSubmit = () => {
@@ -75,6 +75,7 @@ class CarModal extends AdminModal {
     }
 
     render = () => {
+        console.log(this.state.user);
         const readOnly = this.props.readOnly;
         return this.renderModal({
             title: 'Quản lý xe',

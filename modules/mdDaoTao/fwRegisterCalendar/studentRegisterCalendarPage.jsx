@@ -196,7 +196,7 @@ class RegisterTimeTableModal extends AdminModal {
             size: 'large',
             body: <>
                 <div className='row'>
-                    {OffCalendar ? <p className='col-lg-12' style={{ background: 'antiquewhite', paddingBottom: '10px', paddingTop: '10px'}} >Giáo viên: <b>{OffCalendar && OffCalendar.lecturer ? OffCalendar.lecturer.lastname + ' ' + OffCalendar.lecturer.firstname : 'Không có thông tin'}</b> nghỉ <b>{timeOffStatesMapper && timeOffStatesMapper[OffCalendar.timeOff] && timeOffStatesMapper[OffCalendar.timeOff].text}</b> <span className='text-danger'>{new Date(date).getDayText()} {new Date(date).getDateText()}</span> </p> : null}
+                    {OffCalendar ? <p className='col-lg-12' style={{ background: 'antiquewhite', paddingBottom: '10px', paddingTop: '10px'}} >Giáo viên: <b>{OffCalendar && OffCalendar.lecturer ? OffCalendar.lecturer.lastname + ' ' + OffCalendar.lecturer.firstname : 'Không có thông tin'}</b> nghỉ <b>{timeOffStatesMapper && timeOffStatesMapper[OffCalendar.timeOff] && timeOffStatesMapper[OffCalendar.timeOff].text}</b> <span className='text-danger'>{new Date(date).getDateText()}</span> </p> : null}
                 </div>
                 <div style={{ display: !OffCalendar || OffCalendar && OffCalendar.timeOff != 'allDay' ? 'block' : 'none' }}>
                     <div className='row'>
@@ -260,8 +260,8 @@ class StudentView extends AdminPage {
                             if (data.error) {
                                 this.props.history.push(`/user/hoc-vien/khoa-hoc/${this.state.courseId}`);
                             } else {
-                                const { listTimeTable, listRegisterCalendar } = data;
-                                this.setState({ listTimeTable, listRegisterCalendar });
+                                const { listTimeTable, listRegisterCalendar, car } = data;
+                                this.setState({ listTimeTable, listRegisterCalendar, car });
                             }
                         });
                     }
@@ -368,7 +368,15 @@ class StudentView extends AdminPage {
         const { selectedSectionHours, selectedSectionOverTimeHours } = data;
         // if (selectedSectionHours && selectedSectionHours.length) {
             selectedSectionHours.concat(selectedSectionOverTimeHours).forEach(selectedSectionHour => {
-                this.props.createTimeTableByStudent({ date: data.date,startHour: selectedSectionHour.startHour, numOfHours: 1 }, item => {
+                let newData = { 
+                    date: data.date, 
+                    startHour: selectedSectionHour.startHour, 
+                    numOfHours: 1 
+                };
+                if(this.state.car) {
+                    newData.car = this.state.car && this.state.car._id;
+                }
+                this.props.createTimeTableByStudent(newData, item => {
                     done && done();
                     const newEvent = this.getEventObject({}, item);
                     $(this.calendar).fullCalendar('renderEvent', newEvent);
