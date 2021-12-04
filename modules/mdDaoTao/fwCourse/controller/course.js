@@ -105,16 +105,16 @@ module.exports = (app) => {
             condition.teacherGroups = { $elemMatch: { teacher: sessionUser._id } };
             condition.active = true;
         }
-        if (sessionUser.isCourseAdmin && !sessionUser.isLecturer ) {
+        if (sessionUser.isCourseAdmin && !sessionUser.isLecturer) {
             condition.admins = sessionUser._id;
             condition.active = true;
         }
         app.model.course.getPage(pageNumber, pageSize, condition, (error, page) => {
             console.log(page);
-            if (error || !page ) {
+            if (error || !page) {
                 res.send({ error });
-            } else if(page.list && !page.list.length) {
-                res.send({page});
+            } else if (page.list && !page.list.length) {
+                res.send({ page });
             } else {
                 page = app.clone(page);
                 const promiseList = page.list && page.list.length > 0 && page.list.map(item => {

@@ -48,21 +48,21 @@ class NotificationModal extends AdminModal {
     }
 
     onShow = (item) => {
-        const { _id, title, content, abstract,ngayDuKienThiTotNghiep } = this.props.data || { _id: '', title: '', content: '', abstract: '', ngayDuKienThiTotNghiep:'' };
+        const { _id, title, content, abstract, ngayDuKienThiTotNghiep } = this.props.data || { _id: '', title: '', content: '', abstract: '', ngayDuKienThiTotNghiep: '' };
         const thoiGianThiTotNghiepDuKien = T.dateToText(item && item.course && item.course.thoiGianThiTotNghiepDuKien, 'dd/mm/yyyy');
         let newAbstract = abstract.replaceAll('{ho_ten}', item.lastname + ' ' + item.firstname)
-            .replaceAll('{ngay_thi_tot_nghiep}',item.ngayDuKienThiTotNghiep ?  `${T.dateToText(item.ngayDuKienThiTotNghiep, 'dd/mm/yyyy')}` : thoiGianThiTotNghiepDuKien)
+            .replaceAll('{ngay_thi_tot_nghiep}', item.ngayDuKienThiTotNghiep ? `${T.dateToText(item.ngayDuKienThiTotNghiep, 'dd/mm/yyyy')}` : thoiGianThiTotNghiepDuKien)
             .replaceAll('{khoa}', item.course && item.course.name)
             .replaceAll('{cmnd}', item.identityCard);
         let newContent = content.replaceAll('{ho_ten}', item.lastname + ' ' + item.firstname)
-            .replaceAll('{ngay_thi_tot_nghiep}', item.ngayDuKienThiTotNghiep ?  `${T.dateToText(item.ngayDuKienThiTotNghiep, 'dd/mm/yyyy')}` : thoiGianThiTotNghiepDuKien)
+            .replaceAll('{ngay_thi_tot_nghiep}', item.ngayDuKienThiTotNghiep ? `${T.dateToText(item.ngayDuKienThiTotNghiep, 'dd/mm/yyyy')}` : thoiGianThiTotNghiepDuKien)
             .replaceAll('{khoa}', item.course && item.course.name)
             .replaceAll('{cmnd}', item.identityCard);
         this.itemTitle.value(title);
         this.itemNgayDuKien.value(ngayDuKienThiTotNghiep);
         this.itemAbstract.value(newAbstract);
         this.itemContent.html(newContent);
-        this.setState({ _id, item,content, abstract, thoiGianThiTotNghiepDuKien });
+        this.setState({ _id, item, content, abstract, thoiGianThiTotNghiepDuKien });
     }
 
     onSend = () => {
@@ -82,7 +82,7 @@ class NotificationModal extends AdminModal {
     }
 
     changeDate = (date) => {
-        let {content, abstract, item} = this.state;
+        let { content, abstract, item } = this.state;
         let newAbstract = abstract.replaceAll('{ho_ten}', item.lastname + ' ' + item.firstname)
             .replaceAll('{ngay_thi_tot_nghiep}', date)
             .replaceAll('{khoa}', item.course && item.course.name)
@@ -154,16 +154,16 @@ class FailGraduationPage extends AdminPage {
 
     onSearch = ({ pageNumber, pageSize, searchText = this.state.searchText, course = this.course.value() }, done) => {
         const courseType = this.state.courseTypeId;
-        const condition = course == '0' ? { searchText,courseType, totNghiep: false } : { searchText, course , totNghiep: false };
-        this.props.getStudentPage(pageNumber, pageSize,condition , () => {
+        const condition = course == '0' ? { searchText, courseType, totNghiep: false, daThiHetMon: true } : { searchText, course, totNghiep: false, daThiHetMon: true };
+        this.props.getStudentPage(pageNumber, pageSize, condition, () => {
             this.setState({ searchText });
             done && done();
         });
     }
 
     onChangeCourseType = (courseType) => {
-        this.setState({ courseTypeId: courseType  });
-        this.course.value({id: 0, text:'Tất cả khóa học'});
+        this.setState({ courseTypeId: courseType });
+        this.course.value({ id: 0, text: 'Tất cả khóa học' });
         // this.onSearch({ courseType });
     }
 
@@ -227,7 +227,7 @@ class FailGraduationPage extends AdminPage {
                     </div>
                 </div>
                 {this.state.courseTypeId ? <CirclePageButton type='export' onClick={() => exportExamStudent(this.state.courseTypeId, 'HVChuaTotNghiep')} /> : null}
-                {this.course && (this.course.value() != '0')  ? <CirclePageButton type='custom' customClassName='btn-warning' customIcon='fa-paper-plane' style={{right: '75px'}} onClick={(e) => this.sendNotificationCourse(e, this.course.value())} /> : null}
+                {this.course && (this.course.value() != '0') ? <CirclePageButton type='custom' customClassName='btn-warning' customIcon='fa-paper-plane' style={{ right: '75px' }} onClick={(e) => this.sendNotificationCourse(e, this.course.value())} /> : null}
                 <StudentModal readOnly={!permission.write} ref={e => this.modal = e} update={this.props.updateStudent} />
                 <NotificationModal readOnly={!permission.write} ref={e => this.notiModal = e} create={this.props.createNotification} data={this.state.data} />
                 <Pagination pageCondition={pageCondition} pageNumber={pageNumber} pageSize={pageSize} pageTotal={pageTotal} totalItem={totalItem} getPage={(pageNumber, pageSize) => this.onSearch({ pageNumber, pageSize })} />

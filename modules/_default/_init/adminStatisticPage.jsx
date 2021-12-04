@@ -1,13 +1,13 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { getStatistic, getStatisticStudent,updateStatisticCar,updateStatisticTeacher } from './redux';
+import { getStatistic, getStatisticStudent, updateStatisticCar, updateStatisticTeacher } from './redux';
 import { AdminPage, FormTextBox } from 'view/component/AdminPage';
 
 class StatisticPage extends AdminPage {
     state = { isSearching: false, dateStart: '', dateEnd: '' };
     componentDidMount() {
         this.props.getStatistic(data => {
-            const { numberOfUser = 0, numberOfNews = 0, numberOfCourse = 0, numberOfCar = 0, numberOfRepairCar = 0, numberOfPracticeCar = 0,numberOfLecturer = 0, numberOfCourseCar = 0 } = data || {};
+            const { numberOfUser = 0, numberOfNews = 0, numberOfCourse = 0, numberOfCar = 0, numberOfRepairCar = 0, numberOfPracticeCar = 0, numberOfLecturer = 0, numberOfCourseCar = 0 } = data || {};
             this.numberOfUser.value(numberOfUser);
             this.numberOfNews.value(numberOfNews);
             this.numberOfCourse.value(numberOfCourse);
@@ -26,7 +26,7 @@ class StatisticPage extends AdminPage {
         if (dateStart > dateEnd) {
             T.notify('Ngày bắt đầu phải nhỏ hơn ngày kết thúc !', 'danger');
         } else {
-            this.props.getStatisticStudent( dateStart, dateEnd , (data) => {
+            this.props.getStatisticStudent(dateStart, dateEnd, (data) => {
                 console.log(data);
                 this.setState({ isSearching: false, dateStart, dateEnd, dataStudent: data && data.item });
             });
@@ -35,7 +35,7 @@ class StatisticPage extends AdminPage {
 
     updateStatistic = () => {
         this.props.getStatistic(data => {
-            const { numberOfUser = 0, numberOfNews = 0, numberOfCourse = 0, numberOfCar = 0, numberOfRepairCar = 0, numberOfPracticeCar = 0,numberOfLecturer = 0, numberOfCourseCar = 0 } = data || {};
+            const { numberOfUser = 0, numberOfNews = 0, numberOfCourse = 0, numberOfCar = 0, numberOfRepairCar = 0, numberOfPracticeCar = 0, numberOfLecturer = 0, numberOfCourseCar = 0 } = data || {};
             this.numberOfUser.value(numberOfUser);
             this.numberOfNews.value(numberOfNews);
             this.numberOfCourse.value(numberOfCourse);
@@ -51,11 +51,11 @@ class StatisticPage extends AdminPage {
     render() {
         // eslint-disable-next-line no-unused-vars
         const year = new Date().getFullYear();
-        const {  carData, teacherData  } = this.props.system || {};
+        const { carData, teacherData } = this.props.system || {};
         let data = {};
         if (carData && carData.car) {
             const item = carData.car.split(';');
-            item.sort((a,b) => parseInt(a.split(':')[0]) -  parseInt(b.split(':')[0]));
+            item.sort((a, b) => parseInt(a.split(':')[0]) - parseInt(b.split(':')[0]));
             const labels = [], dataTotal = [], dataNewCar = [], dataRemoveCar = [];
             item.forEach(year => {
                 if (year != '') {
@@ -111,7 +111,7 @@ class StatisticPage extends AdminPage {
         let teacher = {};
         if (teacherData && teacherData.teacher) {
             const item = teacherData.teacher.split(';');
-            item.sort((a,b) => parseInt(a.split(':')[0]) -  parseInt(b.split(':')[0]));
+            item.sort((a, b) => parseInt(a.split(':')[0]) - parseInt(b.split(':')[0]));
             const labels = [], dataTotal = [], dataNewTeacher = [];
             item.forEach(year => {
                 if (year != '') {
@@ -178,7 +178,7 @@ class StatisticPage extends AdminPage {
                             </div>
                         </div>
                     </div>
-                    
+
                     <div className='col-md-6'>
                         <div className='tile'>
                             <div className='tile-title d-flex justify-content-between'>
@@ -198,16 +198,16 @@ class StatisticPage extends AdminPage {
                                 <button className='btn btn-success' onClick={() => this.updateStatistic()}>Cập nhật</button>
                             </div>
                             <div className='row'>
-                                <FormTextBox className='col-md-6' ref={e => this.numberOfUser = e} label='Số lượng người dùng' readOnly={true} /> 
-                                <FormTextBox className='col-md-6' ref={e => this.numberOfCourse = e} label='Số lượng khóa học' readOnly={true} /> 
-                                <FormTextBox className='col-md-6' ref={e => this.numberOfNews = e} label='Số lượng tin tức' readOnly={true} /> 
-                                <FormTextBox className='col-md-6' ref={e => this.numberOfLecturer = e} label='Số lượng giáo viên' readOnly={true} /> 
-                                <FormTextBox className='col-md-6' ref={e => this.numberOfCar = e} label='Số lượng xe' readOnly={true} /> 
-                                <FormTextBox className='col-md-6' ref={e => this.numberOfCourseCar = e} label='Số lượng xe đi khóa' readOnly={true} /> 
-                                <FormTextBox className='col-md-6' ref={e => this.numberOfRepairCar = e} label='Số lượng xe sửa chữa' readOnly={true} /> 
-                                <FormTextBox className='col-md-6' ref={e => this.numberOfPracticeCar = e} label='Số lượng xe tập lái' readOnly={true} /> 
+                                <FormTextBox className='col-md-6' ref={e => this.numberOfUser = e} label='Số lượng người dùng' readOnly={true} />
+                                <FormTextBox className='col-md-6' ref={e => this.numberOfCourse = e} label='Số lượng khóa học' readOnly={true} />
+                                <FormTextBox className='col-md-6' ref={e => this.numberOfNews = e} label='Số lượng tin tức' readOnly={true} />
+                                <FormTextBox className='col-md-6' ref={e => this.numberOfLecturer = e} label='Số lượng giáo viên' readOnly={true} />
+                                <FormTextBox className='col-md-6' ref={e => this.numberOfCar = e} label='Số lượng xe' readOnly={true} />
+                                <FormTextBox className='col-md-6' ref={e => this.numberOfCourseCar = e} label='Số lượng xe đi khóa' readOnly={true} />
+                                <FormTextBox className='col-md-6' ref={e => this.numberOfRepairCar = e} label='Số lượng xe sửa chữa' readOnly={true} />
+                                <FormTextBox className='col-md-6' ref={e => this.numberOfPracticeCar = e} label='Số lượng xe tập lái' readOnly={true} />
                             </div>
-                        
+
                         </div>
                     </div>
 
@@ -234,5 +234,5 @@ class StatisticPage extends AdminPage {
 }
 
 const mapStateToProps = state => ({ system: state.system });
-const mapActionsToProps = { getStatistic, getStatisticStudent,updateStatisticCar, updateStatisticTeacher };
+const mapActionsToProps = { getStatistic, getStatisticStudent, updateStatisticCar, updateStatisticTeacher };
 export default connect(mapStateToProps, mapActionsToProps)(StatisticPage);
