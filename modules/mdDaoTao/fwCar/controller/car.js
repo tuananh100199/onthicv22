@@ -157,8 +157,8 @@ module.exports = app => {
             $unset.user = '';
             delete changes.user;
         }
-        const handleChangeLecturer = (lecturer, carId, done) => {
-            const condition = {}, lecturerCondition = {};
+        const handleChangeLecturer = (lecturer, carId, courseType, done) => {
+            const condition = { courseType }, lecturerCondition = {};
             condition.thoiGianKetThuc = {
                 $gte: new Date()
             };
@@ -204,6 +204,7 @@ module.exports = app => {
             if (error || !item) {
                 res.send({ error: 'Lỗi khi lấy thông tin xe!' });
             } else {
+                const courseType = item.courseType && item.courseType._id;
                 if (item.user != changes.user) {
                     const calendarHistory = {};
                     if (changes.user) {
@@ -216,17 +217,17 @@ module.exports = app => {
                     });
 
                     if (item.user == undefined && changes.user) {
-                        handleChangeLecturer(changes.user, _id, () => {
+                        handleChangeLecturer(changes.user, _id, courseType, () => {
                             app.model.car.update(_id, changes, $unset, (error, item) => res.send({ error, item }));
                         });
 
                     } else if (item.user && changes.user == undefined) {
-                        handleChangeLecturer(item.user, null, () => {
+                        handleChangeLecturer(item.user, null, courseType, () => {
                             app.model.car.update(_id, changes, $unset, (error, item) => res.send({ error, item }));
                         });
                     } else {
-                        handleChangeLecturer(item.user, null, () => {
-                            handleChangeLecturer(changes.user, _id, () => {
+                        handleChangeLecturer(item.user, null, courseType, () => {
+                            handleChangeLecturer(changes.user, _id, courseType, () => {
                                 app.model.car.update(_id, changes, $unset, (error, item) => res.send({ error, item }));
                             });
                         });
