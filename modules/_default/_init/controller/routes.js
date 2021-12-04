@@ -265,6 +265,50 @@ module.exports = (app) => {
     });
 
 
+    app.get('/api/statistic/dashboard/teacher', app.permission.check('statistic:read'), (req, res) => {
+        app.model.user.getOld((error,data) => {
+            if(error) res.send({error});
+            else {
+                const yearStart = data && data[0] && data[0].createdDate && data[0].createdDate.getFullYear();
+                const yearEnd = new Date().getFullYear();
+                const promiseList=[];
+                let totalTeacher = 0;
+                for(let year = yearStart; year <= yearEnd; year++){
+                      promiseList.push(
+                      new Promise((resolve, reject) => {
+                          app.model.user.count({isLecturer: true, createdDate : { $gte: new Date().setFullYear(year, 0, 1), $lt : new Date().setFullYear(year+1,0,-1) }}, (error, numberOfTeacher) =>{
+                              if (error) {
+                                  reject(error);
+                              } else {
+                                const obj={};
+                                totalTeacher = totalTeacher+numberOfTeacher;
+                                obj[year] ='totalTeacher:' + totalTeacher + ':newTeacher:' + numberOfTeacher;
+                                resolve(obj);
+                              } 
+                          });
+                      }));
+                  }
+                  promiseList && Promise.all(promiseList).then(item => {
+                      const data = {};
+                      let value = '';
+                      if(item && item.length){
+                          item.forEach(teacher => {
+                              value = value + Object.keys(teacher)[0] + ':' + Object.values(teacher)[0] + ';';
+                          });
+                      }
+                      data.teacher = value;
+                      app.model.setting.set(data, error => {
+                          if (error) {
+                              res.send({ error: 'Update số teacher hàng năm bị lỗi' });
+                          } else {
+                              res.send({teacherData: data || null });
+                          }
+                      });
+                  }).catch(error => console.error(error) || res.send({ error }));
+            }
+        });
+      });
+
     // Hook upload images ---------------------------------------------------------------------------------------------------------------------------
     const uploadSettingImage = (fields, files, done) => {
         if (files.SettingImage && files.SettingImage.length > 0) {

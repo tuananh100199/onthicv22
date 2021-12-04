@@ -4,7 +4,7 @@ import { exportExamStudent, getStudentPage, updateStudent } from './redux';
 import { createNotification } from 'modules/_default/fwNotification/redux';
 import { getNotificationTemplateAll, getNotificationTemplate } from 'modules/mdTruyenThong/fwNotificationTemplate/redux';
 import { getCourseTypeAll, ajaxSelectCourseType } from 'modules/mdDaoTao/fwCourseType/redux';
-import { getCoursePage } from 'modules/mdDaoTao/fwCourse/redux';
+import { ajaxSelectCourseByCourseType, getCoursePage } from 'modules/mdDaoTao/fwCourse/redux';
 import { AdminPage, FormRichTextBox, FormTextBox, FormSelect, FormDatePicker, renderTable, TableCell, AdminModal, CirclePageButton, FormEditor } from 'view/component/AdminPage';
 import Pagination from 'view/component/Pagination';
 
@@ -123,17 +123,6 @@ class FailGraduationPage extends AdminPage {
             this.props.getCourseTypeAll(data => {
                 const courseTypes = data.length && data.map(item => ({ id: item._id, text: item.title }));
                 this.courseType.value(courseTypes.length ? courseTypes[0] : null);
-                // this.course.value({id: 0, text: 'Tất cả khóa học'});
-                let listCourse = [];
-                listCourse.push({id: 0, text: 'Tất cả khóa học'});
-                if(courseTypes[0] && courseTypes[0]._id){
-                    this.props.getCoursePage( courseTypes[0]._id , undefined, undefined, {close: false}, data =>{
-                        if(data && data.page && data.page.list && data.page.list.length){
-                            data.page.list.forEach(course => listCourse.push({ id: course._id, text: course.name }));
-                         }
-                    });
-                }
-                this.setState({listCourse});
             });
             this.props.getNotificationTemplateAll({}, data => {
                 if (data && data.length) {
@@ -166,7 +155,6 @@ class FailGraduationPage extends AdminPage {
     onSearch = ({ pageNumber, pageSize, searchText = this.state.searchText, course = this.course.value() }, done) => {
         const courseType = this.state.courseTypeId;
         const condition = course == '0' ? { searchText,courseType, totNghiep: false } : { searchText, course , totNghiep: false };
-        console.log(condition);
         this.props.getStudentPage(pageNumber, pageSize,condition , () => {
             this.setState({ searchText });
             done && done();
@@ -174,14 +162,7 @@ class FailGraduationPage extends AdminPage {
     }
 
     onChangeCourseType = (courseType) => {
-        let listCourse = [];
-        listCourse.push({id: 0, text: 'Tất cả khóa học'});
-        this.props.getCoursePage(courseType, undefined, undefined, {close: false}, data =>{
-            if(data && data.page && data.page.list && data.page.list.length){
-               data.page.list.forEach(course => listCourse.push({ id: course._id, text: course.name }));
-            }
-        });
-        this.setState({ courseTypeId: courseType, listCourse  });
+        this.setState({ courseTypeId: courseType  });
         this.course.value({id: 0, text:'Tất cả khóa học'});
         // this.onSearch({ courseType });
     }
@@ -190,12 +171,12 @@ class FailGraduationPage extends AdminPage {
 
     sendNotification = (e, item) => e.preventDefault() || this.notiModal.show(item);
 
+    sendNotificationCourse = (e, course) => e.preventDefault() || console.log(course);
+
     render() {
         const permission = this.getUserPermission('student', ['read', 'write']);
         let { pageNumber, pageSize, pageTotal, pageCondition, totalItem, list } = this.props.student && this.props.student.page ?
             this.props.student.page : { pageNumber: 1, pageSize: 50, pageTotal: 1, pageCondition: {}, totalItem: 0, list: [] };
-        const listCourse = this.state.listCourse;
-        console.log(listCourse);
         const table = renderTable({
             getDataSource: () => list, stickyHead: true,
             renderHead: () => (
@@ -238,13 +219,15 @@ class FailGraduationPage extends AdminPage {
                             <div className='col-auto'>
                                 <label className='col-form-label'>Khóa học: </label>
                             </div>
-                            <FormSelect ref={e => this.course = e} data={listCourse} placeholder='Khóa học'
+                            <FormSelect ref={e => this.course = e} data={ajaxSelectCourseByCourseType(this.state.courseTypeId)} placeholder='Khóa học'
                                 onChange={data => this.onSearch(data.id)} style={{ margin: 0, width: '200px' }} />
                         </div>
                         {this.courseType && this.courseType.value() != null ? table : null}
+
                     </div>
                 </div>
                 {this.state.courseTypeId ? <CirclePageButton type='export' onClick={() => exportExamStudent(this.state.courseTypeId, 'HVChuaTotNghiep')} /> : null}
+                {this.course && (this.course.value() != '0')  ? <CirclePageButton type='custom' customClassName='btn-warning' customIcon='fa-paper-plane' style={{right: '75px'}} onClick={(e) => this.sendNotificationCourse(e, this.course.value())} /> : null}
                 <StudentModal readOnly={!permission.write} ref={e => this.modal = e} update={this.props.updateStudent} />
                 <NotificationModal readOnly={!permission.write} ref={e => this.notiModal = e} create={this.props.createNotification} data={this.state.data} />
                 <Pagination pageCondition={pageCondition} pageNumber={pageNumber} pageSize={pageSize} pageTotal={pageTotal} totalItem={totalItem} getPage={(pageNumber, pageSize) => this.onSearch({ pageNumber, pageSize })} />
