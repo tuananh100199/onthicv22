@@ -2,8 +2,8 @@ module.exports = app => {
     const menu = {
         parentMenu: app.parentMenu.trainning,
         menus: {
-            4035: { title: 'Quản lý xe', link: '/user/car' },
-        },
+            4035: { title: 'Quản lý xe', link: '/user/car' }
+        }
     };
     app.permission.add({ name: 'car:read', menu }, { name: 'car:write' }, { name: 'car:delete' }, { name: 'car:import' }, { name: 'car:export' }, { name: 'car:fuel' }, { name: 'car:repair' }, { name: 'car:practice' }, { name: 'car:registration' });
 
@@ -53,7 +53,7 @@ module.exports = app => {
     app.get('/api/car/avaiable-lecturer', (req, res) => {
         app.model.user.getAll({ isLecturer: true }, (error, lecturers) => {
             if (error) {
-                res.send({ error: 'Lấy thông tin giáo viên bị lỗi'});
+                res.send({ error: 'Lấy thông tin giáo viên bị lỗi' });
             } else {
                 app.model.car.getAll({}, (error, cars) => {
                     let avaiableLecturers = [];
@@ -68,7 +68,7 @@ module.exports = app => {
                             avaiableLecturers.push(lecturer);
                         }
                     });
-                    res.send({ error, list : avaiableLecturers });
+                    res.send({ error, list: avaiableLecturers });
                 });
             }
         });
@@ -92,42 +92,42 @@ module.exports = app => {
             }
             const year = (item && item.ngayDangKy ? item.ngayDangKy.getFullYear() : null);
             let data = {},
-            currentYear = new Date().getFullYear();
+                currentYear = new Date().getFullYear();
             app.model.setting.get('car', result => {
                 if (result && Object.keys(result).length != 0) {
                     let value = result.car && result.car.split(';');
-                        value = value.sort((a, b) => parseInt(a.slice(0, 3)) - parseInt(b.slice(0, 3)));
-                                        const indexYear = value.findIndex(item => item.startsWith(year));
-                                        if (indexYear != -1 && (year == currentYear)) {
-                                            const newItem = value[indexYear].split(':');
-                                            newItem[2] = parseInt(newItem[2]);
-                                            newItem[2]++;
-                                            newItem[4] = parseInt(newItem[4]);
-                                            newItem[4]++;
-                                            value[indexYear] = newItem.join(':');
-                                            data.car = value.join(';');
-                                        } else if(indexYear != -1) {
-                                            for(let i = indexYear; i <value.length; i++){
-                                                const newItem = value[i].split(':');
-                                                newItem[2] = parseInt(newItem[2]);
-                                                newItem[2]++;
-                                                if(i == indexYear){
-                                                    newItem[4] = parseInt(newItem[4]);
-                                                        newItem[4]++;
-                                                }
-                                                value[indexYear] = newItem.join(':');
-                                            }
-                                        } else {
-                                            const indexPreviousYear = value.findIndex(item => item.startsWith(year - 1));
-                                            if (indexPreviousYear != -1) {
-                                                const newItem = value[indexPreviousYear].split(':');
-                                                newItem[2] = parseInt(newItem[2]);
-                                                newItem[2]++;
-                                                data.car = result.car + year + ':totalCar:' + newItem[2] + ':newCar:' + 1 + ':removeCar:0;';
-                                            } else {
-                                                data.car = result.car + year + ':totalCar:' + 1 + ':newCar:' + 1 + ':removeCar:0;';
-                                            }
-                                        }
+                    value = value.sort((a, b) => parseInt(a.slice(0, 3)) - parseInt(b.slice(0, 3)));
+                    const indexYear = value.findIndex(item => item.startsWith(year));
+                    if (indexYear != -1 && (year == currentYear)) {
+                        const newItem = value[indexYear].split(':');
+                        newItem[2] = parseInt(newItem[2]);
+                        newItem[2]++;
+                        newItem[4] = parseInt(newItem[4]);
+                        newItem[4]++;
+                        value[indexYear] = newItem.join(':');
+                        data.car = value.join(';');
+                    } else if (indexYear != -1) {
+                        for (let i = indexYear; i < value.length; i++) {
+                            const newItem = value[i].split(':');
+                            newItem[2] = parseInt(newItem[2]);
+                            newItem[2]++;
+                            if (i == indexYear) {
+                                newItem[4] = parseInt(newItem[4]);
+                                newItem[4]++;
+                            }
+                            value[indexYear] = newItem.join(':');
+                        }
+                    } else {
+                        const indexPreviousYear = value.findIndex(item => item.startsWith(year - 1));
+                        if (indexPreviousYear != -1) {
+                            const newItem = value[indexPreviousYear].split(':');
+                            newItem[2] = parseInt(newItem[2]);
+                            newItem[2]++;
+                            data.car = result.car + year + ':totalCar:' + newItem[2] + ':newCar:' + 1 + ':removeCar:0;';
+                        } else {
+                            data.car = result.car + year + ':totalCar:' + 1 + ':newCar:' + 1 + ':removeCar:0;';
+                        }
+                    }
                     app.model.setting.set(data, err => {
                         if (err) {
                             res.send({ error: 'Update số xe hàng năm bị lỗi' });
@@ -156,47 +156,51 @@ module.exports = app => {
         if (changes.user == '0') {
             $unset.user = '';
             delete changes.user;
-        } 
+        }
         const handleChangeLecturer = (lecturer, carId, done) => {
-            const condition = {}, lecturerCondition= {};
+            const condition = {}, lecturerCondition = {};
             condition.thoiGianKetThuc = {
-                $gte: new Date(),
+                $gte: new Date()
             };
             app.model.course.get(condition, (error, course) => {
-              if (course) {
+                if (course) {
                     course = app.clone(course);
                     const listStudent = course.teacherGroups && course.teacherGroups.length ? course.teacherGroups.filter(teacherGroup => teacherGroup.teacher && teacherGroup.teacher._id == lecturer) : [],
-                    studentIds = listStudent.length && listStudent[0].student.map(student => student._id);
-                    lecturerCondition.student = { $in:  studentIds };
-                    lecturerCondition.date = {
-                        $gte: new Date(),
-                    };
-                    app.model.timeTable.getAll(lecturerCondition, (error, list) => {
-                        if (list && list.length) {
-                            const timeTables = list.map(item => app.clone(item));
-                            const handleUpdateTimeTable = (index = 0) => {
-                                if (index == timeTables.length) {
-                                    done && done();
-                                } else {
-                                    const timeTable = timeTables[index];
-                                    timeTable.car = carId ? carId : undefined;
-                                    app.model.timeTable.update({ _id: timeTable._id }, timeTable, () => {
-                                        handleUpdateTimeTable(index + 1);
-                                    });
-                                }
-                            };
-                            handleUpdateTimeTable();
-                        } else {
-                            app.model.car.update(_id, changes, $unset, (error, item) => res.send({ error, item }));
-                        }
-                    });
+                        studentIds = listStudent.length && listStudent[0].student.map(student => student._id);
+                    if (listStudent.length) {
+                        lecturerCondition.student = { $in: studentIds };
+                        lecturerCondition.date = {
+                            $gte: new Date()
+                        };
+                        app.model.timeTable.getAll(lecturerCondition, (error, list) => {
+                            if (list && list.length) {
+                                const timeTables = list.map(item => app.clone(item));
+                                const handleUpdateTimeTable = (index = 0) => {
+                                    if (index == timeTables.length) {
+                                        done && done();
+                                    } else {
+                                        const timeTable = timeTables[index];
+                                        timeTable.car = carId ? carId : undefined;
+                                        app.model.timeTable.update({ _id: timeTable._id }, timeTable, () => {
+                                            handleUpdateTimeTable(index + 1);
+                                        });
+                                    }
+                                };
+                                handleUpdateTimeTable();
+                            } else {
+                                done && done();
+                            }
+                        });
+                    } else {
+                        done && done();
+                    }
                 } else {
-                    app.model.car.update(_id, changes, $unset, (error, item) => res.send({ error, item }));
+                    done && done();
                 }
             });
         };
 
-        app.model.car.get( _id, (error, item) => {
+        app.model.car.get(_id, (error, item) => {
             if (error || !item) {
                 res.send({ error: 'Lỗi khi lấy thông tin xe!' });
             } else {
@@ -205,16 +209,16 @@ module.exports = app => {
                     if (changes.user) {
                         calendarHistory.user = changes.user;
                     }
-                    app.model.car.updateCalendarHistory({ _id: _id }, (error, item) => {
+                    app.model.car.updateCalendarHistory(_id, (error, item) => {
                         if (item) {
-                            app.model.car.addCalendarHistory({ _id: _id }, calendarHistory);
+                            app.model.car.addCalendarHistory({ _id }, calendarHistory);
                         }
                     });
 
                     if (item.user == undefined && changes.user) {
                         handleChangeLecturer(changes.user, _id, () => {
                             app.model.car.update(_id, changes, $unset, (error, item) => res.send({ error, item }));
-                        } );
+                        });
 
                     } else if (item.user && changes.user == undefined) {
                         handleChangeLecturer(item.user, null, () => {
@@ -230,7 +234,7 @@ module.exports = app => {
                 } else {
                     app.model.car.update(_id, changes, $unset, (error, item) => res.send({ error, item }));
                 }
-            }   
+            }
         });
     });
 
@@ -279,7 +283,7 @@ module.exports = app => {
 
     app.put('/api/car/liquidate', app.permission.check('car:write'), (req, res) => {
         const car = req.body.item;
-        app.model.car.update(car._id, {status:'daThanhLy', ngayThanhLy: new Date()}, {}, () => {
+        app.model.car.update(car._id, { status: 'daThanhLy', ngayThanhLy: new Date() }, {}, () => {
             let data = {};
             const year = new Date().getFullYear();
             app.model.setting.get('car', result => {
@@ -294,7 +298,7 @@ module.exports = app => {
                         newItem[6]++;
                         value[indexYear] = newItem.join(':');
                         data.car = value.join(';');
-                    } else{
+                    } else {
                         const newItem = value[value.length].split(':');
                         newItem[2] = parseInt(newItem[2]);
                         newItem[2]--;
@@ -331,8 +335,8 @@ module.exports = app => {
                         item.fuel[indexFuel].fee = data.fee;
                         item.fuel[indexFuel].quantity = data.quantity;
                         app.model.car.update(carId, item, (error, item) => {
-                            res.send({ error, item });
-                        }
+                                res.send({ error, item });
+                            }
                         );
                     }
                 }
@@ -361,8 +365,8 @@ module.exports = app => {
                         item.repair[indexRepair].fee = data.fee;
                         item.repair[indexRepair].content = data.content;
                         app.model.car.update(carId, item, (error, item) => {
-                            res.send({ error, item });
-                        }
+                                res.send({ error, item });
+                            }
                         );
                     }
                 }
@@ -388,9 +392,9 @@ module.exports = app => {
                     } else {
                         item.courseHistory[indexCourseHistory].user = data.user;
                         app.model.car.update(carId, item, (error) => {
-                            if (error) res.send({ error });
-                            else app.model.car.get(carId, (error, item) => res.send({ error, item }));
-                        }
+                                if (error) res.send({ error });
+                                else app.model.car.get(carId, (error, item) => res.send({ error, item }));
+                            }
                         );
                     }
                 }
@@ -418,8 +422,8 @@ module.exports = app => {
                         item.lichSuDangKiem[indexRegistration].ngayHetHanDangKiem = data.ngayHetHanDangKiem;
                         item.lichSuDangKiem[indexRegistration].fee = data.fee;
                         app.model.car.update(carId, item, (error, item) => {
-                            res.send({ error, item });
-                        }
+                                res.send({ error, item });
+                            }
                         );
                     }
                 }
@@ -447,8 +451,8 @@ module.exports = app => {
                         item.lichSuDangKy[indexPractice].ngayHetHanDangKy = data.ngayHetHanDangKy;
                         item.lichSuDangKy[indexPractice].fee = data.fee;
                         app.model.car.update(carId, item, (error, item) => {
-                            res.send({ error, item });
-                        }
+                                res.send({ error, item });
+                            }
                         );
                     }
                 }
@@ -497,12 +501,12 @@ module.exports = app => {
                                     let calendarHistory = { thoiGianBatDau: new Date() };
                                     if (newItem.user) {
                                         calendarHistory.user = newItem.user;
-                                    }  
-                                    app.model.car.addCalendarHistory({ _id : newItem._id }, calendarHistory);
+                                    }
+                                    app.model.car.addCalendarHistory({ _id: newItem._id }, calendarHistory);
                                 }
                                 const d = new Date(car && car.ngayDangKy),
-                                year = d ? d.getFullYear() : null,
-                                currentYear = new Date().getFullYear();
+                                    year = d ? d.getFullYear() : null,
+                                    currentYear = new Date().getFullYear();
                                 let data = {};
                                 app.model.setting.get('car', result => {
                                     if (result && Object.keys(result).length != 0) {
@@ -517,14 +521,14 @@ module.exports = app => {
                                             newItem[4]++;
                                             value[indexYear] = newItem.join(':');
                                             data.car = value.join(';');
-                                        } else if(indexYear != -1) {
-                                            for(let i = indexYear; i <value.length; i++){
+                                        } else if (indexYear != -1) {
+                                            for (let i = indexYear; i < value.length; i++) {
                                                 const newItem = value[i].split(':');
                                                 newItem[2] = parseInt(newItem[2]);
                                                 newItem[2]++;
-                                                if(i == indexYear){
+                                                if (i == indexYear) {
                                                     newItem[4] = parseInt(newItem[4]);
-                                                        newItem[4]++;
+                                                    newItem[4]++;
                                                 }
                                                 value[indexYear] = newItem.join(':');
                                             }
@@ -604,7 +608,7 @@ module.exports = app => {
                                 ngayHetHanTapLai: stringToDate(values[6]),
                                 ngayDangKy: stringToDate(values[7]),
                                 ngayThanhLy: values[8] ? stringToDate(values[8]) : null,
-                                user: values[9],
+                                user: values[9]
                             });
                             handleUpload(index + 1);
                         }
@@ -616,5 +620,5 @@ module.exports = app => {
             });
         }
     });
-    
+
 };
