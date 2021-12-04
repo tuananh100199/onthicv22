@@ -262,7 +262,7 @@ module.exports = (app) => {
 
     app.post('/api/pre-student/import', app.permission.check('pre-student:write'), (req, res) => {
         let students = req.body.students;
-        let studentError = []; // những học viên có số CMND,CCCD của cố vấn dự kiến sai
+        let studentError = []; // những học viên có số CMND,CCCD của giáo viên dự kiến sai
         let err = null;
         function convert(str) {
             let date = new Date(str),
