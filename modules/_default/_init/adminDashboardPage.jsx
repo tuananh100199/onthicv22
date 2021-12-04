@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { getStatistic, getStatisticStudent,updateStatisticTeacher } from './redux';
+import { getStatistic, getStatisticStudent, updateStatisticTeacher } from './redux';
 import CountUp from 'view/js/countUp';
 import { Link } from 'react-router-dom';
 import { AdminPage, FormDatePicker } from 'view/component/AdminPage';
@@ -15,7 +15,7 @@ class DashboardIcon extends React.Component {
     }
 
     render() {
-        const {iconBackgroundColor, icon,link,grid} = this.props;
+        const { iconBackgroundColor, icon, link, grid } = this.props;
         const content = (
             <div className={'widget-small coloured-icon'}>
                 <i className={'icon fa fa-3x ' + icon} style={{ backgroundColor: iconBackgroundColor }} />
@@ -33,7 +33,6 @@ class DashboardPage extends AdminPage {
     state = { isSearching: false, dateStart: '', dateEnd: '' };
     componentDidMount() {
         this.props.getStatistic();
-        this.props.updateStatisticTeacher();
         T.ready();
     }
 
@@ -43,7 +42,7 @@ class DashboardPage extends AdminPage {
         if (dateStart > dateEnd) {
             T.notify('Ngày bắt đầu phải nhỏ hơn ngày kết thúc !', 'danger');
         } else {
-            this.props.getStatisticStudent( dateStart, dateEnd , (data) => {
+            this.props.getStatisticStudent(dateStart, dateEnd, (data) => {
                 this.setState({ isSearching: false, dateStart, dateEnd, dataStudent: data && data.item });
             });
         }
@@ -52,8 +51,8 @@ class DashboardPage extends AdminPage {
     render() {
         // eslint-disable-next-line no-unused-vars
         const year = new Date().getFullYear();
-        const { numberOfUser = 0, numberOfNews = 0, numberOfCourse = 0, numberOfCar = 0, numberOfRepairCar = 0, numberOfPracticeCar = 0,numberOfLecturer = 0, carData,teacherData, numberOfCourseCar = 0 } = this.props.system || {};
-        const {dataStudent, dateStart, dateEnd} = this.state;
+        const { numberOfUser = 0, numberOfNews = 0, numberOfCourse = 0, numberOfCar = 0, numberOfRepairCar = 0, numberOfPracticeCar = 0, numberOfLecturer = 0, carData, teacherData, numberOfCourseCar = 0 } = this.props.system || {};
+        const { dataStudent, dateStart, dateEnd } = this.state;
         let data = {}, dataChartStudent = {};
         if (carData && carData.car) {
             const item = carData.car.split(';');
@@ -143,7 +142,7 @@ class DashboardPage extends AdminPage {
         let teacher = {};
         if (teacherData && teacherData.teacher) {
             const item = teacherData.teacher.split(';');
-            item.sort((a,b) => parseInt(a.split(':')[0]) -  parseInt(b.split(':')[0]));
+            item.sort((a, b) => parseInt(a.split(':')[0]) - parseInt(b.split(':')[0]));
             const labels = [], dataTotal = [], dataNewTeacher = [];
             item.forEach(year => {
                 if (year != '') {
@@ -187,15 +186,15 @@ class DashboardPage extends AdminPage {
 
 
         if (dataStudent && dataStudent.length && dateStart && dateEnd) {
-            const labels = [],dataTotal = [];
+            const labels = [], dataTotal = [];
             const yearStart = dateStart.getFullYear(),
-            yearEnd = dateEnd.getFullYear();
+                yearEnd = dateEnd.getFullYear();
             dataStudent.forEach(month => {
-                const date =  Object.keys(month) && Object.keys(month)[0].split('/');
-                labels.push(yearStart == yearEnd ? (parseInt(date[0]) +1) : (parseInt(date[0])+ 1 + '/' + parseInt(date[1])));
+                const date = Object.keys(month) && Object.keys(month)[0].split('/');
+                labels.push(yearStart == yearEnd ? (parseInt(date[0]) + 1) : (parseInt(date[0]) + 1 + '/' + parseInt(date[1])));
                 dataTotal.push(Object.values(month) && Object.values(month)[0]);
             });
-            
+
             dataChartStudent = {
                 labels: labels,
                 datasets: [
@@ -227,8 +226,8 @@ class DashboardPage extends AdminPage {
             data: dataChartStudent,
         });
         console.log(lineChart);
-        console.log(lineChartStudent);    
-        console.log(lineChartTeacher);   
+        console.log(lineChartStudent);
+        console.log(lineChartTeacher);
 
         //todayViews = 0, allViews = 0
         const permission = this.getUserPermission('system', ['settings']);
@@ -238,10 +237,10 @@ class DashboardPage extends AdminPage {
             breadcrumb: ['Dashboard'],
             content: (
                 <div className='row'>
-                    <DashboardIcon iconBackgroundColor='orange'  icon='fa-users' title='Người dùng' value={numberOfUser} link='/user/member' readOnly={permission.settings} />
-                    <DashboardIcon iconBackgroundColor='#17a2b8'  icon='fa-file' title='Tin tức' value={numberOfNews} link='/user/news' readOnly={permission.settings} />
-                    <DashboardIcon iconBackgroundColor='#1488db'  icon='fa-book' title='Khóa học' value={numberOfCourse} link='/user/course' readOnly={permission.settings} />
-                    <div className='col-md-4'>
+                    <DashboardIcon iconBackgroundColor='orange' icon='fa-users' title='Người dùng' value={numberOfUser} link='/user/member' readOnly={permission.settings} />
+                    <DashboardIcon iconBackgroundColor='#17a2b8' icon='fa-file' title='Tin tức' value={numberOfNews} link='/user/news' readOnly={permission.settings} />
+                    <DashboardIcon iconBackgroundColor='#1488db' icon='fa-book' title='Khóa học' value={numberOfCourse} link='/user/course' readOnly={permission.settings} />
+                    <div className='col-md-6'>
                         <div className='tile'>
                             <h3 className='tile-title'>Thống kê xe hàng năm</h3>
                             <div className='embed-responsive embed-responsive-16by9'>
@@ -249,7 +248,7 @@ class DashboardPage extends AdminPage {
                             </div>
                         </div>
                     </div>
-                    <div className='col-md-4'>
+                    <div className='col-md-6'>
                         <div className='tile'>
                             <h3 className='tile-title'>Thống kê giáo viên hàng năm</h3>
                             <div className='embed-responsive embed-responsive-16by9'>
@@ -257,7 +256,7 @@ class DashboardPage extends AdminPage {
                             </div>
                         </div>
                     </div>
-                    <div className='col-md-4'>
+                    <div className='col-md-6'>
                         <div className='tile'>
                             <h3 className='tile-title'>Thống kê học viên theo tháng</h3>
                             <div className='tile-body row'>
@@ -274,10 +273,11 @@ class DashboardPage extends AdminPage {
                             </div>
                         </div>
                     </div>
-                    <DashboardIcon iconBackgroundColor='#D00'  icon='fa-car' title='Xe' value={numberOfCar} link='/user/car' readOnly={permission.settings} />
-                    <DashboardIcon iconBackgroundColor='#8A0'  icon='fa-wrench' title='Xe đang sửa chữa' value={numberOfRepairCar} link='/user/car/repair' readOnly={permission.settings} />
-                    <DashboardIcon iconBackgroundColor='#CC0'  icon='fa-road' title='Xe đã đăng ký tập lái' value={numberOfPracticeCar} link='/user/car/practice' readOnly={permission.settings} />
-                    <DashboardIcon iconBackgroundColor='#9ced65'  icon='fa-briefcase' title='Xe đang đi khóa' value={numberOfCourseCar} link='/user/car/manager' readOnly={permission.settings} />
+                    <div className='col-md-6'></div>
+                    <DashboardIcon iconBackgroundColor='#D00' icon='fa-car' title='Xe' value={numberOfCar} link='/user/car' readOnly={permission.settings} />
+                    <DashboardIcon iconBackgroundColor='#8A0' icon='fa-wrench' title='Xe đang sửa chữa' value={numberOfRepairCar} link='/user/car/repair' readOnly={permission.settings} />
+                    <DashboardIcon iconBackgroundColor='#CC0' icon='fa-road' title='Xe đã đăng ký tập lái' value={numberOfPracticeCar} link='/user/car/practice' readOnly={permission.settings} />
+                    <DashboardIcon iconBackgroundColor='#9ced65' icon='fa-briefcase' title='Xe đang đi khóa' value={numberOfCourseCar} link='/user/car/manager' readOnly={permission.settings} />
                     <DashboardIcon iconBackgroundColor='coral' icon='fa-user-secret' title='Giáo viên' value={numberOfLecturer} link='/user/manage-lecturer' readOnly={permission.settings} />
                     <DashboardIcon iconBackgroundColor='#900' icon='fa-address-card-o' title='Giáo viên đi khóa' value={numberOfLecturer} link='/user/manage-lecturer' readOnly={permission.settings} />
                     <DashboardIcon iconBackgroundColor='#64b5f6' icon='fa-calendar' title='Lịch dạy' link='/user/course' readOnly={permission.settings} />

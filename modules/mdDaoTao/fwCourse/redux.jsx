@@ -405,7 +405,8 @@ export const ajaxSelectCourseByCourseType = (courseType) => ({
     url: '/api/course/page/1/20' + (courseType ? `?courseType=${courseType}` : ''),
     data: {},
     processResults: response => {
-        const results = [{id: 0, text:'Tất cả khóa học'}];
+        const results = [{ id: 0, text: 'Tất cả khóa học' }];
+        console.log(courseType);
         response && response.page && response.page.list && response.page.list.forEach(course => results.push({ id: course._id, text: course.name + (course.courseType ? ` (${course.courseType.title})` : '') }));
         return ({ results });
     },
