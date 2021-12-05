@@ -50,14 +50,23 @@ class NotificationModal extends AdminModal {
     onShow = (item) => {
         const { _id, title, content, abstract, ngayDuKienThiTotNghiep } = this.props.data || { _id: '', title: '', content: '', abstract: '', ngayDuKienThiTotNghiep: '' };
         const thoiGianThiTotNghiepDuKien = T.dateToText(item && item.course && item.course.thoiGianThiTotNghiepDuKien, 'dd/mm/yyyy');
-        let newAbstract = abstract.replaceAll('{ho_ten}', item.lastname + ' ' + item.firstname)
+        let newAbstract = '',
+        newContent = '';
+        if(item && item.list){
+            newAbstract = abstract.replaceAll('{ngay_thi_tot_nghiep}', thoiGianThiTotNghiepDuKien)
+            .replaceAll('{khoa}', item.course && item.course.name);
+            newContent = content.replaceAll('{ngay_thi_tot_nghiep}', thoiGianThiTotNghiepDuKien )
+            .replaceAll('{khoa}', item.course && item.course.name);
+        } else {
+            newAbstract = abstract.replaceAll('{ho_ten}', item.lastname + ' ' + item.firstname)
             .replaceAll('{ngay_thi_tot_nghiep}', item.ngayDuKienThiTotNghiep ? `${T.dateToText(item.ngayDuKienThiTotNghiep, 'dd/mm/yyyy')}` : thoiGianThiTotNghiepDuKien)
             .replaceAll('{khoa}', item.course && item.course.name)
             .replaceAll('{cmnd}', item.identityCard);
-        let newContent = content.replaceAll('{ho_ten}', item.lastname + ' ' + item.firstname)
+            newContent = content.replaceAll('{ho_ten}', item.lastname + ' ' + item.firstname)
             .replaceAll('{ngay_thi_tot_nghiep}', item.ngayDuKienThiTotNghiep ? `${T.dateToText(item.ngayDuKienThiTotNghiep, 'dd/mm/yyyy')}` : thoiGianThiTotNghiepDuKien)
             .replaceAll('{khoa}', item.course && item.course.name)
-            .replaceAll('{cmnd}', item.identityCard);
+            .replaceAll('{cmnd}', item.identityCard);  
+        }
         this.itemTitle.value(title);
         this.itemNgayDuKien.value(ngayDuKienThiTotNghiep);
         this.itemAbstract.value(newAbstract);
@@ -66,31 +75,69 @@ class NotificationModal extends AdminModal {
     }
 
     onSend = () => {
-        const user = this.state.item && this.state.item.user;
-        const data = {
-            title: this.itemTitle.value(),
-            abstract: this.itemAbstract.value(),
-            content: this.itemContent.html(),
-            type: '2',
-            user: user._id,
-            sentDate: new Date(),
-        };
-        this.props.create(data, () => {
-            T.notify('Gửi thông báo thành công!', 'success');
-            this.hide();
-        });
+        const list = this.state.item && this.state.item.list;
+        if(list) {
+            const handleSendNotification = (index = 0) => {
+                if (index == list.length) {
+                    T.notify('Gửi thông báo thành công!', 'success');
+                    this.hide();
+                } else {
+                    const user = list[index],
+                    abstract = this.itemAbstract.value(),
+                    content = this.itemContent.html();
+                    let newAbstract = abstract.replaceAll('{ho_ten}', user.lastname + ' ' + user.firstname).replaceAll('{cmnd}', user.identityCard),
+                    newContent =  content.replaceAll('{ho_ten}', user.lastname + ' ' + user.firstname).replaceAll('{cmnd}', user.identityCard); 
+                    const data = {
+                        title: this.itemTitle.value(),
+                        abstract: newAbstract,
+                        content: newContent,
+                        type: '2',
+                        user: user.user && user.user._id,
+                        sentDate: new Date(),
+                    };
+                    this.props.create(data, () => {
+                        handleSendNotification(index + 1);
+                    });
+                }
+            };
+            handleSendNotification();
+        } else {
+            const user = this.state.item && this.state.item.user;
+            const data = {
+                title: this.itemTitle.value(),
+                abstract: this.itemAbstract.value(),
+                content: this.itemContent.html(),
+                type: '2',
+                user: user._id,
+                sentDate: new Date(),
+            };
+            this.props.create(data, () => {
+                T.notify('Gửi thông báo thành công!', 'success');
+                this.hide();
+            });
+        }
+        
     }
 
     changeDate = (date) => {
-        let { content, abstract, item } = this.state;
-        let newAbstract = abstract.replaceAll('{ho_ten}', item.lastname + ' ' + item.firstname)
+        let { content, abstract, item } = this.state,
+        newAbstract ='',
+        newContent='';
+        if(item && item.list){
+            newAbstract = abstract.replaceAll('{ngay_thi_tot_nghiep}', date)
+            .replaceAll('{khoa}', item.course && item.course.name);
+            newContent = content.replaceAll('{ngay_thi_tot_nghiep}', date )
+            .replaceAll('{khoa}', item.course && item.course.name);
+        } else {
+            newAbstract = abstract.replaceAll('{ho_ten}', item.lastname + ' ' + item.firstname)
             .replaceAll('{ngay_thi_tot_nghiep}', date)
             .replaceAll('{khoa}', item.course && item.course.name)
             .replaceAll('{cmnd}', item.identityCard);
-        let newContent = content.replaceAll('{ho_ten}', item.lastname + ' ' + item.firstname)
+            newContent = content.replaceAll('{ho_ten}', item.lastname + ' ' + item.firstname)
             .replaceAll('{ngay_thi_tot_nghiep}', date)
             .replaceAll('{khoa}', item.course && item.course.name)
             .replaceAll('{cmnd}', item.identityCard);
+            }
         this.itemAbstract.value(newAbstract);
         this.itemContent.html(newContent);
     }
@@ -98,7 +145,7 @@ class NotificationModal extends AdminModal {
 
 
     render = () => this.renderModal({
-        title: 'Thông báo',
+        title: 'Cấu hình thông báo ' + ((this.state.item && this.state.item.list) ? 'toàn khóa' : 'học viên'),
         size: 'large',
         dataBackdrop: 'static',
         body: <>
@@ -171,7 +218,16 @@ class FailGraduationPage extends AdminPage {
 
     sendNotification = (e, item) => e.preventDefault() || this.notiModal.show(item);
 
-    sendNotificationCourse = (e, course) => e.preventDefault() || console.log(course);
+    sendNotificationCourse = (e) => {
+        e.preventDefault();
+        const list  = this.props.student && this.props.student.page && this.props.student.page.list;
+        if(list && list.length){
+            const course = list[0] && list[0].course;
+            this.notiModal.show({list, course});
+        } else{
+            T.notify('Danh sách học viên trống!', 'danger');
+        }
+    }
 
     render() {
         const permission = this.getUserPermission('student', ['read', 'write']);
