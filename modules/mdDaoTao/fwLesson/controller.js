@@ -237,7 +237,6 @@ module.exports = (app) => {
                 res.send({ error });
             } else {
                 const data = { studentId: student._id, subjectId, lessonId, totalSeconds };
-                console.log(data);
                 app.model.student.updateLearningProgress(data, (error, item) => {
                     res.send({ error, item });
                 });
