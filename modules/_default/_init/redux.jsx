@@ -71,6 +71,20 @@ export function updateStatisticCar(done) {
     };
 }
 
+export function updateStatisticTeacher(done) {
+    return dispatch => {
+        const url = '/api/statistic/dashboard/teacher';
+        T.get(url, data => {
+            data && dispatch({ type: SystemUpdateState, state: data });
+            done && done(data);
+        }, error => {
+            console.error(error);
+            T.notify('Lấy thông tin thống kê hệ thống lỗi!', 'danger');
+            done && done();
+        });
+    };
+}
+
 export function getStatisticStudent(dateStart, dateEnd,done) {
     return dispatch => {
         const url = '/api/statistic/dashboard/student';

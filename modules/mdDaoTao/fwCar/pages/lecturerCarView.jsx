@@ -7,7 +7,7 @@ import { AdminPage, AdminModal, TableCell, renderTable, FormTextBox, FormCheckbo
 import { RegisterCalendarStates, RegisterCalendarStatesMapper } from 'modules/mdDaoTao/fwRegisterCalendar/index';
 
 class TimeTableCarModal extends AdminModal {
-    state = {listTimeTable: null};
+    state = { listTimeTable: null };
 
     componentDidMount() {
         this.props.getCarOfLecturer({ user: this.props.lecturerId }, car => {
@@ -18,7 +18,7 @@ class TimeTableCarModal extends AdminModal {
     }
 
     onShow = (item) => {
-        function formatDayOrMonth(item){
+        function formatDayOrMonth(item) {
             return ('0' + item).slice(-2);
         }
 
@@ -45,7 +45,7 @@ class TimeTableCarModal extends AdminModal {
 
         this.setState({ loading: false, _id, student, dateNumber, date, startHour, endHour });
         date ? this.props.getTimeTableCar({ carId: car._id, date: formatDate(date), official: this.props.official }, data => {
-            if (data.items && data.items.length){
+            if (data.items && data.items.length) {
                 this.setState({ listTimeTable: data.items });
             } else {
                 this.setState({ listTimeTable: null });
@@ -75,8 +75,8 @@ class TimeTableCarModal extends AdminModal {
                 <tr key={index} >
                     <TableCell type='number' content={index + 1} />
                     <TableCell type='text' content={item.student ? item.student.lastname + ' ' + item.student.firstname : ''} style={{ whiteSpace: 'nowrap' }} />
-                    <TableCell type='text' content={item.student ? item.student.identityCard : ''}  />
-                    <TableCell type='text' content={ item.date ? T.dateToText(item.date, 'dd/mm/yyyy') : ''} />
+                    <TableCell type='text' content={item.student ? item.student.identityCard : ''} />
+                    <TableCell type='text' content={item.date ? T.dateToText(item.date, 'dd/mm/yyyy') : ''} />
                     <TableCell type='number' style={{ textAlign: 'center' }} content={item.numOfHours ? `${item.startHour}-${item.startHour + item.numOfHours}` : `${item.startHour}`} />
                     <TableCell type='number' style={{ textAlign: 'center' }} content={item.numOfHours} />
                 </tr>
@@ -95,22 +95,22 @@ class TimeTableCarModal extends AdminModal {
                     <FormDatePicker className='col-12 col-md-4' ref={e => this.itemDate = e} label='Ngày học' onChange={this.onSelectDate} readOnly={true} type='date-mask' required />
                     <FormTextBox className='col-6 col-md-4' ref={e => this.itemStartHour = e} label='Giờ bắt đầu' type='number' min='0' max='23' onChange={this.onChangeHour} readOnly={true} required />
                     <FormTextBox className='col-6 col-md-4' ref={e => this.itemNumOfHours = e} label='Số giờ học' type='number' min='1' max='23' onChange={this.onChangeHour} readOnly={true} required />
-                    
+
                     <p className='col-md-6'>Khóa học: <b>{student && student.course ? student.course.name : ''}</b>. Hạng LX: <b>{student && student.courseType ? student.courseType.title : ''}</b></p>
                     <p className='col-md-6'> {dateNumber == null ? '' :
                         (dateNumber == -1 ? <span className='text-danger'>Trùng thời khóa biểu!</span> : <>Buổi học thứ: <span className='text-primary'>{dateNumber}</span>.</>)}
                     </p>
-                    {listTimeTable && listTimeTable.length && date != null ? 
-                    <div className='col-md-12'>
-                        <p>
-                            Lịch dạy ngày <span className='text-success'>{new Date(date).getDayText()} {new Date(date).getDateText()}</span><span> của cố vấn <b>{this.props.lecturerName ? this.props.lecturerName : ''}</b></span>
-                        </p>
-                        {table}
-                    </div> : ''}
+                    {listTimeTable && listTimeTable.length && date != null ?
+                        <div className='col-md-12'>
+                            <p>
+                                Lịch dạy ngày <span className='text-success'>{new Date(date).getDayText()} {new Date(date).getDateText()}</span><span> của cố vấn <b>{this.props.lecturerName ? this.props.lecturerName : ''}</b></span>
+                            </p>
+                            {table}
+                        </div> : ''}
 
                     <FormTextBox ref={e => this.itemCar = e} label='Xe học' className='col-md-4' style={{ textTransform: 'uppercase' }} readOnly={true} />
                     <FormCheckbox ref={e => this.itemTruant = e} label='Học viên vắng học' className='col-md-4' readOnly={true} />
-                    <FormSelect className='col-md-4' ref={e => this.itemState = e} label='Trạng thái' data={RegisterCalendarStates} readOnly={true} /> 
+                    <FormSelect className='col-md-4' ref={e => this.itemState = e} label='Trạng thái' data={RegisterCalendarStates} readOnly={true} />
 
                     <FormRichTextBox ref={e => this.itemContent = e} label='Nội dung học' className='col-lg-6' readOnly={true} />
                     <FormRichTextBox ref={e => this.itemNote = e} label='Ghi chú' className='col-lg-6' readOnly={true} />
@@ -136,7 +136,7 @@ class LecturerCarView extends AdminPage {
 
         const _this = this;
         T.ready('/user/car', () => {
-          $(this.calendar).fullCalendar({
+            $(this.calendar).fullCalendar({
                 timeZone: 'UTC', timeFormat: 'DD-HH:mm', dayHeaderFormat: 'dd/mm',
                 // weekNumbers: true,
                 selectable: true, eventLimit: false,
@@ -144,10 +144,10 @@ class LecturerCarView extends AdminPage {
                 weekNumberCalculation: 'ISO',
                 fixedWeekCount: false, displayEventEnd: true,
                 showNonCurrentDates: false,
-                monthNames: ['Tháng Một','Tháng Hai','Tháng Ba','Tháng Bốn','Tháng Năm','Tháng Sáu','Tháng Bảy','Tháng Tám','Tháng Chín','Tháng Mười','Tháng Mười Một','Tháng Mười Hai'],
-                monthNamesShort: ['Tháng 1','Tháng 2','Tháng 3','Tháng 4','Tháng 5','Tháng 6','Tháng 7','Tháng 8','Tháng 9','Tháng 10','Tháng 11','Tháng 12'],
-                dayNames: ['Thứ Hai','Thứ Ba','Thứ Tư','Thứ Năm','Thứ Sáu','Thứ Bảy','Chủ Nhật'],
-                dayNamesShort: ['Thứ 2','Thứ 3','Thứ 4','Thứ 5','Thứ 6','Thứ 7','CN'],
+                monthNames: ['Tháng Một', 'Tháng Hai', 'Tháng Ba', 'Tháng Bốn', 'Tháng Năm', 'Tháng Sáu', 'Tháng Bảy', 'Tháng Tám', 'Tháng Chín', 'Tháng Mười', 'Tháng Mười Một', 'Tháng Mười Hai'],
+                monthNamesShort: ['Tháng 1', 'Tháng 2', 'Tháng 3', 'Tháng 4', 'Tháng 5', 'Tháng 6', 'Tháng 7', 'Tháng 8', 'Tháng 9', 'Tháng 10', 'Tháng 11', 'Tháng 12'],
+                dayNames: ['Thứ Hai', 'Thứ Ba', 'Thứ Tư', 'Thứ Năm', 'Thứ Sáu', 'Thứ Bảy', 'Chủ Nhật'],
+                dayNamesShort: ['Thứ 2', 'Thứ 3', 'Thứ 4', 'Thứ 5', 'Thứ 6', 'Thứ 7', 'CN'],
                 header: {
                     left: 'prev,next',
                     center: 'title',
@@ -157,56 +157,56 @@ class LecturerCarView extends AdminPage {
                     month: { timeFormat: 'H:mm' },
                     agendaWeek: { columnHeaderFormat: 'ddd DD/MM' }
                 },
-                events: function(start, end, timezone, callback) {
+                events: function (start, end, timezone, callback) {
                     _this.getData(items => {
                         callback(items.map(item => _this.getEventObject({}, item)));
                     });
-                    },
+                },
                 // select: (startDate, endDate) => {
                 //     this.onCalendarSelect(startDate.toDate(), endDate.toDate());
                 // },
-                eventClick: function(calEvent) {
+                eventClick: function (calEvent) {
                     _this.eventSelect = calEvent;
                     _this.onCalendarSelect(calEvent.start.toDate(), calEvent.end, calEvent.item);
                 },
-                aspectRatio:  isLecturer ? 3 : 2,
+                aspectRatio: isLecturer ? 3 : 2,
             });
         });
     }
 
     getEventObject = (currentEnvent = {}, newItem) => {
-        function formatTime(item){
+        function formatTime(item) {
             return ('0' + item).slice(-2);
         }
         let date = new Date(newItem.date);
         const year = date.getFullYear(),
             month = date.getMonth() + 1,
             day = date.getDate();
-        
+
         const newEvent = {
-        ...currentEnvent,
-        title: `${newItem.student ? newItem.student.lastname + ' ' + newItem.student.firstname : ''}`,
-        start: `${year}-${formatTime(month)}-${formatTime(day)}T${formatTime(newItem.startHour)}:00:00`,
-        end: `${year}-${formatTime(month)}-${formatTime(day)}T${formatTime(newItem.startHour + newItem.numOfHours)}:00:00`,
-        item: newItem,
-        color: RegisterCalendarStatesMapper[newItem.state] && RegisterCalendarStatesMapper[newItem.state].color,
-    };
+            ...currentEnvent,
+            title: `${newItem.student ? newItem.student.lastname + ' ' + newItem.student.firstname : ''}`,
+            start: `${year}-${formatTime(month)}-${formatTime(day)}T${formatTime(newItem.startHour)}:00:00`,
+            end: `${year}-${formatTime(month)}-${formatTime(day)}T${formatTime(newItem.startHour + newItem.numOfHours)}:00:00`,
+            item: newItem,
+            color: RegisterCalendarStatesMapper[newItem.state] && RegisterCalendarStatesMapper[newItem.state].color,
+        };
         return newEvent;
     }
-    
+
     getData = (done) => {
         this.props.getTimeTableCar({ carId: this.props.car && this.props.car._id, official: this.props.official }, data => {
-           done && done(data.items);
+            done && done(data.items);
         });
     }
-    
+
     onCalendarSelect = (start, end, item) => {
         const data = { start: start, end: end, data: item };
         this.modal.show(data);
     }
 
     edit = (e, item) => {
-        const data = {data: item };
+        const data = { data: item };
         e.preventDefault();
         this.modal.show(data);
     }
@@ -221,7 +221,7 @@ class LecturerCarView extends AdminPage {
         const today = T.dateToText(new Date().toISOString(), 'dd/mm/yyyy');
         const permission = this.getUserPermission('timeTable');
         let { pageNumber, pageSize, pageTotal, totalItem, list } = this.props.timeTable && this.props.timeTable.page ?
-        this.props.timeTable.page : { pageNumber: 1, pageSize: 50, pageTotal: 1, totalItem: 0, list: [] };
+            this.props.timeTable.page : { pageNumber: 1, pageSize: 50, pageTotal: 1, totalItem: 0, list: [] };
         const table = renderTable({
             getDataSource: () => list,
             renderHead: () => (
@@ -237,7 +237,7 @@ class LecturerCarView extends AdminPage {
                     <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Xe học</th>
                     <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Thao tác</th>
                 </tr>),
-            renderRow: (item, index) =>  (
+            renderRow: (item, index) => (
                 <tr key={index} style={{ backgroundColor: T.dateToText(item.date, 'dd/mm/yyyy') == today ? '#D9EDF7' : '' }} >
                     <TableCell type='number' content={(pageNumber - 1) * pageSize + index + 1} />
                     <TableCell type='link' content={<>{item.student ? item.student.lastname + ' ' + item.student.firstname : ''}<br />{item.student ? item.student.identityCard : ''}</>} style={{ whiteSpace: 'nowrap' }} onClick={e => this.edit(e, item)} />
@@ -254,17 +254,17 @@ class LecturerCarView extends AdminPage {
         });
 
         return (<>
-                <div>
-                    {this.props.list ? table : null}
-                    {this.props.calendar ? 
+            <div>
+                {this.props.list ? table : null}
+                {this.props.calendar ?
                     <div ref={e => this.calendar = e}></div>
-                    : null} 
-                </div>
-                <TimeTableCarModal ref={e => this.modal = e} readOnly={!permission.write} filterOn={this.props.filterOn} calendar={this.props.calendar} lecturerName={this.props.lecturerName}
-                    create={this.props.createTimeTableByAdmin} update={this.props.updateTimeTableByAdmin} delete={this.deleteCalendar} getDateNumber={this.props.getTimeTableDateNumber} getPage={this.props.getTimeTableCarPage} getTimeTableCar={this.props.getTimeTableCar} onSave={this.onModalFormSave} getCarOfLecturer={this.props.getCarOfLecturer}  /> 
-                 <Pagination name='pageTimeTableCar' pageNumber={pageNumber} pageSize={pageSize} pageTotal={pageTotal} totalItem={totalItem} style={{ left: 320 }}
-                        getPage={this.getPage} />
-            </>
+                    : null}
+            </div>
+            <TimeTableCarModal ref={e => this.modal = e} readOnly={!permission.write} filterOn={this.props.filterOn} calendar={this.props.calendar} lecturerName={this.props.lecturerName}
+                create={this.props.createTimeTableByAdmin} update={this.props.updateTimeTableByAdmin} delete={this.deleteCalendar} getDateNumber={this.props.getTimeTableDateNumber} getPage={this.props.getTimeTableCarPage} getTimeTableCar={this.props.getTimeTableCar} onSave={this.onModalFormSave} getCarOfLecturer={this.props.getCarOfLecturer} />
+            <Pagination name='pageTimeTableCar' pageNumber={pageNumber} pageSize={pageSize} pageTotal={pageTotal} totalItem={totalItem} style={{ left: 320 }}
+                getPage={this.getPage} />
+        </>
         );
     }
 }

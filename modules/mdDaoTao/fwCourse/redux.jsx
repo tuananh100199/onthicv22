@@ -399,3 +399,17 @@ export const ajaxSelectCourse = {
     processResults: response => ({ results: response && response.page && response.page.list ? response.page.list.map(course => ({ id: course._id, text: course.name + (course.courseType ? ` (${course.courseType.title})` : '') })) : [] }),
     fetchOne: (_id, done) => fetchCourse(_id, ({ item }) => done && done({ id: item._id, text: item.name + (item.courseType ? ` (${item.courseType.title})` : '') }))
 };
+
+export const ajaxSelectCourseByCourseType = (courseType) => ({
+    ajax: false,
+    url: '/api/course/page/1/20' + (courseType ? `?courseType=${courseType}` : ''),
+    data: {},
+    processResults: response => {
+        const results = [{ id: 0, text: 'Tất cả khóa học' }];
+        console.log(courseType);
+        response && response.page && response.page.list && response.page.list.forEach(course => results.push({ id: course._id, text: course.name + (course.courseType ? ` (${course.courseType.title})` : '') }));
+        return ({ results });
+    },
+    fetchOne: (_id, done) => fetchCourse(_id, ({ item }) => done && done({ id: item._id, text: item.name + (item.courseType ? ` (${item.courseType.title})` : '') }))
+});
+

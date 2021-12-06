@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { getCarPage, createCar, updateCar, deleteCar,liquidateCar, exportInfoCar, ajaxSelectAvaiableLecturer } from '../redux';
+import { getCarPage, createCar, updateCar, deleteCar, liquidateCar, exportInfoCar, ajaxSelectAvaiableLecturer } from '../redux';
 import { getAllLecturer } from 'modules/_default/fwUser/redux';
 import { getCategoryAll } from 'modules/_default/fwCategory/redux';
 import { ajaxSelectCourseType } from 'modules/mdDaoTao/fwCourseType/redux';
@@ -15,7 +15,7 @@ const dataFilterType = [
     { id: 2, text: 'Xe đang sửa chữa', condition: { status: 'dangSuaChua' } },
     { id: 3, text: 'Xe chờ thanh lý', condition: { status: 'choThanhLy' } },
     { id: 4, text: 'Xe đã thanh lý', condition: { status: 'daThanhLy' } },
-    { id: 5, text: 'Xe đi khóa', condition: { currentCourseClose: true} },
+    { id: 5, text: 'Xe đi khóa', condition: { currentCourseClose: true } },
     { id: 6, text: 'Xe đã có giáo viên', condition: { user: { $exists: true } } },
     { id: 7, text: 'Xe đang trống giáo viên', condition: { user: { $exists: false } } },
 ];
@@ -27,7 +27,7 @@ class CarModal extends AdminModal {
     }
 
     onShow = (item) => {
-        const { _id, licensePlates, courseType, user, ngayHetHanDangKiem, ngayHetHanTapLai, ngayDangKy,  brand, status, division, isPersonalCar } = item || { _id: null, licensePlates: '', ngayHetHanDangKiem: '', ngayHetHanTapLai: '', ngayDangKy: '', ngayThanhLy: '', brand: {} };
+        const { _id, licensePlates, courseType, user, ngayHetHanDangKiem, ngayHetHanTapLai, ngayDangKy, brand, status, division, isPersonalCar } = item || { _id: null, licensePlates: '', ngayHetHanDangKiem: '', ngayHetHanTapLai: '', ngayDangKy: '', ngayThanhLy: '', brand: {} };
         this.itemDivision.value(division ? { id: division._id, text: division.title } : null);
         this.itemCourseType.value(courseType ? { id: courseType._id, text: courseType.title } : null);
         this.itemLicensePlates.value(licensePlates);
@@ -37,7 +37,7 @@ class CarModal extends AdminModal {
         this.itemNgayHetHanTapLai.value(ngayHetHanTapLai);
         this.itemNgayDangKy.value(ngayDangKy);
         this.itemStatus.value(status ? status : 'dangSuDung');
-        this.setState({ _id ,user }, () => this.itemUser.value(user ? { id: user._id, text: user.lastname + ' ' + user.firstname } : { id: 0, text: 'Trống'}));
+        this.setState({ _id, user }, () => this.itemUser.value(user ? { id: user._id, text: user.lastname + ' ' + user.firstname } : { id: 0, text: 'Trống' }));
     }
 
     onSubmit = () => {
@@ -92,7 +92,7 @@ class CarModal extends AdminModal {
                     <FormSelect className='col-md-3' ref={e => this.itemCourseType = e} label='Hạng đào tạo' data={ajaxSelectCourseType} readOnly={readOnly} />
                     <FormSelect className='col-md-5' ref={e => this.itemDivision = e} label='Cơ sở đào tạo' data={ajaxSelectDivision} readOnly={readOnly} />
                     <FormSelect className='col-md-4' ref={e => this.itemUser = e} label='Quản lý phụ trách xe' data={ajaxSelectAvaiableLecturer(this.state.user)} readOnly={readOnly} />
-                    
+
                 </div >
         });
     }
@@ -125,7 +125,7 @@ class CarPage extends AdminPage {
     }
 
     liquidate = (e, item) => e.preventDefault() || T.confirm('Thanh lý xe', 'Bạn có chắc muốn thanh lý xe này ?', true, isConfirm =>
-    isConfirm && this.props.liquidateCar(item));
+        isConfirm && this.props.liquidateCar(item));
 
     // handleFilterByTime = () => {
     //     const { searchText, filterType, user } = this.state.condition;
@@ -232,5 +232,5 @@ class CarPage extends AdminPage {
 }
 
 const mapStateToProps = state => ({ system: state.system, car: state.trainning.car });
-const mapActionsToProps = { getCarPage, deleteCar, createCar, updateCar, getAllLecturer, getCategoryAll,liquidateCar };
+const mapActionsToProps = { getCarPage, deleteCar, createCar, updateCar, getAllLecturer, getCategoryAll, liquidateCar };
 export default connect(mapStateToProps, mapActionsToProps)(CarPage);

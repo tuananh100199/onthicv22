@@ -111,7 +111,7 @@ class CarRegistrationPage extends AdminPage {
                                     <a href='#' className='text-secondary d-inline' onClick={e => e.preventDefault() || this.modal.show(item)}>
                                         <div className='pl-2'>
                                             <span style={{ fontSize: '1rem' }}>
-                                                Ngày đăng kiểm: {T.dateToText(item.ngayDangKiem, 'dd/mm/yyyy')} 
+                                                Ngày đăng kiểm: {T.dateToText(item.ngayDangKiem, 'dd/mm/yyyy')}
                                                 - Chi phí: {T.numberDisplay(item.fee) + ' đồng'}
                                             </span>
                                         </div>

@@ -13,7 +13,7 @@ class CarFuelModal extends AdminModal {
     }
 
     onShow = (item) => {
-        const { date, fee, quantity } = item || { _id: null, licensePlates: '', fee: '',quantity:'' },
+        const { date, fee, quantity } = item || { _id: null, licensePlates: '', fee: '', quantity: '' },
             { licensePlates, _id } = this.props.data,
             fuelId = item && item._id;
         this.itemLicensePlates.value(licensePlates);
@@ -30,7 +30,7 @@ class CarFuelModal extends AdminModal {
             quantity: this.itemSoLuong.value(),
             fuelId: this.state.fuelId
         };
-        if (data.fee == '' && data.quantity=='') {
+        if (data.fee == '' && data.quantity == '') {
             T.notify('Chi phí không được trống!', 'danger');
             this.itemChiPhi.focus();
         } else {
@@ -86,14 +86,14 @@ class CarFuelPage extends AdminPage {
         const permission = this.getUserPermission('car', ['read', 'write', 'delete', 'fuel']),
             car = this.props.car && this.props.car.item,
             list = car && car.fuel && car.fuel.sort((a, b) => new Date(b.date) - new Date(a.date));
-            let total = 0;
-            if(list && list.length){
-                console.log(list);
-                for(let i=0; i<list.length;i++){
-                    console.log(list[i].quantity);
-                    total+= list[i].quantity;
-                }
+        let total = 0;
+        if (list && list.length) {
+            console.log(list);
+            for (let i = 0; i < list.length; i++) {
+                console.log(list[i].quantity);
+                total += list[i].quantity;
             }
+        }
         return this.renderPage({
             icon: 'fa fa-thermometer-empty',
             title: 'Quản lý cấp phát nhiên liệu: ' + (car && car.licensePlates),
@@ -112,7 +112,7 @@ class CarFuelPage extends AdminPage {
                                                 Ngày tiếp nhiên liệu: {T.dateToText(item.date, 'dd/mm/yyyy')}
                                             </span>
                                             {item.fee ? <span>- Chi phí: {T.numberDisplay(item.fee) + ' đồng'} &nbsp;</span> : null}
-                                            {item.quantity ? <span>- Số lượng xăng: {item.quantity +' lít' } &nbsp;</span> : null}
+                                            {item.quantity ? <span>- Số lượng xăng: {item.quantity + ' lít'} &nbsp;</span> : null}
                                         </div>
                                     </a>
                                     {permission.fuel ? <a href='#' className='notification-button text-danger ml-4' onClick={e => this.delete(e, item)}><i className='fa fa-lg fa-trash' /></a> : null}

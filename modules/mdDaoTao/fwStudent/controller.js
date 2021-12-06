@@ -13,7 +13,7 @@ module.exports = (app) => {
     };
 
     app.permission.add(
-        { name: 'student:read' }, { name: 'student:write' }, { name: 'student:delete', menu }, { name: 'student:import' },{name: 'student: fail', menu: menuFailStudent },//TODO: Thầy TÙNG
+        { name: 'student:read' }, { name: 'student:write' }, { name: 'student:delete', menu }, { name: 'student:import' }, { name: 'student: fail', menu: menuFailStudent },//TODO: Thầy TÙNG
         { name: 'pre-student:read', menu }, { name: 'pre-student:write' }, { name: 'pre-student:delete' }, { name: 'pre-student:import' },
     );
 
@@ -35,6 +35,8 @@ module.exports = (app) => {
             }
 
             if (condition.courseType) pageCondition.courseType = condition.courseType;
+            if (condition.daThiHetMon) pageCondition.diemThiHetMon = { $exists: true, $ne: [] };
+            if (condition.course) pageCondition.course = condition.course;
             if (condition.datSatHach) pageCondition.datSatHach = condition.datSatHach;
             if (condition.totNghiep) pageCondition.totNghiep = condition.totNghiep;
             if (condition.searchText) {
@@ -285,16 +287,16 @@ module.exports = (app) => {
                             handleCreateStudent(index + 1);
                         } else { // pre chưa là user
                             // if (!error && user) {
-                                // app.model.setting.get('email', 'emailPassword', 'emailCreateMemberByAdminTitle', 'emailCreateMemberByAdminText', 'emailCreateMemberByAdminHtml', result => {
-                                //     const url = `${app.isDebug || app.rootUrl}/active-user/${user._id}`,
-                                //         fillParams = (student) => student.replaceAll('{name}', `${user.lastname} ${user.firstname}`)
-                                //             .replaceAll('{firstname}', user.firstname).replaceAll('{lastname}', user.lastname)
-                                //             .replaceAll('{email}', user.email).replaceAll('{password}', dataPassword).replaceAll('{url}', url),
-                                //         mailTitle = result.emailCreateMemberByAdminTitle,
-                                //         mailText = fillParams(result.emailCreateMemberByAdminText),
-                                //         mailHtml = fillParams(result.emailCreateMemberByAdminHtml);
-                                //     app.email.sendEmail(result.email, result.emailPassword, user.email, app.email.cc, mailTitle, mailText, mailHtml, null);
-                                // });
+                            // app.model.setting.get('email', 'emailPassword', 'emailCreateMemberByAdminTitle', 'emailCreateMemberByAdminText', 'emailCreateMemberByAdminHtml', result => {
+                            //     const url = `${app.isDebug || app.rootUrl}/active-user/${user._id}`,
+                            //         fillParams = (student) => student.replaceAll('{name}', `${user.lastname} ${user.firstname}`)
+                            //             .replaceAll('{firstname}', user.firstname).replaceAll('{lastname}', user.lastname)
+                            //             .replaceAll('{email}', user.email).replaceAll('{password}', dataPassword).replaceAll('{url}', url),
+                            //         mailTitle = result.emailCreateMemberByAdminTitle,
+                            //         mailText = fillParams(result.emailCreateMemberByAdminText),
+                            //         mailHtml = fillParams(result.emailCreateMemberByAdminHtml);
+                            //     app.email.sendEmail(result.email, result.emailPassword, user.email, app.email.cc, mailTitle, mailText, mailHtml, null);
+                            // });
                             // }
                             student.user = user._id;   // assign id of user to user field of prestudent
                             student.courseType = req.body.courseType;
