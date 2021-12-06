@@ -29,7 +29,7 @@ class CertificateModal extends AdminModal {
     render = () => {
         const readOnly = this.props.readOnly;
         return this.renderModal({
-            title: 'Chứng chỉ hoàn thành khóa học',
+            title: 'Chứng chỉ hoàn thành khóa học, giấy phép lái xe',
             size: 'large',
             body:
                 <>

@@ -57,7 +57,7 @@ module.exports = app => {
         },
 
         // changes = { $set, $unset, $push, $pull }
-        update: (_id, changes, done) => model.findOneAndUpdate({ _id }, changes).populate('student').exec((error, item) => {
+        update: (_id, changes, done) => model.findOneAndUpdate({ _id: _id }, changes).populate('student').exec((error, item) => {
             if (error || item == null) {
                 done('Gặp lỗi khi cập nhật thời khóa biểu!');
             } else {

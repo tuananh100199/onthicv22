@@ -109,13 +109,13 @@ module.exports = app => {
         addLichSuDangKiem: (_id, data, done) => {
             model.findOneAndUpdate(_id, { $push: { lichSuDangKiem: data } }, { new: true }).exec(done);
         },
-        addCalendarHistory: (_id, data, done) => {
-            model.findOneAndUpdate(_id, { $push: { calendarHistory: data } }, { new: true }).exec(done);
+        addCalendarHistory: (condition, data, done = () => {}) => {
+            model.findOneAndUpdate(condition, { $push: { calendarHistory: data } }, { new: true }).exec(done);
         },
         updateCalendarHistory: (_id, done) => {
             model.findById(_id).exec((error, item) => {
-                if (item.calendarHistory.at(-1)) {
-                    model.findOneAndUpdate({ _id, 'calendarHistory._id': item.calendarHistory.at(-1)._id }, { '$set': {
+                if (item.calendarHistory[item.calendarHistory.length - 1]) {
+                    model.findOneAndUpdate({ _id, 'calendarHistory._id': item.calendarHistory[item.calendarHistory.length - 1]._id }, { '$set': {
                         'calendarHistory.$.thoiGianKetThuc': new Date(),
                     }}, { new: true }).exec(done);
                 }
