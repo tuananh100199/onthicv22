@@ -43,7 +43,7 @@ module.exports = (app) => {
                         if (error) {
                             res.send({ error });
                         } else {
-                            if (student.tienDoHocTap && student.tienDoHocTap[subjectId] && student.tienDoHocTap[subjectId][_id]) {
+                            if (student.tienDoHocTap && student.tienDoHocTap[subjectId] && student.tienDoHocTap[subjectId][_id] && student.tienDoHocTap[subjectId][_id].answers) {
                                 const listIdQuestion = Object.keys(student.tienDoHocTap[subjectId][_id].answers);
                                 const newQuestion = item.questions.filter(question => listIdQuestion.indexOf(question._id.toString()) != -1);
                                 item.questions = newQuestion;
