@@ -161,7 +161,12 @@ module.exports = app => {
                         }
                     }
                 }
-                res.send({ error, result: { score, trueAnswer, answers, importanceScore } });
+                app.model.courseType.get(test.courseType, (error, item) => {
+                    if (error || !item) {
+                        error = 'Không tìm thấy loại khóa học của bộ đề!';
+                    }
+                    res.send({ error, result: { score, trueAnswer, answers, importanceScore, pass: score < Number(item.soLuongCauDat) ? false : true } });
+                });
             }
         });
     });

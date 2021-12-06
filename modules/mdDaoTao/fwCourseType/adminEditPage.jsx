@@ -108,6 +108,8 @@ class CourseTypeEditPage extends AdminPage {
                         this.itemPracticeNumOfMonths.value(item.practiceNumOfMonths);
                         this.itemPracticeNumOfHours.value(item.practiceNumOfHours);
                         this.itemPracticeNumOfReviewHours.value(item.practiceNumOfReviewHours);
+                        this.itemSoLuongCauHoiThi.value(item.soLuongCauHoiThi);
+                        this.itemSoLuongCauDat.value(item.soLuongCauDat);
                         this.itemImage.setData('course-type:' + item._id);
 
                         this.itemTitle.focus();
@@ -135,6 +137,8 @@ class CourseTypeEditPage extends AdminPage {
             practiceNumOfMonths: this.itemPracticeNumOfMonths.value(),
             practiceNumOfHours: this.itemPracticeNumOfHours.value(),
             practiceNumOfReviewHours: this.itemPracticeNumOfReviewHours.value(),
+            soLuongCauHoiThi: this.itemSoLuongCauHoiThi.value(),
+            soLuongCauDat: this.itemSoLuongCauDat.value(),
             questionTypes: this.state.types.map(type => ({
                 category: type._id,
                 amount: this[type._id].value(),
@@ -262,6 +266,9 @@ class CourseTypeEditPage extends AdminPage {
                     <FormTextBox className='col-md-4' ref={e => this.itemPracticeNumOfMonths = e} label='Số tháng dạy thực hành' type='number' readOnly={readOnly} />
                     <FormTextBox className='col-md-4' ref={e => this.itemPracticeNumOfHours = e} label='Số giờ dạy thực hành' type='number' readOnly={readOnly} />
                     <FormTextBox className='col-md-4' ref={e => this.itemPracticeNumOfReviewHours = e} label='Số giờ ôn tập thực hành' type='number' readOnly={readOnly} />
+                    <FormTextBox className='col-md-6' ref={e => this.itemSoLuongCauHoiThi = e} label='Số lượng câu hỏi trong một đề thi' type='number' readOnly={readOnly} />
+                    <FormTextBox className='col-md-6' ref={e => this.itemSoLuongCauDat = e} label='Số lượng câu tối thiểu để đậu trong đề thi' type='number' readOnly={readOnly} />
+
                 </div>
 
                 <FormRichTextBox ref={e => this.itemShortDescription = e} label='Mô tả ngắn gọn' readOnly={readOnly} />
