@@ -157,22 +157,22 @@ module.exports = app => {
             $unset.user = '';
             delete changes.user;
         }
-        const handleChangeLecturer = (lecturer, carId, courseType, done) => {
-            const condition = { courseType }, lecturerCondition = {};
+        const handleChangeLecturer = (teacher, carId, courseType, done) => {
+            const condition = { courseType, teacher }, teacherCondition = {};
             condition.thoiGianKetThuc = {
                 $gte: new Date()
             };
-            app.model.course.get(condition, (error, course) => {
+            app.model.course.getTeacherCourse(condition, (error, course) => {
                 if (course) {
                     course = app.clone(course);
-                    const listStudent = course.teacherGroups && course.teacherGroups.length ? course.teacherGroups.filter(teacherGroup => teacherGroup.teacher && teacherGroup.teacher._id == lecturer) : [],
-                        studentIds = listStudent.length && listStudent[0].student.map(student => student._id);
+                    const listStudent = course.teacherGroups && course.teacherGroups.length ? course.teacherGroups.filter(teacherGroup => teacherGroup.teacher == teacher) : [],
+                        studentIds = listStudent.length && listStudent[0].student;
                     if (listStudent.length) {
-                        lecturerCondition.student = { $in: studentIds };
-                        lecturerCondition.date = {
+                        teacherCondition.student = { $in: studentIds };
+                        teacherCondition.date = {
                             $gte: new Date()
                         };
-                        app.model.timeTable.getAll(lecturerCondition, (error, list) => {
+                        app.model.timeTable.getAll(teacherCondition, (error, list) => {
                             if (list && list.length) {
                                 const timeTables = list.map(item => app.clone(item));
                                 const handleUpdateTimeTable = (index = 0) => {
