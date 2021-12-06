@@ -242,7 +242,7 @@ export class FormTextBox extends React.Component {
                     {smallText ? <p className='form-text  mb-1 '><small className='text-muted'>{smallText}</small></p> : null}
                     {listParams.length ?
                     <p className='form-text  mb-1 '>
-                        {listParams.map((param, index) => (<small className='text-muted ml-1' style={{ cursor: 'pointer' }} key={index} onClick={(e) => this.insert(e)}>{param}</small>))}
+                        {listParams.map((param, index) => (<small className='ml-1 text-primary' style={{ cursor: 'pointer' }} key={index} onClick={(e) => this.insert(e)}>{param}</small>))}
                     </p> : null}
                 </div>}
                 <input ref={e => this.input = e} style={{ ...style, display: readOnly ? 'none' : 'block' }}{...properties} />

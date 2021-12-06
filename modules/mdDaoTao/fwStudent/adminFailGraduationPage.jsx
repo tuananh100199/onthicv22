@@ -5,7 +5,7 @@ import { createNotification } from 'modules/_default/fwNotification/redux';
 import { getNotificationTemplateAll, getNotificationTemplate } from 'modules/mdTruyenThong/fwNotificationTemplate/redux';
 import { getCourseTypeAll, ajaxSelectCourseType } from 'modules/mdDaoTao/fwCourseType/redux';
 import { ajaxSelectCourseByCourseType, getCoursePage } from 'modules/mdDaoTao/fwCourse/redux';
-import { AdminPage, FormRichTextBox, FormTextBox, FormSelect, FormDatePicker, renderTable, TableCell, AdminModal, CirclePageButton, FormEditor } from 'view/component/AdminPage';
+import { AdminPage, FormRichTextBox, FormTextBox, FormSelect, renderTable, TableCell, AdminModal, CirclePageButton, FormEditor } from 'view/component/AdminPage';
 import Pagination from 'view/component/Pagination';
 
 const defaultTitleTotNghiep = 'Thông báo thời gian thi tốt nghiệp',
@@ -19,14 +19,12 @@ class StudentModal extends AdminModal {
 
     onShow = (item) => {
         this.liDoChuaTotNghiep.value(item.liDoChuaTotNghiep || '');
-        this.ngayDuKienThiTotNghiep.value(item.ngayDuKienThiTotNghiep || '');
         this.setState(item);
     }
 
     onSubmit = () => {
         const changes = {
             liDoChuaTotNghiep: this.liDoChuaTotNghiep.value().trim(),
-            ngayDuKienThiTotNghiep: this.ngayDuKienThiTotNghiep.value(),
         };
         this.props.update(this.state._id, changes, () => this.hide());
     }
@@ -35,7 +33,6 @@ class StudentModal extends AdminModal {
         title: 'Chỉnh sửa học viên chưa tốt nghiệp',
         body: (
             <div className='row'>
-                <FormDatePicker className='col-12' ref={e => this.ngayDuKienThiTotNghiep = e} label='Ngày dự kiến thi tốt nghiệp (dd/mm/yyyy)' readOnly={this.props.readOnly} type='date-mask' />
                 <FormRichTextBox className='col-12' ref={e => this.liDoChuaTotNghiep = e} label='Lí do chưa tốt nghiệp' readOnly={this.props.readOnly} />
             </div>),
     });
@@ -152,7 +149,7 @@ class NotificationModal extends AdminModal {
             <FormTextBox ref={e => this.itemTitle = e} label='Chủ đề' readOnly={this.props.readOnly} />
             <FormTextBox ref={e => this.itemNgayDuKien = e} smallText={'Ngày thi dự kiến của khóa: '} listParams={[this.state.thoiGianThiTotNghiepDuKien]} label='Ngày dự kiến thi tốt nghiệp' onChange={(e) => this.changeDate(e.target.value)} readOnly={this.props.readOnly} />
             <FormRichTextBox ref={e => this.itemAbstract = e} label='Mô tả ngắn gọn' readOnly={this.props.readOnly} />
-            <FormEditor ref={e => this.itemContent = e} uploadUrl='/user/upload?category=notification' label='Nội dung' readOnly={this.props.readOnly} />
+            <FormEditor ref={e => this.itemContent = e} smallText={'{ho_ten},{cmnd}'} uploadUrl='/user/upload?category=notification' label='Nội dung' readOnly={this.props.readOnly} />
         </>,
         buttons:
             <a className='btn btn-success' href='#' onClick={e => this.onSend(e)} style={{ color: 'white' }}>
@@ -240,7 +237,6 @@ class FailGraduationPage extends AdminPage {
                     <th style={{ width: 'auto', textAlign: 'center' }}>#</th>
                     <th style={{ width: '100%' }}>Họ và tên</th>
                     <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Khóa học</th>
-                    <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Ngày dự kiến thi tốt nghiệp</th>
                     <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Lí do chưa tốt nghiệp</th>
                     <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Thao tác</th>
                 </tr>),
@@ -249,7 +245,6 @@ class FailGraduationPage extends AdminPage {
                     <TableCell type='number' content={index + 1} />
                     <TableCell content={<>{`${item.lastname} ${item.firstname}`}<br />{item.identityCard}</>} style={{ whiteSpace: 'nowrap' }} />
                     <TableCell content={item.course && item.course.name} style={{ whiteSpace: 'nowrap' }} />
-                    <TableCell content={item.ngayDuKienThiTotNghiep ? T.dateToText(item.ngayDuKienThiTotNghiep, 'dd/mm/yyyy') : 'Chưa có'} />
                     <TableCell content={item.liDoChuaTotNghiep || 'Chưa có'} />
                     <TableCell type='buttons' content={item} permission={permission} onEdit={this.edit}>
                         {permission.write ?
