@@ -2,12 +2,16 @@ import T from 'view/js/common';
 
 // Reducer ------------------------------------------------------------------------------------------------------------
 const BankGetAll = 'Bank:GetAll';
+const BankGetItem = 'Bank:GetItem';
 const BankUpdate = 'Bank:Update';
 
 export default function bankReducer(state = null, data) {
     switch (data.type) {
         case BankGetAll:
             return Object.assign({}, state, { list: data.list });
+
+        case BankGetItem:
+            return Object.assign({}, state, { item: data.item });
 
         case BankUpdate: {
             let updatedList = Object.assign({}, state.list),
@@ -69,7 +73,7 @@ export function createBank(bank, done) {
 }
 
 export function updateBank(_id, changes, done) {
-    return dispatch => {
+    return () => {
         const url = '/api/bank';
         T.put(url, { _id, changes }, data => {
             if (data.error) {
@@ -77,9 +81,9 @@ export function updateBank(_id, changes, done) {
                 console.error(`PUT: ${url}. ${data.error}`);
             } else {
                 T.notify('Cập nhật thông tin ngân hàng thành công!', 'info');
-                dispatch(getBankAll());
+                done && done(data.item);
+                // dispatch(getBankAll());
             }
-            done && done(data.error);
         }, error => console.error(error) || T.notify('Cập nhật thông tin ngân hàng bị lỗi!', 'danger'));
     };
 }
@@ -100,7 +104,7 @@ export function deleteBank(_id) {
 }
 
 export function getBank(_id, done) {
-    return () => {
+    return (dispatch) => {
         const url = '/api/bank';
         T.get(url, { _id }, data => {
             if (data.error) {
@@ -108,7 +112,7 @@ export function getBank(_id, done) {
                 console.error(`DELETE: ${url}. ${data.error}`);
             } else {
                 done && done(data.item);
-                T.alert('Lấy thông tin ngân hàng thành công!', 'error', false, 800);
+                dispatch({ type: BankGetItem, item: data.item });
             }
         }, error => console.error(error) || T.notify('Lấy thông tin ngân hàng bị lỗi', 'danger'));
     };

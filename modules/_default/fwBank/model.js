@@ -8,10 +8,11 @@ module.exports = app => {
             active: { type: Boolean, default: false },
         }],
         active: { type: Boolean, default: false },
-        moneyLine: String,
+        moneyLine: Number,
         moneyStr: String,
-        contentLine: String,
+        contentLine: Number,
         contentStr: String,
+        contentSyntax: { type: String, default: '{cmnd} {ten_loai_khoa_hoc}' },
     });
 
     const model = app.db.model('Bank', schema);

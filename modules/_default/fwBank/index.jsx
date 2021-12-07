@@ -12,6 +12,10 @@ export default {
         {
             path: '/user/bank',
             component: Loadable({ loading: Loading, loader: () => import('./adminPage') }),
-        }
+        },
+        {
+            path: '/user/bank/:id',
+            component: Loadable({ loading: Loading, loader: () => import('./adminEditPage') }),
+        },
     ],
 };

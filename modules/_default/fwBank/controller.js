@@ -7,6 +7,7 @@ module.exports = app => {
     };
     app.permission.add({ name: 'bank:read', menu }, { name: 'bank:write' }, { name: 'bank:delete' });
     app.get('/user/bank', app.permission.check('bank:read'), app.templates.admin);
+    app.get('/user/bank/:id', app.permission.check('bank:read'), app.templates.admin);
 
     // APIs -----------------------------------------------------------------------------------------------------------------------------------------
     app.get('/api/bank/all', app.permission.check('bank:read'), (req, res) => {

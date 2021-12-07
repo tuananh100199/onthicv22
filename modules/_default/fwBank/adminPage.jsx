@@ -20,8 +20,7 @@ class BankModal extends AdminModal {
         fetch('https://api.vietqr.io/v1/banks').then(
         (response) => response.json().then(
           (jsonData) => {
-               this.setState({banks: jsonData.data && jsonData.data.map(({code,name})=>({id:code,text:code+' - '+name}))}, ()=>{
-               });
+               this.setState({banks: jsonData.data && jsonData.data.map(({code,name})=>({id:code,text:code+' - '+name}))});
           }
       )
     );}
@@ -63,8 +62,6 @@ class BankPage extends AdminPage {
         });
     }
 
-    edit = (e) => e.preventDefault() || this.bankModal.show();
-
     delete = (e, item) => e.preventDefault() || T.confirm('Xóa ngân hàng', 'Bạn có chắc bạn muốn xóa ngân hàng này?', true, isConfirm =>
         isConfirm && this.props.deleteBank(item._id, () => this.props.getBankAll()));
 
@@ -85,10 +82,10 @@ class BankPage extends AdminPage {
             renderRow: (item, index) => (
                 <tr key={index}>
                     <TableCell type='number' content={index + 1} />
-                    <TableCell type='link' content={item.code} onClick={e => this.edit(e)} style={{ whiteSpace: 'nowrap' }} />
+                    <TableCell type='link' content={item.code} url={'/user/bank/' + item._id} />
                     <TableCell content={item.name} />
-                    <TableCell type='checkbox' content={item.active} permission={permission} onChanged={active => this.props.updateBank(item._id, { active })} />
-                    <TableCell type='buttons' content={item} permission={permission} onEdit={this.edit} onDelete={this.delete}></TableCell>
+                    <TableCell type='checkbox' content={item.active} permission={permission} onChanged={active => this.props.updateBank(item._id, { active }, () => this.props.getBankAll())} />
+                    <TableCell type='buttons' content={item} permission={permission} onEdit={() => this.props.history.push('/user/bank/' + item._id)} onDelete={this.delete}></TableCell>
                 </tr>),
         });
 
@@ -101,7 +98,7 @@ class BankPage extends AdminPage {
                 <BankModal ref={e => this.bankModal = e} readOnly={!permission.write}
                     getAll={this.props.getBankAll} create={this.props.createBank}/>
             </>,
-            onCreate: permission.write ? this.edit : null,
+            onCreate: permission.write ? () => this.bankModal.show()  : null,
         });
     }
 }
