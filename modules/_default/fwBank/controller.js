@@ -23,13 +23,10 @@ module.exports = app => {
     });
 
     app.put('/api/bank', app.permission.check('bank:write'), (req, res) => {
-        let changes = {};
-        if (req.body.changes == null) {
-            changes.permission = [];
-        } else {
-            changes = req.body.changes;
+        if (req.body.changes && req.body.changes.accounts && req.body.changes.accounts == 'empty' ) {
+            req.body.changes.accounts = [];
         }
-        app.model.bank.update(req.body._id, changes, (error, item) => res.send({ error, item }));
+        app.model.bank.update(req.body._id, req.body.changes, (error, item) => res.send({ error, item }));
     });
 
     app.delete('/api/bank', app.permission.check('bank:delete'), (req, res) => {

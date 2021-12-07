@@ -4,54 +4,60 @@ import { getBank, updateBank } from './redux';
 import { AdminPage, AdminModal, FormSelect, FormTextBox, FormRichTextBox, FormCheckbox, TableCell, renderTable } from 'view/component/AdminPage';
 import { Link } from 'react-router-dom';
 
-class BankItemModal extends AdminModal {
+class AccountModal extends AdminModal {
     state = {};
-    bankDidMount() {
-        $(document).ready(() => this.onShown(() => this.itemName.focus()));
+    type = 'add';
+    index = 0;
+    componentDidMount() {
+        $(document).ready(() => this.onShown(() => this.itemNumber.focus()));
     }
 
-    onShow = (item) => {
+    onShow = ({item,index}) => {
+        if(item){ 
+            this.type = 'edit';
+            this.index = index;
+        } else {
+            this.type = 'add';
+        }
         let { number, active, holder } = Object.assign({ number: '', holder: '', active: false }, item);
         this.itemName.value(holder);
         this.itemNumber.value(number);
         this.itemActive.value(active);
-
-        // this.setState({ _id });
     }
 
     onSubmit = (e) => {
         e.preventDefault();
+        const accounts = [...this.props.accounts];
         const changes = {
-            title: this.itemName.value().trim(),
-            subtitle: this.itemSubtitle.value().trim(),
+            holder: this.itemName.value().trim(),
+            number: this.itemNumber.value().trim(),
             active: this.itemActive.value(),
         };
-
-        if (changes.title == '') {
-            T.notify('Tên ngân hàng bị trống!', 'danger');
+        if (changes.holder == '') {
+            T.notify('Người sở hữu tài khoản bị trống!', 'danger');
             this.itemName.focus();
+        } else if (changes.number == '') {
+            T.notify('Số tài khoản bị trống!', 'danger');
+            this.itemNumber.focus();
         } else {
-            if (this.state._id) {
-                this.props.update(this.state._id, changes, this.hide);
+            if(this.type == 'edit'){
+                accounts.splice(this.index, 1, changes);
             } else {
-                this.props.create(changes, this.hide);
+                accounts.push(changes);
             }
+            this.props.updateBank(this.props._id, {accounts}, (item) => {
+                this.props.getBank(item._id, this.hide);
+            });
         }
     }
 
     render = () => this.renderModal({
         title: 'Ngân hàng',
         size: 'large',
-        body: <div className='row'>
-            <div className='col-md-8'>
-                <FormTextBox ref={e => this.itemName = e} label='Tiêu đề chính' readOnly={this.props.readOnly} />
-                <FormTextBox ref={e => this.itemSubtitle = e} label='Tiêu đề phụ' readOnly={this.props.readOnly} />
-                <FormTextBox ref={e => this.itemLink = e} type='link' label='Link liên kết' readOnly={this.props.readOnly} />
-            </div>
-            <div className='col-md-4'>
+        body: <div>
+                <FormTextBox ref={e => this.itemNumber = e} label='Số tài khoản' readOnly={this.props.readOnly} />
+                <FormTextBox ref={e => this.itemName = e} label='Họ và tên người sở hữu tài khoản' readOnly={this.props.readOnly} />
                 <FormCheckbox ref={e => this.itemActive = e} label='Kích hoạt' readOnly={this.props.readOnly} />
-            </div>
-            <FormRichTextBox ref={e => this.itemDescription = e} label='Mô tả' className='col-md-12' readOnly={this.props.readOnly} />
         </div>,
     });
 }
@@ -65,8 +71,7 @@ class BankEditPage extends AdminPage {
             const route = T.routeMatcher('/user/bank/:_id'),
                 params = route.parse(window.location.pathname);
             this.props.getBank(params._id, item => {
-                // this.itemTitle.value(data.item.title);{id:code,text:item.code+' - '+item.name}
-                this.bank.value(item.code);
+                // this.bank.value(item.code);
                 this.active.value(item.active || false);
                 this.contentSyntax.value(item.contentSyntax);
                 this.moneyLine.value(item.moneyLine);
@@ -154,43 +159,48 @@ class BankEditPage extends AdminPage {
             T.notify('Ngân hàng không được trống', 'danger');
             this.bank.focus();
         } else {
-            // if (changes.roles.length == 0) changes.roles = 'empty';
             this.props.updateBank(_id, changes, (item) => {
                 this.props.getBank(item._id);
             });
         }
     }
-    // createItem = (e) => e.preventDefault() || this.modal.show({ bankId: this.state._id });
 
-    // editItem = (e, item) => e.preventDefault() || this.modal.show(item);
+    showModal = (e, {item, index}) => e.preventDefault() || this.modal.show({item,index});
 
-    // swapItem = (e, item, isMoveUp) => e.preventDefault() || this.props.swapBankItem(item._id, isMoveUp);
-
-    // deleteItem = (e, item) => e.preventDefault() || T.confirm('Xóa ngân hàng', 'Bạn có chắc bạn muốn xóa ngân hàng này?', true, isConfirm =>
-    //     isConfirm && this.props.deleteBankItem(item._id));
+    delete = (e, {index}) => e.preventDefault() || T.confirm('Xóa tài khoản ngân hàng', 'Bạn có chắc bạn muốn xóa tài khoản ngân hàng này?', true, isConfirm => {
+        if(isConfirm){
+            const accounts = this.props.bank && this.props.bank.item && this.props.bank.item.accounts || [];
+            accounts.splice(index, 1);
+            this.props.updateBank(this.state._id, { accounts: accounts.length == 0 ? 'empty' : accounts }, (item) => this.props.getBank(item._id));
+        }
+    });
 
     render() {
         const permission = this.getUserPermission('bank');
         const readOnly = !permission.write;
-        const bank = this.props.bank && this.props.bank.item || { code: ''};
+        const { _id } = this.state;
+        const bank = this.props.bank && this.props.bank.item || { code: ''}, accounts = bank && bank.accounts || [];
         const listParams = ['{cmnd}', '{ten_loai_khoa_hoc}'];
         const table = renderTable({
-            getDataSource: () => this.props.bank.bank && this.props.bank.bank.selectedItem && this.props.bank.bank.selectedItem.items,
+            getDataSource: () => accounts,
             renderHead: () => (
                 <tr>
                     <th style={{ width: 'auto' }}>#</th>
-                    <th style={{ width: '80%' }}>Tiêu đề</th>
-                    <th style={{ width: '20%', textAlign: 'center' }}>Ngân hàng</th>
+                    <th style={{ width: 'auto' }} nowrap='true'>Số tài khoản</th>
+                    <th style={{ width: '100%' }}>Họ và tên người sở hữu tài khoản</th>
                     <th style={{ width: 'auto' }} nowrap='true'>Kích hoạt</th>
                     <th style={{ width: 'auto', textAlign: 'center' }}>Thao tác</th>
                 </tr>),
             renderRow: (item, index) => (
                 <tr key={index}>
                     <TableCell type='number' content={index + 1} />
-                    <TableCell type='link' content={item.title} onClick={this.editItem} />
-                    <TableCell type='image' content={item.image || '/img/avatar.jpg'} />
-                    <TableCell type='checkbox' content={item.active} permission={permission} onChanged={active => this.props.updateBankItem(item._id, { active })} />
-                    <TableCell type='buttons' content={item} permission={permission} onSwap={this.swapItem} onEdit={this.editItem} onDelete={this.deleteItem} />
+                    <TableCell type='link' content={item.number} onClick={e => this.showModal(e, {item, index})} />
+                    <TableCell content={item.holder} />
+                    <TableCell type='checkbox' content={item.active} permission={permission} 
+                        onChanged={active => { accounts[index].active = active;
+                            this.props.updateBank(_id, { accounts }, () => this.props.getBank(_id));
+                            }} />
+                    <TableCell type='buttons' content={{item,index}} permission={permission} onEdit={this.showModal} onDelete={this.delete} />
                 </tr>),
         });
 
@@ -236,14 +246,13 @@ class BankEditPage extends AdminPage {
                         {table}
                         {permission.write &&
                             <div style={{ textAlign: 'right' }}>
-                                <button className='btn btn-success' type='button' onClick={this.createItem}>
+                                <button className='btn btn-success' type='button' onClick={(e) => this.showModal(e,{})}>
                                     <i className='fa fa-fw fa-lg fa-plus' /> Thêm
                                 </button>
                             </div>}
                     </div>
                 </div>
-
-                <BankItemModal ref={e => this.modal = e} create={this.props.createBankItem} update={this.props.updateBankItem} change={this.props.changeBankItem} readOnly={readOnly} />
+                <AccountModal ref={e => this.modal = e} updateBank={this.props.updateBank} readOnly={readOnly} _id={_id} getBank={this.props.getBank} accounts = {accounts}/>
             </>,
             backRoute: '/user/bank',
         });
