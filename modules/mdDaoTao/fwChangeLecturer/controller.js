@@ -11,7 +11,7 @@ module.exports = app => {
 
     // APIs -----------------------------------------------------------------------------------------------------------
     app.get('/api/change-lecturer/all', (req, res) => {
-        const condition = {},
+        const condition = {daNghiDay: false},
             searchText = req.query.searchText;
         if (searchText) {
             condition.title = new RegExp(searchText, 'i');

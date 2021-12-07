@@ -219,6 +219,14 @@ export const ajaxSelectUserType = (userType, queryType) => T.createAjaxAdapter(
         response.page.list.map(user => ({ id: user._id, text: `${user.lastname} ${user.firstname} ${user.identityCard ? '(' + user.identityCard + ')' : ''}` })) : [],
 );
 
+export const ajaxSelectTeacher = (userType) => T.createAjaxAdapter(
+    '/api/user/teacher/page/1/20?',
+    // params => ({ condition: params.term ? { searchText: params.term } : { userType } }),
+    params => ({ condition: { searchText: params.term, userType} }),
+    response => response && response.page && response.page.list ?
+        response.page.list.map(user => ({ id: user._id, text: `${user.lastname} ${user.firstname} ${user.identityCard ? '(' + user.identityCard + ')' : ''}` })) : [],
+);
+
 export function ajaxGetUser(_id, done) {
     const url = '/api/user/';
     T.get(url, { _id }, data => {

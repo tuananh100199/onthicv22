@@ -4,6 +4,7 @@ import { exportExamStudent, getStudentPage, updateStudent } from './redux';
 import { createNotification } from 'modules/_default/fwNotification/redux';
 import { ajaxSelectCourseType, getCourseTypeAll } from 'modules/mdDaoTao/fwCourseType/redux';
 import { getNotificationTemplateAll, getNotificationTemplate } from 'modules/mdTruyenThong/fwNotificationTemplate/redux';
+import { ajaxSelectCourseByCourseType } from 'modules/mdDaoTao/fwCourse/redux';
 import { AdminPage, FormRichTextBox, FormSelect, FormDatePicker, FormTextBox, FormEditor, renderTable, TableCell, AdminModal, CirclePageButton } from 'view/component/AdminPage';
 import Pagination from 'view/component/Pagination';
 
@@ -47,47 +48,111 @@ class NotificationModal extends AdminModal {
     }
 
     onShow = (item) => {
-        const { _id, title, content, abstract } = this.props.data || { _id: '', title: '', content: '', abstract: '' };
-        let newAbstract = abstract.replaceAll('{ho_ten}', item.lastname + ' ' + item.firstname)
-            .replaceAll('{ngay_thi_tot_nghiep}', `${T.dateToText(item.ngayDuKienThiTotNghiep, 'dd/mm/yyyy')}`)
+        const { _id, title, content, abstract, ngayDuKienThiSatHach } = this.props.data || { _id: '', title: '', content: '', abstract: '', ngayDuKienThiSatHach: '' };
+        const thoiGianThiTotNghiepDuKien = T.dateToText(item && item.course && item.course.thoiGianThiTotNghiepDuKien, 'dd/mm/yyyy');
+        let newAbstract = '',
+        newContent = '';
+        if(item && item.list){
+            newAbstract = abstract.replaceAll('{ngay_thi_sat_hach}', thoiGianThiTotNghiepDuKien)
+            .replaceAll('{khoa}', item.course && item.course.name);
+            newContent = content.replaceAll('{ngay_thi_sat_hach}', thoiGianThiTotNghiepDuKien )
+            .replaceAll('{khoa}', item.course && item.course.name);
+        } else {
+            newAbstract = abstract.replaceAll('{ho_ten}', item.lastname + ' ' + item.firstname)
+            .replaceAll('{ngay_thi_sat_hach}', item.ngayDuKienThiSatHach ? `${T.dateToText(item.ngayDuKienThiSatHach, 'dd/mm/yyyy')}` : thoiGianThiTotNghiepDuKien)
             .replaceAll('{khoa}', item.course && item.course.name)
             .replaceAll('{cmnd}', item.identityCard);
-        let newContent = content.replaceAll('{ho_ten}', item.lastname + ' ' + item.firstname)
-            .replaceAll('{ngay_thi_sat_hach}', `${T.dateToText(item.ngayDuKienThiSatHach, 'dd/mm/yyyy')}`)
+            newContent = content.replaceAll('{ho_ten}', item.lastname + ' ' + item.firstname)
+            .replaceAll('{ngay_thi_sat_hach}', item.ngayDuKienThiSatHach ? `${T.dateToText(item.ngayDuKienThiSatHach, 'dd/mm/yyyy')}` : thoiGianThiTotNghiepDuKien)
             .replaceAll('{khoa}', item.course && item.course.name)
-            .replaceAll('{cmnd}', item.identityCard);
+            .replaceAll('{cmnd}', item.identityCard);  
+        }
         this.itemTitle.value(title);
+        this.itemNgayDuKien.value(ngayDuKienThiSatHach);
         this.itemAbstract.value(newAbstract);
         this.itemContent.html(newContent);
-        this.setState({ _id, item });
+        this.setState({ _id, item, content, abstract, thoiGianThiTotNghiepDuKien });
     }
 
     onSend = () => {
-        const user = this.state.item && this.state.item.user;
-        const data = {
-            title: this.itemTitle.value(),
-            content: this.itemContent.html(),
-            abstract: this.itemAbstract.value(),
-            type: '3',
-            user: user._id,
-            sentDate: new Date(),
-        };
-        this.props.create(data, () => {
-            T.notify('Gửi thông báo thành công!', 'success');
-            this.hide();
-        });
+        const list = this.state.item && this.state.item.list;
+        if(list) {
+            const handleSendNotification = (index = 0) => {
+                if (index == list.length) {
+                    T.notify('Gửi thông báo thành công!', 'success');
+                    this.hide();
+                } else {
+                    const user = list[index],
+                    abstract = this.itemAbstract.value(),
+                    content = this.itemContent.html();
+                    let newAbstract = abstract.replaceAll('{ho_ten}', user.lastname + ' ' + user.firstname).replaceAll('{cmnd}', user.identityCard),
+                    newContent =  content.replaceAll('{ho_ten}', user.lastname + ' ' + user.firstname).replaceAll('{cmnd}', user.identityCard); 
+                    const data = {
+                        title: this.itemTitle.value(),
+                        abstract: newAbstract,
+                        content: newContent,
+                        type: '3',
+                        user: user.user && user.user._id,
+                        sentDate: new Date(),
+                    };
+                    this.props.create(data, () => {
+                        handleSendNotification(index + 1);
+                    });
+                }
+            };
+            handleSendNotification();
+        } else {
+            const user = this.state.item && this.state.item.user;
+            const data = {
+                title: this.itemTitle.value(),
+                abstract: this.itemAbstract.value(),
+                content: this.itemContent.html(),
+                type: '2',
+                user: user._id,
+                sentDate: new Date(),
+            };
+            this.props.create(data, () => {
+                T.notify('Gửi thông báo thành công!', 'success');
+                this.hide();
+            });
+        }
+        
+    }
+
+    changeDate = (date) => {
+        let { content, abstract, item } = this.state,
+        newAbstract ='',
+        newContent='';
+        if(item && item.list){
+            newAbstract = abstract.replaceAll('{ngay_thi_sat_hach}', date)
+            .replaceAll('{khoa}', item.course && item.course.name);
+            newContent = content.replaceAll('{ngay_thi_sat_hach}', date )
+            .replaceAll('{khoa}', item.course && item.course.name);
+        } else {
+            newAbstract = abstract.replaceAll('{ho_ten}', item.lastname + ' ' + item.firstname)
+            .replaceAll('{ngay_thi_sat_hach}', date)
+            .replaceAll('{khoa}', item.course && item.course.name)
+            .replaceAll('{cmnd}', item.identityCard);
+            newContent = content.replaceAll('{ho_ten}', item.lastname + ' ' + item.firstname)
+            .replaceAll('{ngay_thi_sat_hach}', date)
+            .replaceAll('{khoa}', item.course && item.course.name)
+            .replaceAll('{cmnd}', item.identityCard);
+            }
+        this.itemAbstract.value(newAbstract);
+        this.itemContent.html(newContent);
     }
 
 
 
     render = () => this.renderModal({
-        title: 'Thông báo',
+        title: 'Cấu hình thông báo ' + ((this.state.item && this.state.item.list) ? 'toàn khóa' : 'học viên'),
         size: 'large',
         dataBackdrop: 'static',
         body: <>
             <FormTextBox ref={e => this.itemTitle = e} label='Chủ đề' readOnly={this.props.readOnly} />
+            <FormTextBox ref={e => this.itemNgayDuKien = e} label='Ngày dự kiến thi sát hạch' onChange={(e) => this.changeDate(e.target.value)} readOnly={this.props.readOnly} />
             <FormRichTextBox ref={e => this.itemAbstract = e} label='Mô tả ngắn gọn' readOnly={this.props.readOnly} />
-            <FormEditor ref={e => this.itemContent = e} uploadUrl='/user/upload?category=notification' label='Nội dung' readOnly={this.props.readOnly} />
+            <FormEditor ref={e => this.itemContent = e} smallText={'{ho_ten},{cmnd}'} uploadUrl='/user/upload?category=notification' label='Nội dung' readOnly={this.props.readOnly} />
         </>,
         buttons:
             <a className='btn btn-success' href='#' onClick={e => this.onSend(e)} style={{ color: 'white' }}>
@@ -134,16 +199,19 @@ class FailStudentPage extends AdminPage {
         });
     }
 
-    onSearch = ({ pageNumber, pageSize, searchText = this.state.searchText, courseType = this.courseType.value() }, done) => {
-        this.props.getStudentPage(pageNumber, pageSize, { searchText, courseType, datSatHach: false }, () => {
+    onSearch = ({ pageNumber, pageSize, searchText = this.state.searchText, course = this.course.value() }, done) => {
+        const courseType = this.state.courseTypeId;
+        const condition = course == '0' ? { searchText, courseType, totNghiep: true, datSatHach: false } : { searchText, course, totNghiep: true, datSatHach: false };
+        this.props.getStudentPage(pageNumber, pageSize, condition, () => {
             this.setState({ searchText });
             done && done();
         });
     }
 
     onChangeCourseType = (courseType) => {
-        this.setState({ courseId: courseType });
-        this.onSearch({ courseType });
+        this.setState({ courseTypeId: courseType });
+        this.course.value({ id: 0, text: 'Tất cả khóa học' });
+        // this.onSearch({ courseType });
     }
 
     onChangeNotificationTemplate = (_id) => {
@@ -158,6 +226,17 @@ class FailStudentPage extends AdminPage {
 
     sendNotification = (e, item) => e.preventDefault() || this.notiModal.show(item);
 
+    sendNotificationCourse = (e) => {
+        e.preventDefault();
+        const list  = this.props.student && this.props.student.page && this.props.student.page.list;
+        if(list && list.length){
+            const course = list[0] && list[0].course;
+            this.notiModal.show({list, course});
+        } else{
+            T.notify('Danh sách học viên trống!', 'danger');
+        }
+    }
+
     render() {
         const permission = this.getUserPermission('student', ['read', 'write']);
         let { pageNumber, pageSize, pageTotal, pageCondition, totalItem, list } = this.props.student && this.props.student.page ?
@@ -169,7 +248,6 @@ class FailStudentPage extends AdminPage {
                     <th style={{ width: 'auto', textAlign: 'center' }}>#</th>
                     <th style={{ width: '100%' }}>Họ và tên</th>
                     <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Khóa học</th>
-                    <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Ngày dự kiến thi sát hạch</th>
                     <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Lí do chưa đạt sát hạch</th>
                     <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Thao tác</th>
                 </tr>),
@@ -178,7 +256,6 @@ class FailStudentPage extends AdminPage {
                     <TableCell type='number' content={index + 1} />
                     <TableCell content={<>{`${item.lastname} ${item.firstname}`}<br />{item.identityCard}</>} style={{ whiteSpace: 'nowrap' }} />
                     <TableCell content={item.course && item.course.name} style={{ whiteSpace: 'nowrap' }} />
-                    <TableCell content={item.ngayDuKienThiSatHach ? T.dateToText(item.ngayDuKienThiSatHach, 'dd/mm/yyyy') : 'Chưa có'} />
                     <TableCell content={item.liDoChuaDatSatHach || 'Chưa có'} />
                     <TableCell type='buttons' content={item} permission={permission} onEdit={this.edit}>
                         {permission.write && item.ngayDuKienThiSatHach ?
@@ -195,12 +272,17 @@ class FailStudentPage extends AdminPage {
             content: <>
                 <div className='tile'>
                     <div className='tile-body'>
-                        <div className='row'>
+                    <div className='row'>
                             <div className='col-auto'>
                                 <label className='col-form-label'>Loại khóa học: </label>
                             </div>
                             <FormSelect ref={e => this.courseType = e} data={ajaxSelectCourseType} placeholder='Loại khóa học'
                                 onChange={data => this.onChangeCourseType(data.id)} style={{ margin: 0, width: '200px' }} />
+                            <div className='col-auto'>
+                                <label className='col-form-label'>Khóa học: </label>
+                            </div>
+                            <FormSelect ref={e => this.course = e} data={ajaxSelectCourseByCourseType(this.state.courseTypeId)} placeholder='Khóa học'
+                                onChange={data => this.onSearch(data.id)} style={{ margin: 0, width: '200px' }} />
                         </div>
                         {this.courseType && this.courseType.value() != null ? table : null}
                     </div>
@@ -208,7 +290,7 @@ class FailStudentPage extends AdminPage {
 
                 <CirclePageButton type='custom' customIcon='fa-cloud-upload' style={{ right: 70 }} customClassName='btn-primary' onClick={() => this.props.history.push('/user/student/import-fail-pass')} />
                 <CirclePageButton type='export' onClick={() => exportExamStudent(this.state.courseId, 'HVChuaDatSatHach')} />
-
+                {this.course && (this.course.value() != '0') ? <CirclePageButton type='custom' customClassName='btn-warning' customIcon='fa-paper-plane' style={{ right: '130px' }} onClick={(e) => this.sendNotificationCourse(e, this.course.value())} /> : null}
                 <StudentModal readOnly={!permission.write} ref={e => this.modal = e} update={this.props.updateStudent} />
                 <NotificationModal readOnly={!permission.write} ref={e => this.notiModal = e} create={this.props.createNotification} data={this.state.data} />
                 <Pagination pageCondition={pageCondition} pageNumber={pageNumber} pageSize={pageSize} pageTotal={pageTotal} totalItem={totalItem} getPage={(pageNumber, pageSize) => this.onSearch({ pageNumber, pageSize })} />

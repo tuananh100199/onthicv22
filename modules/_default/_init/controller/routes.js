@@ -288,10 +288,16 @@ module.exports = (app) => {
                                 if (error) {
                                     reject(error);
                                 } else {
-                                    const obj = {};
-                                    totalTeacher = totalTeacher + numberOfTeacher;
-                                    obj[year] = 'totalTeacher:' + totalTeacher + ':newTeacher:' + numberOfTeacher;
-                                    resolve(obj);
+                                    app.model.user.count({ isLecturer: true, daNghiDay:true, ngayNghiDay: { $gte: new Date().setFullYear(year, 0, 1), $lt: new Date().setFullYear(year + 1, 0, -1) } }, (error, numberOfRemoveTeacher) => {
+                                        if (error) {
+                                            reject(error);
+                                        } else {
+                                            const obj = {};
+                                            totalTeacher = totalTeacher + numberOfTeacher - numberOfRemoveTeacher;
+                                            obj[year] = 'totalTeacher:' + totalTeacher + ':newTeacher:' + numberOfTeacher +':removeTeacher:' + numberOfRemoveTeacher;
+                                            resolve(obj);
+                                        }
+                                    });
                                 }
                             });
                         }));
