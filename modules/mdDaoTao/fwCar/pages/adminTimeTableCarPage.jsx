@@ -23,27 +23,27 @@ export class AdminTimeTableCarPage extends AdminPage {
             this.setState({ currentCourseType: courseTypes.length && courseTypes[0].id, courseTypes });
             this.courseType.value(courseTypes.length && courseTypes[0].id);
 
-            this.props.getAllCars({courseType: courseTypes.length && courseTypes[0].id}, listCar => {
-                this.setState({ currentLecturer: listCar[0].user, currentCar: listCar[0], listCar, filterOn: false, key: listCar[0], list: true, calendar: false});
+            this.props.getAllCars({ courseType: courseTypes.length && courseTypes[0].id }, listCar => {
+                this.setState({ currentLecturer: listCar[0].user, currentCar: listCar[0], listCar, filterOn: false, key: listCar[0], list: true, calendar: false });
             });
         });
-       
+
     }
 
     onChange = (value) => {
-        this.setState({ filterOn: value , key: !this.state.key});
+        this.setState({ filterOn: value, key: !this.state.key });
         this.forceUpdate();
     }
 
     onChangeCourseType = (condition) => {
         this.props.getAllCars(condition, listCar => {
-            this.setState({ key: !this.state.key, currentCar: listCar[0], listCar, filterOn: false,  list: true, calendar: false});
+            this.setState({ key: !this.state.key, currentCar: listCar[0], listCar, filterOn: false, list: true, calendar: false });
         });
         this.forceUpdate();
     }
 
     selectCar = (car) => {
-        this.setState({ currentLecturer: car.user, currentCar: car, key: !this.state.key});
+        this.setState({ currentLecturer: car.user, currentCar: car, key: !this.state.key });
     }
     render() {
         const { courseTypes, currentLecturer, currentCar, listCar, filterOn, key, calendar, list } = this.state;
@@ -52,7 +52,7 @@ export class AdminTimeTableCarPage extends AdminPage {
             <FormSelect ref={e => this.courseType = e} data={courseTypes} onChange={value => this.onChangeCourseType({ courseType: value.id })} style={{ minWidth: '200px', marginBottom: 0, marginRight: 12 }} />
         </>;
         const inboxTimeTable = listCar && listCar.length && listCar.map((car, index) => {
-            const isSelectedCar = currentCar && currentCar._id ==  car._id;
+            const isSelectedCar = currentCar && currentCar._id == car._id;
             return (
                 <div key={index} className={'lecturer_list' + (isSelectedCar ? ' active_lecturer' : '')} style={{ cursor: 'pointer' }} onClick={e => e.preventDefault() || this.selectCar(car)}>
                     <div className='lecturer'>
@@ -83,12 +83,12 @@ export class AdminTimeTableCarPage extends AdminPage {
                                 </div>
                             </div>
                             <div className='col-sm-9' >
-                                <div className='recent_heading pb-3' style={{ marginBottom: '25px'}}>
-                                    <h4 style={{float: 'left'}}>{currentCar && currentCar.licensePlates}</h4>
-                                    <div style={{float: 'right', display: 'flex'}}>
-                                        {list ? <FormCheckbox ref={e => this.course = e} style={{paddingRight: '12px'}} onChange={value => this.onChange(value)} label='Hiển thị ngày hiện tại' /> : null}
-                                        <button style={{border: 'none', outline: 'none', marginRight: '3px', backgroundColor: list ? '#2189CF' : ''}} onClick={() => this.setState({key: !key, calendar: false, list: true})}><i className='fa fa-bars'></i> Danh sách</button>
-                                        <button style={{border: 'none', outline: 'none', backgroundColor: calendar ? '#2189CF' : ''}} onClick={() =>this.setState({key: !key, calendar: true, list: false, filterOn: false})}><i className='fa fa-calendar'></i> Lịch</button>
+                                <div className='recent_heading pb-3' style={{ marginBottom: '25px' }}>
+                                    <h4 style={{ float: 'left' }}>{currentCar && currentCar.licensePlates}</h4>
+                                    <div style={{ float: 'right', display: 'flex' }}>
+                                        {list ? <FormCheckbox ref={e => this.course = e} style={{ paddingRight: '12px' }} onChange={value => this.onChange(value)} label='Hiển thị ngày hiện tại' /> : null}
+                                        <button style={{ border: 'none', outline: 'none', marginRight: '3px', backgroundColor: list ? '#2189CF' : '' }} onClick={() => this.setState({ key: !key, calendar: false, list: true })}><i className='fa fa-bars'></i> Danh sách</button>
+                                        <button style={{ border: 'none', outline: 'none', backgroundColor: calendar ? '#2189CF' : '' }} onClick={() => this.setState({ key: !key, calendar: true, list: false, filterOn: false })}><i className='fa fa-calendar'></i> Lịch</button>
                                     </div>
                                 </div>
                                 {currentCar ? <LecturerCarView key={key} official={true} car={currentCar} filterOn={filterOn} list={list} calendar={calendar} lecturerName={currentLecturer ? currentLecturer.lastname + ' ' + currentLecturer.firstname : ''} /> : null}

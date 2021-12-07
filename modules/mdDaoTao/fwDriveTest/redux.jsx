@@ -179,10 +179,10 @@ export function checkDriveTestScore(_id, answers, done) {
         }, error => console.error(error) || T.notify('Kiểm tra đáp án bị lỗi!', 'danger'));
     };
 }
-export function checkRandomDriveTestScore(answers, done) {
+export function checkRandomDriveTestScore(answers, courseType, done) {
     return () => {
         const url = '/api/drive-test/random/submit';
-        T.post(url, { answers }, data => {
+        T.post(url, { answers, courseType }, data => {
             if (data.error) {
                 T.notify('Kiểm tra đáp án bị lỗi!', 'danger');
                 console.error('GET: ' + url + '.', data.error);

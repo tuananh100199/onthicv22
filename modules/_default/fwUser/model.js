@@ -96,6 +96,8 @@ module.exports = (app) => {
         get: (condition, done) => (typeof condition == 'object' ? model.findOne(condition) : model.findById(condition))
             .select('-password -token -tokenDate').populate('roles').populate('division').exec(done),
 
+        getOld: (done) => model.find({isLecturer: true}).sort({ createdDate: 1 }).limit(1).exec(done),
+
         getPage: (pageNumber, pageSize, condition, sort, done) => {
             model.countDocuments(condition, (error, totalItem) => {
                 if (done == undefined) {

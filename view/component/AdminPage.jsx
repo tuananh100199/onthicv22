@@ -198,10 +198,23 @@ export class FormTextBox extends React.Component {
         }
     }
 
+    insert = (e) => {
+        const onChange = this.props.onChange;
+        let cursorPosition = this.input.selectionStart;
+        let textBeforeCursorPosition = this.input.innerHTML.substring(0, cursorPosition);
+        let textAfterCursorPosition = this.input.innerHTML.substring(cursorPosition, this.input.innerHTML.length);
+        this.setState({
+            value: textBeforeCursorPosition + ' ' + e.target.innerHTML + ' ' + textAfterCursorPosition
+        },() => {
+            e.target.value = textBeforeCursorPosition + ' ' + e.target.innerHTML + ' ' + textAfterCursorPosition;
+            onChange && onChange(e);
+        });
+    }
+
     focus = () => this.input.focus();
 
     render() {
-        let { type = 'text', smallText = '', label = '', className = '', readOnly = false, onChange = null, required = false, min = '', max = '', style } = this.props,
+        let { type = 'text', smallText = '', label = '', className = '', readOnly = false, onChange = null, required = false, min = '', max = '', style, listParams = [] } = this.props,
             readOnlyText = this.state.value;
         type = type.toLowerCase(); // type = text | number | email | password | phone
         const properties = {
@@ -225,8 +238,14 @@ export class FormTextBox extends React.Component {
         return (
             <div className={'form-group ' + (className || '')}>
                 <label onClick={() => this.input.focus()}>{label}{!readOnly && required ? <span style={{ color: 'red' }}> *</span> : ''}</label>{readOnly ? <>: <b>{readOnlyText}</b></> : ''}
+                {!readOnly && <div className='d-flex'>
+                    {smallText ? <p className='form-text  mb-1 '><small className='text-muted'>{smallText}</small></p> : null}
+                    {listParams.length ?
+                    <p className='form-text  mb-1 '>
+                        {listParams.map((param, index) => (<small className='ml-1 text-primary' style={{ cursor: 'pointer' }} key={index} onClick={(e) => this.insert(e)}>{param}</small>))}
+                    </p> : null}
+                </div>}
                 <input ref={e => this.input = e} style={{ ...style, display: readOnly ? 'none' : 'block' }}{...properties} />
-                {smallText ? <small>{smallText}</small> : null}
             </div>);
     }
 }

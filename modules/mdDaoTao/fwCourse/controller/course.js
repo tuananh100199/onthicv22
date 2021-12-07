@@ -105,16 +105,15 @@ module.exports = (app) => {
             condition.teacherGroups = { $elemMatch: { teacher: sessionUser._id } };
             condition.active = true;
         }
-        if (sessionUser.isCourseAdmin && !sessionUser.isLecturer ) {
+        if (sessionUser.isCourseAdmin && !sessionUser.isLecturer) {
             condition.admins = sessionUser._id;
             condition.active = true;
         }
         app.model.course.getPage(pageNumber, pageSize, condition, (error, page) => {
-            console.log(page);
-            if (error || !page ) {
+            if (error || !page) {
                 res.send({ error });
-            } else if(page.list && !page.list.length) {
-                res.send({page});
+            } else if (page.list && !page.list.length) {
+                res.send({ page });
             } else {
                 page = app.clone(page);
                 const promiseList = page.list && page.list.length > 0 && page.list.map(item => {
@@ -292,7 +291,6 @@ module.exports = (app) => {
                         if (error || !course) reject(error);
                         else {
                             const courseType = course.courseType;
-                            console.log(course.close);
                             app.model.car.get({ user: _teacherId, courseType: courseType._id }, (error, item) => {
                                 if (error) {
                                     reject(error);
@@ -300,7 +298,6 @@ module.exports = (app) => {
                                     resolve();
                                 } else {
                                     app.model.car.addCourseHistory({ _id: item._id }, { course: course._id, user: _teacherId }, error => {
-                                        console.log(error);
                                         if (error) reject(error);
                                         else app.model.car.update({ _id: item._id }, { currentCourseClose: course.close }, error => error ? reject(error) : resolve());
                                     });

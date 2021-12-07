@@ -146,6 +146,12 @@ module.exports = app => {
             model.findOneAndUpdate({ _id, 'teacherGroups.teacher': _teacherId }, { $pull: { 'teacherGroups.$.student': _studentId } }, { new: true }).exec(done);
         },
 
+        getTeacherCourse: (condition, done) => {
+            const courseType = condition.courseType,
+                teacher = condition.teacher,
+                thoiGianKetThuc = condition.thoiGianKetThuc;
+            model.findOne({ courseType, 'teacherGroups.teacher': teacher, thoiGianKetThuc }).exec(done);
+        },
 
         delete: (_id, done) => model.findById(_id, (error, item) => {
             if (error) {

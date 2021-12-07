@@ -55,7 +55,7 @@ export class AdminTimeTablePage extends AdminPage {
         return this.renderPage({
             icon: 'fa fa-list-alt',
             title: 'Danh sách lịch học học viên đăng ký: ' + item.name,
-            breadcrumb: [<Link key={0} to='/user/course'>Khóa học</Link>, item._id ? <Link key={0} to={backRoute}>{item.name}</Link> : '', 'Lịch nghỉ'],
+            breadcrumb: [<Link key={0} to='/user/course'>Khóa học</Link>, item._id ? <Link key={0} to={backRoute}>{item.name}</Link> : '', 'Danh sách đăng ký lịch học'],
             content: (
                 <div className='tile'>
                     <div className='tile-body'>
@@ -63,7 +63,7 @@ export class AdminTimeTablePage extends AdminPage {
                             <div className='box_people col-sm-3'>
                                 <div className='headind_srch'>
                                     <div className='recent_heading'>
-                                        <h4>Danh sách cố vấn</h4>
+                                        <h4>Danh sách giáo viên</h4>
                                     </div>
                                 </div>
                                 <div>
