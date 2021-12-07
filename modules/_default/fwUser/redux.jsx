@@ -212,7 +212,7 @@ export const ajaxSelectUser = T.createAjaxAdapter(
 );
 
 export const ajaxSelectUserType = (userType, queryType) => T.createAjaxAdapter(
-    '/api/user/page/1/20',
+    '/api/user/page/1/20?',
     // params => ({ condition: params.term ? { searchText: params.term } : { userType } }),
     params => ({ condition: { searchText: params.term, userType, queryType } }),
     response => response && response.page && response.page.list ?
