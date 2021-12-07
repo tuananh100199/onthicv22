@@ -211,10 +211,10 @@ export const ajaxSelectUser = T.createAjaxAdapter(
         response.page.list.map(user => ({ id: user._id, text: `${user.lastname} ${user.firstname} ${user.identityCard ? '(' + user.identityCard + ')' : ''}` })) : [],
 );
 
-export const ajaxSelectUserType = (userType) => T.createAjaxAdapter(
+export const ajaxSelectUserType = (userType, queryType) => T.createAjaxAdapter(
     '/api/user/page/1/20',
     // params => ({ condition: params.term ? { searchText: params.term } : { userType } }),
-    params => ({ condition: { searchText: params.term, userType } }),
+    params => ({ condition: { searchText: params.term, userType, queryType } }),
     response => response && response.page && response.page.list ?
         response.page.list.map(user => ({ id: user._id, text: `${user.lastname} ${user.firstname} ${user.identityCard ? '(' + user.identityCard + ')' : ''}` })) : [],
 );

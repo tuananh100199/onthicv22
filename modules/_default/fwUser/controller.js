@@ -56,7 +56,13 @@ module.exports = app => {
                 }
 
                 if (condition.userType && condition.userType != 'all') {
-                    pageCondition.$or.push(Object.fromEntries(
+                    if(condition.queryType && condition.queryType == 'or' ){
+                    (Array.isArray(condition.userType) ? condition.userType : [condition.userType]).forEach((item)=>{
+                        const subObject = {};
+                        subObject[item] = true; 
+                        pageCondition.$or.push(subObject);
+                    });
+                    } else pageCondition.$or.push(Object.fromEntries(
                         (Array.isArray(condition.userType) ? condition.userType : [condition.userType]).map(item => [item, true])));
                 }
 
