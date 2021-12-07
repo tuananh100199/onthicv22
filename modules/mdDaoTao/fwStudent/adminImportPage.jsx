@@ -165,7 +165,7 @@ class ImportPage extends AdminPage {
                     T.notify('Import ứng viên bị lỗi!', 'danger');
                 } else {
                     if (data.studentError && data.studentError.length) {
-                        T.alert(`Không tìm thấy cố vấn có CMND/CCCD:  ${data.studentError.reduce((a, b) => `${b.error + ', ' + a}`, ' ')}!`, 'error', false, 8000);
+                        T.alert(`Không tìm thấy giáo viên có CMND/CCCD:  ${data.studentError.reduce((a, b) => `${b.error + ', ' + a}`, ' ')}!`, 'error', false, 8000);
                     }
                     this.props.history.push('/user/pre-student');
                 }

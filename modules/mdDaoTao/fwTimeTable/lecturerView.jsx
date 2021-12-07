@@ -224,7 +224,7 @@ class TimeTableModal extends AdminModal {
                     {listTimeTable && listTimeTable.length && date != null ? 
                     <div className='col-md-12'>
                         <p>
-                            Lịch dạy ngày <span className='text-success'>{new Date(date).getDayText()} {new Date(date).getDateText()}</span><span> của cố vấn <b>{this.props.lecturerName ? this.props.lecturerName : ''}</b></span>
+                            Lịch dạy ngày <span className='text-success'>{new Date(date).getDayText()} {new Date(date).getDateText()}</span><span> của giáo viên <b>{this.props.lecturerName ? this.props.lecturerName : ''}</b></span>
                         </p>
                         {table}
                     </div> : ''}

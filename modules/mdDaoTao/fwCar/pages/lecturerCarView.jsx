@@ -100,13 +100,13 @@ class TimeTableCarModal extends AdminModal {
                     <p className='col-md-6'> {dateNumber == null ? '' :
                         (dateNumber == -1 ? <span className='text-danger'>Trùng thời khóa biểu!</span> : <>Buổi học thứ: <span className='text-primary'>{dateNumber}</span>.</>)}
                     </p>
-                    {listTimeTable && listTimeTable.length && date != null ?
-                        <div className='col-md-12'>
-                            <p>
-                                Lịch dạy ngày <span className='text-success'>{new Date(date).getDayText()} {new Date(date).getDateText()}</span><span> của cố vấn <b>{this.props.lecturerName ? this.props.lecturerName : ''}</b></span>
-                            </p>
-                            {table}
-                        </div> : ''}
+                    {listTimeTable && listTimeTable.length && date != null ? 
+                    <div className='col-md-12'>
+                        <p>
+                            Lịch dạy ngày <span className='text-success'>{new Date(date).getDayText()} {new Date(date).getDateText()}</span><span> của giáo viên <b>{this.props.lecturerName ? this.props.lecturerName : ''}</b></span>
+                        </p>
+                        {table}
+                    </div> : ''}
 
                     <FormTextBox ref={e => this.itemCar = e} label='Xe học' className='col-md-4' style={{ textTransform: 'uppercase' }} readOnly={true} />
                     <FormCheckbox ref={e => this.itemTruant = e} label='Học viên vắng học' className='col-md-4' readOnly={true} />

@@ -64,7 +64,7 @@ export class AdminTimeTablePage extends AdminPage {
                             <div className='box_people col-sm-3'>
                                 <div className='headind_srch'>
                                     <div className='recent_heading'>
-                                        <h4>Danh sách cố vấn</h4>
+                                        <h4>Danh sách giáo viên</h4>
                                     </div>
                                 </div>
                                 <div>
