@@ -172,10 +172,10 @@ module.exports = app => {
     });
 
     app.post('/api/drive-test/random/submit', (req, res) => {//mobile
-        const { answers } = req.body,
+        const { answers, courseType } = req.body,
             randomTest = req.session.driveTest;
         let score = 0,
-            error = null,
+            err = null,
             importanceScore = null;
 
         const questionMapper = {},
@@ -195,11 +195,16 @@ module.exports = app => {
                         }
                     }
                 } else {
-                    error = 'Không tìm thấy câu hỏi!';
+                    err = 'Không tìm thấy câu hỏi!';
                 }
             }
         }
-        res.send({ error, result: { score, trueAnswer, answers, importanceScore } });
+        app.model.courseType.get(courseType, (error, item) => {
+            if (error || !item) {
+                err = 'Không tìm thấy loại khóa học của bộ đề!';
+            }
+            res.send({ error: err, result: { score, trueAnswer, answers, importanceScore, pass: score < Number(item.soLuongCauDat) ? false : true } });
+        });
     });
 
     // Question APIs -----------------------------------------------------------------------------------------------------
