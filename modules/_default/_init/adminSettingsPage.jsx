@@ -2,14 +2,20 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { saveSystemState } from './redux';
 import QRCode from 'react-qr-code';
-import { AdminPage, FormTextBox, FormImageBox } from 'view/component/AdminPage';
+import { AdminPage, FormTextBox, FormImageBox, FormSelect } from 'view/component/AdminPage';
 
 class SettingsPage extends AdminPage {
-    state = {};
+    state = {
+        banks: [],
+        money: '000',
+    };
+
     componentDidMount() {
         T.ready(() => {
-            let { address, email, mobile, fax, facebook, youtube, twitter, instagram, logo, footer, contact, subscribe, smsAPIToken, moneyLine, moneyStr, contentLine, contentStr } = this.props.system ?
+            this.getBanks();
+            let { address, email, mobile, fax, facebook, youtube, twitter, instagram, logo, footer, contact, subscribe, smsAPIToken, moneyLine, moneyStr, contentLine, contentStr, banks} = this.props.system ?
                 this.props.system : { address: '', email: '', mobile: '', fax: '', facebook: '', youtube: '', twitter: '', instagram: '', logo: '/img/logo.jpg', footer: '/img/footer.jpg', contact: '/img/contact.jpg', subscribe: '/img/subscribe.jpg', smsAPIToken:'' };
+            console.log(banks, typeof banks,'banssssk mout');
             this.systemAddress.value(address);
             this.systemEmail.value(email);
             this.systemMobile.value(mobile);
@@ -22,12 +28,27 @@ class SettingsPage extends AdminPage {
             this.systemMoneyEndStr.value(moneyStr || '(+)/:money/VND');
             this.systemContentStartStr.value(contentLine || 3);
             this.systemContentEndStr.value(contentStr|| 'N/dung:/:content/');
+            // this.systemBank.value('OCB');
             this.systemLogo.setData('logo', logo);
             this.systemContact.setData('contact', contact);
             this.systemSubscribe.setData('subscribe', subscribe);
-            this.setState({ logo, footer, contact, subscribe, smsAPIToken });
+            this.setState({ logo, footer, contact, subscribe, smsAPIToken, bankSystems: JSON.parse(banks) });
         });
     }
+
+    getBanks = () => {
+        fetch('https://api.vietqr.io/v1/banks').then(
+        (response) => response.json().then(
+          (jsonData) => {
+               console.log(jsonData);
+               this.setState({banks: jsonData.data && jsonData.data.map(({code,name})=>({id:code,text:code+' - '+name}))}, ()=>{
+               console.log(this.state.bankSystems, typeof this.state.bankSystems,'bank');
+               this.systemBank.value(this.state.bankSystems || []);
+                // this.systemBank.value(['OCB']);
+               });
+          }
+      )
+    );}
 
     saveCommonInfo = () => {
         this.props.saveSystemState({
@@ -44,6 +65,8 @@ class SettingsPage extends AdminPage {
 
     saveSMS = () => {
         this.props.saveSystemState({
+            banks: this.systemBank.value().length == 0 ? 'empty' : this.systemBank.value(),
+            // banks: JSON.stringify(this.systemBank.value()),
             moneyLine: this.systemMoneyStartStr.value(),
             moneyStr: this.systemMoneyEndStr.value(),
             contentLine: this.systemContentStartStr.value(),
@@ -106,11 +129,25 @@ class SettingsPage extends AdminPage {
                             <p>API Token QR Code</p>
                             {this.state.smsAPIToken ? <QRCode value={this.state.smsAPIToken} size={200}/>: null}
                             <p style={{ fontWeight:'bold', marginTop: 10 }} >CKT: Chuỗi ký tự; GD: Giao dịch</p>
+                            <FormSelect ref={e => this.systemBank = e} label='Ngân hàng' data={this.state.banks} multiple={true} readOnly={readOnly} onChange={
+                                ({id})=>console.log(id,'đjdj')
+                            }/>
                             <FormTextBox ref={e => this.systemMoneyStartStr = e} label='Dòng biến động số dư' readOnly={readOnly} />
-                            <FormTextBox ref={e => this.systemMoneyEndStr = e} label='CKT phần biến động số dư' readOnly={readOnly} />
+                            <FormTextBox ref={e => this.systemMoneyEndStr = e} label='Chuỗi phần biến động số dư' readOnly={readOnly} />
+                            <FormTextBox ref={e => this.moneyStringEx = e} label='Chuỗi phần biến động số dư ví dụ' readOnly={readOnly} />
+                                                               
+                            <button className='btn btn-primary' type='button' onClick={()=>{
+
+                                this.setState({money:'123'});
+                                }}>
+                                        Tính
+                                    </button>
+                            &nbsp; &nbsp; Số tiền (money) = 20000
+                            {/* <span style={{ fontWeight:'bold'}}>{this.state.money}</span>  */}
                             <FormTextBox ref={e => this.systemContentStartStr = e} label='Dòng nội dung GD' readOnly={readOnly} />
-                            <FormTextBox ref={e => this.systemContentEndStr = e} smallText='Nếu kí tự kết thúc là xuống dòng thì để trống' label='CKT phần nội dung GD' readOnly={readOnly} />                           
-                            {/* <QRCode ref={e => this.systemSMSAPIToken = e} value="hey" size={200}/> */}
+                            <FormTextBox ref={e => this.systemContentEndStr = e} label='CKT phần nội dung GD' readOnly={readOnly} />
+                            {/* smallText='Nếu kí tự kết thúc là xuống dòng thì để trống' */}
+                            CKT nội dung GD ví dụ: <span style={{ fontWeight:'bold'}}>N/dung: 123456789 B1</span>                      
                             </div>
                             {readOnly ? null :
                                 <div className='tile-footer' style={{ textAlign: 'right' }}>

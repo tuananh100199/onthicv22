@@ -129,6 +129,7 @@ module.exports = (app) => {
             moneyStr: '(+)/:money/VND',
             contentLine: 3,
             contentStr: 'N/dung:/:content/',
+            banks: JSON.stringify(['OCB']),
             // moneyStartStr: '(+)',
             // moneyEndStr: 'VND',
             // contentStartStr: 'hiepphat',
