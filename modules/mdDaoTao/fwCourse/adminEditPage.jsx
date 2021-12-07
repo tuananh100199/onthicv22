@@ -27,7 +27,7 @@ class EditCoursePage extends AdminPage {
         const currentUser = this.props.system ? this.props.system.user : null,
             { isLecturer, isCourseAdmin } = currentUser,
             item = this.props.course && this.props.course.item ? this.props.course.item : {};
-        const permission = this.getUserPermission('course',['read', 'write', 'delete', 'lock']),
+        const permission = this.getUserPermission('course', ['read', 'write', 'delete', 'lock']),
             permissionFeedback = this.getUserPermission('feedback');
         return this.renderPage({
             icon: 'fa fa-cubes',
@@ -41,7 +41,7 @@ class EditCoursePage extends AdminPage {
                     <PageIcon visible={isCourseAdmin || permission.write} to={`/user/course/${item._id}/graduation-subject`} icon='fa-clone' iconBackgroundColor='#dc143c' text='Môn thi tốt nghiệp' />
                     {item.chatActive && (isLecturer || isCourseAdmin || permission.write) && <PageIcon to={`/user/chat/${item._id}`} icon='fa-comments-o' iconBackgroundColor='#9ccc65' text='Chat' />}
 
-                    {(isCourseAdmin || permission.write)  ? <PageIconHeader text='Nhân sự' /> : null}
+                    {(isCourseAdmin || permission.write) ? <PageIconHeader text='Nhân sự' /> : null}
                     <PageIcon visible={permission.lock} to={`/user/course/${item._id}/manager`} icon='fa-user-secret' iconBackgroundColor='#D00' text='Gán Quản trị viên khóa học' />
                     <PageIcon visible={isCourseAdmin || permission.write} to={`/user/course/${item._id}/student`} icon='fa-user-plus' iconBackgroundColor='#8A0' text='Gán Học viên' />
                     <PageIcon visible={isCourseAdmin || permission.write} to={`/user/course/${item._id}/teacher`} icon='fa-user-circle' iconBackgroundColor='#CC0' text='Gán Giáo viên' />

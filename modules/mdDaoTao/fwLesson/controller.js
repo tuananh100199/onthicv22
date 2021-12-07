@@ -43,7 +43,7 @@ module.exports = (app) => {
                         if (error) {
                             res.send({ error });
                         } else {
-                            if (student.tienDoHocTap && student.tienDoHocTap[subjectId] && student.tienDoHocTap[subjectId][_id]) {
+                            if (student.tienDoHocTap && student.tienDoHocTap[subjectId] && student.tienDoHocTap[subjectId][_id] && student.tienDoHocTap[subjectId][_id].answers) {
                                 const listIdQuestion = Object.keys(student.tienDoHocTap[subjectId][_id].answers);
                                 const newQuestion = item.questions.filter(question => listIdQuestion.indexOf(question._id.toString()) != -1);
                                 item.questions = newQuestion;
@@ -237,7 +237,6 @@ module.exports = (app) => {
                 res.send({ error });
             } else {
                 const data = { studentId: student._id, subjectId, lessonId, totalSeconds };
-                console.log(data);
                 app.model.student.updateLearningProgress(data, (error, item) => {
                     res.send({ error, item });
                 });

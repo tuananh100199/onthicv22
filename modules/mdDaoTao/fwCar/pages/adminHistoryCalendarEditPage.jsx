@@ -74,38 +74,38 @@ class HistoryCalendarEditPage extends AdminPage {
     }
 
     edit = (e, item) => e.preventDefault() || this.modal.show(item);
-    
+
     render() {
         const permission = this.getUserPermission('car', ['read', 'write', 'delete', 'fuel']),
             car = this.props.car && this.props.car.item,
             list = car && car.calendarHistory && car.calendarHistory.sort((a, b) => new Date(b.thoiGianBatDau) - new Date(a.thoiGianBatDau));
         const table = renderTable({
-                getDataSource: () => list && list.filter(item => item.course == null),
-                renderHead: () => (
-                    <tr>
-                        <th style={{ width: 'auto', textAlign: 'center' }}>#</th>
-                        <th style={{ width: 'auto' }} nowrap='true'>Biển số xe</th>
-                        <th style={{ width: 'auto' }} nowrap='true'>Nhãn hiệu xe</th>
-                        <th style={{ width: 'auto' }} nowrap='true'>Giáo viên phụ trách xe</th>
-                        <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Hạng đào tạo</th>
-                        <th style={{ width: '100%' }} nowrap='true'>Cơ sở đào tạo</th>
-                        <th style={{ width: '100%' }} nowrap='true'>Thời gian bắt đầu</th>
-                        <th style={{ width: '100%' }} nowrap='true'>Thời gian kết thúc</th>
-                        <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Thao tác</th>
-                    </tr>),
-                renderRow: (item, index) => (
-                    <tr key={index}>
-                        <TableCell type='number' content={index + 1} />
-                        <TableCell type='link' style={{ whiteSpace: 'nowrap' }} content={car.licensePlates} onClick={e => this.edit(e, item)} />
-                        <TableCell type='text' content={car.brand && car.brand.title} />
-                        <TableCell type='text' style={{ whiteSpace: 'nowrap' }} content={item.user && (item.user.lastname + ' ' + item.user.firstname)} />
-                        <TableCell type='text' style={{ whiteSpace: 'nowrap' }} content={car.courseType && car.courseType.title} />
-                        <TableCell type='text' style={{ whiteSpace: 'nowrap' }} content={car.division ? car.division.title : ''} />
-                        <TableCell type='text' style={{ whiteSpace: 'nowrap' }} content={item && item.thoiGianBatDau ? T.dateToText(item.thoiGianBatDau, 'dd/mm/yyyy') : ''} />
-                        <TableCell type='text' style={{ whiteSpace: 'nowrap' }} content={item && item.thoiGianKetThuc ? T.dateToText(item.thoiGianKetThuc, 'dd/mm/yyyy') : ''} />
-                        <TableCell type='buttons' content={item} permission={permission} onEdit={this.edit} />
-                    </tr >),
-            });
+            getDataSource: () => list && list.filter(item => item.course == null),
+            renderHead: () => (
+                <tr>
+                    <th style={{ width: 'auto', textAlign: 'center' }}>#</th>
+                    <th style={{ width: 'auto' }} nowrap='true'>Biển số xe</th>
+                    <th style={{ width: 'auto' }} nowrap='true'>Nhãn hiệu xe</th>
+                    <th style={{ width: 'auto' }} nowrap='true'>Giáo viên phụ trách xe</th>
+                    <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Hạng đào tạo</th>
+                    <th style={{ width: '100%' }} nowrap='true'>Cơ sở đào tạo</th>
+                    <th style={{ width: '100%' }} nowrap='true'>Thời gian bắt đầu</th>
+                    <th style={{ width: '100%' }} nowrap='true'>Thời gian kết thúc</th>
+                    <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Thao tác</th>
+                </tr>),
+            renderRow: (item, index) => (
+                <tr key={index}>
+                    <TableCell type='number' content={index + 1} />
+                    <TableCell type='link' style={{ whiteSpace: 'nowrap' }} content={car.licensePlates} onClick={e => this.edit(e, item)} />
+                    <TableCell type='text' content={car.brand && car.brand.title} />
+                    <TableCell type='text' style={{ whiteSpace: 'nowrap' }} content={item.user && (item.user.lastname + ' ' + item.user.firstname)} />
+                    <TableCell type='text' style={{ whiteSpace: 'nowrap' }} content={car.courseType && car.courseType.title} />
+                    <TableCell type='text' style={{ whiteSpace: 'nowrap' }} content={car.division ? car.division.title : ''} />
+                    <TableCell type='text' style={{ whiteSpace: 'nowrap' }} content={item && item.thoiGianBatDau ? T.dateToText(item.thoiGianBatDau, 'dd/mm/yyyy') : ''} />
+                    <TableCell type='text' style={{ whiteSpace: 'nowrap' }} content={item && item.thoiGianKetThuc ? T.dateToText(item.thoiGianKetThuc, 'dd/mm/yyyy') : ''} />
+                    <TableCell type='buttons' content={item} permission={permission} onEdit={this.edit} />
+                </tr >),
+        });
         return this.renderPage({
             icon: 'fa fa-thermometer-empty',
             title: 'Giáo viên phụ trách xe: ' + (car && car.licensePlates),
