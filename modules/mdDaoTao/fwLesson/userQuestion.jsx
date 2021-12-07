@@ -1,7 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { getLessonByStudent, checkQuestion, resetStudentScore, timeLesson } from './redux';
-import { getSubject } from '../fwSubject/redux';
+import { getSubjectByStudent } from '../fwSubject/redux';
 import { getStudentScore } from '../fwStudent/redux';
 import { Link } from 'react-router-dom';
 import { AdminPage } from 'view/component/AdminPage';
@@ -20,7 +20,7 @@ class userQuestion extends AdminPage {
                     this.props.history.push('/user/hoc-vien/khoa-hoc/' + params.courseId + '/mon-hoc/' + params.subjectId + '/bai-hoc/' + params._id);
                 } else if (data.item) {
                     let totalSeconds = 0;
-                    this.props.getSubject(params.subjectId, data => {
+                    this.props.getSubjectByStudent(params.subjectId, data => {
                         if(data.item && data.item.lessons){
                             const listLesson = data.item.lessons,
                             currentIndex = listLesson.findIndex(lesson => lesson._id == params._id);
@@ -290,5 +290,5 @@ class userQuestion extends AdminPage {
 }
 
 const mapStateToProps = state => ({ system: state.system, lesson: state.trainning.lesson, subject: state.trainning.subject });
-const mapActionsToProps = { getLessonByStudent, checkQuestion, getStudentScore, resetStudentScore, timeLesson, getSubject };
+const mapActionsToProps = { getLessonByStudent, checkQuestion, getStudentScore, resetStudentScore, timeLesson, getSubjectByStudent };
 export default connect(mapStateToProps, mapActionsToProps)(userQuestion);
