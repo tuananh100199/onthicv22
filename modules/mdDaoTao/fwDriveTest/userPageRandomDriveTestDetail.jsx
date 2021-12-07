@@ -21,7 +21,7 @@ class UserPageRandomDriveTestDetail extends AdminPage {
                     } else {
                         this.setState({ prevButton: 'invisible' });
                     }
-                    this.setState({ activeQuestionIndex: 0, questions });
+                    this.setState({ activeQuestionIndex: 0, questions, courseType: _id });
                     let minutes = data.driveTest.totalTime;
                     let seconds = 0;
                     window.interval = setInterval(() => {
@@ -76,7 +76,7 @@ class UserPageRandomDriveTestDetail extends AdminPage {
 
     submitAnswer = (e) => {
         e && e.preventDefault();
-        this.props.checkRandomDriveTestScore(this.state.studentAnswer, result => {
+        this.props.checkRandomDriveTestScore(this.state.studentAnswer, this.state.courseType, result => {
             T.alert('Gửi câu trả lời thành công!', 'success', false, 2000);
             this.setState({
                 prevTrueAnswers: result.trueAnswer,

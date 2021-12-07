@@ -57,7 +57,7 @@ module.exports = app => {
 
                     app.model.course.removeStudentFromTeacherGroup(_courseId, _oldTeacherId, _studentId, () => {
                         app.model.course.addStudentToTeacherGroup(_courseId, _newTeacherId, _studentId, () => {
-                            if (changes.lecturer != item.lecturer) {
+                            if (changes.state == 'approved' && (changes.lecturer || item.lecturer)) {
                                 condition.student = _studentId;
                                 condition.date = {
                                     $gte: new Date(),

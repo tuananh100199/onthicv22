@@ -75,7 +75,6 @@ class CarModal extends AdminModal {
     }
 
     render = () => {
-        console.log(this.state.user);
         const readOnly = this.props.readOnly;
         return this.renderModal({
             title: 'Quản lý xe',

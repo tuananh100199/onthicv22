@@ -157,22 +157,22 @@ module.exports = app => {
             $unset.user = '';
             delete changes.user;
         }
-        const handleChangeLecturer = (lecturer, carId, done) => {
-            const condition = {}, lecturerCondition = {};
+        const handleChangeLecturer = (teacher, carId, courseType, done) => {
+            const condition = { courseType, teacher }, teacherCondition = {};
             condition.thoiGianKetThuc = {
                 $gte: new Date()
             };
-            app.model.course.get(condition, (error, course) => {
+            app.model.course.getTeacherCourse(condition, (error, course) => {
                 if (course) {
                     course = app.clone(course);
-                    const listStudent = course.teacherGroups && course.teacherGroups.length ? course.teacherGroups.filter(teacherGroup => teacherGroup.teacher && teacherGroup.teacher._id == lecturer) : [],
-                        studentIds = listStudent.length && listStudent[0].student.map(student => student._id);
+                    const listStudent = course.teacherGroups && course.teacherGroups.length ? course.teacherGroups.filter(teacherGroup => teacherGroup.teacher == teacher) : [],
+                        studentIds = listStudent.length && listStudent[0].student;
                     if (listStudent.length) {
-                        lecturerCondition.student = { $in: studentIds };
-                        lecturerCondition.date = {
+                        teacherCondition.student = { $in: studentIds };
+                        teacherCondition.date = {
                             $gte: new Date()
                         };
-                        app.model.timeTable.getAll(lecturerCondition, (error, list) => {
+                        app.model.timeTable.getAll(teacherCondition, (error, list) => {
                             if (list && list.length) {
                                 const timeTables = list.map(item => app.clone(item));
                                 const handleUpdateTimeTable = (index = 0) => {
@@ -204,6 +204,7 @@ module.exports = app => {
             if (error || !item) {
                 res.send({ error: 'Lỗi khi lấy thông tin xe!' });
             } else {
+                const courseType = item.courseType && item.courseType._id;
                 if (item.user != changes.user) {
                     const calendarHistory = {};
                     if (changes.user) {
@@ -216,17 +217,17 @@ module.exports = app => {
                     });
 
                     if (item.user == undefined && changes.user) {
-                        handleChangeLecturer(changes.user, _id, () => {
+                        handleChangeLecturer(changes.user, _id, courseType, () => {
                             app.model.car.update(_id, changes, $unset, (error, item) => res.send({ error, item }));
                         });
 
                     } else if (item.user && changes.user == undefined) {
-                        handleChangeLecturer(item.user, null, () => {
+                        handleChangeLecturer(item.user, null, courseType, () => {
                             app.model.car.update(_id, changes, $unset, (error, item) => res.send({ error, item }));
                         });
                     } else {
-                        handleChangeLecturer(item.user, null, () => {
-                            handleChangeLecturer(changes.user, _id, () => {
+                        handleChangeLecturer(item.user, null, courseType, () => {
+                            handleChangeLecturer(changes.user, _id, courseType, () => {
                                 app.model.car.update(_id, changes, $unset, (error, item) => res.send({ error, item }));
                             });
                         });
