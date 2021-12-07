@@ -4,7 +4,7 @@ import { exportExamStudent, getStudentPage, updateStudent } from './redux';
 import { createNotification } from 'modules/_default/fwNotification/redux';
 import { getNotificationTemplateAll, getNotificationTemplate } from 'modules/mdTruyenThong/fwNotificationTemplate/redux';
 import { getCourseTypeAll, ajaxSelectCourseType } from 'modules/mdDaoTao/fwCourseType/redux';
-import { ajaxSelectCourseByCourseType, getCoursePage } from 'modules/mdDaoTao/fwCourse/redux';
+import { ajaxSelectCourseByCourseType } from 'modules/mdDaoTao/fwCourse/redux';
 import { AdminPage, FormRichTextBox, FormTextBox, FormSelect, renderTable, TableCell, AdminModal, CirclePageButton, FormEditor } from 'view/component/AdminPage';
 import Pagination from 'view/component/Pagination';
 
@@ -288,5 +288,5 @@ class FailGraduationPage extends AdminPage {
 }
 
 const mapStateToProps = state => ({ system: state.system, student: state.trainning.student, notificationTemplate: state.communication.notificationTemplate });
-const mapActionsToProps = { getStudentPage, updateStudent, createNotification, getCourseTypeAll, getNotificationTemplateAll, getNotificationTemplate, getCoursePage };
+const mapActionsToProps = { getStudentPage, updateStudent, createNotification, getCourseTypeAll, getNotificationTemplateAll, getNotificationTemplate };
 export default connect(mapStateToProps, mapActionsToProps)(FailGraduationPage);

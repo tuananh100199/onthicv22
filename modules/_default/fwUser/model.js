@@ -19,6 +19,8 @@ module.exports = (app) => {
         isLecturer: { type: Boolean, default: false },                                              // Là giáo viên
         isStaff: { type: Boolean, default: false },                                                 // Là nhân viên
         isTrustLecturer: { type: Boolean, default: false },                                         // Giáo viên tin cậy => họ được quyền approved forum, comment của họ
+        daNghiDay: { type: Boolean, default: false },                                               // Là giáo viên đã nghỉ dạy
+        ngayNghiDay: Date,
 
         token: String,
         tokenDate: Date,

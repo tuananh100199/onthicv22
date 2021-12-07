@@ -22,7 +22,7 @@ class UserModal extends AdminModal {
     }
 
     onShow = (item) => {
-        if (item == null) item = { _id: null, firstname: '', lastname: '', email: '', phoneNumber: '', sex: 'male', birthday: null, identityCard: '', division: null, roles: [], active: true, isCourseAdmin: false, isLecturer: false, isTrustLecturer: false, isStaff: false };
+        if (item == null) item = { _id: null, firstname: '', lastname: '', email: '', phoneNumber: '', sex: 'male', birthday: null, identityCard: '', division: null, roles: [], active: true, isCourseAdmin: false, isLecturer: false, isTrustLecturer: false, isStaff: false, daNghiDay: false, ngayNghiDay: null };
         this.itemFirstname.value(item.firstname || '');
         this.itemLastname.value(item.lastname || '');
         this.itemBirthday.value(item.birthday || '');
@@ -36,10 +36,12 @@ class UserModal extends AdminModal {
         this.itemSex.value(item.sex || 'male');
         this.itemDivision.value(item.division ? { id: item.division._id, text: item.division.title + (item.division.isOutside ? ' (cơ sở ngoài)' : '') } : null);
         this.itemActive.value(item.active);
+        this.itemDaNghiDay.value(item.daNghiDay);
+        this.itemNgayNghiDay.value(item.ngayNghiDay);
         this.imageBox.setData(`user:${item._id ? item._id : 'new'}`);
 
         const allRoles = this.props.allRoles.map(item => ({ id: item._id, text: item.name }));
-        this.setState({ _id: item._id, image: item.image, allRoles, isLecturer: item.isLecturer }, () => {
+        this.setState({ _id: item._id, image: item.image, allRoles, isLecturer: item.isLecturer, className: (item.daNghiDay ? 'col-md-3' : 'invisible') }, () => {
             this.itemRoles.value(item.roles.map(item => item._id));
         });
     }
@@ -60,6 +62,8 @@ class UserModal extends AdminModal {
             birthday: this.itemBirthday.value(),
             division: this.itemDivision.value(),
             active: this.itemActive.value(),
+            daNghiDay: this.itemDaNghiDay.value(),
+            ngayNghiDay: this.itemDaNghiDay.value() ? this.itemNgayNghiDay.value() : null,
         };
 
         if (changes.lastname == '') {
@@ -80,6 +84,9 @@ class UserModal extends AdminModal {
         } else if (changes.division == null) {
             T.notify('Cơ sở đào tạo không được trống', 'danger');
             this.itemDivision.focus();
+        }else if (changes.daNghiDay && !changes.ngayNghiDay) {
+            T.notify('Ngày nghỉ dạy không được trống!', 'danger');
+            this.itemNgayNghiDay.focus();
         } else {
             if (changes.roles.length == 0) changes.roles = 'empty';
             this.state._id ?
@@ -99,6 +106,10 @@ class UserModal extends AdminModal {
                 this.props.changeSystemState({ user });
             }
         }
+    }
+
+    isChecked = (checked) => {
+        this.setState({ className: checked ? 'col-md-3' : 'invisible' });
     }
 
     render = () => {
@@ -126,10 +137,11 @@ class UserModal extends AdminModal {
                     <FormCheckbox ref={e => this.itemIsStaff = e} isSwitch={true} className='col-md-2' label='Nhân viên' readOnly={readOnly} />
                     <FormCheckbox ref={e => this.itemIsLecturer = e} isSwitch={true} className='col-md-2' label='Giáo viên' onChange={active => this.setState({ isLecturer: active })} readOnly={readOnly} />
                     <FormCheckbox ref={e => this.itemIsTrustLecturer = e} style={{ display: this.state.isLecturer ? 'inline-flex' : 'none' }} isSwitch={true} className='col-md-4' label='Giáo viên tin cậy' readOnly={readOnly} />
-
                     <FormSelect ref={e => this.itemRoles = e} className='col-md-12' label='Vai trò' data={this.state.allRoles} multiple={true} readOnly={readOnly} />
-                    <FormSelect ref={e => this.itemDivision = e} className='col-md-8' label='Thuộc cơ sở đào tạo' data={ajaxSelectDivision} readOnly={readOnly} required />
-                    <FormCheckbox ref={e => this.itemActive = e} isSwitch={true} className='col-md-4' label='Kích hoạt' readOnly={readOnly} />
+                    <FormSelect ref={e => this.itemDivision = e} className='col-md-4' label='Thuộc cơ sở đào tạo' data={ajaxSelectDivision} readOnly={readOnly} required />
+                    <FormCheckbox ref={e => this.itemActive = e} isSwitch={true} className='col-md-2' label='Kích hoạt' readOnly={readOnly} />
+                    <FormCheckbox ref={e => this.itemDaNghiDay = e} isSwitch={true} className='col-md-3' label='Đã nghỉ dạy' onChange={this.isChecked} readOnly={readOnly} />
+                    <FormDatePicker ref={e => this.itemNgayNghiDay = e} className={this.state.className} label='Ngày nghỉ dạy' readOnly={this.props.readOnly} />
                 </div>),
         });
     }

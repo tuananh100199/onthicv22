@@ -1,6 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { getLessonByStudent, checkQuestion, resetStudentScore, timeLesson } from './redux';
+import { getSubject } from '../fwSubject/redux';
 import { getStudentScore } from '../fwStudent/redux';
 import { Link } from 'react-router-dom';
 import { AdminPage } from 'view/component/AdminPage';
@@ -19,6 +20,14 @@ class userQuestion extends AdminPage {
                     this.props.history.push('/user/hoc-vien/khoa-hoc/' + params.courseId + '/mon-hoc/' + params.subjectId + '/bai-hoc/' + params._id);
                 } else if (data.item) {
                     let totalSeconds = 0;
+                    this.props.getSubject(params.subjectId, data => {
+                        if(data.item && data.item.lessons){
+                            const listLesson = data.item.lessons,
+                            currentIndex = listLesson.findIndex(lesson => lesson._id == params._id);
+                            if(currentIndex + 1 == listLesson.length) this.setState({nextLesson: null});
+                            else this.setState({nextLesson: listLesson[currentIndex+1]});
+                        } 
+                    });
                     this.props.getStudentScore(params.courseId, item => {
                         if (item) {
                             totalSeconds = item[params.subjectId] && item[params.subjectId][params._id] && item[params.subjectId][params._id].totalSeconds ? parseInt(item[params.subjectId][params._id].totalSeconds) : 0;
@@ -196,7 +205,7 @@ class userQuestion extends AdminPage {
         const { questions } = this.state ? this.state : { questions: [] };
         const activeQuestionIndex = this.state.activeQuestionIndex ? this.state.activeQuestionIndex : 0;
         const activeQuestion = questions ? questions[activeQuestionIndex] : null;
-        const { prevTrueAnswers, prevAnswers, showSubmitButton, showTotalScore, score } = this.state;
+        const { prevTrueAnswers, prevAnswers, showSubmitButton, showTotalScore, score, nextLesson, subjectId, courseId } = this.state;
         if (questions && questions.length == 1) {
             activeQuestion && prevAnswers && prevAnswers[activeQuestion._id] && $('#' + activeQuestion._id + prevAnswers[activeQuestion._id]).prop('checked', true);
         } else if (activeQuestionIndex == 0) {
@@ -262,6 +271,12 @@ class userQuestion extends AdminPage {
                                             <button className='btn btn-info' id='refresh-btn' onClick={e => this.resetQuestion(e)} disabled={false}>
                                                 <i className='fa fa-lg fa-refresh' /> Làm lại
                                             </button>}
+                                        {
+                                           !showSubmitButton && nextLesson ?  
+                                            <a className='btn btn-warning ml-5' href={'/user/hoc-vien/khoa-hoc/' + courseId + '/mon-hoc/' + subjectId +  '/bai-hoc/' + nextLesson._id}>
+                                                <i className='fa fa-lg fa-arrow-right' /> Sang bài tiếp theo
+                                            </a> : null
+                                        }
                                     </ul>
                                 </nav>
                             </div>
@@ -274,6 +289,6 @@ class userQuestion extends AdminPage {
     }
 }
 
-const mapStateToProps = state => ({ system: state.system, lesson: state.trainning.lesson });
-const mapActionsToProps = { getLessonByStudent, checkQuestion, getStudentScore, resetStudentScore, timeLesson };
+const mapStateToProps = state => ({ system: state.system, lesson: state.trainning.lesson, subject: state.trainning.subject });
+const mapActionsToProps = { getLessonByStudent, checkQuestion, getStudentScore, resetStudentScore, timeLesson, getSubject };
 export default connect(mapStateToProps, mapActionsToProps)(userQuestion);
