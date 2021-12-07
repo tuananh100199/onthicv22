@@ -1,5 +1,6 @@
 // That code below is generated automatically. Do not change them manually!
 import _init from 'modules/_default/_init/index';
+import fwBank from 'modules/_default/fwBank/index';
 import fwCategory from 'modules/_default/fwCategory/index';
 import fwCluster from 'modules/_default/fwCluster/index';
 import fwComment from 'modules/_default/fwComment/index';
@@ -34,4 +35,4 @@ import fwNews from 'modules/mdTruyenThong/fwNews/index';
 import fwNotificationTemplate from 'modules/mdTruyenThong/fwNotificationTemplate/index';
 import fwSubscribe from 'modules/mdTruyenThong/fwSubscribe/index';
 
-export const modules = [_init, fwCategory, fwCluster, fwComment, fwEmail, fwHome, fwMenu, fwNotification, fwRate, fwRole, fwUser, fwCandidate, fwCar, fwCertificate, fwChangeLecturer, fwChat, fwCourse, fwCourseType, fwDivision, fwDriveQuestion, fwDriveTest, fwLesson, fwPayment, fwRegisterCalendar, fwSign, fwStudent, fwSubject, fwTimeTable, fwContact, fwFeedback, fwForum, fwNews, fwNotificationTemplate, fwSubscribe];
+export const modules = [_init, fwBank, fwCategory, fwCluster, fwComment, fwEmail, fwHome, fwMenu, fwNotification, fwRate, fwRole, fwUser, fwCandidate, fwCar, fwCertificate, fwChangeLecturer, fwChat, fwCourse, fwCourseType, fwDivision, fwDriveQuestion, fwDriveTest, fwLesson, fwPayment, fwRegisterCalendar, fwSign, fwStudent, fwSubject, fwTimeTable, fwContact, fwFeedback, fwForum, fwNews, fwNotificationTemplate, fwSubscribe];
