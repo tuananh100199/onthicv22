@@ -2,6 +2,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { getLessonByStudent, viewLesson, timeLesson } from './redux';
 import { getStudentScore } from '../fwStudent/redux';
+import { getSubject } from '../fwSubject/redux';
 import YouTube from 'react-youtube';
 import { Link } from 'react-router-dom';
 import { AdminPage, AdminModal } from 'view/component/AdminPage';
@@ -30,6 +31,14 @@ class adminEditPage extends AdminPage {
                     this.props.history.push('/user');
                 } else if (data.item) {
                     let totalSeconds = 0;
+                    this.props.getSubject(params.subjectId, data => {
+                        if(data.item && data.item.lessons){
+                            const listLesson = data.item.lessons,
+                            currentIndex = listLesson.findIndex(lesson => lesson._id == params._id);
+                            if(currentIndex + 1 == listLesson.length) this.setState({nextLesson: null, monThucHanh: data.item.monThucHanh});
+                            else this.setState({nextLesson: listLesson[currentIndex+1], monThucHanh: data.item.monThucHanh});
+                        } 
+                    });
                     if (data.item.questions) {
                         this.props.viewLesson(params._id, params.subjectId, params.courseId, true);
                     }
@@ -75,14 +84,13 @@ class adminEditPage extends AdminPage {
     }
 
     render() {
-        console.log('object');
-        const { lessonId, subjectId, title, courseId, tienDoHocTap,isView } = this.state,
+        const { lessonId, subjectId, title, courseId, tienDoHocTap,isView,monThucHanh,nextLesson } = this.state,
             lesson = this.props.lesson && this.props.lesson.item,
             videos = lesson && lesson.videos ? lesson.videos : [],
-            taiLieuThamKhao = lesson && lesson.taiLieuThamKhao;
-        const rate = this.props.rate && this.props.rate.item;
-        const isShowRating = tienDoHocTap && tienDoHocTap[lessonId] || (lesson && lesson.questions && !lesson.questions.length);
-        const videosRender = videos.length ? videos.map((video, index) => (
+            taiLieuThamKhao = lesson && lesson.taiLieuThamKhao,
+            rate = this.props.rate && this.props.rate.item,
+            isShowRating = tienDoHocTap && tienDoHocTap[lessonId] || (lesson && lesson.questions && !lesson.questions.length),
+            videosRender = videos.length ? videos.map((video, index) => (
             <div key={index} className='d-flex justify-content-center pb-5'>
                 <div className='embed-responsive embed-responsive-16by9' style={{ width: '70%', display: 'block' }} onClick={e => this.onView(e, video._id, index)}>
                     <YouTube opts={{playerVars: {'autoplay': 0, 'controls': isView ? 1 : 0, 'rel':0}}} videoId={video.link} containerClassName='embed embed-youtube' />
@@ -109,7 +117,7 @@ class adminEditPage extends AdminPage {
                             // <button className='btn btn-primary' onClick={() => this.modalTaiLieuThamKhao.show(taiLieuThamKhao)}>
                             //     Tài liệu tham khảo
                             // </button>
-                            <a href={'/user/hoc-vien/khoa-hoc/' + courseId + '/mon-hoc/' + subjectId + '/bai-hoc/tai-lieu/' + lessonId} style={{ color: 'black' }}><h5>Tài liệu tham khảo</h5></a>
+                            <a href={'/user/hoc-vien/khoa-hoc/' + courseId + '/mon-hoc/' + subjectId + '/bai-hoc/tai-lieu/' + lessonId} style={{ color: 'black' }}><h5>Tài liệu học tập</h5></a>
                             : null}
                     </div>
                     <div className='tile-footer' >
@@ -119,9 +127,16 @@ class adminEditPage extends AdminPage {
                                 {rate && <h5>Đã đánh giá:   <span className='text-warning'>{rate.value + ' sao'}</span></h5>}
                                 <RateModal ref={e => this.modal = e} title='Đánh giá bài giảng' type='lesson' _refId={lessonId} />
                             </div>
+                            {monThucHanh ?
+                            <div>
+                                {nextLesson ? 
+                                <a className='btn btn-warning ml-5' href={'/user/hoc-vien/khoa-hoc/' + courseId + '/mon-hoc/' + subjectId +  '/bai-hoc/' + nextLesson._id}>
+                                    <i className='fa fa-lg fa-arrow-right' /> Sang bài tiếp theo
+                                </a> : null}
+                            </div> :
                             <div>
                                 <Link to={'/user/hoc-vien/khoa-hoc/' + courseId + '/mon-hoc/' + subjectId + '/bai-hoc/cau-hoi/' + lessonId} className='btn btn-primary'>Câu hỏi ôn tập</Link>
-                            </div>
+                            </div>}
                         </div>
                     </div>
                 </div>
@@ -137,5 +152,5 @@ class adminEditPage extends AdminPage {
 }
 
 const mapStateToProps = state => ({ system: state.system, lesson: state.trainning.lesson, rate: state.framework.rate });
-const mapActionsToProps = { getLessonByStudent, getStudentScore, viewLesson, timeLesson };
+const mapActionsToProps = { getLessonByStudent, getStudentScore, viewLesson, timeLesson, getSubject };
 export default connect(mapStateToProps, mapActionsToProps)(adminEditPage);
