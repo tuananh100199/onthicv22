@@ -129,11 +129,11 @@ class StudentView extends AdminPage {
             renderHead: () => (
                 <tr>
                     <th style={{ width: 'auto', textAlign: 'center' }}>#</th>
-                    <th style={{ width: '40%' }} nowrap='true'>Khóa học</th>
+                    <th style={{ width: '30%' }} nowrap='true'>Khóa học</th>
                     <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Buổi học</th>
                     <th style={{ width: '35%', textAlign: 'center' }} nowrap='true'>Ngày học</th>
                     <th style={{ width: '35%', textAlign: 'center' }} nowrap='true'>Giờ học</th>
-                    <th style={{ width: '30%', textAlign: 'center' }} nowrap='true'>Xe học</th>
+                    <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Xe học</th>
                     <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Nghỉ học</th>
                     <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Ghi chú</th>
                 </tr>),
@@ -144,7 +144,7 @@ class StudentView extends AdminPage {
                     <TableCell type='number' style={{ width: 'auto', textAlign: 'center' }} content={item.dateNumber} />
                     <TableCell type='text' style={{ textAlign: 'center', whiteSpace: 'nowrap' }} content={item.date ? T.dateToText(item.date, 'dd/mm/yyyy') : ''} />
                     <TableCell type='number' style={{ width: 'auto', textAlign: 'center' }} content={item.numOfHours ? `${item.startHour}h-${item.startHour + item.numOfHours}h` : `${item.startHour}h`} />
-                    <TableCell type='number' style={{ textAlign: 'center' }} content={item.licensePlates} />
+                    <TableCell type='text' style={{ textAlign: 'center', whiteSpace: 'nowrap' }} content={item.car && item.car.licensePlates} />
                     <TableCell type='text' style={{ textAlign: 'center', backgroundColor: item.truant ? 'red' : '', color: item.truant ? 'white' : '' }} content={item.truant ? 'X' : ''} />
                     <TableCell type='link' style={{ textAlign: 'center' }} content={<i className='fa fa-lg fa-comment' />} onClick={ e => this.edit(e, item) } />
                 </tr>),
