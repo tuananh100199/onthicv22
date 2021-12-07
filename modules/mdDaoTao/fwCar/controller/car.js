@@ -51,7 +51,7 @@ module.exports = app => {
     });
 
     app.get('/api/car/avaiable-lecturer', (req, res) => {
-        app.model.user.getAll({ isLecturer: true }, (error, lecturers) => {
+        app.model.user.getAll({ isLecturer: true, daNghiDay: false }, (error, lecturers) => {
             if (error) {
                 res.send({ error: 'Lấy thông tin giáo viên bị lỗi' });
             } else {

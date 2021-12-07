@@ -143,13 +143,14 @@ class DashboardPage extends AdminPage {
         if (teacherData && teacherData.teacher) {
             const item = teacherData.teacher.split(';');
             item.sort((a, b) => parseInt(a.split(':')[0]) - parseInt(b.split(':')[0]));
-            const labels = [], dataTotal = [], dataNewTeacher = [];
+            const labels = [], dataTotal = [], dataNewTeacher = [],dataRemoveTeacher =[];
             item.forEach(year => {
                 if (year != '') {
                     const newItem = year.split(':');
                     labels.push(newItem[0]);
                     dataTotal.push(parseInt(newItem[2]));
                     dataNewTeacher.push(parseInt(newItem[4]));
+                    dataRemoveTeacher.push(parseInt(newItem[6]));
                 }
             });
             teacher = {
@@ -175,6 +176,16 @@ class DashboardPage extends AdminPage {
                         pointHoverBorderColor: 'rgba(151,187,205,1)',
                         data: dataNewTeacher
                     },
+                    {
+                        label: 'Giáo viên đã nghỉ',
+                        backgroundColor: 'rgba(39, 143, 0,0.2)',
+                        borderColor: 'rgba(39, 143, 0,1)',
+                        pointBackgroundColor: 'rgba(39, 143, 0,1)',
+                        pointBorderColor: '#fff',
+                        pointHoverBackgroundColor: '#fff',
+                        pointHoverBorderColor: 'rgba(39, 143, 0,1)',
+                        data: dataRemoveTeacher
+                    }
                 ]
             };
         }

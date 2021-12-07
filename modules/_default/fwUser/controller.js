@@ -30,6 +30,7 @@ module.exports = app => {
             pageSize = parseInt(req.params.pageSize),
             condition = req.query.condition || {},
             pageCondition = {};
+        console.log(condition);
         try {
             if (condition && condition.searchText && condition.searchText.startsWith('teacherPage')) {
                 let teacherCondition = {};
@@ -58,6 +59,7 @@ module.exports = app => {
                 if (condition.userType && condition.userType != 'all') {
                     pageCondition.$or.push(Object.fromEntries(
                         (Array.isArray(condition.userType) ? condition.userType : [condition.userType]).map(item => [item, true])));
+                    pageCondition.daNghiDay = false;
                 }
 
                 if (condition.dateStart && condition.dateEnd) {
