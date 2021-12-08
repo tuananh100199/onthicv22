@@ -65,7 +65,10 @@ class CarModal extends AdminModal {
         } else if (!data.division) {
             T.notify('Cơ sở đào tạo không được trống!', 'danger');
             this.itemDivision.focus();
-        } else if (!data.user) {
+        } else if (!data.ngayDangKy) {
+            T.notify('Ngày đăng ký không được trống!', 'danger');
+            this.itemNgayDangKy.focus();
+        }else if (!data.user) {
             T.notify('Vui lòng chọn Quản lý phụ trách xe!', 'danger');
             this.itemUser.focus();
         }
