@@ -2,7 +2,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { getLessonByStudent, viewLesson, timeLesson } from './redux';
 import { getStudentScore } from '../fwStudent/redux';
-import { getSubject } from '../fwSubject/redux';
+import { getSubjectByStudent } from '../fwSubject/redux';
 import YouTube from 'react-youtube';
 import { Link } from 'react-router-dom';
 import { AdminPage, AdminModal } from 'view/component/AdminPage';
@@ -31,7 +31,7 @@ class adminEditPage extends AdminPage {
                     this.props.history.push('/user');
                 } else if (data.item) {
                     let totalSeconds = 0;
-                    this.props.getSubject(params.subjectId, data => {
+                    this.props.getSubjectByStudent(params.subjectId, data => {
                         if(data.item && data.item.lessons){
                             const listLesson = data.item.lessons,
                             currentIndex = listLesson.findIndex(lesson => lesson._id == params._id);
@@ -152,5 +152,5 @@ class adminEditPage extends AdminPage {
 }
 
 const mapStateToProps = state => ({ system: state.system, lesson: state.trainning.lesson, rate: state.framework.rate });
-const mapActionsToProps = { getLessonByStudent, getStudentScore, viewLesson, timeLesson, getSubject };
+const mapActionsToProps = { getLessonByStudent, getStudentScore, viewLesson, timeLesson, getSubjectByStudent };
 export default connect(mapStateToProps, mapActionsToProps)(adminEditPage);
