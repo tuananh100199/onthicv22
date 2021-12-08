@@ -63,7 +63,7 @@ class BankPage extends AdminPage {
     }
 
     delete = (e, item) => e.preventDefault() || T.confirm('Xóa ngân hàng', 'Bạn có chắc bạn muốn xóa ngân hàng này?', true, isConfirm =>
-        isConfirm && this.props.deleteBank(item._id, () => this.props.getBankAll()));
+        isConfirm && this.props.deleteBank(item._id));
 
     render() {
         const permission = this.getUserPermission('bank');

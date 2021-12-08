@@ -1,23 +1,12 @@
 module.exports = app => {
     const schema = app.db.Schema({
-        type:String, // mã chứng từ
         timeReceived: Date,
-        code:String, // số chứng từ -> unique: type+key of mongoose
-        firstname: String, // học viên
-        lastname: String, // học viên
-        student: { type: app.db.Schema.Types.ObjectId, ref: 'Student' },
-        content: String, // diễn giải
-        debitAccount: String, //tk nợ, fixed
-        creditAccount: String, //tk có, fixed
-        moneyAmount: Number,
-        creditObject: String,  //đối tượng có = identityCard?
-        debitObject: String, //đối tượng nợ , should create new bank model ?
-        courseTypeName: String, 
-        courseType: { type: app.db.Schema.ObjectId, ref: 'CourseType' }, 
+        sender: String,
+        body: String,
     });
-    const model = app.db.model('Payment', schema);
+    const model = app.db.model('Sms', schema);
 
-    app.model.payment = {
+    app.model.sms = {
         create: (data, done) => model.create(data, done),
 
         getPage: (pageNumber, pageSize, condition, done) => model.countDocuments(condition, (error, totalItem) => {
@@ -32,6 +21,16 @@ module.exports = app => {
                         result.list = list;
                         done(error, result);
                     });
+            }
+        }),
+        
+        delete: (_id, done) => model.findOne({ _id }, (error, item) => {
+            if (error) {
+                done(error);
+            } else if (item == null) {
+                done('Invalid Id!');
+            } else {
+                item.remove(done);
             }
         }),
     };
