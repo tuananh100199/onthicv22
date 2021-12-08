@@ -125,7 +125,7 @@ class UserPageRandomDriveTestDetail extends AdminPage {
                     if (questions && questions.length == 1) {
                         this.setState({ prevButton: 'invisible', nextButton: 'invisible' });
                     } else {
-                        this.setState({ prevButton: 'invisible' });
+                        this.setState({ prevButton: 'invisible', nextButton: 'visible' });
                     }
                     this.setState({
                         prevAnswers: null,

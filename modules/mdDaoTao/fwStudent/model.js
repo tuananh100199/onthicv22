@@ -268,18 +268,13 @@ module.exports = (app) => {
                 } else if(data.answers) {
                     const obj = {};
                     if (student.tienDoThiHetMon) {
-                        if(student.tienDoThiHetMon[data.subjectId]){
-                            student.tienDoThiHetMon[data.subjectId].score = data.score;
-                            student.tienDoThiHetMon[data.subjectId].trueAnswers = data.trueAnswer;
-                            student.tienDoThiHetMon[data.subjectId].answers = data.answers;
-                            student.tienDoThiHetMon[data.subjectId].diemTB = Number((parseInt(data.score) / Object.keys(data.answers).length).toFixed(1));
-                        } else{
+                        if(!student.tienDoThiHetMon[data.subjectId]) student.tienDoThiHetMon[data.subjectId] = {};
                             student.tienDoThiHetMon[data.subjectId] = {};
                             student.tienDoThiHetMon[data.subjectId].score = data.score;
                             student.tienDoThiHetMon[data.subjectId].trueAnswers = data.trueAnswer;
                             student.tienDoThiHetMon[data.subjectId].answers = data.answers;
                             student.tienDoThiHetMon[data.subjectId].diemTB = Number((parseInt(data.score) / Object.keys(data.answers).length).toFixed(1));
-                        }
+                        
                     } else {
                         student.tienDoThiHetMon = {};
                         obj[data.subjectId] = { score: data.score, trueAnswers: data.trueAnswer, answers: data.answers, diemTB: Number((parseInt(data.score) / Object.keys(data.answers).length).toFixed(1)) };
