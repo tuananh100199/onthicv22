@@ -75,6 +75,14 @@ module.exports = (app) => {
         });
     });
 
+    app.get('/api/student/subject/score', app.permission.check('user:login'), (req, res) => {//mobile
+        const _userId = req.session.user._id,
+            _courseId = req.query.courseId;
+        app.model.student.get({ user: _userId, course: _courseId }, (error, item) => {
+            res.send({ error, item: item && item.tienDoThiHetMon });
+        });
+    });
+
     app.get('/api/student/export/:_courseId/:filter', app.permission.check('course:read'), (req, res) => {
         let pageNumber = parseInt(req.params.pageNumber),
             pageSize = parseInt(req.params.pageSize),

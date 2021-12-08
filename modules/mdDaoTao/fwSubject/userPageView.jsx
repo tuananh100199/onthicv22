@@ -1,7 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { getSubjectByStudent } from './redux';
-import { getStudentScore } from '../fwStudent/redux';
+import { getStudentScore,getStudentSubjectScore } from '../fwStudent/redux';
 import { Link } from 'react-router-dom';
 import { AdminPage } from 'view/component/AdminPage';
 
@@ -24,6 +24,13 @@ class AdminEditPage extends AdminPage {
                             this.setState({ tienDoHocTap: data[params._id] });
                         }
                     });
+                    this.props.getStudentSubjectScore(this.state.courseId, data => {
+                        if (data.error) {
+                            this.props.history.push('/user');
+                        } else {
+                            this.setState({ tienDoThiHetMon: data[params._id] });
+                        }
+                    });
                     T.ready('/user/hoc-vien/khoa-hoc/' + this.state.courseId);
                     const { _id, title, shortDescription, detailDescription } = data.item;
                     this.setState({ _id, title, shortDescription, detailDescription });
@@ -37,11 +44,13 @@ class AdminEditPage extends AdminPage {
     }
 
     render() {
-        const tienDoHocTap = this.state.tienDoHocTap,
+        const {tienDoHocTap, tienDoThiHetMon} = this.state,
+            diemThiHetMon = (tienDoThiHetMon && tienDoThiHetMon.diemTB) ? (tienDoThiHetMon.diemTB*10) : 0,
             monThucHanh = this.props.subject && this.props.subject.item && this.props.subject.item.monThucHanh;
         const lessons = this.props.subject && this.props.subject.item && this.props.subject.item.lessons ? this.props.subject.item.lessons : [];
         const userPageLink = '/user/hoc-vien/khoa-hoc/' + this.state.courseId;
         let finishedLesson = 0;
+        console.log(tienDoThiHetMon);
         if (monThucHanh) {
             lessons.length && lessons.forEach((lesson, index) => {
                 if (tienDoHocTap && tienDoHocTap[lesson._id]) {
@@ -50,7 +59,7 @@ class AdminEditPage extends AdminPage {
             });
         } else {
             lessons.length && lessons.forEach((lesson, index) => {
-                if (tienDoHocTap && tienDoHocTap[lesson._id] && tienDoHocTap[lesson._id].answers) {
+                if (tienDoHocTap && tienDoHocTap[lesson._id] && tienDoHocTap[lesson._id].diemTB && tienDoHocTap[lesson._id].diemTB > 0.5) {
                     finishedLesson = index + 1;
                 } else if (!lesson.questions.length) {
                     if (index == 0)
@@ -81,7 +90,11 @@ class AdminEditPage extends AdminPage {
                             <i className='icon fa fa-3x fa fa-briefcase' style={{ backgroundColor: (finishedLesson == index ? '#007bff' : (finishedLesson > index ? '#17a2b8' : '#6c757d')) }} />
                             <div className='info'>
                                 <h4>{lesson && lesson.title}</h4>
-                                {tienDoHocTap && tienDoHocTap[lesson._id] && tienDoHocTap[lesson._id].answers ? <div><p>Đã hoàn thành</p>{!monThucHanh && <p> Số câu đúng:{((tienDoHocTap[lesson._id].score ? tienDoHocTap[lesson._id].score : 0) + '/' + Math.min(lesson.numQuestion, lesson.questions.length))}</p>}</div> : (lesson.questions.length || monThucHanh ? <p>Chưa hoàn thành</p> : <p>Đã hoàn thành</p>)}
+                                {tienDoHocTap && tienDoHocTap[lesson._id] && tienDoHocTap[lesson._id].answers ? 
+                                    <div><p>Đã hoàn thành</p>{!monThucHanh && <p> Điểm ôn tập:{((tienDoHocTap[lesson._id].score ? 
+                                        tienDoHocTap[lesson._id].score : 0) + '/' + Math.min(lesson.numQuestion, lesson.questions.length))}
+                                        {(tienDoHocTap[lesson._id].diemTB && tienDoHocTap[lesson._id].diemTB > 0.5) ? ' (Đạt)' : ' (Chưa đạt)'}</p>}</div> 
+                                    : ((lesson.questions.length || !monThucHanh) ? <p>Chưa hoàn thành</p> : <p>Đã hoàn thành</p>)}
                             </div>
                         </div>);
                         const show = (
@@ -96,13 +109,24 @@ class AdminEditPage extends AdminPage {
                         return show;
                     }) : <div className='col-md-4'>Chưa có bài học</div>
                     }
-                    {lessons && tienDoHocTap && Object.keys(tienDoHocTap).length >= lessons.length ?
-                        <><h4 style={{ width: '100%' }}>Câu hỏi phản hồi</h4>
+                    {lessons && tienDoHocTap && (Object.keys(tienDoHocTap).length >= lessons.length) ?
+                        <>
+                        <h4 style={{ width: '100%' }}>Câu hỏi phản hồi</h4>
                             <Link className='col-md-6' to={'/user/hoc-vien/khoa-hoc/' + this.state.courseId + '/mon-hoc/phan-hoi/' + this.state.subjectId}>
-                                <div className={'widget-small coloured-icon info'}>
-                                    <i className='icon fa fa-3x fa-info' />
+                                <div className={'widget-small coloured-icon warning'}>
+                                    <i className='icon fa fa-3x fa-comments' />
                                     <div className='info'>
                                         <h4>Câu hỏi phản hồi</h4>
+                                    </div>
+                                </div>
+                            </Link>
+                        <h4 style={{ width: '100%' }}>Thi hết môn</h4>
+                            <Link className='col-md-6' to={'/user/hoc-vien/khoa-hoc/' + this.state.courseId + '/mon-hoc/thi-het-mon/' + this.state.subjectId}>
+                                <div className={'widget-small coloured-icon danger'} >
+                                    <i className='icon fa fa-3x fa-pencil-square-o' />
+                                    <div className='info'>
+                                        <h4>Thi hết môn</h4>
+                                        {tienDoThiHetMon ? <p>Điểm: {diemThiHetMon + ' (' + ((diemThiHetMon > 5) ? 'Đạt) ' : 'Không đạt) ')}</p> : null}
                                     </div>
                                 </div>
                             </Link>
@@ -116,5 +140,5 @@ class AdminEditPage extends AdminPage {
 }
 
 const mapStateToProps = state => ({ system: state.system, subject: state.trainning.subject });
-const mapActionsToProps = { getSubjectByStudent, getStudentScore };
+const mapActionsToProps = { getSubjectByStudent, getStudentScore,getStudentSubjectScore };
 export default connect(mapStateToProps, mapActionsToProps)(AdminEditPage);

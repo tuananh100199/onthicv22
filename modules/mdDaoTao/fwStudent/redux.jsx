@@ -133,6 +133,22 @@ export function getStudentScore(courseId, done) {
     };
 }
 
+export function getStudentSubjectScore(courseId, done) {
+    return dispatch => {
+        const url = '/api/student/subject/score';
+        T.get(url, { courseId }, data => {
+            if (data.error) {
+                T.notify('Lấy thông tin học viên bị lỗi!', 'danger');
+                console.error(`GET: ${url}. ${data.error}`);
+            } else {
+                // T.alert('Lấy thông tin học viên thành công!', 'info', false, 800);
+                done && done(data.item);
+                dispatch({ type: StudentUpdate, item: data.item });
+            }
+        }, error => console.error(error) || T.notify('Lấy thông tin học viên bị lỗi', 'danger'));
+    };
+}
+
 export function exportExamStudent(_courseId, filter) {
     T.download(T.url(`/api/student/export/${_courseId}/${filter}`));
 }

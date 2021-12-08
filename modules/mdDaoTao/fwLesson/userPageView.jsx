@@ -47,7 +47,7 @@ class adminEditPage extends AdminPage {
                         if (data.error) {
                             this.props.history.push('/user');
                         } else {
-                            totalSeconds = data[params.subjectId] && data[params.subjectId][params._id] && data[params.subjectId][params._id].totalSeconds ? parseInt(data[params.subjectId][params._id].totalSeconds) : 0;
+                            totalSeconds = (data[params.subjectId] && data[params.subjectId][params._id] && data[params.subjectId][params._id].totalSeconds) ? parseInt(data[params.subjectId][params._id].totalSeconds) : 0;
                             this.setState({ tienDoHocTap: data[params.subjectId], isView: data[params.subjectId] && data[params.subjectId][params._id] && data[params.subjectId][params._id].view });
                         }
                     });
@@ -117,7 +117,7 @@ class adminEditPage extends AdminPage {
                             // <button className='btn btn-primary' onClick={() => this.modalTaiLieuThamKhao.show(taiLieuThamKhao)}>
                             //     Tài liệu tham khảo
                             // </button>
-                            <a href={'/user/hoc-vien/khoa-hoc/' + courseId + '/mon-hoc/' + subjectId + '/bai-hoc/tai-lieu/' + lessonId} style={{ color: 'black' }}><h5>Tài liệu học tập</h5></a>
+                            <a href={'/user/hoc-vien/khoa-hoc/' + courseId + '/mon-hoc/' + subjectId + '/bai-hoc/tai-lieu/' + lessonId} className='btn btn-primary' ><div>Tài liệu học tập</div></a>
                             : null}
                     </div>
                     <div className='tile-footer' >

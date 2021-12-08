@@ -152,6 +152,48 @@ export function submitFeedback(subjectId, courseId, answers, done) {
     };
 }
 
+export function createRandomSubjectTest(subjectId,courseId, done) {
+    return () => {
+        const url = '/api/subject/random';
+        T.post(url, { subjectId, courseId }, data => {
+            if (data.error) {
+                T.notify('Tạo bộ đề thi ngẫu nhiên bị lỗi!', 'danger');
+                console.error('POST: ' + url + '. ' + data.error);
+            } else {
+                done && done(data);
+            }
+        }, error => console.error(error) || T.notify('Tạo bộ đề thi ngẫu nhiên bị lỗi!', 'danger'));
+    };
+}
+
+export function checkRandomSubjectTest( subjectId, courseId, answers, done) {
+    return () => {
+        const url = '/api/subject/random/submit';
+        T.post(url, { subjectId, courseId, answers }, data => {
+            if (data.error) {
+                T.notify('Kiểm tra đáp án bị lỗi!', 'danger');
+                console.error('GET: ' + url + '.', data.error);
+            } else {
+                done && done(data.result);
+            }
+        }, error => console.error(error) || T.notify('Kiểm tra đáp án bị lỗi!', 'danger'));
+    };
+}
+
+export function resetStudentSubjectScore( subjectId, courseId, done) {
+    return () => {
+        const url = '/api/subject/random/reset';
+        T.put(url, { subjectId, courseId }, data => {
+            if (data.error) {
+                T.notify('Làm lại câu hỏi ôn tập bị lỗi!', 'danger');
+                console.error('POST: ' + url + '.', data.error);
+            } else {
+                done && done(data.result);
+            }
+        }, error => console.error(error) || T.notify('Làm lại câu hỏi ôn tập bị lỗi!', 'danger'));
+    };
+}
+
 export const ajaxSelectSubject = T.createAjaxAdapter(
     '/api/subject/page/1/20',
     response => response && response.page && response.page.list ? response.page.list.map(item => ({ id: item._id, text: item.title })) : []
