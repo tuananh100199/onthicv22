@@ -4,6 +4,7 @@
 2000. Cấu hình (undefined)
 	2010 - Thông tin chung (/user/setting)
 	2020 - Email (/user/email)
+	2030 - Ngân hàng (/user/bank)
 	2040 - Cluster (/user/cluster)
 	2060 - Người dùng (/user/member)
 	2070 - Quản lý giáo viên (/user/manage-lecturer)

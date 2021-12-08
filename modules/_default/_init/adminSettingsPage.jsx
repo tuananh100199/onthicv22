@@ -6,9 +6,10 @@ import { AdminPage, FormTextBox, FormImageBox } from 'view/component/AdminPage';
 
 class SettingsPage extends AdminPage {
     state = {};
+
     componentDidMount() {
         T.ready(() => {
-            let { address, email, mobile, fax, facebook, youtube, twitter, instagram, logo, footer, contact, subscribe, smsAPIToken, moneyStartStr, moneyEndStr, contentStartStr, contentEndStr } = this.props.system ?
+            let { address, email, mobile, fax, facebook, youtube, twitter, instagram, logo, footer, contact, subscribe, smsAPIToken} = this.props.system ?
                 this.props.system : { address: '', email: '', mobile: '', fax: '', facebook: '', youtube: '', twitter: '', instagram: '', logo: '/img/logo.jpg', footer: '/img/footer.jpg', contact: '/img/contact.jpg', subscribe: '/img/subscribe.jpg', smsAPIToken:'' };
             this.systemAddress.value(address);
             this.systemEmail.value(email);
@@ -18,10 +19,6 @@ class SettingsPage extends AdminPage {
             this.systemYoutube.value(youtube);
             this.systemTwitter.value(twitter);
             this.systemInstagram.value(instagram);
-            this.systemMoneyStartStr.value(moneyStartStr || '(+)');
-            this.systemMoneyEndStr.value(moneyEndStr|| 'VND');
-            this.systemContentStartStr.value(contentStartStr || 'hiepphat');
-            this.systemContentEndStr.value(contentEndStr|| '\n');
             this.systemLogo.setData('logo', logo);
             this.systemContact.setData('contact', contact);
             this.systemSubscribe.setData('subscribe', subscribe);
@@ -39,15 +36,6 @@ class SettingsPage extends AdminPage {
             youtube: this.systemYoutube.value(),
             twitter: this.systemTwitter.value(),
             instagram: this.systemInstagram.value(),
-        });
-    }
-
-    saveSMS = () => {
-        this.props.saveSystemState({
-            moneyStartStr: this.systemMoneyStartStr.value(),
-            moneyEndStr: this.systemMoneyEndStr.value(),
-            contentStartStr: this.systemContentStartStr.value(),
-            contentEndStr: this.systemContentEndStr.value() == '' ? '\n' : this.systemContentEndStr.value(),
         });
     }
 
@@ -105,19 +93,7 @@ class SettingsPage extends AdminPage {
                             <div className='tile-body'>
                             <p>API Token QR Code</p>
                             {this.state.smsAPIToken ? <QRCode value={this.state.smsAPIToken} size={200}/>: null}
-                            <p style={{ fontWeight:'bold', marginTop: 10 }} >CKT: Chuỗi ký tự; GD: Giao dịch</p>
-                            <FormTextBox ref={e => this.systemMoneyStartStr = e} label='CKT bắt đầu phần biến động số dư' readOnly={readOnly} />
-                            <FormTextBox ref={e => this.systemMoneyEndStr = e} label='CKT kết thúc phần biến động số dư' readOnly={readOnly} />
-                            <FormTextBox ref={e => this.systemContentStartStr = e} label='CKT nhận biết GD nhận tiền từ học viên Hiệp Phát trong nội dung GD' readOnly={readOnly} />
-                            <FormTextBox ref={e => this.systemContentEndStr = e} smallText='Nếu kí tự kết thúc là xuống dòng thì để trống' label='CKT kết thúc phần nội dung GD' readOnly={readOnly} />                           
-                            {/* <QRCode ref={e => this.systemSMSAPIToken = e} value="hey" size={200}/> */}
                             </div>
-                            {readOnly ? null :
-                                <div className='tile-footer' style={{ textAlign: 'right' }}>
-                                    <button className='btn btn-primary' type='button' onClick={this.saveSMS}>
-                                        <i className='fa fa-fw fa-lg fa-save' /> Lưu
-                                    </button>
-                                </div>}
                         </div>
                     </div>
 
