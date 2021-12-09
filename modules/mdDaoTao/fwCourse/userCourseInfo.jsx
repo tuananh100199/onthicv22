@@ -1,6 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { getCourseByStudent } from './redux';
+import { getBankByStudent } from 'modules/_default/fwBank/redux';
 import { Link } from 'react-router-dom';
 import { AdminPage } from 'view/component/AdminPage';
 
@@ -22,7 +23,13 @@ class UserCourseInfo extends AdminPage {
                         T.alert(data.notify, 'error', false, 2000);
                         this.props.history.push(previousRoute);
                     } else if (data.item && data.student) {
-                        this.setState({ ...data.item, ngayDuKienThiSatHach: data.student.ngayDuKienThiSatHach, hocPhiPhaiDong: data.student.hocPhiPhaiDong, hocPhiDaDong: data.student.hocPhiDaDong, hocPhiMienGiam: data.student.hocPhiMienGiam });
+                        this.props.getBankByStudent({active:true},(item)=>{
+                        this.setState({ ...data.item, ngayDuKienThiSatHach: data.student.ngayDuKienThiSatHach, hocPhiPhaiDong: data.student.hocPhiPhaiDong, hocPhiDaDong: data.student.hocPhiDaDong, hocPhiMienGiam: data.student.hocPhiMienGiam,
+                            contentSyntax: item.contentSyntax.replace('{cmnd}',data.student.identityCard).replace('{ten_loai_khoa_hoc}',data.student.courseType.title),
+                            code: item.code, nameBank: item.name, 
+                            accounts: item.accounts.find(({active})=>active == true),
+                         });
+                        });
                     } else {
                         this.props.history.push(previousRoute);
                     }
@@ -54,6 +61,16 @@ class UserCourseInfo extends AdminPage {
                         </div>
                     </div>
 
+                     <div className='tile'>
+                        <h3 className='tile-title'>Tài khoản ngân hàng nhận tiền học phí</h3>
+                        <div className='tile-body row'>
+                            <label className='col-md-12'>Tên ngân hàng: <b>{this.state.code+' - '+this.state.nameBank}</b></label>
+                            <label className='col-md-12'>Số tài khoản: <b>{this.state.accounts && this.state.accounts.number}</b></label>
+                            <label className='col-md-12'>Người sỡ hữu tài khoản: <b>{this.state.accounts && this.state.accounts.holder}</b></label>
+                            <label className='col-md-12'>Cú pháp chuyển khoản: <b>{this.state.contentSyntax}</b></label>
+                        </div>
+                    </div>
+
                     <div className='tile'>
                         <h3 className='tile-title'>Thời gian</h3>
                         <label className='col'>Thời gian khai giảng: <b>{T.dateToText(this.state.thoiGianKhaiGiang, 'dd/mm/yyyy h:mm')}</b></label>
@@ -74,5 +91,5 @@ class UserCourseInfo extends AdminPage {
 }
 
 const mapStateToProps = state => ({ system: state.system, course: state.trainning.course });
-const mapActionsToProps = { getCourseByStudent };
+const mapActionsToProps = { getCourseByStudent, getBankByStudent };
 export default connect(mapStateToProps, mapActionsToProps)(UserCourseInfo);

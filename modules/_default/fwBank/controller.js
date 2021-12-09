@@ -18,6 +18,10 @@ module.exports = app => {
         app.model.bank.get({ _id: req.query._id }, (error, item) => res.send({ error, item }));
     });
 
+    app.get('/api/bank/student', app.permission.check('user:login'), (req, res) => {
+        app.model.bank.get(req.query.condition, (error, item) => res.send({ error, item }));
+    });
+
     app.post('/api/bank', app.permission.check('bank:write'), (req, res) => {
         app.model.bank.create(req.body.bank, (error, item) => res.send({ error, item }));
     });
