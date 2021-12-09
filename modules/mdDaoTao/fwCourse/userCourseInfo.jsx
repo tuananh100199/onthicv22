@@ -62,11 +62,12 @@ class UserCourseInfo extends AdminPage {
                     </div>
 
                      <div className='tile'>
-                        <h3 className='tile-title'>Tài khoản ngân hàng nhận tiền học phí</h3>
+                        <h3 className='tile-title'>Học phí</h3>
                         <div className='tile-body row'>
                             <label className='col-md-12'>Tên ngân hàng: <b>{this.state.code+' - '+this.state.nameBank}</b></label>
                             <label className='col-md-12'>Số tài khoản: <b>{this.state.accounts && this.state.accounts.number}</b></label>
                             <label className='col-md-12'>Người sỡ hữu tài khoản: <b>{this.state.accounts && this.state.accounts.holder}</b></label>
+                            <label className='col-md-12'>Học phí: <b>{this.state.hocPhiPhaiDong ? T.numberDisplay(this.state.hocPhiPhaiDong) + ' đồng' : ''}</b></label>
                             <label className='col-md-12'>Cú pháp chuyển khoản: <b>{this.state.contentSyntax}</b></label>
                         </div>
                     </div>

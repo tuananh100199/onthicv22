@@ -34,6 +34,9 @@ module.exports = app => {
     });
 
     app.delete('/api/bank', app.permission.check('bank:delete'), (req, res) => {
-        app.model.bank.delete(req.body._id, error => res.send({ error }));
+        const user = req.session.user;
+        if (user.roles.some(role => role.name == 'admin')) {
+            app.model.bank.delete(req.body._id, error => res.send({ error }));
+        } else res.send({ error: 'Bạn không có quyền xóa ngân hàng' });
     });
 };

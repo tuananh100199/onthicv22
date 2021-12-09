@@ -23,6 +23,9 @@ module.exports = app => {
     });
 
     app.delete('/api/sms', app.permission.check('sms:delete'), (req, res) => {
-        app.model.sms.delete(req.body._id, error => res.send({ error }));
+        const user = req.session.user;
+        if (user.roles.some(role => role.name == 'admin')) {
+            app.model.sms.delete(req.body._id, error => res.send({ error }));
+        } else res.send({ error: 'Bạn không có quyền xóa SMS' });
     });
 };
