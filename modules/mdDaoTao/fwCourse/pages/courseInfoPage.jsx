@@ -73,6 +73,11 @@ class EditCoursePage extends AdminPage {
                 commentActive: this.commentActive.value(),
                 thoiGianKetThuc: this.thoiGianKetThuc.value(),
                 thoiGianBatDau: this.thoiGianBatDau.value(),
+                thoiGianKhaiGiang: this.thoiGianKhaiGiang.value(),
+                thoiGianThiKetThucMonDuKien: this.thoiGianThiKetThucMonDuKien.value(),
+                thoiGianThiKetThucMonChinhThuc: this.thoiGianThiKetThucMonChinhThuc.value(),
+                thoiGianThiTotNghiepDuKien: this.thoiGianThiTotNghiepDuKien.value(),
+                thoiGianThiTotNghiepChinhThuc: this.thoiGianThiTotNghiepChinhThuc.value()
                 
             };
             this.setState({ chatActive: changes.chatActive, commentActive: changes.commentActive });

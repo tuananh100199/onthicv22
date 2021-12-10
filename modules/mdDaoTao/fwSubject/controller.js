@@ -13,6 +13,7 @@ module.exports = (app) => {
     app.get('/user/hoc-vien/khoa-hoc/:courseId/mon-hoc/:_id', app.permission.check('user:login'), app.templates.admin);
     app.get('/user/hoc-vien/khoa-hoc/:courseId/mon-hoc/thong-tin/:_id', app.permission.check('user:login'), app.templates.admin);
     app.get('/user/hoc-vien/khoa-hoc/:courseId/mon-hoc/phan-hoi/:_id', app.permission.check('user:login'), app.templates.admin);
+    app.get('/user/hoc-vien/khoa-hoc/:courseId/mon-hoc/thi-het-mon/:_id', app.permission.check('user:login'), app.templates.admin);
 
     // Subject APIs ---------------------------------------------------------------------------------------------------
     app.get('/api/subject/page/:pageNumber/:pageSize', app.permission.check('subject:read'), (req, res) => {
@@ -111,6 +112,138 @@ module.exports = (app) => {
                 res.send({ error });
             } else {
                 app.model.subject.get(_subjectId, (error, item) => res.send({ error, item }));
+            }
+        });
+    });
+
+    //Random Đề thi hết môn ----------------------------------------------------------------------------------------------
+    app.post('/api/subject/random', (req, res) => {
+        const {subjectId, courseId} = req.body;
+        app.model.student.get({ user: req.session.user._id, course: courseId }, (error, student) => {
+            if (error) {
+                res.send({ error });
+            } else {
+                if (student.tienDoThiHetMon && student.tienDoThiHetMon[subjectId] && student.tienDoThiHetMon[subjectId].answers) {
+                    const listIdQuestion = Object.keys(student.tienDoThiHetMon[subjectId].answers);
+                    app.model.driveQuestion.getAll((error, list) => {
+                        if (error || list.length == 0) {
+                            res.send({ error: 'Lấy câu hỏi thi bị lỗi!' });
+                        } else {
+                            const newQuestion = list.filter(question => listIdQuestion.indexOf(question._id.toString()) != -1);
+                            const driveTest = {
+                                questions: newQuestion,
+                            };
+                            res.send({ error, driveTest });
+                        }
+                    });
+                } else {
+                    app.getRandom = (arr, n) => {
+                        if (n < 1) {
+                            return null;
+                        }
+                        let result = new Array(n),
+                            len = arr.length,
+                            taken = new Array(len);
+                        if (n > len) {
+                            return null;
+                        }
+                        while (n--) {
+                            let x = Math.floor(Math.random() * len);
+                            result[n] = arr[x in taken ? taken[x] : x];
+                            taken[x] = --len in taken ? taken[len] : len;
+                        }
+                        return result;
+                    };
+                    app.model.subject.get(subjectId, (error, item) => {
+                        if (error || item == null) {
+                            res.send({ error: 'Lấy môn học bị lỗi!' });
+                        } else {
+                            if (item.questionTypes) {
+                                app.model.driveQuestion.getAll((error, list) => {
+                                    if (error || list.length == 0) {
+                                        res.send({ error: 'Lấy câu hỏi thi bị lỗi!' });
+                                    } else {
+                                        const questionMapper = {};
+                                        list.forEach(question => {
+                                            questionMapper[question.categories[0]] ?
+                                                questionMapper[question.categories[0]].push(question) :
+                                                (questionMapper[question.categories[0]] = [question]);
+                                        });
+            
+                                        const randomQuestions = [];
+                                        item.questionTypes.forEach(type => {
+                                            randomQuestions.push(app.getRandom(questionMapper[type.category], type.amount));
+                                        });
+                                        const driveTest = {
+                                            questions: randomQuestions.filter(item => item != null).flat(),
+                                            totalTime: item.totalTime
+                                        };
+                                        res.send({ driveTest, subject: item });
+                                    }
+                                });
+                            } else {
+                                res.send({ error: 'Lấy loại câu hỏi thi bị lỗi!' });
+                            }
+                        }
+                    });
+                }
+            }
+        });
+        
+    });
+
+    app.post('/api/subject/random/submit', app.permission.check('user:login'), (req, res) => {//mobile
+        const { courseId, subjectId, answers } = req.body;
+        let questionIds = answers ? Object.keys(answers) : [],
+            score = 0;
+        app.model.driveQuestion.getAll({ _id: { $in: questionIds } }, (error, questions) => {
+            if (error) {
+                res.send({ error });
+            } else {
+                const questionMapper = {},
+                    trueAnswer = {};
+                questions.forEach(item => {
+                    questionMapper[item._id] = item;
+                    trueAnswer[item._id] = item.trueAnswer;
+                });
+                if (answers) {
+                    for (const [key, value] of Object.entries(answers)) {
+                        if (questionMapper[key]) {
+                            if (questionMapper[key].trueAnswer == value) {
+                                score = score + 1;
+                            }
+                        } else {
+                            error = 'Không tìm thấy câu hỏi!';
+                        }
+                    }
+                }
+                app.model.student.get({ user: req.session.user._id, course: courseId }, (error, student) => {
+                    if (error) {
+                        res.send({ error });
+                    } else {
+                        const data = { studentId: student._id, subjectId, trueAnswer, answers, score, courseId };
+                        app.model.student.updateTienDoThiHetMon(data, (error, item) => {
+                            res.send({ error, result: { score, trueAnswer, answers }, item });
+                        });
+                    }
+                });
+            }
+        });
+    });
+
+    app.put('/api/subject/random/reset', app.permission.check('user:login'), (req, res) => {
+        const { courseId, subjectId } = req.body,
+            userId = req.session.user._id;
+        app.model.student.get({ user: userId, course: courseId }, (error, student) => {
+            if (error) {
+                res.send({ error });
+            } else {
+                const key = 'tienDoThiHetMon.' + subjectId,
+                    changes = {};
+                changes[key] = {score: '', trueAnswers: '', answers: ''};
+                app.model.student.resetLesson({ _id: student._id }, changes, (error, item) => {
+                    res.send({ error, item });
+                });
             }
         });
     });
