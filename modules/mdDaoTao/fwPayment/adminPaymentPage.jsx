@@ -5,25 +5,22 @@ import Pagination from 'view/component/Pagination';
 import { AdminPage, AdminModal, TableCell, renderTable } from 'view/component/AdminPage';
 
 class SmsModal extends AdminModal {
-    sender = '';
-    body = ''; 
-    timeReceived = '';
-
     onShow = ({sender, body, timeReceived}) => {
-        this.sender = sender;
-        this.body = body;
-        this.timeReceived = timeReceived;
+        this.setState({sender, body, timeReceived});
     };
 
-    render = () => this.renderModal({
+    render = () => {
+        const {sender, body, timeReceived} = this.state;
+        return this.renderModal({
         title: 'Thông tin SMS Banking đã được xử lý',
         size: 'large',
         body: <>
-            <label className='col-md-12'>Tên ngân hàng nhận: <b>{this.sender}</b></label>
-            <label className='col-md-12'>Nội dung SMS: <b>{this.body}</b></label>
-            <label className='col-md-12'>Thời gian nhận: <b>{this.timeReceived}</b></label>
-        </>,
-    });
+            <label className='col-md-12'>Tên ngân hàng nhận: <b>{sender}</b></label>
+            <label className='col-md-12'>Nội dung SMS: <b>{body}</b></label>
+            <label className='col-md-12'>Thời gian nhận: <b>{timeReceived ? T.dateToText(timeReceived): ''}</b></label>
+            </>,
+        });
+    }
 }
 
 class PaymentPage extends AdminPage {
@@ -73,7 +70,7 @@ class PaymentPage extends AdminPage {
                     <TableCell type='number' content={item.moneyAmount} />
                     <TableCell content={item.debitObject} />
                     <TableCell content={item.creditObject} />
-                    <TableCell type='buttons'>
+                    <TableCell type='buttons'style={{ textAlign: 'center' }}>
                         {item.sms ?
                             <a className='btn btn-success' href='#' onClick={(e) => {
                                 e.preventDefault(); 
