@@ -188,7 +188,7 @@ class CourseAdminModal extends AdminModal {
 
 
 class AdminLearningProgressPage extends AdminPage {
-    state = { filter: 'all' };
+    state = { filter: 'all', listShow: [] };
     componentDidMount() {
         T.ready('/user/course', () => {
             const params = T.routeMatcher('/user/course/:_id/learning').parse(window.location.pathname);
@@ -239,7 +239,7 @@ class AdminLearningProgressPage extends AdminPage {
             subjects = this.props.course && this.props.course.subjects ? this.props.course.subjects.sort((a, b) => a.monThucHanh - b.monThucHanh) : [],
             monThiTotNghiep = item && item.monThiTotNghiep ? item.monThiTotNghiep : [],
             totalColumns = [{id: 'diemLyThuyet', text: 'Điểm lý thuyết'}, {id:'diemThucHanh', text: 'Điểm thực hành'} ,{id:'diemTrungBinh', text:'Điểm trung bình'}  ,{id:'diemTrungBinhHetMon', text: 'Điểm trung bình thi hết môn'}, {id:'datSatHach', text:'Đạt sát hạch'}],
-            listShow = this.state.listShow ? this.state.listShow : [],
+            listShow = (this.showColModal && this.showColModal.state && this.showColModal.state.listShow) ? this.showColModal.state.listShow : (this.state.listShow || []),
             dataSelectCourseAdmin = [
                 { id: 'all', text: 'Tất cả học viên' },
                 { id: 'thiHetMon', text: 'Học viên đủ điều kiện thi hết môn' },
