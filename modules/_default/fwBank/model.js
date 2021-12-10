@@ -9,9 +9,9 @@ module.exports = app => {
         }],
         active: { type: Boolean, default: false },
         moneyLine: Number,
-        moneyStr: String,
+        moneyStr: { type: String, default: '+/:money/VND' },
         contentLine: Number,
-        contentStr: String,
+        contentStr: { type: String, default: 'Noi dung:/:content/' },
         contentSyntax: { type: String, default: '{cmnd} {ten_loai_khoa_hoc}' },
     });
 

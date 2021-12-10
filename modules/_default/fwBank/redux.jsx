@@ -109,7 +109,22 @@ export function getBank(_id, done) {
         T.get(url, { _id }, data => {
             if (data.error) {
                 T.notify('Lấy thông tin ngân hàng bị lỗi!', 'danger');
-                console.error(`DELETE: ${url}. ${data.error}`);
+                console.error(`GET: ${url}. ${data.error}`);
+            } else {
+                done && done(data.item);
+                dispatch({ type: BankGetItem, item: data.item });
+            }
+        }, error => console.error(error) || T.notify('Lấy thông tin ngân hàng bị lỗi', 'danger'));
+    };
+}
+
+export function getBankByStudent(condition, done) {
+    return (dispatch) => {
+        const url = '/api/bank/student';
+        T.get(url, { condition }, data => {
+            if (data.error) {
+                T.notify('Lấy thông tin ngân hàng bị lỗi!', 'danger');
+                console.error(`GET: ${url}. ${data.error}`);
             } else {
                 done && done(data.item);
                 dispatch({ type: BankGetItem, item: data.item });

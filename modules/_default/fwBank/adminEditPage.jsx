@@ -214,8 +214,8 @@ class BankEditPage extends AdminPage {
                     <div className='tile-body row'>
                         <div className='col-md-4'>
                         <FormSelect ref={e => this.bank = e} label='Ngân hàng' data={this.state.banks} readOnly={readOnly} onChange={data => this.onChange(data)}/>
-                        <FormCheckbox ref={e => this.active = e} label='Kích hoạt' readOnly={readOnly} />
                         <FormRichTextBox ref={e => this.contentSyntax = e} rows={1} listParams={listParams} label='Cú pháp chuyển tiền của học viên' readOnly={readOnly} />
+                        <FormCheckbox ref={e => this.active = e} label='Kích hoạt' readOnly={readOnly} />
                         </div>
                         <div className='col-md-4'>
                         <FormTextBox ref={e => this.moneyLine = e} label='Dòng biến động số dư' readOnly={readOnly} />
