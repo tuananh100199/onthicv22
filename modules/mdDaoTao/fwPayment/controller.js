@@ -35,8 +35,9 @@ module.exports = app => {
                                 }
                             });
                         };
+                        const value = { $regex: `.*${originatingAddress}.*`, $options: 'i' };
                         // check whether originatingAddress be in code of bank db ?
-                        app.model.bank.get({ code: { $regex: originatingAddress, $options: 'i' } }, (error, bank) => { //check active bank ?
+                        app.model.bank.get({ $or: [{ shortname: value }, { code: value }] }, (error, bank) => { //check active bank ?
                             if(error || !bank){
                                 res.send({error: 'This bank doesn\'t exist in db'});
                             } else { //create sms when bank exist ?
@@ -108,12 +109,7 @@ module.exports = app => {
                                                             }
                                                             payment.creditObject = identityCard;
                                                             payment.courseTypeName = courseTypeName;
-                                                            app.model.courseType.get({
-                                                    title: {
-                                                        $regex: courseTypeName,
-                                                        $options: 'i'
-                                                    }
-                                                }, (error, item) => {
+                                                            app.model.courseType.get({ title: { $regex: courseTypeName, $options: 'i'}}, (error, item) => {
                                                     if (error || !item) {
                                                         res.send({
                                                             error: 'Nonexist courseType'
@@ -136,14 +132,19 @@ module.exports = app => {
                                                                             error
                                                                         });
                                                                     } else {
+                                                                        payment.sms = sms._id;
                                                                         payment.student = item._id;
                                                                         payment.firstname = item.firstname;
                                                                         payment.lastname = item.lastname;
                                                                         payment.courseType = item.courseType && item.courseType._id;
-                                                                        app.model.payment.create(payment, (error, item) => res.send({
-                                                                            error,
-                                                                            item
-                                                                        }));
+                                                                        app.model.payment.create(payment, (error, item) =>{
+                                                                            if(error || !item){
+                                                                                res.send({error: error || 'Lỗi khi tạo thu công nợ'});
+                                                                            } else {
+                                                                                sms.isHandled = true;
+                                                                                sms.save((error, item) => res.send({error, item}));
+                                                                            }
+                                                                        });
                                                                     }
                                                                 });
                                                             }

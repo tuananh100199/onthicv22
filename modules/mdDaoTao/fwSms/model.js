@@ -1,8 +1,9 @@
 module.exports = app => {
     const schema = app.db.Schema({
-        timeReceived: Date,
+        timeReceived: { type: Date, default: Date.now },
         sender: String,
         body: String,
+        isHandled: { type: Boolean, default: false },
     });
     const model = app.db.model('Sms', schema);
 

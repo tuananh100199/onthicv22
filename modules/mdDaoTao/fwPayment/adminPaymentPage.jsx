@@ -2,7 +2,29 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { getPaymentPage } from './redux';
 import Pagination from 'view/component/Pagination';
-import { AdminPage, TableCell, renderTable } from 'view/component/AdminPage';
+import { AdminPage, AdminModal, TableCell, renderTable } from 'view/component/AdminPage';
+
+class SmsModal extends AdminModal {
+    sender = '';
+    body = ''; 
+    timeReceived = '';
+
+    onShow = ({sender, body, timeReceived}) => {
+        this.sender = sender;
+        this.body = body;
+        this.timeReceived = timeReceived;
+    };
+
+    render = () => this.renderModal({
+        title: 'Thông tin SMS Banking đã được xử lý',
+        size: 'large',
+        body: <>
+            <label className='col-md-12'>Tên ngân hàng nhận: <b>{this.sender}</b></label>
+            <label className='col-md-12'>Nội dung SMS: <b>{this.body}</b></label>
+            <label className='col-md-12'>Thời gian nhận: <b>{this.timeReceived}</b></label>
+        </>,
+    });
+}
 
 class PaymentPage extends AdminPage {
     state = { searchText: '', isSearching: false };
@@ -36,6 +58,7 @@ class PaymentPage extends AdminPage {
                     <th style={{ width: 'auto' }} nowrap='true'>Số tiền(VNĐ)</th>
                     <th style={{ width: 'auto' }}  nowrap='true'>Đối tượng nợ</th>
                     <th style={{ width: 'auto' }}  nowrap='true'>Đối tượng có</th>
+                    <th style={{ width: 'auto' }}  nowrap='true'>SMS Banking</th>
                 </tr>),
             renderRow: (item, index) => (
                 <tr key={index}>
@@ -50,6 +73,15 @@ class PaymentPage extends AdminPage {
                     <TableCell type='number' content={item.moneyAmount} />
                     <TableCell content={item.debitObject} />
                     <TableCell content={item.creditObject} />
+                    <TableCell type='buttons'>
+                        {item.sms ?
+                            <a className='btn btn-success' href='#' onClick={(e) => {
+                                e.preventDefault(); 
+                                this.modal.show(item.sms);
+                            }}>
+                                <i className='fa fa-lg fa-comments-o' />
+                            </a> : null}
+                    </TableCell>
                 </tr >),
         });
         return this.renderPage({
@@ -58,6 +90,7 @@ class PaymentPage extends AdminPage {
             breadcrumb: ['Thu công nợ'],
             content: <>
                 <div className='tile'>{table}</div>
+                <SmsModal ref={e => this.modal = e}/>
                 <Pagination name='adminPayment' pageCondition={pageCondition} pageNumber={pageNumber} pageSize={pageSize} pageTotal={pageTotal} totalItem={totalItem}
                     getPage={this.props.getPaymentPage} />
             </>

@@ -2,16 +2,17 @@ module.exports = app => {
     const schema = app.db.Schema({
         code: String,
         name: String,
+        shortname: String,
         accounts:[{
             holder: String,
             number: String,
             active: { type: Boolean, default: false },
         }],
         active: { type: Boolean, default: false },
-        moneyLine: Number,
+        moneyLine: { type: Number, default: 0 },
         moneyStr: { type: String, default: '+/:money/VND' },
-        contentLine: Number,
-        contentStr: { type: String, default: 'Noi dung:/:content/' },
+        contentLine: { type: Number, default: 0 },
+        contentStr: { type: String, default: 'ND:/:content/' },
         contentSyntax: { type: String, default: '{cmnd} {ten_loai_khoa_hoc}' },
     });
 

@@ -16,6 +16,7 @@ module.exports = app => {
             pageSize = parseInt(req.params.pageSize),
             condition = req.query.pageCondition || {};
         try {
+            condition.isHandled = false;
             app.model.sms.getPage(pageNumber, pageSize, condition, (error, page) => res.send({ error, page }));
         } catch (error) {
             res.send({ error });
