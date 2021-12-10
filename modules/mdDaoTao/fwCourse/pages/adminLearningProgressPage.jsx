@@ -258,19 +258,19 @@ class AdminLearningProgressPage extends AdminPage {
         const subjectColumns = [];
         (subjects || []).forEach((subject, index) => {
             totalColumns.push({id: subject._id, text: subject.title});
-            (listShow.length == 0 || (listShow.length && listShow.indexOf(subject._id) != -1)) && subjectColumns.push(<th key={index} style={{ width: 'auto', color: subject.monThucHanh ? 'aqua' : 'coral' }} nowrap='true'>{subject.title}</th>);
+            (!listShow.length || (listShow.length && listShow.indexOf(subject._id) != -1)) && subjectColumns.push(<th key={index} style={{ width: 'auto', color: subject.monThucHanh ? 'aqua' : 'coral' }} nowrap='true'>{subject.title}</th>);
         });
 
         const finalScoreColumns = [];
         (subjects || []).forEach((subject, index) => {
             totalColumns.push({id: 'final' + subject._id, text: 'Điểm thi ' + subject.title});
-            (listShow.length == 0 || (listShow.length && listShow.indexOf('final' + subject._id) != -1)) && finalScoreColumns.push(<th key={index} style={{ width: 'auto', color: subject.monThucHanh ? 'aqua' : 'coral' }} nowrap='true'>{'Điểm thi ' + subject.title}</th>);
+            (!listShow.length || (listShow.length && listShow.indexOf('final' + subject._id) != -1)) && finalScoreColumns.push(<th key={index} style={{ width: 'auto', color: subject.monThucHanh ? 'aqua' : 'coral' }} nowrap='true'>{'Điểm thi ' + subject.title}</th>);
         });
 
         const monThiTotNghiepColumns = [];
         (monThiTotNghiep || []).forEach((monThi, index) => {
             totalColumns.push({id: monThi._id, text: monThi.title});
-            (listShow.length == 0 || (listShow.length && listShow.indexOf(monThi._id) != -1)) && monThiTotNghiepColumns.push(<th key={index} style={{ width: 'auto' }} nowrap='true'>{monThi.title}</th>);
+            (!listShow.length || (listShow.length && listShow.indexOf(monThi._id) != -1)) && monThiTotNghiepColumns.push(<th key={index} style={{ width: 'auto' }} nowrap='true'>{monThi.title}</th>);
         });
         const table = renderTable({
             getDataSource: () => students, stickyHead: true,
@@ -279,13 +279,13 @@ class AdminLearningProgressPage extends AdminPage {
                     <th style={{ width: 'auto', textAlign: 'center' }}>#</th>
                     <th style={{ width: '100%' }} nowrap='true'>Tên học viên</th>
                     {subjectColumns}
-                    {(listShow.length == 0 || (listShow.length && listShow.indexOf('diemLyThuyet') != -1)) && <th style={{ width: 'auto', color: 'coral' }} nowrap='true'>Điểm lý thuyết</th>}
-                    {(listShow.length == 0 || (listShow.length &&  listShow.indexOf('diemThucHanh') != -1)) && <th style={{ width: 'auto', color: 'aqua' }} nowrap='true'>Điểm thực hành</th>}
-                    {(listShow.length == 0 || (listShow.length && listShow.indexOf('diemTrungBinh') != -1)) && <th style={{ width: 'auto', color: 'red' }} nowrap='true'>Điểm trung bình</th>}
+                    {(!listShow.length || (listShow.length && listShow.indexOf('diemLyThuyet') != -1)) && <th style={{ width: 'auto', color: 'coral' }} nowrap='true'>Điểm lý thuyết</th>}
+                    {(!listShow.length || (listShow.length &&  listShow.indexOf('diemThucHanh') != -1)) && <th style={{ width: 'auto', color: 'aqua' }} nowrap='true'>Điểm thực hành</th>}
+                    {(!listShow.length || (listShow.length && listShow.indexOf('diemTrungBinh') != -1)) && <th style={{ width: 'auto', color: 'red' }} nowrap='true'>Điểm trung bình</th>}
                     {isCourseAdmin && finalScoreColumns}
-                    {(listShow.length == 0 || (listShow.length && listShow.indexOf('diemTrungBinhHetMon') != -1)) && isCourseAdmin && <th style={{ width: 'auto', color: 'red' }} nowrap='true'>Điểm trung bình thi hết môn</th>}
+                    {(!listShow.length || (listShow.length && listShow.indexOf('diemTrungBinhHetMon') != -1)) && isCourseAdmin && <th style={{ width: 'auto', color: 'red' }} nowrap='true'>Điểm trung bình thi hết môn</th>}
                     {isCourseAdmin && monThiTotNghiepColumns}
-                    {(listShow.length == 0 || (listShow.length && listShow.indexOf('datSatHach') != -1)) && isCourseAdmin && <th style={{ width: 'auto' }} nowrap='true'>Đạt sát hạch</th>}
+                    {(!listShow.length || (listShow.length && listShow.indexOf('datSatHach') != -1)) && isCourseAdmin && <th style={{ width: 'auto' }} nowrap='true'>Đạt sát hạch</th>}
                     {isCourseAdmin && <th style={{ width: 'auto' }} nowrap='true'>Thao tác</th>}
                 </tr>),
             renderRow: (item, index) => {
@@ -298,28 +298,28 @@ class AdminLearningProgressPage extends AdminPage {
                         <TableCell type='number' content={index + 1} />
                         <TableCell type='text' style={{ whiteSpace: 'nowrap' }} content={<p>{item.lastname + ' ' + item.firstname} <br /> {item.identityCard}</p>} />
                         {subjects && subjects.length ? subjects.map((subject, i) => (
-                            (listShow.length == 0 || (listShow.length && listShow.indexOf(subject._id) != -1)) ? <TableCell key={i} type='text' style={{ textAlign: 'center', whiteSpace: 'nowrap' }} content={<p>{` 
+                            (!listShow.length || (listShow.length && listShow.indexOf(subject._id) != -1)) ? <TableCell key={i} type='text' style={{ textAlign: 'center', whiteSpace: 'nowrap' }} content={<p>{` 
                             ${item.subject && item.subject[subject._id] && !subject.monThucHanh ? item.subject[subject._id].completedLessons : 0}
                             / ${subject.monThucHanh ? 0 : subject.lessons.length}
                             ${subject.monThucHanh ? '' : `=> ${item.subject && item.subject[subject._id] ? item.subject[subject._id].diemMonHoc : 0}`}`} <br />
                             Thời gian học : {item.subject[subject._id].thoiGianHoc ? convertTime(item.subject[subject._id].thoiGianHoc) : convertTime(0)}
                             </p>} /> : null
                             )) : null}
-                        {(listShow.length == 0 || (listShow.length && listShow.indexOf('diemLyThuyet') != -1)) && <TableCell type='text' style={{ textAlign: 'center' }} content={diemLyThuyet} />}
-                        {(listShow.length == 0 || (listShow.length && listShow.indexOf('diemThucHanh') != -1)) && <TableCell type='link' style={{ textAlign: 'center' }} content={<>{diemThucHanh}<i className='fa fa-lg fa-edit' /></>} className='practicePoint' onClick={e => this.edit(e, item)}/> }
-                        {(listShow.length == 0 || (listShow.length && listShow.indexOf('diemTrungBinh') != -1)) && <TableCell type='text' style={{ textAlign: 'center' }} content={diemTB} /> }
+                        {(!listShow.length || (listShow.length && listShow.indexOf('diemLyThuyet') != -1)) && <TableCell type='text' style={{ textAlign: 'center' }} content={diemLyThuyet} />}
+                        {(!listShow.length || (listShow.length && listShow.indexOf('diemThucHanh') != -1)) && <TableCell type='link' style={{ textAlign: 'center' }} content={<>{diemThucHanh}<i className='fa fa-lg fa-edit' /></>} className='practicePoint' onClick={e => this.edit(e, item)}/> }
+                        {(!listShow.length || (listShow.length && listShow.indexOf('diemTrungBinh') != -1)) && <TableCell type='text' style={{ textAlign: 'center' }} content={diemTB} /> }
                         {isCourseAdmin && subjects && subjects.length ? subjects.map((diemThi, i) => (
-                            (listShow.length == 0 || (listShow.length && listShow.indexOf('final' + diemThi._id) != -1)) ? <TableCell key={i} type='text' style={{ textAlign: 'center' }}
+                            (!listShow.length || (listShow.length && listShow.indexOf('final' + diemThi._id) != -1)) ? <TableCell key={i} type='text' style={{ textAlign: 'center' }}
                                 content={
                                     students && students[index] && students[index].diemThiHetMon && students[index].diemThiHetMon[i] && students[index].diemThiHetMon[i].point
                                 } />: null)) : null}
-                        {(listShow.length == 0 || (listShow.length && listShow.indexOf('diemTrungBinhHetMon') != -1)) && isCourseAdmin && <TableCell type='text' style={{ textAlign: 'center' }} content={students && students[index] && students[index].diemTrungBinhThiHetMon} />}
+                        {(!listShow.length || (listShow.length && listShow.indexOf('diemTrungBinhHetMon') != -1)) && isCourseAdmin && <TableCell type='text' style={{ textAlign: 'center' }} content={students && students[index] && students[index].diemTrungBinhThiHetMon} />}
                         {isCourseAdmin && monThiTotNghiep && monThiTotNghiep.length ? monThiTotNghiep.map((diemThi, i) => (
-                            (listShow.length == 0 || (listShow.length && listShow.indexOf(diemThi._id) != -1))  ? <TableCell key={i} type='text' style={{ textAlign: 'center' }} className={students && students[index] && students[index].diemThiTotNghiep && students[index].diemThiTotNghiep[i] && students[index].diemThiTotNghiep[i].diemLiet ? 'text-danger' : ''}
+                            (!listShow.length || (listShow.length && listShow.indexOf(diemThi._id) != -1))  ? <TableCell key={i} type='text' style={{ textAlign: 'center' }} className={students && students[index] && students[index].diemThiTotNghiep && students[index].diemThiTotNghiep[i] && students[index].diemThiTotNghiep[i].diemLiet ? 'text-danger' : ''}
                                 content={
                                     students && students[index] && students[index].diemThiTotNghiep && students[index].diemThiTotNghiep[i] && students[index].diemThiTotNghiep[i].point
                                 } />: null)) : null}
-                        {(listShow.length == 0 || (listShow.length && listShow.indexOf('datSatHach') != -1)) && isCourseAdmin && <TableCell type='text' style={{ textAlign: 'center' }} content={students && students[index] && students[index].datSatHach ? 'X' : ''} />}
+                        {(!listShow.length || (listShow.length && listShow.indexOf('datSatHach') != -1)) && isCourseAdmin && <TableCell type='text' style={{ textAlign: 'center' }} content={students && students[index] && students[index].datSatHach ? 'X' : ''} />}
                         {isCourseAdmin && (
                             <TableCell type='buttons' content={item} permission={{ write: true, delete: true }} onEdit={e => this.edit(e, item)} />
                         )}

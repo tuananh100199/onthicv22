@@ -22,7 +22,6 @@ class UserCourseInfo extends AdminPage {
                         T.alert(data.notify, 'error', false, 2000);
                         this.props.history.push(previousRoute);
                     } else if (data.item && data.student) {
-                        console.log(data);
                         this.setState({ ...data.item, ngayDuKienThiSatHach: data.student.ngayDuKienThiSatHach, hocPhiPhaiDong: data.student.hocPhiPhaiDong, hocPhiDaDong: data.student.hocPhiDaDong, hocPhiMienGiam: data.student.hocPhiMienGiam });
                     } else {
                         this.props.history.push(previousRoute);
