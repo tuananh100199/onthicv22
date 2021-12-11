@@ -205,7 +205,8 @@ class userQuestion extends AdminPage {
         const { questions } = this.state ? this.state : { questions: [] };
         const activeQuestionIndex = this.state.activeQuestionIndex ? this.state.activeQuestionIndex : 0;
         const activeQuestion = questions ? questions[activeQuestionIndex] : null;
-        const { prevTrueAnswers, prevAnswers, showSubmitButton, showTotalScore, score, nextLesson, subjectId, courseId } = this.state;
+        const { prevTrueAnswers, prevAnswers, showSubmitButton, showTotalScore, score, nextLesson, subjectId, courseId } = this.state,
+        diemThi = (score && questions && questions.length) ? Number((parseInt(score) / questions.length).toFixed(1)) : 0;
         if (questions && questions.length == 1) {
             activeQuestion && prevAnswers && prevAnswers[activeQuestion._id] && $('#' + activeQuestion._id + prevAnswers[activeQuestion._id]).prop('checked', true);
         } else if (activeQuestionIndex == 0) {
@@ -272,7 +273,7 @@ class userQuestion extends AdminPage {
                                                 <i className='fa fa-lg fa-refresh' /> Làm lại
                                             </button>}
                                         {
-                                           !showSubmitButton && nextLesson ?  
+                                           !showSubmitButton && nextLesson && (diemThi > 0.5) ?  
                                             <a className='btn btn-warning ml-5' href={'/user/hoc-vien/khoa-hoc/' + courseId + '/mon-hoc/' + subjectId +  '/bai-hoc/' + nextLesson._id}>
                                                 <i className='fa fa-lg fa-arrow-right' /> Sang bài tiếp theo
                                             </a> : null
