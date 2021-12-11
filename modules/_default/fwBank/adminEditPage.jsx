@@ -78,7 +78,7 @@ class BankEditPage extends AdminPage {
                 this.moneyStr.value(item.moneyStr);
                 this.contentLine.value(item.contentLine);
                 this.contentStr.value(item.contentStr);
-                this.setState({code: item.code, _id: item._id, name: item.name});
+                this.setState({code: item.code, _id: item._id});
             });
         });
     }
@@ -87,18 +87,18 @@ class BankEditPage extends AdminPage {
         fetch('https://api.vietqr.io/v1/banks').then(
         (response) => response.json().then(
           (jsonData) => {
-               this.setState({banks: jsonData.data && jsonData.data.map(({code,name})=>({id:code,text:code+' - '+name}))}, ()=>{
+               this.setState({banks: jsonData.data && jsonData.data.map(({code, name, short_name})=>({id:code,text:short_name+' - '+name}))}, ()=>{
                     this.bank.value(this.state.code);
                });
           }
       )
     );}
 
-    onChange = ({id, text}) => {
-        text = text.split('-')[1];
+    onChange = ({text}) => {
+        text = text.split('-');
         this.setState({
-            name: text,
-            code: id
+            name: text[1],
+            shortname: text[0],
         });
     }
 
@@ -129,10 +129,7 @@ class BankEditPage extends AdminPage {
     }
 
     save = () => {
-        const { code, name, _id } = this.state;
         const changes = {
-            code: code.trim(),
-            name: name.trim(),
             active: this.active.value(),
             contentSyntax: this.contentSyntax.value().trim(),
             moneyLine: parseInt(this.moneyLine.value()),
@@ -159,8 +156,16 @@ class BankEditPage extends AdminPage {
             T.notify('Ngân hàng không được trống', 'danger');
             this.bank.focus();
         } else {
+            const { shortname, name, _id, code } = this.state;
+            const bankCodeCurrent = this.bank.value().trim();
+            if(bankCodeCurrent != code){
+                changes.code = bankCodeCurrent;
+                changes.shortname = shortname.trim();
+                changes.name = name.trim();
+            }
             this.props.updateBank(_id, changes, (item) => {
                 this.props.getBank(item._id);
+                this.setState({ code: item.code});
             });
         }
     }
@@ -179,7 +184,7 @@ class BankEditPage extends AdminPage {
         const permission = this.getUserPermission('bank');
         const readOnly = !permission.write;
         const { _id } = this.state;
-        const bank = this.props.bank && this.props.bank.item || { code: ''}, accounts = bank && bank.accounts || [];
+        const bank = this.props.bank && this.props.bank.item || { shortname: ''}, accounts = bank && bank.accounts || [];
         const listParams = ['{cmnd}', '{ten_loai_khoa_hoc}'];
         const table = renderTable({
             getDataSource: () => accounts,
@@ -206,7 +211,7 @@ class BankEditPage extends AdminPage {
 
         return this.renderPage({
             icon: 'fa fa-university',
-            title: 'Ngân hàng: ' + (bank.code || '...'),
+            title: 'Ngân hàng: ' + (bank.shortname || '...'),
             breadcrumb: [<Link key={0} to='/user/bank'>Ngân hàng</Link>, 'Chỉnh sửa'],
             content: <>
                 <div className='tile'>

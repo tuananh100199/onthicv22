@@ -4,11 +4,7 @@ import { getBankAll, createBank, updateBank, deleteBank } from './redux';
 import { AdminPage, AdminModal, FormSelect, TableCell, renderTable } from 'view/component/AdminPage';
 
 class BankModal extends AdminModal {
-    state = {
-        banks: [],
-        name: '',
-        code: '',
-    };
+    state = { banks: [] };
 
     componentDidMount() {
         $(document).ready(() => this.onShown(() => {
@@ -20,26 +16,27 @@ class BankModal extends AdminModal {
         fetch('https://api.vietqr.io/v1/banks').then(
         (response) => response.json().then(
           (jsonData) => {
-               this.setState({banks: jsonData.data && jsonData.data.map(({code,name})=>({id:code,text:code+' - '+name}))});
+               this.setState({banks: jsonData.data && jsonData.data.map(({code, name, short_name})=>({id:code,text:short_name+' - '+name}))});
           }
       )
     );}
 
-    onChange = ({id, text}) => {
-        text = text.split('-')[1];
+    onChange = ({text}) => {
+        text = text.split('-');
         this.setState({
-            name: text,
-            code: id
+            name: text[1],
+            shortname: text[0],
         });
     }
 
     onSubmit = () => {
-        const {code, name} = this.state;
+        const { shortname, name } = this.state;
+        const code = this.bank.value();
         if (code == '') {
             T.notify('Ngân hàng bị trống!', 'danger');
             this.bank.focus();
         } else {
-            this.props.create({code: code.trim(), name: name.trim()}, () => {
+            this.props.create({code: code.trim(), name: name.trim(), shortname: shortname.trim()}, () => {
                 this.props.getAll();
                 this.hide();
                 });
@@ -82,7 +79,7 @@ class BankPage extends AdminPage {
             renderRow: (item, index) => (
                 <tr key={index}>
                     <TableCell type='number' content={index + 1} />
-                    <TableCell type='link' content={item.code} url={'/user/bank/' + item._id} />
+                    <TableCell type='link' content={item.shortname} url={'/user/bank/' + item._id} />
                     <TableCell content={item.name} />
                     <TableCell type='checkbox' content={item.active} permission={permission} onChanged={active => this.props.updateBank(item._id, { active }, () => this.props.getBankAll())} />
                     <TableCell type='buttons' content={item} permission={permission} onEdit={() => this.props.history.push('/user/bank/' + item._id)} onDelete={this.delete}></TableCell>
