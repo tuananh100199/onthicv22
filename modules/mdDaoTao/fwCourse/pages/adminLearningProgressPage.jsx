@@ -1,9 +1,10 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
-import { getCourse, getLearningProgressPage, exportLearningProgressToExcel } from '../redux';
+import { getCourse, getLearningProgressPage, exportLearningProgressToExcel, exportFinalExam } from '../redux';
 import { updateStudent } from 'modules/mdDaoTao/fwStudent/redux';
 import { AdminPage, AdminModal, CirclePageButton, TableCell, renderTable, FormTextBox, FormSelect, FormCheckbox } from 'view/component/AdminPage';
+import FileSaver from 'file-saver';
 import Pagination from 'view/component/Pagination';
 import './style.scss';
 
@@ -231,6 +232,15 @@ class AdminLearningProgressPage extends AdminPage {
             this.modal.show(item);
     };
 
+    exportFinal = (e, item, diemThi) => {
+        e.preventDefault();
+        if(item && item.tienDoThiHetMon && item.tienDoThiHetMon[diemThi._id]){
+            this.props.exportFinalExam(diemThi._id, item._id, (data) => {
+                FileSaver.saveAs(new Blob([new Uint8Array(data.buf.data)]), 'KTLX.docx');
+            });
+        } else T.notify('Học viên chưa làm bài kiểm tra của môn học này!', 'danger');
+    };
+
     render() {
         const user = this.props.system ? this.props.system.user : null,
             { isLecturer, isCourseAdmin } = user,
@@ -309,10 +319,10 @@ class AdminLearningProgressPage extends AdminPage {
                         {(!listShow.length || (listShow.length && listShow.indexOf('diemThucHanh') != -1)) && <TableCell type='link' style={{ textAlign: 'center' }} content={<>{diemThucHanh}<i className='fa fa-lg fa-edit' /></>} className='practicePoint' onClick={e => this.edit(e, item)}/> }
                         {(!listShow.length || (listShow.length && listShow.indexOf('diemTrungBinh') != -1)) && <TableCell type='text' style={{ textAlign: 'center' }} content={diemTB} /> }
                         {isCourseAdmin && subjects && subjects.length ? subjects.map((diemThi, i) => (
-                            (!listShow.length || (listShow.length && listShow.indexOf('final' + diemThi._id) != -1)) ? <TableCell key={i} type='text' style={{ textAlign: 'center' }}
-                                content={
-                                    students && students[index] && students[index].diemThiHetMon && students[index].diemThiHetMon[i] && students[index].diemThiHetMon[i].point
-                                } />: null)) : null}
+                            (!listShow.length || (listShow.length && listShow.indexOf('final' + diemThi._id) != -1)) ? <TableCell key={i} type='link' style={{ textAlign: 'center' }} className='practicePoint'    
+                            content={
+                                <> {students && students[index] && students[index].diemThiHetMon && students[index].diemThiHetMon[i] && students[index].diemThiHetMon[i].point}<i className='fa fa-lg fa-download' /></>   
+                                } onClick={e => this.exportFinal(e, item, diemThi)} />: null)) : null}
                         {(!listShow.length || (listShow.length && listShow.indexOf('diemTrungBinhHetMon') != -1)) && isCourseAdmin && <TableCell type='text' style={{ textAlign: 'center' }} content={students && students[index] && students[index].diemTrungBinhThiHetMon} />}
                         {isCourseAdmin && monThiTotNghiep && monThiTotNghiep.length ? monThiTotNghiep.map((diemThi, i) => (
                             (!listShow.length || (listShow.length && listShow.indexOf(diemThi._id) != -1))  ? <TableCell key={i} type='text' style={{ textAlign: 'center' }} className={students && students[index] && students[index].diemThiTotNghiep && students[index].diemThiTotNghiep[i] && students[index].diemThiTotNghiep[i].diemLiet ? 'text-danger' : ''}
@@ -360,5 +370,5 @@ class AdminLearningProgressPage extends AdminPage {
 }
 
 const mapStateToProps = state => ({ system: state.system, course: state.trainning.course });
-const mapActionsToProps = { getCourse, getLearningProgressPage, updateStudent };
+const mapActionsToProps = { getCourse, getLearningProgressPage, updateStudent, exportFinalExam };
 export default connect(mapStateToProps, mapActionsToProps)(AdminLearningProgressPage);
