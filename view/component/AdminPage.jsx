@@ -264,11 +264,13 @@ export class FormRichTextBox extends React.Component {
     focus = () => this.input.focus();
 
     insert = (e) => {
+        this.focus();
         let cursorPosition = this.input.selectionStart;
         let textBeforeCursorPosition = this.input.innerHTML.substring(0, cursorPosition);
         let textAfterCursorPosition = this.input.innerHTML.substring(cursorPosition, this.input.innerHTML.length);
         this.setState({
-            value: textBeforeCursorPosition + ' ' + e.target.innerHTML + ' ' + textAfterCursorPosition
+            // value: textBeforeCursorPosition + ' ' + e.target.innerHTML + ' ' + textAfterCursorPosition
+            value: textBeforeCursorPosition + e.target.innerHTML + textAfterCursorPosition
         });
     }
 
