@@ -20,21 +20,25 @@ class SectionNews extends React.Component {
         const newsFeed = this.props.news && this.props.news.newsFeed ? this.props.news.newsFeed : [];
         return (
             <div className='services' >
-                <h2 className='section_title'>Tin Tức Mới Nhất</h2>
+                <div style={{ height: '50px', width: '420px', backgroundColor: '#199d76', marginBottom: '20px', paddingLeft: '10px' }}>
+                    <h3 className='section_title' style={{ color: 'white'}}>Tin Tức Mới Nhất</h3>
+                </div>
                 <div>{this.state.viewport == 'big' ?
-                    (<div className='row pt-5'>
+                    (<div className='row' style={{ margin: 'auto'}}>
                         {newsFeed.map((item, index) => (
-                            <div key={index} className='team_col ftco-animate col-md-4' style={{ marginLeft: 'auto', marginRight: 'auto' }}>
-                                <div className='team_item text-center d-flex flex-column align-items-center justify-content'>
-                                    <div className='team_image' ><Link to={item.link ? '/tintuc/' + item.link : '/news/' + item._id} style={{ color: '#4CA758' }}><img src={item.image} alt='lastnews' /></Link></div>
-                                    <div className='team_content text-center'>
-                                        <div className='team_name'>
-                                            <Link to={item.link ? '/tintuc/' + item.link : '/news/' + item._id} style={{ color: '#4CA758' }}>{item.title}</Link>
-                                        </div>
-                                        <div className='team_text'>
-                                            <blockquote>
-                                                <p>&ldquo;{item.abstract}&rdquo;</p>
-                                            </blockquote>
+                            <div key={index} className='team_col ftco-animate col-md-4' style={{}}>
+                                <div className='wrap_item'  style={{ margin: '0px -5px', border: '5px solid #199d76', height: '100%', boxShadow: '5px 5px 13px #888888' }}>
+                                    <div className='team_item text-center d-flex flex-column align-items-center justify-content'>
+                                        <div className='team_image' ><Link to={item.link ? '/tintuc/' + item.link : '/news/' + item._id} style={{ color: '#4CA758' }}><img src={item.image} alt='lastnews' /></Link></div>
+                                        <div className='team_content text-center'>
+                                            <div className='team_name'>
+                                                <Link to={item.link ? '/tintuc/' + item.link : '/news/' + item._id} style={{ color: '#4CA758' }}>{item.title}</Link>
+                                            </div>
+                                            <div className='team_text'>
+                                                <blockquote>
+                                                    <p>&ldquo;{item.abstract}&rdquo;</p>
+                                                </blockquote>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>

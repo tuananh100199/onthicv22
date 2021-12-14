@@ -19,6 +19,8 @@ import SectionStatistic from './sectionStatistic';
 import SectionVideo from './sectionVideo';
 import SectionListVideo from './sectionListVideo';
 import SectionLoginForm from './SectionLoginForm';
+import SectionDenVoiHiepPhat from './sectionDenVoiHiepPhat';
+import SectionGioiThieuHiepPhat from './sectionGioiThieuHiepPhat';
 
 export default {
     init: () => {
@@ -76,6 +78,16 @@ export default {
             text: 'Đăng nhập',
             backgroundColor: '#36ee99',
         };
+        T.component['den voi Hiep Phat'] = {
+            render: (viewId) => <SectionDenVoiHiepPhat viewId={viewId} />,
+            text: 'Đến với Hiệp Phát',
+            backgroundColor: '#36ee99',
+        };
+        T.component['gioi thieu Hiep Phat'] = {
+            render: (viewId) => <SectionGioiThieuHiepPhat viewId={viewId} />,
+            text: 'Giới thiệu Hiệp Phát',
+            backgroundColor: '#36ee99',
+        };
     },
     redux: {
         parent: 'component',
@@ -115,11 +127,15 @@ export default {
             component: Loadable({ loading: Loading, loader: () => import('./adminListVideoEditPage') })
         },
         {
+            path: '/user/introduce',
+            component: Loadable({ loading: Loading, loader: () => import('./adminGioiThieuHiepPhat') })
+        },
+        {
             path: '/request-login',
             component: Loadable({ loading: Loading, loader: () => import('./homeRequestLoginPage') })
         },
     ],
     Section: {
-        SectionContent, SectionListContent, SectionCarousel, SectionStaffGroup, SectionStatistic, SectionVideo, SectionListVideo
+        SectionContent, SectionListContent, SectionCarousel, SectionStaffGroup, SectionStatistic, SectionVideo, SectionListVideo, SectionDenVoiHiepPhat, SectionGioiThieuHiepPhat
     }
 };

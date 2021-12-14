@@ -196,8 +196,9 @@ export function changeStaff(item) {
 //Home
 
 export function homeGetStaffGroup(_id, done) {
+    console.log('_id', _id);
     return () => {
-        const url = '/home/staff-group/';
+        const url = '/home/staff-group';
         T.get(url, { _id }, data => {
             if (data.error) {
                 T.notify('Lấy danh sách nhân viên bị lỗi!', 'danger');

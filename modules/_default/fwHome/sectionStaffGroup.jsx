@@ -1,6 +1,8 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { homeGetStaffGroup } from './redux/reduxStaffGroup';
+// import { Link } from 'react-router-dom';
+import './style.css';
 
 class SectionStaffGroup extends React.Component {
     state = {};
@@ -14,26 +16,39 @@ class SectionStaffGroup extends React.Component {
 
     render() {
         return <>
-            <div className='team text-center'>
-                <h2>{this.state.title}</h2>
-            </div>
-            <div className='row'>
-                {this.state.items ? this.state.items.map((staff, index) => staff ? (
-                    <div key={index} className='col-md-6 col-lg-3 team_col ftco-animate' style={{ marginLeft: 'auto', marginRight: 'auto' }}>
-                        {/* // <div key={index} className={this.state.items.length == 4 ? 'col-md-6 col-lg-3 team_col ftco-animate' : 'col-md-6 col-lg-4 team_col ftco-animate'} style={{ marginLeft: 'auto', marginRight: 'auto' }}> */}
-                        <div className='team_item text-center d-flex flex-column aling-items-center justify-content'>
-                            <div className='team_image' style={{ height: 300 }}><img src={staff.image || staff.user.image} alt='' /></div>
-                            <div className='team_content text-center'>
-                                <div className='team_name' style={{ whiteSpace: 'nowrap' }}>{staff.user.lastname + ' ' + staff.user.firstname}</div>
-                                <div className='team_title' style={{ height: 10 }}>{staff.user.isLecturer && 'Giáo viên' || staff.user.isStaff && 'Nhân viên'}</div>
-                                <div className='team_text'>
+        <div id='carouselLastNews' className='carousel slide ftco-animate' data-ride='carousel' data-interval='5000' style={{ height: 'auto' }}>
+            <div className='carousel-inner'>
+                { this.state.items && this.state.items.map((staff, index) => (
+                    <div className={'container_staff team_col carousel-item' + (index == 0 ? ' active' : '')}
+                        key={index}>
+                        <div className='wrapper_staff'>
+                            <div className='staff_info'>
+                                <div className='staff_title'>
+                                    <h3>{this.state.title}</h3>
+                                </div>
+                                <div className='strike1'/>
+                                <div className='staff_name' style={{ whiteSpace: 'nowrap' }}><h5>{staff.user.lastname + ' ' + staff.user.firstname}</h5></div>
+                                <div className='strike2'/>
+                                <div className='text'>
                                     <blockquote>
                                         <p>&ldquo;{staff.description}&rdquo;</p>
                                     </blockquote>
-                                </div>
+                                </div> 
+                            </div>
+                            <div className='staff_img'>
+                                <img src={staff.image} alt='Image' className='img-fluid' />
                             </div>
                         </div>
-                    </div>) : null) : null}
+                </div>))}
+            </div>
+            <a className='carousel-control-prev' href='#carouselLastNews' role='button' data-slide='prev' style={{ opacity: 1 }}>
+                <span className='carousel-control-prev-icon' />
+                <span className='sr-only'>Previous</span>
+            </a>
+            <a className='carousel-control-next' href='#carouselLastNews' role='button' data-slide='next' style={{ opacity: 1 }}>
+                <span className='carousel-control-next-icon' />
+                <span className='sr-only'>Next</span>
+            </a>
             </div>
         </>;
     }

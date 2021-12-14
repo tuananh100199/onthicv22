@@ -102,6 +102,10 @@ module.exports = (app) => {
 
         getPage: (pageNumber, pageSize, condition, sort, done) => {
             model.countDocuments(condition, (error, totalItem) => {
+                console.log('condition', condition);
+                console.log('error', error);
+                console.log('totalItem', totalItem);
+
                 if (done == undefined) {
                     done = sort;
                     sort = { lastname: 1, firstname: 1 };
@@ -115,6 +119,7 @@ module.exports = (app) => {
                     const skipNumber = (result.pageNumber > 0 ? result.pageNumber - 1 : 0) * result.pageSize;
                     model.find(condition).select('-password -token -tokenDate').sort(sort).skip(skipNumber).limit(result.pageSize)
                         .populate('roles').populate('division').exec((error, list) => {
+                            console.log('list', list);
                             result.list = list || [];
                             done(error, result);
                         });
