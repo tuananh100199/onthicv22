@@ -10,7 +10,7 @@ class EditCoursePage extends AdminPage {
     componentDidMount() {
         const setData = (course) => {
             const { name, maxStudent, courseFee, shortDescription, detailDescription, courseType, close, lock,
-                thoiGianKhaiGiang, thoiGianBatDau, thoiGianKetThuc, thoiGianThiKetThucMonDuKien, thoiGianThiKetThucMonChinhThuc, thoiGianThiTotNghiepDuKien, thoiGianThiTotNghiepChinhThuc, active, chatActive, commentActive } = course;
+                thoiGianKhaiGiang, thoiGianBatDau, thoiGianKetThuc, thoiGianThiKetThucMonDuKien, thoiGianThiTotNghiepDuKien, thoiGianThiTotNghiepChinhThuc, active, chatActive, commentActive } = course;
 
             this.name.value(name);
             this.courseType.value(courseType ? { id: courseType._id, text: courseType.title } : null);
@@ -23,7 +23,7 @@ class EditCoursePage extends AdminPage {
             this.thoiGianBatDau.value(thoiGianBatDau);
             this.thoiGianKetThuc.value(thoiGianKetThuc);
             this.thoiGianThiKetThucMonDuKien.value(thoiGianThiKetThucMonDuKien);
-            this.thoiGianThiKetThucMonChinhThuc.value(thoiGianThiKetThucMonChinhThuc);
+            // this.thoiGianThiKetThucMonChinhThuc.value(thoiGianThiKetThucMonChinhThuc);
             this.thoiGianThiTotNghiepDuKien.value(thoiGianThiTotNghiepDuKien);
             this.thoiGianThiTotNghiepChinhThuc.value(thoiGianThiTotNghiepChinhThuc);
             this.close.value(close);
@@ -75,13 +75,15 @@ class EditCoursePage extends AdminPage {
                 thoiGianBatDau: this.thoiGianBatDau.value(),
                 thoiGianKhaiGiang: this.thoiGianKhaiGiang.value(),
                 thoiGianThiKetThucMonDuKien: this.thoiGianThiKetThucMonDuKien.value(),
-                thoiGianThiKetThucMonChinhThuc: this.thoiGianThiKetThucMonChinhThuc.value(),
+                // thoiGianThiKetThucMonChinhThuc: this.thoiGianThiKetThucMonChinhThuc.value(),
                 thoiGianThiTotNghiepDuKien: this.thoiGianThiTotNghiepDuKien.value(),
                 thoiGianThiTotNghiepChinhThuc: this.thoiGianThiTotNghiepChinhThuc.value()
 
             };
+            console.log(changes);
             this.setState({ chatActive: changes.chatActive, commentActive: changes.commentActive });
             if (changes.courseFee == null) changes.courseFee = 0;
+            if (changes.thoiGianThiTotNghiepChinhThuc == 'Invalid Date') changes.thoiGianThiTotNghiepChinhThuc = null;
             if (changes.name == '') {
                 T.notify('Tên khóa học trống!', 'danger');
                 this.name.focus();
@@ -131,12 +133,12 @@ class EditCoursePage extends AdminPage {
                         <FormDatePicker ref={e => this.thoiGianBatDau = e} label='Thời gian bắt đầu' className='col-md-4' readOnly={readOnly} />
                         <FormDatePicker ref={e => this.thoiGianKetThuc = e} label='Thời gian kết thúc' className='col-md-4' readOnly={readOnly} />
 
-                        <FormDatePicker ref={e => this.thoiGianThiKetThucMonDuKien = e} label='Thời gian kết thúc môn dự kiến' className='col-md-4' readOnly={readOnly} />
-                        <FormDatePicker ref={e => this.thoiGianThiKetThucMonChinhThuc = e} label='Thời gian kết thúc môn chính thức' className='col-md-4' readOnly={readOnly} />
-                        <div className='col-md-4' />
+                        <FormDatePicker ref={e => this.thoiGianThiKetThucMonDuKien = e} label='Thời gian thi kết thúc môn dự kiến' className='col-md-4' readOnly={readOnly} />
+                        {/* <FormDatePicker ref={e => this.thoiGianThiKetThucMonChinhThuc = e} label='Thời gian kết thúc môn chính thức' className='col-md-4' readOnly={readOnly} /> */}
+                        {/* <div className='col-md-4' /> */}
 
-                        <FormDatePicker ref={e => this.thoiGianThiTotNghiepDuKien = e} label='Thời gian tốt nghiệp dự kiến' className='col-md-4' readOnly={readOnly} />
-                        <FormDatePicker ref={e => this.thoiGianThiTotNghiepChinhThuc = e} label='Thời gian tốt nghiệp chính thức' className='col-md-4' readOnly={readOnly} />
+                        <FormDatePicker ref={e => this.thoiGianThiTotNghiepDuKien = e} label='Thời gian thi tốt nghiệp dự kiến' className='col-md-4' readOnly={readOnly} />
+                        <FormDatePicker ref={e => this.thoiGianThiTotNghiepChinhThuc = e} label='Thời gian thi tốt nghiệp chính thức' className='col-md-4' readOnly={readOnly} />
 
                     </div>
                 </div>
