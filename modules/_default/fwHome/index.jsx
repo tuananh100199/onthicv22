@@ -10,6 +10,7 @@ import staffGroup, { ajaxGetStaffGroup, ajaxSelectStaffGroup } from './redux/red
 import statistic, { ajaxSelectStatistic, ajaxGetStatistic } from './redux/reduxStatistic';
 import video, { ajaxSelectVideo, ajaxGetVideo } from './redux/reduxVideo';
 import listVideo, { ajaxSelectListVideo, ajaxGetListVideo } from './redux/reduxListVideo';
+import gioiThieu, { ajaxSelectGioiThieu, ajaxGetGioiThieu } from './redux/reduxGioiThieuHiepPhat';
 
 import SectionListContent from './sectionListContent';
 import SectionContent from './sectionContent';
@@ -19,6 +20,7 @@ import SectionStatistic from './sectionStatistic';
 import SectionVideo from './sectionVideo';
 import SectionListVideo from './sectionListVideo';
 import SectionLoginForm from './SectionLoginForm';
+import SectionGioiThieuHiepPhat from './sectionGioiThieuHiepPhat';
 
 export default {
     init: () => {
@@ -76,10 +78,17 @@ export default {
             text: 'Đăng nhập',
             backgroundColor: '#36ee99',
         };
+        T.component['gioi thieu'] = {
+            render: (viewId) => <SectionGioiThieuHiepPhat viewId={viewId} />,
+            text: 'Giới thiệu Hiệp Phát',
+            backgroundColor: '#36ee99',
+            adapter: ajaxSelectGioiThieu,
+            getItem: ajaxGetGioiThieu,
+        };
     },
     redux: {
         parent: 'component',
-        reducers: { carousel, content, listContent, staffGroup, statistic, video, listVideo },
+        reducers: { carousel, content, listContent, staffGroup, statistic, video, listVideo, gioiThieu },
     },
     routes: [
         {
@@ -118,8 +127,12 @@ export default {
             path: '/request-login',
             component: Loadable({ loading: Loading, loader: () => import('./homeRequestLoginPage') })
         },
+        {
+            path: '/user/gioi-thieu/:_id',
+            component: Loadable({ loading: Loading, loader: () => import('./adminGioiThieuHiepPhatEditPage') })
+        },
     ],
     Section: {
-        SectionContent, SectionListContent, SectionCarousel, SectionStaffGroup, SectionStatistic, SectionVideo, SectionListVideo
+        SectionContent, SectionListContent, SectionCarousel, SectionStaffGroup, SectionStatistic, SectionVideo, SectionListVideo, SectionGioiThieuHiepPhat
     }
 };
