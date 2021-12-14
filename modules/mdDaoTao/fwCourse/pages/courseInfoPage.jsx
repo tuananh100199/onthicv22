@@ -6,7 +6,7 @@ import { Link } from 'react-router-dom';
 import { AdminPage, FormTextBox, FormDatePicker, FormEditor, FormSelect, FormRichTextBox, CirclePageButton, FormCheckbox } from 'view/component/AdminPage';
 
 class EditCoursePage extends AdminPage {
-    state={};
+    state = {};
     componentDidMount() {
         const setData = (course) => {
             const { name, maxStudent, courseFee, shortDescription, detailDescription, courseType, close, lock,
@@ -30,7 +30,7 @@ class EditCoursePage extends AdminPage {
             this.active.value(active);
             this.chatActive.value(chatActive);
             this.commentActive.value(commentActive);
-            this.setState({lock});
+            this.setState({ lock });
         };
 
         T.ready('/user/course', () => {
@@ -78,7 +78,7 @@ class EditCoursePage extends AdminPage {
                 thoiGianThiKetThucMonChinhThuc: this.thoiGianThiKetThucMonChinhThuc.value(),
                 thoiGianThiTotNghiepDuKien: this.thoiGianThiTotNghiepDuKien.value(),
                 thoiGianThiTotNghiepChinhThuc: this.thoiGianThiTotNghiepChinhThuc.value()
-                
+
             };
             this.setState({ chatActive: changes.chatActive, commentActive: changes.commentActive });
             if (changes.courseFee == null) changes.courseFee = 0;
@@ -93,10 +93,10 @@ class EditCoursePage extends AdminPage {
 
     lock = (e) => {
         const course = this.props.course ? this.props.course.item || {} : {},
-        lock = this.state.lock;
+            lock = this.state.lock;
         e.preventDefault() || T.confirm('Khóa thông tin khóa học', `Bạn có chắc muốn ${lock ? 'mở ' : 'khóa'} thông tin khóa học này ?`, true, isConfirm =>
-        isConfirm && this.props.updateCourse(course._id, { lock: !lock }, () => this.setState({lock: !lock})));
-    } 
+            isConfirm && this.props.updateCourse(course._id, { lock: !lock }, () => this.setState({ lock: !lock })));
+    }
 
     render() {
         const course = this.props.course ? this.props.course.item || {} : {};
@@ -127,12 +127,12 @@ class EditCoursePage extends AdminPage {
                 <div className='tile'>
                     <div className='row'>
                         <h3 className='tile-title col-12' style={{ paddingLeft: 15, marginBottom: 5 }}>Thời gian</h3>
-                        <FormDatePicker ref={e => this.thoiGianKhaiGiang = e} label='Thời gian khai giảng' className='col-md-4' readOnly={readOnly} type='time' />
+                        <FormDatePicker ref={e => this.thoiGianKhaiGiang = e} label='Thời gian khai giảng' className='col-md-4' readOnly={readOnly} />
                         <FormDatePicker ref={e => this.thoiGianBatDau = e} label='Thời gian bắt đầu' className='col-md-4' readOnly={readOnly} />
                         <FormDatePicker ref={e => this.thoiGianKetThuc = e} label='Thời gian kết thúc' className='col-md-4' readOnly={readOnly} />
 
-                        <FormDatePicker ref={e => this.thoiGianThiKetThucMonDuKien = e} label='Thời gian kết thúc môn dự kiến' className='col-md-4' readOnly={readOnly} type='time' />
-                        <FormDatePicker ref={e => this.thoiGianThiKetThucMonChinhThuc = e} label='Thời gian kết thúc môn chính thức' className='col-md-4' readOnly={readOnly} type='time' />
+                        <FormDatePicker ref={e => this.thoiGianThiKetThucMonDuKien = e} label='Thời gian kết thúc môn dự kiến' className='col-md-4' readOnly={readOnly} />
+                        <FormDatePicker ref={e => this.thoiGianThiKetThucMonChinhThuc = e} label='Thời gian kết thúc môn chính thức' className='col-md-4' readOnly={readOnly} />
                         <div className='col-md-4' />
 
                         <FormDatePicker ref={e => this.thoiGianThiTotNghiepDuKien = e} label='Thời gian tốt nghiệp dự kiến' className='col-md-4' readOnly={readOnly} />
@@ -153,7 +153,7 @@ class EditCoursePage extends AdminPage {
                     </div>
                 </div>
                 {!readOnly ? <CirclePageButton type='save' onClick={this.saveInfo} /> : null}
-                {!permission.lock ? <CirclePageButton type='custom' style={{right: '75px'}} customClassName={lock ? 'btn-success' : 'btn-danger'} customIcon={lock ? 'fa-unlock' : 'fa-lock'} onClick={(e) => this.lock(e)} /> : null}
+                {!permission.lock ? <CirclePageButton type='custom' style={{ right: '75px' }} customClassName={lock ? 'btn-success' : 'btn-danger'} customIcon={lock ? 'fa-unlock' : 'fa-lock'} onClick={(e) => this.lock(e)} /> : null}
             </>,
             backRoute: previousRoute,
         });
