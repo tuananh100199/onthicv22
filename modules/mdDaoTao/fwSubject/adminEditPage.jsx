@@ -37,13 +37,14 @@ class AdminEditPage extends AdminPage {
                         T.notify('Lấy môn học bị lỗi!', 'danger');
                         this.props.history.push(adminPageLink);
                     } else if (data.item) {
-                        const { _id, title, shortDescription, detailDescription, monThucHanh, categories, totalTime } = data.item || { title: '', shortDescription:'', detailDescription:'', monThucHanh: false,  categories: [], totalTime:'' };
+                        const { _id, title, shortDescription, detailDescription, monThucHanh, monTienQuyet, categories, totalTime } = data.item || { title: '', shortDescription: '', detailDescription: '', monThucHanh: false, monTienQuyet: false, categories: [], totalTime: '' };
                         this.itemTitle.value(title);
                         this.itemDescription.value(shortDescription);
                         this.itemEditor.html(detailDescription);
                         this.itemTitle.focus();
-                        this.totalTime.value(totalTime );
+                        this.totalTime.value(totalTime);
                         this.itemMonThucHanh.value(monThucHanh);
+                        this.itemMonTienQuyet.value(monTienQuyet);
                         data.item.questionTypes && data.item.questionTypes.forEach(type => type.amount ?
                             this[type.category] && this[type.category].value(type.amount) : this[type.category] && this[type.category].value(0));
                         // this.itemCategories.value(categories.some(item => item._id) ? categories.map(({_id})=> _id) : categories);
@@ -52,7 +53,7 @@ class AdminEditPage extends AdminPage {
                         this.props.history.push(adminPageLink);
                     }
                 });
-                this.props.getCategoryAll('drive-question', null, data => this.setState({questionTypes: data}));
+                this.props.getCategoryAll('drive-question', null, data => this.setState({ questionTypes: data }));
             } else {
                 this.props.history.push(adminPageLink);
             }
@@ -64,10 +65,11 @@ class AdminEditPage extends AdminPage {
         shortDescription: this.itemDescription.value(),
         detailDescription: this.itemEditor.html(),
         monThucHanh: this.itemMonThucHanh.value(),
+        monTienQuyet: this.itemMonTienQuyet.value(),
         totalTime: this.totalTime.value(),
         questionTypes: this.state.questionTypes.map(type => ({
             category: type._id,
-            amount: this[type._id].value() ? this[type._id].value() : 0 ,
+            amount: this[type._id].value() ? this[type._id].value() : 0,
         })),
     });
 
@@ -82,7 +84,6 @@ class AdminEditPage extends AdminPage {
         const permission = this.getUserPermission('subject'),
             readOnly = !permission.write,
             questionTypes = this.props.category && this.props.category.map(item => ({ id: item._id, text: item.title }));
-        console.log(this);
         const tableLesson = renderTable({
             getDataSource: () => this.props.subject && this.props.subject.item && this.props.subject.item.lessons,
             renderHead: () => (
@@ -102,8 +103,11 @@ class AdminEditPage extends AdminPage {
         const componentInfo = (
             <div className='tile-body'>
                 <FormTextBox ref={e => this.itemTitle = e} label='Tên môn học' value={this.state.title} onChange={e => this.setState({ title: e.target.value })} readOnly={readOnly} />
-                <FormCheckbox ref={e => this.itemMonThucHanh = e} className={readOnly ? 'invisible' : ''} label='Môn thực hành' isSwitch={true} readOnly={readOnly} />
-                <FormTextBox className='col-md-4' ref={e => this.totalTime = e} label='Thời gian làm bài thi'  type='number' readOnly={!permission.write} />
+                <div className='row'>
+                    <FormCheckbox ref={e => this.itemMonThucHanh = e} className={'col-md-6 ' + (readOnly ? 'invisible' : '')} label='Môn thực hành' isSwitch={true} readOnly={readOnly} />
+                    <FormCheckbox ref={e => this.itemMonTienQuyet = e} className={'col-md-6 ' + (readOnly ? 'invisible' : '')} label='Môn tiên quyết' isSwitch={true} readOnly={readOnly} />
+                    <FormTextBox className='col-md-4' ref={e => this.totalTime = e} label='Thời gian làm bài thi' type='number' readOnly={!permission.write} />
+                </div>
                 {/* <FormSelect ref={e => this.itemCategories = e}  data={questionTypes} multiple={true} label='Loại câu hỏi ôn tập' readOnly={readOnly} /> */}
                 <FormRichTextBox ref={e => this.itemDescription = e} label='Mô tả ngắn gọn' rows='2' readOnly={readOnly} />
                 <FormEditor ref={e => this.itemEditor = e} label='Mô tả chi tiết' readOnly={readOnly} />

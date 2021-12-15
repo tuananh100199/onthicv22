@@ -37,7 +37,9 @@ class AdminListSubject extends AdminPage {
         T.onSearch = (searchText) => this.props.getSubjectPage(null, null, searchText);
     }
 
-    changeType = (item, monThucHanh) => this.props.updateSubject(item._id, { monThucHanh: monThucHanh });
+    changeMonThucHanh = (item, monThucHanh) => this.props.updateSubject(item._id, { monThucHanh: monThucHanh });
+
+    changeMonTienQuyet = (item, monTienQuyet) => this.props.updateSubject(item._id, { monTienQuyet: monTienQuyet });
 
     create = e => e && e.preventDefault() || this.modal.show();
 
@@ -57,6 +59,7 @@ class AdminListSubject extends AdminPage {
                     <th style={{ width: 'auto' }} nowrap='true'>Số bài học</th>
                     <th style={{ width: 'auto' }} nowrap='true'>Số câu hỏi</th>
                     <th style={{ width: 'auto' }} nowrap='true'>Môn thực hành</th>
+                    <th style={{ width: 'auto' }} nowrap='true'>Môn tiên quyết</th>
                     <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Thao tác</th>
                 </tr>),
             renderRow: (item, index) => (
@@ -65,7 +68,8 @@ class AdminListSubject extends AdminPage {
                     <TableCell type='link' content={item.title} url={'/user/dao-tao/mon-hoc/' + item._id} />
                     <TableCell type='number' content={item.lessons ? item.lessons.length : 0} />
                     <TableCell type='number' content={item.questions ? item.questions.length : 0} />
-                    <TableCell type='checkbox' content={item.monThucHanh} permission={permission} onChanged={monThucHanh => this.changeType(item, monThucHanh)} />
+                    <TableCell type='checkbox' content={item.monThucHanh} permission={permission} onChanged={monThucHanh => this.changeMonThucHanh(item, monThucHanh)} />
+                    <TableCell type='checkbox' content={item.monTienQuyet} permission={permission} onChanged={monTienQuyet => this.changeMonTienQuyet(item, monTienQuyet)} />
                     <TableCell type='buttons' content={item} permission={permission} onEdit={'/user/dao-tao/mon-hoc/' + item._id} onDelete={this.delete} />
                 </tr>),
         });

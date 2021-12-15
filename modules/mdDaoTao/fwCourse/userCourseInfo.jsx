@@ -56,9 +56,9 @@ class UserCourseInfo extends AdminPage {
                         <h3 className='tile-title'>Thông tin chung</h3>
                         <div className='tile-body row'>
                             <label className='col-md-6'>Tên khóa học: <b>{this.state.name}</b></label>
-                            <label className='col-md-3'>Loại khóa học: <b>{this.state.courseType ? this.state.courseType.title : ''}</b></label>
-                            <label className='col-md-4'>Học phí phải đóng:  <b>{this.state.hocPhiPhaiDong ? T.numberDisplay(this.state.hocPhiPhaiDong) + ' đồng' : ''}</b></label>
-                            <label className='col-md-4'>Học phí đã đóng:  <b>{this.state.hocPhiDaDong ? T.numberDisplay(this.state.hocPhiDaDong) + ' đồng' : ''}</b></label>
+                            <label className='col-md-6'>Loại khóa học: <b>{this.state.courseType ? this.state.courseType.title : ''}</b></label>
+                            <label className='col-md-6'>Học phí phải đóng:  <b>{this.state.hocPhiPhaiDong ? T.numberDisplay(this.state.hocPhiPhaiDong) + ' đồng' : ''}</b></label>
+                            <label className='col-md-6'>Học phí đã đóng:  <b>{this.state.hocPhiDaDong ? T.numberDisplay(this.state.hocPhiDaDong) + ' đồng' : ''}</b></label>
                             {this.state.hocPhiMienGiam ? <label className='col-md-4'>Học phí miễn giảm: <b>{T.numberDisplay(this.state.hocPhiMienGiam) + ' đồng'}</b></label> : null}
                             {this.state.shortDescription ? <div className='col-md-12'><label>Giới thiệu ngắn khóa học:</label> <b>{this.state.shortDescription}</b></div> : <></>}
                             {this.state.detailDescription ? <div className='col-md-12'><label>Mô tả chi tiết: </label><p dangerouslySetInnerHTML={{ __html: this.state.detailDescription }} /> </div> : <></>}

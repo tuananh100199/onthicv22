@@ -5,6 +5,7 @@ module.exports = app => {
         detailDescription: String,
         totalTime: Number,
         monThucHanh: { type: Boolean, default: false },
+        monTienQuyet: { type: Boolean, default: false },
         lessons: { type: [{ type: app.db.Schema.Types.ObjectId, ref: 'Lesson' }], default: [] },
         questions: { type: [{ type: app.db.Schema.Types.ObjectId, ref: 'Question' }], default: [] },
         questionTypes: [{

@@ -153,6 +153,8 @@ class UserCoursePageDetail extends AdminPage {
     render() {
         const course = this.props.course && this.props.course.item,
             subjects = course && course.subjects ? course.subjects : [];
+        const showMonThucHanh = subjects.length && (subjects.findIndex(subject => subject.monTienQuyet == true) == -1);
+        console.log(showMonThucHanh);
         const { name, courseId, teacher, student } = this.state, rate = this.props.rate.item && this.props.rate.item.value;
         return this.renderPage({
             icon: 'fa fa-cubes',
@@ -180,10 +182,10 @@ class UserCoursePageDetail extends AdminPage {
                     {subjects.length ? <>
                         <PageIconHeader text='Môn học thực hành' />
                         {subjects.map((subject, index) =>
-                            subject.monThucHanh && <PageIcon key={index} to={`/user/hoc-vien/khoa-hoc/${courseId}/mon-hoc/${subject._id}`} icon='fa-briefcase' iconBackgroundColor='#1488db' text={subject ? subject.title : ''} />
+                            subject.monThucHanh && <PageIcon key={index} to={`/user/hoc-vien/khoa-hoc/${courseId}/mon-hoc/${subject._id}`} onClick={() => T.alert('Vui lòng hoàn thành các môn học lý thuyết', 'error', false, 8000)} notify={true} icon='fa-briefcase' iconBackgroundColor={showMonThucHanh ? '#1488db' : 'secondary'} text={subject ? subject.title : ''} />
                         )}
-                        {teacher && <PageIcon to={`/user/hoc-vien/khoa-hoc/${courseId}/dang-ky-lich-hoc`} icon='fa-calendar-plus-o' iconBackgroundColor='#8d74aa' text='Đăng ký lịch học' />}
-                        <PageIcon to={`/user/hoc-vien/khoa-hoc/${courseId}/thoi-khoa-bieu`} icon='fa-calendar' iconBackgroundColor='#ffc107' text='Thời khóa biểu' />
+                        {teacher && <PageIcon to={`/user/hoc-vien/khoa-hoc/${courseId}/dang-ky-lich-hoc`} onClick={() => T.alert('Vui lòng hoàn thành các môn học lý thuyết', 'error', false, 8000)} icon='fa-calendar-plus-o' notify={true} iconBackgroundColor={showMonThucHanh ? '#8d74aa' : 'secondary'} text='Đăng ký lịch học' />}
+                        <PageIcon to={`/user/hoc-vien/khoa-hoc/${courseId}/thoi-khoa-bieu`} icon='fa-calendar' onClick={() => T.alert('Vui lòng hoàn thành các môn học lý thuyết', 'error', false, 8000)} notify={true} iconBackgroundColor={showMonThucHanh ? '#ffc107' : 'secondary'} text='Thời khóa biểu' />
                     </> : null}
 
                     <PageIconHeader text='Liên lạc' />
