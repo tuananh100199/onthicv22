@@ -8,7 +8,7 @@ import StatisticPage from './adminStatisticView';
 import StaffGroupPage from './adminStaffGroupView';
 import ListVideoPage from './adminListVideoView';
 import ListContentView from './adminListContentView';
-import GioiThieuHiepPhatPage from './adminGioiThieuHiepPhat';
+import LoginFormView from './adminLoginFormView';
 
 export class ComponentPage extends AdminPage {
     render() {
@@ -21,7 +21,7 @@ export class ComponentPage extends AdminPage {
         tabs.push({ key: tabs.length, title: 'Tập Video', component: <ListVideoPage permission={permission} history={this.props.history} /> });
         tabs.push({ key: tabs.length, title: 'Thống kê', component: <StatisticPage history={this.props.history} permission={permission} /> });
         tabs.push({ key: tabs.length, title: 'Nhóm nhân viên', component: <StaffGroupPage history={this.props.history} permission={permission} /> });
-        tabs.push({ key: tabs.length, title: 'Giới thiệu Hiệp Phát', component: <GioiThieuHiepPhatPage history={this.props.history} permission={permission} /> });
+        tabs.push({ key: tabs.length, title: 'Đăng nhập', component: <LoginFormView history={this.props.history} permission={permission} /> });
 
         return this.renderPage({
             icon: 'fa fa-cogs',

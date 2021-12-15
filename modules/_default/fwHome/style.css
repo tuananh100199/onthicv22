@@ -187,12 +187,12 @@
     background: #199d76;
     /* clip-path: polygon(0 0, 100% 0, 50% 100%, 0% 100%); */
     flex: 1 0 75%;
-    transform: translateX(25%);
+    transform: translateX(30%);
     align-items: center;
     justify-content: flex-start;
 }
 
-.staff_info .staff_title {
+.staff_info .staff_group_title {
     padding-left: 90px;
     padding-top: 50px;
     color: white;
@@ -228,8 +228,18 @@
     font-size: 25px;
 }
 
-.staff_info .staff_title h3{
+.staff_info .staff_group_title h3{
     color: white;
+}
+
+.staff_info .staff_title {
+    margin-bottom: 15px;
+    padding-left: 90px;
+    padding-top: 15px;
+}
+
+.staff_info .staff_title h6{
+    color: yellow;
 }
 
 .staff_img {
@@ -261,4 +271,66 @@
     padding-right: 10%;
 }
   
-  
+.login_form .form_title{
+    font-size: 22px;
+    color: white;
+    padding-top: 25px;
+    height: 80px;
+    background: #199d76;
+    text-align: center;
+    margin: auto;
+}
+.login_form .content{
+    margin-bottom: 15px;
+    margin-top: 10px;
+    text-align: justify;
+    color: #199d76;
+    line-height: 20px;
+}
+.login_form .wrap-box{
+    display: flex;
+    color: #199d76;
+    height: 70px;
+    width: 100%;
+    padding: 0px 8px;
+    margin: 0px;
+    text-align: center;
+}
+.login_form .wrap-box .wrap_icon{
+    padding-top: 5px;
+    width: 60px;
+    height: 50px;
+    border-radius: 50%;
+    text-align: center;
+    background-color: #199d76;
+}
+
+.login_form .wrap-box i{
+    width: 40px;
+    height: 40px;
+    font-size: 40px;
+    margin: auto;
+    text-align: center;
+    color: white;
+}
+.login_form .wrap-box input{
+    margin-left: 10px;
+    width: 100%;
+    height: 45px;
+    background: transparent;
+    border: solid 2px #199d76;
+    border-radius: 25px;
+    padding-left: 25px;
+    outline: none;
+    font-size: 15px;
+    color: #404040;
+    font-weight: 500;
+}
+.login_form .wrap-box input::placeholder {
+    color: #199d76;
+    opacity: 1; /* Firefox */
+}
+.login_form .wrap_image {
+    left: -30px;
+    width: 120%;
+  }

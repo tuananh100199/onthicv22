@@ -23,11 +23,12 @@ class SectionStaffGroup extends React.Component {
                         key={index}>
                         <div className='wrapper_staff'>
                             <div className='staff_info'>
-                                <div className='staff_title'>
+                                <div className='staff_group_title'>
                                     <h3>{this.state.title}</h3>
                                 </div>
                                 <div className='strike1'/>
                                 <div className='staff_name' style={{ whiteSpace: 'nowrap' }}><h5>{staff.user.lastname + ' ' + staff.user.firstname}</h5></div>
+                                <div className='staff_title' style={{ whiteSpace: 'nowrap' }}><h6>{staff.title}</h6></div>
                                 <div className='strike2'/>
                                 <div className='text'>
                                     <blockquote>

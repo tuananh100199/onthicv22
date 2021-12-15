@@ -21,7 +21,7 @@ class SectionNews extends React.Component {
         return (
             <div className='services' >
                 <div style={{ height: '50px', width: '420px', backgroundColor: '#199d76', marginBottom: '20px', paddingLeft: '10px' }}>
-                    <h3 className='section_title' style={{ color: 'white'}}>Tin Tức Mới Nhất</h3>
+                    <h3 className='section_title' style={{ color: 'white', paddingTop: '5px' }}>Tin Tức Mới Nhất</h3>
                 </div>
                 <div>{this.state.viewport == 'big' ?
                     (<div className='row' style={{ margin: 'auto'}}>

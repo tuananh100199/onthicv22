@@ -10,6 +10,7 @@ import staffGroup, { ajaxGetStaffGroup, ajaxSelectStaffGroup } from './redux/red
 import statistic, { ajaxSelectStatistic, ajaxGetStatistic } from './redux/reduxStatistic';
 import video, { ajaxSelectVideo, ajaxGetVideo } from './redux/reduxVideo';
 import listVideo, { ajaxSelectListVideo, ajaxGetListVideo } from './redux/reduxListVideo';
+import loginForm, { ajaxSelectLoginForm, ajaxGetLoginForm } from './redux/reduxLoginForm';
 
 import SectionListContent from './sectionListContent';
 import SectionContent from './sectionContent';
@@ -77,6 +78,8 @@ export default {
             render: (viewId) => <SectionLoginForm viewId={viewId} />,
             text: 'Đăng nhập',
             backgroundColor: '#36ee99',
+            adapter: ajaxSelectLoginForm,
+            getItem: ajaxGetLoginForm,
         };
         T.component['den voi Hiep Phat'] = {
             render: (viewId) => <SectionDenVoiHiepPhat viewId={viewId} />,
@@ -91,7 +94,7 @@ export default {
     },
     redux: {
         parent: 'component',
-        reducers: { carousel, content, listContent, staffGroup, statistic, video, listVideo },
+        reducers: { carousel, content, listContent, staffGroup, statistic, video, listVideo, loginForm },
     },
     routes: [
         {
@@ -127,8 +130,8 @@ export default {
             component: Loadable({ loading: Loading, loader: () => import('./adminListVideoEditPage') })
         },
         {
-            path: '/user/introduce',
-            component: Loadable({ loading: Loading, loader: () => import('./adminGioiThieuHiepPhat') })
+            path: '/user/login-form/:_id',
+            component: Loadable({ loading: Loading, loader: () => import('./adminLoginFormEditPage') })
         },
         {
             path: '/request-login',

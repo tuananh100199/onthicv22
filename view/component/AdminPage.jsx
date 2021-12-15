@@ -530,6 +530,7 @@ export class FormImageBox extends React.Component {
     setData = data => this.imageBox.setData(data);
 
     render() {
+        console.log(this.props);
         let { label = '', className = '', style = {}, readOnly = false, postUrl = '/user/upload', uploadType = '', image = null, onDelete = null, onSuccess = null } = this.props;
         return (
             <div className={'form-group ' + className} style={style}>
