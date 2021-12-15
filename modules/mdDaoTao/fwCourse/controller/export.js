@@ -398,4 +398,48 @@ module.exports = (app) => {
         }
     });
 
+    app.get('/api/course/final-exam/export/:_subjectId/:_studentId', app.permission.check('user:login'), (req, res) => {
+        const {_subjectId,_studentId} = req.params;
+        app.model.student.get({_id:_studentId}, (error, student) => {
+            if (!error && student) {
+                const tienDoThiHetMon = student.tienDoThiHetMon;
+                if (tienDoThiHetMon && tienDoThiHetMon[_subjectId] && tienDoThiHetMon[_subjectId].answers) {
+                    const listIdQuestion = Object.keys(tienDoThiHetMon[_subjectId].answers);
+                    app.model.driveQuestion.getAll((error, list) => {
+                        if (error || list.length == 0) {
+                            res.send({ error: 'Lấy câu hỏi thi bị lỗi!' });
+                        } else {
+                            const newQuestion = list.filter(question => listIdQuestion.indexOf(question._id.toString()) != -1);
+                            const driveTest = {
+                                questions: newQuestion,
+                            };
+                            const data = {
+                                firstname: student.firstname || '',
+                                lastname: student.lastname || '',
+                            };
+                            driveTest && driveTest.questions && driveTest.questions.map((question,index) => {
+                                const answers = question && question.answers && question.answers.split('\n');
+                                    data['question' + (index + 1)] = question.title;
+                                    for(let i = 0; i<4; i++){
+                                        if(tienDoThiHetMon[_subjectId].answers[question._id] == i)
+                                            data[(index+1)+''+(i+1)] = 'X';
+                                        else data[(index+1)+''+(i+1)] = '';
+                                        data['question'+ (index+1) + (i+1)] = answers[i] ? answers[i] : '';
+                                        
+                                    }      
+                            });
+                            app.docx.generateFile('/document/KTLX.docx', data, (error, buf) => {
+                                res.send({ error: error, buf: buf });
+                            });
+                        }
+                    });
+                } else{
+                    res.send({error: 'Học viên chưa làm bài kiểm tra này'});
+                } 
+            } else {
+                res.send({ error: 'Lấy câu hỏi thi bị lỗi!' });
+            }
+        });
+    });
+
 };

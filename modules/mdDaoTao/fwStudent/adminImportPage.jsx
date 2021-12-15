@@ -83,6 +83,9 @@ class EditModal extends AdminModal {
         } else if (data.giayKhamSucKhoeNgayKham == 'Invalid Date') {
             T.notify('Ngày khám sức khỏe không chính xác!', 'danger');
             this.itemGiayKhamSucKhoeNgayKham.focus();
+        } else if (data.hocPhiPhaiDong == '') {
+            T.notify('Học phí phải đóng không được trống!', 'danger');
+            this.itemHocPhiPhaiDong.focus();
         } else {
             this.props.edit(this.state.id, data);
             T.notify('Cập nhật thông tin ứng viên thành công!', 'success');
@@ -95,16 +98,16 @@ class EditModal extends AdminModal {
         size: 'large',
         body: (
             <div className='row'>
-                <FormTextBox ref={e => this.itemLastname = e} className='col-md-8' label='Họ ứng viên' readOnly={this.props.readOnly} />
-                <FormTextBox ref={e => this.itemFirstname = e} className='col-md-4' label='Tên ứng viên' readOnly={this.props.readOnly} />
-                <FormTextBox ref={e => this.itemEmail = e} className='col-md-6' label='Email' readOnly={this.props.readOnly} />
+                <FormTextBox ref={e => this.itemLastname = e} className='col-md-8' label='Họ ứng viên' readOnly={this.props.readOnly} required />
+                <FormTextBox ref={e => this.itemFirstname = e} className='col-md-4' label='Tên ứng viên' readOnly={this.props.readOnly} required />
+                <FormTextBox ref={e => this.itemEmail = e} className='col-md-6' label='Email' readOnly={this.props.readOnly} required />
                 <FormTextBox ref={e => this.itemPhoneNumber = e} className='col-md-6' label='Số điện thoại' readOnly={this.props.readOnly} />
                 <FormSelect ref={e => this.itemSex = e} className='col-md-3' label='Giới tính' data={[{ id: 'female', text: 'Nữ' }, { id: 'male', text: 'Nam' }]} readOnly={this.props.readOnly} />
-                <FormDatePicker ref={e => this.itemBirthday = e} className='col-md-3' label='Năm sinh' readOnly={this.props.readOnly} />
+                <FormDatePicker ref={e => this.itemBirthday = e} className='col-md-3' label='Năm sinh' readOnly={this.props.readOnly} required />
                 <FormTextBox ref={e => this.itemNationality = e} className='col-md-6' label='Quốc tịch' readOnly={this.props.readOnly} />
                 <FormTextBox ref={e => this.itemResidence = e} className='col-md-6' label='Nơi cư trú' readOnly={this.props.readOnly} />
                 <FormTextBox ref={e => this.itemRegularResidence = e} className='col-md-6' label='Nơi đăng ký hộ khẩu thường trú' readOnly={this.props.readOnly} />
-                <FormTextBox ref={e => this.itemIdentityCard = e} className='col-md-4' label='Số CMND,CCCD' readOnly={this.props.readOnly} />
+                <FormTextBox ref={e => this.itemIdentityCard = e} className='col-md-4' label='Số CMND,CCCD' readOnly={this.props.readOnly} required />
                 <FormDatePicker ref={e => this.itemIdentityDate = e} className='col-md-4' label='Ngày cấp' readOnly={this.props.readOnly} />
                 <FormTextBox ref={e => this.itemIdentityIssuedBy = e} className='col-md-4' label='Nơi cấp' readOnly={this.props.readOnly} />
                 <FormTextBox ref={e => this.itemLincenseNumber = e} className='col-md-4' label='Số giấy phép lái xe 2 bánh' readOnly={this.props.readOnly} />
@@ -112,11 +115,11 @@ class EditModal extends AdminModal {
                 <FormTextBox ref={e => this.itemLincenseIssuedBy = e} className='col-md-4' label='Nơi cấp' readOnly={this.props.readOnly} />
                 <FormCheckbox ref={e => this.itemGiayKhamSucKhoe = e} className='col-md-4' label='Đã có giấy khám sức khỏe' readOnly={this.props.readOnly} onChange={this.isChecked} />
                 <FormDatePicker ref={e => this.itemGiayKhamSucKhoeNgayKham = e} className={this.state.className} label='Ngày khám sức khỏe' readOnly={this.props.readOnly} />
-                <FormTextBox ref={e => this.itemHocPhiPhaiDong = e} className='col-md-4' label='Học phí' readOnly={this.props.readOnly} />
+                <FormTextBox ref={e => this.itemHocPhiPhaiDong = e} className='col-md-4' label='Học phí' readOnly={this.props.readOnly} required />
                 <FormCheckbox ref={e => this.itemHinhThe3x4 = e} className='col-md-6' label='Hình thẻ 3x4' readOnly={this.props.readOnly} />
                 <FormCheckbox ref={e => this.itemHinhChupTrucTiep = e} className='col-md-6' label='Hình chụp trực tiếp' readOnly={this.props.readOnly} />
-                <FormTextBox ref={e => this.itemLecturerIdentityCard = e} className='col-md-6' label='Số CMND,CCCD của giáo viên dự kiến' readOnly={this.props.readOnly} />
-                <FormTextBox ref={e => this.itemLecturerName = e} className='col-md-6' label='Tên giáo viên dự kiến' readOnly={this.props.readOnly} />
+                <FormTextBox ref={e => this.itemLecturerIdentityCard = e} className='col-md-6' label='Số CMND,CCCD của giáo viên dự kiến' readOnly={this.props.readOnly} required />
+                <FormTextBox ref={e => this.itemLecturerName = e} className='col-md-6' label='Tên giáo viên dự kiến' readOnly={this.props.readOnly} required />
             </div>),
     });
 }

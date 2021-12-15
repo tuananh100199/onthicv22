@@ -391,6 +391,22 @@ export function exportTeacherAndStudentToExcel(_courseId) {
 export function exportLearningProgressToExcel(_courseId, filter) {
     T.download(T.url(`/api/course/learning-progress/export/${_courseId}/${filter}`));
 }
+
+export function exportFinalExam( _subjectId ,_studentId, done) {
+    return () => {
+        const url = `/api/course/final-exam/export/${_subjectId}/${_studentId}`;
+        T.get(url, data => {
+            if (data.error) {
+                T.notify('Xuất file word bị lỗi!', 'danger');
+                console.error(`GET: ${url}.`, data.error);
+            } else {
+                if (done) done(data);
+                T.notify('Xuất file word thành công!', 'success');
+            }
+        }, error => console.error(error) || T.notify('Xuất file word bị lỗi!', 'danger'));
+    };
+}
+
 // Ajax Selections ----------------------------------------------------------------------------------------------------
 export const ajaxSelectCourse = {
     ajax: false,

@@ -100,7 +100,7 @@ class AdminEditPage extends AdminPage {
                                     <div><p>Đã hoàn thành</p>{!monThucHanh && <p> Điểm ôn tập:{((tienDoHocTap[lesson._id].score ? 
                                         tienDoHocTap[lesson._id].score : 0) + '/' + Math.min(lesson.numQuestion, lesson.questions.length))}
                                         {(tienDoHocTap[lesson._id].diemTB && tienDoHocTap[lesson._id].diemTB > 0.5) ? ' (Đạt)' : ' (Chưa đạt)'}</p>}</div> 
-                                    : ((lesson.questions.length || !monThucHanh) ? <p>Chưa hoàn thành</p> : <p>Đã hoàn thành</p>)}
+                                    : ((lesson.questions.length && !monThucHanh) ? <p>Chưa hoàn thành</p> : <p>Đã hoàn thành</p>)}
                             </div>
                         </div>);
                         const show = (

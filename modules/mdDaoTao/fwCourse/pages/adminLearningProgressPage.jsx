@@ -1,9 +1,10 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
-import { getCourse, getLearningProgressPage, exportLearningProgressToExcel } from '../redux';
+import { getCourse, getLearningProgressPage, exportLearningProgressToExcel, exportFinalExam } from '../redux';
 import { updateStudent } from 'modules/mdDaoTao/fwStudent/redux';
 import { AdminPage, AdminModal, CirclePageButton, TableCell, renderTable, FormTextBox, FormSelect, FormCheckbox } from 'view/component/AdminPage';
+import FileSaver from 'file-saver';
 import Pagination from 'view/component/Pagination';
 import './style.scss';
 
@@ -60,36 +61,36 @@ class ShowColModal extends AdminModal {
     }
 
     onShow = () => {
-        const {totalColumns, course} = this.props;
-        const listShow = T.cookie('showColLearningProgress/' + course) ? T.cookie('showColLearningProgress/' + course) : [];  
+        const { totalColumns, course } = this.props;
+        const listShow = T.cookie('showColLearningProgress/' + course) ? T.cookie('showColLearningProgress/' + course) : [];
         totalColumns.map(column => {
-            if(listShow.length) this['showColumns'+ column.id].value(listShow.indexOf(column.id) != -1);
-            else this['showColumns'+ column.id].value(false);
+            if (listShow.length) this['showColumns' + column.id].value(listShow.indexOf(column.id) != -1);
+            else this['showColumns' + column.id].value(false);
         });
     }
 
     onSubmit = () => {
-        const {totalColumns, course, filter} = this.props;
-        let listShow =[];
+        const { totalColumns, course, filter } = this.props;
+        let listShow = [];
         totalColumns.map(column => {
-            if(this['showColumns'+ column.id].value()){
+            if (this['showColumns' + column.id].value()) {
                 listShow.push(column.id);
             }
         });
         T.cookie('showColLearningProgress/' + course, listShow);
-        this.setState({listShow});
+        this.setState({ listShow });
         this.props.getLearningProgressPage(undefined, undefined, { courseId: course, filter: filter }, () => {
             T.notify('Lưu danh sách cột hiển thị thành công!', 'success');
             this.hide();
-        }); 
+        });
     }
 
     render = () => {
         const totalColumns = this.props.totalColumns;
         const content = (
             <>
-                {totalColumns.map((column,index) => <FormCheckbox key={index} ref={e => this['showColumns'+ column.id] = e} label={column.text} />)}
-            </> 
+                {totalColumns.map((column, index) => <FormCheckbox key={index} ref={e => this['showColumns' + column.id] = e} label={column.text} />)}
+            </>
         );
         return this.renderModal({
             title: 'Cột hiển thị',
@@ -231,6 +232,15 @@ class AdminLearningProgressPage extends AdminPage {
             this.modal.show(item);
     };
 
+    exportFinal = (e, item, diemThi) => {
+        e.preventDefault();
+        if (item && item.tienDoThiHetMon && item.tienDoThiHetMon[diemThi._id]) {
+            this.props.exportFinalExam(diemThi._id, item._id, (data) => {
+                FileSaver.saveAs(new Blob([new Uint8Array(data.buf.data)]), 'KTLX.docx');
+            });
+        } else T.notify('Học viên chưa làm bài kiểm tra của môn học này!', 'danger');
+    };
+
     render() {
         const user = this.props.system ? this.props.system.user : null,
             { isLecturer, isCourseAdmin } = user,
@@ -238,7 +248,7 @@ class AdminLearningProgressPage extends AdminPage {
             students = this.props.course && this.props.course && this.props.course.students ? this.props.course.students : [],
             subjects = this.props.course && this.props.course.subjects ? this.props.course.subjects.sort((a, b) => a.monThucHanh - b.monThucHanh) : [],
             monThiTotNghiep = item && item.monThiTotNghiep ? item.monThiTotNghiep : [],
-            totalColumns = [{id: 'diemLyThuyet', text: 'Điểm lý thuyết'}, {id:'diemThucHanh', text: 'Điểm thực hành'} ,{id:'diemTrungBinh', text:'Điểm trung bình'}  ,{id:'diemTrungBinhHetMon', text: 'Điểm trung bình thi hết môn'}, {id:'datSatHach', text:'Đạt sát hạch'}],
+            totalColumns = [{ id: 'diemLyThuyet', text: 'Điểm lý thuyết' }, { id: 'diemThucHanh', text: 'Điểm thực hành' }, { id: 'diemTrungBinh', text: 'Điểm trung bình' }, { id: 'diemTrungBinhHetMon', text: 'Điểm trung bình thi hết môn' }, { id: 'datSatHach', text: 'Đạt sát hạch' }],
             listShow = (this.showColModal && this.showColModal.state && this.showColModal.state.listShow) ? this.showColModal.state.listShow : (this.state.listShow || []),
             dataSelectCourseAdmin = [
                 { id: 'all', text: 'Tất cả học viên' },
@@ -248,28 +258,28 @@ class AdminLearningProgressPage extends AdminPage {
                 { id: 'satHach', text: 'Học viên đã đạt sát hạch' },
             ];
         const convertTime = (time) => {
-                let hours = parseInt( time / 3600 ) % 24 ;
-                let minutes = parseInt( time / 60 ) % 60 ;
-                let seconds = time % 60;
-                return (hours < 10 ? '0' + hours : hours) + ':' + (minutes < 10 ? '0' + minutes : minutes) + ':' + (seconds  < 10 ? '0' + seconds : seconds);
-            };
+            let hours = parseInt(time / 3600) % 24;
+            let minutes = parseInt(time / 60) % 60;
+            let seconds = time % 60;
+            return (hours < 10 ? '0' + hours : hours) + ':' + (minutes < 10 ? '0' + minutes : minutes) + ':' + (seconds < 10 ? '0' + seconds : seconds);
+        };
         const { pageNumber, pageSize, pageTotal, totalItem } = this.props.course && this.props.course.page ?
             this.props.course.page : { pageNumber: 1, pageSize: 50, pageTotal: 1, totalItem: 0 };
         const subjectColumns = [];
         (subjects || []).forEach((subject, index) => {
-            totalColumns.push({id: subject._id, text: subject.title});
+            totalColumns.push({ id: subject._id, text: subject.title });
             (!listShow.length || (listShow.length && listShow.indexOf(subject._id) != -1)) && subjectColumns.push(<th key={index} style={{ width: 'auto', color: subject.monThucHanh ? 'aqua' : 'coral' }} nowrap='true'>{subject.title}</th>);
         });
 
         const finalScoreColumns = [];
         (subjects || []).forEach((subject, index) => {
-            totalColumns.push({id: 'final' + subject._id, text: 'Điểm thi ' + subject.title});
+            totalColumns.push({ id: 'final' + subject._id, text: 'Điểm thi ' + subject.title });
             (!listShow.length || (listShow.length && listShow.indexOf('final' + subject._id) != -1)) && finalScoreColumns.push(<th key={index} style={{ width: 'auto', color: subject.monThucHanh ? 'aqua' : 'coral' }} nowrap='true'>{'Điểm thi ' + subject.title}</th>);
         });
 
         const monThiTotNghiepColumns = [];
         (monThiTotNghiep || []).forEach((monThi, index) => {
-            totalColumns.push({id: monThi._id, text: monThi.title});
+            totalColumns.push({ id: monThi._id, text: monThi.title });
             (!listShow.length || (listShow.length && listShow.indexOf(monThi._id) != -1)) && monThiTotNghiepColumns.push(<th key={index} style={{ width: 'auto' }} nowrap='true'>{monThi.title}</th>);
         });
         const table = renderTable({
@@ -280,7 +290,7 @@ class AdminLearningProgressPage extends AdminPage {
                     <th style={{ width: '100%' }} nowrap='true'>Tên học viên</th>
                     {subjectColumns}
                     {(!listShow.length || (listShow.length && listShow.indexOf('diemLyThuyet') != -1)) && <th style={{ width: 'auto', color: 'coral' }} nowrap='true'>Điểm lý thuyết</th>}
-                    {(!listShow.length || (listShow.length &&  listShow.indexOf('diemThucHanh') != -1)) && <th style={{ width: 'auto', color: 'aqua' }} nowrap='true'>Điểm thực hành</th>}
+                    {(!listShow.length || (listShow.length && listShow.indexOf('diemThucHanh') != -1)) && <th style={{ width: 'auto', color: 'aqua' }} nowrap='true'>Điểm thực hành</th>}
                     {(!listShow.length || (listShow.length && listShow.indexOf('diemTrungBinh') != -1)) && <th style={{ width: 'auto', color: 'red' }} nowrap='true'>Điểm trung bình</th>}
                     {isCourseAdmin && finalScoreColumns}
                     {(!listShow.length || (listShow.length && listShow.indexOf('diemTrungBinhHetMon') != -1)) && isCourseAdmin && <th style={{ width: 'auto', color: 'red' }} nowrap='true'>Điểm trung bình thi hết môn</th>}
@@ -302,23 +312,23 @@ class AdminLearningProgressPage extends AdminPage {
                             ${item.subject && item.subject[subject._id] && !subject.monThucHanh ? item.subject[subject._id].completedLessons : 0}
                             / ${subject.monThucHanh ? 0 : subject.lessons.length}
                             ${subject.monThucHanh ? '' : `=> ${item.subject && item.subject[subject._id] ? item.subject[subject._id].diemMonHoc : 0}`}`} <br />
-                            Thời gian học : {item.subject[subject._id].thoiGianHoc ? convertTime(item.subject[subject._id].thoiGianHoc) : convertTime(0)}
+                                Thời gian học : {item.subject[subject._id].thoiGianHoc ? convertTime(item.subject[subject._id].thoiGianHoc) : convertTime(0)}
                             </p>} /> : null
-                            )) : null}
+                        )) : null}
                         {(!listShow.length || (listShow.length && listShow.indexOf('diemLyThuyet') != -1)) && <TableCell type='text' style={{ textAlign: 'center' }} content={diemLyThuyet} />}
-                        {(!listShow.length || (listShow.length && listShow.indexOf('diemThucHanh') != -1)) && <TableCell type='link' style={{ textAlign: 'center' }} content={<>{diemThucHanh}<i className='fa fa-lg fa-edit' /></>} className='practicePoint' onClick={e => this.edit(e, item)}/> }
-                        {(!listShow.length || (listShow.length && listShow.indexOf('diemTrungBinh') != -1)) && <TableCell type='text' style={{ textAlign: 'center' }} content={diemTB} /> }
+                        {(!listShow.length || (listShow.length && listShow.indexOf('diemThucHanh') != -1)) && <TableCell type='link' style={{ textAlign: 'center' }} content={<>{diemThucHanh}<i className='fa fa-lg fa-edit' /></>} className='practicePoint' onClick={e => this.edit(e, item)} />}
+                        {(!listShow.length || (listShow.length && listShow.indexOf('diemTrungBinh') != -1)) && <TableCell type='text' style={{ textAlign: 'center' }} content={diemTB} />}
                         {isCourseAdmin && subjects && subjects.length ? subjects.map((diemThi, i) => (
-                            (!listShow.length || (listShow.length && listShow.indexOf('final' + diemThi._id) != -1)) ? <TableCell key={i} type='text' style={{ textAlign: 'center' }}
+                            (!listShow.length || (listShow.length && listShow.indexOf('final' + diemThi._id) != -1)) ? <TableCell key={i} type='link' style={{ textAlign: 'center' }} className='practicePoint'
                                 content={
-                                    students && students[index] && students[index].diemThiHetMon && students[index].diemThiHetMon[i] && students[index].diemThiHetMon[i].point
-                                } />: null)) : null}
+                                    <> {students && students[index] && students[index].tienDoThiHetMon && students[index].tienDoThiHetMon[diemThi._id] && (students[index].tienDoThiHetMon[diemThi._id].diemTB * 10)}<i className='fa fa-lg fa-download' /></>
+                                } onClick={e => this.exportFinal(e, item, diemThi)} /> : null)) : null}
                         {(!listShow.length || (listShow.length && listShow.indexOf('diemTrungBinhHetMon') != -1)) && isCourseAdmin && <TableCell type='text' style={{ textAlign: 'center' }} content={students && students[index] && students[index].diemTrungBinhThiHetMon} />}
                         {isCourseAdmin && monThiTotNghiep && monThiTotNghiep.length ? monThiTotNghiep.map((diemThi, i) => (
-                            (!listShow.length || (listShow.length && listShow.indexOf(diemThi._id) != -1))  ? <TableCell key={i} type='text' style={{ textAlign: 'center' }} className={students && students[index] && students[index].diemThiTotNghiep && students[index].diemThiTotNghiep[i] && students[index].diemThiTotNghiep[i].diemLiet ? 'text-danger' : ''}
+                            (!listShow.length || (listShow.length && listShow.indexOf(diemThi._id) != -1)) ? <TableCell key={i} type='text' style={{ textAlign: 'center' }} className={students && students[index] && students[index].diemThiTotNghiep && students[index].diemThiTotNghiep[i] && students[index].diemThiTotNghiep[i].diemLiet ? 'text-danger' : ''}
                                 content={
                                     students && students[index] && students[index].diemThiTotNghiep && students[index].diemThiTotNghiep[i] && students[index].diemThiTotNghiep[i].point
-                                } />: null)) : null}
+                                } /> : null)) : null}
                         {(!listShow.length || (listShow.length && listShow.indexOf('datSatHach') != -1)) && isCourseAdmin && <TableCell type='text' style={{ textAlign: 'center' }} content={students && students[index] && students[index].datSatHach ? 'X' : ''} />}
                         {isCourseAdmin && (
                             <TableCell type='buttons' content={item} permission={{ write: true, delete: true }} onEdit={e => this.edit(e, item)} />
@@ -336,13 +346,13 @@ class AdminLearningProgressPage extends AdminPage {
                 <div className='tile'>
                     <div className='tile-body'>
                         <div className='row'>
-                            <div className='col-md-6'>
+                            <div className='col-md-9'>
                                 {isCourseAdmin ? <FormSelect ref={e => this.filter = e} data={dataSelectCourseAdmin} onChange={data => this.getPage(undefined, undefined, data.id)} style={{ marginBottom: '10px', width: '300px' }} /> :
                                     <FormCheckbox ref={e => this.course = e} onChange={value => { const data = value ? 'thiHetMon' : 'all'; this.getPage(undefined, undefined, data); }} label='Học viên đủ điều kiện thi hết môn' />
                                 }
                             </div>
-                            {isCourseAdmin && !item.lock &&  <Link style={{ textAlign: 'right' }} className='col-md-3' to={`${backRoute}/import-final-score`}><button className='btn btn-primary'> Nhập điểm thi hết môn </button></Link>}
-                            {isCourseAdmin && !item.lock && <Link  to={'/user/course/' + item._id + '/import-graduation-exam-score'} className='col-md-3'><button className='btn btn-primary'>Nhập điểm thi tốt nghiệp</button></Link>}
+                            {/* {isCourseAdmin && !item.lock && <Link style={{ textAlign: 'right' }} className='col-md-3' to={`${backRoute}/import-final-score`}><button className='btn btn-primary'> Nhập điểm thi hết môn </button></Link>} */}
+                            {isCourseAdmin && !item.lock && <Link to={'/user/course/' + item._id + '/import-graduation-exam-score'} className='col-md-3'><button className='btn btn-primary'>Nhập điểm thi tốt nghiệp</button></Link>}
                         </div>
                         {table}
                         {!isLecturer ? <Pagination name='adminLearningProgress' pageNumber={pageNumber} pageSize={pageSize} pageTotal={pageTotal} totalItem={totalItem} getPage={this.getPage} style={{ marginLeft: 45 }} /> : null}
@@ -350,7 +360,7 @@ class AdminLearningProgressPage extends AdminPage {
                         {<ShowColModal ref={e => this.showColModal = e} totalColumns={totalColumns} course={item._id} filter={this.state.filter} getLearningProgressPage={this.props.getLearningProgressPage} />}
                         {item._id ? <CourseAdminModal ref={e => this.courseAdmiModal = e} updateStudent={this.props.updateStudent} getLearningProgressPage={this.props.getLearningProgressPage} monThiTotNghiep={monThiTotNghiep} subjects={subjects} course={item} filter={this.state.filter} /> : null}
                         {isCourseAdmin && <CirclePageButton type='export' onClick={() => exportLearningProgressToExcel(item._id, this.state.filter)} />}
-                        {isCourseAdmin && <CirclePageButton type='custom' customClassName='btn-warning' customIcon='fa-pencil-square-o' style={{right: '75px'}} onClick={() => this.showColModal.show()} />}
+                        {isCourseAdmin && <CirclePageButton type='custom' customClassName='btn-warning' customIcon='fa-pencil-square-o' style={{ right: '75px' }} onClick={() => this.showColModal.show()} />}
                     </div>
                 </div>
             </>,
@@ -360,5 +370,5 @@ class AdminLearningProgressPage extends AdminPage {
 }
 
 const mapStateToProps = state => ({ system: state.system, course: state.trainning.course });
-const mapActionsToProps = { getCourse, getLearningProgressPage, updateStudent };
+const mapActionsToProps = { getCourse, getLearningProgressPage, updateStudent, exportFinalExam };
 export default connect(mapStateToProps, mapActionsToProps)(AdminLearningProgressPage);
