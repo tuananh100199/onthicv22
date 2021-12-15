@@ -76,7 +76,7 @@ export function updateStudent(_id, changes, done) {
                 T.notify('Cập nhật thông tin học viên bị lỗi!', 'danger');
                 console.error(`PUT: ${url}. ${data.error}`);
             } else {
-                T.notify('Cập nhật thông tin học viên thành công!', 'success');
+                !(changes.tongThoiGianChat || changes.tongThoiGianForum) && T.notify('Cập nhật thông tin học viên thành công!', 'success');
                 done && done(data.item);
                 dispatch({ type: StudentUpdate, item: data.item });
                 // dispatch(getStudentPage());

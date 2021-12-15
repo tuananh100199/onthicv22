@@ -35,7 +35,7 @@ class UserCourseInfo extends AdminPage {
         const userPageLink = '/user/hoc-vien/khoa-hoc/' + this.state.courseId + '/mon-hoc/' + this.state.subjectId + '/bai-hoc/' + this.state.lessonId;
         return this.renderPage({
             icon: 'fa fa-cubes',
-            title: 'Tài liệu tham khảo: ' + (this.state.title),
+            title: 'Tài liệu học tập: ' + (this.state.title),
             breadcrumb: [<Link key={0} to={userPageLink}>Bài học</Link>, 'Tài liệu tham khảo'],
             content: (
                 <div className='tile'>

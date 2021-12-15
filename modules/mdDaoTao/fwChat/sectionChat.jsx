@@ -1,6 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { readAllChats, getAllChats, getUserChats, addChat } from './redux';
+import { getStudent, updateStudent } from '../fwStudent/redux';
 import { AdminPage } from 'view/component/AdminPage';
 import './chat.scss';
 import inView from 'in-view';
@@ -17,6 +18,26 @@ class SectionChat extends AdminPage {
         this.props.oldMessagePersonal && this.setState({
             oldMessagePersonal: this.props.oldMessagePersonal
         });
+        if (!(user.isLecturer || user.isCourseAdmin)) {
+            this.props.getStudent({ course: courseId, user: user._id }, data => {
+                if (!data.error) {
+                    this.setState({ studentId: data._id });
+                    let tongThoiGianChat = data.tongThoiGianChat ? data.tongThoiGianChat : 0;
+                    let hours = 0;
+                    let minutes = 0;
+                    let seconds = 0;
+                    window.interval = setInterval(() => {
+                        ++tongThoiGianChat;
+                        this.setState({ tongThoiGianChat });
+                        hours = parseInt(tongThoiGianChat / 3600) % 24;
+                        minutes = parseInt(tongThoiGianChat / 60) % 60;
+                        seconds = tongThoiGianChat % 60;
+                        $('#time').text((hours < 10 ? '0' + hours : hours) + ':' + (minutes < 10 ? '0' + minutes : minutes) + ':' + (seconds < 10 ? '0' + seconds : seconds));
+                    }, 1000);
+                }
+            });
+        }
+
         _selectedUserId ? T.socket.emit('chat:join', { _userId: _selectedUserId }) : T.socket.emit('chat:joinCourseRoom', { courseId });
         T.socket.on('chat:send', this.onReceiveMessage);
         this.scrollToBottom();
@@ -31,6 +52,9 @@ class SectionChat extends AdminPage {
 
     componentWillUnmount() {
         T.socket.off('chat:send');
+        const { studentId, tongThoiGianChat } = this.state;
+        clearInterval(window.interval);
+        this.props.updateStudent(studentId, { tongThoiGianChat });
     }
 
     loadMoreChats = () => { // Scroll on top and load more chats
@@ -267,5 +291,5 @@ class SectionChat extends AdminPage {
 }
 
 const mapStateToProps = state => ({ system: state.system });
-const mapActionsToProps = { readAllChats, getAllChats, getUserChats, addChat };
+const mapActionsToProps = { readAllChats, getAllChats, getUserChats, addChat, getStudent, updateStudent };
 export default connect(mapStateToProps, mapActionsToProps)(SectionChat);

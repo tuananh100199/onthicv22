@@ -55,11 +55,11 @@ module.exports = (app) => {
         }
     });
 
-    app.get('/api/student', app.permission.check('student:read'), (req, res) => {
+    app.get('/api/student', app.permission.check('user:login'), (req, res) => {
         app.model.student.get(req.query._id, (error, item) => res.send({ error, item }));
     });
 
-    app.put('/api/student', app.permission.check('student:write'), (req, res) => {
+    app.put('/api/student', app.permission.check('user:login'), (req, res) => {
         app.model.student.update(req.body._id, req.body.changes, (error, item) => res.send({ error, item }));
     });
 
