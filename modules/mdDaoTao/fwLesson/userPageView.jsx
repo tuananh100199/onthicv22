@@ -80,26 +80,6 @@ class adminEditPage extends AdminPage {
         this.props.rateLesson(this.state.lessonId, this.state.subjectId, this.state.courseId, value);
     }
 
-    onReady(event) {
-        const videoData = event.target.getVideoData(),
-            videoId = videoData && videoData.video_id;
-        const listVideo = this.state.listVideo ? this.state.listVideo : {};
-        let totalSecondsVideo = this.state.totalSecondsVideo ? this.state.totalSecondsVideo : 0;
-        if (listVideo) {
-            const listVideoId = Object.keys(listVideo);
-            const currentIndex = listVideoId.findIndex(_videoId => _videoId == videoId);
-            if (currentIndex == -1) {
-                listVideo[videoId] = event.target.getDuration();
-                totalSecondsVideo += event.target.getDuration();
-            }
-            this.setState({ listVideo, totalSecondsVideo });
-        } else {
-            listVideo[videoId] = event.target.getDuration();
-            totalSecondsVideo += event.target.getDuration();
-            this.setState({ listVideo, totalSecondsVideo });
-        }
-    }
-
     onEnd(event) {
         const videoData = event.target.getVideoData(),
             videoId = videoData && videoData.video_id,
@@ -127,7 +107,7 @@ class adminEditPage extends AdminPage {
             videosRender = videos.length ? videos.map((video, index) => (
                 <div key={index} className='d-flex justify-content-center pb-5'>
                     <div className='embed-responsive embed-responsive-16by9' style={{ width: '70%', display: 'block' }} onClick={e => this.onView(e, video._id, index)}>
-                        <YouTube opts={{ playerVars: { 'autoplay': 0, 'controls': (!isView === 'false') ? 1 : 0, 'rel': 0 } }} videoId={video.link} containerClassName='embed embed-youtube' onReady={(e) => this.onReady(e)} onEnd={(e) => this.onEnd(e)} />
+                        <YouTube opts={{ playerVars: { 'autoplay': 0, 'controls': (!isView === 'false') ? 1 : 0, 'rel': 0 } }} videoId={video.link} containerClassName='embed embed-youtube' onEnd={(e) => this.onEnd(e)} />
                     </div>
                 </div>)) : 'Chưa có video bài giảng!';
         const userPageLink = '/user/hoc-vien/khoa-hoc/' + courseId + '/mon-hoc/' + subjectId;
