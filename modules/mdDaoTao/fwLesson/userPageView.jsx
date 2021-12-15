@@ -39,16 +39,13 @@ class adminEditPage extends AdminPage {
                             else this.setState({ nextLesson: listLesson[currentIndex + 1], monThucHanh: data.item.monThucHanh });
                         }
                     });
-                    if (data.item.questions) {
-                        this.props.viewLesson(params._id, params.subjectId, params.courseId, true);
-                    }
                     T.ready('/user/hoc-vien/khoa-hoc/' + params.courseId);
                     this.props.getStudentScore(params.courseId, data => {
                         if (data.error) {
                             this.props.history.push('/user');
                         } else {
                             totalSeconds = (data[params.subjectId] && data[params.subjectId][params._id] && data[params.subjectId][params._id].totalSeconds) ? parseInt(data[params.subjectId][params._id].totalSeconds) : 0;
-                            this.setState({ tienDoHocTap: data[params.subjectId], isView: data[params.subjectId] && data[params.subjectId][params._id] && data[params.subjectId][params._id].view });
+                            this.setState({ tienDoHocTap: data[params.subjectId], isView: data[params.subjectId] && data[params.subjectId][params._id] && data[params.subjectId][params._id].view ? data[params.subjectId][params._id].view : 'false' });
                         }
                     });
                     let hours = 0;
@@ -83,28 +80,25 @@ class adminEditPage extends AdminPage {
         this.props.rateLesson(this.state.lessonId, this.state.subjectId, this.state.courseId, value);
     }
 
-    onReady(event) {
+    onEnd(event) {
         const videoData = event.target.getVideoData(),
-            videoId = videoData && videoData.video_id;
-        const listVideo = this.state.listVideo ? this.state.listVideo : {};
-        let totalSecondsVideo = this.state.totalSecondsVideo ? this.state.totalSecondsVideo : 0;
-        if (listVideo) {
-            const listVideoId = Object.keys(listVideo);
-            const currentIndex = listVideoId.findIndex(_videoId => _videoId == videoId);
-            if (currentIndex == -1) {
-                listVideo[videoId] = event.target.getDuration();
-                totalSecondsVideo += event.target.getDuration();
-            }
-            this.setState({ listVideo, totalSecondsVideo });
-        } else {
-            listVideo[videoId] = event.target.getDuration();
-            totalSecondsVideo += event.target.getDuration();
-            this.setState({ listVideo, totalSecondsVideo });
+            videoId = videoData && videoData.video_id,
+            lesson = this.props.lesson && this.props.lesson.item,
+            videos = lesson && lesson.videos ? lesson.videos : [];
+        const { lessonId, subjectId, courseId } = this.state;
+        const viewedVideos = this.state.viewedVideos ? this.state.viewedVideos : [];
+        if (viewedVideos.findIndex(video => video == videoId) == -1) {
+            viewedVideos.push(videoId);
+            this.setState({ viewedVideos });
+        }
+        if (viewedVideos.length == videos.length) {
+            this.setState({ isView: true });
+            this.props.viewLesson(lessonId, subjectId, courseId, true);
         }
     }
 
     render() {
-        const { lessonId, subjectId, title, courseId, tienDoHocTap, isView, monThucHanh, nextLesson, totalSecondsVideo, totalSeconds } = this.state,
+        const { lessonId, subjectId, title, courseId, tienDoHocTap, isView, monThucHanh, nextLesson } = this.state,
             lesson = this.props.lesson && this.props.lesson.item,
             videos = lesson && lesson.videos ? lesson.videos : [],
             taiLieuThamKhao = lesson && lesson.taiLieuThamKhao,
@@ -113,11 +107,10 @@ class adminEditPage extends AdminPage {
             videosRender = videos.length ? videos.map((video, index) => (
                 <div key={index} className='d-flex justify-content-center pb-5'>
                     <div className='embed-responsive embed-responsive-16by9' style={{ width: '70%', display: 'block' }} onClick={e => this.onView(e, video._id, index)}>
-                        <YouTube opts={{ playerVars: { 'autoplay': 0, 'controls': isView ? 1 : 0, 'rel': 0 } }} videoId={video.link} containerClassName='embed embed-youtube' onReady={(e) => this.onReady(e)} />
+                        <YouTube opts={{ playerVars: { 'autoplay': 0, 'controls': (!isView === 'false') ? 1 : 0, 'rel': 0 } }} videoId={video.link} containerClassName='embed embed-youtube' onEnd={(e) => this.onEnd(e)} />
                     </div>
                 </div>)) : 'Chưa có video bài giảng!';
         const userPageLink = '/user/hoc-vien/khoa-hoc/' + courseId + '/mon-hoc/' + subjectId;
-        const isShowButtonQuestion = totalSeconds > totalSecondsVideo;
         if (tienDoHocTap && tienDoHocTap[lessonId]) {
             $('#' + tienDoHocTap[lessonId].rating).prop('checked', true);
         }
@@ -150,14 +143,15 @@ class adminEditPage extends AdminPage {
                             </div>
                             {monThucHanh ?
                                 <div>
-                                    {nextLesson ?
-                                        <a className='btn btn-warning ml-5' href={'/user/hoc-vien/khoa-hoc/' + courseId + '/mon-hoc/' + subjectId + '/bai-hoc/' + nextLesson._id}>
+                                    {!(isView === 'false') && nextLesson ?
+                                        <a className={'btn btn-warning ml-5'} href={'/user/hoc-vien/khoa-hoc/' + courseId + '/mon-hoc/' + subjectId + '/bai-hoc/' + nextLesson._id}>
                                             <i className='fa fa-lg fa-arrow-right' /> Sang bài tiếp theo
-                                        </a> : null}
+                                        </a> :
+                                        <button className='btn btn-secondary' onClick={() => T.alert('Thời gian học của bạn chưa đạt yêu cầu để sang bài tiếp theo!', 'error', false, 8000)}>Sang bài tiếp theo</button>}
                                 </div> :
-                                (isShowButtonQuestion && <div>
+                                (!(isView === 'false') ?
                                     <Link to={'/user/hoc-vien/khoa-hoc/' + courseId + '/mon-hoc/' + subjectId + '/bai-hoc/cau-hoi/' + lessonId} className='btn btn-primary'>Câu hỏi ôn tập</Link>
-                                </div>)}
+                                    : <button className='btn btn-secondary' onClick={() => T.alert('Thời gian học của bạn chưa đạt yêu cầu để làm bài ôn tập này!', 'error', false, 8000)}>Câu hỏi ôn tập</button>)}
                         </div>
                     </div>
                 </div>

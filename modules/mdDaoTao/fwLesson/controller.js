@@ -38,6 +38,7 @@ module.exports = (app) => {
         app.model.lesson.get(_id, (error, item) => {
             if (item && item.questions) {
                 item.questions.forEach(question => question.trueAnswer = null);
+                item.questions = item.questions.filter(question => question.active);
                 if (item.numQuestion < item.questions.length) {
                     app.model.student.get({ user: req.session.user._id, course: courseId }, (error, student) => {
                         if (error) {
@@ -120,7 +121,7 @@ module.exports = (app) => {
             } else {
                 const key = 'tienDoHocTap.' + subjectId + '.' + lessonId,
                     changes = {};
-                changes[key] = {score: '', trueAnswers: '', answers: ''};
+                changes[key] = { score: '', trueAnswers: '', answers: '' };
                 app.model.student.resetLesson({ _id: students[0]._id }, changes, (error, item) => {
                     res.send({ error, item });
                 });
