@@ -5,6 +5,7 @@ module.exports = app => {
         user: { type: app.db.Schema.Types.ObjectId, ref: 'User' },
         active: { type: Boolean, default: false },
         description: String,
+        title: String, // Chức danh
         image: String
     });
     const model = app.db.model('Staff', schema);

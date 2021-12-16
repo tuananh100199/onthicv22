@@ -12,7 +12,8 @@ class StaffModal extends AdminModal {
     }
 
     onShow = (item) => {
-        const { _id, image, active, description, user, staffGroupId } = item || { _id: null, active: true };
+        const { _id, image, active, title, description, user, staffGroupId } = item || { _id: null, active: true };
+        this.itemTitle.value(title || '');
         this.itemDescription.value(description || '');
         this.itemUser.value(user ? { id: user._id, text: `${user.lastname} ${user.firstname} (${user.email})` } : null);
         this.itemActive.value(active);
@@ -37,6 +38,7 @@ class StaffModal extends AdminModal {
         e.preventDefault();
         const changes = {
             user: this.itemUser.value(),
+            title: this.itemTitle.value().trim(),
             description: this.itemDescription.value().trim(),
             staffGroupId: this.state.staffGroupId,
             active: this.itemActive.value(),
@@ -58,6 +60,7 @@ class StaffModal extends AdminModal {
             <div className='col-md-8'>
                 <FormSelect ref={e => this.itemUser = e} label='Tên nhân viên' data={ajaxSelectUserType(['isCourseAdmin', 'isLecturer', 'isStaff'], 'or')} readOnly={this.props.readOnly} />
                 <FormRichTextBox ref={e => this.itemDescription = e} label='Mô tả' readOnly={this.props.readOnly} />
+                <FormTextBox ref={e => this.itemTitle = e} label='Chức danh' readOnly={this.props.readOnly} />
             </div>
             <div className='col-md-4'>
                 <FormImageBox ref={e => this.imageBox = e} label='Hình ảnh nền (Tỉ lệ 3:4)' uploadType='StaffImage' image={this.state.image} readOnly={this.props.readOnly}

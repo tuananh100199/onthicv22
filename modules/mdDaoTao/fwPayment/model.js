@@ -1,8 +1,8 @@
 module.exports = app => {
     const schema = app.db.Schema({
-        type:String, // mã chứng từ
+        type: String, // mã chứng từ
         timeReceived: Date,
-        code:String, // số chứng từ -> unique: type+key of mongoose
+        code: String, // số chứng từ -> unique: type+key of mongoose
         firstname: String, // học viên
         lastname: String, // học viên
         student: { type: app.db.Schema.Types.ObjectId, ref: 'Student' },

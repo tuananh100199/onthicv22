@@ -422,7 +422,6 @@ export const ajaxSelectCourseByCourseType = (courseType) => ({
     data: {},
     processResults: response => {
         const results = [{ id: 0, text: 'Tất cả khóa học' }];
-        console.log(courseType);
         response && response.page && response.page.list && response.page.list.forEach(course => results.push({ id: course._id, text: course.name + (course.courseType ? ` (${course.courseType.title})` : '') }));
         return ({ results });
     },

@@ -1,0 +1,336 @@
+/* ĐẾN VỚI HIỆP PHÁT */
+.warp_den_voi_HP {
+    width: 100%;
+}
+.warp_den_voi_HP .wrap_item_den_voi_HP {
+    background-color: #199d76;
+    border-radius: 10px;
+    margin-bottom: 30px;
+    height: 260px;
+}
+.warp_den_voi_HP .wrap_item_den_voi_HP:hover {
+    border: 1px solid #199d76;
+    background-color: white;
+    margin-bottom: 30px;
+    height: 260px;
+}
+.warp_den_voi_HP .wrap_item_den_voi_HP .hover_item {
+  display: none;
+}
+
+.warp_den_voi_HP .wrap_item_den_voi_HP:hover .item {
+    display: none;
+}
+.warp_den_voi_HP .wrap_item_den_voi_HP:hover .hover_item {
+    display: block;
+    background-color: white;
+}
+.warp_den_voi_HP .wrap_item_den_voi_HP:hover .hover_item .description {
+    color: #199d76;
+    font-size: 15px;
+    line-height: 20px;
+    text-align: justify;
+    padding: 0 8px;
+}
+.warp_den_voi_HP .wrap_item_den_voi_HP:hover .hover_item .hover_title_item {
+    color: #199d76;
+    margin-top: 15px;
+    font-weight: 700;
+    text-align: center;
+}
+
+.warp_den_voi_HP .wrap_item_den_voi_HP .icon_item_den_voi_HP {
+    font-size: 120px;
+    color: white;
+    text-align: center;
+}
+.warp_den_voi_HP .wrap_item_den_voi_HP .title_item_den_voi_HP {
+    font-size: 20px;
+    color: white;
+    text-align: center;
+}
+
+/* GIỚI THIỆU HIỆP PHÁT */
+.warp_gioi_thieu_HP .title_gioi_thieu {
+    padding-left: 30px;
+    display: grid;
+    background-color: #199d76;
+    height: 60px;
+    width: 250px;
+    color: yellow;
+}
+.warp_gioi_thieu_HP .title_gioi_thieu span {
+    font-weight: 800;
+    color: white;
+}
+.warp_gioi_thieu_HP .description {
+    color: #199d76;
+    padding: 8px;
+    text-align: justify;
+}
+.warp_gioi_thieu_HP .description span{
+    font-style: italic;
+    color: darkgray;
+}
+.social_gioi_thieu {
+    border-bottom: 30px solid #199d76;
+    border-right: 20px solid transparent;
+    border-left: 0px solid transparent;
+    height: 0;
+    width: 150px;
+}
+
+.social-menu {
+	display: flex;
+	list-style-type: none;
+    padding-top: 5px;
+    padding-left: 5px;
+}
+ 
+.social-menu i {
+	color: #fff;
+	width: 18px;
+	height: 18px;
+	border-radius: 50%;
+	font-size: 15px;
+	margin-right: 10px;
+	transition: all 0.2s ease-in-out;
+	display: flex;
+	justify-content: center;
+}
+
+.social-menu i:before {
+	display: flex;
+	flex-flow: row nowrap;
+	align-items: center;
+}
+
+.social-menu a {
+	text-decoration: none;
+}
+
+.fa-facebook {
+	background:#3b5998
+} 
+
+.fa-linkedin {
+	background:#007bb6
+}
+
+.fa-twitter {
+	background:#00aced
+}
+
+.fa-instagram {
+	background:#3f729b
+}
+
+.fa-youtube {
+	background:#c4302b
+}
+
+.social-menu i:hover {
+	opacity: .7;
+	border-radius: 0;
+}
+
+
+.img-intro1, .img-intro2, .img-intro3 {
+    position: absolute;
+    color: white;
+    line-height: 100px;
+    text-align: center;
+}
+  
+.img-intro1 {
+    width: 200px;
+    height: 250px;
+    z-index: 1;
+    top: -10px;
+    left: 10px;
+    background: red;
+}
+
+.img-intro2 {
+    width: 300px;
+    height: 250px;
+    top: 40px;
+    left: 150px;
+    background: green;
+}
+
+.img-intro3 {
+    width: 300px;
+    height: 250px;
+    top: 80px;
+    left: 100px;
+    background: blue;
+}  
+.container_staff {
+    width: 100%;
+    height: 450px;
+    overflow: hidden;
+    margin: auto;
+}
+
+.wrapper_staff {
+    width: 100%;
+    height: 100%;
+    display:flex;
+    background: #ccc;
+    transform: translateX(-25%);
+}
+
+.staff_info {
+    display: block;
+    height: 100%;
+    background: #199d76;
+    /* clip-path: polygon(0 0, 100% 0, 50% 100%, 0% 100%); */
+    flex: 1 0 75%;
+    transform: translateX(30%);
+    align-items: center;
+    justify-content: flex-start;
+}
+
+.staff_info .staff_group_title {
+    padding-left: 90px;
+    padding-top: 50px;
+    color: white;
+    font-size: 15px;
+    text-transform: uppercase;
+}
+
+.staff_info .strike1 {
+    margin-top: 5px;
+    width: 140px;
+    height: 4px;
+    background-color: white;
+    margin-left: 90px;
+}
+
+.staff_info .strike2 {
+    margin-top: 5px;
+    width: 70px;
+    height: 2px;
+    background-color: white;
+    margin-left: 90px;
+}
+
+.staff_info .staff_name {
+    padding-left: 90px;
+    padding-top: 50px;
+    color: white;
+    font-size: 15px;
+}
+
+.staff_info .staff_name h5{
+    color: white;
+    font-size: 25px;
+}
+
+.staff_info .staff_group_title h3{
+    color: white;
+}
+
+.staff_info .staff_title {
+    margin-bottom: 15px;
+    padding-left: 90px;
+    padding-top: 15px;
+}
+
+.staff_info .staff_title h6{
+    color: yellow;
+}
+
+.staff_img {
+    height: 100%;
+    background: teal;
+    clip-path: polygon(25% 0, 100% 0, 95% 100%, 15% 100%);
+    flex: 1 0 75%;
+    transform: translateX(-15%);
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+}
+.staff_img img{
+    width: 100%;    
+}
+.staff_info .text {
+    width:65%;
+    padding-left: 90px;
+    color: white;
+    margin-top: 50px;
+}
+
+.staff_info .text p{
+    color: yellow;  
+}
+
+.staff_img .text {
+    width:50%;
+    padding-right: 10%;
+}
+  
+.login_form .form_title{
+    font-size: 22px;
+    color: white;
+    padding-top: 25px;
+    height: 80px;
+    background: #199d76;
+    text-align: center;
+    margin: auto;
+}
+.login_form .content{
+    margin-bottom: 15px;
+    margin-top: 10px;
+    text-align: justify;
+    color: #199d76;
+    line-height: 20px;
+}
+.login_form .wrap-box{
+    display: flex;
+    color: #199d76;
+    height: 70px;
+    width: 100%;
+    padding: 0px 8px;
+    margin: 0px;
+    text-align: center;
+}
+.login_form .wrap-box .wrap_icon{
+    padding-top: 5px;
+    width: 60px;
+    height: 50px;
+    border-radius: 50%;
+    text-align: center;
+    background-color: #199d76;
+}
+
+.login_form .wrap-box i{
+    width: 40px;
+    height: 40px;
+    font-size: 40px;
+    margin: auto;
+    text-align: center;
+    color: white;
+}
+.login_form .wrap-box input{
+    margin-left: 10px;
+    width: 100%;
+    height: 45px;
+    background: transparent;
+    border: solid 2px #199d76;
+    border-radius: 25px;
+    padding-left: 25px;
+    outline: none;
+    font-size: 15px;
+    color: #404040;
+    font-weight: 500;
+}
+.login_form .wrap-box input::placeholder {
+    color: #199d76;
+    opacity: 1; /* Firefox */
+}
+.login_form .wrap_image {
+    left: -30px;
+    width: 120%;
+  }
