@@ -132,7 +132,7 @@ class AdminEditPage extends AdminPage {
                                 </Link>
                             </>}
                         </> :
-                        monThucHanh && <>
+                        !monThucHanh && <>
                             <h4 style={{ width: '100%' }}>Thi hết môn</h4>
                             <Link className='col-md-6' onClick={() => T.alert('Vui lòng hoàn thành tất cả các bài học trước khi thi hết môn!', 'error', false, 8000)} >
                                 <div className={'widget-small coloured-icon secondary'} >
