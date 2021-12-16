@@ -30,7 +30,6 @@ module.exports = app => {
             pageSize = parseInt(req.params.pageSize),
             condition = req.query.condition || {},
             pageCondition = {};
-        console.log(condition);
         try {
             if (condition && condition.searchText && condition.searchText.startsWith('teacherPage')) {
                 let teacherCondition = {};

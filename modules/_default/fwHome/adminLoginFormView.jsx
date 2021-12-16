@@ -41,7 +41,6 @@ class LoginFormView extends React.Component {
         isConfirm && this.props.deleteLoginForm(item._id));
 
     render() {
-        console.log('hiiii', this.props.component.loginForm);
         const permission = this.props.permission;
         const table = renderTable({
             getDataSource: () => this.props.component.loginForm && this.props.component.loginForm.list,

@@ -29,7 +29,6 @@ export function getLoginFormAll(done) {
     return dispatch => {
         const url = '/api/loginForm/all';
         T.get(url, data => {
-            console.log('data', data);
             if (data.error) {
                 T.notify('Lấy danh sách đăng nhập bị lỗi!', 'danger');
                 console.error('GET: ' + url + '. ' + data.error);

@@ -9,7 +9,6 @@ class EditCoursePage extends AdminPage {
     state={};
     componentDidMount() {
         const setData = (course) => {
-            console.log('course', course);
             const { name, maxStudent, courseFee, shortDescription, detailDescription, courseType, close, lock,
                 thoiGianKhaiGiang, thoiGianBatDau, thoiGianKetThuc, thoiGianThiKetThucMonDuKien, thoiGianThiKetThucMonChinhThuc, thoiGianThiTotNghiepDuKien, thoiGianThiTotNghiepChinhThuc, active, chatActive, commentActive } = course;
 

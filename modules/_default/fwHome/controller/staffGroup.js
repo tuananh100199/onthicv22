@@ -87,7 +87,6 @@ module.exports = app => {
 
     // Home -----------------------------------------------------------------------------------------------------------------------------------------
     app.get('/home/staff-group', (req, res) => app.model.staffGroup.get(req.query._id, (error, staffGroup) => {
-        console.log('staffGroup', staffGroup);
         if (error || staffGroup == null) {
             res.send({ error: 'Get staffGroup failed!' });
         } else {

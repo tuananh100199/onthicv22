@@ -26,7 +26,7 @@ class Footer extends React.Component {
                                     <div className='footer_logo'>
                                         <a href='#' onClick={e => e.preventDefault()}>
                                             <div>Lái xe<span>Hiệp Phát</span></div>
-                                            <div>Trung tâm dạy nghề lái xe</div>
+                                            <div>Trung tâm dạy nghề lái xe11</div>
                                         </a>
                                     </div>
                                     <div className='footer_about_text'>
