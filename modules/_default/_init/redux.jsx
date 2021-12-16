@@ -85,17 +85,47 @@ export function updateStatisticTeacher(done) {
     };
 }
 
-export function getStatisticStudent(dateStart, dateEnd,done) {
+export function getStatisticStudent(dateStart, dateEnd, done) {
     return dispatch => {
         const url = '/api/statistic/dashboard/student';
-        T.get(url,{dateStart, dateEnd}, data => {
-            data && dispatch({ type: SystemUpdateState});
+        T.get(url, { dateStart, dateEnd }, data => {
+            data && dispatch({ type: SystemUpdateState });
             done && done(data);
         }, error => {
             console.error(error);
             T.notify('Lấy thông tin thống kê hệ thống lỗi!', 'danger');
             done && done();
         });
+    };
+}
+
+export function getCaptureSetting(done) {
+    return dispatch => {
+        const url = '/api/capture';
+        T.get(url, data => {
+            data && dispatch({ type: SystemUpdateState, state: data });
+            done && done(data);
+        }, error => {
+            console.error(error);
+            T.notify('Lấy thông tin cấu hình nhận diện học viên bị lỗi!', 'danger');
+            done && done();
+        });
+    };
+}
+export function updateCaptureSetting(changes, done) {
+    console.log(changes);
+    return dispatch => {
+        const url = '/api/capture';
+        T.put(url, changes, data => {
+            if (data.error) {
+                T.notify(data.error, 'danger');
+                console.error('PUT: ' + url + '.', data.error);
+            } else {
+                done && done(data);
+                T.notify('Lưu thông tin cấu hình nhận diện học viên thành công!', 'success');
+                dispatch({ type: SystemUpdateState, state: data });
+            }
+        }, error => console.error(error) || T.notify('Lưu thông tin hệ thống lỗi!', 'danger'));
     };
 }
 

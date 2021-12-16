@@ -13,16 +13,26 @@ module.exports = (app) => {
         },
     };
 
+    const menuSettingCapture = {
+        parentMenu: app.parentMenu.trainning,
+        menus: {
+            3999: { title: 'Cấu hình nhận diện học viên', link: '/user/setting-capture', icon: 'fa-camera', backgroundColor: '#0091EA' }
+        },
+    };
+
     app.permission.add(
         { name: 'dashboard:standard', menu: { parentMenu: { index: 100, title: 'Dashboard', icon: 'fa-dashboard', link: '/user/dashboard' } } },
         { name: 'user:login', menu: { parentMenu: app.parentMenu.user } },
         { name: 'system:settings', menu: menuSettings },
         { name: 'statistic:read', menu: menuStatistic },
+        { name: 'settingCapture:read', menu: menuSettingCapture },
+        { name: 'settingCapture:write' },
     );
 
     app.get('/user/dashboard', app.permission.check('dashboard:standard'), app.templates.admin);
     app.get('/user/statistic', app.permission.check('statistic:read'), app.templates.admin);
     app.get('/user/setting', app.permission.check('system:settings'), app.templates.admin);
+    app.get('/user/setting-capture', app.permission.check('settingCapture:read'), app.templates.admin);
     ['/index.htm(l)?', '/404.htm(l)?', '/request-permissions(/:roleId?)', '/request-login'].forEach((route) => app.get(route, app.templates.home));
 
     // API ------------------------------------------------------------------------------------------------------------------------------------------
@@ -282,13 +292,13 @@ module.exports = (app) => {
                                 if (error) {
                                     reject(error);
                                 } else {
-                                    app.model.user.count({ isLecturer: true, daNghiDay:true, ngayNghiDay: { $gte: new Date().setFullYear(year, 0, 1), $lt: new Date().setFullYear(year + 1, 0, -1) } }, (error, numberOfRemoveTeacher) => {
+                                    app.model.user.count({ isLecturer: true, daNghiDay: true, ngayNghiDay: { $gte: new Date().setFullYear(year, 0, 1), $lt: new Date().setFullYear(year + 1, 0, -1) } }, (error, numberOfRemoveTeacher) => {
                                         if (error) {
                                             reject(error);
                                         } else {
                                             const obj = {};
                                             totalTeacher = totalTeacher + numberOfTeacher - numberOfRemoveTeacher;
-                                            obj[year] = 'totalTeacher:' + totalTeacher + ':newTeacher:' + numberOfTeacher +':removeTeacher:' + numberOfRemoveTeacher;
+                                            obj[year] = 'totalTeacher:' + totalTeacher + ':newTeacher:' + numberOfTeacher + ':removeTeacher:' + numberOfRemoveTeacher;
                                             resolve(obj);
                                         }
                                     });
@@ -313,6 +323,29 @@ module.exports = (app) => {
                         }
                     });
                 }).catch(error => console.error(error) || res.send({ error }));
+            }
+        });
+    });
+
+    app.get('/api/capture', app.permission.check('settingCapture:read'), (req, res) => {
+        app.model.setting.get('numberOfMinScreenCapture', item => {
+            app.model.setting.get('domainLink', data => res.send({ numberOfMinScreenCapture: item.numberOfMinScreenCapture || 0, domainLink: data.domainLink || '' }));
+        });
+    });
+
+    app.put('/api/capture', app.permission.check('settingCapture:read'), (req, res) => {
+        const changes = req.body;
+        app.model.setting.set({ numberOfMinScreenCapture: changes.numberOfMinScreenCapture || '' }, error => {
+            if (error) {
+                res.send({ error: 'Update số phút mỗi lần chụp bị lỗi' });
+            } else {
+                app.model.setting.set({ domainLink: changes.domainLink || '' }, error => {
+                    if (error) {
+                        res.send({ error: 'Update link domain lưu ảnh bị lỗi' });
+                    } else {
+                        res.send({ data: changes, error });
+                    }
+                });
             }
         });
     });
