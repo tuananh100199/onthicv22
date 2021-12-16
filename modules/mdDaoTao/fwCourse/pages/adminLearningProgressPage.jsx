@@ -248,7 +248,7 @@ class AdminLearningProgressPage extends AdminPage {
             students = this.props.course && this.props.course && this.props.course.students ? this.props.course.students : [],
             subjects = this.props.course && this.props.course.subjects ? this.props.course.subjects.sort((a, b) => a.monThucHanh - b.monThucHanh) : [],
             monThiTotNghiep = item && item.monThiTotNghiep ? item.monThiTotNghiep : [],
-            totalColumns = [{ id: 'diemLyThuyet', text: 'Điểm lý thuyết' }, { id: 'diemThucHanh', text: 'Điểm thực hành' }, { id: 'diemTrungBinh', text: 'Điểm trung bình' }, { id: 'diemTrungBinhHetMon', text: 'Điểm trung bình thi hết môn' }, { id: 'datSatHach', text: 'Đạt sát hạch' }, { id: 'thoiGianChat', text: 'Thời gian tham gia phòng chat' }, { id: 'thoiGianForum', text: 'Thời gian tham gia forum' }],
+            totalColumns = [{ id: 'diemLyThuyet', text: 'Điểm lý thuyết' }, { id: 'diemThucHanh', text: 'Điểm thực hành' }, { id: 'diemTrungBinh', text: 'Điểm trung bình' }, { id: 'diemTrungBinhHetMon', text: 'Điểm trung bình thi hết môn' }, { id: 'datSatHach', text: 'Đạt sát hạch' }, { id: 'thoiGianChat', text: 'Thời gian tham gia phòng chat' }, { id: 'thoiGianForum', text: 'Thời gian tham gia forum' }, { id: 'thoiGianTaiLieu', text: 'Thời gian xem tài liệu ôn tập' }],
             listShow = (this.showColModal && this.showColModal.state && this.showColModal.state.listShow) ? this.showColModal.state.listShow : (this.state.listShow || []),
             dataSelectCourseAdmin = [
                 { id: 'all', text: 'Tất cả học viên' },
@@ -298,6 +298,7 @@ class AdminLearningProgressPage extends AdminPage {
                     {(!listShow.length || (listShow.length && listShow.indexOf('datSatHach') != -1)) && isCourseAdmin && <th style={{ width: 'auto' }} nowrap='true'>Đạt sát hạch</th>}
                     {(!listShow.length || (listShow.length && listShow.indexOf('thoiGianChat') != -1)) && isCourseAdmin && <th style={{ width: 'auto' }} nowrap='true'>Thời gian tham gia phòng chat</th>}
                     {(!listShow.length || (listShow.length && listShow.indexOf('thoiGianForum') != -1)) && isCourseAdmin && <th style={{ width: 'auto' }} nowrap='true'>Thời gian tham gia forum</th>}
+                    {(!listShow.length || (listShow.length && listShow.indexOf('thoiGianTaiLieu') != -1)) && isCourseAdmin && <th style={{ width: 'auto' }} nowrap='true'>Thời gian xem tài liệu ôn tập</th>}
                     {isCourseAdmin && <th style={{ width: 'auto' }} nowrap='true'>Thao tác</th>}
                 </tr>),
             renderRow: (item, index) => {
@@ -334,6 +335,7 @@ class AdminLearningProgressPage extends AdminPage {
                         {(!listShow.length || (listShow.length && listShow.indexOf('datSatHach') != -1)) && isCourseAdmin && <TableCell type='text' style={{ textAlign: 'center' }} content={students && students[index] && students[index].datSatHach ? 'X' : ''} />}
                         {(!listShow.length || (listShow.length && listShow.indexOf('thoiGianChat') != -1)) && isCourseAdmin && <TableCell type='text' style={{ textAlign: 'center' }} content={students && students[index] && students[index].tongThoiGianChat ? convertTime(students[index].tongThoiGianChat) : convertTime(0)} />}
                         {(!listShow.length || (listShow.length && listShow.indexOf('thoiGianForum') != -1)) && isCourseAdmin && <TableCell type='text' style={{ textAlign: 'center' }} content={students && students[index] && students[index].tongThoiGianForum ? convertTime(students[index].tongThoiGianForum) : convertTime(0)} />}
+                        {(!listShow.length || (listShow.length && listShow.indexOf('thoiGianTaiLieu') != -1)) && isCourseAdmin && <TableCell type='text' style={{ textAlign: 'center' }} content={students && students[index] && students[index].tongThoiGianTaiLieu ? convertTime(students[index].tongThoiGianTaiLieu) : convertTime(0)} />}
                         {isCourseAdmin && (
                             <TableCell type='buttons' content={item} permission={{ write: true, delete: true }} onEdit={e => this.edit(e, item)} />
                         )}

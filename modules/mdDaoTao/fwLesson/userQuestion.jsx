@@ -21,12 +21,12 @@ class userQuestion extends AdminPage {
                 } else if (data.item) {
                     let totalSeconds = 0;
                     this.props.getSubjectByStudent(params.subjectId, data => {
-                        if(data.item && data.item.lessons){
+                        if (data.item && data.item.lessons) {
                             const listLesson = data.item.lessons,
-                            currentIndex = listLesson.findIndex(lesson => lesson._id == params._id);
-                            if(currentIndex + 1 == listLesson.length) this.setState({nextLesson: null});
-                            else this.setState({nextLesson: listLesson[currentIndex+1]});
-                        } 
+                                currentIndex = listLesson.findIndex(lesson => lesson._id == params._id);
+                            if (currentIndex + 1 == listLesson.length) this.setState({ nextLesson: null });
+                            else this.setState({ nextLesson: listLesson[currentIndex + 1] });
+                        }
                     });
                     this.props.getStudentScore(params.courseId, item => {
                         if (item) {
@@ -36,7 +36,7 @@ class userQuestion extends AdminPage {
                                 subjectId: params.subjectId,
                                 courseId: params.courseId,
                                 prevTrueAnswers: item[params.subjectId][params._id] && item[params.subjectId][params._id].trueAnswers ? item[params.subjectId][params._id].trueAnswers : null,
-                                prevAnswers: item[params.subjectId][params._id] &&  item[params.subjectId][params._id].answers ? item[params.subjectId][params._id].answers : null,
+                                prevAnswers: item[params.subjectId][params._id] && item[params.subjectId][params._id].answers ? item[params.subjectId][params._id].answers : null,
                                 showSubmitButton: item[params.subjectId][params._id] && item[params.subjectId][params._id].answers ? false : true
                             });
                         }
@@ -47,12 +47,18 @@ class userQuestion extends AdminPage {
                     let seconds = 0;
                     window.interval = setInterval(() => {
                         ++totalSeconds;
-                        this.setState({totalSeconds});
-                        hours = parseInt( totalSeconds / 3600 ) % 24 ;
-                        minutes = parseInt( totalSeconds / 60 ) % 60 ;
+                        this.setState({ totalSeconds });
+                        hours = parseInt(totalSeconds / 3600) % 24;
+                        minutes = parseInt(totalSeconds / 60) % 60;
                         seconds = totalSeconds % 60;
-                        $('#time').text((hours < 10 ? '0' + hours : hours) + ':' + (minutes < 10 ? '0' + minutes : minutes) + ':' + (seconds  < 10 ? '0' + seconds : seconds));
+                        $('#time').text((hours < 10 ? '0' + hours : hours) + ':' + (minutes < 10 ? '0' + minutes : minutes) + ':' + (seconds < 10 ? '0' + seconds : seconds));
                     }, 1000);
+                    window.onbeforeunload = (event) => {
+                        const e = event || window.event;
+                        e.preventDefault();
+                        clearInterval(window.interval);
+                        this.props.timeLesson(params._id, params.subjectId, params.courseId, totalSeconds);
+                    };
                     const { _id, title, shortDescription, detailDescription, questions } = data.item;
                     if (questions && questions.length == 1) {
                         this.setState({ prevButton: 'invisible', nextButton: 'invisible' });
@@ -68,9 +74,9 @@ class userQuestion extends AdminPage {
             this.props.history.push('/user/hoc-vien/khoa-hoc/' + params.courseId + '/mon-hoc/' + params.subjectId + '/bai-hoc/' + params._id);
         }
     }
-    
+
     componentWillUnmount() {
-        const {lessonId,subjectId,courseId,totalSeconds} = this.state;
+        const { lessonId, subjectId, courseId, totalSeconds } = this.state;
         clearInterval(window.interval);
         this.props.timeLesson(lessonId, subjectId, courseId, totalSeconds);
         window.removeEventListener('keydown', this.logKey);
@@ -206,7 +212,7 @@ class userQuestion extends AdminPage {
         const activeQuestionIndex = this.state.activeQuestionIndex ? this.state.activeQuestionIndex : 0;
         const activeQuestion = questions ? questions[activeQuestionIndex] : null;
         const { prevTrueAnswers, prevAnswers, showSubmitButton, showTotalScore, score, nextLesson, subjectId, courseId } = this.state,
-        diemThi = (score && questions && questions.length) ? Number((parseInt(score) / questions.length).toFixed(1)) : 0;
+            diemThi = (score && questions && questions.length) ? Number((parseInt(score) / questions.length).toFixed(1)) : 0;
         if (questions && questions.length == 1) {
             activeQuestion && prevAnswers && prevAnswers[activeQuestion._id] && $('#' + activeQuestion._id + prevAnswers[activeQuestion._id]).prop('checked', true);
         } else if (activeQuestionIndex == 0) {
@@ -273,10 +279,10 @@ class userQuestion extends AdminPage {
                                                 <i className='fa fa-lg fa-refresh' /> Làm lại
                                             </button>}
                                         {
-                                           !showSubmitButton && nextLesson && (diemThi > 0.5) ?  
-                                            <a className='btn btn-warning ml-5' href={'/user/hoc-vien/khoa-hoc/' + courseId + '/mon-hoc/' + subjectId +  '/bai-hoc/' + nextLesson._id}>
-                                                <i className='fa fa-lg fa-arrow-right' /> Sang bài tiếp theo
-                                            </a> : null
+                                            !showSubmitButton && nextLesson && (diemThi > 0.5) ?
+                                                <a className='btn btn-warning ml-5' href={'/user/hoc-vien/khoa-hoc/' + courseId + '/mon-hoc/' + subjectId + '/bai-hoc/' + nextLesson._id}>
+                                                    <i className='fa fa-lg fa-arrow-right' /> Sang bài tiếp theo
+                                                </a> : null
                                         }
                                     </ul>
                                 </nav>

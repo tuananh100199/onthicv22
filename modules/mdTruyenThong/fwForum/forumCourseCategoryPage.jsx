@@ -44,6 +44,12 @@ class ForumCategoryPage extends AdminPage {
                                 seconds = tongThoiGianForum % 60;
                                 $('#time').text((hours < 10 ? '0' + hours : hours) + ':' + (minutes < 10 ? '0' + minutes : minutes) + ':' + (seconds < 10 ? '0' + seconds : seconds));
                             }, 1000);
+                            window.onbeforeunload = (event) => {
+                                const e = event || window.event;
+                                e.preventDefault();
+                                clearInterval(window.interval);
+                                this.props.updateStudent(data._id, { tongThoiGianForum });
+                            };
                         }
                     });
                 }
