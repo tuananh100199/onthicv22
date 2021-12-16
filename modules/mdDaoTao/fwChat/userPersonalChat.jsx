@@ -17,14 +17,16 @@ class UserPersonalChat extends AdminPage {
         if (courseId) {
             T.ready('/user/hoc-vien/khoa-hoc/' + courseId, () => {
                 this.props.getAdminChatByStudent(courseId, data => {
-                    this.props.getUserChats(data.item && data.item._id, null, chat => {
-                        this.setState({
-                            oldMessage: chat.chats,
-                            listAdmin: [data.item],
-                            _selectedUserId: data.item && data.item._id,
-                            isLoading: false
+                    if (data.item && data.item._id) {
+                        this.props.getUserChats(data.item && data.item._id, null, chat => {
+                            this.setState({
+                                oldMessage: chat.chats,
+                                listAdmin: [data.item],
+                                _selectedUserId: data.item && data.item._id,
+                                isLoading: false
+                            });
                         });
-                    });
+                    }
                 });
             });
 

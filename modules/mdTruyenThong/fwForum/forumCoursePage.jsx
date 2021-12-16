@@ -2,6 +2,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { getForumPage, createForum, updateForum, deleteForum } from './redux';
 import { getCourse } from 'modules/mdDaoTao/fwCourse/redux';
+import { getStudent, updateStudent } from 'modules/mdDaoTao/fwStudent/redux';
 import { Link } from 'react-router-dom';
 import Pagination from 'view/component/Pagination';
 import { AdminPage, AdminModal, FormTextBox, FormSelect, FormEditor } from 'view/component/AdminPage';
@@ -43,7 +44,7 @@ class ForumModal extends AdminModal {
                 if ((this.itemContent.text() || '').split(' ').length > 200) {
                     T.notify('Nội dung của forum dài hơn 200 từ', 'danger');
                 } else {
-                    
+
                     this.state._id ?
                         this.props.update(this.state._id, data, () => this.hide()) :
                         this.props.create(data, (data) => (data && data.item && this.props.history.push(`/user/course/${this.props.courseId}/forum/${data.item._id}/message`)) || this.hide());
@@ -69,14 +70,14 @@ class ForumPage extends AdminPage {
     state = {};
     componentDidMount() {
         const params = T.routeMatcher('/user/course/:_courseId/forum/:_categoryId').parse(window.location.pathname),
-                courseId = params._courseId,
-                forumCategoryId = params._categoryId;
-            const user = this.props.system ? this.props.system.user : null,
-                { _id, isLecturer,isTrustLecturer, isCourseAdmin } = user;
-         T.ready((isLecturer || isCourseAdmin) ? '/user/course': `/user/hoc-vien/khoa-hoc/${courseId}`, () => { 
+            courseId = params._courseId,
+            forumCategoryId = params._categoryId;
+        const user = this.props.system ? this.props.system.user : null,
+            { _id, isLecturer, isTrustLecturer, isCourseAdmin } = user;
+        T.ready((isLecturer || isCourseAdmin) ? '/user/course' : `/user/hoc-vien/khoa-hoc/${courseId}`, () => {
             if (forumCategoryId) {
                 this.setState({ userId: _id, isLecturer, isTrustLecturer, isCourseAdmin, courseId, forumCategoryId }, () => this.getPage());
-                if((isLecturer || isCourseAdmin) ){
+                if ((isLecturer || isCourseAdmin)) {
                     const course = this.props.course ? this.props.course.item : null;
                     if (!course) {
                         this.props.getCourse(params._id, data => {
@@ -86,6 +87,30 @@ class ForumPage extends AdminPage {
                             }
                         });
                     }
+                } else {
+                    this.props.getStudent({ course: courseId, user: user._id }, data => {
+                        if (!data.error) {
+                            this.setState({ studentId: data._id });
+                            let tongThoiGianForum = data.tongThoiGianForum ? data.tongThoiGianForum : 0;
+                            let hours = 0;
+                            let minutes = 0;
+                            let seconds = 0;
+                            window.interval = setInterval(() => {
+                                ++tongThoiGianForum;
+                                this.setState({ tongThoiGianForum });
+                                hours = parseInt(tongThoiGianForum / 3600) % 24;
+                                minutes = parseInt(tongThoiGianForum / 60) % 60;
+                                seconds = tongThoiGianForum % 60;
+                                $('#time').text((hours < 10 ? '0' + hours : hours) + ':' + (minutes < 10 ? '0' + minutes : minutes) + ':' + (seconds < 10 ? '0' + seconds : seconds));
+                            }, 1000);
+                            window.onbeforeunload = (event) => {
+                                const e = event || window.event;
+                                e.preventDefault();
+                                clearInterval(window.interval);
+                                this.props.updateStudent(data._id, { tongThoiGianForum });
+                            };
+                        }
+                    });
                 }
             } else {
                 this.props.history.goBack();
@@ -94,6 +119,12 @@ class ForumPage extends AdminPage {
         // TODO: Hiển thị thanh tìm kiếm
         // T.ready(() => T.showSearchBox());
         // T.onSearch = (searchText) => this.props.getForumPage(1, 50, searchText);
+    }
+
+    componentWillUnmount() {
+        const { studentId, tongThoiGianForum } = this.state;
+        clearInterval(window.interval);
+        this.props.updateStudent(studentId, { tongThoiGianForum });
     }
 
     getPage = (pageNumber, pageSize, searchText, done) => {
@@ -150,9 +181,9 @@ class ForumPage extends AdminPage {
         return this.renderPage({
             icon: 'fa fa-users',
             title: category ? category.title : 'Forum',
-            breadcrumb: this.state.isLecturer || this.state.isCourseAdmin ? 
-            [<Link key={0} to='/user/course'>Khóa học</Link>, this.state.courseId ? <Link key={0} to={courseBackRoute}>{courseItem.name}</Link> : '',<Link key={0} to={categoryBackRoute}>Danh mục</Link>, category ? category.title : 'Danh sách'] : 
-            [<Link key={0} to={userBackRoute}>Khóa học của tôi</Link>, <Link key={0} to={categoryBackRoute}>Forum</Link>, category ? category.title : 'Danh sách'],
+            breadcrumb: this.state.isLecturer || this.state.isCourseAdmin ?
+                [<Link key={0} to='/user/course'>Khóa học</Link>, this.state.courseId ? <Link key={0} to={courseBackRoute}>{courseItem.name}</Link> : '', <Link key={0} to={categoryBackRoute}>Danh mục</Link>, category ? category.title : 'Danh sách'] :
+                [<Link key={0} to={userBackRoute}>Khóa học của tôi</Link>, <Link key={0} to={categoryBackRoute}>Forum</Link>, category ? category.title : 'Danh sách'],
             content: category ? <>
                 {listForums}
                 <Pagination name='pageForum' style={{ marginLeft: '70px' }} pageNumber={pageNumber} pageSize={pageSize} pageTotal={pageTotal} totalItem={totalItem} getPage={this.getPage} />
@@ -166,5 +197,5 @@ class ForumPage extends AdminPage {
 }
 
 const mapStateToProps = state => ({ system: state.system, forum: state.communication.forum, course: state.trainning.course });
-const mapActionsToProps = { getForumPage, createForum, updateForum, deleteForum, getCourse };
+const mapActionsToProps = { getForumPage, createForum, updateForum, deleteForum, getCourse, getStudent, updateStudent };
 export default connect(mapStateToProps, mapActionsToProps)(ForumPage);

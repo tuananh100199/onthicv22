@@ -168,7 +168,7 @@ class adminEditPage extends AdminPage {
             <div className='tile-body'>
                 <FormTextBox ref={e => this.itemTitle = e} label='Tên bài học' value={this.state.title} onChange={e => this.setState({ title: e.target.value })} readOnly={!permission.write} />
                 <FormRichTextBox ref={e => this.itemDescription = e} label='Mô tả ngắn gọn' rows='3' readOnly={!permission.write} />
-                <FormTextBox ref={e => this.itemNumQuestion = e} type='number' label='Số lượng câu hỏi ôn tập' value={this.state.numQuestion} readOnly={!permission.write}></FormTextBox>
+                <FormTextBox ref={e => this.itemNumQuestion = e} type='number' label='Số lượng câu hỏi ôn tập'  readOnly={!permission.write}></FormTextBox>
                 <FormEditor ref={e => this.itemEditor = e} label='Mô tả chi tiết' uploadUrl='/user/upload?category=lesson' readOnly={!permission.write} />
                 <FormEditor ref={e => this.itemTaiLieuThamKhao = e} label='Tài liệu tham khảo' uploadUrl='/user/upload?category=lesson' readOnly={!permission.write} />
                 {permission.write ? <CirclePageButton type='save' onClick={this.saveInfo} /> : null}

@@ -3,9 +3,15 @@ module.exports = app => {
         title: String,
         shortDescription: String,
         detailDescription: String,
+        totalTime: Number,
         monThucHanh: { type: Boolean, default: false },
+        monTienQuyet: { type: Boolean, default: false },
         lessons: { type: [{ type: app.db.Schema.Types.ObjectId, ref: 'Lesson' }], default: [] },
         questions: { type: [{ type: app.db.Schema.Types.ObjectId, ref: 'Question' }], default: [] },
+        questionTypes: [{
+            category: { type: app.db.Schema.ObjectId, ref: 'Category' },
+            amount: Number,
+        }],
     });
     const model = app.db.model('Subject', schema);
 

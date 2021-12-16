@@ -76,7 +76,7 @@ export function updateStudent(_id, changes, done) {
                 T.notify('Cập nhật thông tin học viên bị lỗi!', 'danger');
                 console.error(`PUT: ${url}. ${data.error}`);
             } else {
-                T.notify('Cập nhật thông tin học viên thành công!', 'success');
+                !(changes.tongThoiGianChat || changes.tongThoiGianForum || changes.tongThoiGianTaiLieu) && T.notify('Cập nhật thông tin học viên thành công!', 'success');
                 done && done(data.item);
                 dispatch({ type: StudentUpdate, item: data.item });
                 // dispatch(getStudentPage());
@@ -120,6 +120,22 @@ export function getStudent(_id, done) {
 export function getStudentScore(courseId, done) {
     return dispatch => {
         const url = '/api/student/score';
+        T.get(url, { courseId }, data => {
+            if (data.error) {
+                T.notify('Lấy thông tin học viên bị lỗi!', 'danger');
+                console.error(`GET: ${url}. ${data.error}`);
+            } else {
+                // T.alert('Lấy thông tin học viên thành công!', 'info', false, 800);
+                done && done(data.item);
+                dispatch({ type: StudentUpdate, item: data.item });
+            }
+        }, error => console.error(error) || T.notify('Lấy thông tin học viên bị lỗi', 'danger'));
+    };
+}
+
+export function getStudentSubjectScore(courseId, done) {
+    return dispatch => {
+        const url = '/api/student/subject/score';
         T.get(url, { courseId }, data => {
             if (data.error) {
                 T.notify('Lấy thông tin học viên bị lỗi!', 'danger');

@@ -21,13 +21,13 @@ export function getPaymentPage(pageNumber, pageSize, pageCondition, done) {
         const url = `/api/payment/page/${page.pageNumber}/${page.pageSize}`;
         T.get(url, { pageCondition }, data => {
             if (data.error) {
-                T.notify('Lấy danh sách học viên bị lỗi!', 'danger');
+                T.notify('Lấy danh sách thu công nợ bị lỗi!', 'danger');
                 console.error(`GET: ${url}. ${data.error}`);
             } else {
                 if (pageCondition) data.page.pageCondition = pageCondition;
                 done && done(data.page);
                 dispatch({ type: PaymentGetPage, page: data.page });
             }
-        }, error => console.error(error) || T.notify('Lấy danh sách học viên bị lỗi!', 'danger'));
+        }, error => console.error(error) || T.notify('Lấy danh sách thu công nợ bị lỗi!', 'danger'));
     };
 }

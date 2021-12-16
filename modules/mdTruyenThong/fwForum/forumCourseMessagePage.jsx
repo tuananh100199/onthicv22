@@ -2,6 +2,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { getForum, getForumMessagePage, createForumMessage, updateForumMessage, deleteForumMessage } from './redux';
 import { getCourse } from 'modules/mdDaoTao/fwCourse/redux';
+import { getStudent, updateStudent } from 'modules/mdDaoTao/fwStudent/redux';
 import { Link } from 'react-router-dom';
 import Pagination from 'view/component/Pagination';
 import { AdminPage, AdminModal, FormRichTextBox, FormSelect } from 'view/component/AdminPage';
@@ -57,19 +58,44 @@ class ForumCourseMessagePage extends AdminPage {
     state = {};
     componentDidMount() {
         const params = T.routeMatcher('/user/course/:_courseId/forum/:_forumId/message').parse(window.location.pathname),
-                forumId = params._forumId,
-                courseId = params._courseId;
-                const user = this.props.system ? this.props.system.user : null,
-                { _id, isLecturer, isTrustLecturer, isCourseAdmin } = user;
-        T.ready((isLecturer || isCourseAdmin) ? '/user/course': `/user/hoc-vien/khoa-hoc/${courseId}`, () => { 
+            forumId = params._forumId,
+            courseId = params._courseId;
+        const user = this.props.system ? this.props.system.user : null,
+            { _id, isLecturer, isTrustLecturer, isCourseAdmin } = user;
+        T.ready((isLecturer || isCourseAdmin) ? '/user/course' : `/user/hoc-vien/khoa-hoc/${courseId}`, () => {
             if (forumId) {
-                this.setState({userId: _id, isLecturer, isTrustLecturer, isCourseAdmin, forumId }, () => this.props.getForum(forumId) || this.getPage());
+                this.setState({ userId: _id, isLecturer, isTrustLecturer, isCourseAdmin, forumId }, () => this.props.getForum(forumId) || this.getPage());
                 const course = this.props.course ? this.props.course.item : null;
                 if (!course) {
                     this.props.getCourse(params._id, data => {
                         if (data.error) {
                             T.notify('Lấy khóa học bị lỗi!', 'danger');
                             this.props.history.push('/user/course/' + params._id);
+                        }
+                    });
+                }
+                if (!(isLecturer || isCourseAdmin)) {
+                    this.props.getStudent({ course: courseId, user: user._id }, data => {
+                        if (!data.error) {
+                            this.setState({ studentId: data._id });
+                            let tongThoiGianForum = data.tongThoiGianForum ? data.tongThoiGianForum : 0;
+                            let hours = 0;
+                            let minutes = 0;
+                            let seconds = 0;
+                            window.interval = setInterval(() => {
+                                ++tongThoiGianForum;
+                                this.setState({ tongThoiGianForum });
+                                hours = parseInt(tongThoiGianForum / 3600) % 24;
+                                minutes = parseInt(tongThoiGianForum / 60) % 60;
+                                seconds = tongThoiGianForum % 60;
+                                $('#time').text((hours < 10 ? '0' + hours : hours) + ':' + (minutes < 10 ? '0' + minutes : minutes) + ':' + (seconds < 10 ? '0' + seconds : seconds));
+                            }, 1000);
+                            window.onbeforeunload = (event) => {
+                                const e = event || window.event;
+                                e.preventDefault();
+                                clearInterval(window.interval);
+                                this.props.updateStudent(data._id, { tongThoiGianForum });
+                            };
                         }
                     });
                 }
@@ -80,6 +106,12 @@ class ForumCourseMessagePage extends AdminPage {
         // TODO: Hiển thị thanh tìm kiếm
         // T.ready(() => T.showSearchBox());
         // T.onSearch = (searchText) => this.props.getForumPage(1, 50, searchText);
+    }
+
+    componentWillUnmount() {
+        const { studentId, tongThoiGianForum } = this.state;
+        clearInterval(window.interval);
+        this.props.updateStudent(studentId, { tongThoiGianForum });
     }
 
     getPage = (pageNumber, pageSize, pageCondition, done) => {
@@ -107,9 +139,9 @@ class ForumCourseMessagePage extends AdminPage {
         return this.renderPage({
             icon: 'fa fa-comments',
             title: forum ? <>{forum.title} <small style={{ fontSize: 13 }}>({forum.user ? `${forum.user.lastname} ${forum.user.firstname}` : ''} {forum.modifiedDate ? ' - ' + (new Date(forum.modifiedDate).getText()) : ''})</small></> : '...',
-            breadcrumb: (this.state.isLecturer || this.state.isCourseAdmin) ? 
-            [<Link key={0} to='/user/course'>Khóa học</Link>, courseItem._id ? <Link key={0} to={courseBackRoute}>{courseItem.name}</Link> : '', <Link key={0} to={categoryBackRoute}>Danh mục</Link>, <Link key={0} to={forumBackRoute}>{forum && forum.title}</Link>, 'Bài viết'] : 
-            [<Link key={0} to={userBackRoute}>Khóa học của tôi</Link>, <Link key={0} to={categoryBackRoute}>Forum</Link>,<Link key={0} to={forumBackRoute}>{category ? category.title : 'Danh sách'}</Link>,'Bài viết'],
+            breadcrumb: (this.state.isLecturer || this.state.isCourseAdmin) ?
+                [<Link key={0} to='/user/course'>Khóa học</Link>, courseItem._id ? <Link key={0} to={courseBackRoute}>{courseItem.name}</Link> : '', <Link key={0} to={categoryBackRoute}>Danh mục</Link>, <Link key={0} to={forumBackRoute}>{forum && forum.title}</Link>, 'Bài viết'] :
+                [<Link key={0} to={userBackRoute}>Khóa học của tôi</Link>, <Link key={0} to={categoryBackRoute}>Forum</Link>, <Link key={0} to={forumBackRoute}>{category ? category.title : 'Danh sách'}</Link>, 'Bài viết'],
             content: forum ? <>
                 <div className='tile'>
                     {/* <small className='bg-secondary' style={createdDateStyle}>
@@ -143,5 +175,5 @@ class ForumCourseMessagePage extends AdminPage {
 }
 
 const mapStateToProps = state => ({ system: state.system, forum: state.communication.forum, course: state.trainning.course });
-const mapActionsToProps = { getForum, getForumMessagePage, createForumMessage, updateForumMessage, deleteForumMessage, getCourse };
+const mapActionsToProps = { getForum, getForumMessagePage, createForumMessage, updateForumMessage, deleteForumMessage, getCourse, getStudent, updateStudent };
 export default connect(mapStateToProps, mapActionsToProps)(ForumCourseMessagePage);

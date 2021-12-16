@@ -58,7 +58,7 @@ class StaffModal extends AdminModal {
         size: 'large',
         body: <div className='row'>
             <div className='col-md-8'>
-                <FormSelect ref={e => this.itemUser = e} label='Tên nhân viên' data={ajaxSelectUserType(['isCourseAdmin', 'isLecturer', 'isStaff'])} readOnly={this.props.readOnly} />
+                <FormSelect ref={e => this.itemUser = e} label='Tên nhân viên' data={ajaxSelectUserType(['isCourseAdmin', 'isLecturer', 'isStaff'], 'or')} readOnly={this.props.readOnly} />
                 <FormRichTextBox ref={e => this.itemDescription = e} label='Mô tả' readOnly={this.props.readOnly} />
                 <FormTextBox ref={e => this.itemTitle = e} label='Chức danh' readOnly={this.props.readOnly} />
             </div>

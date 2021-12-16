@@ -55,11 +55,11 @@ module.exports = (app) => {
         }
     });
 
-    app.get('/api/student', app.permission.check('student:read'), (req, res) => {
+    app.get('/api/student', app.permission.check('user:login'), (req, res) => {
         app.model.student.get(req.query._id, (error, item) => res.send({ error, item }));
     });
 
-    app.put('/api/student', app.permission.check('student:write'), (req, res) => {
+    app.put('/api/student', app.permission.check('user:login'), (req, res) => {
         app.model.student.update(req.body._id, req.body.changes, (error, item) => res.send({ error, item }));
     });
 
@@ -72,6 +72,14 @@ module.exports = (app) => {
             _courseId = req.query.courseId;
         app.model.student.get({ user: _userId, course: _courseId }, (error, item) => {
             res.send({ error, item: item && item.tienDoHocTap });
+        });
+    });
+
+    app.get('/api/student/subject/score', app.permission.check('user:login'), (req, res) => {//mobile
+        const _userId = req.session.user._id,
+            _courseId = req.query.courseId;
+        app.model.student.get({ user: _userId, course: _courseId }, (error, item) => {
+            res.send({ error, item: item && item.tienDoThiHetMon });
         });
     });
 

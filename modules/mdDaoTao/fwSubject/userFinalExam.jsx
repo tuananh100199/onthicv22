@@ -1,84 +1,71 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { getLessonByStudent, checkQuestion, resetStudentScore, timeLesson } from './redux';
-import { getSubjectByStudent } from '../fwSubject/redux';
-import { getStudentScore } from '../fwStudent/redux';
 import { Link } from 'react-router-dom';
+import { createRandomSubjectTest, checkRandomSubjectTest, resetStudentSubjectScore  } from './redux';
+import { getStudentSubjectScore } from '../fwStudent/redux';
 import { AdminPage } from 'view/component/AdminPage';
 import 'view/component/input.scss';
 
-class userQuestion extends AdminPage {
-    state = { showSubmitButton: true, showTotalScore: false };
+class UserPageRandomDriveTestDetail extends AdminPage {
+    state = { showSubmitButton: true, showTotalScore: false, prevButton: 'visible', nextButton: 'visible' };
     componentDidMount() {
         window.addEventListener('keydown', this.logKey);
-        const params = T.routeMatcher('/user/hoc-vien/khoa-hoc/:courseId/mon-hoc/:subjectId/bai-hoc/cau-hoi/:_id').parse(window.location.pathname);
+        const params = T.routeMatcher('/user/hoc-vien/khoa-hoc/:courseId/mon-hoc/thi-het-mon/:_id').parse(window.location.pathname);
         if (params._id) {
-            this.setState({ lessonId: params._id, subjectId: params.subjectId, courseId: params.courseId });
-            this.props.getLessonByStudent(params._id, params.courseId, params.subjectId, data => {
+            this.setState({ subjectId: params._id, courseId: params.courseId });
+            this.props.createRandomSubjectTest(params._id, params.courseId , data => {
                 if (data.error) {
                     T.notify('Lấy bài học bị lỗi!', 'danger');
-                    this.props.history.push('/user/hoc-vien/khoa-hoc/' + params.courseId + '/mon-hoc/' + params.subjectId + '/bai-hoc/' + params._id);
-                } else if (data.item) {
-                    let totalSeconds = 0;
-                    this.props.getSubjectByStudent(params.subjectId, data => {
-                        if (data.item && data.item.lessons) {
-                            const listLesson = data.item.lessons,
-                                currentIndex = listLesson.findIndex(lesson => lesson._id == params._id);
-                            if (currentIndex + 1 == listLesson.length) this.setState({ nextLesson: null });
-                            else this.setState({ nextLesson: listLesson[currentIndex + 1] });
-                        }
-                    });
-                    this.props.getStudentScore(params.courseId, item => {
-                        if (item) {
-                            totalSeconds = item[params.subjectId] && item[params.subjectId][params._id] && item[params.subjectId][params._id].totalSeconds ? parseInt(item[params.subjectId][params._id].totalSeconds) : 0;
-                            this.setState({
-                                activeQuestionIndex: 0,
-                                subjectId: params.subjectId,
-                                courseId: params.courseId,
-                                prevTrueAnswers: item[params.subjectId][params._id] && item[params.subjectId][params._id].trueAnswers ? item[params.subjectId][params._id].trueAnswers : null,
-                                prevAnswers: item[params.subjectId][params._id] && item[params.subjectId][params._id].answers ? item[params.subjectId][params._id].answers : null,
-                                showSubmitButton: item[params.subjectId][params._id] && item[params.subjectId][params._id].answers ? false : true
-                            });
-                        }
-                    });
+                    this.props.history.push('/user/hoc-vien/khoa-hoc/' + params.courseId + '/mon-hoc/' + params.subjectId);
+                } else if (data.driveTest) {
                     T.ready('/user/hoc-vien/khoa-hoc/' + params.courseId);
-                    let hours = 0;
-                    let minutes = 0;
-                    let seconds = 0;
-                    window.interval = setInterval(() => {
-                        ++totalSeconds;
-                        this.setState({ totalSeconds });
-                        hours = parseInt(totalSeconds / 3600) % 24;
-                        minutes = parseInt(totalSeconds / 60) % 60;
-                        seconds = totalSeconds % 60;
-                        $('#time').text((hours < 10 ? '0' + hours : hours) + ':' + (minutes < 10 ? '0' + minutes : minutes) + ':' + (seconds < 10 ? '0' + seconds : seconds));
-                    }, 1000);
-                    window.onbeforeunload = (event) => {
-                        const e = event || window.event;
-                        e.preventDefault();
-                        clearInterval(window.interval);
-                        this.props.timeLesson(params._id, params.subjectId, params.courseId, totalSeconds);
-                    };
-                    const { _id, title, shortDescription, detailDescription, questions } = data.item;
+                    const { questions } = data.driveTest;
                     if (questions && questions.length == 1) {
                         this.setState({ prevButton: 'invisible', nextButton: 'invisible' });
                     } else {
                         this.setState({ prevButton: 'invisible' });
                     }
-                    this.setState({ _id, title, shortDescription, detailDescription, questions });
+                    this.props.getStudentSubjectScore(params.courseId, item => {
+                        if (item) {
+                            this.setState({
+                                activeQuestionIndex: 0,
+                                prevTrueAnswers: item[params._id] && item[params._id].trueAnswers ? item[params._id].trueAnswers : null,
+                                prevAnswers: item[params._id] &&  item[params._id].answers ? item[params._id].answers : null,
+                                showSubmitButton: item[params._id] && item[params._id].answers ? false : true
+                            });
+                        }
+                    });
+                    this.setState({ activeQuestionIndex: 0, questions });
+                    if(data.driveTest.totalTime){
+                        let minutes = data.driveTest.totalTime;
+                        let seconds = 0;
+                        window.interval = setInterval(() => {
+                            --seconds;
+                            minutes = (seconds < 0) ? --minutes : minutes;
+                            seconds = (seconds < 0) ? 59 : seconds;
+                            seconds = (seconds < 10) ? '0' + seconds : seconds;
+                            $('#time').text(minutes + ':' + seconds);
+                            if (minutes < 0) clearInterval(window.interval);
+                            if ((seconds <= 0) && (minutes <= 0)) {
+                                clearInterval(window.interval);
+                                this.submitAnswer();
+                            }
+                        }, 1000);
+                    }
+                    
                 } else {
-                    this.props.history.push('/user/hoc-vien/khoa-hoc/' + params.courseId + '/mon-hoc/' + params.subjectId + '/bai-hoc/' + params._id);
+                    this.props.history.push('/user/hoc-vien/khoa-hoc/' + params.courseId + '/mon-hoc/' + params.subjectId);
                 }
             });
         } else {
-            this.props.history.push('/user/hoc-vien/khoa-hoc/' + params.courseId + '/mon-hoc/' + params.subjectId + '/bai-hoc/' + params._id);
+            this.props.history.push('/user/hoc-vien/khoa-hoc/' + params.courseId + '/mon-hoc/' + params.subjectId);
         }
     }
 
     componentWillUnmount() {
-        const { lessonId, subjectId, courseId, totalSeconds } = this.state;
+        // const {lessonId,subjectId,courseId,totalSeconds} = this.state;
         clearInterval(window.interval);
-        this.props.timeLesson(lessonId, subjectId, courseId, totalSeconds);
+        // this.props.timeLesson(lessonId, subjectId, courseId, totalSeconds);
         window.removeEventListener('keydown', this.logKey);
     }
 
@@ -110,7 +97,7 @@ class userQuestion extends AdminPage {
 
     submitAnswer = (e) => {
         e.preventDefault();
-        this.props.checkQuestion(this.state.lessonId, this.state.subjectId, this.state.courseId, this.state.studentAnswer, result => {
+        this.props.checkRandomSubjectTest(this.state.subjectId, this.state.courseId, this.state.studentAnswer, result => {
             T.alert('Gửi câu trả lời thành công!', 'success', false, 2000);
             this.setState({
                 prevTrueAnswers: result.trueAnswer,
@@ -120,42 +107,57 @@ class userQuestion extends AdminPage {
                 showTotalScore: true
 
             });
+            clearInterval(window.interval);
         });
     }
 
     resetQuestion = (e) => {
         e.preventDefault();
-        const { lessonId, subjectId, courseId } = this.state;
-        this.props.resetStudentScore(lessonId, subjectId, courseId);
-        this.props.getLessonByStudent(lessonId, courseId, subjectId, data => {
-            if (data.error) {
-                T.notify('Lấy bài học bị lỗi!', 'danger');
-                this.props.history.push('/user/hoc-vien/khoa-hoc/' + courseId + '/mon-hoc/' + subjectId + '/bai-hoc/' + lessonId);
-            } else if (data.item) {
-                T.ready('/user/hoc-vien/khoa-hoc/' + courseId);
-                const { _id, title, shortDescription, detailDescription, questions } = data.item;
-                this.setState({
-                    _id, title, shortDescription, detailDescription, questions,
-                    prevAnswers: null,
-                    prevTrueAnswers: null,
-                    showSubmitButton: true,
-                    showTotalScore: false,
-                    activeQuestionIndex: 0,
-                    studentAnswer: null
-                });
-                if (questions && questions.length == 1) {
-                    this.setState({ prevButton: 'invisible', nextButton: 'invisible' });
+        const { subjectId, courseId } = this.state;
+        this.props.resetStudentSubjectScore(subjectId, courseId, () => {
+            this.props.createRandomSubjectTest(subjectId, courseId, data => {
+                if (data.error) {
+                    T.notify('Lấy bài học bị lỗi!', 'danger');
+                    this.props.history.push('/user/hoc-vien/khoa-hoc/' + courseId + '/mon-hoc/' + subjectId);
+                } else if (data.driveTest) {
+                    T.ready('/user/hoc-vien/khoa-hoc/' + courseId);
+                    const { questions } = data.driveTest;
+                    if (questions && questions.length == 1) {
+                        this.setState({ prevButton: 'invisible', nextButton: 'invisible' });
+                    } else {
+                        this.setState({ prevButton: 'invisible', nextButton: 'visible' });
+                    }
+                    this.setState({
+                        prevAnswers: null,
+                        prevTrueAnswers: null,
+                        showSubmitButton: true,
+                        showTotalScore: false,
+                        activeQuestionIndex: 0,
+                        studentAnswer: null,
+                        questions 
+                    });
+                    if(data.driveTest.totalTime){
+                        let minutes = data.driveTest.totalTime;
+                        let seconds = 0;
+                        window.interval = setInterval(() => {
+                            --seconds;
+                            minutes = (seconds < 0) ? --minutes : minutes;
+                            seconds = (seconds < 0) ? 59 : seconds;
+                            seconds = (seconds < 10) ? '0' + seconds : seconds;
+                            $('#time').text(minutes + ':' + seconds);
+                            if (minutes < 0) clearInterval(window.interval);
+                            if ((seconds <= 0) && (minutes <= 0)) {
+                                clearInterval(window.interval);
+                                this.submitAnswer();
+                            }
+                        }, 1000);
+                    } 
                 } else {
-                    this.setState({ prevButton: 'invisible', nextButton: 'visible' });
+                    this.props.history.push('/user/hoc-vien/khoa-hoc/' + courseId + '/mon-hoc/' + subjectId);
                 }
-                setTimeout(() => {
-                    this.submitButton.classList.add('btn-secondary');
-                    $('input[name="' + this.state.questions[0]._id + '"]').prop('checked', false);
-                }, 50);
-            } else {
-                this.props.history.push('/user/hoc-vien/khoa-hoc/' + courseId + '/mon-hoc/' + subjectId + '/bai-hoc/' + lessonId);
-            }
+            });
         });
+        
     }
 
     changeQuestion = (e, index) => {
@@ -207,12 +209,11 @@ class userQuestion extends AdminPage {
     }
 
     render() {
-        const userPageLink = '/user/hoc-vien/khoa-hoc/' + this.state.courseId + '/mon-hoc/' + this.state.subjectId + '/bai-hoc/' + this.state.lessonId;
         const { questions } = this.state ? this.state : { questions: [] };
         const activeQuestionIndex = this.state.activeQuestionIndex ? this.state.activeQuestionIndex : 0;
         const activeQuestion = questions ? questions[activeQuestionIndex] : null;
-        const { prevTrueAnswers, prevAnswers, showSubmitButton, showTotalScore, score, nextLesson, subjectId, courseId } = this.state,
-            diemThi = (score && questions && questions.length) ? Number((parseInt(score) / questions.length).toFixed(1)) : 0;
+        const { prevTrueAnswers, prevAnswers, showSubmitButton, showTotalScore, score, subjectId, courseId } = this.state;
+        const userPageLink = '/user/hoc-vien/khoa-hoc/' + courseId + '/mon-hoc/' + subjectId ;
         if (questions && questions.length == 1) {
             activeQuestion && prevAnswers && prevAnswers[activeQuestion._id] && $('#' + activeQuestion._id + prevAnswers[activeQuestion._id]).prop('checked', true);
         } else if (activeQuestionIndex == 0) {
@@ -220,8 +221,8 @@ class userQuestion extends AdminPage {
         }
         return this.renderPage({
             icon: 'fa fa-book',
-            title: 'Bài học: ' + (this.state.title || '...'),
-            breadcrumb: [<Link key={0} to={userPageLink}>Bài học</Link>, 'Câu hỏi ôn tập'],
+            title: 'Đề thi hết môn',
+            breadcrumb: [<Link key={0} to={userPageLink}>Môn học</Link>, 'Đề thi hết môn'],
             content: (<>
                 {questions && questions.length ? (
                     <div className='tile'>
@@ -278,12 +279,6 @@ class userQuestion extends AdminPage {
                                             <button className='btn btn-info' id='refresh-btn' onClick={e => this.resetQuestion(e)} disabled={false}>
                                                 <i className='fa fa-lg fa-refresh' /> Làm lại
                                             </button>}
-                                        {
-                                            !showSubmitButton && nextLesson && (diemThi > 0.5) ?
-                                                <a className='btn btn-warning ml-5' href={'/user/hoc-vien/khoa-hoc/' + courseId + '/mon-hoc/' + subjectId + '/bai-hoc/' + nextLesson._id}>
-                                                    <i className='fa fa-lg fa-arrow-right' /> Sang bài tiếp theo
-                                                </a> : null
-                                        }
                                     </ul>
                                 </nav>
                             </div>
@@ -296,6 +291,6 @@ class userQuestion extends AdminPage {
     }
 }
 
-const mapStateToProps = state => ({ system: state.system, lesson: state.trainning.lesson, subject: state.trainning.subject });
-const mapActionsToProps = { getLessonByStudent, checkQuestion, getStudentScore, resetStudentScore, timeLesson, getSubjectByStudent };
-export default connect(mapStateToProps, mapActionsToProps)(userQuestion);
+const mapStateToProps = state => ({ system: state.system, driveTest: state.trainning.driveTest });
+const mapActionsToProps = {  createRandomSubjectTest, checkRandomSubjectTest, getStudentSubjectScore, resetStudentSubjectScore };
+export default connect(mapStateToProps, mapActionsToProps)(UserPageRandomDriveTestDetail);

@@ -42,6 +42,7 @@ module.exports = (app) => {
         hocPhiDaDong: Number,                                                                       // Học phí đã đóng
 
         tienDoHocTap: {},
+        tienDoThiHetMon: {},
         diemThucHanh: Number,
         diemBoDeThi: {},
 
@@ -58,6 +59,7 @@ module.exports = (app) => {
             subject: { type: app.db.Schema.ObjectId, ref: 'Subject' },
             point: Number,
         }],
+
         diemTrungBinhThiHetMon: Number,
         soGioThucHanhDaHoc: { type: Number, default: 0 },
 
@@ -71,6 +73,10 @@ module.exports = (app) => {
 
         ngayNhanChungChiHoanThanhKhoaHoc: Date,
         ngayNhanGiayPhepLaiXe: Date,
+
+        tongThoiGianChat: Number,
+        tongThoiGianTaiLieu: Number,
+        tongThoiGianForum: Number,
 
         createdDate: { type: Date, default: Date.now },                                             // Ngày tạo
         modifiedDate: { type: Date, default: Date.now },                                            // Ngày cập nhật cuối cùng
@@ -179,7 +185,7 @@ module.exports = (app) => {
 
         // changes = { $set, $unset, $push, $pull }
         update: (_id, changes, done) => {
-            if (changes.course) {
+            if (changes && changes.course) {
                 app.model.course.get(changes.course, (error, item) => {
                     if (error) {
                         done(error);
@@ -244,20 +250,46 @@ module.exports = (app) => {
                         Object.assign(student.tienDoHocTap[data.subjectId], obj);
                     }
                     model.findOneAndUpdate({ _id: data.studentId }, { tienDoHocTap: student.tienDoHocTap }, { new: true }).exec(done);
-                } else if(data.score) {
+                } else if (data.answers) {
                     const obj = {};
                     if (student.tienDoHocTap[data.subjectId] && student.tienDoHocTap[data.subjectId][data.lessonId]) {
                         student.tienDoHocTap[data.subjectId][data.lessonId].score = data.score;
                         student.tienDoHocTap[data.subjectId][data.lessonId].trueAnswers = data.trueAnswer;
                         student.tienDoHocTap[data.subjectId][data.lessonId].answers = data.answers;
+                        student.tienDoHocTap[data.subjectId][data.lessonId].diemTB = Number((parseInt(data.score) / Object.keys(data.answers).length).toFixed(1));
                     } else {
-                        obj[data.lessonId] = { score: data.score, trueAnswers: data.trueAnswer, answers: data.answers };
+                        obj[data.lessonId] = { score: data.score, trueAnswers: data.trueAnswer, answers: data.answers, diemTB: Number((parseInt(data.score) / Object.keys(data.answers).length).toFixed(1)) };
                         Object.assign(student.tienDoHocTap[data.subjectId], obj);
                     }
                     model.findOneAndUpdate({ _id: data.studentId }, { tienDoHocTap: student.tienDoHocTap }, { new: true }).exec(done);
                 }
             });
         },
+
+        updateTienDoThiHetMon: (data, done) => {
+            app.model.student.get(data.studentId, (error, student) => {
+                if (error) {
+                    done(error);
+                } else if (data.answers) {
+                    const obj = {};
+                    if (student.tienDoThiHetMon) {
+                        if (!student.tienDoThiHetMon[data.subjectId]) student.tienDoThiHetMon[data.subjectId] = {};
+                        student.tienDoThiHetMon[data.subjectId] = {};
+                        student.tienDoThiHetMon[data.subjectId].score = data.score;
+                        student.tienDoThiHetMon[data.subjectId].trueAnswers = data.trueAnswer;
+                        student.tienDoThiHetMon[data.subjectId].answers = data.answers;
+                        student.tienDoThiHetMon[data.subjectId].diemTB = Number((parseInt(data.score) / Object.keys(data.answers).length).toFixed(1));
+
+                    } else {
+                        student.tienDoThiHetMon = {};
+                        obj[data.subjectId] = { score: data.score, trueAnswers: data.trueAnswer, answers: data.answers, diemTB: Number((parseInt(data.score) / Object.keys(data.answers).length).toFixed(1)) };
+                        Object.assign(student.tienDoThiHetMon, obj);
+                    }
+                    model.findOneAndUpdate({ _id: data.studentId }, { tienDoThiHetMon: student.tienDoThiHetMon }, { new: true }).exec(done);
+                }
+            });
+        },
+
 
         addFeedback: (data, done) => {
             app.model.student.get(data.studentId, (error, student) => {
