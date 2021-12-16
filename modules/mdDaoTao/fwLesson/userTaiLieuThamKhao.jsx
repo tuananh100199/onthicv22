@@ -24,7 +24,6 @@ class UserCourseInfo extends AdminPage {
                     } else if (data.item) {
                         this.setState(data.item);
                         this.props.getStudent({ course: params.courseId, user: user._id }, data => {
-                            console.log(data);
                             if (!data.error) {
                                 this.setState({ studentId: data._id });
                                 let tongThoiGianTaiLieu = data.tongThoiGianTaiLieu ? data.tongThoiGianTaiLieu : 0;

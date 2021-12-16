@@ -106,7 +106,6 @@ class adminEditPage extends AdminPage {
 
     onStateChange(event, videoId) {
         const listPlayedVideo = this.state.listPlayedVideo;
-        console.log(event);
         if (event.data == 1) {
             let time = 0,
                 hours = 0,
@@ -169,7 +168,7 @@ class adminEditPage extends AdminPage {
                         {videosRender}
                         <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                             {taiLieuThamKhao != '' ?
-                                <div><a href={'/user/hoc-vien/khoa-hoc/' + courseId + '/mon-hoc/' + subjectId + '/bai-hoc/tai-lieu/' + lessonId} className='btn btn-primary' ><div>Tài liệu học tập</div></a></div>
+                                <div><a href={'/user/hoc-vien/khoa-hoc/' + courseId + '/mon-hoc/' + subjectId + '/bai-hoc/tai-lieu/' + lessonId} className='btn btn-success' ><div>Tài liệu học tập</div></a></div>
                                 : null}
                             {(monThucHanh || (lesson && lesson.questions && !lesson.questions.length)) ?
                                 <div className=''>
@@ -180,7 +179,7 @@ class adminEditPage extends AdminPage {
                                         <button className='btn btn-secondary' onClick={() => T.alert('Thời gian học của bạn chưa đạt yêu cầu để sang bài tiếp theo!', 'error', false, 8000)}>Sang bài tiếp theo</button>}
                                 </div> :
                                 (!(isView === 'false') ?
-                                    <Link to={'/user/hoc-vien/khoa-hoc/' + courseId + '/mon-hoc/' + subjectId + '/bai-hoc/cau-hoi/' + lessonId} className='btn btn-primary'>Câu hỏi ôn tập</Link>
+                                    <Link to={'/user/hoc-vien/khoa-hoc/' + courseId + '/mon-hoc/' + subjectId + '/bai-hoc/cau-hoi/' + lessonId} className='btn btn-warning'>Câu hỏi ôn tập</Link>
                                     : <button className='btn btn-secondary' onClick={() => T.alert('Thời gian học của bạn chưa đạt yêu cầu để làm bài ôn tập này!', 'error', false, 8000)}>Câu hỏi ôn tập</button>)}
                         </div>
                     </div>
