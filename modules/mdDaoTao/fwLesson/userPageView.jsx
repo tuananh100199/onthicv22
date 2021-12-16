@@ -21,7 +21,7 @@ class TaiLieuThamKhaoModal extends AdminModal {
     });
 }
 class adminEditPage extends AdminPage {
-    state = { showQuestionButton: false, questionVisibility: 'hidden', listVideo: {}, totalSecondsVideo: 0 };
+    state = { showQuestionButton: false, questionVisibility: 'hidden', listVideo: {}, totalSecondsVideo: 0, listPlayedVideo: {} };
     intervalVideo;
     componentDidMount() {
         const params = T.routeMatcher('/user/hoc-vien/khoa-hoc/:courseId/mon-hoc/:subjectId/bai-hoc/:_id').parse(window.location.pathname);
@@ -105,6 +105,8 @@ class adminEditPage extends AdminPage {
     }
 
     onStateChange(event, videoId) {
+        const listPlayedVideo = this.state.listPlayedVideo;
+        console.log(event);
         if (event.data == 1) {
             let time = 0,
                 hours = 0,
@@ -115,8 +117,16 @@ class adminEditPage extends AdminPage {
                 hours = parseInt(time / 3600) % 24;
                 minutes = parseInt(time / 60) % 60;
                 seconds = (time % 60).toFixed(0);
-                $('#' + videoId).text('Thời gian còn lại: ' + (hours < 10 ? '0' + hours : hours) + ':' + (minutes < 10 ? '0' + minutes : minutes) + ':' + (seconds < 10 ? '0' + seconds : seconds));
+                !(hours == 0 && minutes == 0 && seconds == 0) && $('#' + videoId).text('Thời gian còn lại: ' + (hours < 10 ? '0' + hours : hours) + ':' + (minutes < 10 ? '0' + minutes : minutes) + ':' + (seconds < 10 ? '0' + seconds : seconds));
             }, 1000);
+            listPlayedVideo[videoId] = event;
+            this.setState({ listIdPlayedVideo });
+            const listIdPlayedVideo = Object.keys(listPlayedVideo);
+            listIdPlayedVideo.forEach(id => {
+                if (id != videoId) {
+                    listPlayedVideo[id] && listPlayedVideo[id].target.stopVideo();
+                }
+            });
         } else if (event.data == 2 || event.data == 0) {
             clearInterval(this.intervalVideo);
             this.intervalVideo = null;
