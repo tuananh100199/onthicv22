@@ -143,7 +143,7 @@ class adminEditPage extends AdminPage {
                 <div key={index} className=' pb-5'>
                     <div className='d-flex justify-content-center'>
                         <div className='embed-responsive embed-responsive-16by9' style={{ width: '70%', display: 'block' }} >
-                            <YouTube opts={{ playerVars: { 'autoplay': 0, 'controls': (!isView === 'false') ? 1 : 0, 'rel': 0, 'modestbranding': 1, 'showinfo': 0 } }} videoId={video.link} containerClassName='embed embed-youtube' onEnd={(e) => this.onEnd(e)} onStateChange={(e) => this.onStateChange(e, video._id)} />
+                            <YouTube opts={{ playerVars: { 'autoplay': 0, 'controls': (!(isView === 'false')) ? 1 : 0, 'rel': 0, 'modestbranding': 1, 'showinfo': 0 } }} videoId={video.link} containerClassName='embed embed-youtube' onEnd={(e) => this.onEnd(e)} onStateChange={(e) => this.onStateChange(e, video._id)} />
                         </div>
                     </div>
                     <p id={video._id} className='text-center' ></p>
