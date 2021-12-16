@@ -106,6 +106,7 @@ class adminEditPage extends AdminPage {
 
     onStateChange(event, videoId) {
         const listPlayedVideo = this.state.listPlayedVideo;
+        console.log(event.data);
         if (event.data == 1) {
             let time = 0,
                 hours = 0,
@@ -116,7 +117,7 @@ class adminEditPage extends AdminPage {
                 hours = parseInt(time / 3600) % 24;
                 minutes = parseInt(time / 60) % 60;
                 seconds = (time % 60).toFixed(0);
-                !(hours == 0 && minutes == 0 && seconds == 0) && $('#' + videoId).text('Thời gian còn lại: ' + (hours < 10 ? '0' + hours : hours) + ':' + (minutes < 10 ? '0' + minutes : minutes) + ':' + (seconds < 10 ? '0' + seconds : seconds));
+                $('#' + videoId).text((hours < 10 ? '0' + hours : hours) + ':' + (minutes < 10 ? '0' + minutes : minutes) + ':' + (seconds < 10 ? '0' + seconds : seconds)).css('color', 'black');
             }, 1000);
             listPlayedVideo[videoId] = event;
             this.setState({ listIdPlayedVideo });
@@ -128,6 +129,7 @@ class adminEditPage extends AdminPage {
             });
         } else if (event.data == 2 || event.data == 0) {
             clearInterval(this.intervalVideo);
+            event.data == 0 && $('#' + videoId).text('Đã hoàn thành').css('color', 'green');
             this.intervalVideo = null;
         }
     }
@@ -143,7 +145,7 @@ class adminEditPage extends AdminPage {
                 <div key={index} className=' pb-5'>
                     <div className='d-flex justify-content-center'>
                         <div className='embed-responsive embed-responsive-16by9' style={{ width: '70%', display: 'block' }} >
-                            <YouTube opts={{ playerVars: { 'autoplay': 0, 'controls': (!isView === 'false') ? 1 : 0, 'rel': 0, 'modestbranding': 1, 'showinfo': 0 } }} videoId={video.link} containerClassName='embed embed-youtube' onEnd={(e) => this.onEnd(e)} onStateChange={(e) => this.onStateChange(e, video._id)} />
+                            <YouTube opts={{ playerVars: { 'autoplay': 0, 'controls': (!(isView === 'false')) ? 1 : 0, 'rel': 0, 'modestbranding': 1, 'showinfo': 0 } }} videoId={video.link} containerClassName='embed embed-youtube' onEnd={(e) => this.onEnd(e)} onStateChange={(e) => this.onStateChange(e, video._id)} />
                         </div>
                     </div>
                     <p id={video._id} className='text-center' ></p>
@@ -180,7 +182,7 @@ class adminEditPage extends AdminPage {
                                 </div> :
                                 (!(isView === 'false') ?
                                     <Link to={'/user/hoc-vien/khoa-hoc/' + courseId + '/mon-hoc/' + subjectId + '/bai-hoc/cau-hoi/' + lessonId} className='btn btn-warning'>Câu hỏi ôn tập</Link>
-                                    : <button className='btn btn-secondary' onClick={() => T.alert('Thời gian học của bạn chưa đạt yêu cầu để làm bài ôn tập này!', 'error', false, 8000)}>Câu hỏi ôn tập</button>)}
+                                    : <button className='btn btn-secondary' onClick={() => T.alert('Bạn vui lòng hoàn thành các bài học để được mở khoá!', 'error', false, 8000)}>Câu hỏi ôn tập</button>)}
                         </div>
                     </div>
                     <div className='tile-footer' >

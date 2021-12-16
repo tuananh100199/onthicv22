@@ -59,14 +59,6 @@ class AdminEditPage extends AdminPage {
             });
         } else {
             lessons.length && lessons.forEach((lesson, index) => {
-                // if (tienDoHocTap && tienDoHocTap[lesson._id] && tienDoHocTap[lesson._id].diemTB && tienDoHocTap[lesson._id].diemTB > 0.5) {
-                //     finishedLesson = index + 1;
-                // } else if (!lesson.questions.length) {
-                //     if (index == 0 && tienDoHocTap && tienDoHocTap[lesson._id] && tienDoHocTap[lesson._id].view)
-                //         finishedLesson = index + 1;
-                //     else if (tienDoHocTap && tienDoHocTap[lessons[index - 1]._id])
-                //         finishedLesson = index + 1;
-                // }
                 if (lesson.questions.length) {
                     if (tienDoHocTap && tienDoHocTap[lesson._id] && tienDoHocTap[lesson._id].diemTB && tienDoHocTap[lesson._id].diemTB >= 0.5) {
                         finishedLesson = index + 1;
@@ -116,7 +108,7 @@ class AdminEditPage extends AdminPage {
                         return show;
                     }) : <div className='col-md-4'>Chưa có bài học</div>
                     }
-                    {lessons && tienDoHocTap && (Object.keys(tienDoHocTap).length >= lessons.length) ?
+                    {lessons && (tienDoHocTap && (Object.keys(tienDoHocTap).length >= lessons.length) && tienDoHocTap[Object.keys(tienDoHocTap)[lessons.length - 1]].diemTB >= 0.5) ?
                         <>
                             <h4 style={{ width: '100%' }}>Câu hỏi phản hồi</h4>
                             <Link className='col-md-6' to={'/user/hoc-vien/khoa-hoc/' + this.state.courseId + '/mon-hoc/phan-hoi/' + this.state.subjectId}>
@@ -140,7 +132,7 @@ class AdminEditPage extends AdminPage {
                                 </Link>
                             </>}
                         </> :
-                        monThucHanh && <>
+                        !monThucHanh && <>
                             <h4 style={{ width: '100%' }}>Thi hết môn</h4>
                             <Link className='col-md-6' onClick={() => T.alert('Vui lòng hoàn thành tất cả các bài học trước khi thi hết môn!', 'error', false, 8000)} >
                                 <div className={'widget-small coloured-icon secondary'} >
