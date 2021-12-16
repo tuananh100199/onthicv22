@@ -75,6 +75,7 @@ module.exports = (app) => {
         ngayNhanGiayPhepLaiXe: Date,
 
         tongThoiGianChat: Number,
+        tongThoiGianTaiLieu: Number,
         tongThoiGianForum: Number,
 
         createdDate: { type: Date, default: Date.now },                                             // Ngày tạo

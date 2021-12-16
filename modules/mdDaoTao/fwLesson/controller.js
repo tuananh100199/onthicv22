@@ -234,7 +234,7 @@ module.exports = (app) => {
     app.post('/api/lesson/time', app.permission.check('user:login'), (req, res) => {
         const { courseId, subjectId, lessonId, totalSeconds } = req.body;
         app.model.student.get({ user: req.session.user._id, course: courseId }, (error, student) => {
-            if (error) {
+            if (error || !student) {
                 res.send({ error });
             } else {
                 const data = { studentId: student._id, subjectId, lessonId, totalSeconds };

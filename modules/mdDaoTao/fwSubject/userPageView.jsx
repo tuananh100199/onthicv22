@@ -5,6 +5,7 @@ import { getStudentScore, getStudentSubjectScore } from '../fwStudent/redux';
 import { Link } from 'react-router-dom';
 import { AdminPage } from 'view/component/AdminPage';
 
+
 class AdminEditPage extends AdminPage {
     state = {};
     componentDidMount() {
@@ -126,18 +127,20 @@ class AdminEditPage extends AdminPage {
                                     </div>
                                 </div>
                             </Link>
-                            <h4 style={{ width: '100%' }}>Thi hết môn</h4>
-                            <Link className='col-md-6' to={'/user/hoc-vien/khoa-hoc/' + this.state.courseId + '/mon-hoc/thi-het-mon/' + this.state.subjectId}>
-                                <div className={'widget-small coloured-icon danger'} >
-                                    <i className='icon fa fa-3x fa-pencil-square-o' />
-                                    <div className='info'>
-                                        <h4>Thi hết môn</h4>
-                                        {tienDoThiHetMon ? <p>Điểm: {diemThiHetMon + ' (' + ((diemThiHetMon > 5) ? 'Đạt) ' : 'Không đạt) ')}</p> : null}
+                            {!monThucHanh && <>
+                                <h4 style={{ width: '100%' }}>Thi hết môn</h4>
+                                <Link className='col-md-6' to={'/user/hoc-vien/khoa-hoc/' + this.state.courseId + '/mon-hoc/thi-het-mon/' + this.state.subjectId}>
+                                    <div className={'widget-small coloured-icon danger'} >
+                                        <i className='icon fa fa-3x fa-pencil-square-o' />
+                                        <div className='info'>
+                                            <h4>Thi hết môn</h4>
+                                            {tienDoThiHetMon ? <p>Điểm: {diemThiHetMon + ' (' + ((diemThiHetMon > 5) ? 'Đạt) ' : 'Không đạt) ')}</p> : null}
+                                        </div>
                                     </div>
-                                </div>
-                            </Link>
+                                </Link>
+                            </>}
                         </> :
-                        <>
+                        monThucHanh && <>
                             <h4 style={{ width: '100%' }}>Thi hết môn</h4>
                             <Link className='col-md-6' onClick={() => T.alert('Vui lòng hoàn thành tất cả các bài học trước khi thi hết môn!', 'error', false, 8000)} >
                                 <div className={'widget-small coloured-icon secondary'} >

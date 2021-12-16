@@ -22,6 +22,7 @@ class TaiLieuThamKhaoModal extends AdminModal {
 }
 class adminEditPage extends AdminPage {
     state = { showQuestionButton: false, questionVisibility: 'hidden', listVideo: {}, totalSecondsVideo: 0 };
+    intervalVideo;
     componentDidMount() {
         const params = T.routeMatcher('/user/hoc-vien/khoa-hoc/:courseId/mon-hoc/:subjectId/bai-hoc/:_id').parse(window.location.pathname);
         if (params._id) {
@@ -59,6 +60,12 @@ class adminEditPage extends AdminPage {
                         seconds = totalSeconds % 60;
                         $('#time').text((hours < 10 ? '0' + hours : hours) + ':' + (minutes < 10 ? '0' + minutes : minutes) + ':' + (seconds < 10 ? '0' + seconds : seconds));
                     }, 1000);
+                    window.onbeforeunload = (event) => {
+                        const e = event || window.event;
+                        e.preventDefault();
+                        clearInterval(window.interval);
+                        this.props.timeLesson(params._id, params.subjectId, params.courseId, totalSeconds);
+                    };
                     this.setState({ lessonId: params._id, subjectId: params.subjectId, courseId: params.courseId, ...data.item });
                 } else {
                     this.props.history.push('/user');
@@ -72,8 +79,8 @@ class adminEditPage extends AdminPage {
     componentWillUnmount() {
         const { lessonId, subjectId, courseId, totalSeconds } = this.state;
         clearInterval(window.interval);
+        clearInterval(this.intervalVideo);
         this.props.timeLesson(lessonId, subjectId, courseId, totalSeconds);
-
     }
 
     saveRating = (value) => {
@@ -97,6 +104,25 @@ class adminEditPage extends AdminPage {
         }
     }
 
+    onStateChange(event, videoId) {
+        if (event.data == 1) {
+            let time = 0,
+                hours = 0,
+                minutes = 0,
+                seconds = 0;
+            this.intervalVideo = setInterval(() => {
+                time = event.target.getDuration() - event.target.getCurrentTime();
+                hours = parseInt(time / 3600) % 24;
+                minutes = parseInt(time / 60) % 60;
+                seconds = (time % 60).toFixed(0);
+                $('#' + videoId).text('Thời gian còn lại: ' + (hours < 10 ? '0' + hours : hours) + ':' + (minutes < 10 ? '0' + minutes : minutes) + ':' + (seconds < 10 ? '0' + seconds : seconds));
+            }, 1000);
+        } else if (event.data == 2 || event.data == 0) {
+            clearInterval(this.intervalVideo);
+            this.intervalVideo = null;
+        }
+    }
+
     render() {
         const { lessonId, subjectId, title, courseId, tienDoHocTap, isView, monThucHanh, nextLesson } = this.state,
             lesson = this.props.lesson && this.props.lesson.item,
@@ -105,11 +131,15 @@ class adminEditPage extends AdminPage {
             rate = this.props.rate && this.props.rate.item,
             isShowRating = tienDoHocTap && tienDoHocTap[lessonId] || (lesson && lesson.questions && !lesson.questions.length),
             videosRender = videos.length ? videos.map((video, index) => (
-                <div key={index} className='d-flex justify-content-center pb-5'>
-                    <div className='embed-responsive embed-responsive-16by9' style={{ width: '70%', display: 'block' }} onClick={e => this.onView(e, video._id, index)}>
-                        <YouTube opts={{ playerVars: { 'autoplay': 0, 'controls': (!isView === 'false') ? 1 : 0, 'rel': 0 } }} videoId={video.link} containerClassName='embed embed-youtube' onEnd={(e) => this.onEnd(e)} />
+                <div key={index} className=' pb-5'>
+                    <div className='d-flex justify-content-center'>
+                        <div className='embed-responsive embed-responsive-16by9' style={{ width: '70%', display: 'block' }} >
+                            <YouTube opts={{ playerVars: { 'autoplay': 0, 'controls': (!isView === 'false') ? 1 : 0, 'rel': 0, 'modestbranding': 1, 'showinfo': 0 } }} videoId={video.link} containerClassName='embed embed-youtube' onEnd={(e) => this.onEnd(e)} onStateChange={(e) => this.onStateChange(e, video._id)} />
+                        </div>
                     </div>
-                </div>)) : 'Chưa có video bài giảng!';
+                    <p id={video._id} className='text-center' ></p>
+                </div>
+            )) : 'Chưa có video bài giảng!';
         const userPageLink = '/user/hoc-vien/khoa-hoc/' + courseId + '/mon-hoc/' + subjectId;
         if (tienDoHocTap && tienDoHocTap[lessonId]) {
             $('#' + tienDoHocTap[lessonId].rating).prop('checked', true);
@@ -127,22 +157,12 @@ class adminEditPage extends AdminPage {
                     <h3 className='tile-title'>Bài giảng</h3>
                     <div className='tile-body'>
                         {videosRender}
-                        {taiLieuThamKhao != '' ?
-                            // <button className='btn btn-primary' onClick={() => this.modalTaiLieuThamKhao.show(taiLieuThamKhao)}>
-                            //     Tài liệu tham khảo
-                            // </button>
-                            <div><a href={'/user/hoc-vien/khoa-hoc/' + courseId + '/mon-hoc/' + subjectId + '/bai-hoc/tai-lieu/' + lessonId} className='btn btn-primary' ><div>Tài liệu học tập</div></a></div>
-                            : null}
-                    </div>
-                    <div className='tile-footer' >
                         <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                            <div className={isShowRating ? 'visible' : 'invisible'}>
-                                <button className='btn btn-primary mb-2' onClick={(e) => { e.preventDefault(); this.modal.show(); }}>Đánh giá bài học</button>
-                                {rate && <h5>Đã đánh giá:   <span className='text-warning'>{rate.value + ' sao'}</span></h5>}
-                                <RateModal ref={e => this.modal = e} title='Đánh giá bài giảng' type='lesson' _refId={lessonId} />
-                            </div>
-                            {monThucHanh ?
-                                <div>
+                            {taiLieuThamKhao != '' ?
+                                <div><a href={'/user/hoc-vien/khoa-hoc/' + courseId + '/mon-hoc/' + subjectId + '/bai-hoc/tai-lieu/' + lessonId} className='btn btn-primary' ><div>Tài liệu học tập</div></a></div>
+                                : null}
+                            {(monThucHanh || (lesson && lesson.questions && !lesson.questions.length)) ?
+                                <div className=''>
                                     {!(isView === 'false') && nextLesson ?
                                         <a className={'btn btn-warning ml-5'} href={'/user/hoc-vien/khoa-hoc/' + courseId + '/mon-hoc/' + subjectId + '/bai-hoc/' + nextLesson._id}>
                                             <i className='fa fa-lg fa-arrow-right' /> Sang bài tiếp theo
@@ -152,6 +172,15 @@ class adminEditPage extends AdminPage {
                                 (!(isView === 'false') ?
                                     <Link to={'/user/hoc-vien/khoa-hoc/' + courseId + '/mon-hoc/' + subjectId + '/bai-hoc/cau-hoi/' + lessonId} className='btn btn-primary'>Câu hỏi ôn tập</Link>
                                     : <button className='btn btn-secondary' onClick={() => T.alert('Thời gian học của bạn chưa đạt yêu cầu để làm bài ôn tập này!', 'error', false, 8000)}>Câu hỏi ôn tập</button>)}
+                        </div>
+                    </div>
+                    <div className='tile-footer' >
+                        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                            <div className={isShowRating ? 'visible' : 'invisible'}>
+                                <button className='btn btn-primary mb-2' onClick={(e) => { e.preventDefault(); this.modal.show(); }}>Đánh giá bài học</button>
+                                {rate && <h5>Đã đánh giá:   <span className='text-warning'>{rate.value + ' sao'}</span></h5>}
+                                <RateModal ref={e => this.modal = e} title='Đánh giá bài giảng' type='lesson' _refId={lessonId} />
+                            </div>
                         </div>
                     </div>
                 </div>
