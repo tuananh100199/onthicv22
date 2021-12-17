@@ -241,6 +241,19 @@ module.exports = (app) => {
                         Object.assign(student.tienDoHocTap[data.subjectId], obj);
                     }
                     model.findOneAndUpdate({ _id: data.studentId }, { tienDoHocTap: student.tienDoHocTap }, { new: true }).exec(done);
+                } else if (data.viewVideo) {
+                    const obj = {};
+                    let list = {};
+                    if (student.tienDoHocTap[data.subjectId] && student.tienDoHocTap[data.subjectId][data.lessonId]) {
+                        list = student.tienDoHocTap[data.subjectId][data.lessonId].viewedVideo ? student.tienDoHocTap[data.subjectId][data.lessonId].viewedVideo : {};
+                        list[data.viewVideo] = true;
+                        student.tienDoHocTap[data.subjectId][data.lessonId].viewedVideo = list;
+                    } else {
+                        list[data.viewVideo] = true;
+                        obj[data.lessonId] = { viewedVideo: list };
+                        Object.assign(student.tienDoHocTap[data.subjectId], obj);
+                    }
+                    model.findOneAndUpdate({ _id: data.studentId }, { tienDoHocTap: student.tienDoHocTap }, { new: true }).exec(done);
                 } else if (data.totalSeconds) {
                     const obj = {};
                     if (student.tienDoHocTap[data.subjectId] && student.tienDoHocTap[data.subjectId][data.lessonId]) {
