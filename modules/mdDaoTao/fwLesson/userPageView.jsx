@@ -48,13 +48,14 @@ class adminEditPage extends AdminPage {
                         } else {
                             totalSeconds = (data[params.subjectId] && data[params.subjectId][params._id] && data[params.subjectId][params._id].totalSeconds) ? parseInt(data[params.subjectId][params._id].totalSeconds) : 0;
                             const listViewVideo = data[params.subjectId] && data[params.subjectId][params._id] && data[params.subjectId][params._id].viewedVideo ? Object.keys(data[params.subjectId][params._id].viewedVideo) : [];
+                            const isView = data[params.subjectId] && data[params.subjectId][params._id] && data[params.subjectId][params._id].view ? data[params.subjectId][params._id].view : 'false';
                             setTimeout(() => {
                                 lesson && lesson.videos && lesson.videos.forEach(video => {
-                                    if (listViewVideo.findIndex(viewVideo => viewVideo == video._id) != -1)
+                                    if (!(isView === 'false') || (listViewVideo.findIndex(viewVideo => viewVideo == video._id) != -1))
                                         $('#' + video._id).text('Đã hoàn thành').css('color', 'green');
                                 });
                             }, 1000);
-                            this.setState({ tienDoHocTap: data[params.subjectId], isView: data[params.subjectId] && data[params.subjectId][params._id] && data[params.subjectId][params._id].view ? data[params.subjectId][params._id].view : 'false', listViewVideo });
+                            this.setState({ tienDoHocTap: data[params.subjectId], isView, listViewVideo });
                         }
                     });
                     let hours = 0;
@@ -161,7 +162,7 @@ class adminEditPage extends AdminPage {
                 <div key={index} className=' pb-5'>
                     <div className='d-flex justify-content-center'>
                         <div className='embed-responsive embed-responsive-16by9' style={{ width: '70%', display: 'block' }} >
-                            <YouTube opts={{ playerVars: { 'autoplay': 0, 'controls': (listViewVideo && (listViewVideo.findIndex(viewVideo => viewVideo == video._id) != -1)) ? 1 : 0, 'rel': 0, 'modestbranding': 1, 'showinfo': 0 } }} videoId={video.link} containerClassName='embed embed-youtube' onEnd={(e) => this.onEnd(e)} onStateChange={(e) => this.onStateChange(e, video._id)} />
+                            <YouTube opts={{ playerVars: { 'autoplay': 0, 'controls': ((listViewVideo && (listViewVideo.findIndex(viewVideo => viewVideo == video._id) != -1)) || !(isView === 'false')) ? 1 : 0, 'rel': 0, 'modestbranding': 1, 'showinfo': 0 } }} videoId={video.link} containerClassName='embed embed-youtube' onEnd={(e) => this.onEnd(e)} onStateChange={(e) => this.onStateChange(e, video._id)} />
                         </div>
                     </div>
                     <p id={video._id} className='text-center' ></p>
