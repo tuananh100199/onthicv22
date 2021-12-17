@@ -9,6 +9,7 @@ import StaffGroupPage from './adminStaffGroupView';
 import ListVideoPage from './adminListVideoView';
 import ListContentView from './adminListContentView';
 import LoginFormView from './adminLoginFormView';
+import GioiThieuHiepPhatView from './adminGioiThieuHiepPhatView';
 
 export class ComponentPage extends AdminPage {
     render() {
@@ -22,6 +23,7 @@ export class ComponentPage extends AdminPage {
         tabs.push({ key: tabs.length, title: 'Thống kê', component: <StatisticPage history={this.props.history} permission={permission} /> });
         tabs.push({ key: tabs.length, title: 'Nhóm nhân viên', component: <StaffGroupPage history={this.props.history} permission={permission} /> });
         tabs.push({ key: tabs.length, title: 'Đăng nhập', component: <LoginFormView history={this.props.history} permission={permission} /> });
+        tabs.push({ key: tabs.length, title: 'Giới thiệu Hiệp Phát', component: <GioiThieuHiepPhatView permission={permission} history={this.props.history} /> });
 
         return this.renderPage({
             icon: 'fa fa-cogs',

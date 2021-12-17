@@ -58,7 +58,7 @@ class SectionAdvisoryForm extends React.Component {
 
         return (
             <div className='row'>
-                <div className='intro col-md-6'>
+                <div className='intro intro_hang_GPLX col-md-6'>
                     <div className='intro_col'>
                         <div style={{ backgroundColor: '#199d76', width: '100%', paddingLeft: '33px', paddingRight: '34px', paddingBottom: '30px', paddingTop: '85px', boxShadow: '0px 25px 38px rgb(0 0 0 / 20% '}}>
                             <div style={{ position: 'absolute', top: 0, height: '80px', background: '#199d76', lineHeight: '80px', textAlign: 'center', fontSize: '24px', fontWeight: 600, color: '#FFFFFF' }}>Các hạng giấy phép lái xe</div>
@@ -70,7 +70,7 @@ class SectionAdvisoryForm extends React.Component {
                                     </div>
                                 </div>
 
-                                <div className='col-md-9' style={{ margin: 'auto', padding: '7px', color: '#199d76' }}>
+                                <div className='col-md-9 content' style={{ margin: 'auto', padding: '7px', color: '#199d76' }}>
                                     <p style={{ fontSize: '12px', margin:'0px', lineHeight: 1.3, color: '#199d76' }}>- <span style={{ textIndent: '5px' }}>Cấp cho người điều kiển ô tô tự động chở người đến 09 chổ ngồi, ô tô tải chuyên dùng số tự động, có trọng tải thiết kế dưới 3500Kg, không chuyên nghiệp</span></p>
                                     <p style={{ fontSize: '12px', margin:'0px', lineHeight: 1.3, color: '#199d76' }}>- Cho người có đủ sức khỏe từ 18 tuổi trở lên</p>
                                     <p style={{ fontSize: '12px', margin:'0px', lineHeight: 1.3, color: '#199d76' }}>- Có thời hạn đến khi người lái xe đủ 55 tuổi đối với nữ và đủ 60 tuổi đối với nam; trường hợp người lái xe trên 45 tuổi đối với nữ và trên 50 tuổi đối với nam giấy phép lái xe được cấp có thời hạn 10 năm, kể từ ngày cấp.</p>
@@ -107,7 +107,7 @@ class SectionAdvisoryForm extends React.Component {
                 </div>
                 <div className='intro col-md-6'>
                     <div className='intro_col'>
-                        <div className='intro_form_container'>
+                        <div className='intro_form_container' style={{ boxShadow: 'rgb(0 0 0 / 20%) 0px 25px 38px' }}>
                             <div className='intro_form_title'>Đăng ký tư vấn</div>
                             <form action='#' className='intro_form' id='intro_form' onSubmit={this.onSubmit}>
                                 <div className='d-flex flex-row align-items-start justify-content-between flex-wrap'>
