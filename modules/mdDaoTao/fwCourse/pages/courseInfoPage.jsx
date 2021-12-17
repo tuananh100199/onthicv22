@@ -80,7 +80,6 @@ class EditCoursePage extends AdminPage {
                 thoiGianThiTotNghiepChinhThuc: this.thoiGianThiTotNghiepChinhThuc.value()
 
             };
-            console.log(changes);
             this.setState({ chatActive: changes.chatActive, commentActive: changes.commentActive });
             if (changes.courseFee == null) changes.courseFee = 0;
             if (changes.thoiGianThiTotNghiepChinhThuc == 'Invalid Date') changes.thoiGianThiTotNghiepChinhThuc = null;
