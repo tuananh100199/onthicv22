@@ -6,13 +6,13 @@
     background-color: #199d76;
     border-radius: 10px;
     margin-bottom: 30px;
-    height: 260px;
+    height: 200px;
 }
 .warp_den_voi_HP .wrap_item_den_voi_HP:hover {
     border: 1px solid #199d76;
     background-color: white;
     margin-bottom: 30px;
-    height: 260px;
+    height: 200px;
 }
 .warp_den_voi_HP .wrap_item_den_voi_HP .hover_item {
   display: none;
@@ -40,7 +40,7 @@
 }
 
 .warp_den_voi_HP .wrap_item_den_voi_HP .icon_item_den_voi_HP {
-    font-size: 120px;
+    font-size: 100px;
     color: white;
     text-align: center;
 }
@@ -52,11 +52,12 @@
 
 /* GIỚI THIỆU HIỆP PHÁT */
 .warp_gioi_thieu_HP .title_gioi_thieu {
-    padding-left: 30px;
+    font-size: 20px;
+    padding-left: 10px;
     display: grid;
     background-color: #199d76;
     height: 60px;
-    width: 250px;
+    width: 315px;
     color: yellow;
 }
 .warp_gioi_thieu_HP .title_gioi_thieu span {
@@ -64,6 +65,8 @@
     color: white;
 }
 .warp_gioi_thieu_HP .description {
+    margin-top: 20px;
+    font-size: 17px;
     color: #199d76;
     padding: 8px;
     text-align: justify;
@@ -143,20 +146,18 @@
 }
   
 .img-intro1 {
-    width: 200px;
+    width: 261px;
     height: 250px;
     z-index: 1;
-    top: -10px;
+    top: -37px;
     left: 10px;
-    background: red;
 }
 
 .img-intro2 {
     width: 300px;
     height: 250px;
-    top: 40px;
-    left: 150px;
-    background: green;
+    top: 0px;
+    left: 270px;
 }
 
 .img-intro3 {
@@ -164,7 +165,6 @@
     height: 250px;
     top: 80px;
     left: 100px;
-    background: blue;
 }  
 .container_staff {
     width: 100%;
@@ -270,7 +270,19 @@
     width:50%;
     padding-right: 10%;
 }
-  
+.login_form .intro_form_login {
+    background-color: #199d76;
+    width: 100%;
+    padding-left: 33px;
+    padding-right: 34px;
+    padding-bottom: 36px;
+    padding-top: 80px;
+}
+.login_form .intro_form_login .wrap_form{
+    padding: 30px;
+    background: white;
+}
+
 .login_form .form_title{
     font-size: 22px;
     color: white;
@@ -278,7 +290,7 @@
     height: 80px;
     background: #199d76;
     text-align: center;
-    margin: auto;
+    margin-top: 15px;
 }
 .login_form .content{
     margin-bottom: 15px;
@@ -334,3 +346,14 @@
     left: -30px;
     width: 120%;
   }
+
+/* Các hạng giấy phép lái xe */
+.intro_hang_GPLX .content p:first-line{
+    text-indent: -36px;
+}
+
+.intro_hang_GPLX .content p{
+    padding-left: 15px;
+    text-indent:-10px;
+}
+   

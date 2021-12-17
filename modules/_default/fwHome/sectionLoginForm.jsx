@@ -18,9 +18,10 @@ class SectionLoginForm extends React.Component {
 
         if (data.username !== '' && data.password !== '') {
             this.props.login(data, result => {
-                this.errorMessage.innerHTML = result.error;
+                if (result.error) {
+                    this.errorMessage.innerHTML = result.error;
+                }
                 if (result.user) {
-                    $(this.modal.current).modal('hide');
                     window.location = '/user';
                 }
             });
@@ -37,15 +38,16 @@ class SectionLoginForm extends React.Component {
             { !user ?
             <div className='intro login_form'>
                 <div className='intro_col'>
-                    <div className='intro_form_container'>
-                            {item ? 
-                                <div className='row'>
-                                    <div className='col-md-7' style={{ width: '100%'}}>
-                                        <div className='wrap_image'>
-                                            <img src={item.image} style={{ width: '100%', objectFit: 'contain' }} alt='Image' />                                        
-                                        </div>
+                    <div className='intro_form_login'>
+                        {item ? 
+                            <div className='row'>
+                                <div className='col-md-7' style={{ width: '100%'}}>
+                                    <div className='wrap_image'>
+                                        <img src={item.image} style={{ width: '100%', objectFit: 'contain' }} alt='Image' />                                        
                                     </div>
-                                    <div className='col-md-5'>
+                                </div>
+                                <div className='col-md-5'>
+                                    <div className='wrap_form'>
                                         <div className='form_title'>
                                             {item.title}
                                         </div>
@@ -65,13 +67,16 @@ class SectionLoginForm extends React.Component {
                                                     <input id='password' type='text' placeholder='Mật khẩu' ref={e => this.password = e} />
                                                 </div>
                                             </div>
+                                            <p ref={e => this.errorMessage = e} className='text-danger text-center'></p>
                                             <button className='button button_1 intro_button trans_200' style={{ marginTop: '20px'}}>Đăng nhập</button>
                                         </form>
                                     </div>
-                                </div> : null}
+                                </div>
+                            </div> 
+                        : null}
                     </div>
                 </div>
-            </div> :  null}
+            </div> : <div style={{ paddingTop: '80px'}}/>}
         </>
         );
     }

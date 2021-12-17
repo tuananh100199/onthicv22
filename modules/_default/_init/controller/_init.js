@@ -52,14 +52,42 @@ module.exports = (app) => {
                     } else {
                         app.deleteImage(item.image); // Xoá hình cũ
                     }
-                    app.fs.rename(srcPath, destPath, (error) => {
-                        if (error) {
-                            done({ error });
-                        } else {
-                            item.image = image + '?t=' + new Date().getTime().toString().slice(-8);
-                            item.save((error) => done({ error, item, image: item.image }));
-                        }
-                    });
+                    if (dataName && dataName.startsWith('gioi-thieu')) {
+                        app.fs.rename(srcPath, destPath, (error) => {
+                            if (error) {
+                                done({ error });
+                            } else {
+                                if (dataName.startsWith('gioi-thieu1')) {
+                                    item.image1 = image + '?t=' + new Date().getTime().toString().slice(-8);
+                                    item.save((error) => done({ error, item, image: item.image1 }));
+                                } else if (dataName.startsWith('gioi-thieu2')) {
+                                    item.image2 = image + '?t=' + new Date().getTime().toString().slice(-8);
+                                    item.save((error) => done({ error, item, image: item.image2 }));
+                                } else {
+                                    item.image3 = image + '?t=' + new Date().getTime().toString().slice(-8);
+                                    item.save((error) => done({ error, item, image: item.image3 }));
+                                }
+                            }
+                        });
+                    } else {
+                        app.fs.rename(srcPath, destPath, (error) => {
+                            if (error) {
+                                done({ error });
+                            } else {
+                                item.image = image + '?t=' + new Date().getTime().toString().slice(-8);
+                                item.save((error) => done({ error, item, image: item.image }));
+                            }
+                        });
+                    }
+                    // app.fs.rename(srcPath, destPath, (error) => {
+                    //     if (error) {
+                    //         done({ error });
+                    //     } else {
+                    //         item.image = image + '?t=' + new Date().getTime().toString().slice(-8);
+                    //         item.save((error) => done({ error, item, image: item.image }));
+                    //     }
+                    // });
+
                 }
             });
         }
