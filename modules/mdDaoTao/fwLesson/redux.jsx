@@ -232,18 +232,32 @@ export function changeLessonQuestions(data) {
     return { type: LessonGetItem, item: { questions: data.questions } };
 }
 
-// Lesson Rating ----------------------------------------------------------------------------------------------------
+// Lesson Video ----------------------------------------------------------------------------------------------------
 export function viewLesson(lessonId, subjectId, courseId, view, done) {
     return () => {
         const url = '/api/lesson/view';
         T.post(url, { lessonId, subjectId, courseId, view }, data => {
             if (data.error) {
-                T.notify('Cập nhật bài thực hành bị lỗi!', 'danger');
+                T.notify('Cập nhật trạng thái học bị lỗi!', 'danger');
                 console.error('GET: ' + url + '.', data.error);
             } else {
                 done && done(data);
             }
-        }, error => console.error(error) || T.notify('Cập nhật bài thực hành bị lỗi!', 'danger'));
+        }, error => console.error(error) || T.notify('Cập nhật trạng thái học bị lỗi!', 'danger'));
+    };
+}
+
+export function viewVideo(lessonId, subjectId, courseId, viewVideo, done) {
+    return () => {
+        const url = '/api/lesson/viewVideo';
+        T.post(url, { lessonId, subjectId, courseId, viewVideo }, data => {
+            if (data.error) {
+                T.notify('Cập nhật trạng thái học bị lỗi!', 'danger');
+                console.error('GET: ' + url + '.', data.error);
+            } else {
+                done && done(data);
+            }
+        }, error => console.error(error) || T.notify('Cập nhật trạng thái học bị lỗi!', 'danger'));
     };
 }
 
