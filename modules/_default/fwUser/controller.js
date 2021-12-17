@@ -56,12 +56,12 @@ module.exports = app => {
                 }
 
                 if (condition.userType && condition.userType != 'all') {
-                    if(condition.queryType && condition.queryType == 'or' ){
-                    (Array.isArray(condition.userType) ? condition.userType : [condition.userType]).forEach((item)=>{
-                        const subObject = {};
-                        subObject[item] = true; 
-                        pageCondition.$or.push(subObject);
-                    });
+                    if (condition.queryType && condition.queryType == 'or') {
+                        (Array.isArray(condition.userType) ? condition.userType : [condition.userType]).forEach((item) => {
+                            const subObject = {};
+                            subObject[item] = true;
+                            pageCondition.$or.push(subObject);
+                        });
                     } else pageCondition.$or.push(Object.fromEntries(
                         (Array.isArray(condition.userType) ? condition.userType : [condition.userType]).map(item => [item, true])));
                     pageCondition.daNghiDay = false;
@@ -78,7 +78,7 @@ module.exports = app => {
             }
 
             if (req.session.user.division && req.session.user.division.isOutside) pageCondition.division = req.session.user.division._id;
-            app.model.user.getPage(pageNumber, pageSize, {}, (error, page) => res.send({ error, page }));
+            app.model.user.getPage(pageNumber, pageSize, pageCondition, (error, page) => res.send({ error, page }));
         } catch (error) {
             res.send({ error });
         }
