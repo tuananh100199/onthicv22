@@ -632,12 +632,12 @@ $breakpoint-xs: 'only screen and (max-width:767px)';
 6. Intro
 *********************************/
 
-.intro {
-    width: 100%;
-    background: #FFFFFF;
-    padding-top: 60px;
-    padding-bottom: 90px;
-}
+// .intro {
+//     width: 100%;
+//     background: #FFFFFF;
+//     padding-top: 60px;
+//     padding-bottom: 90px;
+// }
 
 .intro_content {
     padding-top: 30px;
@@ -1219,3 +1219,35 @@ $breakpoint-xs: 'only screen and (max-width:767px)';
     display: block;
     padding: 6px;
 }
+
+// Giao diện footer
+// .container {
+//     width: 500px;
+//     height: 300px;
+//     border: 1px solid black;
+//     position: relative;
+//     overflow: hidden;
+//   }
+.wrapper_footer {
+    height: 350px;
+}
+  
+  .wrap-division {
+    width: 100%;
+    height: 100%;
+    background-color: blue;
+    transform: skewX(15deg) translateX(-35%);
+    position: absolute;
+    z-index: 10;
+  } 
+  
+  .division-img {
+    width: 100%;
+    height: 100%;
+    background-color: red;
+    z-index: 0;
+  }
+  .division-img img{
+    float: right;
+    height: 350px;
+  }

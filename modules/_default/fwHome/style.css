@@ -59,6 +59,11 @@
     height: 60px;
     width: 315px;
     color: yellow;
+}   
+@media (max-width: 768px) {
+    .warp_gioi_thieu_HP .img-gioi-thieu{
+        display: none;
+    } 
 }
 .warp_gioi_thieu_HP .title_gioi_thieu span {
     font-weight: 800;
@@ -286,11 +291,8 @@
 .login_form .form_title{
     font-size: 22px;
     color: white;
-    padding-top: 25px;
-    height: 80px;
     background: #199d76;
     text-align: center;
-    margin-top: 15px;
 }
 .login_form .content{
     margin-bottom: 15px;
@@ -356,4 +358,3 @@
     padding-left: 15px;
     text-indent:-10px;
 }
-   

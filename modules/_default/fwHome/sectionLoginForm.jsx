@@ -41,12 +41,12 @@ class SectionLoginForm extends React.Component {
                     <div className='intro_form_login'>
                         {item ? 
                             <div className='row'>
-                                <div className='col-md-7' style={{ width: '100%'}}>
+                                <div className='col-lg-7 col-md-12' style={{ width: '100%'}}>
                                     <div className='wrap_image'>
                                         <img src={item.image} style={{ width: '100%', objectFit: 'contain' }} alt='Image' />                                        
                                     </div>
                                 </div>
-                                <div className='col-md-5'>
+                                <div className='col-lg-5 col-md-12'>
                                     <div className='wrap_form'>
                                         <div className='form_title'>
                                             {item.title}

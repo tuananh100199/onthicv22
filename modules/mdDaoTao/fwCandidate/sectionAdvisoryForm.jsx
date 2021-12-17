@@ -58,7 +58,7 @@ class SectionAdvisoryForm extends React.Component {
 
         return (
             <div className='row'>
-                <div className='intro intro_hang_GPLX col-md-6'>
+                <div className='intro intro_hang_GPLX col-lg-6 col-md-12'>
                     <div className='intro_col'>
                         <div style={{ backgroundColor: '#199d76', width: '100%', paddingLeft: '33px', paddingRight: '34px', paddingBottom: '30px', paddingTop: '85px', boxShadow: '0px 25px 38px rgb(0 0 0 / 20% '}}>
                             <div style={{ position: 'absolute', top: 0, height: '80px', background: '#199d76', lineHeight: '80px', textAlign: 'center', fontSize: '24px', fontWeight: 600, color: '#FFFFFF' }}>Các hạng giấy phép lái xe</div>
@@ -105,7 +105,7 @@ class SectionAdvisoryForm extends React.Component {
                         </div>
                     </div>
                 </div>
-                <div className='intro col-md-6'>
+                <div className='intro col-lg-6 col-md-12'>
                     <div className='intro_col'>
                         <div className='intro_form_container' style={{ boxShadow: 'rgb(0 0 0 / 20%) 0px 25px 38px' }}>
                             <div className='intro_form_title'>Đăng ký tư vấn</div>

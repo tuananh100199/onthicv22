@@ -6,8 +6,8 @@ import './style.css';
 class SectionDenVoiHiepPhat extends React.Component {
     render() {
         return (
-            <div className='intro'>
-                <div className='intro_col'>
+            // <div className='intro'>
+            //     <div className='intro_col'>
                     <div className='intro_form_container'>
                         <div className='intro_form_title'>
                             ĐẾN VỚI HIỆP PHÁT
@@ -118,8 +118,8 @@ class SectionDenVoiHiepPhat extends React.Component {
                             </div>
                         </div>
                     </div>
-                </div>
-            </div>
+            //     </div>
+            // </div>
         );
     }
 }

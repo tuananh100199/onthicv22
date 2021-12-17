@@ -15,9 +15,9 @@ class SectionGioiThieuHiepPhat extends React.Component {
     render() {
         const { image1, image2, image3, abstract, title } = this.state;
         return (
-            <div className='intro'>
-                <div className='intro_col'>
-                    <div className=''>
+            // <div className='intro'>
+            //     <div className='intro_col'>
+            //         <div className=''>
                         <div className='warp_gioi_thieu_HP'>
                             <div className='row'>
                                 <div className='col-lg-6 col-md-12'>
@@ -37,7 +37,7 @@ class SectionGioiThieuHiepPhat extends React.Component {
                                         </ul>
                                     </div>
                                 </div>
-                                <div className='col-lg-6 col-md-12'>
+                                <div className='col-lg-6 col-md-12 img-gioi-thieu'>
                                     <div>
                                         <img src={image1} className='img-intro1' alt='image 1'></img>
                                     </div>
@@ -50,9 +50,9 @@ class SectionGioiThieuHiepPhat extends React.Component {
                                 </div>
                             </div>
                         </div>
-                    </div>
-                </div>
-            </div>
+            //         </div>
+            //     </div>
+            // </div>
         );
     }
 }
