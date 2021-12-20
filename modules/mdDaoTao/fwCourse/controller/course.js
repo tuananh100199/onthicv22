@@ -469,13 +469,20 @@ module.exports = (app) => {
                 const diemThucHanh = student.diemThucHanh ? Number(student.diemThucHanh) : 0;
 
                 let filterThiTotNghiep = true;
-                if (isAdmin) {
-                    const diemThiHetMon = student && student.diemThiHetMon && student.diemThiHetMon;
-                    if (diemThiHetMon.length) {
-                        for (let i = 0; i < diemThiHetMon.length; i++) {
-                            if (diemThiHetMon[i].point < 5) {
+                if (isAdmin || sessionUser.isLecturer) {
+                    const tienDoThiHetMon = student && student.tienDoThiHetMon && student.tienDoThiHetMon;
+                    const listIdThiHetMon = tienDoThiHetMon && Object.keys(tienDoThiHetMon);
+                    if (listIdThiHetMon && listIdThiHetMon.length) {
+                        for (let i = 0; i < monLyThuyet.length; i++) {
+                            const index = listIdThiHetMon.findIndex(monThi => monThi == monLyThuyet[i]._id);
+                            if( index == -1){
                                 filterThiTotNghiep = false;
                                 break;
+                            } else{
+                                if(!(tienDoThiHetMon[listIdThiHetMon[index]].score && (parseInt(tienDoThiHetMon[listIdThiHetMon[index]].score) >= 5))){
+                                    filterThiTotNghiep = false;
+                                    break;
+                                }
                             }
                         }
                     } else {
