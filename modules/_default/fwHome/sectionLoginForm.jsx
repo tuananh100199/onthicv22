@@ -36,7 +36,7 @@ class SectionLoginForm extends React.Component {
         return (
         <>
             { !user ?
-            <div className='intro login_form'>
+            <div className='login_form'>
                 <div className='intro_col'>
                     <div className='intro_form_login'>
                         {item ? 
@@ -64,7 +64,7 @@ class SectionLoginForm extends React.Component {
                                                     <div className='wrap_icon'>
                                                         <i className='fa fa-lock' aria-hidden='true' />
                                                     </div>
-                                                    <input id='password' type='text' placeholder='Mật khẩu' ref={e => this.password = e} />
+                                                    <input id='password' type='password' placeholder='Mật khẩu' ref={e => this.password = e} />
                                                 </div>
                                             </div>
                                             <p ref={e => this.errorMessage = e} className='text-danger text-center'></p>

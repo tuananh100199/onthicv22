@@ -369,7 +369,7 @@ section {
     left: 0;
     width: 100vw;
     z-index: 100;
-    background: #199d76;
+    background: white;
 }
 
 .header_content {
@@ -771,7 +771,7 @@ section {
 .intro {
     background: #FFFFFF;
     padding-top: 60px;
-    padding-bottom: 91px;
+    /* padding-bottom: 91px; */
 }
 
 .intro_image {

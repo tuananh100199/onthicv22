@@ -664,7 +664,8 @@ $breakpoint-xs: 'only screen and (max-width:767px)';
 
 .intro_form_container {
     width: 100%;
-    background: #FFFFFF;
+    // background: #FFFFFF;
+    background: #199d76;
     padding-left: 33px;
     padding-right: 34px;
     padding-bottom: 36px;
@@ -678,12 +679,13 @@ $breakpoint-xs: 'only screen and (max-width:767px)';
     left: 0;
     width: 336px;
     height: 80px;
-    background: #199d76;
+    background: white;
+    // background: #199d76;
     line-height: 80px;
     text-align: center;
     font-size: 24px;
     font-weight: 600;
-    color: #FFFFFF;
+    color: #199d76;
 }
 
 .intro_form {
@@ -798,7 +800,7 @@ $breakpoint-xs: 'only screen and (max-width:767px)';
 .intro {
     background: #FFFFFF;
     padding-top: 67px;
-    padding-bottom: 91px;
+    // padding-bottom: 91px;
 }
 
 .intro_image {

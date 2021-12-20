@@ -1,52 +1,83 @@
 /* ĐẾN VỚI HIỆP PHÁT */
-.warp_den_voi_HP {
+.wrap_den_voi_HP {
     width: 100%;
 }
-.warp_den_voi_HP .wrap_item_den_voi_HP {
+.wrap_den_voi_HP .wrap_item {
+    /* background-color: #199d76; */
+    background-color: white;
+    border-radius: 20px;
+    margin-bottom: 30px;
+    height: 200px;
+}
+.wrap_den_voi_HP .wrap_item:hover {
+    /* border: 1px solid #199d76; */
+    /* background-color: white; */
+    border: 1px solid white;
     background-color: #199d76;
-    border-radius: 10px;
     margin-bottom: 30px;
     height: 200px;
 }
-.warp_den_voi_HP .wrap_item_den_voi_HP:hover {
-    border: 1px solid #199d76;
-    background-color: white;
-    margin-bottom: 30px;
-    height: 200px;
-}
-.warp_den_voi_HP .wrap_item_den_voi_HP .hover_item {
-  display: none;
-}
-
-.warp_den_voi_HP .wrap_item_den_voi_HP:hover .item {
+.wrap_den_voi_HP .wrap_item .detail {
+    background: #199d76;
+    position: absolute;
+    bottom: 0;
+    border-radius: 20px;
+    color: #fff;
     display: none;
+    height: 100%;
 }
-.warp_den_voi_HP .wrap_item_den_voi_HP:hover .hover_item {
-    display: block;
-    background-color: white;
-}
-.warp_den_voi_HP .wrap_item_den_voi_HP:hover .hover_item .description {
-    color: #199d76;
+.wrap_den_voi_HP .wrap_item .detail .description {
+    /* color: #199d76; */
+    color: white;
     font-size: 15px;
     line-height: 20px;
     text-align: justify;
     padding: 0 8px;
+    /* display: none; */
 }
-.warp_den_voi_HP .wrap_item_den_voi_HP:hover .hover_item .hover_title_item {
-    color: #199d76;
+.wrap_den_voi_HP .wrap_item .detail .hover_title_item {
+    /* color: #199d76; */
+    color: white;
     margin-top: 15px;
     font-weight: 700;
     text-align: center;
+    /* display: none; */
 }
 
-.warp_den_voi_HP .wrap_item_den_voi_HP .icon_item_den_voi_HP {
+.wrap_den_voi_HP .wrap_item:hover .item {
+    display: none;
+}
+.wrap_den_voi_HP .wrap_item:hover .detail {
+    display: block;
+    /* background-color: white; */
+    background-color: #199d76;
+    animation-duration: 0.4s;
+    animation-timing-function: ease;
+    animation-delay: 0s;
+    animation-iteration-count: 1;
+    animation-direction: normal;
+    animation-fill-mode: none;
+    animation-play-state: running;
+    /* animation-name: showDetail; */
+}
+
+.wrap_den_voi_HP .wrap_item:hover .detail .description {
+    display: block;
+}
+.wrap_den_voi_HP .wrap_item:hover .detail .hover_title_item {
+    display: block;
+}
+
+.wrap_den_voi_HP .wrap_item .icon_item_den_voi_HP {
     font-size: 100px;
-    color: white;
+    /* color: white; */
+    color: #199d76;
     text-align: center;
 }
-.warp_den_voi_HP .wrap_item_den_voi_HP .title_item_den_voi_HP {
+.wrap_den_voi_HP .wrap_item .title_item_den_voi_HP {
     font-size: 20px;
-    color: white;
+    /* color: white; */
+    color: #199d76;
     text-align: center;
 }
 
@@ -151,18 +182,18 @@
 }
   
 .img-intro1 {
-    width: 261px;
-    height: 250px;
+    width: 249px;
+    height: 202px;
     z-index: 1;
-    top: -37px;
+    top: 0px;
     left: 10px;
 }
 
 .img-intro2 {
-    width: 300px;
-    height: 250px;
-    top: 0px;
-    left: 270px;
+    width: 293px;
+    height: 204px;
+    top: 11px;
+    left: 242px;
 }
 
 .img-intro3 {
@@ -293,6 +324,8 @@
     color: white;
     background: #199d76;
     text-align: center;
+    padding-top: 10px;
+    padding-bottom: 10px;
 }
 .login_form .content{
     margin-bottom: 15px;
@@ -348,13 +381,3 @@
     left: -30px;
     width: 120%;
   }
-
-/* Các hạng giấy phép lái xe */
-.intro_hang_GPLX .content p:first-line{
-    text-indent: -36px;
-}
-
-.intro_hang_GPLX .content p{
-    padding-left: 15px;
-    text-indent:-10px;
-}
