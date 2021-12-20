@@ -288,7 +288,7 @@ class AdminLearningProgressPage extends AdminPage {
         const finalScoreColumns = [];
         (subjects || []).forEach((subject, index) => {
             totalColumns.push({ id: 'final' + subject._id, text: 'Điểm thi ' + subject.title });
-            (!listShow.length || (listShow.length && listShow.indexOf('final' + subject._id) != -1)) && finalScoreColumns.push(<th key={index} style={{ width: 'auto', color: subject.monThucHanh ? 'aqua' : 'coral' }} nowrap='true'>{'Điểm thi ' + subject.title}</th>);
+            (!listShow.length || (listShow.length && listShow.indexOf('final' + subject._id) != -1)) && finalScoreColumns.push(<th key={index} style={{ width: 'auto', whiteSpace:'pre',textAlign:'center', color: subject.monThucHanh ? 'aqua' : 'coral' }} >{'Điểm thi ' + this.converNameSubject(subject)}</th>);
         });
 
         const monThiTotNghiepColumns = [];
@@ -301,7 +301,7 @@ class AdminLearningProgressPage extends AdminPage {
             renderHead: () => (
                 <tr>
                     <th style={{ width: 'auto', textAlign: 'center' }}>#</th>
-                    <th style={{ width: '50%' }} nowrap='true'>Tên học viên</th>
+                    <th style={{ width: '100%' }} nowrap='true'>Tên học viên</th>
                     {subjectColumns}
                     {(!listShow.length || (listShow.length && listShow.indexOf('diemLyThuyet') != -1)) && <th style={{ width: 'auto', color: 'coral' }} nowrap='true'>Điểm lý thuyết</th>}
                     {(!listShow.length || (listShow.length && listShow.indexOf('diemThucHanh') != -1)) && <th style={{ width: 'auto', color: 'aqua' }} nowrap='true'>Điểm thực hành</th>}
