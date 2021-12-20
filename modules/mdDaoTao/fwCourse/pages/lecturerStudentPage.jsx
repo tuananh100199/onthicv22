@@ -32,7 +32,7 @@ class LecturerStudentPage extends AdminPage {
     checkMonLyThuyet = (student, subjects) => {
         const tienDoThiHetMon = student && student.tienDoThiHetMon && student.tienDoThiHetMon;
         const monLyThuyet = subjects.filter(subject => subject.monThucHanh == false);
-        const listIdThiHetMon = Object.keys(tienDoThiHetMon);
+        const listIdThiHetMon = tienDoThiHetMon ? Object.keys(tienDoThiHetMon) : [];
         let lyThuyet = true;
         if (listIdThiHetMon.length) {
             for (let i = 0; i < monLyThuyet.length; i++) {
