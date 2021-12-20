@@ -58,9 +58,9 @@ class SectionChat extends AdminPage {
 
     componentWillUnmount() {
         T.socket.off('chat:send');
-        const { studentId, tongThoiGianChat } = this.state;
+        const { studentId, tongThoiGianChat,user } = this.state;
         clearInterval(window.interval);
-        this.props.updateStudent(studentId, { tongThoiGianChat });
+        user && !(user.isLecturer || user.isCourseAdmin) && this.props.updateStudent(studentId, { tongThoiGianChat });
     }
 
     loadMoreChats = () => { // Scroll on top and load more chats

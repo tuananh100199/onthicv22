@@ -61,8 +61,8 @@ class ShowColModal extends AdminModal {
     }
 
     onShow = () => {
-        const { totalColumns, course } = this.props;
-        const listShow = T.cookie('showColLearningProgress/' + course) ? T.cookie('showColLearningProgress/' + course) : [];
+        const { totalColumns, course,user  } = this.props;
+        const listShow = T.cookie('showColLearningProgress/' + course + '/' + user._id) ? T.cookie('showColLearningProgress/' + course + '/' + user._id) : [];
         totalColumns.map(column => {
             if (listShow.length) this['showColumns' + column.id].value(listShow.indexOf(column.id) != -1);
             else this['showColumns' + column.id].value(false);
@@ -70,14 +70,14 @@ class ShowColModal extends AdminModal {
     }
 
     onSubmit = () => {
-        const { totalColumns, course, filter } = this.props;
+        const { totalColumns, course, filter,user } = this.props;
         let listShow = [];
         totalColumns.map(column => {
             if (this['showColumns' + column.id].value()) {
                 listShow.push(column.id);
             }
         });
-        T.cookie('showColLearningProgress/' + course, listShow);
+        T.cookie('showColLearningProgress/' + course+'/' + user._id, listShow);
         this.setState({ listShow });
         this.props.getLearningProgressPage(undefined, undefined, { courseId: course, filter: filter }, () => {
             T.notify('Lưu danh sách cột hiển thị thành công!', 'success');
@@ -196,7 +196,7 @@ class AdminLearningProgressPage extends AdminPage {
             if (params && params._id) {
                 const course = this.props.course ? this.props.course.item : null,
                     user = this.props.system && this.props.system.user,
-                    listShow = T.cookie('showColLearningProgress/' + params._id) ? T.cookie('showColLearningProgress/' + params._id) : [];
+                    listShow = T.cookie('showColLearningProgress/' + params._id + '/' + user._id) ? T.cookie('showColLearningProgress/' + params._id + '/' + user._id) : [];
                 this.setState({ courseId: params._id, listShow });
                 if (course) {
                     this.props.getLearningProgressPage(undefined, undefined, { courseId: course._id, filter: this.state.filter });
@@ -268,7 +268,7 @@ class AdminLearningProgressPage extends AdminPage {
         const subjectColumns = [];
         (subjects || []).forEach((subject, index) => {
             totalColumns.push({ id: subject._id, text: subject.title });
-            (!listShow.length || (listShow.length && listShow.indexOf(subject._id) != -1)) && subjectColumns.push(<th key={index} style={{ width: 'auto', color: subject.monThucHanh ? 'aqua' : 'coral' }} nowrap='true'>{subject.title}</th>);
+            (!listShow.length || (listShow.length && listShow.indexOf(subject._id) != -1)) && subjectColumns.push(<th key={index} style={{ width: 'auto', color: subject.monThucHanh ? 'aqua' : 'coral' }} >{subject.title}</th>);
         });
 
         const finalScoreColumns = [];
@@ -354,7 +354,7 @@ class AdminLearningProgressPage extends AdminPage {
                         <div className='row'>
                             <div className='col-md-9'>
                                 {isCourseAdmin ? <FormSelect ref={e => this.filter = e} data={dataSelectCourseAdmin} onChange={data => this.getPage(undefined, undefined, data.id)} style={{ marginBottom: '10px', width: '300px' }} /> :
-                                    <FormCheckbox ref={e => this.course = e} onChange={value => { const data = value ? 'thiHetMon' : 'all'; this.getPage(undefined, undefined, data); }} label='Học viên đủ điều kiện thi hết môn' />
+                                    <FormCheckbox ref={e => this.course = e} onChange={value => { const data = value ? 'thiTotNghiep' : 'all'; this.getPage(undefined, undefined, data); }} label='Học viên đủ điều kiện thi tốt nghiệp' />
                                 }
                             </div>
                             {/* {isCourseAdmin && !item.lock && <Link style={{ textAlign: 'right' }} className='col-md-3' to={`${backRoute}/import-final-score`}><button className='btn btn-primary'> Nhập điểm thi hết môn </button></Link>} */}
@@ -363,7 +363,7 @@ class AdminLearningProgressPage extends AdminPage {
                         {table}
                         {!isLecturer ? <Pagination name='adminLearningProgress' pageNumber={pageNumber} pageSize={pageSize} pageTotal={pageTotal} totalItem={totalItem} getPage={this.getPage} style={{ marginLeft: 45 }} /> : null}
                         {item._id ? <LearningProgressModal ref={e => this.modal = e} updateStudent={this.props.updateStudent} getLearningProgressPage={this.props.getLearningProgressPage} courseId={item._id} filter={this.state.filter} /> : null}
-                        {<ShowColModal ref={e => this.showColModal = e} totalColumns={totalColumns} course={item._id} filter={this.state.filter} getLearningProgressPage={this.props.getLearningProgressPage} />}
+                        {<ShowColModal ref={e => this.showColModal = e} totalColumns={totalColumns} user={this.props.system.user} course={item._id} filter={this.state.filter} getLearningProgressPage={this.props.getLearningProgressPage} />}
                         {item._id ? <CourseAdminModal ref={e => this.courseAdmiModal = e} updateStudent={this.props.updateStudent} getLearningProgressPage={this.props.getLearningProgressPage} monThiTotNghiep={monThiTotNghiep} subjects={subjects} course={item} filter={this.state.filter} /> : null}
                         {isCourseAdmin && <CirclePageButton type='export' onClick={() => exportLearningProgressToExcel(item._id, this.state.filter)} />}
                         {isCourseAdmin && <CirclePageButton type='custom' customClassName='btn-warning' customIcon='fa-pencil-square-o' style={{ right: '75px' }} onClick={() => this.showColModal.show()} />}
