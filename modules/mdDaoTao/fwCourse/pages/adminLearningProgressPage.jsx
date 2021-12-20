@@ -243,11 +243,11 @@ class AdminLearningProgressPage extends AdminPage {
 
     converNameSubject = (subject) => {
         let title = subject.title;
-        if(title.startsWith('Đạo đức')){
+        if(title.startsWith('Đạo đức') && title.length > 40){
             const titleItem = title.split('và');
             if(titleItem[1]) titleItem[1] = '\nvà ' + titleItem[1];
             title = titleItem.join('');
-        } else if(title.startsWith('Hướng dẫn')){
+        } else if(title.startsWith('Hướng dẫn') && title.length > 40){
             const titleItem = title.split('cho');
             if(titleItem[1]) titleItem[1] = '\ncho ' + titleItem[1];
             title = titleItem.join('');
