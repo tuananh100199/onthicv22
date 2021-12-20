@@ -213,7 +213,7 @@ module.exports = app => {
                 }
                 // Add login permission => user.active == true => user:login
                 if (user.active) app.permissionHooks.pushUserPermission(user, 'user:login');
-
+                if(!(user.isLecturer && !user.isCourseAdmin)) app.permissionHooks.pushUserPermission(user, 'driverTest:view');
                 new Promise(resolve => { // User is CourseAdmin
                     if (user.isCourseAdmin) {
                         app.permissionHooks.pushUserPermission(user, 'courseAdmin:login');
