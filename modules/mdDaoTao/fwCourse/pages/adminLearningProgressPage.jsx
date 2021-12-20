@@ -241,6 +241,20 @@ class AdminLearningProgressPage extends AdminPage {
         } else T.notify('Học viên chưa làm bài kiểm tra của môn học này!', 'danger');
     };
 
+    converNameSubject = (subject) => {
+        let title = subject.title;
+        if(title.startsWith('Đạo đức')){
+            const titleItem = title.split('và');
+            if(titleItem[1]) titleItem[1] = '\nvà ' + titleItem[1];
+            title = titleItem.join('');
+        } else if(title.startsWith('Hướng dẫn')){
+            const titleItem = title.split('cho');
+            if(titleItem[1]) titleItem[1] = '\ncho ' + titleItem[1];
+            title = titleItem.join('');
+        }
+        return title;
+    }
+
     render() {
         const user = this.props.system ? this.props.system.user : null,
             { isLecturer, isCourseAdmin } = user,
@@ -268,7 +282,7 @@ class AdminLearningProgressPage extends AdminPage {
         const subjectColumns = [];
         (subjects || []).forEach((subject, index) => {
             totalColumns.push({ id: subject._id, text: subject.title });
-            (!listShow.length || (listShow.length && listShow.indexOf(subject._id) != -1)) && subjectColumns.push(<th key={index} style={{ width: 'auto', color: subject.monThucHanh ? 'aqua' : 'coral' }} >{subject.title}</th>);
+            (!listShow.length || (listShow.length && listShow.indexOf(subject._id) != -1)) && subjectColumns.push(<th key={index} style={{ width: 'auto', whiteSpace:'pre', textAlign:'center', color: subject.monThucHanh ? 'aqua' : 'coral' }}  >{this.converNameSubject(subject)}</th>);
         });
 
         const finalScoreColumns = [];
@@ -287,7 +301,7 @@ class AdminLearningProgressPage extends AdminPage {
             renderHead: () => (
                 <tr>
                     <th style={{ width: 'auto', textAlign: 'center' }}>#</th>
-                    <th style={{ width: '100%' }} nowrap='true'>Tên học viên</th>
+                    <th style={{ width: '50%' }} nowrap='true'>Tên học viên</th>
                     {subjectColumns}
                     {(!listShow.length || (listShow.length && listShow.indexOf('diemLyThuyet') != -1)) && <th style={{ width: 'auto', color: 'coral' }} nowrap='true'>Điểm lý thuyết</th>}
                     {(!listShow.length || (listShow.length && listShow.indexOf('diemThucHanh') != -1)) && <th style={{ width: 'auto', color: 'aqua' }} nowrap='true'>Điểm thực hành</th>}
