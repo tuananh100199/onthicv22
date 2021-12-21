@@ -2,7 +2,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { getCourse } from '../redux';
-import AdminPersonalChat from 'modules/mdDaoTao/fwChat/adminPersonalChat';
+import AdminPersonalChat from 'modules/mdDaoTao/fwChat/lecturerPersonalChat';
 import { AdminPage } from 'view/component/AdminPage';
 
 export class AdminChatPersonalPage extends AdminPage {
