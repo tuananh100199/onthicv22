@@ -126,10 +126,10 @@ class ForumCourseMessagePage extends AdminPage {
     render() {
         const courseItem = this.props.course && this.props.course.item ? this.props.course.item : {};
         const adminPermission = this.getUserPermission('system', ['settings']);
-        const { userId, isLecturer, isTrustLecturer, isCourseAdmin } = this.state;
+        const { userId, isLecturer, isCourseAdmin } = this.state;
         const createdDateStyle = { textDecoration: 'none', position: 'absolute', top: 0, left: 0, padding: '6px 12px', color: 'white', borderTopLeftRadius: 3, borderBottomRightRadius: 3 };
         const { item: forum, category } = this.props.forum || {};
-        const forumOwner = adminPermission && adminPermission.settings || isCourseAdmin || (isLecturer && isTrustLecturer && forum && forum.user && (userId == forum.user._id));
+        const forumOwner = adminPermission && adminPermission.settings || isCourseAdmin || (isLecturer && forum && forum.user && (userId == forum.user._id));
         const { pageNumber, pageSize, pageTotal, totalItem, list } = forum && forum.page ? forum.page : { pageNumber: 1, pageSize: 50, pageTotal: 1, totalItem: 0 };
         const courseBackRoute = '/user/course/' + courseItem._id;
         const categoryBackRoute = '/user/course/' + courseItem._id + '/forum';
