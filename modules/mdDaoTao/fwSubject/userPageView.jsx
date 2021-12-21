@@ -126,7 +126,7 @@ class AdminEditPage extends AdminPage {
                                         <i className='icon fa fa-3x fa-pencil-square-o' />
                                         <div className='info'>
                                             <h4>Thi hết môn</h4>
-                                            {tienDoThiHetMon ? <p>Điểm: {diemThiHetMon + ' (' + ((diemThiHetMon > 5) ? 'Đạt) ' : 'Không đạt) ')}</p> : null}
+                                            {tienDoThiHetMon ? <p>Điểm: {diemThiHetMon + ' (' + ((diemThiHetMon >= 5) ? 'Đạt) ' : 'Không đạt) ')}</p> : null}
                                         </div>
                                     </div>
                                 </Link>

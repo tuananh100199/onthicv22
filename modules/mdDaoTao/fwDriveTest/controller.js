@@ -14,7 +14,7 @@ module.exports = app => {
         },
     };
 
-    app.permission.add({ name: 'user:login', menu: driveTest }, { name: 'driveTestUser:read' }, { name: 'driveTest:write', menu }, { name: 'driveTest:delete' }, { name: 'driveTest:read', menu });
+    app.permission.add({ name: 'driverTest:view', menu: driveTest }, { name: 'driveTestUser:read' }, { name: 'driveTest:write', menu }, { name: 'driveTest:delete' }, { name: 'driveTest:read' });
 
     app.get('/user/drive-test', app.permission.check('driveTest:read'), app.templates.admin);
     app.get('/user/drive-test/:_id', app.permission.check('driveTest:read'), app.templates.admin);

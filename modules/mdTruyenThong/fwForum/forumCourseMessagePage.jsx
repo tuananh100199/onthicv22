@@ -62,6 +62,7 @@ class ForumCourseMessagePage extends AdminPage {
             courseId = params._courseId;
         const user = this.props.system ? this.props.system.user : null,
             { _id, isLecturer, isTrustLecturer, isCourseAdmin } = user;
+            this.setState({isLecturer, isCourseAdmin});
         T.ready((isLecturer || isCourseAdmin) ? '/user/course' : `/user/hoc-vien/khoa-hoc/${courseId}`, () => {
             if (forumId) {
                 this.setState({ userId: _id, isLecturer, isTrustLecturer, isCourseAdmin, forumId }, () => this.props.getForum(forumId) || this.getPage());
@@ -109,9 +110,9 @@ class ForumCourseMessagePage extends AdminPage {
     }
 
     componentWillUnmount() {
-        const { studentId, tongThoiGianForum } = this.state;
+        const { studentId, tongThoiGianForum, isCourseAdmin, isLecturer } = this.state;
         clearInterval(window.interval);
-        this.props.updateStudent(studentId, { tongThoiGianForum });
+        !(isLecturer || isCourseAdmin) && this.props.updateStudent(studentId, { tongThoiGianForum });
     }
 
     getPage = (pageNumber, pageSize, pageCondition, done) => {
