@@ -38,11 +38,11 @@ export function getForumCategories(course, done) {
 }
 
 T.initCookiePage('pageForum');
-export function getForumPage(categoryId, pageNumber, pageSize, searchText, courseId, done) {
+export function getForumPage(pageNumber, pageSize, pageCondition, done) {
     const page = T.updatePage('pageForum', pageNumber, pageSize);
     return dispatch => {
         const url = '/api/forum/page/' + page.pageNumber + '/' + page.pageSize;
-        T.get(url, { categoryId, searchText, courseId }, data => {
+        T.get(url, { pageCondition }, data => {
             if (data.error) {
                 T.notify('Lấy danh sách forum bị lỗi!', 'danger');
                 console.error(`GET: ${url}. ${data.error}`);
@@ -79,14 +79,13 @@ export function createForum(data, done) {
             } else {
                 done && done(data);
                 T.notify('Tạo forum thành công!', 'success');
-                data.item && data.item.category && dispatch(getForumPage(data.item.category, undefined, undefined, null, data.item.course));
-
+                data.item && data.item.category && dispatch(getForumPage( undefined, undefined,{ categoryId: data.item.category, searchText: null, courseId: data.item.course }));
             }
         }, error => console.error(error) || T.notify('Tạo forum bị lỗi!', 'danger'));
     };
 }
 
-export function updateForum(_id, changes, done) {
+export function updateForum(_id, changes, condition, done) {
     return dispatch => {
         const url = '/api/forum';
         T.put(url, { _id, changes }, data => {
@@ -97,13 +96,13 @@ export function updateForum(_id, changes, done) {
             } else {
                 done && done(data);
                 T.notify('Cập nhật forum thành công!', 'success');
-                data.item && data.item.category && dispatch(getForumPage(data.item.category, undefined, undefined, null, data.item.course));
+                data.item && data.item.category && dispatch(getForumPage( undefined, undefined,{ categoryId: data.item.category, searchText: null, filterType: condition.filterType, courseId: data.item.course }));
             }
         }, error => console.error(error) || T.notify('Cập nhật forum bị lỗi', 'danger'));
     };
 }
 
-export function deleteForum(_id) {
+export function deleteForum(_id, condition) {
     return dispatch => {
         const url = '/api/forum';
         T.delete(url, { _id }, data => {
@@ -112,7 +111,7 @@ export function deleteForum(_id) {
                 console.error(`DELETE: ${url}. ${data.error}`);
             } else {
                 T.alert('Forum được xóa thành công!', 'error', false, 800);
-                data.item && data.item.category && dispatch(getForumPage(data.item.category, undefined, undefined, null, data.item.course));
+                data.item && data.item.category && dispatch(getForumPage( undefined, undefined,{ categoryId: data.item.category, searchText: null, filterType: condition.filterType, courseId: data.item.course }));
             }
         }, error => console.error(error) || T.notify('Xóa forum bị lỗi!', 'danger'));
     };

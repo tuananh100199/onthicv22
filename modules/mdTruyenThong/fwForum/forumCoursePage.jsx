@@ -7,6 +7,10 @@ import { Link } from 'react-router-dom';
 import Pagination from 'view/component/Pagination';
 import { AdminPage, AdminModal, FormTextBox, FormSelect, FormEditor } from 'view/component/AdminPage';
 import { ForumStates, ForumStatesMapper, ForumButtons } from './index';
+const dataFilterType = [
+    { id: 0, text: 'Tất cả', condition: {} },
+    { id: 1, text: 'Đang chờ duyệt', condition: { state: 'waiting' } }
+];
 
 class ForumModal extends AdminModal {
     state = {};
@@ -44,10 +48,24 @@ class ForumModal extends AdminModal {
                 if ((this.itemContent.text() || '').split(' ').length > 200) {
                     T.notify('Nội dung của forum dài hơn 200 từ', 'danger');
                 } else {
-
-                    this.state._id ?
-                        this.props.update(this.state._id, data, () => this.hide()) :
-                        this.props.create(data, (data) => (data && data.item && this.props.history.push(`/user/course/${this.props.courseId}/forum/${data.item._id}/message`)) || this.hide());
+                    if (this.state._id) {
+                        if (this.props.forumCreator) {
+                            this.props.update(this.state._id, data, { filterType: this.props.filterType && this.props.filterType.condition }, () => this.hide());
+                        } else {
+                            this.props.update(this.state._id, data, { filterType: this.props.filterType && this.props.filterType.condition }, () => {
+                                this.hide();
+                                T.alert('Bạn vui lòng chờ Quản trị viên duyệt thay đổi thông tin forum của bạn. Cảm ơn', 'success', false);
+                            });
+                        }
+                    } else {
+                        if (this.props.forumCreator) {
+                            this.props.create(data, (data) => (data && data.item && this.props.history.push(`/user/course/${this.props.courseId}/forum/${data.item._id}/message`)) || this.hide());
+                        } else {
+                            this.props.create(data, () => {
+                                T.alert('Bạn vui lòng chờ Quản trị viên duyệt forum mới của bạn. Cảm ơn', 'success', false) || this.hide();
+                            });
+                        }
+                    }
                 }
             }
         }
@@ -77,7 +95,7 @@ class ForumPage extends AdminPage {
             this.setState({isLecturer, isCourseAdmin});
         T.ready((isLecturer || isCourseAdmin) ? '/user/course' : `/user/hoc-vien/khoa-hoc/${courseId}`, () => {
             if (forumCategoryId) {
-                this.setState({ userId: _id, isLecturer, isTrustLecturer, isCourseAdmin, courseId, forumCategoryId }, () => this.getPage());
+                this.setState({ userId: _id, isLecturer, isTrustLecturer, isCourseAdmin, courseId, forumCategoryId }, () => this.getPage() || this.filterType && this.filterType.value(0));
                 if ((isLecturer || isCourseAdmin)) {
                     const course = this.props.course ? this.props.course.item : null;
                     if (!course) {
@@ -129,13 +147,32 @@ class ForumPage extends AdminPage {
     }
 
     getPage = (pageNumber, pageSize, searchText, done) => {
-        this.state.forumCategoryId && this.props.getForumPage(this.state.forumCategoryId, pageNumber, pageSize, searchText, this.state.courseId, done);
+        this.state.forumCategoryId && this.props.getForumPage(pageNumber, pageSize, { categoryId: this.state.forumCategoryId, searchText, courseId: this.state.courseId }, done);
     }
+
+    onSearch = ({ pageNumber, pageSize, searchText, filterType }, done) => {
+        if (searchText == undefined) searchText = this.state.searchText;
+        if (filterType == undefined) filterType = this.state.filterType;
+        const condition = { categoryId: this.state.forumCategoryId, searchText, filterType: filterType.condition, courseId: this.state.courseId };
+        this.setState({ isSearching: true }, () => this.props.getForumPage(pageNumber, pageSize, condition, (page) => {
+            this.setState({ condition, searchText, filterType, isSearching: false });
+            done && done(page);
+        }));
+    }
+
 
     edit = (e, item) => e.preventDefault() || this.modal.show(item);
 
     delete = (item) => T.confirm('Chủ đề', `Bạn có chắc bạn muốn xóa chủ đề '${item.title}'?`, 'warning', true, isConfirm =>
-        isConfirm && this.props.deleteForum(item._id));
+        isConfirm && this.props.deleteForum(item._id, { filterType: this.state.filterType && this.state.filterType.condition }));
+
+    handleOnChangeActive = (_id, active) => {
+        if (active == 'true') {
+            this.props.updateForum(_id, { active: true }, { filterType: this.state.filterType && this.state.filterType.condition });
+        } else {
+            this.props.updateForum(_id, { active: false }, { filterType: this.state.filterType && this.state.filterType.condition });
+        }
+    }
 
     render() {
         const courseItem = this.props.course && this.props.course.item ? this.props.course.item : {};
@@ -147,9 +184,13 @@ class ForumPage extends AdminPage {
         const courseBackRoute = '/user/course/' + this.state.courseId,
             categoryBackRoute = '/user/course/' + this.state.courseId + '/forum',
             userBackRoute = `/user/hoc-vien/khoa-hoc/${this.state.courseId}`;
+        const header = forumAdmin ?  <>
+            <label style={{ lineHeight: '40px', marginBottom: 0 }}>Trạng thái:</label>&nbsp;&nbsp;
+            <FormSelect ref={e => this.filterType = e} data={dataFilterType} onChange={value => this.onSearch({ filterType: value })} style={{ minWidth: '200px', marginBottom: 0, marginRight: 12 }} />
+        </> : null;
 
         const listForums = list && list.length ? list.map((item, index) => {
-            const forumOwner = forumAdmin || (isLecturer && isTrustLecturer && item && item.user && (userId == item.user._id));
+            const forumOwner = forumAdmin || (isLecturer && (isTrustLecturer || item.state == 'approved') && item && item.user && (userId == item.user._id));
             return <div key={index} className='tile'>
                 <div style={{ display: 'inline-flex' }}>
                     <h4 className='tile-title'>
@@ -158,10 +199,10 @@ class ForumPage extends AdminPage {
                     <small style={{ paddingTop: 10 }}>
                         ({item.user ? `${item.user.lastname} ${item.user.firstname}` : ''}
                         {item.modifiedDate ? ' - ' + (new Date(item.modifiedDate).getText()) : ''})&nbsp;&nbsp;
-                        {forumOwner && item.state && ForumStatesMapper[item.state] ? <b style={{ color: ForumStatesMapper[item.state].color }}>{ForumStatesMapper[item.state].text}</b> : ''}
+                        {isLecturer && item.state && ForumStatesMapper[item.state] ? <b style={{ color: ForumStatesMapper[item.state].color }}>{ForumStatesMapper[item.state].text}</b> : ''}
                     </small>
                 </div>
-                <ForumButtons state={item.state} permission={{ forumOwner }} onChangeState={(state) => this.props.updateForum(item._id, { state })} onEdit={() => this.modal.show(item)} onDelete={() => this.delete(item)} />
+                <ForumButtons  isForumPage={true} active={item.active} state={item.state} permission={{ forumOwner, forumAdmin }} onChangeState={(state) => this.props.updateForum(item._id, { state }, { filterType: this.state.filterType && this.state.filterType.condition })} onChangeActive={(active) => this.handleOnChangeActive(item._id, active)} onEdit={() => this.modal.show(item)} onDelete={() => this.delete(item)} />
 
                 <div className='tile-body' style={{ marginBottom: 20 }}>
                     <p className='limit-line' dangerouslySetInnerHTML={{ __html: item.content }} />
@@ -182,6 +223,7 @@ class ForumPage extends AdminPage {
         return this.renderPage({
             icon: 'fa fa-users',
             title: category ? category.title : 'Forum',
+            header: header,
             breadcrumb: this.state.isLecturer || this.state.isCourseAdmin ?
                 [<Link key={0} to='/user/course'>Khóa học</Link>, this.state.courseId ? <Link key={0} to={courseBackRoute}>{courseItem.name}</Link> : '', <Link key={0} to={categoryBackRoute}>Danh mục</Link>, category ? category.title : 'Danh sách'] :
                 [<Link key={0} to={userBackRoute}>Khóa học của tôi</Link>, <Link key={0} to={categoryBackRoute}>Forum</Link>, category ? category.title : 'Danh sách'],
@@ -189,10 +231,10 @@ class ForumPage extends AdminPage {
                 {listForums}
                 <Pagination name='pageForum' style={{ marginLeft: '70px' }} pageNumber={pageNumber} pageSize={pageSize} pageTotal={pageTotal} totalItem={totalItem} getPage={this.getPage} />
                 <ForumModal ref={e => this.modal = e} courseId={this.state.courseId} category={category._id} forumCreator={forumAdmin || isLecturer && isTrustLecturer} history={this.props.history}
-                    create={this.props.createForum} update={this.props.updateForum} />
+                    create={this.props.createForum} update={this.props.updateForum} filterType={this.state.filterType}/>
             </> : '...',
             backRoute: categoryBackRoute,
-            onCreate: forumAdmin || isLecturer && isTrustLecturer ? this.edit : null,
+            onCreate: forumAdmin || isLecturer ? this.edit : null,
         });
     }
 }

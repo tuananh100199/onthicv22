@@ -55,18 +55,30 @@ module.exports = app => {
     app.get('/api/forum/page/:pageNumber/:pageSize', app.permission.check('user:login'), (req, res) => {
         const pageNumber = parseInt(req.params.pageNumber),
             pageSize = parseInt(req.params.pageSize),
-            { categoryId, searchText, courseId } = req.query,
-            pageCondition = { category: categoryId };
-        pageCondition.course = courseId ? courseId : null;
-
+            { categoryId, searchText, courseId, filterType } = req.query.pageCondition,
+            condition = { category: categoryId };
+            condition.course = courseId ? courseId : null;
+        const user = req.session.user;
+        let subObject1 = {}, subObject2 = {}, pageCondition = {};
+        subObject1.$or = [];
+        subObject2.$or = [];
+        if (filterType) {
+            condition.state = filterType.state;
+        }
         if (searchText) {
-            pageCondition.title = new RegExp(searchText, 'i');
-            pageCondition.content = new RegExp(searchText, 'i');
+            condition.title = new RegExp(searchText, 'i');
+            condition.content = new RegExp(searchText, 'i');
         }
-        if (!(req.session.user.permissions && req.session.user.permissions.includes('forum:write'))) {
-            pageCondition.state = 'approved';
+        
+        if (!(user.isCourseAdmin || user.permissions && user.permissions.includes('forum:delete'))) {
+            subObject1 = { state: 'approved', active: true, ...condition };
+            subObject2 = { user: user._id, ...condition };
+            pageCondition = {
+                $or: [subObject1, subObject2]
+            };
+        } else {
+            pageCondition = condition;
         }
-
         app.model.category.get(categoryId, (error, category) => {
             if (error || category == null) {
                 res.send({ error: 'Danh mục không hợp lệ!' });
@@ -138,13 +150,23 @@ module.exports = app => {
         const pageNumber = parseInt(req.params.pageNumber),
             pageSize = parseInt(req.params.pageSize),
             { _forumId, searchText } = req.query,
-            pageCondition = { forum: _forumId };
+            condition = { forum: _forumId };
+        let subObject1 = {}, subObject2 = {}, pageCondition = {};
+        subObject1.$or = [];
+        subObject2.$or = [];
         const user = req.session.user;
         if (searchText) {
-            pageCondition.content = new RegExp(searchText, 'i');
+            condition.content = new RegExp(searchText, 'i');
         }
-        if (!(user.isCourseAdmin || user.isLecturer && user.isTrustLecturer || user.permissions && user.permissions.includes('forum:delete'))) {
-            pageCondition.state = 'approved';
+        
+        if (!(user.isCourseAdmin || user.permissions && user.permissions.includes('forum:delete'))) {
+            subObject1 = { state: 'approved', ...condition };
+            subObject2 = { user: user._id, ...condition };
+            pageCondition = {
+                $or: [subObject1, subObject2]
+            };
+        } else {
+            pageCondition = condition;
         }
 
         app.model.forumMessage.getPage(pageNumber, pageSize, pageCondition, (error, page) => {
