@@ -5,6 +5,7 @@ import { getAdminChatByStudent, getChatByAdmin,getUserChats } from './redux';
 import UserAllChat from './userAllChat';
 import UserPersonalChat from './userPersonalChat';
 import AdminAllChat from './adminAllChat';
+// import LecturerPersonalChat from './lecturerPersonalChat';
 import AdminPersonalChat from './adminPersonalChat';
 
 class ChatPage extends AdminPage {
@@ -18,7 +19,7 @@ class ChatPage extends AdminPage {
             if (sessionUser.isCourseAdmin || sessionUser.isLecturer) {
                 T.ready('/user/course');
                 this.props.getChatByAdmin(_id, data => {
-                    if(data && data.item && data.item.length)this.setState({ adminChat: true });
+                    if(data && data.item && data.item.length) this.setState({ adminChat: true });
                     else this.setState({ adminChat: false });
                 });
             } else {
@@ -41,6 +42,7 @@ class ChatPage extends AdminPage {
             { title: 'Phòng chat chung', component: <AdminAllChat /> },
         ];
         if(adminChat && sessionUser.isLecturer) adminTabs.push({ title: 'Phòng chat cá nhân', component: <AdminPersonalChat /> });
+        if(adminChat && sessionUser.isCourseAdmin) adminTabs.push({ title: 'Phòng chat cá nhân', component: <AdminPersonalChat /> });
         const userTabs = [
             { title: 'Phòng chat chung', component: <UserAllChat /> },
         ];

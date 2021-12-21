@@ -60,14 +60,25 @@ module.exports = app => {
     app.get('/api/chat/admin', app.permission.check('course:read'), (req, res) => {
         const sessionUser = req.session.user;
         if (sessionUser.isCourseAdmin) {
-            app.model.student.getAll({ course: req.query._id }, (error, item) => res.send({ error, item }));
+            app.model.course.get(req.query._id, (error, item) => {
+                if (error || !item) {
+                    res.send({ error });
+                } else {
+                    let listTeacher = [];
+                    item.teacherGroups && item.teacherGroups.length && item.teacherGroups.forEach(teacherGroup => teacherGroup.teacher && listTeacher.push(teacherGroup.teacher));
+                    res.send({ error, item: listTeacher });
+                }
+            });
         } else {
             app.model.course.get(req.query._id, (error, item) => {
                 if (error || !item) {
                     res.send({ error });
                 } else {
                     const listStudent = item.teacherGroups.filter(teacherGroup => teacherGroup.teacher && teacherGroup.teacher._id == sessionUser._id);
-                    res.send({ error, item: listStudent.length ? listStudent[0].student : null });
+                    let listUser = [];
+                    item.admins && item.admins.length && item.admins.forEach(admin => listUser.push(admin));
+                    listUser =  listUser.concat(listStudent[0].student);
+                    res.send({ error, item: listUser });
                 }
             });
         }
