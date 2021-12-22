@@ -323,7 +323,7 @@ section {
 }
 
 .button_1:hover a {
-    color: #199d76;
+    color: white;
 }
 
 .button_2 {
@@ -369,7 +369,7 @@ section {
     left: 0;
     width: 100vw;
     z-index: 100;
-    background: #FFFFFF;
+    background: #199d76;
 }
 
 .header_content {
