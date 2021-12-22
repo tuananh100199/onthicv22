@@ -568,6 +568,7 @@ $breakpoint-xs-landscape: 'only screen and (min-width:480px) and (max-width:767p
 .team_image {
     width: 100%;
     overflow: hidden;
+    border-radius: 25px;
 }
 
 .team_image img {
@@ -701,7 +702,7 @@ $breakpoint-xs: 'only screen and (max-width:767px)';
     padding-left: 25px;
     outline: none;
     font-size: 15px;
-    color: #404040;
+    color: white;
     font-weight: 500;
     -webkit-transition: all 200ms ease;
     -moz-transition: all 200ms ease;
@@ -745,35 +746,35 @@ $breakpoint-xs: 'only screen and (max-width:767px)';
     font-size: 14px !important;
     font-weight: 400 !important;
     font-style: italic;
-    color: #a09f9f !important;
+    color: white !important;
 }
 
 .intro_input:-moz-placeholder {
     font-size: 14px !important;
     font-weight: 400 !important;
     font-style: italic;
-    color: #a09f9f !important;
+    color: white !important;
 }
 
 .intro_input::-moz-placeholder {
     font-size: 14px !important;
     font-weight: 400 !important;
     font-style: italic;
-    color: #a09f9f !important;
+    color: white !important;
 }
 
 .intro_input:-ms-input-placeholder {
     font-size: 14px !important;
     font-weight: 400 !important;
     font-style: italic;
-    color: #a09f9f !important;
+    color: white !important;
 }
 
 .intro_input::input-placeholder {
     font-size: 14px !important;
     font-weight: 400 !important;
     font-style: italic;
-    color: #a09f9f !important;
+    color: white !important;
 }
 
 .intro_button {
@@ -798,7 +799,7 @@ $breakpoint-xs: 'only screen and (max-width:767px)';
 *********************************/
 
 .intro {
-    background: #FFFFFF;
+    // background: #FFFFFF;
     padding-top: 67px;
     // padding-bottom: 91px;
 }

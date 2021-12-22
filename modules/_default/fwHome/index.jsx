@@ -12,6 +12,7 @@ import video, { ajaxSelectVideo, ajaxGetVideo } from './redux/reduxVideo';
 import listVideo, { ajaxSelectListVideo, ajaxGetListVideo } from './redux/reduxListVideo';
 import loginForm, { ajaxSelectLoginForm, ajaxGetLoginForm } from './redux/reduxLoginForm';
 import gioiThieu, { ajaxSelectGioiThieu, ajaxGetGioiThieu } from './redux/reduxGioiThieuHiepPhat';
+import hangGPLX, { ajaxSelectHangGPLX, ajaxGetHangGPLX } from './redux/reduxHangGPLX';
 
 import SectionListContent from './sectionListContent';
 import SectionContent from './sectionContent';
@@ -99,11 +100,13 @@ export default {
             render: (viewId) => <SectionCacHangGPLX viewId={viewId} />,
             text: 'Các hạng giấy phép lái xe',
             backgroundColor: 'gray',
+            adapter: ajaxSelectHangGPLX,
+            getItem: ajaxGetHangGPLX,
         };
     },
     redux: {
         parent: 'component',
-        reducers: { carousel, content, listContent, staffGroup, statistic, video, listVideo, gioiThieu, loginForm },
+        reducers: { carousel, content, listContent, staffGroup, statistic, video, listVideo, gioiThieu, loginForm, hangGPLX },
     },
     routes: [
         {
@@ -149,6 +152,10 @@ export default {
         {
             path: '/user/gioi-thieu/:_id',
             component: Loadable({ loading: Loading, loader: () => import('./adminGioiThieuHiepPhatEditPage') })
+        },
+        {
+            path: '/user/hang-gplx/:_id',
+            component: Loadable({ loading: Loading, loader: () => import('./adminHangGPLXEditPage') })
         },
     ],
     Section: {

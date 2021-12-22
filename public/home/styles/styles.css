@@ -309,7 +309,7 @@ section {
 }
 
 .button_1 {
-    background: #199d76;
+    background: white;
     border: solid 2px transparent;
 }
 
@@ -318,12 +318,12 @@ section {
 }
 
 .button_1:hover {
-    background: transparent;
+    background: white;
     border: solid 2px #199d76;
 }
 
 .button_1:hover a {
-    color: #199d76;
+    color: white;
 }
 
 .button_2 {
@@ -769,8 +769,8 @@ section {
 *********************************/
 
 .intro {
-    background: #FFFFFF;
-    padding-top: 60px;
+    /* background: #FFFFFF; */
+    /* padding-top: 60px; */
     /* padding-bottom: 91px; */
 }
 
@@ -1346,6 +1346,7 @@ section {
 
 .team_image {
     width: 100%;
+    border-radius: 25px;
 }
 
 .team_image img {

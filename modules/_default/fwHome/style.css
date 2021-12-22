@@ -220,7 +220,7 @@
 .staff_info {
     display: block;
     height: 100%;
-    background: #199d76;
+    background: white;
     /* clip-path: polygon(0 0, 100% 0, 50% 100%, 0% 100%); */
     flex: 1 0 75%;
     transform: translateX(30%);
@@ -231,7 +231,7 @@
 .staff_info .staff_group_title {
     padding-left: 90px;
     padding-top: 50px;
-    color: white;
+    color: #199d76;
     font-size: 15px;
     text-transform: uppercase;
 }
@@ -260,12 +260,12 @@
 }
 
 .staff_info .staff_name h5{
-    color: white;
+    color: #199d76;
     font-size: 25px;
 }
 
 .staff_info .staff_group_title h3{
-    color: white;
+    color: #199d76;
 }
 
 .staff_info .staff_title {
@@ -275,7 +275,7 @@
 }
 
 .staff_info .staff_title h6{
-    color: yellow;
+    color: #199d76;
 }
 
 .staff_img {
@@ -299,7 +299,7 @@
 }
 
 .staff_info .text p{
-    color: yellow;  
+    color: #199d76;  
 }
 
 .staff_img .text {

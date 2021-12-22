@@ -69,7 +69,7 @@ class SectionAdvisoryForm extends React.Component {
                                         <div className='col-md-3 img_item'>
                                             <h3 className='title_img'>B1</h3>
                                             <div className='wrap_img'>
-                                                <img alt='Những sai lầm lớn khi bảo dưỡng xe ô tô 2021' src='https://truongdaotaolaixehcm.com/wp-content/uploads/2018/03/nhung-sai-lam-lon-khi-bao-duong-xe-o-to-1024x768.jpg'/>
+                                                <img alt='hạng b1' src='https://truongdaotaolaixehcm.com/wp-content/uploads/2018/03/nhung-sai-lam-lon-khi-bao-duong-xe-o-to-1024x768.jpg'/>
                                             </div>
                                         </div>
 
@@ -83,7 +83,7 @@ class SectionAdvisoryForm extends React.Component {
                                         <div className='col-md-3 img_item'>
                                             <h3 className='title_img'>B2</h3>
                                             <div className='wrap_img'>
-                                                <img alt='Những sai lầm lớn khi bảo dưỡng xe ô tô 2021' src='https://truongdaotaolaixehcm.com/wp-content/uploads/2018/03/nhung-sai-lam-lon-khi-bao-duong-xe-o-to-1024x768.jpg'/>
+                                                <img alt='hạng b2' src='https://truongdaotaolaixehcm.com/wp-content/uploads/2018/03/nhung-sai-lam-lon-khi-bao-duong-xe-o-to-1024x768.jpg'/>
                                             </div>
                                         </div>
                                         <div className='col-md-9 content_item'>
@@ -96,7 +96,7 @@ class SectionAdvisoryForm extends React.Component {
                                         <div className='col-md-3 img_item'>
                                             <h3 className='title_img'>C</h3>
                                             <div className='wrap_img'>
-                                                <img alt='Những sai lầm lớn khi bảo dưỡng xe ô tô 2021' src='https://truongdaotaolaixehcm.com/wp-content/uploads/2018/03/nhung-sai-lam-lon-khi-bao-duong-xe-o-to-1024x768.jpg'/>
+                                                <img alt='hạng c' src='https://ototaihyundaicantho.com/public/upload/images/hinhsanpham/xe-tai-hyundai-mighty-110s-7-tan-thung-mui-bac-27021575272648.png'/>
                                             </div>
                                         </div>
                                         <div className='col-md-9 content_item'>
@@ -108,7 +108,7 @@ class SectionAdvisoryForm extends React.Component {
                                 </div>
                             </div>
                         </div>
-                        <div className='intro col-lg-6 col-md-12'>
+                        <div className='intro col-lg-6 col-md-12 advisory'>
                             <div className='intro_col'>
                                 <div className='intro_form_container' style={{ boxShadow: 'rgb(0 0 0 / 20%) 0px 25px 38px' }}>
                                     <div className='intro_form_title'>Đăng ký tư vấn</div>
@@ -116,30 +116,30 @@ class SectionAdvisoryForm extends React.Component {
                                         <div className='d-flex flex-row align-items-start justify-content-between flex-wrap'>
                                             {readOnly ?
                                                 <div className='w-100'>
-                                                    <p style={{ width: '100%', padding: '0 8px' }}>Họ và Tên: <b>{lastname} {firstname}</b></p>
-                                                    <p style={{ width: '100%', padding: '0 8px', marginBottom: 16 }}>Email: <b>{email}</b></p>
+                                                    <p style={{ width: '100%', padding: '0 8px', color: 'white' }}>Họ và Tên: <b>{lastname} {firstname}</b></p>
+                                                    <p style={{ width: '100%', padding: '0 8px', color: 'white', marginBottom: 16 }}>Email: <b>{email}</b></p>
                                                 </div> :
                                                 <>
-                                                    <p style={{ width: '50%', padding: '0 8px', margin: 0 }}>Họ<br />
+                                                    <p style={{ width: '50%', padding: '0 8px', margin: 0, color: 'white' }}>Họ<br />
                                                         <input type='text' className='intro_input w-100' placeholder='Họ' ref={e => this.lastname = e} />
                                                     </p>
-                                                    <p style={{ width: '50%', padding: '0 8px', margin: 0 }}>Tên<br />
+                                                    <p style={{ width: '50%', padding: '0 8px', margin: 0, color: 'white' }}>Tên<br />
                                                         <input type='text' className='intro_input w-100' placeholder='Tên' ref={e => this.firstname = e} />
                                                     </p>
-                                                    <p style={{ width: '50%', padding: '0 8px', margin: 0 }}>Email<br />
+                                                    <p style={{ width: '50%', padding: '0 8px', margin: 0, color: 'white' }}>Email<br />
                                                         <input type='text' className='intro_input w-100' placeholder='Email' ref={e => this.email = e} />
                                                     </p>
                                                 </>}
 
-                                            <p style={{ width: readOnly ? '100%' : '50%', padding: '0 8px', margin: 0 }}>Số điện thoại:
+                                            <p style={{ width: readOnly ? '100%' : '50%', padding: '0 8px', margin: 0, color: 'white' }}>Số điện thoại:
                                                 <input onKeyPress={e => (!/[0-9]/.test(e.key)) && e.preventDefault()}
                                                     type='tel' className='intro_input w-100' placeholder='Số điện thoại' ref={e => this.phoneNumber = e} />
                                             </p>
-                                            <div className='mb-5' style={{ width: '100%', padding: '0 8px', margin: 0 }}>
-                                                <FormSelect ref={e => this.courseType = e} label='Loại khóa học:' data={ajaxSelectCourseType} style={{ margin: 0, width: '100% !important' }} labelStyle={{ color: '#828282' }} />
+                                            <div className='mb-5' style={{ width: '100%', padding: '0 8px', margin: 0, color: 'white' }}>
+                                                <FormSelect ref={e => this.courseType = e} label='Loại khóa học:' data={ajaxSelectCourseType} style={{ margin: 0, width: '100% !important' }} labelStyle={{ color: 'white' }} />
                                             </div>
                                         </div>
-                                        <button className='button button_1 intro_button trans_200'>Đăng ký</button>
+                                        <button className='button button_1 intro_button trans_200 advisory_btn'>Đăng ký</button>
                                     </form>
                                 </div>
                             </div>

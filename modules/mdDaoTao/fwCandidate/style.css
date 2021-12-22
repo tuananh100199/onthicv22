@@ -1,3 +1,4 @@
+/* HẠNG GPLX */
 .section_hang_GPLX {
     background-color: aliceblue;
 }
@@ -56,4 +57,14 @@
 }
 .section_hang_GPLX .intro_hang_GPLX .wrap_GPLX .wrap_item_GPLX .content_item p:first-line{
     text-indent: -36px;
+}
+
+/* ĐĂNG KÝ TƯ VẤN */
+.section_hang_GPLX .advisory .advisory_btn {
+    background-color: #fd556d;
+    color: white;
+}
+.section_hang_GPLX .advisory .advisory_btn:hover {
+    background-color: white;
+    color: #199d76;
 }
