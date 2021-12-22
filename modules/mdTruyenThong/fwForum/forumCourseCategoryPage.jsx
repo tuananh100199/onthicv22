@@ -15,6 +15,7 @@ class ForumCategoryPage extends AdminPage {
         const user = this.props.system ? this.props.system.user : null,
             { isLecturer, isCourseAdmin } = user,
             admin = isLecturer || isCourseAdmin;
+        this.setState({admin});
         T.ready(admin ? '/user/course' : `/user/hoc-vien/khoa-hoc/${courseId}`, () => {
             if (courseId) {
                 this.setState({ courseId, admin }, () => this.props.getForumCategories(courseId));
@@ -60,9 +61,9 @@ class ForumCategoryPage extends AdminPage {
     }
 
     componentWillUnmount() {
-        const { studentId, tongThoiGianForum } = this.state;
+        const { studentId, tongThoiGianForum, admin } = this.state;
         clearInterval(window.interval);
-        this.props.updateStudent(studentId, { tongThoiGianForum });
+        !admin && this.props.updateStudent(studentId, { tongThoiGianForum });
     }
 
     render() {

@@ -10,6 +10,8 @@ import staffGroup, { ajaxGetStaffGroup, ajaxSelectStaffGroup } from './redux/red
 import statistic, { ajaxSelectStatistic, ajaxGetStatistic } from './redux/reduxStatistic';
 import video, { ajaxSelectVideo, ajaxGetVideo } from './redux/reduxVideo';
 import listVideo, { ajaxSelectListVideo, ajaxGetListVideo } from './redux/reduxListVideo';
+import loginForm, { ajaxSelectLoginForm, ajaxGetLoginForm } from './redux/reduxLoginForm';
+import gioiThieu, { ajaxSelectGioiThieu, ajaxGetGioiThieu } from './redux/reduxGioiThieuHiepPhat';
 
 import SectionListContent from './sectionListContent';
 import SectionContent from './sectionContent';
@@ -19,6 +21,9 @@ import SectionStatistic from './sectionStatistic';
 import SectionVideo from './sectionVideo';
 import SectionListVideo from './sectionListVideo';
 import SectionLoginForm from './SectionLoginForm';
+import SectionDenVoiHiepPhat from './sectionDenVoiHiepPhat';
+import SectionGioiThieuHiepPhat from './sectionGioiThieuHiepPhat';
+import SectionCacHangGPLX from './sectionCacHangGPLX';
 
 export default {
     init: () => {
@@ -74,12 +79,31 @@ export default {
         T.component['login form'] = {
             render: (viewId) => <SectionLoginForm viewId={viewId} />,
             text: 'Đăng nhập',
-            backgroundColor: '#36ee99',
+            backgroundColor: '#199d76',
+            adapter: ajaxSelectLoginForm,
+            getItem: ajaxGetLoginForm,
+        };
+        T.component['den voi Hiep Phat'] = {
+            render: (viewId) => <SectionDenVoiHiepPhat viewId={viewId} />,
+            text: 'Đến với Hiệp Phát',
+            backgroundColor: '#15bd99',
+        };
+        T.component['gioi thieu'] = {
+            render: (viewId) => <SectionGioiThieuHiepPhat viewId={viewId} />,
+            text: 'Giới thiệu Hiệp Phát',
+            backgroundColor: '#36db99',
+            adapter: ajaxSelectGioiThieu,
+            getItem: ajaxGetGioiThieu,
+        };
+        T.component['cac hang GPLX'] = {
+            render: (viewId) => <SectionCacHangGPLX viewId={viewId} />,
+            text: 'Các hạng giấy phép lái xe',
+            backgroundColor: 'gray',
         };
     },
     redux: {
         parent: 'component',
-        reducers: { carousel, content, listContent, staffGroup, statistic, video, listVideo },
+        reducers: { carousel, content, listContent, staffGroup, statistic, video, listVideo, gioiThieu, loginForm },
     },
     routes: [
         {
@@ -115,11 +139,19 @@ export default {
             component: Loadable({ loading: Loading, loader: () => import('./adminListVideoEditPage') })
         },
         {
+            path: '/user/login-form/:_id',
+            component: Loadable({ loading: Loading, loader: () => import('./adminLoginFormEditPage') })
+        },
+        {
             path: '/request-login',
             component: Loadable({ loading: Loading, loader: () => import('./homeRequestLoginPage') })
         },
+        {
+            path: '/user/gioi-thieu/:_id',
+            component: Loadable({ loading: Loading, loader: () => import('./adminGioiThieuHiepPhatEditPage') })
+        },
     ],
     Section: {
-        SectionContent, SectionListContent, SectionCarousel, SectionStaffGroup, SectionStatistic, SectionVideo, SectionListVideo
+        SectionContent, SectionListContent, SectionCarousel, SectionStaffGroup, SectionStatistic, SectionVideo, SectionListVideo, SectionDenVoiHiepPhat, SectionGioiThieuHiepPhat
     }
 };

@@ -4,10 +4,11 @@ module.exports = app => {
         user: { type: app.db.Schema.ObjectId, ref: 'User' },
         title: String,
         content: String,
-        state: { type: String, enum: ['approved', 'waiting', 'reject'], default: 'waiting' },
+        state: { type: String, enum: ['approved', 'waiting', 'reject'], default: 'waiting' }, // QTHT hoặc QTKH phê duyệt
         category: { type: app.db.Schema.ObjectId, ref: 'Category' },              // Phân loại forum
         createdDate: { type: Date, default: Date.now },
         modifiedDate: { type: Date, default: Date.now },
+        active: { type: Boolean, default: false }, // bật/tắt forum
     });
     const model = app.db.model('Forum', schema);
 

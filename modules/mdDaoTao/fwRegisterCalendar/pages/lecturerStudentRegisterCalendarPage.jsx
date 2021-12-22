@@ -20,7 +20,7 @@ export class LecturerRegisterCalendarPage extends AdminPage {
                         }
                     });
                 }
-               this.setState({ filterOn: false, key: false, list: false, calendar: true});
+               this.setState({ filterOn: false, filterType: false, key: false, list: false, calendar: true});
 
             } else {
                 this.props.history.push('/user/course/');
@@ -28,14 +28,23 @@ export class LecturerRegisterCalendarPage extends AdminPage {
         });
     }
 
+    onFilterType = (value) => {
+        this.setState({ filterType: value , key: !this.state.key});
+        this.forceUpdate();
+    }
+
     render() {
-        const { key, calendar, list,filterOn } = this.state;
+        const { key, calendar, list, filterOn, filterType } = this.state;
         const { user } = this.props.system ? this.props.system : {};
         const item = this.props.course && this.props.course.item ? this.props.course.item : {};
         const backRoute = `/user/course/${item._id}`;
+        const header = <>
+            <FormCheckbox ref={e => this.course = e} style={{paddingRight: '12px'}} onChange={value => this.onFilterType(value)} label='Lịch đang chờ duyệt' />
+        </>;
         return this.renderPage({
             icon: 'fa fa-list-alt',
             title: 'Danh sách lịch học học viên đăng ký: ' + item.name,
+            header: header,
             breadcrumb: [<Link key={0} to='/user/course'>Khóa học</Link>, item._id ? <Link key={0} to={backRoute}>{item.name}</Link> : '', 'Lịch nghỉ'],
             content: (
                 <div className='tile'>
@@ -47,7 +56,7 @@ export class LecturerRegisterCalendarPage extends AdminPage {
                                 <button style={{border: 'none', outline: 'none', backgroundColor: calendar ? '#2189CF' : ''}} onClick={() =>this.setState({ key: !key, calendar: true, list: false, filterOn: false})}><i className='fa fa-calendar'></i> Lịch</button>
                             </div>
                         </div>
-                        {item && item._id ? <LecturerView key={key} official={false} courseId={item._id} lecturerId={user && user._id} filterOn={filterOn} calendar={calendar} list={list} lecturerName={user && user.lastname + ' ' + user.firstname}/> : null}
+                        {item && item._id ? <LecturerView key={key} official={false} courseId={item._id} lecturerId={user && user._id} filterOn={filterOn} filterType={filterType} calendar={calendar} list={list} lecturerName={user && user.lastname + ' ' + user.firstname}/> : null}
                     </div>
                 </div>),
             backRoute,

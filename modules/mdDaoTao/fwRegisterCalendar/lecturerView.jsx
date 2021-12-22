@@ -116,7 +116,7 @@ class LecturerView extends AdminPage {
     componentDidMount() {
         const user = this.props.system ? this.props.system.user : null,
             { isLecturer, isCourseAdmin } = user;
-        const { courseId, lecturerId, filterOn } = this.props;
+        const { courseId, lecturerId, filterOn, filterType } = this.props;
         const course = this.props.course ? this.props.course.item : null;
 
         if (!course) {
@@ -128,8 +128,8 @@ class LecturerView extends AdminPage {
             });
         }
         if (courseId && lecturerId) {
-            this.setState({ courseId, lecturerId, isLecturer, isCourseAdmin, filterOn });
-            this.props.getRegisterCalendarPageByAdmin(undefined, undefined, { courseId: courseId, lecturerId: lecturerId, filterOn: filterOn});
+            this.setState({ courseId, lecturerId, isLecturer, isCourseAdmin });
+            this.props.getRegisterCalendarPageByAdmin(undefined, undefined, { courseId, lecturerId, filterOn, filterType});
         }
 
         const _this = this;
@@ -182,7 +182,6 @@ class LecturerView extends AdminPage {
     }
 
     getEventObject = (currentEnvent = {}, newItem) => {
-
         function formatTime(item){
             return ('0' + item).slice(-2);
         }
@@ -204,7 +203,7 @@ class LecturerView extends AdminPage {
     }
     
     getData = (done) => {
-        this.props.getAllRegisterCalendars({ courseId: this.props.courseId, lecturerId: this.props.lecturerId, filterOn: this.props.filterOn }, list => {
+        this.props.getAllRegisterCalendars({ courseId: this.props.courseId, lecturerId: this.props.lecturerId, filterOn: this.props.filterOn, filterType: this.props.filterType }, list => {
            done && done(list);
         });
     }
@@ -215,7 +214,7 @@ class LecturerView extends AdminPage {
     }
 
     onModalFormSave = (_id, data, done) => {
-        _id ? this.props.updateRegisterCalendarByAdmin(_id, data, {courseId: this.props.courseId, lecturerId: this.props.lecturerId, filterOn: this.props.filterOn}, item => {
+        _id ? this.props.updateRegisterCalendarByAdmin(_id, data, {courseId: this.props.courseId, lecturerId: this.props.lecturerId, filterOn: this.props.filterOn, filterType: this.props.filterType }, item => {
             done && done();
             if (this.eventSelect) {
                 const eventSelect = this.getEventObject(this.eventSelect, item);
@@ -223,7 +222,7 @@ class LecturerView extends AdminPage {
                 $(this.calendar).fullCalendar('renderEvent', eventSelect);
                 this.eventSelect = null;
             }
-        }) : this.props.createRegisterCalendarByAdmin(data, {courseId: this.props.courseId, lecturerId: this.props.lecturerId, filterOn: this.props.filterOn}, data => {
+        }) : this.props.createRegisterCalendarByAdmin(data, {courseId: this.props.courseId, lecturerId: this.props.lecturerId, filterOn: this.props.filterOn, filterType: this.props.filterType }, data => {
             done && done();
             const newEvent = this.getEventObject({}, data);
             $(this.calendar).fullCalendar('renderEvent', newEvent);
@@ -236,10 +235,10 @@ class LecturerView extends AdminPage {
         this.modalCourseAdmin.show(data);
     }
 
-    updateState = (item, state) => this.props.updateRegisterCalendarByAdmin(item._id, { state }, {courseId: this.props.courseId, lecturerId: this.props.lecturerId, filterOn: this.props.filterOn});
+    updateState = (item, state) => this.props.updateRegisterCalendarByAdmin(item._id, { state }, {courseId: this.props.courseId, lecturerId: this.props.lecturerId, filterOn: this.props.filterOn, filterType: this.props.filterType });
 
     deleteCalendar = (_id) => {
-        this.props.deleteRegisterCalendarByAdmin(_id, {courseId: this.props.courseId, lecturerId: this.props.lecturerId, filterOn: this.props.filterOn});
+        this.props.deleteRegisterCalendarByAdmin(_id, { courseId: this.props.courseId, lecturerId: this.props.lecturerId, filterOn: this.props.filterOn, filterType: this.props.filterType });
         if (this.eventSelect) {
             $(this.calendar).fullCalendar('removeEvents', [this.eventSelect._id]);
             this.eventSelect = null;
@@ -247,9 +246,9 @@ class LecturerView extends AdminPage {
     }
     
     delete = (e, item) => e.preventDefault() || T.confirm('Xoá lịch dạy biểu', 'Bạn có chắc muốn xoá lịch dạy này?', true, isConfirm =>
-        isConfirm && this.props.deleteRegisterCalendarByAdmin(item._id, {courseId: this.props.courseId, lecturerId: this.props.lecturerId, filterOn: this.props.filterOn} ));
+        isConfirm && this.props.deleteRegisterCalendarByAdmin(item._id, { courseId: this.props.courseId, lecturerId: this.props.lecturerId, filterOn: this.props.filterOn, filterType: this.props.filterType } ));
         
-    getPage = (pageNumber, pageSize) => this.props.getRegisterCalendarPageByAdmin(pageNumber, pageSize, { courseId: this.props.courseId, lecturerId: this.props.lecturerId, filterOn: this.props.filterOn });
+    getPage = (pageNumber, pageSize) => this.props.getRegisterCalendarPageByAdmin(pageNumber, pageSize, { courseId: this.props.courseId, lecturerId: this.props.lecturerId, filterOn: this.props.filterOn, filterType: this.props.filterType });
 
     render() {
         const courseItem = this.props.course && this.props.course.item ? this.props.course.item : {};
@@ -299,7 +298,7 @@ class LecturerView extends AdminPage {
                     <div id='calendar' ref={e => this.calendar = e}></div>
                     : null} 
                 </div>
-                <RegisterCalendarModal ref={e => this.modalCourseAdmin = e} readOnly={false} isCourseAdmin={this.state.isCourseAdmin} isLecturer={this.state.isLecturer} courseItem={courseItem} courseId={this.props.courseId} lecturerId={this.props.lecturerId} filterOn={this.props.filterOn} calendar={this.props.calendar} lecturerName={this.props.lecturerName}
+                <RegisterCalendarModal ref={e => this.modalCourseAdmin = e} readOnly={false} isCourseAdmin={this.state.isCourseAdmin} isLecturer={this.state.isLecturer} courseItem={courseItem} courseId={this.props.courseId} lecturerId={this.props.lecturerId} filterOn={this.props.filterOn} filterType={this.props.filterType} calendar={this.props.calendar} lecturerName={this.props.lecturerName}
                     create={this.props.createRegisterCalendarByAdmin} update={this.props.updateRegisterCalendarByAdmin} delete={this.deleteCalendar} getPage={this.props.getRegisterCalendarPageByAdmin} getRegisterCalendarOfLecturer={this.props.getRegisterCalendarOfLecturer} onSave={this.onModalFormSave}  /> 
                  <Pagination name='pageRegisterCalendar' pageNumber={pageNumber} pageSize={pageSize} pageTotal={pageTotal} totalItem={totalItem} style={{ left: 320 }}
                         getPage={this.getPage} />

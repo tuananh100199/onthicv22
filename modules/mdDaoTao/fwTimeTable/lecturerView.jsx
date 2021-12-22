@@ -328,7 +328,7 @@ class LecturerView extends AdminPage {
     }
     
     getData = (done) => {
-        this.props.getTimeTableOfLecturer({ courseId: this.props.courseId, lecturerId: this.props.lecturerId, official: this.props.official }, data => {
+        this.props.getTimeTableOfLecturer({ courseId: this.props.courseId, lecturerId: this.props.lecturerId, official: this.props.official, filterType: this.props.filterType }, data => {
            done && done(data.items);
         });
     }
@@ -347,7 +347,7 @@ class LecturerView extends AdminPage {
                 $(this.calendar).fullCalendar('renderEvent', eventSelect);
                 this.eventSelect = null;
             }
-        }) : this.props.createTimeTableByAdmin(data, {courseId: this.props.courseId, lecturerId: this.props.lecturerId, filterOn: this.props.filterOn, official: this.props.official}, data => {
+        }) : this.props.createTimeTableByAdmin(data, {courseId: this.props.courseId, lecturerId: this.props.lecturerId, filterOn: this.props.filterOn, filterType: this.props.filterType, official: this.props.official}, data => {
             done && done();
             const newEvent = this.getEventObject({}, data);
             $(this.calendar).fullCalendar('renderEvent', newEvent);
@@ -361,7 +361,7 @@ class LecturerView extends AdminPage {
     }
 
     deleteCalendar = (_id) => {
-        this.props.deleteTimeTableByAdmin(_id, {courseId: this.props.courseId, lecturerId: this.props.lecturerId, filterOn: this.props.filterOn});
+        this.props.deleteTimeTableByAdmin(_id, {courseId: this.props.courseId, lecturerId: this.props.lecturerId, filterOn: this.props.filterOn, filterType: this.props.filterType});
         if (this.eventSelect) {
             $(this.calendar).fullCalendar('removeEvents', [this.eventSelect._id]);
             this.eventSelect = null;
@@ -371,16 +371,16 @@ class LecturerView extends AdminPage {
     updateState = (item, state) => this.updateTimeTable(item._id, { state });
     
     delete = (e, item) => e.preventDefault() || T.confirm('Xoá thời khóa biểu', 'Bạn có chắc muốn xoá thời khóa biểu này?', true, isConfirm =>
-        isConfirm && this.props.deleteTimeTableByAdmin(item._id, {courseId: this.props.courseId, lecturerId: this.props.lecturerId, filterOn: this.props.filterOn, official: this.props.official} ));
+        isConfirm && this.props.deleteTimeTableByAdmin(item._id, {courseId: this.props.courseId, lecturerId: this.props.lecturerId, filterOn: this.props.filterOn, official: this.props.official, filterType: this.props.filterType } ));
         
     getPage = (pageNumber, pageSize) => this.getTimeTablePage(pageNumber, pageSize);
 
     getTimeTablePage = (pageNumber, pageSize) => {
-        this.props.getTimeTablePageByAdmin(pageNumber, pageSize, { courseId: this.props.courseId, lecturerId: this.props.lecturerId, filterOn: this.props.filterOn, official: this.props.official });
+        this.props.getTimeTablePageByAdmin(pageNumber, pageSize, { courseId: this.props.courseId, lecturerId: this.props.lecturerId, filterOn: this.props.filterOn, official: this.props.official, filterType: this.props.filterType });
     }
 
     updateTimeTable = (_id, data, done) => {
-        this.props.updateTimeTableByAdmin(_id, data, { courseId: this.props.courseId, lecturerId: this.props.lecturerId, filterOn: this.props.filterOn, official: this.props.official }, item => {
+        this.props.updateTimeTableByAdmin(_id, data, { courseId: this.props.courseId, lecturerId: this.props.lecturerId, filterOn: this.props.filterOn, official: this.props.official, filterType: this.props.filterType }, item => {
             done && done(item);
         });
     }

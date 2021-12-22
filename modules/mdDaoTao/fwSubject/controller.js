@@ -5,7 +5,7 @@ module.exports = (app) => {
             4020: { title: 'Môn học', link: '/user/dao-tao/mon-hoc' },
         },
     };
-    app.permission.add({ name: 'subject:read' }, { name: 'subject:write', menu }, { name: 'subject:delete' });
+    app.permission.add({ name: 'subject:read' }, { name: 'subject:write' }, { name: 'subject:delete' }, {name: 'subject:view', menu});
 
     app.get('/user/dao-tao', app.permission.check('subject:read'), app.templates.admin);
     app.get('/user/dao-tao/mon-hoc', app.permission.check('subject:read'), app.templates.admin);
@@ -256,7 +256,7 @@ module.exports = (app) => {
 
     // Hook permissionHooks  ------------------------------------------------------------------------------------------
     app.permissionHooks.add('courseAdmin', 'subject', (user) => new Promise(resolve => {
-        app.permissionHooks.pushUserPermission(user, 'subject:read');
+        app.permissionHooks.pushUserPermission(user, 'subject:read', 'subject:view');
         resolve();
     }));
     app.permissionHooks.add('lecturer', 'subject', (user) => new Promise(resolve => {

@@ -1,14 +1,15 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { AdminPage, FormTabs } from 'view/component/AdminPage';
-import { getAdminChatByStudent } from './redux';
+import { getAdminChatByStudent, getChatByAdmin,getUserChats } from './redux';
 import UserAllChat from './userAllChat';
 import UserPersonalChat from './userPersonalChat';
 import AdminAllChat from './adminAllChat';
+// import LecturerPersonalChat from './lecturerPersonalChat';
 import AdminPersonalChat from './adminPersonalChat';
 
 class ChatPage extends AdminPage {
-    state = { userChat: false };
+    state = { userChat: false, adminChat:false };
     componentDidMount() {
         const route = T.routeMatcher('/user/chat/:_id'),
             _id = route.parse(window.location.pathname)._id;
@@ -17,14 +18,15 @@ class ChatPage extends AdminPage {
         if (_id) {
             if (sessionUser.isCourseAdmin || sessionUser.isLecturer) {
                 T.ready('/user/course');
+                this.props.getChatByAdmin(_id, data => {
+                    if(data && data.item && data.item.length) this.setState({ adminChat: true });
+                    else this.setState({ adminChat: false });
+                });
             } else {
                 T.ready('/user/hoc-vien/khoa-hoc/' + _id);
                 this.props.getAdminChatByStudent(_id, data => {
-                    if (data.item && data.item._id) {
-                        this.setState({ userChat: true });
-                    } else {
-                        this.setState({ userChat: false });
-                    }
+                    if (data.item && data.item._id) this.setState({ userChat: true }); 
+                    else this.setState({ userChat: false });
                 });
             }
         } else {
@@ -35,11 +37,12 @@ class ChatPage extends AdminPage {
     render() {
         const sessionUser = this.props.system.user,
             isAdmin = sessionUser.isCourseAdmin || sessionUser.isLecturer,
-            userChat = this.state.userChat;
+            {userChat, adminChat} = this.state;
         const adminTabs = [
             { title: 'Phòng chat chung', component: <AdminAllChat /> },
-            sessionUser.isLecturer && { title: 'Phòng chat cá nhân', component: <AdminPersonalChat /> },
         ];
+        if(adminChat && sessionUser.isLecturer) adminTabs.push({ title: 'Phòng chat cá nhân', component: <AdminPersonalChat /> });
+        if(adminChat && sessionUser.isCourseAdmin) adminTabs.push({ title: 'Phòng chat cá nhân', component: <AdminPersonalChat /> });
         const userTabs = [
             { title: 'Phòng chat chung', component: <UserAllChat /> },
         ];
@@ -56,5 +59,5 @@ class ChatPage extends AdminPage {
 }
 
 const mapStateToProps = state => ({ system: state.system, division: state.trainning.division });
-const mapActionsToProps = { getAdminChatByStudent };
+const mapActionsToProps = { getAdminChatByStudent,getChatByAdmin,getUserChats };
 export default connect(mapStateToProps, mapActionsToProps)(ChatPage);

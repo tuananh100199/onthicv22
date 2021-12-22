@@ -93,7 +93,7 @@ class AdminEditPage extends AdminPage {
                                     <div><p>Đã hoàn thành</p>{!monThucHanh && <p> Điểm ôn tập:{((tienDoHocTap[lesson._id].score ?
                                         tienDoHocTap[lesson._id].score : 0) + '/' + Math.min(lesson.numQuestion, Object.keys(tienDoHocTap[lesson._id].answers).length))}
                                         {(tienDoHocTap[lesson._id].diemTB && tienDoHocTap[lesson._id].diemTB >= 0.5) ? ' (Đạt)' : ' (Chưa đạt)'}</p>}</div>
-                                    : ((lesson.questions.length && !monThucHanh) ? <p>Chưa hoàn thành</p> : (monThucHanh ? (tienDoHocTap && tienDoHocTap[lesson._id] && tienDoHocTap[lesson._id].view ? <p>Đã hoàn thành</p> : <p>Chưa hoàn thành</p>) : <p>Đã hoàn thành</p>))}
+                                    : ((lesson.questions.length && !monThucHanh) ? <p>Chưa hoàn thành</p> : ((tienDoHocTap && tienDoHocTap[lesson._id] && tienDoHocTap[lesson._id].view ? <p>Đã hoàn thành</p> : <p>Chưa hoàn thành</p>)))}
                             </div>
                         </div>);
                         const show = (
@@ -126,13 +126,13 @@ class AdminEditPage extends AdminPage {
                                         <i className='icon fa fa-3x fa-pencil-square-o' />
                                         <div className='info'>
                                             <h4>Thi hết môn</h4>
-                                            {tienDoThiHetMon ? <p>Điểm: {diemThiHetMon + ' (' + ((diemThiHetMon > 5) ? 'Đạt) ' : 'Không đạt) ')}</p> : null}
+                                            {tienDoThiHetMon ? <p>Điểm: {diemThiHetMon + ' (' + ((diemThiHetMon >= 5) ? 'Đạt) ' : 'Không đạt) ')}</p> : null}
                                         </div>
                                     </div>
                                 </Link>
                             </>}
                         </> :
-                        monThucHanh && <>
+                        !monThucHanh && <>
                             <h4 style={{ width: '100%' }}>Thi hết môn</h4>
                             <Link className='col-md-6' onClick={() => T.alert('Vui lòng hoàn thành tất cả các bài học trước khi thi hết môn!', 'error', false, 8000)} >
                                 <div className={'widget-small coloured-icon secondary'} >

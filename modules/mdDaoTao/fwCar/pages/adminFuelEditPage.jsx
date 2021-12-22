@@ -88,9 +88,7 @@ class CarFuelPage extends AdminPage {
             list = car && car.fuel && car.fuel.sort((a, b) => new Date(b.date) - new Date(a.date));
         let total = 0;
         if (list && list.length) {
-            console.log(list);
             for (let i = 0; i < list.length; i++) {
-                console.log(list[i].quantity);
                 total += list[i].quantity;
             }
         }

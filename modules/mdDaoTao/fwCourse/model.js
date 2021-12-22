@@ -1,6 +1,6 @@
 module.exports = app => {
     const schema = app.db.Schema({
-        name: String,                                                       // Tên lớp
+        name: String,                                                       // Tên khóa học
         shortDescription: String,                                           // Giới thiệu ngắn khóa học
         detailDescription: String,                                          // Chi tiết khóa học
         courseType: { type: app.db.Schema.ObjectId, ref: 'CourseType' },    // Loại khóa học

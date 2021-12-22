@@ -1,8 +1,14 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { login } from 'modules/_default/_init/redux';
+import { homegetLoginForm } from './redux/reduxLoginForm';
 
 class SectionLoginForm extends React.Component {
+    state = {};
+    componentDidMount() {
+        this.props.viewId && this.props.homegetLoginForm(this.props.viewId, data => this.setState(data));
+    }
+
     onLogin = (e) => {
         e.preventDefault();
         const data = {
@@ -12,9 +18,10 @@ class SectionLoginForm extends React.Component {
 
         if (data.username !== '' && data.password !== '') {
             this.props.login(data, result => {
-                this.errorMessage.innerHTML = result.error;
+                if (result.error) {
+                    this.errorMessage.innerHTML = result.error;
+                }
                 if (result.user) {
-                    $(this.modal.current).modal('hide');
                     window.location = '/user';
                 }
             });
@@ -24,38 +31,57 @@ class SectionLoginForm extends React.Component {
     }
 
     render() {
+        const { item } = this.state;
         const user = this.props.system && this.props.system.user;
         return (
-            <div className='intro'>
+        <>
+            { !user ?
+            <div className='intro login_form'>
                 <div className='intro_col'>
-                    <div className='intro_form_container'>
-                        <div className='intro_form_title'>Hệ thống đào tạo trực tuyến
-                            HIỆP PHÁT
-                        </div>
-                        <p>Hệ thống hỗ trợ công tác đào tạo, hỗ trợ giảng dạy - học và đánh giá, kiểm tra trực tuyến dành riêng cho các Học viên Đào tạo và sát hạch lái xe B1, B2 và C.</p>
-                        {user ?
-                            <>
-                                <p>Xin chào {user.lastname + ' ' + user.firstname}!</p>
-                                <a href='/user' className='button button_1 intro_button trans_200'>Trang cá nhân</a>
-                            </> :
-                            <form action='#' className='intro_form' id='intro_form' onSubmit={this.onLogin}>
-                                <div className='d-flex flex-row align-items-start justify-content-between flex-wrap'>
-                                    <p style={{ width: '100%', padding: '0 8px', margin: 0 }}>CMND/CCCD:
-                                        <input id='username' type='text' onKeyPress={e => (!/[0-9]/.test(e.key)) && e.preventDefault()} className='intro_input w-100' placeholder='CMND/CCCD' ref={e => this.username = e} />
-                                    </p>
-                                    <p style={{ width: '100%', padding: '0 8px', margin: 0 }}>Mật khẩu<br />
-                                        <input id='password' type='text' className='intro_input w-100' placeholder='Mật khẩu' ref={e => this.password = e} />
-                                    </p>
+                    <div className='intro_form_login'>
+                        {item ? 
+                            <div className='row'>
+                                <div className='col-md-7' style={{ width: '100%'}}>
+                                    <div className='wrap_image'>
+                                        <img src={item.image} style={{ width: '100%', objectFit: 'contain' }} alt='Image' />                                        
+                                    </div>
                                 </div>
-                                <button className='button button_1 intro_button trans_200'>Đăng nhập</button>
-                            </form>}
+                                <div className='col-md-5'>
+                                    <div className='wrap_form'>
+                                        <div className='form_title'>
+                                            {item.title}
+                                        </div>
+                                        <p className='content'>{item.content}</p>
+                                        <form action='#' className='intro_form' id='intro_form' onSubmit={this.onLogin}>
+                                            <div className='d-flex flex-row align-items-start justify-content-between flex-wrap'>
+                                                <div style={{ width: '100%', padding: '0 8px', margin: 0 }} className='wrap-box'>
+                                                    <div className='wrap_icon'>
+                                                        <i className='fa fa-user' aria-hidden='true' />
+                                                    </div>
+                                                    <input id='username' type='text' onKeyPress={e => (!/[0-9]/.test(e.key)) && e.preventDefault()} placeholder='Tên đăng nhập' ref={e => this.username = e} />
+                                                </div>
+                                                <div style={{ width: '100%', padding: '0 8px', margin: 0 }} className='wrap-box' >
+                                                    <div className='wrap_icon'>
+                                                        <i className='fa fa-lock' aria-hidden='true' />
+                                                    </div>
+                                                    <input id='password' type='text' placeholder='Mật khẩu' ref={e => this.password = e} />
+                                                </div>
+                                            </div>
+                                            <p ref={e => this.errorMessage = e} className='text-danger text-center'></p>
+                                            <button className='button button_1 intro_button trans_200' style={{ marginTop: '20px'}}>Đăng nhập</button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div> 
+                        : null}
                     </div>
                 </div>
-            </div>
+            </div> : <div style={{ paddingTop: '80px'}}/>}
+        </>
         );
     }
 }
 
 const mapStateToProps = state => ({ system: state.system });
-const mapActionsToProps = { login };
+const mapActionsToProps = { login, homegetLoginForm };
 export default connect(mapStateToProps, mapActionsToProps)(SectionLoginForm);

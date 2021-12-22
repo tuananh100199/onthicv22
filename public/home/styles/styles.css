@@ -309,7 +309,7 @@ section {
 }
 
 .button_1 {
-    background: #fd556d;
+    background: #199d76;
     border: solid 2px transparent;
 }
 
@@ -319,11 +319,11 @@ section {
 
 .button_1:hover {
     background: transparent;
-    border: solid 2px #fd556d;
+    border: solid 2px #199d76;
 }
 
 .button_1:hover a {
-    color: #fd556d;
+    color: #199d76;
 }
 
 .button_2 {

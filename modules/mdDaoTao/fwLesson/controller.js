@@ -5,7 +5,7 @@ module.exports = (app) => {
             4030: { title: 'Bài học', link: '/user/dao-tao/bai-hoc' },
         },
     };
-    app.permission.add({ name: 'lesson:read' }, { name: 'lesson:write', menu }, { name: 'lesson:delete' });
+    app.permission.add({ name: 'lesson:read' }, { name: 'lesson:write' }, { name: 'lesson:delete' }, {name: 'lesson:view', menu});
 
     app.get('/user/dao-tao/bai-hoc', app.permission.check('lesson:read'), app.templates.admin);
     app.get('/user/dao-tao/bai-hoc/:_id', app.permission.check('lesson:read'), app.templates.admin);
@@ -231,6 +231,20 @@ module.exports = (app) => {
         });
     });
 
+    app.post('/api/lesson/viewVideo', app.permission.check('user:login'), (req, res) => {
+        const { courseId, subjectId, lessonId, viewVideo } = req.body;
+        app.model.student.get({ user: req.session.user._id, course: courseId }, (error, student) => {
+            if (error) {
+                res.send({ error });
+            } else {
+                const data = { studentId: student._id, subjectId, lessonId, viewVideo };
+                app.model.student.updateLearningProgress(data, (error, item) => {
+                    res.send({ error, item });
+                });
+            }
+        });
+    });
+
     app.post('/api/lesson/time', app.permission.check('user:login'), (req, res) => {
         const { courseId, subjectId, lessonId, totalSeconds } = req.body;
         app.model.student.get({ user: req.session.user._id, course: courseId }, (error, student) => {
@@ -254,7 +268,7 @@ module.exports = (app) => {
 
     // Hook permissionHooks  ------------------------------------------------------------------------------------------
     app.permissionHooks.add('courseAdmin', 'lession', (user) => new Promise(resolve => {
-        app.permissionHooks.pushUserPermission(user, 'lesson:read');
+        app.permissionHooks.pushUserPermission(user, 'lesson:read','lesson:view');
         resolve();
     }));
 

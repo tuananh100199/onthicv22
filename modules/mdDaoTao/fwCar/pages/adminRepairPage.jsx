@@ -22,7 +22,6 @@ class CarRepairModal extends AdminModal {
             current = list && list[0],
             { dateStart, dateEnd, fee, content } = current || { dateStart: '', dateEnd: '', fee: '', content: '' },
             repairId = current && current._id;
-        console.log(dateStart, dateEnd, fee);
 
         this.itemLicensePlates.value(licensePlates);
         this.itemNgaySuaChua.value(dateStart ? dateStart : new Date());

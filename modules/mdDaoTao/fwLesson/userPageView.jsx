@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { getLessonByStudent, viewLesson, timeLesson } from './redux';
+import { getLessonByStudent, viewLesson, viewVideo, timeLesson } from './redux';
 import { getStudentScore } from '../fwStudent/redux';
 import { getSubjectByStudent } from '../fwSubject/redux';
 import YouTube from 'react-youtube';
@@ -31,6 +31,7 @@ class adminEditPage extends AdminPage {
                     T.notify('Lấy bài học bị lỗi!', 'danger');
                     this.props.history.push('/user');
                 } else if (data.item) {
+                    const lesson = data.item;
                     let totalSeconds = 0;
                     this.props.getSubjectByStudent(params.subjectId, data => {
                         if (data.item && data.item.lessons) {
@@ -46,7 +47,15 @@ class adminEditPage extends AdminPage {
                             this.props.history.push('/user');
                         } else {
                             totalSeconds = (data[params.subjectId] && data[params.subjectId][params._id] && data[params.subjectId][params._id].totalSeconds) ? parseInt(data[params.subjectId][params._id].totalSeconds) : 0;
-                            this.setState({ tienDoHocTap: data[params.subjectId], isView: data[params.subjectId] && data[params.subjectId][params._id] && data[params.subjectId][params._id].view ? data[params.subjectId][params._id].view : 'false' });
+                            const listViewVideo = data[params.subjectId] && data[params.subjectId][params._id] && data[params.subjectId][params._id].viewedVideo ? Object.keys(data[params.subjectId][params._id].viewedVideo) : [];
+                            const isView = data[params.subjectId] && data[params.subjectId][params._id] && data[params.subjectId][params._id].view ? data[params.subjectId][params._id].view : 'false';
+                            setTimeout(() => {
+                                lesson && lesson.videos && lesson.videos.forEach(video => {
+                                    if (!(isView === 'false') || (listViewVideo.findIndex(viewVideo => viewVideo == video._id) != -1))
+                                        $('#' + video._id).text('Đã hoàn thành').css('color', 'green');
+                                });
+                            }, 1000);
+                            this.setState({ tienDoHocTap: data[params.subjectId], isView, listViewVideo });
                         }
                     });
                     let hours = 0;
@@ -93,10 +102,10 @@ class adminEditPage extends AdminPage {
             lesson = this.props.lesson && this.props.lesson.item,
             videos = lesson && lesson.videos ? lesson.videos : [];
         const { lessonId, subjectId, courseId } = this.state;
-        const viewedVideos = this.state.viewedVideos ? this.state.viewedVideos : [];
+        const viewedVideos = this.state.listViewVideo ? this.state.listViewVideo : [];
         if (viewedVideos.findIndex(video => video == videoId) == -1) {
             viewedVideos.push(videoId);
-            this.setState({ viewedVideos });
+            this.setState({ listViewVideo: viewedVideos });
         }
         if (viewedVideos.length == videos.length) {
             this.setState({ isView: true });
@@ -105,19 +114,24 @@ class adminEditPage extends AdminPage {
     }
 
     onStateChange(event, videoId) {
+        const { lessonId, subjectId, courseId, listViewVideo } = this.state;
         const listPlayedVideo = this.state.listPlayedVideo;
         if (event.data == 1) {
-            let time = 0,
-                hours = 0,
-                minutes = 0,
-                seconds = 0;
-            this.intervalVideo = setInterval(() => {
-                time = event.target.getDuration() - event.target.getCurrentTime();
-                hours = parseInt(time / 3600) % 24;
-                minutes = parseInt(time / 60) % 60;
-                seconds = (time % 60).toFixed(0);
-                !(hours == 0 && minutes == 0 && seconds == 0) && $('#' + videoId).text('Thời gian còn lại: ' + (hours < 10 ? '0' + hours : hours) + ':' + (minutes < 10 ? '0' + minutes : minutes) + ':' + (seconds < 10 ? '0' + seconds : seconds));
-            }, 1000);
+            if (listViewVideo && listViewVideo.findIndex(viewedVideo => viewedVideo == videoId) != -1) {
+                $('#' + videoId).text('Đã hoàn thành').css('color', 'green');
+            } else {
+                let time = 0,
+                    hours = 0,
+                    minutes = 0,
+                    seconds = 0;
+                this.intervalVideo = setInterval(() => {
+                    time = event.target.getDuration() - event.target.getCurrentTime();
+                    hours = parseInt(time / 3600) % 24;
+                    minutes = parseInt(time / 60) % 60;
+                    seconds = (time % 60).toFixed(0);
+                    $('#' + videoId).text((hours < 10 ? '0' + hours : hours) + ':' + (minutes < 10 ? '0' + minutes : minutes) + ':' + (seconds < 10 ? '0' + seconds : seconds)).css('color', 'black');
+                }, 1000);
+            }
             listPlayedVideo[videoId] = event;
             this.setState({ listIdPlayedVideo });
             const listIdPlayedVideo = Object.keys(listPlayedVideo);
@@ -128,12 +142,17 @@ class adminEditPage extends AdminPage {
             });
         } else if (event.data == 2 || event.data == 0) {
             clearInterval(this.intervalVideo);
+            if (event.data == 0) {
+                this.props.viewVideo(lessonId, subjectId, courseId, videoId);
+                $('#' + videoId).text('Đã hoàn thành').css('color', 'green');
+            }
+
             this.intervalVideo = null;
         }
     }
 
     render() {
-        const { lessonId, subjectId, title, courseId, tienDoHocTap, isView, monThucHanh, nextLesson } = this.state,
+        const { lessonId, subjectId, title, courseId, tienDoHocTap, isView, listViewVideo, monThucHanh, nextLesson } = this.state,
             lesson = this.props.lesson && this.props.lesson.item,
             videos = lesson && lesson.videos ? lesson.videos : [],
             taiLieuThamKhao = lesson && lesson.taiLieuThamKhao,
@@ -143,7 +162,7 @@ class adminEditPage extends AdminPage {
                 <div key={index} className=' pb-5'>
                     <div className='d-flex justify-content-center'>
                         <div className='embed-responsive embed-responsive-16by9' style={{ width: '70%', display: 'block' }} >
-                            <YouTube opts={{ playerVars: { 'autoplay': 0, 'controls': (!(isView === 'false')) ? 1 : 0, 'rel': 0, 'modestbranding': 1, 'showinfo': 0 } }} videoId={video.link} containerClassName='embed embed-youtube' onEnd={(e) => this.onEnd(e)} onStateChange={(e) => this.onStateChange(e, video._id)} />
+                            <YouTube opts={{ playerVars: { 'autoplay': 0, 'controls': ((listViewVideo && (listViewVideo.findIndex(viewVideo => viewVideo == video._id) != -1)) || !(isView === 'false')) ? 1 : 0, 'rel': 0, 'modestbranding': 1, 'showinfo': 0 } }} videoId={video.link} containerClassName='embed embed-youtube' onEnd={(e) => this.onEnd(e)} onStateChange={(e) => this.onStateChange(e, video._id)} />
                         </div>
                     </div>
                     <p id={video._id} className='text-center' ></p>
@@ -181,7 +200,7 @@ class adminEditPage extends AdminPage {
                                 </div> :
                                 (!(isView === 'false') ?
                                     <Link to={'/user/hoc-vien/khoa-hoc/' + courseId + '/mon-hoc/' + subjectId + '/bai-hoc/cau-hoi/' + lessonId} className='btn btn-warning'>Câu hỏi ôn tập</Link>
-                                    : <button className='btn btn-secondary' onClick={() => T.alert('Thời gian học của bạn chưa đạt yêu cầu để làm bài ôn tập này!', 'error', false, 8000)}>Câu hỏi ôn tập</button>)}
+                                    : <button className='btn btn-secondary' onClick={() => T.alert('Bạn vui lòng hoàn thành các bài học để được mở khoá!', 'error', false, 8000)}>Câu hỏi ôn tập</button>)}
                         </div>
                     </div>
                     <div className='tile-footer' >
@@ -206,5 +225,5 @@ class adminEditPage extends AdminPage {
 }
 
 const mapStateToProps = state => ({ system: state.system, lesson: state.trainning.lesson, rate: state.framework.rate });
-const mapActionsToProps = { getLessonByStudent, getStudentScore, viewLesson, timeLesson, getSubjectByStudent };
+const mapActionsToProps = { getLessonByStudent, getStudentScore, viewLesson, timeLesson, getSubjectByStudent, viewVideo };
 export default connect(mapStateToProps, mapActionsToProps)(adminEditPage);
