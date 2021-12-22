@@ -30,12 +30,11 @@ class SettingsPage extends AdminPage {
         e.preventDefault;
         const imageSrc = this.webcam.getScreenshot();
         this.setState({imageSrc}, async () => {
-            await faceApi.nets.tinyFaceDetector.load('/models/');
-            const options = new faceApi.TinyFaceDetectorOptions({
+            await faceApi.nets.ssdMobilenetv1.load('/models/');
+            const options = new faceApi.SsdMobilenetv1Options({
                 inputSize: 512,
                 scoreThreshold: 0.5
             });
-            
             const result = await faceApi.detectSingleFace('img', options);
             if(result) $('#result').text('Đã phát hiện khuôn mặt');
             else $('#result').text('Không phát hiện khuôn mặt');

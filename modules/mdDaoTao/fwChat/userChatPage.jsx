@@ -41,8 +41,7 @@ class ChatPage extends AdminPage {
         const adminTabs = [
             { title: 'Phòng chat chung', component: <AdminAllChat /> },
         ];
-        if(adminChat && sessionUser.isLecturer) adminTabs.push({ title: 'Phòng chat cá nhân', component: <AdminPersonalChat /> });
-        if(adminChat && sessionUser.isCourseAdmin) adminTabs.push({ title: 'Phòng chat cá nhân', component: <AdminPersonalChat /> });
+        if(adminChat && (sessionUser.isLecturer||sessionUser.isCourseAdmin)) adminTabs.push({ title: 'Phòng chat cá nhân', component: <AdminPersonalChat /> });
         const userTabs = [
             { title: 'Phòng chat chung', component: <UserAllChat /> },
         ];
