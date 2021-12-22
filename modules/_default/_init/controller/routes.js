@@ -350,18 +350,6 @@ module.exports = (app) => {
         });
     });
 
-    // app.get('/api/capture/detect', app.permission.check('user:login'), (req, res) => {
-    //     const img = req.body.img;
-    //     Promise.all([
-    //         faceapi.nets.tinyFaceDetector.loadFromUri('public/document')
-    //     ]).then(() => {
-    //         const detection = faceapi.detectAllFaces(img, 
-    //             new faceapi.TinyFaceDetectorOptions())
-    //             console.log(detection);    
-    //         )
-    //     });
-    // });
-
     // Hook upload images ---------------------------------------------------------------------------------------------------------------------------
     const uploadSettingImage = (fields, files, done) => {
         if (files.SettingImage && files.SettingImage.length > 0) {

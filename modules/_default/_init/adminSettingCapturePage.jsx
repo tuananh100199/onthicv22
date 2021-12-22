@@ -29,7 +29,7 @@ class SettingsPage extends AdminPage {
     capture = (e) => {
         e.preventDefault;
         const imageSrc = this.webcam.getScreenshot();
-        this.setState({imageSrc},async () => {
+        this.setState({imageSrc}, async () => {
             await faceApi.nets.tinyFaceDetector.load('/models/');
             const options = new faceApi.TinyFaceDetectorOptions({
                 inputSize: 512,
@@ -39,9 +39,7 @@ class SettingsPage extends AdminPage {
             const result = await faceApi.detectSingleFace('img', options);
             if(result) $('#result').text('Đã phát hiện khuôn mặt');
             else $('#result').text('Không phát hiện khuôn mặt');
-        });
-        
-        
+        });     
     }
 
     render() {
@@ -80,8 +78,11 @@ class SettingsPage extends AdminPage {
                         />
                     </div>
                     <button className='btn btn-primary text-center' onClick={(e) => this.capture(e)}>Chụp ảnh</button>
-                    {imgSrc && (<img id='img' src={imgSrc}></img>)}
-                    {imgSrc && (<p id='result'></p>)}
+                    <div>
+                        {imgSrc && (<img id='img' src={imgSrc}></img>)}
+                        {imgSrc && (<p id='result'></p>)}
+                    </div>
+                    
                     {/* <ReactPlayer url='https://drive.google.com/file/d/1XWdDkazv6gyQvVd6jA8UD8GIE55eqBeD/preview' /> */}
                     {/* <div className='d-flex justify-content-center'>
                         <div className='embed-responsive embed-responsive-16by9' style={{ width: '70%', display: 'block' }} >
