@@ -80,11 +80,11 @@ class SettingsPage extends AdminPage {
                     </div>
                     <button className='btn btn-primary text-center' onClick={(e) => this.capture(e)}>Chụp ảnh</button>
                     {/* <ReactPlayer url='https://drive.google.com/file/d/1XWdDkazv6gyQvVd6jA8UD8GIE55eqBeD/preview' /> */}
-                    <div className='d-flex justify-content-center'>
+                    {/* <div className='d-flex justify-content-center'>
                         <div className='embed-responsive embed-responsive-16by9' style={{ width: '70%', display: 'block' }} >
                             <iframe width="100%" height="100%" allow="fullscreen" controls="0" src="https://drive.google.com/file/d/1XWdDkazv6gyQvVd6jA8UD8GIE55eqBeD/preview"></iframe>
                         </div>
-                    </div>
+                    </div> */}
                 </div>
 
             </>,
