@@ -29,17 +29,18 @@ class SettingsPage extends AdminPage {
     capture = (e) => {
         e.preventDefault;
         const imageSrc = this.webcam.getScreenshot();
-        this.setState({imageSrc}, async () => {
-            await faceApi.nets.tinyFaceDetector.load('/models/');
-            const options = new faceApi.TinyFaceDetectorOptions({
-                inputSize: 512,
-                scoreThreshold: 0.5
+        this.setState({imageSrc},()=>{
+            faceApi.nets.tinyFaceDetector.load('/models/').then(()=>{
+                const options = new faceApi.TinyFaceDetectorOptions({
+                    inputSize: 512,
+                    scoreThreshold: 0.5
+                });
+                faceApi.detectSingleFace('img', options).then((result)=>{
+                    if(result) $('#result').text('Đã phát hiện khuôn mặt');
+                    else $('#result').text('Không phát hiện khuôn mặt');
+                });
             });
-            
-            const result = await faceApi.detectSingleFace('img', options);
-            if(result) $('#result').text('Đã phát hiện khuôn mặt');
-            else $('#result').text('Không phát hiện khuôn mặt');
-        });     
+        });   
     }
 
     render() {
