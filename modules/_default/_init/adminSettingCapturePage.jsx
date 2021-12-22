@@ -3,19 +3,7 @@ import { connect } from 'react-redux';
 import { getCaptureSetting, updateCaptureSetting } from './redux';
 import { AdminPage, FormTextBox } from 'view/component/AdminPage';
 import Webcam from 'react-webcam';
-// import ReactPlayer from 'react-player';
-// import '@tensorflow/tfjs-node';
-
-// // implements nodejs wrappers for HTMLCanvasElement, HTMLImageElement, ImageData
-// import * as canvas from 'canvas';
-
-// import * as faceapi from 'face-api.js';
-
-// // patch nodejs environment, we need to provide an implementation of
-// // HTMLCanvasElement and HTMLImageElement, additionally an implementation
-// // of ImageData is required, in case you want to use the MTCNN
-// const { Canvas, Image, ImageData } = canvas;
-// faceapi.env.monkeyPatch({ Canvas, Image, ImageData });
+import * as faceapi from 'face-api.js';
 
 class SettingsPage extends AdminPage {
     state = {};
@@ -40,8 +28,14 @@ class SettingsPage extends AdminPage {
 
     capture = (e) => {
         e.preventDefault;
-        const imageSrc = this.webcam.getScreenshot();
-        console.log(imageSrc);
+        // const imageSrc = this.webcam.getScreenshot();
+        Promise.all([
+            faceapi.nets.tinyFaceDetector.loadFromUri('/public/document')
+        ]).then(() => {
+            // const detection = faceapi.detectAllFaces(imageSrc, 
+            //     new faceapi.TinyFaceDetectorOptions());
+            console.log('a');    
+        });
     }
 
     render() {
@@ -80,11 +74,11 @@ class SettingsPage extends AdminPage {
                     </div>
                     <button className='btn btn-primary text-center' onClick={(e) => this.capture(e)}>Chụp ảnh</button>
                     {/* <ReactPlayer url='https://drive.google.com/file/d/1XWdDkazv6gyQvVd6jA8UD8GIE55eqBeD/preview' /> */}
-                    <div className='d-flex justify-content-center'>
+                    {/* <div className='d-flex justify-content-center'>
                         <div className='embed-responsive embed-responsive-16by9' style={{ width: '70%', display: 'block' }} >
                             <iframe width="100%" height="100%" allow="fullscreen" controls="0" src="https://drive.google.com/file/d/1XWdDkazv6gyQvVd6jA8UD8GIE55eqBeD/preview"></iframe>
                         </div>
-                    </div>
+                    </div> */}
                 </div>
 
             </>,
