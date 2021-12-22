@@ -6,7 +6,6 @@ import { getCourse } from '../../fwCourse/redux';
 import LecturerView from '../lecturerView';
 import '../registerCalendar.scss';
 
-
 export class AdminRegisterCalendarPage extends AdminPage {
     state = {};
     componentDidMount() {
@@ -19,7 +18,7 @@ export class AdminRegisterCalendarPage extends AdminPage {
                             this.props.history.push('/user/course/' + params._id);
                         } else if (data.item) {
                             const listLecturer = data.item && data.item.teacherGroups && data.item.teacherGroups.length &&  data.item.teacherGroups.map(group => group.teacher); 
-                            listLecturer && listLecturer.length && this.setState({ currentLecturer: listLecturer[0], listLecturer: listLecturer, filterOn: false, key: listLecturer[0], list: true, calendar: false});
+                            listLecturer && listLecturer.length && this.setState({ currentLecturer: listLecturer[0], listLecturer: listLecturer, filterOn: false, filterType: false, key: listLecturer[0], list: true, calendar: false});
                         }
                     });
             } else {
@@ -33,12 +32,20 @@ export class AdminRegisterCalendarPage extends AdminPage {
         this.forceUpdate();
     }
 
+    onFilterType = (value) => {
+        this.setState({ filterType: value , key: !this.state.key});
+        this.forceUpdate();
+    }
+
     selectLecturer = (lecturer) => {
         this.setState({ currentLecturer: lecturer, key: !this.state.key});
     }
     render() {
-        const { currentLecturer, listLecturer, filterOn, key, calendar, list } = this.state;
+        const { currentLecturer, listLecturer, filterOn, filterType, key, calendar, list } = this.state;
         const item = this.props.course && this.props.course.item ? this.props.course.item : {};
+        const header = <>
+            <FormCheckbox ref={e => this.course = e} style={{paddingRight: '12px'}} onChange={value => this.onFilterType(value)} label='Lịch đang chờ duyệt' />
+        </>;
         const inboxRegisterCalendar = listLecturer && listLecturer.length && listLecturer.map((lecturer, index) => {
             const isSelectedUser = currentLecturer && currentLecturer._id ==  lecturer._id;
             return (
@@ -55,12 +62,13 @@ export class AdminRegisterCalendarPage extends AdminPage {
         return this.renderPage({
             icon: 'fa fa-calendar-plus-o',
             title: 'Lịch nghỉ: ' + item.name,
+            header: header,
             breadcrumb: [<Link key={0} to='/user/course'>Khóa học</Link>, item._id ? <Link key={0} to={backRoute}>{item.name}</Link> : '', 'Lịch nghỉ'],
             content: (
                 <div className='tile'>
                     <div className='tile-body'>
                         <div className='box_time_table row' >
-                            <div className='box_people col-sm-3'>
+                            <div className='box_people col-sm-2'>
                                 <div className='headind_srch'>
                                     <div className='recent_heading'>
                                         <h4>Danh sách giáo viên</h4>
@@ -70,7 +78,7 @@ export class AdminRegisterCalendarPage extends AdminPage {
                                     {inboxRegisterCalendar}
                                 </div>
                             </div>
-                            <div className='col-sm-9' >
+                            <div className='col-sm-10' >
                                 <div className='recent_heading pb-3' style={{ marginBottom: '25px'}}>
                                     <h4 style={{float: 'left'}}>{currentLecturer && currentLecturer.lastname + ' ' + currentLecturer.firstname }</h4>
                                     <div style={{float: 'right', display: 'flex'}}>
@@ -79,7 +87,7 @@ export class AdminRegisterCalendarPage extends AdminPage {
                                         <button style={{border: 'none', outline: 'none', backgroundColor: calendar ? '#2189CF' : ''}} onClick={() =>this.setState({key: !key, calendar: true, list: false, filterOn: false})}><i className='fa fa-calendar'></i> Lịch</button>
                                     </div>
                                 </div>
-                                {currentLecturer && item && item._id ? <LecturerView key={key} courseId={item._id} lecturerId={currentLecturer && currentLecturer._id} filterOn={filterOn} list={list} calendar={calendar} lecturerName={currentLecturer && currentLecturer.lastname + ' ' + currentLecturer.firstname} /> : null}
+                                {currentLecturer && item && item._id ? <LecturerView key={key} courseId={item._id} lecturerId={currentLecturer && currentLecturer._id} filterOn={filterOn} filterType={filterType} list={list} calendar={calendar} lecturerName={currentLecturer && currentLecturer.lastname + ' ' + currentLecturer.firstname} /> : null}
                             </div>
                         </div>
                     </div>

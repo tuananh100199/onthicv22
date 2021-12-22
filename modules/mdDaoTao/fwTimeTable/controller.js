@@ -215,6 +215,9 @@ module.exports = (app) => {
                     let today  = new Date();
                     pageCondition.date = new Date(today.getFullYear(), today.getMonth(), today.getDate());
                 }
+                if (condition.filterType && JSON.parse(condition.filterType)){
+                    pageCondition.state = 'waiting';
+                }
                 if (condition.official && JSON.parse(condition.official)) {
                     pageCondition.state = 'approved';
                 }
@@ -240,6 +243,8 @@ module.exports = (app) => {
                 }
                 if (condition.official && JSON.parse(condition.official)) {
                     lecturerCondition.state = 'approved';
+                } else if (condition.filterType && JSON.parse(condition.filterType)) {
+                    lecturerCondition.state = 'waiting';
                 } else {
                     if (isCourseAdmin) {
                         lecturerCondition.state = { $in: ['approved', 'waiting', 'reject', 'cancel', 'autoCancel' ] };

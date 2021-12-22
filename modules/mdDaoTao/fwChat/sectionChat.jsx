@@ -58,9 +58,9 @@ class SectionChat extends AdminPage {
 
     componentWillUnmount() {
         T.socket.off('chat:send');
-        const { studentId, tongThoiGianChat } = this.state;
+        const { studentId, tongThoiGianChat,user } = this.state;
         clearInterval(window.interval);
-        this.props.updateStudent(studentId, { tongThoiGianChat });
+        user && !(user.isLecturer || user.isCourseAdmin) && this.props.updateStudent(studentId, { tongThoiGianChat });
     }
 
     loadMoreChats = () => { // Scroll on top and load more chats
@@ -104,19 +104,19 @@ class SectionChat extends AdminPage {
         }
     }
 
-    selectUser = (student) => {
-        const studentId = student.user._id;
-        if (this.state._selectedUserId != studentId && this.props.system && this.props.system.user) {
-            this.props.getUserChats(studentId, null, data => {
+    selectUser = (user) => {
+        const userId = user.user ?  user.user._id : user._id;
+        if (this.state._selectedUserId != userId && this.props.system && this.props.system.user) {
+            this.props.getUserChats(userId, null, data => {
                 this.setState({
                     oldMessagePersonal: data.chats,
-                    _selectedUserId: studentId,
+                    _selectedUserId: userId,
                     isLastedChat: data.chats && data.chats.length < 20,
-                    userName: student.lastname + ' ' + student.firstname,
-                    userImage: student.image
+                    userName: user.lastname + ' ' + user.firstname,
+                    userImage: user.image
                 });
             });
-            T.socket.emit('chat:join', { _userId: studentId });
+            T.socket.emit('chat:join', { _userId: userId });
         }
     }
 
@@ -263,7 +263,7 @@ class SectionChat extends AdminPage {
                         <div className='inbox_people col-sm-3'>
                             <div className='headind_srch'>
                                 <div className='recent_heading'>
-                                    <h4>{this.props.type && this.props.type == 'student' ? 'Giáo viên' : 'Học viên'}</h4>
+                                    <h4>{'Liên hệ'}</h4>
                                 </div>
                             </div>
                             <div className='inbox_chat'>

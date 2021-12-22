@@ -9,8 +9,13 @@ module.exports = (app) => {
     // APIs -----------------------------------------------------------------------------------------------------------
 
     app.get('/api/register-calendar/all', app.permission.check('registerCalendar:read'), (req, res) => {
-        const condition = req.query.condition;
-        app.model.registerCalendar.getAll({ lecturer: condition.lecturerId }, (error, list) => res.send({ error, list }));
+        const condition = req.query.condition || {},
+        teacherCondition = {};
+        teacherCondition.lecturer = condition.lecturerId;
+        if (condition.filterType && JSON.parse(condition.filterType)){
+            teacherCondition.state = 'waiting';
+        }
+        app.model.registerCalendar.getAll(teacherCondition, (error, list) => res.send({ error, list }));
     });
 
     app.get('/api/register-calendar', app.permission.check('registerCalendar:read'), (req, res) => {
@@ -59,6 +64,9 @@ module.exports = (app) => {
             if (condition.filterOn && JSON.parse(condition.filterOn)){
                 let today  = new Date();
                 pageCondition.dateOff = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+            }
+            if (condition.filterType && JSON.parse(condition.filterType)){
+                pageCondition.state = 'waiting';
             }
             app.model.registerCalendar.getPage(pageNumber, pageSize, pageCondition, (error, page) =>{
                 res.send({ error, page });
