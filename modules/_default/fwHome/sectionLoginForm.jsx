@@ -36,17 +36,18 @@ class SectionLoginForm extends React.Component {
         return (
         <>
             { !user ?
-            <div className='intro login_form'>
+            <div className='login_form'>
                 <div className='intro_col'>
-                    <div className='intro_form_login'>
-                        {item ? 
+                {item ?  
+                    <div className='intro_form_login' style={{backgroundImage: 'url(' + item.imageBackground + ')', backgroundSize: 'cover'}}>
+                        
                             <div className='row'>
-                                <div className='col-md-7' style={{ width: '100%'}}>
+                                <div className='col-lg-7 col-md-12' style={{ width: '100%'}}>
                                     <div className='wrap_image'>
                                         <img src={item.image} style={{ width: '100%', objectFit: 'contain' }} alt='Image' />                                        
                                     </div>
                                 </div>
-                                <div className='col-md-5'>
+                                <div className='col-lg-5 col-md-12'>
                                     <div className='wrap_form'>
                                         <div className='form_title'>
                                             {item.title}
@@ -64,17 +65,19 @@ class SectionLoginForm extends React.Component {
                                                     <div className='wrap_icon'>
                                                         <i className='fa fa-lock' aria-hidden='true' />
                                                     </div>
-                                                    <input id='password' type='text' placeholder='Mật khẩu' ref={e => this.password = e} />
+                                                    <input id='password' type='password' placeholder='Mật khẩu' ref={e => this.password = e} />
                                                 </div>
                                             </div>
-                                            <p ref={e => this.errorMessage = e} className='text-danger text-center'></p>
-                                            <button className='button button_1 intro_button trans_200' style={{ marginTop: '20px'}}>Đăng nhập</button>
+                                            <p ref={e => this.errorMessage = e} className='text-center' style={{ color: 'white' }}></p>
+                                            <div className='wrap-submit-btn'>
+                                                <button className='login-form-button trans_200'>Đăng nhập</button>
+                                            </div>
                                         </form>
                                     </div>
                                 </div>
                             </div> 
-                        : null}
                     </div>
+                : null}
                 </div>
             </div> : <div style={{ paddingTop: '80px'}}/>}
         </>

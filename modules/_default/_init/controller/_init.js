@@ -52,6 +52,8 @@ module.exports = (app) => {
                     } else {
                         app.deleteImage(item.image); // Xoá hình cũ
                     }
+                    console.log('dataName', dataName);
+
                     if (dataName && dataName.startsWith('gioi-thieu')) {
                         app.fs.rename(srcPath, destPath, (error) => {
                             if (error) {
@@ -61,6 +63,37 @@ module.exports = (app) => {
                                     item.image1 = image + '?t=' + new Date().getTime().toString().slice(-8);
                                     item.save((error) => done({ error, item, image: item.image1 }));
                                 } else if (dataName.startsWith('gioi-thieu2')) {
+                                    item.image2 = image + '?t=' + new Date().getTime().toString().slice(-8);
+                                    item.save((error) => done({ error, item, image: item.image2 }));
+                                } else {
+                                    item.image3 = image + '?t=' + new Date().getTime().toString().slice(-8);
+                                    item.save((error) => done({ error, item, image: item.image3 }));
+                                }
+                            }
+                        });
+                    } else  if (dataName && dataName.startsWith('loginForm')) {
+                        app.fs.rename(srcPath, destPath, (error) => {
+                            if (error) {
+                                done({ error });
+                            } else {
+                                if (dataName.startsWith('loginFormBackground')) {
+                                    item.imageBackground = image + '?t=' + new Date().getTime().toString().slice(-8);
+                                    item.save((error) => done({ error, item, image: item.imageBackground }));
+                                } else {
+                                    item.image = image + '?t=' + new Date().getTime().toString().slice(-8);
+                                    item.save((error) => done({ error, item, image: item.image }));
+                                }
+                            }
+                        });
+                    } else  if (dataName && dataName.startsWith('hang')) {
+                        app.fs.rename(srcPath, destPath, (error) => {
+                            if (error) {
+                                done({ error });
+                            } else {
+                                if (dataName.startsWith('hang1')) {
+                                    item.image1 = image + '?t=' + new Date().getTime().toString().slice(-8);
+                                    item.save((error) => done({ error, item, image: item.image1 }));
+                                } else if (dataName.startsWith('hang2')) {
                                     item.image2 = image + '?t=' + new Date().getTime().toString().slice(-8);
                                     item.save((error) => done({ error, item, image: item.image2 }));
                                 } else {

@@ -309,7 +309,7 @@ section {
 }
 
 .button_1 {
-    background: #199d76;
+    background: white;
     border: solid 2px transparent;
 }
 
@@ -318,7 +318,7 @@ section {
 }
 
 .button_1:hover {
-    background: transparent;
+    background: white;
     border: solid 2px #199d76;
 }
 
@@ -369,7 +369,7 @@ section {
     left: 0;
     width: 100vw;
     z-index: 100;
-    background: #199d76;
+    background: white;
 }
 
 .header_content {
@@ -380,6 +380,7 @@ section {
 }
 
 .header.scrolled .header_content {
+    background-color: #199d76;
     height: 75px;
     box-shadow: 0px 5px 15px rgba(87, 204, 195, 0.15);
 }
@@ -769,9 +770,9 @@ section {
 *********************************/
 
 .intro {
-    background: #FFFFFF;
-    padding-top: 60px;
-    padding-bottom: 91px;
+    /* background: #FFFFFF; */
+    /* padding-top: 60px; */
+    /* padding-bottom: 91px; */
 }
 
 .intro_image {
@@ -1346,6 +1347,7 @@ section {
 
 .team_image {
     width: 100%;
+    border-radius: 25px;
 }
 
 .team_image img {

@@ -1,52 +1,101 @@
 /* ĐẾN VỚI HIỆP PHÁT */
-.warp_den_voi_HP {
+.wrap_den_voi_HP {
     width: 100%;
 }
-.warp_den_voi_HP .wrap_item_den_voi_HP {
+.section_den_voi_hp .strike1 {
+    height: 4px;
     background-color: #199d76;
-    border-radius: 10px;
-    margin-bottom: 30px;
-    height: 200px;
+    margin-left: 45px;
 }
-.warp_den_voi_HP .wrap_item_den_voi_HP:hover {
-    border: 1px solid #199d76;
-    background-color: white;
-    margin-bottom: 30px;
-    height: 200px;
-}
-.warp_den_voi_HP .wrap_item_den_voi_HP .hover_item {
-  display: none;
+.section_den_voi_hp .form_title {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 336px;
+    height: 80px;
+    line-height: 80px;
+    text-align: center;
+    font-size: 24px;
+    font-weight: 600;
+    color: #199d76;
 }
 
-.warp_den_voi_HP .wrap_item_den_voi_HP:hover .item {
-    display: none;
+.wrap_den_voi_HP .wrap_item {
+    background-color: #199d76;
+    /* background-color: white; */
+    border-radius: 20px;
+    margin-bottom: 30px;
+    height: 200px;
 }
-.warp_den_voi_HP .wrap_item_den_voi_HP:hover .hover_item {
-    display: block;
+.wrap_den_voi_HP .wrap_item:hover {
+    border: 1px solid #199d76;
     background-color: white;
+    /* border: 1px solid white;
+    background-color: #199d76; */
+    margin-bottom: 30px;
+    height: 200px;
 }
-.warp_den_voi_HP .wrap_item_den_voi_HP:hover .hover_item .description {
+.wrap_den_voi_HP .wrap_item .detail {
+    background: #199d76;
+    position: absolute;
+    bottom: 0;
+    border-radius: 20px;
+    color: #fff;
+    display: none;
+    height: 100%;
+}
+.wrap_den_voi_HP .wrap_item .detail .description {
     color: #199d76;
+    /* color: white; */
     font-size: 15px;
     line-height: 20px;
     text-align: justify;
     padding: 0 8px;
+    /* display: none; */
 }
-.warp_den_voi_HP .wrap_item_den_voi_HP:hover .hover_item .hover_title_item {
+.wrap_den_voi_HP .wrap_item .detail .hover_title_item {
     color: #199d76;
+    /* color: white; */
     margin-top: 15px;
     font-weight: 700;
     text-align: center;
+    /* display: none; */
 }
 
-.warp_den_voi_HP .wrap_item_den_voi_HP .icon_item_den_voi_HP {
+.wrap_den_voi_HP .wrap_item:hover .item {
+    display: none;
+}
+.wrap_den_voi_HP .wrap_item:hover .detail {
+    display: block;
+    background-color: white;
+    /* background-color: #199d76; */
+    animation-duration: 0.4s;
+    animation-timing-function: ease;
+    animation-delay: 0s;
+    animation-iteration-count: 1;
+    animation-direction: normal;
+    animation-fill-mode: none;
+    animation-play-state: running;
+    /* animation-name: showDetail; */
+}
+
+.wrap_den_voi_HP .wrap_item:hover .detail .description {
+    display: block;
+}
+.wrap_den_voi_HP .wrap_item:hover .detail .hover_title_item {
+    display: block;
+}
+
+.wrap_den_voi_HP .wrap_item .icon_item_den_voi_HP {
     font-size: 100px;
     color: white;
+    /* color: #199d76; */
     text-align: center;
 }
-.warp_den_voi_HP .wrap_item_den_voi_HP .title_item_den_voi_HP {
+.wrap_den_voi_HP .wrap_item .title_item_den_voi_HP {
     font-size: 20px;
     color: white;
+    /* color: #199d76; */
     text-align: center;
 }
 
@@ -55,19 +104,25 @@
     font-size: 20px;
     padding-left: 10px;
     display: grid;
-    background-color: #199d76;
-    height: 60px;
+    background-color: white;
+    height: 75px;
     width: 315px;
-    color: yellow;
+    color: goldenrod;
+    padding-top: 5px;
+}   
+@media (max-width: 768px) {
+    .warp_gioi_thieu_HP .img-gioi-thieu{
+        display: none;
+    } 
 }
 .warp_gioi_thieu_HP .title_gioi_thieu span {
     font-weight: 800;
-    color: white;
+    color: #199d76;
 }
 .warp_gioi_thieu_HP .description {
     margin-top: 20px;
     font-size: 17px;
-    color: #199d76;
+    color: white;
     padding: 8px;
     text-align: justify;
 }
@@ -75,8 +130,12 @@
     font-style: italic;
     color: darkgray;
 }
+.warp_gioi_thieu_HP .description a{
+    font-style: italic;
+    color: black;
+}
 .social_gioi_thieu {
-    border-bottom: 30px solid #199d76;
+    border-bottom: 30px solid white;
     border-right: 20px solid transparent;
     border-left: 0px solid transparent;
     height: 0;
@@ -146,18 +205,18 @@
 }
   
 .img-intro1 {
-    width: 261px;
-    height: 250px;
+    width: 249px;
+    height: 202px;
     z-index: 1;
-    top: -37px;
+    top: 0px;
     left: 10px;
 }
 
 .img-intro2 {
-    width: 300px;
-    height: 250px;
-    top: 0px;
-    left: 270px;
+    width: 293px;
+    height: 204px;
+    top: 11px;
+    left: 242px;
 }
 
 .img-intro3 {
@@ -204,7 +263,7 @@
     margin-top: 5px;
     width: 140px;
     height: 4px;
-    background-color: white;
+    background-color: #199d76;
     margin-left: 90px;
 }
 
@@ -212,14 +271,14 @@
     margin-top: 5px;
     width: 70px;
     height: 2px;
-    background-color: white;
+    background-color: #199d76;
     margin-left: 90px;
 }
 
 .staff_info .staff_name {
     padding-left: 90px;
     padding-top: 50px;
-    color: white;
+    color: #199d76;
     font-size: 15px;
 }
 
@@ -271,7 +330,7 @@
     padding-right: 10%;
 }
 .login_form .intro_form_login {
-    background-color: #199d76;
+    background-color: white;
     width: 100%;
     padding-left: 33px;
     padding-right: 34px;
@@ -286,11 +345,11 @@
 .login_form .form_title{
     font-size: 22px;
     color: white;
-    padding-top: 25px;
-    height: 80px;
     background: #199d76;
     text-align: center;
-    margin-top: 15px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    box-shadow: 0px 0px 10px rgb(0 0 0 / 20%);
 }
 .login_form .content{
     margin-bottom: 15px;
@@ -301,7 +360,7 @@
 }
 .login_form .wrap-box{
     display: flex;
-    color: #199d76;
+    color: white;
     height: 70px;
     width: 100%;
     padding: 0px 8px;
@@ -315,6 +374,7 @@
     border-radius: 50%;
     text-align: center;
     background-color: #199d76;
+    box-shadow: 0px 0px 10px rgb(0 0 0 / 20%);
 }
 
 .login_form .wrap-box i{
@@ -335,7 +395,7 @@
     padding-left: 25px;
     outline: none;
     font-size: 15px;
-    color: #404040;
+    color: #199d76;
     font-weight: 500;
 }
 .login_form .wrap-box input::placeholder {
@@ -346,14 +406,81 @@
     left: -30px;
     width: 120%;
   }
-
-/* Các hạng giấy phép lái xe */
-.intro_hang_GPLX .content p:first-line{
+.login_form .wrap-submit-btn {
+    width: 100%;
+    text-align: center;
+}
+.login_form .wrap-submit-btn .login-form-button {
+    background: #199d76;
+    width: 50%;
+    font-size: 14px;
+    font-weight: 700;
+    color: #FFFFFF;
+    text-transform: uppercase;
+    border: solid 2px transparent;
+    cursor: pointer;
+    height: 35px;
+    border-radius: 20px;
+}
+  /* HẠNG GPLX */
+/* .section_hang_GPLX {
+    background-color: aliceblue;
+} */
+.section_hang_GPLX .intro_hang_GPLX .wrap_GPLX {
+    background-color: #199d76;
+    margin-bottom: 28px;
+    width: 100%;
+    padding-left: 33px;
+    padding-right: 34px;
+    padding-bottom: 15px;
+    padding-top: 85px;
+    box-shadow: 0px 0px 10px rgb(0 0 0 / 20%);
+}
+.section_hang_GPLX .intro_hang_GPLX .wrap_GPLX .title_GPLX{
+    position: absolute; 
+    top: 0; height: 80px; 
+    background: #199d76; 
+    line-height: 80px; 
+    text-align: center; 
+    font-size: 24px; 
+    font-weight: 600; 
+    color: #FFFFFF;
+}
+.section_hang_GPLX .intro_hang_GPLX .wrap_GPLX .wrap_item_GPLX{
+    background-color: white; 
+    border: 1px solid #199d76; 
+    margin: 5px 0;
+}
+.section_hang_GPLX .intro_hang_GPLX .wrap_GPLX .wrap_item_GPLX .img_item{
+    padding: 0;
+    border-right: 3px solid #199d76 
+}
+.section_hang_GPLX .intro_hang_GPLX .wrap_GPLX .wrap_item_GPLX .img_item .title_img{
+    font-weight: bold; 
+    text-align: center; 
+    padding-top: 15px; 
+    color: #199d76;
+}
+.section_hang_GPLX .intro_hang_GPLX .wrap_GPLX .wrap_item_GPLX .img_item .wrap_img{
+    text-align: center;
+}
+.section_hang_GPLX .intro_hang_GPLX .wrap_GPLX .wrap_item_GPLX .img_item .wrap_img img{
+    width: 80px;
+}
+.section_hang_GPLX .intro_hang_GPLX .wrap_GPLX .wrap_item_GPLX .content_item{
+    margin: auto; 
+    padding: 7px; 
+    color: #199d76;
+}
+.section_hang_GPLX .intro_hang_GPLX .wrap_GPLX .wrap_item_GPLX .content_item p{
+    font-size: 12px; 
+    margin: 0px; 
+    line-height: 1.3; 
+    color: #199d76;
+    padding-left: 15px;
+    text-indent: -10px;
+}
+.section_hang_GPLX .intro_hang_GPLX .wrap_GPLX .wrap_item_GPLX .content_item p:first-line{
     text-indent: -36px;
 }
 
-.intro_hang_GPLX .content p{
-    padding-left: 15px;
-    text-indent:-10px;
-}
-   

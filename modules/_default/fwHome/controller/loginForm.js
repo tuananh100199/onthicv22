@@ -4,6 +4,7 @@ module.exports = app => {
     app.get('/api/loginForm/page/:pageNumber/:pageSize', app.permission.check('component:read'), (req, res) => {
         const pageNumber = parseInt(req.params.pageNumber),
             pageSize = parseInt(req.params.pageSize);
+            console.log('ê');
         app.model.loginForm.getPage(pageNumber, pageSize, {}, (error, page) => {
             res.send({ error: error || page == null ? '.loginForm is not ready!' : null, page });
         });
@@ -38,6 +39,7 @@ module.exports = app => {
 
     // Hook upload images ---------------------------------------------------------------------------------------------------------------------------
     app.createFolder(app.path.join(app.publicPath, '/img/loginForm'));
+    app.createFolder(app.path.join(app.publicPath, '/img/loginFormBackground'));
 
     const uploadLoginForm = (fields, files, done) => {
         if (fields.userData && fields.userData[0].startsWith('loginForm:') && files.LoginFormImage && files.LoginFormImage.length > 0) {
@@ -49,5 +51,18 @@ module.exports = app => {
 
     app.uploadHooks.add('uploadLoginFormImage', (req, fields, files, params, done) =>
         app.permission.has(req, () => uploadLoginForm(fields, files, done), done, 'component:write'));
+
+
+    const uploadLoginFormBackground = (fields, files, done) => {
+        if (fields.userData && fields.userData[0].startsWith('loginFormBackground:') && files.LoginFormBackgroundImage && files.LoginFormBackgroundImage.length > 0) {
+            console.log('Hook: uploadLoginForm image => login form background image upload');
+            const _id = fields.userData[0].substring('loginFormBackground:'.length);
+            app.uploadImage('loginFormBackground', app.model.loginForm.get, _id, files.LoginFormBackgroundImage[0].path, done);
+        }
+    };
+
+    app.uploadHooks.add('uploadLoginFormBackgroundImage', (req, fields, files, params, done) =>
+        app.permission.has(req, () => uploadLoginFormBackground(fields, files, done), done, 'component:write'));
+    
 
 };
