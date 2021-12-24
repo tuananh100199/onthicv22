@@ -16,10 +16,30 @@ class Footer extends React.Component {
         const divisionsInside = this.props.division && this.props.division.list ?
             this.props.division.list.filter(division => !division.isOutside)
             : [];
+            console.log('divisionsInside', divisionsInside);
         return (
-            <footer className='footer' style={{ position: 'absolute', bottom: 0, width: '100%' }}>
+            <footer className='footer' id='lienHe' style={{ position: 'absolute', bottom: 0, width: '100%' }}>
                 <div className='footer_content'>
                     <div className='container-fluid'>
+                        {/* <div className='wrapper_footer'>
+                                <div className='wrap-division'>
+                                    <div className='staff_group_title'>
+                                        <h3>{this.state.title}</h3>
+                                        Trung tâm dạy nghề lát xe
+                                        <span>HIEP PHAT</span>
+                                    </div>
+                                    <div className='staff_name' style={{ whiteSpace: 'nowrap' }}><h5>{staff.user.lastname + ' ' + staff.user.firstname}</h5></div>
+                                    <div className='staff_title' style={{ whiteSpace: 'nowrap' }}><h6>{staff.title}</h6></div>
+                                    <div className='text'>
+                                        <blockquote>
+                                            <p>&ldquo;hi&rdquo;</p>
+                                        </blockquote>
+                                    </div> 
+                                </div>
+                                <div className='division-img'>
+                                    <img src={divisionsInside && divisionsInside.length && divisionsInside[0].image} alt='Image' className='img-fluid' />
+                                </div>
+                            </div> */}
                         <div className='row'>
                             <div className='col-lg-5 footer_col'>
                                 <div className='footer_about'>

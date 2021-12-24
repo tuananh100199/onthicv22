@@ -68,6 +68,14 @@ class HomeMenu extends React.Component {
 
     showCandidateModal = (e) => e.preventDefault() || this.candidateModal.show();
 
+    scroll = (link) => {
+        document.getElementById({link}) && document.getElementById('gioiThieu').scrollIntoView({
+            block: 'end',
+            behavior: 'smooth',
+            inline: 'nearest'
+        });
+    }
+
     render() {
         const currentLink = this.state.link || '/';
         let menus = [];
@@ -79,12 +87,14 @@ class HomeMenu extends React.Component {
                     let link = item.link ? item.link.toLowerCase().trim() : '/',
                         isExternalLink = link.startsWith('http://') || link.startsWith('https://');
                     link = item.link ? item.link : '#';
-
                     return (item.submenus && item.submenus.length > 0) ? (
                         <li key={index} className={currentLink == item.link || item.submenus.some(item => item.link == currentLink) ? 'active' : ''}>
-                            {isExternalLink ? <a href={link} target='_blank' rel='noreferrer'>{item.title}</a> : (item.link ?
-                                <Link to={link} onClick={() => this.onMenuClick(link)}>{item.title}</Link> :
-                                <a href='#' onClick={e => e.preventDefault()}>{item.title}</a>)}
+                            {isExternalLink ? <a href={link} target='_blank' rel='noreferrer'>{item.title}</a> : 
+                                (item.link ?
+                                    <Link to={link} onClick={() => this.onMenuClick(link)}>{item.title}</Link> :
+                                    <a href='#' onClick={e => e.preventDefault()}>{item.title}</a>
+                                )
+                            }
                             <ul className='dropdown'>{
                                 item.submenus.map((subMenu, subIndex) => {
                                     const link = subMenu.link ? subMenu.link.toLowerCase().trim() : '/';
@@ -101,7 +111,7 @@ class HomeMenu extends React.Component {
                     ) : (
                         <li key={index} className={currentLink == link ? 'active' : ''}>
                             {isExternalLink ? <a href={link} target='_blank' rel='noreferrer'>{item.title}</a> :
-                                (link.startsWith('#') ? <a href={link}>{item.title}</a> : <Link to={link} onClick={() => this.onMenuClick(link)}>{item.title}  </Link>)}
+                                (link.startsWith('#') ? <a href={link} onClick={() => this.scroll(link)}>{item.title}</a> : <Link to={link} onClick={() => this.onMenuClick(link)}>{item.title}  </Link>)}
                         </li>);
                 }
             });

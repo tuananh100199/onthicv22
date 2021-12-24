@@ -12,9 +12,11 @@ class ComponentModal extends AdminModal {
     }
 
     onShow = ({ parentId, component }) => {
-        const { _id, className, style, viewId, viewType } = component || { _id: null, className: '', style: '', viewId: null, viewType: '<empty>' };
+        console.log('component', component);
+        const { _id, className, style, href, viewId, viewType } = component || { _id: null, className: '', style: '', href: '', viewId: null, viewType: '<empty>' };
         this.itemClassname.value(className);
         this.itemStyle.value(style);
+        this.itemHref.value(href);
         this.itemViewTyle.value(viewType || '<empty>');
 
         this.setState({ _id, parentId, viewId: viewId || '' }, () => viewType && this.viewTypeChanged(viewType));
@@ -39,7 +41,9 @@ class ComponentModal extends AdminModal {
                 viewType: this.itemViewTyle.value(),
                 className: this.itemClassname.value().trim(),
                 style: this.itemStyle.value(),
+                href: this.itemHref.value(),
             };
+            console.log('data', data);
         if (data.style) data.style = data.style.trim();
         if (viewId) data.viewId = viewId;
 
@@ -57,7 +61,7 @@ class ComponentModal extends AdminModal {
             <FormTextBox ref={e => this.itemClassname = e} label='Classname' readOnly={this.props.readOnly} />
             <FormTextBox ref={e => this.itemStyle = e} label='Style' smallText='Ví dụ: <strong>marginTop: 50px; backgroundColor: red</strong> <br/> (Các style cách nhau bởi dấu chấm phẩy &apos;;&apos;)' readOnly={this.props.readOnly} />
             <FormSelect ref={e => this.itemViewTyle = e} label='Loại thành phần' data={this.componentTypes} onChange={data => this.viewTypeChanged(data.id)} readOnly={this.props.readOnly} />
-
+            <FormTextBox ref={e => this.itemHref = e} label='Id của thành phần' smallText='Ví dụ: #dangKyTuVan' readOnly={this.props.readOnly} />
             <FormSelect ref={e => this.itemViewItem = e} label='Tên thành phần' data={this.state.adapter} onChange={data => this.setState({ viewId: data.id })} readOnly={this.props.readOnly}
                 style={{ display: this.state.adapter ? 'block' : 'none' }} />
         </>,
