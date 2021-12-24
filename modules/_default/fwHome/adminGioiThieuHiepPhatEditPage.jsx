@@ -38,7 +38,6 @@ class ContentEditPage extends AdminPage {
 
     render() {
         const permission = this.getUserPermission('component');
-        console.log(this.state.title);
         return this.renderPage({
             icon: 'fa fa-edit',
             title: 'Giới thiệu Hiệp Phát: ' + (this.state.title || '...'),

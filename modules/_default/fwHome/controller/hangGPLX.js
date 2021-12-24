@@ -4,12 +4,7 @@ module.exports = app => {
     app.get('/api/hang-gplx/page/:pageNumber/:pageSize', app.permission.check('component:read'), (req, res) => {
         const pageNumber = parseInt(req.params.pageNumber),
             pageSize = parseInt(req.params.pageSize);
-            console.log('herre123');
-            console.log('pageNumber', pageNumber);
-            console.log('pageSize', pageSize);
-
         app.model.hangGPLX.getPage(pageNumber, pageSize, {}, (error, page) => {
-            console.log('page', page);
             res.send({ error: error || page == null ? 'Content is not ready!' : null, page });
         });
     });

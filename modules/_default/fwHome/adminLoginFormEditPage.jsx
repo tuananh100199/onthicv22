@@ -14,7 +14,6 @@ class LoginFormEditPage extends AdminPage {
                 if (data.error) {
                     this.props.history.push('/user/component');
                 } else if (data.item) {
-                    console.log(data.item);
                     const { _id, title, content, image = '/img/avatar.jpg', imageBackground = '' } = data.item;
                     this.itemTitle.focus();
                     this.itemTitle.value(title);
@@ -36,7 +35,6 @@ class LoginFormEditPage extends AdminPage {
     });
 
     render() {
-        console.log('hi', this.state);
         const permission = this.getUserPermission('component');
         return this.renderPage({
             icon: 'fa fa-edit',

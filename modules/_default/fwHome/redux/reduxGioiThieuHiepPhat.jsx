@@ -33,7 +33,6 @@ export function getGioiThieuAll(done) {
                 T.notify('Lấy bài giới thiệu Hiệp Phát bị lỗi!', 'danger');
                 console.error('GET: ' + url + '. ' + data.error);
             } else {
-                console.log(data);
                 done && done(data.list);
                 dispatch({ type: GioiThieuGetAll, list: data.list ? data.list : [] });
             }

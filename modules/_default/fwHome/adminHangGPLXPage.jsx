@@ -16,7 +16,6 @@ class HangGPLXModal extends AdminModal {
             T.notify('Tên các hạng lái xe bị trống!', 'danger');
             this.itemTitle.focus();
         } else {
-            console.log('title', title);
             this.props.create({ title }, data => {
                 if (data.item) {
                     this.hide();

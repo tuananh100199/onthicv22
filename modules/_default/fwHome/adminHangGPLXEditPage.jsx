@@ -11,7 +11,6 @@ class HangGPLXEditPage extends AdminPage {
             const route = T.routeMatcher('/user/hang-gplx/:_id'),
                 params = route.parse(window.location.pathname);
             this.props.getHangGPLX(params._id, data => {
-                console.log(data);
                 if (data.error) {
                     this.props.history.push('/user/component');
                 } else if (data.item) {
@@ -29,7 +28,6 @@ class HangGPLXEditPage extends AdminPage {
                     this.imageBox3.setData('hang3:' + _id, image3);
                 
                     this.setState({ _id, title, image1, image2, image3 });
-                    console.log('hihi', abstract1.split('\n'));
                 } else {
                     this.props.history.push('/user/component');
                 }
@@ -52,7 +50,6 @@ class HangGPLXEditPage extends AdminPage {
             T.notify('Tên các hạng giấy phép lái xe trống!', 'danger');
             this.itemTitle.focus();
         } else {
-            console.log('this.state._id', this.state._id);
             this.props.updateHangGPLX(this.state._id, changes);
         }
     }

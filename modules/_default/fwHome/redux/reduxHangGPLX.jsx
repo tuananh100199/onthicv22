@@ -33,7 +33,6 @@ export function getHangGPLXAll(done) {
                 T.notify('Lấy hạng giấy phép lái xe bị lỗi!', 'danger');
                 console.error('GET: ' + url + '. ' + data.error);
             } else {
-                console.log(data);
                 done && done(data.list);
                 dispatch({ type: HangGPLXGetAll, list: data.list ? data.list : [] });
             }

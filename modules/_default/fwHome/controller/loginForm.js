@@ -4,7 +4,6 @@ module.exports = app => {
     app.get('/api/loginForm/page/:pageNumber/:pageSize', app.permission.check('component:read'), (req, res) => {
         const pageNumber = parseInt(req.params.pageNumber),
             pageSize = parseInt(req.params.pageSize);
-            console.log('ê');
         app.model.loginForm.getPage(pageNumber, pageSize, {}, (error, page) => {
             res.send({ error: error || page == null ? '.loginForm is not ready!' : null, page });
         });
