@@ -6,7 +6,7 @@ import { Link } from 'react-router-dom';
 import { AdminPage, renderTable, TableCell } from 'view/component/AdminPage';
 import T from 'view/js/common';
 
-class LecturerStudentPage extends AdminPage {
+class AdminCommentPage extends AdminPage {
     state = {};
     componentDidMount() {
         T.ready('/user/course', () => {
@@ -73,4 +73,4 @@ class LecturerStudentPage extends AdminPage {
 
 const mapStateToProps = state => ({ system: state.system, comment: state.framework.comment, course: state.trainning.course });
 const mapActionsToProps = { getCommentWaitingPage, getCourse };
-export default connect(mapStateToProps, mapActionsToProps)(LecturerStudentPage);
+export default connect(mapStateToProps, mapActionsToProps)(AdminCommentPage);

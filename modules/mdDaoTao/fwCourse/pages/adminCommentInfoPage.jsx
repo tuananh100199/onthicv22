@@ -6,7 +6,7 @@ import { getCourse } from '../redux';
 import { Link } from 'react-router-dom';
 import { AdminPage } from 'view/component/AdminPage';
 
-class LecturerStudentPage extends AdminPage {
+class AdminCommentInfoPage extends AdminPage {
     state = {};
     componentDidMount() {
         T.ready('/user/course', () => {
@@ -38,7 +38,6 @@ class LecturerStudentPage extends AdminPage {
     }
 
     render() {
-        // const item = this.props.comment && this.props.comment.page && this.props.comment.page.list ? this.props.comment.page.list  : [];
         const {courseId, lessonId, lessonName} = this.state;
         const course = this.props.course && this.props.course.item ? this.props.course.item : {};
         const backRoute = `/user/course/${course._id}/comment`;
@@ -58,4 +57,4 @@ class LecturerStudentPage extends AdminPage {
 
 const mapStateToProps = state => ({ system: state.system, comment: state.framework.comment, course: state.trainning.course });
 const mapActionsToProps = { getCommentLessonId, getCourse };
-export default connect(mapStateToProps, mapActionsToProps)(LecturerStudentPage);
+export default connect(mapStateToProps, mapActionsToProps)(AdminCommentInfoPage);
