@@ -15,7 +15,8 @@ class LecturerStudentPage extends AdminPage {
                 const course = this.props.course ? this.props.course.item : null;
                 if (course) {
                     this.props.getCommentLessonId(params._id, data =>{
-                        if(data && data.lessonId) this.setState({courseId: course._id, lessonId: data.lessonId});
+                        if(data && data.lessonId) this.setState({courseId: course._id, lessonId: data.lessonId, lessonName: data.lessonName});
+                        else this.props.history.push('/user/course/' + params._id + '/comment');
                     });
                 } else {
                     this.props.getCourse(params._courseId, data => {
@@ -24,7 +25,8 @@ class LecturerStudentPage extends AdminPage {
                             this.props.history.push('/user/course/' + params._id);
                         } else {
                             this.props.getCommentLessonId(params._courseId, data =>{
-                                if(data && data.lessonId) this.setState({courseId: params._courseId, lessonId: data.lessonId});
+                                if(data && data.lessonId) this.setState({courseId: params._courseId, lessonId: data.lessonId, lessonName: data.lessonName});
+                                else this.props.history.push('/user/course/' + params._id + '/comment');
                             });
                         }
                     });
@@ -37,12 +39,12 @@ class LecturerStudentPage extends AdminPage {
 
     render() {
         // const item = this.props.comment && this.props.comment.page && this.props.comment.page.list ? this.props.comment.page.list  : [];
-        const {courseId, lessonId} = this.state;
+        const {courseId, lessonId, lessonName} = this.state;
         const course = this.props.course && this.props.course.item ? this.props.course.item : {};
         const backRoute = `/user/course/${course._id}/comment`;
         return this.renderPage({
             icon: 'fa fa-comment-o',
-            title: 'Bình luận: ' + course.name,
+            title: 'Bình luận môn học: ' + lessonName,
             breadcrumb: [<Link key={0} to='/user/course'>Khóa học</Link>, course._id ? <Link key={0} to={backRoute}>Bình luận chờ duyệt</Link> : '', 'Bình luận'],
             content: (
                 <div className='tile'>

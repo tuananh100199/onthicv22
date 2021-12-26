@@ -19,36 +19,38 @@ module.exports = app => {
     app.get('/api/comment/waiting/page/:pageNumber/:pageSize', (req, res) => {
         const pageNumber = parseInt(req.params.pageNumber),
             pageSize = parseInt(req.params.pageSize),
-            condition  = req.query.pageCondition;
-        app.model.comment.getPage(pageNumber, pageSize, condition, (error, page) => res.send({ error, page }));
+            courseId  = req.query.pageCondition && req.query.pageCondition.courseId;
+        app.model.comment.getAll({refParentId: courseId}, (error,item) =>{
+            if(error) res.send({error});
+            else{
+                const parentIdList = [];
+                item && item.length && item.map(comment => parentIdList.push(comment._id && comment._id.toString()));
+                const condition = {$or: [{ 'refParentId': courseId },{ 'parentId': {$in: parentIdList }}], state:'waiting'};
+                app.model.comment.getPage(pageNumber, pageSize, condition, (error, page) => res.send({ error, page }));
+            }
+        });
     });
 
     app.get('/api/comment/lessonId', (req, res) => {
         const _id = req.query._id;
-        app.model.comment.get(_id, (error, item)=>{
-            if(error) res.send({error});
-            else{
-                app.model.lesson.get(item.refID, (error, lesson) =>{
-                    if(error) res.send({error});
-                    else if(lesson) res.send({error, lessonId: lesson._id});
-                    else {
-                        app.model.comment.get(item.refID, (error, parentComment)=>{
-                            if(error){
-                                res.send({error});
-                            } else{
-                                app.model.lesson.get(parentComment.refID, (error, lesson) =>{
-                                    if(error) res.send({error});
-                                    else if(lesson) res.send({error, lessonId: lesson._id});
-                                    else {
-                                        res.send({error: 'Không tìm thấy bài học chứa bình luận này'});
-                                    }
-                                });
-                            }
+        const handleGetComment = (_id) => {
+            app.model.comment.get(_id, (error, item)=>{
+                if(error || !item) res.send({error});
+                else {
+                    if(item.refId){
+                        app.model.lesson.get(item.refId, (error, lesson) =>{
+                            if(error) res.send({error});
+                            else if(!lesson) res.send({error: 'Không tìm thấy bình luận'});
+                            else res.send({error, lessonId: lesson._id, lessonName: lesson.title});
                         });
+                    } else{
+                        handleGetComment(item.parentId);
                     }
-                });
-            }
-        });
+                    
+                }
+            });
+        };
+    handleGetComment(_id);
     });
 
 

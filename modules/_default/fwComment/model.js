@@ -29,7 +29,7 @@ module.exports = app => {
         getAll: (condition, done) => model.find(condition).exec(done),
 
         getPage: (pageNumber, pageSize, condition, done) => model.countDocuments(condition, async (error, totalItem) => {
-            if (!condition.parentId) condition.parentId = { $exists: false };
+            if (!condition.parentId && !condition.$or) condition.parentId = { $exists: false };
             if (error) {
                 done(error);
             } else {

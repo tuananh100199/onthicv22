@@ -4,6 +4,7 @@ import { getCommentWaitingPage } from 'modules/_default/fwComment/redux';
 import { getCourse } from '../redux';
 import { Link } from 'react-router-dom';
 import { AdminPage, renderTable, TableCell } from 'view/component/AdminPage';
+import T from 'view/js/common';
 
 class LecturerStudentPage extends AdminPage {
     state = {};
@@ -13,14 +14,14 @@ class LecturerStudentPage extends AdminPage {
             if (params && params._id) {
                 const course = this.props.course ? this.props.course.item : null;
                 if (course) {
-                    this.props.getCommentWaitingPage({ refParentId: course._id, state: 'waiting' }, undefined, undefined);
+                    this.props.getCommentWaitingPage({ courseId: course._id }, undefined, undefined);
                 } else {
                     this.props.getCourse(params._id, data => {
                         if (data.error) {
                             T.notify('Lấy khóa học bị lỗi!', 'danger');
                             this.props.history.push('/user/course/' + params._id);
                         } else {
-                            this.props.getCommentWaitingPage({ refParentId: params._id, state: 'waiting' }, undefined, undefined);
+                            this.props.getCommentWaitingPage({ courseId: params._id }, undefined, undefined);
                         }
                     });
                 }
@@ -32,6 +33,7 @@ class LecturerStudentPage extends AdminPage {
 
     render() {
         const item = this.props.comment && this.props.comment.page && this.props.comment.page.list ? this.props.comment.page.list  : [];
+        item.sort((a,b) => (new Date(a.createdDate) - new Date(b.createdDate)));
         const course = this.props.course && this.props.course.item ? this.props.course.item : {};
         // const teacherGroup = item && item.teacherGroups ? item.teacherGroups.find(group => group.teacher && group.teacher._id == currentUser._id) : null;
         const table = renderTable({
@@ -40,7 +42,8 @@ class LecturerStudentPage extends AdminPage {
                 <tr>
                     <th style={{ width: 'auto', textAlign: 'center' }}>#</th>
                     <th style={{ width: '100%' }} nowrap='true'>Nội dung bình luận</th>
-                    <th style={{ width: '100%' }} nowrap='true'>Người bình luận</th>
+                    <th style={{ width: 'auto' }} nowrap='true'>Người bình luận</th>
+                    <th style={{ width: 'auto%' }} nowrap='true'>Ngày bình luận</th>
                     <th style={{ width: 'auto' }} nowrap='true'>Thao tác</th>
                 </tr>),
             renderRow: (item, index) => (
@@ -48,6 +51,7 @@ class LecturerStudentPage extends AdminPage {
                     <TableCell type='number' content={index + 1} />
                     <TableCell type='link' content={item.content} url={`/user/course/${course._id}/comment/${item._id}`} />
                     <TableCell type='text' content={item.author ? (item.author.lastname + ' ' + item.author.firstname) : ''} />
+                    <TableCell type='text' content={item.createdDate ? T.dateToText(item.createdDate, 'dd/mm/yyyy') : ''} />
                     <TableCell type='buttons' content={item} permission={{ write: true }} onEdit={`/user/course/${course._id}/comment/${item._id}`} />
                 </tr>),
         });
