@@ -39,6 +39,8 @@ module.exports = (app) => {
     app.get('/user/course/:_id/rate-subject', app.permission.check('course:read'), app.templates.admin);
     app.get('/user/course/:_id/chat-all', app.permission.check('user:login'), app.templates.admin);
     app.get('/user/course/:_id/chat', app.permission.check('user:login'), app.templates.admin);
+    app.get('/user/course/:_id/comment', app.permission.check('comment:write'), app.templates.admin);
+    app.get('/user/course/:_courseId/comment/:_id', app.permission.check('comment:write'), app.templates.admin);
     app.get('/user/course/:_id/import-final-score', app.permission.check('course:import'), app.templates.admin);
 
     app.get('/user/hoc-vien/khoa-hoc/:_id', app.permission.check('user:login'), app.templates.admin);
