@@ -13,6 +13,7 @@ module.exports = (app) => {
         { name: 'course:write' },
         { name: 'course:delete' },
         { name: 'course:lock' },
+        { name: 'course:audit' },
         { name: 'course:export' }, { name: 'course:import' },
     );
 
@@ -40,6 +41,7 @@ module.exports = (app) => {
     app.get('/user/course/:_id/chat-all', app.permission.check('user:login'), app.templates.admin);
     app.get('/user/course/:_id/chat', app.permission.check('user:login'), app.templates.admin);
     app.get('/user/course/:_id/import-final-score', app.permission.check('course:import'), app.templates.admin);
+    app.get('/user/course/:_courseId/photo/:_id', app.permission.check('user:login'), app.templates.admin);
 
     app.get('/user/hoc-vien/khoa-hoc/:_id', app.permission.check('user:login'), app.templates.admin);
     app.get('/user/hoc-vien/khoa-hoc/thong-tin/:_id', app.permission.check('user:login'), app.templates.admin);
@@ -547,7 +549,7 @@ module.exports = (app) => {
 
     // Hook permissionHooks -------------------------------------------------------------------------------------------
     app.permissionHooks.add('courseAdmin', 'course', (user) => new Promise(resolve => {
-        app.permissionHooks.pushUserPermission(user, 'course:read', 'course:write');
+        app.permissionHooks.pushUserPermission(user, 'course:read', 'course:write', 'course:audit');
         // Quản lý khóa học nội bộ thì được import danh sách học viên bằng file Excel
         if (user.division && !user.division.isOutside) app.permissionHooks.pushUserPermission(user, 'course:export', 'course:import');
         resolve();

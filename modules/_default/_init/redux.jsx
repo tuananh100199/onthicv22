@@ -103,6 +103,7 @@ export function getCaptureSetting(done) {
     return dispatch => {
         const url = '/api/capture';
         T.get(url, data => {
+            console.log(data);
             data && dispatch({ type: SystemUpdateState, state: data });
             done && done(data);
         }, error => {
@@ -113,7 +114,6 @@ export function getCaptureSetting(done) {
     };
 }
 export function updateCaptureSetting(changes, done) {
-    console.log(changes);
     return dispatch => {
         const url = '/api/capture';
         T.put(url, changes, data => {
@@ -126,6 +126,36 @@ export function updateCaptureSetting(changes, done) {
                 dispatch({ type: SystemUpdateState, state: data });
             }
         }, error => console.error(error) || T.notify('Lưu thông tin hệ thống lỗi!', 'danger'));
+    };
+}
+
+export function savePhoto(imageSrc, user, done) {
+    return dispatch => {
+        const url = '/api/capture/save';
+        T.put(url, {imageSrc, user}, data => {
+            if (data.error) {
+                // T.notify(data.error, 'danger');
+                console.error('PUT: ' + url + '.', data.error);
+            } else {
+                done && done(data);
+                dispatch({ type: SystemUpdateState, state: data });
+            }
+        }, error => console.error(error) || T.notify('Lưu thông tin hệ thống lỗi!', 'danger'));
+    };
+}
+
+export function getListPhoto(date, user, done) {
+    return dispatch => {
+        const url = '/api/capture/photo';
+        T.get(url, {date, user}, data => {
+            if (data.error) {
+                // T.notify(data.error, 'danger');
+                console.error('GET: ' + url + '.', data.error);
+            } else {
+                done && done(data);
+                dispatch({ type: SystemUpdateState, state: data });
+            }
+        }, error => console.error(error) || T.notify('Lấy hình ảnh bị lỗi!', 'danger'));
     };
 }
 
