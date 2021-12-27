@@ -19,14 +19,61 @@ module.exports = app => {
     app.get('/api/comment/waiting/page/:pageNumber/:pageSize', (req, res) => {
         const pageNumber = parseInt(req.params.pageNumber),
             pageSize = parseInt(req.params.pageSize),
-            courseId  = req.query.pageCondition && req.query.pageCondition.courseId;
-        app.model.comment.getAll({refParentId: courseId}, (error,item) =>{
-            if(error) res.send({error});
-            else{
+            { courseId, filter } = req.query.pageCondition;
+        app.model.comment.getAll({ refParentId: courseId }, (error, item) => {
+            if (error) res.send({ error });
+            else {
                 const parentIdList = [];
+                let err = null,
+                    newItem = {};
+                const handleGetComment = (_id, list, index, done) => {
+                    app.model.comment.get(_id, (error, item) => {
+                        if (error || !item) err = error || 'Không tìm thấy comment!';
+                        else {
+                            if (item.refId) {
+                                app.model.lesson.get(item.refId, (error, lesson) => {
+                                    if (error) err = error;
+                                    else if (!lesson) err = 'Không tìm thấy bình luận';
+                                    else {
+                                        newItem = list[index];
+                                        newItem.lessonId = lesson._id;
+                                        newItem.lessonName = lesson.title;
+                                        done(newItem);
+                                    }
+                                });
+                            } else {
+                                handleGetComment(item.parentId, list, index, done);
+                            }
+
+                        }
+                    });
+                };
                 item && item.length && item.map(comment => parentIdList.push(comment._id && comment._id.toString()));
-                const condition = {$or: [{ 'refParentId': courseId },{ 'parentId': {$in: parentIdList }}], state:'waiting'};
-                app.model.comment.getPage(pageNumber, pageSize, condition, (error, page) => res.send({ error, page }));
+                const condition = { $or: [{ 'refParentId': courseId }, { 'parentId': { $in: parentIdList } }], state: 'waiting' };
+                app.model.comment.getPage(pageNumber, pageSize, condition, (error, page) => {
+                    page.listLesson = [{ id: 'all', text: 'Tất cả bài học' }];
+                    if (page && page.list && page.list.length) {
+                        const list = page.list;
+                        const handleGetLesson = (index = 0) => {
+                            if (index == list.length) {
+                                if (filter != 'all') page.list = page.list.filter(comment => comment.lessonId == filter);
+                                res.send({ error: err, page });
+                            } else {
+                                const comment = list[index];
+                                handleGetComment(comment._id, list, index, (newItem) => {
+                                    page.list[index] = newItem;
+                                    if (page.listLesson.findIndex(lesson => lesson.id == newItem.lessonId) == -1)
+                                        page.listLesson.push({ id: newItem.lessonId, text: newItem.lessonName });
+                                    handleGetLesson(index + 1);
+                                });
+                            }
+                        };
+                        handleGetLesson();
+                    } else {
+                        res.send({ error, page });
+                    }
+                }
+                );
             }
         });
     });
@@ -34,23 +81,23 @@ module.exports = app => {
     app.get('/api/comment/lessonId', (req, res) => {
         const _id = req.query._id;
         const handleGetComment = (_id) => {
-            app.model.comment.get(_id, (error, item)=>{
-                if(error || !item) res.send({error});
+            app.model.comment.get(_id, (error, item) => {
+                if (error || !item) res.send({ error });
                 else {
-                    if(item.refId){
-                        app.model.lesson.get(item.refId, (error, lesson) =>{
-                            if(error) res.send({error});
-                            else if(!lesson) res.send({error: 'Không tìm thấy bình luận'});
-                            else res.send({error, lessonId: lesson._id, lessonName: lesson.title});
+                    if (item.refId) {
+                        app.model.lesson.get(item.refId, (error, lesson) => {
+                            if (error) res.send({ error });
+                            else if (!lesson) res.send({ error: 'Không tìm thấy bình luận' });
+                            else res.send({ error, lessonId: lesson._id, lessonName: lesson.title });
                         });
-                    } else{
+                    } else {
                         handleGetComment(item.parentId);
                     }
-                    
+
                 }
             });
         };
-    handleGetComment(_id);
+        handleGetComment(_id);
     });
 
 
@@ -64,7 +111,7 @@ module.exports = app => {
             condition.state = 'approved';
         }
 
-        app.model.comment.getRepliesInScope(condition , from, limit, (error, replies) => {
+        app.model.comment.getRepliesInScope(condition, from, limit, (error, replies) => {
             if (error || !replies) {
                 res.send({ error: error || 'Invalid comment id' });
             } else {
