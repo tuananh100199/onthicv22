@@ -329,12 +329,11 @@ module.exports = (app) => {
 
     app.get('/api/capture', app.permission.check('user:login'), (req, res) => {
         app.model.setting.get('numberOfMinScreenCapture', item => {
-            app.model.setting.get('domainLink', data =>{
-                app.model.setting.get('activeCapture', activeCapture =>{
-                    console.log(activeCapture);
+            app.model.setting.get('domainLink', data => {
+                app.model.setting.get('activeCapture', activeCapture => {
                     res.send({ numberOfMinScreenCapture: item.numberOfMinScreenCapture || 0, domainLink: data.domainLink || '', activeCapture: activeCapture.activeCapture || '' });
-                }); 
-            }); 
+                });
+            });
         });
     });
 
@@ -362,16 +361,16 @@ module.exports = (app) => {
     });
 
     app.put('/api/capture/save', app.permission.check('user:login'), (req, res) => {
-        const {imageSrc, user} = req.body;
+        const { imageSrc, user } = req.body;
         const base64Data = imageSrc.replace(/^data:image\/jpeg;base64,/, '');
         const folderName = user,
-        dateFolderName = app.date.getDateFolderName();
+            dateFolderName = app.date.getDateFolderName();
         app.createFolder(
-            app.path.join(app.publicPath, 'img','/verifyStudent'),
-            app.path.join(app.publicPath, 'img','/verifyStudent', folderName),
-            app.path.join(app.publicPath, 'img','/verifyStudent', folderName, dateFolderName),
+            app.path.join(app.publicPath, 'img', '/verifyStudent'),
+            app.path.join(app.publicPath, 'img', '/verifyStudent', folderName),
+            app.path.join(app.publicPath, 'img', '/verifyStudent', folderName, dateFolderName),
         );
-        app.fs.writeFile(app.path.join(app.publicPath, 'img/verifyStudent', folderName, dateFolderName, new Date().getTime() + '.png'),base64Data, 'base64', (error) => {
+        app.fs.writeFile(app.path.join(app.publicPath, 'img/verifyStudent', folderName, dateFolderName, new Date().getTime() + '.png'), base64Data, 'base64', (error) => {
             res.send({ error });
         });
     });
@@ -380,27 +379,27 @@ module.exports = (app) => {
         const { date, user } = req.query;
         const dateFolderName = app.date.getDateFolderName(new Date(date));
         const listUser = app.fs.readdirSync(app.publicPath + '/img/verifyStudent/');
-        if(listUser && listUser.length){
-            if(listUser.findIndex(userId => userId == user) != -1){
+        if (listUser && listUser.length) {
+            if (listUser.findIndex(userId => userId == user) != -1) {
                 const listDate = app.fs.readdirSync(app.publicPath + '/img/verifyStudent/' + user);
-                if(listDate && listDate.length){
-                    if(listDate.findIndex(dateName => dateFolderName == dateName) != -1){
+                if (listDate && listDate.length) {
+                    if (listDate.findIndex(dateName => dateFolderName == dateName) != -1) {
                         const list = app.fs.readdirSync(app.publicPath + '/img/verifyStudent/' + user + '/' + dateFolderName);
-                        res.send({item: list ? list : [], path: '/img/verifyStudent/' + user + '/' + dateFolderName});
-                    } else{
-                        res.send({item: [], path: '/img/verifyStudent/' + user + '/' + dateFolderName});
+                        res.send({ item: list ? list : [], path: '/img/verifyStudent/' + user + '/' + dateFolderName });
+                    } else {
+                        res.send({ item: [], path: '/img/verifyStudent/' + user + '/' + dateFolderName });
                     }
-                } else{
-                    res.send({item: [], path: '/img/verifyStudent/' + user + '/' + dateFolderName});
+                } else {
+                    res.send({ item: [], path: '/img/verifyStudent/' + user + '/' + dateFolderName });
                 }
-            } else{
-                res.send({item: [], path: '/img/verifyStudent/' + user + '/' + dateFolderName});
+            } else {
+                res.send({ item: [], path: '/img/verifyStudent/' + user + '/' + dateFolderName });
             }
-        } else{
-            res.send({item: [], path: '/img/verifyStudent/' + user + '/' + dateFolderName});
+        } else {
+            res.send({ item: [], path: '/img/verifyStudent/' + user + '/' + dateFolderName });
         }
-        
-        
+
+
     });
 
     // Hook upload images ---------------------------------------------------------------------------------------------------------------------------

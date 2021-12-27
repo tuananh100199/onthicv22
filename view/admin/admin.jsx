@@ -56,23 +56,23 @@ class App extends React.Component {
         this.props.getCaptureSetting(data => {
             const user = this.props.system && this.props.system.user;
             const { numberOfMinScreenCapture = 5, activeCapture = false } = data || {};
-            if(activeCapture && user && !(user.isCourseAdmin || user.isLecturer)){
+            if (activeCapture && user && !(user.isCourseAdmin || user.isLecturer)) {
                 window.interval = setInterval(() => {
                     const imageSrc = this.webcam.getScreenshot();
-                    this.setState({imageSrc},()=>{
-                    this.props.savePhoto(imageSrc, user._id);
-                    faceApi.nets.ssdMobilenetv1.load('/models/').then(()=>{
-                        const options = new faceApi.SsdMobilenetv1Options({
-                            inputSize: 512,
-                            scoreThreshold: 0.5
-                        });
-                        faceApi.detectSingleFace('img', options).then((result)=>{
-                            if(result) console.log('Đã phát hiện khuôn mặt');
-                            else console.log('Không phát hiện khuôn mặt');
+                    this.setState({ imageSrc }, () => {
+                        this.props.savePhoto(imageSrc, user._id);
+                        faceApi.nets.ssdMobilenetv1.load('/models/').then(() => {
+                            const options = new faceApi.SsdMobilenetv1Options({
+                                inputSize: 512,
+                                scoreThreshold: 0.5
+                            });
+                            faceApi.detectSingleFace('img', options).then((result) => {
+                                if (result) console.log('Đã phát hiện khuôn mặt');
+                                else console.log('Không phát hiện khuôn mặt');
+                            });
                         });
                     });
-                }); 
-                }, 12000*numberOfMinScreenCapture);
+                }, 12000 * numberOfMinScreenCapture);
             }
         });
         T.socket.on('debug-user-changed', user => store.dispatch(updateSystemState({ user })));
@@ -92,7 +92,7 @@ class App extends React.Component {
                     <AdminHeader />
                     <AdminMenu />
                     <div className='site-content'>
-                        <span className='invisible float-left' style={{marginRight: '-240px'}}>
+                        <span className='invisible float-left' style={{ marginRight: '-240px' }}>
                             <Webcam
                                 audio={false}
                                 height={240}
@@ -102,7 +102,7 @@ class App extends React.Component {
                                 videoConstraints={videoConstraints}
                             />
                         </span>
-                        {imgSrc && (<img className='d-none' id='img' src={imgSrc}></img>)} 
+                        {imgSrc && (<img className='d-none' id='img' src={imgSrc}></img>)}
                         <Switch>
                             {this.state.routes}
                             <Route path='**' component={Loadable({ loading: Loading, loader: () => import('view/component/MessagePage') })} />
@@ -114,5 +114,5 @@ class App extends React.Component {
     }
 }
 
-const Main = connect(state => ({ system: state.system }), { getSystemState, updateSystemState,savePhoto, getCaptureSetting })(App);
+const Main = connect(state => ({ system: state.system }), { getSystemState, updateSystemState, savePhoto, getCaptureSetting })(App);
 ReactDOM.render(<Provider store={store}><Main /></Provider>, document.getElementById('app'));

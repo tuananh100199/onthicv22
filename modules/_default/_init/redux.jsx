@@ -103,7 +103,6 @@ export function getCaptureSetting(done) {
     return dispatch => {
         const url = '/api/capture';
         T.get(url, data => {
-            console.log(data);
             data && dispatch({ type: SystemUpdateState, state: data });
             done && done(data);
         }, error => {
@@ -132,7 +131,7 @@ export function updateCaptureSetting(changes, done) {
 export function savePhoto(imageSrc, user, done) {
     return dispatch => {
         const url = '/api/capture/save';
-        T.put(url, {imageSrc, user}, data => {
+        T.put(url, { imageSrc, user }, data => {
             if (data.error) {
                 // T.notify(data.error, 'danger');
                 console.error('PUT: ' + url + '.', data.error);
@@ -147,7 +146,7 @@ export function savePhoto(imageSrc, user, done) {
 export function getListPhoto(date, user, done) {
     return dispatch => {
         const url = '/api/capture/photo';
-        T.get(url, {date, user}, data => {
+        T.get(url, { date, user }, data => {
             if (data.error) {
                 // T.notify(data.error, 'danger');
                 console.error('GET: ' + url + '.', data.error);

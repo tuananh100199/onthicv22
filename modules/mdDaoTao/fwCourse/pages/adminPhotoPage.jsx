@@ -13,9 +13,9 @@ class AdminPhotoPage extends AdminPage {
             const params = T.routeMatcher('/user/course/:_courseId/photo/:_id').parse(window.location.pathname);
             const course = this.props.course ? this.props.course.item : null;
             if (course) {
-                if(params._id){
-                    this.props.getStudent(params._id, data =>{
-                        this.setState({studentId: data._id, studentName: data.lastname + ' ' + data.firstname, userId: data && data.user && data.user._id });
+                if (params._id) {
+                    this.props.getStudent(params._id, data => {
+                        this.setState({ studentId: data._id, studentName: data.lastname + ' ' + data.firstname, userId: data && data.user && data.user._id });
                     });
                 }
             } else {
@@ -24,29 +24,29 @@ class AdminPhotoPage extends AdminPage {
                         T.notify('Lấy khóa học bị lỗi!', 'danger');
                         this.props.history.push('/user/course/' + params._id);
                     } else {
-                        if(params._id){
-                            this.props.getStudent(params._id, data =>{
-                                this.setState({studentId: data._id, studentName: data.lastname + ' ' + data.firstname, userId: data && data.user && data.user._id });
+                        if (params._id) {
+                            this.props.getStudent(params._id, data => {
+                                this.setState({ studentId: data._id, studentName: data.lastname + ' ' + data.firstname, userId: data && data.user && data.user._id });
                             });
                         }
                     }
                 });
             }
-            
-            
+
+
         });
     }
 
     handleFilterByTime = (item) => {
         const user = this.state.userId;
-        this.props.getListPhoto( item, user, data =>{
-            this.setState({data});
+        this.props.getListPhoto(item, user, data => {
+            this.setState({ data });
         });
     }
 
     render() {
         const item = this.props.course && this.props.course.item ? this.props.course.item : {};
-        const { studentName, data} = this.state;
+        const { studentName, data } = this.state;
         const backRoute = `/user/course/${item._id}/learning`;
         return this.renderPage({
             icon: 'fa fa-camera',
@@ -57,16 +57,16 @@ class AdminPhotoPage extends AdminPage {
                     <div className='tile-body'>
                         <FormDatePicker className='col-md-2' ref={e => this.itemNgayLuaChon = e} label='Ngày chụp' onChange={(item) => this.handleFilterByTime(item)} />
                         <div className='row'>
-                            {data && data.item && data.item.length ? data.item.map((image,index) => (
-                            <div key={index} className='col-md-3'>
-                                <img  src={data.path + '/' + image}></img>
-                                <p>{T.dateToText(new Date(parseInt(image.slice(0,13))))}</p>
-                            </div>
-                             )) : <p className='col-md-3'>Chưa có dữ liệu!</p>}
+                            {data && data.item && data.item.length ? data.item.map((image, index) => (
+                                <div key={index} className='col-md-6 col-lg-4 col-xs-12'>
+                                    <img src={data.path + '/' + image}></img>
+                                    <p>{T.dateToText(new Date(parseInt(image.slice(0, 13))))}</p>
+                                </div>
+                            )) : <p className='col-md-3'>Chưa có dữ liệu!</p>}
                         </div>
-                        
+
                     </div>
-                    
+
                 </div>
             ),
             backRoute,
