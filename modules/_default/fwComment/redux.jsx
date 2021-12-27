@@ -31,6 +31,36 @@ export function getCommentPage(refParentId, refId, pageNumber, pageSize, done) {
     };
 }
 
+export function getCommentWaitingPage(pageCondition, pageNumber, pageSize, done) {
+    const page = T.updatePage('pageComment', pageNumber, pageSize);
+    return (dispatch) => {
+        const url = `/api/comment/waiting/page/${page.pageNumber}/${page.pageSize}`;
+        T.get(url, { pageCondition }, data => {
+            if (data.error) {
+                T.notify('Lấy bình luận bị lỗi!', 'danger');
+                console.error('GET: ' + url + '.', data.error);
+            } else {
+                done && done(data.page);
+                dispatch({ type: CommentGetPage, page: data.page });
+            }
+        }, error => console.error(error) || T.notify('Lấy bình luận bị lỗi!', 'danger'));
+    };
+}
+
+export function getCommentLessonId(_id, done) {
+    return () => {
+        const url = '/api/comment/lessonId';
+        T.get(url, data => {
+            if (data.error) {
+                T.notify('Lấy bình luận bị lỗi!', 'danger');
+                console.error('GET: ' + url + '.', data.error);
+            } else {
+                done && done(data);
+            }
+        }, error => console.error(error) || T.notify('Lấy bình luận bị lỗi!', 'danger'));
+    };
+}
+
 export function getCommentScope(_id, from, limit, done) {
     return () => {
         const url = `/api/comment/scope/${_id}/${from}/${limit}`;
