@@ -327,9 +327,14 @@ module.exports = (app) => {
         });
     });
 
-    app.get('/api/capture', app.permission.check('settingCapture:read'), (req, res) => {
+    app.get('/api/capture', app.permission.check('user:login'), (req, res) => {
         app.model.setting.get('numberOfMinScreenCapture', item => {
-            app.model.setting.get('domainLink', data => res.send({ numberOfMinScreenCapture: item.numberOfMinScreenCapture || 0, domainLink: data.domainLink || '' }));
+            app.model.setting.get('domainLink', data =>{
+                app.model.setting.get('activeCapture', activeCapture =>{
+                    console.log(activeCapture);
+                    res.send({ numberOfMinScreenCapture: item.numberOfMinScreenCapture || 0, domainLink: data.domainLink || '', activeCapture: activeCapture.activeCapture || '' });
+                }); 
+            }); 
         });
     });
 
@@ -343,24 +348,60 @@ module.exports = (app) => {
                     if (error) {
                         res.send({ error: 'Update link domain lưu ảnh bị lỗi' });
                     } else {
-                        res.send({ data: changes, error });
+                        app.model.setting.set({ activeCapture: changes.activeCapture || false }, error => {
+                            if (error) {
+                                res.send({ error: 'Update trạng thái lưu ảnh bị lỗi' });
+                            } else {
+                                res.send({ data: changes, error });
+                            }
+                        });
                     }
                 });
             }
         });
     });
 
-    // app.get('/api/capture/detect', app.permission.check('user:login'), (req, res) => {
-    //     const img = req.body.img;
-    //     Promise.all([
-    //         faceapi.nets.tinyFaceDetector.loadFromUri('public/document')
-    //     ]).then(() => {
-    //         const detection = faceapi.detectAllFaces(img, 
-    //             new faceapi.TinyFaceDetectorOptions())
-    //             console.log(detection);    
-    //         )
-    //     });
-    // });
+    app.put('/api/capture/save', app.permission.check('user:login'), (req, res) => {
+        const {imageSrc, user} = req.body;
+        const base64Data = imageSrc.replace(/^data:image\/jpeg;base64,/, '');
+        const folderName = user,
+        dateFolderName = app.date.getDateFolderName();
+        app.createFolder(
+            app.path.join(app.publicPath, 'img','/verifyStudent'),
+            app.path.join(app.publicPath, 'img','/verifyStudent', folderName),
+            app.path.join(app.publicPath, 'img','/verifyStudent', folderName, dateFolderName),
+        );
+        app.fs.writeFile(app.path.join(app.publicPath, 'img/verifyStudent', folderName, dateFolderName, new Date().getTime() + '.png'),base64Data, 'base64', (error) => {
+            res.send({ error });
+        });
+    });
+
+    app.get('/api/capture/photo', app.permission.check('course:audit'), (req, res) => {
+        const { date, user } = req.query;
+        const dateFolderName = app.date.getDateFolderName(new Date(date));
+        const listUser = app.fs.readdirSync(app.publicPath + '/img/verifyStudent/');
+        if(listUser && listUser.length){
+            if(listUser.findIndex(userId => userId == user) != -1){
+                const listDate = app.fs.readdirSync(app.publicPath + '/img/verifyStudent/' + user);
+                if(listDate && listDate.length){
+                    if(listDate.findIndex(dateName => dateFolderName == dateName) != -1){
+                        const list = app.fs.readdirSync(app.publicPath + '/img/verifyStudent/' + user + '/' + dateFolderName);
+                        res.send({item: list ? list : [], path: '/img/verifyStudent/' + user + '/' + dateFolderName});
+                    } else{
+                        res.send({item: [], path: '/img/verifyStudent/' + user + '/' + dateFolderName});
+                    }
+                } else{
+                    res.send({item: [], path: '/img/verifyStudent/' + user + '/' + dateFolderName});
+                }
+            } else{
+                res.send({item: [], path: '/img/verifyStudent/' + user + '/' + dateFolderName});
+            }
+        } else{
+            res.send({item: [], path: '/img/verifyStudent/' + user + '/' + dateFolderName});
+        }
+        
+        
+    });
 
     // Hook upload images ---------------------------------------------------------------------------------------------------------------------------
     const uploadSettingImage = (fields, files, done) => {

@@ -120,12 +120,8 @@ export default {
             component: Loadable({ loading: Loading, loader: () => import('./pages/adminRatingPage') })
         },
         {
-            path: '/user/course/:_id/chat-all',
-            component: Loadable({ loading: Loading, loader: () => import('./pages/adminChatAllPage') })
-        },
-        {
-            path: '/user/course/:_id/chat',
-            component: Loadable({ loading: Loading, loader: () => import('./pages/adminChatPersonalPage') })
+            path: '/user/course/:_courseId/photo/:_id',
+            component: Loadable({ loading: Loading, loader: () => import('./pages/adminPhotoPage') })
         },
         {
             path: '/user/course/:_id/import-final-score',

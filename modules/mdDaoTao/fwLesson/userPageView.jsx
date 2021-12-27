@@ -168,7 +168,6 @@ class adminEditPage extends AdminPage {
                     <p id={video._id} className='text-center' ></p>
                 </div>
             )) : 'Chưa có video bài giảng!';
-        console.log(isView);
         const userPageLink = '/user/hoc-vien/khoa-hoc/' + courseId + '/mon-hoc/' + subjectId;
         if (tienDoHocTap && tienDoHocTap[lessonId]) {
             $('#' + tienDoHocTap[lessonId].rating).prop('checked', true);
