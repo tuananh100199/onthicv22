@@ -50,7 +50,7 @@ export function getCommentWaitingPage(pageCondition, pageNumber, pageSize, done)
 export function getCommentLessonId(_id, done) {
     return () => {
         const url = '/api/comment/lessonId';
-        T.get(url, data => {
+        T.get(url,{ _id }, data => {
             if (data.error) {
                 T.notify('Lấy bình luận bị lỗi!', 'danger');
                 console.error('GET: ' + url + '.', data.error);
