@@ -256,7 +256,7 @@ module.exports = (app) => {
 
     // Hook permissionHooks  ------------------------------------------------------------------------------------------
     app.permissionHooks.add('courseAdmin', 'subject', (user) => new Promise(resolve => {
-        app.permissionHooks.pushUserPermission(user, 'subject:read', 'subject:view');
+        app.permissionHooks.pushUserPermission(user, 'subject:read');
         resolve();
     }));
     app.permissionHooks.add('lecturer', 'subject', (user) => new Promise(resolve => {
