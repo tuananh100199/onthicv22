@@ -5,7 +5,7 @@ module.exports = (app) => {
             4030: { title: 'Bài học', link: '/user/dao-tao/bai-hoc' },
         },
     };
-    app.permission.add({ name: 'lesson:read' }, { name: 'lesson:write' }, { name: 'lesson:delete' }, {name: 'lesson:view', menu});
+    app.permission.add({ name: 'lesson:read' }, { name: 'lesson:write' }, { name: 'lesson:delete' }, { name: 'lesson:view', menu });
 
     app.get('/user/dao-tao/bai-hoc', app.permission.check('lesson:read'), app.templates.admin);
     app.get('/user/dao-tao/bai-hoc/:_id', app.permission.check('lesson:read'), app.templates.admin);
@@ -121,7 +121,9 @@ module.exports = (app) => {
             } else {
                 const key = 'tienDoHocTap.' + subjectId + '.' + lessonId,
                     changes = {};
-                changes[key] = { score: '', trueAnswers: '', answers: '' };
+                changes[key + '.score'] = '';
+                changes[key + '.trueAnswers'] = '';
+                changes[key + '.answers'] = '';
                 app.model.student.resetLesson({ _id: students[0]._id }, changes, (error, item) => {
                     res.send({ error, item });
                 });
@@ -268,7 +270,7 @@ module.exports = (app) => {
 
     // Hook permissionHooks  ------------------------------------------------------------------------------------------
     app.permissionHooks.add('courseAdmin', 'lession', (user) => new Promise(resolve => {
-        app.permissionHooks.pushUserPermission(user, 'lesson:read','lesson:view');
+        app.permissionHooks.pushUserPermission(user, 'lesson:read', 'lesson:view');
         resolve();
     }));
 
