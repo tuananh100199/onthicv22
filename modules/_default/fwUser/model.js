@@ -165,7 +165,22 @@ module.exports = (app) => {
                 done('Cannot delete default admin menu!');
             } else {
                 app.deleteImage(item.image);
-                item.remove(done);
+                app.model.chat.getAll( {$or: [{ 'sender': item._id }, { 'receiver': item._id  }]}, (error, list) => {
+                    if(error) item.remove(done);
+                    else{
+                        const handleDeleteChat = (index = 0) => {
+                            if (index == list.length) {
+                                item.remove(done);
+                            } else {
+                                const chat = list[index];
+                                app.model.chat.delete(chat._id, () => {
+                                    handleDeleteChat(index + 1);
+                                });
+                            }
+                        };
+                        handleDeleteChat();
+                    }
+                });
             }
         }),
 
