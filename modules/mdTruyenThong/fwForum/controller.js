@@ -257,7 +257,7 @@ module.exports = app => {
     }));
 
     app.permissionHooks.add('courseAdmin', 'forum', (user) => new Promise(resolve => {
-        app.permissionHooks.pushUserPermission(user, 'forum:write', 'forum:delete');
+        app.permissionHooks.pushUserPermission(user, 'forum:write');
         resolve();
     }));
 

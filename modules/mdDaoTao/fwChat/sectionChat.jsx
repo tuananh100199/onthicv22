@@ -165,25 +165,25 @@ class SectionChat extends AdminPage {
             const sent = prevItem.sent ? T.dateToText(new Date(prevItem.sent), 'dd/mm HH:MM') : '';
             listChats.push(
                 <div key={listChats.length} style={{ width: '100%', display: 'flex', marginBottom: 8 }}>
-                    {prevItem.sender._id == _userId ?
+                    {prevItem.sender && prevItem.sender._id == _userId ?
                         <>
                             <div style={{ width: '70%', position: 'relative', border: 'solid 1px #ddd', borderRadius: 6, padding: 8, marginLeft: '20%', textAlign: 'right' }}>
                                 <p style={{ marginBottom: 6, fontWeight: 'bolder' }}>
-                                    {prevItem.sender.lastname} {prevItem.sender.firstname}
+                                    {prevItem.sender ? prevItem.sender.lastname : 'Người dùng hệ thống'} {prevItem.sender ? prevItem.sender.firstname : ''}
                                 </p>
                                 <small className='text-secondary' style={{ position: 'absolute', top: 6, left: 6 }}>{sent}</small>
                                 {chats}
                             </div>
                             <div style={{ width: '8%', padding: 6 }}>
-                                <img src={prevItem.sender.image} alt='image' style={{ width: '100%', height: 'auto', borderRadius: '50%', border: 'solid 1px #ddd' }} />
+                                <img src={prevItem.sender ? prevItem.sender.image : '/img/avatar-default.png'} alt='image' style={{ width: '100%', height: 'auto', borderRadius: '50%', border: 'solid 1px #ddd' }} />
                             </div>
                         </> :
                         <>
                             <div style={{ width: '8%', padding: 6 }}>
-                                <img src={prevItem.sender.image} alt='image' style={{ width: '100%', height: 'auto', borderRadius: '50%', border: 'solid 1px #ddd' }} />
+                                <img src={prevItem.sender ? prevItem.sender.image : '/img/avatar-default.png'} alt='image' style={{ width: '100%', height: 'auto', borderRadius: '50%', border: 'solid 1px #ddd' }} />
                             </div>
                             <div style={{ width: '70%', position: 'relative', border: 'solid 1px #ddd', borderRadius: 6, padding: 8 }}>
-                                <p style={{ marginBottom: 6, fontWeight: 'bolder' }}>{prevItem.sender.lastname} {prevItem.sender.firstname}</p>
+                                <p style={{ marginBottom: 6, fontWeight: 'bolder' }}>{prevItem.sender ? prevItem.sender.lastname : 'Người dùng hệ thống'} {prevItem.sender ? prevItem.sender.firstname : ''}</p>
                                 <small className='text-secondary' style={{ position: 'absolute', top: 6, right: 6 }}>{sent}</small>
                                 {chats}
                             </div>
@@ -207,7 +207,7 @@ class SectionChat extends AdminPage {
                     itemSent = new Date(item.sent), prevItemSent = prevItem ? new Date(prevItem.sent) : null,
                     isNewDay = prevItemSent == null || T.dateToText(itemSent, 'dd/mm/yyyy') != T.dateToText(prevItemSent, 'dd/mm/yyyy'),
                     isNow = itemSent && prevItemSent && itemSent.getTime() - prevItemSent.getTime() <= 300000,
-                    isNewUser = prevItem && prevItem.sender._id != item.sender._id,
+                    isNewUser = !item.sender || !(prevItem && prevItem.sender) || (item.sender && prevItem && prevItem.sender && prevItem.sender._id != item.sender._id),
                     newMessage = item.message.split(' ').map((part, index) =>
                         urlRegex.test(part) ? <a key={index} href={part} target='_blank' rel='noreferrer' ><u>{part}</u></a> : part + ' '
                     );

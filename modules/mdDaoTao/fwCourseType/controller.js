@@ -7,8 +7,8 @@ module.exports = (app) => {
     };
 
     app.permission.add(
-        { name: 'course-type:read', menu },
-        { name: 'course-type:write' },
+        { name: 'course-type:read'},
+        { name: 'course-type:write',menu },
         { name: 'course-type:delete' },
     );
 
