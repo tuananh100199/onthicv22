@@ -5,21 +5,10 @@ import { getStudentScore } from '../fwStudent/redux';
 import { getSubjectByStudent } from '../fwSubject/redux';
 import YouTube from 'react-youtube';
 import { Link } from 'react-router-dom';
-import { AdminPage, AdminModal } from 'view/component/AdminPage';
+import { AdminPage } from 'view/component/AdminPage';
 import RateModal from 'modules/_default/fwRate/RateModal';
 // import 'view/component/ratingStar.scss';
 import CommentSection from 'modules/_default/fwComment/CommentSection';
-
-
-class TaiLieuThamKhaoModal extends AdminModal {
-    state = {};
-    onShow = (item) => this.setState({ item });
-
-    render = () => this.renderModal({
-        title: 'Tài liệu tham khảo',
-        body: <p dangerouslySetInnerHTML={{ __html: this.state.item }} />
-    });
-}
 class adminEditPage extends AdminPage {
     state = { showQuestionButton: false, questionVisibility: 'hidden', listVideo: {}, totalSecondsVideo: 0, listPlayedVideo: {} };
     intervalVideo;
@@ -216,7 +205,6 @@ class adminEditPage extends AdminPage {
                 <div className='tile'>
                     <div className='tile-body'><CommentSection refParentId={courseId} refId={lessonId} /></div>
                 </div>
-                <TaiLieuThamKhaoModal ref={e => this.modalTaiLieuThamKhao = e} />
             </> : null,
             backRoute: userPageLink,
         });

@@ -1,13 +1,21 @@
 module.exports = app => {
     const schema = app.db.Schema({
-        title: String,
-        image: String,
-        content: String,
-        imageBackground: String
-    });
-    const model = app.db.model('LoginForm', schema);
+        title: String, // tên của component
+        title1: String, //tên hạng 1
+        abstract1: String,
+        image1: String,
 
-    app.model.loginForm = {
+        title2: String,
+        abstract2: String,
+        image2: String,
+
+        title3: String,
+        abstract3: String,
+        image3: String,
+    });
+    const model = app.db.model('HangGPLX', schema);
+
+    app.model.hangGPLX = {
         create: (data, done) => model.create(data, done),
 
         getPage: (pageNumber, pageSize, condition, done) => model.countDocuments(condition, (error, totalItem) => {
@@ -24,7 +32,7 @@ module.exports = app => {
             }
         }),
 
-        getAll: (done) => model.find({},).sort({ _id: -1 }).exec(done),
+        getAll: (done) => model.find({}, '-content').sort({ _id: -1 }).exec(done),
 
         get: (condition, done) => typeof condition == 'string' ? model.findById(condition, done) : model.findOne(condition, done),
 

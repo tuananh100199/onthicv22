@@ -257,6 +257,7 @@
     .header.scrolled .header_content,
     .header_content {
         height: 60px;
+        background-color: #199d76;
     }
     .home {
         margin-top: 60px;

@@ -14,13 +14,14 @@ class LoginFormEditPage extends AdminPage {
                 if (data.error) {
                     this.props.history.push('/user/component');
                 } else if (data.item) {
-                    const { _id, title, content, image = '/img/avatar.jpg' } = data.item;
+                    const { _id, title, content, image = '/img/avatar.jpg', imageBackground = '' } = data.item;
                     this.itemTitle.focus();
                     this.itemTitle.value(title);
                     this.itemContent.value(content);
                     this.imageBox.setData('loginForm:' + _id, image);
+                    this.imageBackgroundBox.setData('loginFormBackground:' + _id, imageBackground);
 
-                    this.setState({ _id, title, image });
+                    this.setState({ _id, title, image, imageBackground });
                 } else {
                     this.props.history.push('/user/component');
                 }
@@ -46,7 +47,10 @@ class LoginFormEditPage extends AdminPage {
                             <FormTextBox ref={e => this.itemTitle = e} label='Tiêu đề' readOnly={!permission.write} onChange={e => this.setState({ title: e.target.value })} />
                             <FormRichTextBox ref={e => this.itemContent = e} label='Mô tả' readOnly={!permission.write} />
                         </div>
-                        <FormImageBox ref={e => this.imageBox = e} className='col-md-4' label='Hình đại diện' uploadType='LoginFormImage' image={this.state.image} readOnly={!permission.write} />
+                        <div className='col-md-4'>
+                            <FormImageBox ref={e => this.imageBox = e} className='col-md-12' label='Hình đại diện' uploadType='LoginFormImage' image={this.state.image} readOnly={!permission.write} />
+                            <FormImageBox ref={e => this.imageBackgroundBox = e} className='col-md-12' label='Hình nền' uploadType='LoginFormBackgroundImage' image={this.state.imageBackground} readOnly={!permission.write} />
+                        </div>
                     </div>
                 </div>),
             backRoute: '/user/component',

@@ -6,6 +6,7 @@ module.exports = app => {
         className: String,
         style: String,
         componentIds: [{ type: app.db.Schema.Types.ObjectId, ref: 'Component' }],
+        href: String,
     });
     const model = app.db.model('Component', schema);
 
@@ -22,8 +23,10 @@ module.exports = app => {
         getByMenuId: (menuId, done) => model.find({ menuId }).sort({ priority: -1 }).exec(done),
 
         update: (_id, data, done) => {
+            console.log('data', data);
             let changes = { $set: {} };
             if (data.viewType) changes.$set.viewType = data.viewType;
+            if (data.href) changes.$set.href = data.href;
             if (data.className || data.className == '') changes.$set.className = data.className;
             if (data.style || data.style == '') changes.$set.style = data.style;
             if (data.viewId) {

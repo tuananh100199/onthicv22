@@ -36,7 +36,7 @@ export default class MenuPage extends React.Component {
             if (item.components) this.renderComponents(0, item.components, childComponents);
 
             outs.push(
-                <div key={index} className={item.className + (isFirst ? ' first-component' : '')} style={itemStyle}>
+                <div key={index} id={item.href && item.href.substring(1)} className={item.className + (isFirst ? ' first-component' : '')} style={itemStyle}>
                     {itemView}
                     {childComponents}
                 </div>
