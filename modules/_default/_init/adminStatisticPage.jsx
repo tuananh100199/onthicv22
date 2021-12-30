@@ -27,7 +27,6 @@ class StatisticPage extends AdminPage {
             T.notify('Ngày bắt đầu phải nhỏ hơn ngày kết thúc !', 'danger');
         } else {
             this.props.getStatisticStudent(dateStart, dateEnd, (data) => {
-                console.log(data);
                 this.setState({ isSearching: false, dateStart, dateEnd, dataStudent: data && data.item });
             });
         }

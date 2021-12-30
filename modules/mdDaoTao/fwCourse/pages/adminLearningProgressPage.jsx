@@ -259,6 +259,7 @@ class AdminLearningProgressPage extends AdminPage {
         const user = this.props.system ? this.props.system.user : null,
             { isLecturer, isCourseAdmin } = user,
             item = this.props.course && this.props.course.item ? this.props.course.item : {},
+            courseId = item && item._id,
             students = this.props.course && this.props.course && this.props.course.students ? this.props.course.students : [],
             subjects = this.props.course && this.props.course.subjects ? this.props.course.subjects.sort((a, b) => a.monThucHanh - b.monThucHanh) : [],
             monThiTotNghiep = item && item.monThiTotNghiep ? item.monThiTotNghiep : [],
@@ -323,7 +324,8 @@ class AdminLearningProgressPage extends AdminPage {
                 return (
                     <tr key={index}>
                         <TableCell type='number' content={index + 1} />
-                        <TableCell type='text' style={{ whiteSpace: 'nowrap' }} content={<p>{item.lastname + ' ' + item.firstname} <br /> {item.identityCard}</p>} />
+                        {isCourseAdmin ? <TableCell type='link' style={{ whiteSpace: 'nowrap' }} content={<p>{item.lastname + ' ' + item.firstname} <br /> {item.identityCard}</p>} url={'/user/course/' + courseId + '/photo/' + item._id} />
+                        : <TableCell type='text' style={{ whiteSpace: 'nowrap' }} content={<p>{item.lastname + ' ' + item.firstname} <br /> {item.identityCard}</p>}  />}
                         {subjects && subjects.length ? subjects.map((subject, i) => (
                             (!listShow.length || (listShow.length && listShow.indexOf(subject._id) != -1)) ? <TableCell key={i} type='text' style={{ textAlign: 'center', whiteSpace: 'nowrap' }} content={<p>{` 
                             ${item.subject && item.subject[subject._id] && !subject.monThucHanh ? item.subject[subject._id].completedLessons : 0}
