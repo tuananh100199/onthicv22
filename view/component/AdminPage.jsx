@@ -654,7 +654,7 @@ export class AdminModal extends React.Component {
         }
     }
 
-    renderModal = ({ title, body, size, dataBackdrop, buttons, isLoading = false }) => {
+    renderModal = ({ title, body, size, dataBackdrop, buttons, isLoading = false, hideCloseButton = false }) => {
         const { readOnly = false } = this.props;
         return (
             <div className='modal fade' role='dialog' data-backdrop={dataBackdrop} ref={e => this.modal = e}>
@@ -662,16 +662,16 @@ export class AdminModal extends React.Component {
                     <div className='modal-content'>
                         <div className='modal-header'>
                             <h5 className='modal-title'>{title}</h5>
-                            <button type='button' className='close' data-dismiss='modal' aria-label='Close'>
+                            {!hideCloseButton ? <button type='button' className='close' data-dismiss='modal' aria-label='Close'>
                                 <span aria-hidden='true'>&times;</span>
-                            </button>
+                            </button> : null}
                         </div>
                         <div className='modal-body'>{body}</div>
                         <div className='modal-footer'>
                             {buttons}
-                            <button type='button' className='btn btn-secondary' data-dismiss='modal'>
+                            {!hideCloseButton ? <button type='button' className='btn btn-secondary' data-dismiss='modal'>
                                 <i className='fa fa-fw fa-lg fa-times' />Đóng
-                            </button>
+                            </button> : null}
                             {readOnly == true || !this.onSubmit ? null :
                                 <button type='submit' className='btn btn-primary' disabled={isLoading}>
                                     {isLoading ? <i className='fa fa-spin fa-lg fa-spinner' /> : <i className='fa fa-fw fa-lg fa-save' />} Lưu

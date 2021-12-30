@@ -179,8 +179,8 @@ export function logout(config) {
     if (config.message == undefined) config.message = 'Bạn có muốn đăng xuất không?';
     if (config.errorMessage == undefined) config.errorMessage = 'Đăng xuất thất bại!';
     return dispatch => {
-        T.confirm(config.title, config.message, true, isConfirm => {
-            isConfirm && T.post('/logout', {},
+        if (config.type == 'faceDetect') {
+            T.post('/logout', {},
                 () => {
                     dispatch({ type: SystemUpdateState, state: { user: null } });
                     const pathname = window.location.pathname;
@@ -192,7 +192,22 @@ export function logout(config) {
                 },
                 error => console.error(error) || T.notify(config.errorMessage, 'danger')
             );
-        });
+        } else {
+            T.confirm(config.title, config.message, true, isConfirm => {
+                isConfirm && T.post('/logout', {},
+                    () => {
+                        dispatch({ type: SystemUpdateState, state: { user: null } });
+                        const pathname = window.location.pathname;
+                        if (pathname.startsWith('/user')) {
+                            window.location = '/';
+                        } else if (config.done) {
+                            config.done();
+                        }
+                    },
+                    error => console.error(error) || T.notify(config.errorMessage, 'danger')
+                );
+            });
+        }
     };
 }
 
