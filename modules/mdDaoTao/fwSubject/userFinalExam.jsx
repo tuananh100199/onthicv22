@@ -1,19 +1,99 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
-import { createRandomSubjectTest, checkRandomSubjectTest, resetStudentSubjectScore  } from './redux';
+import { createRandomSubjectTest, checkRandomSubjectTest, resetStudentSubjectScore } from './redux';
 import { getStudentSubjectScore } from '../fwStudent/redux';
-import { AdminPage } from 'view/component/AdminPage';
+import { getCaptureSetting, savePhoto, logout } from 'modules/_default/_init/redux';
+import { AdminPage, AdminModal } from 'view/component/AdminPage';
 import 'view/component/input.scss';
+import Webcam from 'react-webcam';
+import * as faceApi from 'face-api.js';
 
+class ConfirmModal extends AdminModal {
+    intervalCountDown;
+    componentDidMount() {
+        $(document).ready(() => { });
+    }
+
+    onShow = () => {
+        faceApi.nets.ssdMobilenetv1.load('/models/');
+        let minutesFaceDetect = 3;
+        let secondsFaceDetect = 0;
+        this.intervalCountDown = setInterval(() => {
+            --secondsFaceDetect;
+            minutesFaceDetect = (secondsFaceDetect < 0) ? --minutesFaceDetect : minutesFaceDetect;
+            secondsFaceDetect = (secondsFaceDetect < 0) ? 59 : secondsFaceDetect;
+            secondsFaceDetect = (secondsFaceDetect < 10) ? '0' + secondsFaceDetect : secondsFaceDetect;
+            $('#timeFaceDetect').text(minutesFaceDetect + ':' + secondsFaceDetect).css('color', 'red');
+            if (minutesFaceDetect < 0) clearInterval(this.intervalCountDown);
+            if ((secondsFaceDetect <= 0) && (minutesFaceDetect <= 0)) {
+                clearInterval(this.intervalCountDown);
+                this.capture(null, 'end');
+            }
+        }, 1000);
+    }
+
+    capture = (e, type) => {
+        e && e.preventDefault;
+        const imageDetectSrc = this.webcamConfirm.getScreenshot();
+        this.setState({ imageDetectSrc }, () => {
+            faceApi.nets.ssdMobilenetv1.load('/models/').then(() => {
+                const options = new faceApi.SsdMobilenetv1Options({
+                    inputSize: 512,
+                    scoreThreshold: 0.5
+                });
+                faceApi.detectSingleFace('img', options).then((result) => {
+                    if (type == 'end') this.props.logout({ type: 'faceDetect' });
+                    else {
+                        if (result) {
+                            this.hide();
+                        } else {
+                            this.hide();
+                        }
+                    }
+                });
+            });
+        });
+    }
+
+    render = () => this.renderModal({
+        title: 'Xác nhận học viên trực tuyến',
+        dataBackdrop: 'static',
+        body: <>
+            <div >
+                <div className='d-flex justify-content-center invisible' style={{ marginBottom: '-240px' }}>
+                    <Webcam
+                        audio={false}
+                        height={240}
+                        ref={e => this.webcamConfirm = e}
+                        screenshotFormat='image/jpeg'
+                        width={240}
+                        videoConstraints={{
+                            width: 1280,
+                            height: 720,
+                            facingMode: 'user'
+                        }}
+                    />
+                </div>
+                <div>
+                    <p>Không phát hiện hoạt động trong thời gian dài, vui lòng xác nhận để tiếp tục học!</p>
+                    <p>Thời gian còn lại: <span id='timeFaceDetect'></span></p>
+                </div>
+            </div>
+        </>,
+        buttons: <button className='btn btn-warning' onClick={(e) => this.capture(e, 'userCapture')}>Xác nhận</button>,
+        hideCloseButton: true
+    });
+}
 class UserPageRandomDriveTestDetail extends AdminPage {
     state = { showSubmitButton: true, showTotalScore: false, prevButton: 'visible', nextButton: 'visible' };
+    intervalFaceDetect;
     componentDidMount() {
         window.addEventListener('keydown', this.logKey);
         const params = T.routeMatcher('/user/hoc-vien/khoa-hoc/:courseId/mon-hoc/thi-het-mon/:_id').parse(window.location.pathname);
         if (params._id) {
             this.setState({ subjectId: params._id, courseId: params.courseId });
-            this.props.createRandomSubjectTest(params._id, params.courseId , data => {
+            this.props.createRandomSubjectTest(params._id, params.courseId, data => {
                 if (data.error) {
                     T.notify('Lấy bài học bị lỗi!', 'danger');
                     this.props.history.push('/user/hoc-vien/khoa-hoc/' + params.courseId + '/mon-hoc/' + params.subjectId);
@@ -30,13 +110,50 @@ class UserPageRandomDriveTestDetail extends AdminPage {
                             this.setState({
                                 activeQuestionIndex: 0,
                                 prevTrueAnswers: item[params._id] && item[params._id].trueAnswers ? item[params._id].trueAnswers : null,
-                                prevAnswers: item[params._id] &&  item[params._id].answers ? item[params._id].answers : null,
+                                prevAnswers: item[params._id] && item[params._id].answers ? item[params._id].answers : null,
                                 showSubmitButton: item[params._id] && item[params._id].answers ? false : true
                             });
                         }
                     });
+                    setTimeout(() => {
+                        const user = this.props.system && this.props.system.user;
+                        const imageSrc = this.webcam.getScreenshot();
+                        this.props.savePhoto(imageSrc, user._id);
+                    }, 1000);
+                    this.props.getCaptureSetting(data => {
+                        const user = this.props.system && this.props.system.user;
+                        const { numberOfMinScreenCapture = 5, activeCapture = false } = data || {};
+                        if (activeCapture && user && !(user.isCourseAdmin || user.isLecturer)) {
+                            this.intervalFaceDetect = setInterval(() => {
+                                const imageSrc = this.webcam.getScreenshot();
+                                this.setState({ imageSrc }, () => {
+                                    faceApi.nets.ssdMobilenetv1.load('/models/').then(() => {
+                                        const options = new faceApi.SsdMobilenetv1Options({
+                                            inputSize: 512,
+                                            scoreThreshold: 0.5
+                                        });
+                                        faceApi.detectSingleFace('img', options).then((result) => {
+                                            if (result) {
+                                                this.setState({ faceDetect: 0 });
+                                                this.props.savePhoto(imageSrc, user._id);
+                                            }
+                                            else {
+                                                this.setState(prevState => ({
+                                                    faceDetect: prevState.faceDetect ? prevState.faceDetect + 1 : 1
+                                                }), () => {
+                                                    if (this.state.faceDetect > 2) {
+                                                        this.confirmModal.show();
+                                                    }
+                                                });
+                                            }
+                                        });
+                                    });
+                                });
+                            }, 60000 * numberOfMinScreenCapture);
+                        }
+                    });
                     this.setState({ activeQuestionIndex: 0, questions });
-                    if(data.driveTest.totalTime){
+                    if (data.driveTest.totalTime) {
                         let minutes = data.driveTest.totalTime;
                         let seconds = 0;
                         window.interval = setInterval(() => {
@@ -52,7 +169,7 @@ class UserPageRandomDriveTestDetail extends AdminPage {
                             }
                         }, 1000);
                     }
-                    
+
                 } else {
                     this.props.history.push('/user/hoc-vien/khoa-hoc/' + params.courseId + '/mon-hoc/' + params.subjectId);
                 }
@@ -65,6 +182,7 @@ class UserPageRandomDriveTestDetail extends AdminPage {
     componentWillUnmount() {
         // const {lessonId,subjectId,courseId,totalSeconds} = this.state;
         clearInterval(window.interval);
+        clearInterval(this.intervalFaceDetect);
         // this.props.timeLesson(lessonId, subjectId, courseId, totalSeconds);
         window.removeEventListener('keydown', this.logKey);
     }
@@ -134,9 +252,9 @@ class UserPageRandomDriveTestDetail extends AdminPage {
                         showTotalScore: false,
                         activeQuestionIndex: 0,
                         studentAnswer: null,
-                        questions 
+                        questions
                     });
-                    if(data.driveTest.totalTime){
+                    if (data.driveTest.totalTime) {
                         let minutes = data.driveTest.totalTime;
                         let seconds = 0;
                         window.interval = setInterval(() => {
@@ -151,13 +269,13 @@ class UserPageRandomDriveTestDetail extends AdminPage {
                                 this.submitAnswer();
                             }
                         }, 1000);
-                    } 
+                    }
                 } else {
                     this.props.history.push('/user/hoc-vien/khoa-hoc/' + courseId + '/mon-hoc/' + subjectId);
                 }
             });
         });
-        
+
     }
 
     changeQuestion = (e, index) => {
@@ -213,17 +331,34 @@ class UserPageRandomDriveTestDetail extends AdminPage {
         const activeQuestionIndex = this.state.activeQuestionIndex ? this.state.activeQuestionIndex : 0;
         const activeQuestion = questions ? questions[activeQuestionIndex] : null;
         const { prevTrueAnswers, prevAnswers, showSubmitButton, showTotalScore, score, subjectId, courseId } = this.state;
-        const userPageLink = '/user/hoc-vien/khoa-hoc/' + courseId + '/mon-hoc/' + subjectId ;
+        const userPageLink = '/user/hoc-vien/khoa-hoc/' + courseId + '/mon-hoc/' + subjectId;
         if (questions && questions.length == 1) {
             activeQuestion && prevAnswers && prevAnswers[activeQuestion._id] && $('#' + activeQuestion._id + prevAnswers[activeQuestion._id]).prop('checked', true);
         } else if (activeQuestionIndex == 0) {
             activeQuestion && prevAnswers && prevAnswers[activeQuestion._id] && $('#' + activeQuestion._id + prevAnswers[activeQuestion._id]).prop('checked', true);
         }
+        const videoConstraints = {
+            width: 1280,
+            height: 720,
+            facingMode: 'user'
+        };
+        const imgSrc = this.state.imageSrc;
         return this.renderPage({
             icon: 'fa fa-book',
             title: 'Đề thi hết môn',
             breadcrumb: [<Link key={0} to={userPageLink}>Môn học</Link>, 'Đề thi hết môn'],
             content: (<>
+                <span className='invisible float-left' style={{ marginRight: '-240px' }}>
+                    <Webcam
+                        audio={false}
+                        height={240}
+                        ref={e => this.webcam = e}
+                        screenshotFormat='image/jpeg'
+                        width={240}
+                        videoConstraints={videoConstraints}
+                    />
+                </span>
+                {imgSrc && (<img className='d-none' id='img' src={imgSrc}></img>)}
                 {questions && questions.length ? (
                     <div className='tile'>
                         <div className='tile-header d-flex justify-content-between'>
@@ -285,6 +420,7 @@ class UserPageRandomDriveTestDetail extends AdminPage {
                         </div>
                     </div>
                 ) : <div className='tile'>Không có câu hỏi</div>}
+                <ConfirmModal ref={e => this.confirmModal = e} logout={this.props.logout} readOnly={false} />
             </>),
             backRoute: userPageLink,
         });
@@ -292,5 +428,5 @@ class UserPageRandomDriveTestDetail extends AdminPage {
 }
 
 const mapStateToProps = state => ({ system: state.system, driveTest: state.trainning.driveTest });
-const mapActionsToProps = {  createRandomSubjectTest, checkRandomSubjectTest, getStudentSubjectScore, resetStudentSubjectScore };
+const mapActionsToProps = { createRandomSubjectTest, checkRandomSubjectTest, getStudentSubjectScore, resetStudentSubjectScore, getCaptureSetting, savePhoto, logout };
 export default connect(mapStateToProps, mapActionsToProps)(UserPageRandomDriveTestDetail);
