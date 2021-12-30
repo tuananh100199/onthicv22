@@ -23,7 +23,7 @@ module.exports = (app) => {
     const menuDocument = {
         parentMenu: app.parentMenu.setting,
         menus: {
-            3999: { title: 'Tài liệu', link: '/user/document', icon: 'fa-camera', backgroundColor: '#0091EA' }
+            2120: { title: 'Tài liệu', link: '/user/document', icon: 'fa-camera', backgroundColor: '#0091EA' }
         },
     };
 
