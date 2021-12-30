@@ -30,5 +30,9 @@ export default {
             path: '/user/setting-capture',
             component: Loadable({ loading: Loading, loader: () => import('./adminSettingCapturePage') })
         },
+        {
+            path: '/user/document',
+            component: Loadable({ loading: Loading, loader: () => import('./adminDocumentPage') })
+        },
     ],
 };

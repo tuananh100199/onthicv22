@@ -158,6 +158,34 @@ export function getListPhoto(date, user, done) {
     };
 }
 
+export function getListDocument(done) {
+    return dispatch => {
+        const url = '/api/document';
+        T.get(url, data => {
+            if (data.error) {
+                console.error('GET: ' + url + '.', data.error);
+            } else {
+                done && done(data);
+                dispatch({ type: SystemUpdateState, state: data });
+            }
+        }, error => console.error(error) || T.notify('Lấy tài liệu bị lỗi!', 'danger'));
+    };
+}
+
+export function deleteDocument(filename, done) {
+    return dispatch => {
+        const url = '/api/document';
+        T.delete(url, { filename }, data => {
+            if (data.error) {
+                console.error('DELETE: ' + url + '.', data.error);
+            } else {
+                done && done(data);
+                dispatch(getListDocument());
+            }
+        }, error => console.error(error) || T.notify('Lấy tài liệu bị lỗi!', 'danger'));
+    };
+}
+
 export function login(data, done) {
     return () => {
         T.post('/login', data, res => {

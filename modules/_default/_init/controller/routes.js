@@ -20,6 +20,13 @@ module.exports = (app) => {
         },
     };
 
+    const menuDocument = {
+        parentMenu: app.parentMenu.setting,
+        menus: {
+            2120: { title: 'Tài liệu', link: '/user/document', icon: 'fa-camera', backgroundColor: '#0091EA' }
+        },
+    };
+
     app.permission.add(
         { name: 'dashboard:standard', menu: { parentMenu: { index: 100, title: 'Dashboard', icon: 'fa-dashboard', link: '/user/dashboard' } } },
         { name: 'user:login', menu: { parentMenu: app.parentMenu.user } },
@@ -27,12 +34,16 @@ module.exports = (app) => {
         { name: 'statistic:read', menu: menuStatistic },
         { name: 'settingCapture:read', menu: menuSettingCapture },
         { name: 'settingCapture:write' },
+        { name: 'document:read' },
+        { name: 'document:write', menu: menuDocument },
+        { name: 'document:delete' },
     );
 
     app.get('/user/dashboard', app.permission.check('dashboard:standard'), app.templates.admin);
     app.get('/user/statistic', app.permission.check('statistic:read'), app.templates.admin);
     app.get('/user/setting', app.permission.check('system:settings'), app.templates.admin);
     app.get('/user/setting-capture', app.permission.check('settingCapture:read'), app.templates.admin);
+    app.get('/user/document', app.permission.check('document:read'), app.templates.admin);
     ['/index.htm(l)?', '/404.htm(l)?', '/request-permissions(/:roleId?)', '/request-login'].forEach((route) => app.get(route, app.templates.home));
 
     // API ------------------------------------------------------------------------------------------------------------------------------------------
@@ -378,6 +389,9 @@ module.exports = (app) => {
     app.get('/api/capture/photo', app.permission.check('course:audit'), (req, res) => {
         const { date, user } = req.query;
         const dateFolderName = app.date.getDateFolderName(new Date(date));
+        app.createFolder(
+            app.path.join(app.publicPath, 'img', '/verifyStudent'),
+        );
         const listUser = app.fs.readdirSync(app.publicPath + '/img/verifyStudent/');
         if (listUser && listUser.length) {
             if (listUser.findIndex(userId => userId == user) != -1) {
@@ -398,8 +412,17 @@ module.exports = (app) => {
         } else {
             res.send({ item: [], path: '/img/verifyStudent/' + user + '/' + dateFolderName });
         }
+    });
 
+    app.get('/api/document', app.permission.check('document:read'), (req, res) => {
+        const list = app.fs.readdirSync(app.publicPath + '/document');
+        res.send({ listDocument: list });
+    });
 
+    app.delete('/api/document', app.permission.check('document:delete'), (req, res) => {
+        const { filename } = req.body;
+        app.fs.unlinkSync(app.publicPath + '/document/' + filename);
+        res.send({});
     });
 
     // Hook upload images ---------------------------------------------------------------------------------------------------------------------------

@@ -12,6 +12,7 @@
 	2090 - Menu (/user/menu)
 	2100 - Thành phần giao diện (/user/component)
 	2110 - Thống kê (/user/statistic)
+	2120 - Tài liệu (/user/document)
 3000. Truyền thông (undefined)
 	3001 - Đăng ký tư vấn (/user/candidate)
 	3002 - Liên hệ (/user/contact)
