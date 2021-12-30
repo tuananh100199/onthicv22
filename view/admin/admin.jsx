@@ -46,7 +46,7 @@ const store = createStore(combineReducers(reducers), {}, composeWithDevTools(app
 class ConfirmModal extends AdminModal {
     intervalCountDown;
     componentDidMount() {
-        $(document).ready(() => this.onShown(() => this.itemTitle.focus()));
+        $(document).ready(() => { });
     }
 
     onShow = () => {
@@ -153,7 +153,7 @@ class App extends React.Component {
                                     this.setState(prevState => ({
                                         faceDetect: prevState.faceDetect ? prevState.faceDetect + 1 : 1
                                     }), () => {
-                                        if (this.state.faceDetect > 1) {
+                                        if (this.state.faceDetect > 2) {
                                             this.modal.show();
                                         }
                                     });
@@ -161,7 +161,7 @@ class App extends React.Component {
                             });
                         });
                     });
-                }, 12000 * numberOfMinScreenCapture);
+                }, 60000 * numberOfMinScreenCapture);
             }
         });
         T.socket.on('debug-user-changed', user => store.dispatch(updateSystemState({ user })));
