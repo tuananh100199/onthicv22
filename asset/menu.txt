@@ -23,6 +23,7 @@
 3010. Forum (/user/forum)
 3030. Phản hồi (/user/feedback/system)
 4000. Đào tạo (undefined)
+	3999 - Cấu hình nhận diện học viên (/user/setting-capture)
 	4001 - Danh mục câu hỏi thi (/user/drive-question/category)
 	4002 - Câu hỏi thi (/user/drive-question)
 	4003 - Danh mục biển báo (/user/sign/category)

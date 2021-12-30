@@ -154,7 +154,7 @@ class EditCoursePage extends AdminPage {
                     </div>
                 </div>
                 {!readOnly ? <CirclePageButton type='save' onClick={this.saveInfo} /> : null}
-                {!permission.lock ? <CirclePageButton type='custom' style={{ right: '75px' }} customClassName={lock ? 'btn-success' : 'btn-danger'} customIcon={lock ? 'fa-unlock' : 'fa-lock'} onClick={(e) => this.lock(e)} /> : null}
+                {permission.lock ? <CirclePageButton type='custom' style={{ right: '75px' }} customClassName={lock ? 'btn-success' : 'btn-danger'} customIcon={lock ? 'fa-unlock' : 'fa-lock'} onClick={(e) => this.lock(e)} /> : null}
             </>,
             backRoute: previousRoute,
         });
