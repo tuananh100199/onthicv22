@@ -3,7 +3,7 @@
 1100. Thông báo (/user/notification)
 2000. Cấu hình (undefined)
 	2010 - Thông tin chung (/user/setting)
-	2020 - Email (/user/email)
+	2020 - Phòng ban (/user/department)
 	2030 - Ngân hàng (/user/bank)
 	2040 - Cluster (/user/cluster)
 	2060 - Người dùng (/user/member)
