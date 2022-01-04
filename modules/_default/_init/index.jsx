@@ -26,5 +26,13 @@ export default {
             path: '/user/statistic',
             component: Loadable({ loading: Loading, loader: () => import('./adminStatisticPage') })
         },
+        {
+            path: '/user/setting-capture',
+            component: Loadable({ loading: Loading, loader: () => import('./adminSettingCapturePage') })
+        },
+        {
+            path: '/user/document',
+            component: Loadable({ loading: Loading, loader: () => import('./adminDocumentPage') })
+        },
     ],
 };

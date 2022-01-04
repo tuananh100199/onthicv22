@@ -11,13 +11,13 @@ import { connect, Provider } from 'react-redux';
 import { BrowserRouter, Switch, Route } from 'react-router-dom';
 import thunk from 'redux-thunk';
 import { composeWithDevTools } from 'redux-devtools-extension';
-
-import { getSystemState, updateSystemState } from 'modules/_default/_init/redux';
+import { getSystemState, updateSystemState, getCaptureSetting, savePhoto, logout } from 'modules/_default/_init/redux';
 import { changeUser } from 'modules/_default/fwUser/redux';
 import Loadable from 'react-loadable';
 import Loading from 'view/component/Loading';
 import AdminHeader from 'view/component/AdminHeader';
 import AdminMenu from 'view/component/AdminMenu';
+
 
 // Load modules -------------------------------------------------------------------------------------------------------------------------------------
 import { modules } from './modules.jsx';
@@ -51,7 +51,6 @@ class App extends React.Component {
             }
             store.dispatch(changeUser(user));
         });
-
         T.socket.on('debug-user-changed', user => store.dispatch(updateSystemState({ user })));
         T.socket.on('debug-role-changed', roles => this.props.system && this.props.system.isDebug && this.props.updateSystemState({ roles }));
     }
@@ -74,5 +73,5 @@ class App extends React.Component {
     }
 }
 
-const Main = connect(state => ({ system: state.system }), { getSystemState, updateSystemState })(App);
+const Main = connect(state => ({ system: state.system }), { getSystemState, updateSystemState, savePhoto, getCaptureSetting, logout })(App);
 ReactDOM.render(<Provider store={store}><Main /></Provider>, document.getElementById('app'));

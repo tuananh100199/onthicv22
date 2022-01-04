@@ -128,6 +128,10 @@ export default {
             component: Loadable({ loading: Loading, loader: () => import('./pages/adminRatingPage') })
         },
         {
+            path: '/user/course/:_courseId/photo/:_id',
+            component: Loadable({ loading: Loading, loader: () => import('./pages/adminPhotoPage') })
+        },
+        {
             path: '/user/course/:_id/import-final-score',
             component: Loadable({ loading: Loading, loader: () => import('./pages/adminImportFinalScorePage') })
         },
