@@ -59,6 +59,7 @@ export function createDepartment(data, done) {
                 T.notify('Tạo phòng ban bị lỗi!', 'danger');
                 console.error('POST: ' + url + '. ' + data.error);
             } else {
+                T.notify('Tạo phòng ban thanh công!', 'success');
                 done && done(data);
                 dispatch(getDepartmentPage());
             }
@@ -75,6 +76,7 @@ export function updateDepartment(_id, changes, done) {
                 console.error('PUT: ' + url + '. ' + data.error);
                 done && done(data.error);
             } else {
+                T.notify('Cập nhật thông tin phòng ban thanh công!', 'success');
                 dispatch(getDepartmentPage());
                 done && done();
             }

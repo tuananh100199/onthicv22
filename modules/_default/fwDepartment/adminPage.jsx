@@ -10,15 +10,15 @@ class DepartmentModal extends AdminModal {
     }
 
     onShow = (item) => {
-        let { _id=null, name='', active=true } = item || {};
-        this.itemName.value(name);
+        let { _id=null, title='', active=true } = item || {};
+        this.itemName.value(title);
         this.itemIsActive.value(active);
         this.setState({ _id });
     }
 
     onSubmit = () => {
         const data = {
-            name: this.itemName.value(),
+            title: this.itemName.value(),
             active: this.itemIsActive.value(),
         };
         if (data.name == '') {
@@ -45,9 +45,11 @@ class DepartmentModal extends AdminModal {
 class AdminQuestionPage extends AdminPage {
     state = { };
     componentDidMount() {
-        T.ready(() => T.showSearchBox());
-        this.props.getDepartmentPage(1);
-        T.onSearch = (searchText) => this.props.getDepartmentPage(1,undefined,searchText);
+        T.ready(() => {
+            T.showSearchBox();
+            this.props.getDepartmentPage(1);
+            T.onSearch = (searchText) => this.props.getDepartmentPage(1,undefined,searchText);
+        });
     }
 
     edit = (e, item) => e.preventDefault() || this.modal.show(item);
@@ -70,7 +72,7 @@ class AdminQuestionPage extends AdminPage {
             renderRow: (item, index) => (
                 <tr key={index}>
                     <TableCell type='number' content={(pageNumber - 1) * pageSize+ index + 1} />
-                    <TableCell type='link' content={item.name} onClick={e => this.edit(e, item)} />
+                    <TableCell type='link' content={item.title} onClick={e => this.edit(e, item)} />
                     <TableCell type='checkbox' content={item.active} permission={permission} onChanged={active => this.props.updateDepartment(item._id, { active })} />
                     <TableCell type='buttons' content={item} permission={permission} onEdit={this.edit} onDelete={this.delete} />
                 </tr>),

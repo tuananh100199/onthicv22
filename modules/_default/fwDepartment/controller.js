@@ -24,7 +24,7 @@ module.exports = app => {
             pageSize = parseInt(req.params.pageSize),
             { searchText='' } = req.query,
             condition={};
-            searchText!='' && (condition.name = new RegExp(searchText, 'i'));
+            searchText!='' && (condition.title = new RegExp(searchText, 'i'));
         app.model.department.getPage(pageNumber, pageSize, condition, (error, page) => res.send({ error, page }));
     });
 
