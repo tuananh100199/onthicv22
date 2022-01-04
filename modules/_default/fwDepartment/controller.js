@@ -2,7 +2,7 @@ module.exports = app => {
     const menu = {
         parentMenu: app.parentMenu.setting,
         menus: {
-            2020: { title: 'Phòng ban', link: '/user/department', icon: 'fa fa-university', backgroundColor: 'rgb(106, 90, 205)' }
+            2130: { title: 'Phòng ban', link: '/user/department', icon: 'fa fa-university', backgroundColor: 'rgb(106, 90, 205)' }
         }
     };
     app.permission.add({ name: 'department:read', menu }, { name: 'department:write' }, { name: 'department:delete' });
