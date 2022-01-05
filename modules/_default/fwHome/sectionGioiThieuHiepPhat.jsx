@@ -6,20 +6,55 @@ import './style.css';
 class SectionGioiThieuHiepPhat extends React.Component {
     state = {};
     componentDidMount() {
-        if (this.props.viewId) {
-            this.props.getGioiThieu(this.props.viewId, data => {
-                data && data.item && this.setState(data.item);
-            });
-        }
+        $(document).ready(() => {
+            function introText() {
+                let introText = document.querySelectorAll('.text-gioi-thieu');
+                for (let i = 0; i < introText.length; i++) {
+                let windowHeight = window.innerHeight;
+                let elementTop = introText[i].getBoundingClientRect().top;
+                let elementVisible = 150;
+            
+                if (elementTop < windowHeight - elementVisible) {
+                    introText[i].classList.add('active_intro_text');
+                } else {
+                    introText[i].classList.remove('active_intro_text');
+                }
+                }
+            }
+            
+            window.addEventListener('scroll', introText);
+
+            function introImg() {
+                let introImg = document.querySelectorAll('.img-gioi-thieu');
+                for (let i = 0; i < introImg.length; i++) {
+                let windowHeight = window.innerHeight;
+                let elementTop = introImg[i].getBoundingClientRect().top;
+                let elementVisible = 150;
+            
+                if (elementTop < windowHeight - elementVisible) {
+                    introImg[i].classList.add('active_intro_img');
+                } else {
+                    introImg[i].classList.remove('active_intro_img');
+                }
+                }
+            }
+            
+            window.addEventListener('scroll', introImg);
+            if (this.props.viewId) {
+                this.props.getGioiThieu(this.props.viewId, data => {
+                    data && data.item && this.setState(data.item);
+                });
+            }
+        });
     }
     render() {
         const { image1, image2, image3, abstract, title } = this.state;
         return (
-            <div className='section-intro-hp' style={{ backgroundColor: '#199d76', paddingTop: '80px', paddingBottom: '80px' }}>
-                <div className='container' style={{ padding: '50px'}}>
+            <div className='section-intro-hp' style={{  }}>
+                <div className='container'>
                     <div className='warp_gioi_thieu_HP'>
                         <div className='row'>
-                            <div className='col-lg-5 col-md-12'>
+                            <div className='col-lg-5 col-md-12 text-gioi-thieu'>
                                 <div className='title_gioi_thieu'>
                                     Giới thiệu
                                     <span>{title}</span>

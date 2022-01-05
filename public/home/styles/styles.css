@@ -382,7 +382,7 @@ section {
 .header.scrolled .header_content {
     background-color: #199d76;
     height: 75px;
-    box-shadow: 0px 5px 15px rgba(87, 204, 195, 0.15);
+    box-shadow: 0px 0px 10px whitesmoke;
 }
 
 .logo a>div:first-child {
@@ -1108,7 +1108,7 @@ section {
 /*********************************
 12. Footer
 *********************************/
-
+/* 
 .footer {
     display: block;
     position: relative;
@@ -1253,7 +1253,7 @@ section {
 
 .footer_nav ul li a:hover {
     color: #4ca758;
-}
+} */
 
 
 /*********************************

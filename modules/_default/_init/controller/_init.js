@@ -176,6 +176,7 @@ module.exports = (app) => {
             map: '/img/map.png',
             contact: '/img/contact.jpg',
             subscribe: '/img/subscribe.jpg',
+            footer: '/img/footer.jpg',
             facebook: 'https://www.facebook.com',
             fax: '',
             youtube: '',

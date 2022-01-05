@@ -21,23 +21,53 @@ class SectionStaffGroup extends React.Component {
                 { this.state.items && this.state.items.map((staff, index) => (
                     <div className={'container_staff team_col carousel-item' + (index == 0 ? ' active' : '')}
                         key={index}>
-                        <div className='wrapper_staff'>
-                            <div className='staff_info'>
-                                <div className='staff_group_title'>
-                                    <h3>{this.state.title}</h3>
+                        <div className='pc'>
+                            <div className='wrapper_staff'>
+                                <div className='staff_info'>
+                                    <div className='staff_group_title'>
+                                        <h3>{this.state.title}</h3>
+                                    </div>
+                                    <div className='strike1'/>
+                                    <div className='staff_name' style={{ whiteSpace: 'nowrap' }}><h5>{staff.user.lastname + ' ' + staff.user.firstname}</h5></div>
+                                    <div className='staff_title' style={{ whiteSpace: 'nowrap' }}><h6>{staff.title}</h6></div>
+                                    <div className='strike2'/>
+                                    <div className='text'>
+                                        <blockquote>
+                                            <p>&ldquo;{staff.description}&rdquo;</p>
+                                        </blockquote>
+                                    </div> 
                                 </div>
-                                <div className='strike1'/>
-                                <div className='staff_name' style={{ whiteSpace: 'nowrap' }}><h5>{staff.user.lastname + ' ' + staff.user.firstname}</h5></div>
-                                <div className='staff_title' style={{ whiteSpace: 'nowrap' }}><h6>{staff.title}</h6></div>
-                                <div className='strike2'/>
-                                <div className='text'>
-                                    <blockquote>
-                                        <p>&ldquo;{staff.description}&rdquo;</p>
-                                    </blockquote>
-                                </div> 
+                                <div className='staff_img'>
+                                    <img src={staff.image} alt='Image' className='img-fluid' />
+                                </div>
                             </div>
-                            <div className='staff_img'>
-                                <img src={staff.image} alt='Image' className='img-fluid' />
+                        </div>
+                        <div className='mobile'>
+                            <div className='wrapper_staff'>
+                                <div className='row'>
+                                    <div className='col-12'>
+                                        <div className='staff_info'>
+                                            <div className='staff_group_title'>
+                                                <h3>{this.state.title}</h3>
+                                            </div>
+                                            <div className='strike1'/>
+                                            <div className='staff_name' style={{ whiteSpace: 'nowrap' }}><h5>{staff.user.lastname + ' ' + staff.user.firstname}</h5></div>
+                                            <div className='staff_title' style={{ whiteSpace: 'nowrap' }}><h6>{staff.title}</h6></div>
+                                            <div className='strike2'/>
+                                            <div className='text'>
+                                                <blockquote>
+                                                    <p>&ldquo;{staff.description}&rdquo;</p>
+                                                </blockquote>
+                                            </div> 
+                                        </div>
+                                    </div>
+                               <div className='col-12' style={{ padding: 'inherit'}}>
+                                <div className='staff_img'>
+                                        <img src={staff.image} alt='Image' className='img-fluid' />
+                                    </div>
+                               </div>
+                            </div>
+                                
                             </div>
                         </div>
                 </div>))}

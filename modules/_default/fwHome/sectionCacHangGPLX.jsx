@@ -5,6 +5,22 @@ import './style.css';
 
 class SectionCacHangGPLX extends React.Component {
     componentDidMount() {
+        function GPLX() {
+            let GPLX = document.querySelectorAll('.section_hang_GPLX');
+            for (let i = 0; i < GPLX.length; i++) {
+              let windowHeight = window.innerHeight;
+              let elementTop = GPLX[i].getBoundingClientRect().top;
+              let elementVisible = 150;
+          
+              if (elementTop < windowHeight - elementVisible) {
+                GPLX[i].classList.add('active_gplx');
+              } else {
+                GPLX[i].classList.remove('active_gplx');
+              }
+            }
+        }
+          
+        window.addEventListener('scroll', GPLX);
         if (this.props.viewId) {
             this.props.getHangGPLX(this.props.viewId, data => {
                 data && data.item && this.setState(data.item);
@@ -16,7 +32,7 @@ class SectionCacHangGPLX extends React.Component {
         const item = this.state;
         return (
             <div className='section_hang_GPLX'>
-                <div className='intro_hang_GPLX col-md-12'>
+                <div className='intro_hang_GPLX'>
                     <div className='intro_col'>
                         {item ? 
                         <div className='wrap_GPLX'>

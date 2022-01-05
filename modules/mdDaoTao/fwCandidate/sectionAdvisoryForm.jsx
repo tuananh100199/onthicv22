@@ -8,6 +8,24 @@ import './style.css';
 class SectionAdvisoryForm extends React.Component {
     componentDidMount() {
         $(document).ready(() => {
+            function advisory() {
+                let advisory = document.querySelectorAll('.advisory');
+                console.log('advisory', advisory);
+              
+                for (let i = 0; i < advisory.length; i++) {
+                  let windowHeight = window.innerHeight;
+                  let elementTop = advisory[i].getBoundingClientRect().top;
+                  let elementVisible = 150;
+              
+                  if (elementTop < windowHeight - elementVisible) {
+                    advisory[i].classList.add('active');
+                  } else {
+                    advisory[i].classList.remove('active');
+                  }
+                }
+            }
+              
+            window.addEventListener('scroll', advisory);
             this.props.viewId ?
                 ajaxGetCourseType(this.props.viewId, data =>
                     this.courseType.value(data && data.item && { id: data.item._id, text: data.item.title })) : this.courseType.value(null);
@@ -58,41 +76,41 @@ class SectionAdvisoryForm extends React.Component {
         if (this.phoneNumber) this.phoneNumber.value = phoneNumber || '';
 
         return (
-                        <div className='advisory'>
-                            <div className='intro_col'>
-                                <div className='intro_form_container' style={{ boxShadow: 'rgb(0 0 0 / 20%) 0px 25px 38px', backgroundColor: 'white' }}>
-                                    <div className='intro_form_title'>Đăng ký tư vấn</div>
-                                    <form action='#' className='intro_form' id='intro_form' onSubmit={this.onSubmit}>
-                                        <div className='d-flex flex-row align-items-start justify-content-between flex-wrap'>
-                                            {readOnly ?
-                                                <div className='w-100'>
-                                                    <p style={{ width: '100%', padding: '0 8px', color: '#199d76' }}>Họ và Tên: <b>{lastname} {firstname}</b></p>
-                                                    <p style={{ width: '100%', padding: '0 8px', color: '#199d76', marginBottom: 16 }}>Email: <b>{email}</b></p>
-                                                </div> :
-                                                <>
-                                                    <p style={{ width: '50%', padding: '0 8px', margin: 0, color: '#199d76' }}>Họ<br />
-                                                        <input type='text' className='intro_input w-100' placeholder='Họ' ref={e => this.lastname = e} />
-                                                    </p>
-                                                    <p style={{ width: '50%', padding: '0 8px', margin: 0, color: '#199d76' }}>Tên<br />
-                                                        <input type='text' className='intro_input w-100' placeholder='Tên' ref={e => this.firstname = e} />
-                                                    </p>
-                                                    <p style={{ width: '50%', padding: '0 8px', margin: 0, color: '#199d76' }}>Email<br />
-                                                        <input type='text' className='intro_input w-100' placeholder='Email' ref={e => this.email = e} />
-                                                    </p>
-                                                </>}
+            <div className='advisory'>
+                <div className='intro_col'>
+                    <div className='advisory_form_container' style={{ boxShadow: 'rgb(0 0 0 / 20%) 0px 25px 38px', backgroundColor: 'white' }}>
+                        <div className='intro_form_title'>Đăng ký tư vấn</div>
+                        <form action='#' className='intro_form' id='intro_form' onSubmit={this.onSubmit}>
+                            <div className='d-flex flex-row align-items-start justify-content-between flex-wrap'>
+                                {readOnly ?
+                                    <div className='w-100'>
+                                        <p style={{ width: '100%', padding: '0 8px', color: '#199d76' }}>Họ và Tên: <b>{lastname} {firstname}</b></p>
+                                        <p style={{ width: '100%', padding: '0 8px', color: '#199d76', marginBottom: 16 }}>Email: <b>{email}</b></p>
+                                    </div> :
+                                    <>
+                                        <p style={{ width: '50%', padding: '0 8px', margin: 0, color: '#199d76' }}>Họ<br />
+                                            <input type='text' className='intro_input w-100' placeholder='Họ' ref={e => this.lastname = e} />
+                                        </p>
+                                        <p style={{ width: '50%', padding: '0 8px', margin: 0, color: '#199d76' }}>Tên<br />
+                                            <input type='text' className='intro_input w-100' placeholder='Tên' ref={e => this.firstname = e} />
+                                        </p>
+                                        <p style={{ width: '50%', padding: '0 8px', margin: 0, color: '#199d76' }}>Email<br />
+                                            <input type='text' className='intro_input w-100' placeholder='Email' ref={e => this.email = e} />
+                                        </p>
+                                    </>}
 
-                                            <p style={{ width: readOnly ? '100%' : '50%', padding: '0 8px', margin: 0, color: '#199d76' }}>Số điện thoại:
-                                                <input onKeyPress={e => (!/[0-9]/.test(e.key)) && e.preventDefault()}
-                                                    type='tel' className='intro_input w-100' placeholder='Số điện thoại' ref={e => this.phoneNumber = e} />
-                                            </p>
-                                            <div className='mb-5' style={{ width: '100%', padding: '0 8px', margin: 0, color: '#199d76' }}>
-                                                <FormSelect ref={e => this.courseType = e} label='Loại khóa học:' data={ajaxSelectCourseType} style={{ margin: 0, width: '100% !important' }} labelStyle={{ color: 'white' }} />
-                                            </div>
-                                        </div>
-                                        <button className='button button_1 intro_button trans_200 advisory_btn'>Đăng ký</button>
-                                    </form>
+                                <p style={{ width: readOnly ? '100%' : '50%', padding: '0 8px', margin: 0, color: '#199d76' }}>Số điện thoại:
+                                    <input onKeyPress={e => (!/[0-9]/.test(e.key)) && e.preventDefault()}
+                                        type='tel' className='intro_input w-100' placeholder='Số điện thoại' ref={e => this.phoneNumber = e} />
+                                </p>
+                                <div className='mb-5' style={{ width: '100%', padding: '0 8px', margin: 0, color: '#199d76' }}>
+                                    <FormSelect ref={e => this.courseType = e} label='Loại khóa học:' data={ajaxSelectCourseType} style={{ margin: 0, width: '100% !important' }} labelStyle={{ color: 'white' }} />
                                 </div>
                             </div>
+                            <button className='button button_1 intro_button trans_200 advisory_btn'>Đăng ký</button>
+                        </form>
+                    </div>
+                </div>
             </div>
         );
     }

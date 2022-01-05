@@ -139,9 +139,9 @@
         padding-left: 0;
         padding-right: 0;
     }
-    .team_col:not(:last-child) {
+    /* .team_col:not(:last-child) {
         margin-bottom: 60px;
-    }
+    } */
     .cta_phone {
         margin-top: 33px;
     }

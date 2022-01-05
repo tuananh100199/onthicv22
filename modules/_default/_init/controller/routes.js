@@ -323,7 +323,7 @@ module.exports = (app) => {
             console.log('Hook: uploadSettingImage => ' + fields.userData);
             const srcPath = files.SettingImage[0].path;
 
-            if (['logo', 'contact', 'subscribe'].includes(fields.userData.toString())) {
+            if (['logo', 'contact', 'subscribe', 'footer'].includes(fields.userData.toString())) {
                 app.state.get(fields.userData, (_, oldImage) => {
                     oldImage && app.deleteImage(oldImage);
                     let destPath = `/img/${fields.userData}${app.path.extname(srcPath)}`;

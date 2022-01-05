@@ -22,6 +22,7 @@ class SettingsPage extends AdminPage {
             this.systemLogo.setData('logo', logo);
             this.systemContact.setData('contact', contact);
             this.systemSubscribe.setData('subscribe', subscribe);
+            this.systemFooter.setData('footer', footer);
             this.setState({ logo, footer, contact, subscribe, smsAPIToken });
         });
     }
@@ -118,6 +119,7 @@ class SettingsPage extends AdminPage {
                                 <FormImageBox ref={e => this.systemLogo = e} label='Logo công ty' uploadType='SettingImage' image={this.state.logo} readOnly={readOnly} />
                                 <FormImageBox ref={e => this.systemContact = e} label='Hình nền phần liên hệ' uploadType='SettingImage' image={this.state.contact} readOnly={readOnly} />
                                 <FormImageBox ref={e => this.systemSubscribe = e} label='Hình nền phần đăng ký nhận tin' uploadType='SettingImage' image={this.state.subscribe} readOnly={readOnly} />
+                                <FormImageBox ref={e => this.systemFooter = e} label='Hình nền footer mobile' uploadType='SettingImage' image={this.state.footer} readOnly={readOnly} />
                             </div>
                         </div>
                     </div>
