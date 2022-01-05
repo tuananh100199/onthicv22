@@ -6,7 +6,7 @@ module.exports = app => {
         },
     };
 
-    app.permission.add({ name: 'forum:write' }, { name: 'forum:delete', menu });
+    app.permission.add({ name: 'forum:write' }, { name: 'forum:delete' }, { name: 'forum:category', menu });
     app.permission.add({ name: 'user:login', menu: { parentMenu: { index: 3010, title: 'Forum', icon: 'fa-users', link: '/user/forum' } } });
 
     app.get('/user/category/forum', app.permission.check('category:read'), app.templates.admin);
@@ -257,7 +257,7 @@ module.exports = app => {
     }));
 
     app.permissionHooks.add('courseAdmin', 'forum', (user) => new Promise(resolve => {
-        app.permissionHooks.pushUserPermission(user, 'forum:write', 'forum:delete');
+        app.permissionHooks.pushUserPermission(user, 'forum:write');
         resolve();
     }));
 

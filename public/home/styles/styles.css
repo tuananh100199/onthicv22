@@ -309,21 +309,23 @@ section {
 }
 
 .button_1 {
-    background: white;
-    border: solid 2px transparent;
+    background: transparent;
+    border: solid 2px red;
+    color: red;
 }
 
 .button_1 a {
-    color: #FFFFFF;
+    color: red;
 }
 
 .button_1:hover {
-    background: white;
-    border: solid 2px #199d76;
+    color: red;
+    /* background: #4ca758; */
 }
 
 .button_1:hover a {
-    color: white;
+    color: red;
+    /* background: #4ca758; */
 }
 
 .button_2 {

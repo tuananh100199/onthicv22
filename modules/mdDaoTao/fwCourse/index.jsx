@@ -88,6 +88,14 @@ export default {
             component: Loadable({ loading: Loading, loader: () => import('./pages/adminLearningProgressPage') })
         },
         {
+            path: '/user/course/:_id/comment',
+            component: Loadable({ loading: Loading, loader: () => import('./pages/adminCommentPage') })
+        },
+        {
+            path: '/user/course/:_courseId/comment/:_id',
+            component: Loadable({ loading: Loading, loader: () => import('./pages/adminCommentInfoPage') })
+        },
+        {
             path: '/user/course/:_id/import-graduation-exam-score',
             component: Loadable({ loading: Loading, loader: () => import('./pages/adminImportDiemThiTotNghiepPage') })
         },
@@ -118,6 +126,10 @@ export default {
         {
             path: '/user/course/:_id/rate-subject',
             component: Loadable({ loading: Loading, loader: () => import('./pages/adminRatingPage') })
+        },
+        {
+            path: '/user/course/:_courseId/photo/:_id',
+            component: Loadable({ loading: Loading, loader: () => import('./pages/adminPhotoPage') })
         },
         {
             path: '/user/course/:_id/import-final-score',

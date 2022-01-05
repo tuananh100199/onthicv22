@@ -1,6 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { getLessonByStudent, viewLesson, viewVideo, timeLesson } from './redux';
+import { getCaptureSetting, savePhoto, logout } from 'modules/_default/_init/redux';
 import { getStudentScore } from '../fwStudent/redux';
 import { getSubjectByStudent } from '../fwSubject/redux';
 import YouTube from 'react-youtube';
@@ -9,20 +10,89 @@ import { AdminPage, AdminModal } from 'view/component/AdminPage';
 import RateModal from 'modules/_default/fwRate/RateModal';
 // import 'view/component/ratingStar.scss';
 import CommentSection from 'modules/_default/fwComment/CommentSection';
+import Webcam from 'react-webcam';
+import * as faceApi from 'face-api.js';
 
+class ConfirmModal extends AdminModal {
+    intervalCountDown;
+    componentDidMount() {
+        $(document).ready(() => { });
+    }
 
-class TaiLieuThamKhaoModal extends AdminModal {
-    state = {};
-    onShow = (item) => this.setState({ item });
+    onShow = () => {
+        faceApi.nets.ssdMobilenetv1.load('/models/');
+        let minutesFaceDetect = 3;
+        let secondsFaceDetect = 0;
+        this.intervalCountDown = setInterval(() => {
+            --secondsFaceDetect;
+            minutesFaceDetect = (secondsFaceDetect < 0) ? --minutesFaceDetect : minutesFaceDetect;
+            secondsFaceDetect = (secondsFaceDetect < 0) ? 59 : secondsFaceDetect;
+            secondsFaceDetect = (secondsFaceDetect < 10) ? '0' + secondsFaceDetect : secondsFaceDetect;
+            $('#timeFaceDetect').text(minutesFaceDetect + ':' + secondsFaceDetect).css('color', 'red');
+            if (minutesFaceDetect < 0) clearInterval(this.intervalCountDown);
+            if ((secondsFaceDetect <= 0) && (minutesFaceDetect <= 0)) {
+                clearInterval(this.intervalCountDown);
+                this.capture(null, 'end');
+            }
+        }, 1000);
+    }
+
+    capture = (e, type) => {
+        e && e.preventDefault;
+        const imageDetectSrc = this.webcamConfirm.getScreenshot();
+        this.setState({ imageDetectSrc }, () => {
+            faceApi.nets.ssdMobilenetv1.load('/models/').then(() => {
+                const options = new faceApi.SsdMobilenetv1Options({
+                    inputSize: 512,
+                    scoreThreshold: 0.5
+                });
+                faceApi.detectSingleFace('img', options).then((result) => {
+                    if (type == 'end') this.props.logout({ type: 'faceDetect' });
+                    else {
+                        if (result) {
+                            this.hide();
+                        } else {
+                            this.hide();
+                        }
+                    }
+                });
+            });
+        });
+    }
 
     render = () => this.renderModal({
-        title: 'Tài liệu tham khảo',
-        body: <p dangerouslySetInnerHTML={{ __html: this.state.item }} />
+        title: 'Xác nhận học viên trực tuyến',
+        dataBackdrop: 'static',
+        body: <>
+            <div >
+                <div className='d-flex justify-content-center invisible' style={{ marginBottom: '-240px' }}>
+                    <Webcam
+                        audio={false}
+                        height={240}
+                        ref={e => this.webcamConfirm = e}
+                        screenshotFormat='image/jpeg'
+                        width={240}
+                        videoConstraints={{
+                            width: 1280,
+                            height: 720,
+                            facingMode: 'user'
+                        }}
+                    />
+                </div>
+                <div>
+                    <p>Không phát hiện hoạt động trong thời gian dài, vui lòng xác nhận để tiếp tục học!</p>
+                    <p>Thời gian còn lại: <span id='timeFaceDetect'></span></p>
+                </div>
+            </div>
+        </>,
+        buttons: <button className='btn btn-warning' onClick={(e) => this.capture(e, 'userCapture')}>Xác nhận</button>,
+        hideCloseButton: true
     });
 }
 class adminEditPage extends AdminPage {
     state = { showQuestionButton: false, questionVisibility: 'hidden', listVideo: {}, totalSecondsVideo: 0, listPlayedVideo: {} };
     intervalVideo;
+    intervalFaceDetect;
     componentDidMount() {
         const params = T.routeMatcher('/user/hoc-vien/khoa-hoc/:courseId/mon-hoc/:subjectId/bai-hoc/:_id').parse(window.location.pathname);
         if (params._id) {
@@ -54,7 +124,42 @@ class adminEditPage extends AdminPage {
                                     if (!(isView === 'false') || (listViewVideo.findIndex(viewVideo => viewVideo == video._id) != -1))
                                         $('#' + video._id).text('Đã hoàn thành').css('color', 'green');
                                 });
+                                const user = this.props.system && this.props.system.user;
+                                const imageSrc = this.webcam.getScreenshot();
+                                this.props.savePhoto(imageSrc, user._id);
                             }, 1000);
+                            this.props.getCaptureSetting(data => {
+                                const user = this.props.system && this.props.system.user;
+                                const { numberOfMinScreenCapture = 5, activeCapture = false } = data || {};
+                                if (activeCapture && user && !(user.isCourseAdmin || user.isLecturer)) {
+                                    this.intervalFaceDetect = setInterval(() => {
+                                        const imageSrc = this.webcam.getScreenshot();
+                                        this.setState({ imageSrc }, () => {
+                                            faceApi.nets.ssdMobilenetv1.load('/models/').then(() => {
+                                                const options = new faceApi.SsdMobilenetv1Options({
+                                                    inputSize: 512,
+                                                    scoreThreshold: 0.5
+                                                });
+                                                faceApi.detectSingleFace('img', options).then((result) => {
+                                                    if (result) {
+                                                        this.setState({ faceDetect: 0 });
+                                                        this.props.savePhoto(imageSrc, user._id);
+                                                    }
+                                                    else {
+                                                        this.setState(prevState => ({
+                                                            faceDetect: prevState.faceDetect ? prevState.faceDetect + 1 : 1
+                                                        }), () => {
+                                                            if (this.state.faceDetect > 2) {
+                                                                this.confirmModal.show();
+                                                            }
+                                                        });
+                                                    }
+                                                });
+                                            });
+                                        });
+                                    }, 60000 * numberOfMinScreenCapture);
+                                }
+                            });
                             this.setState({ tienDoHocTap: data[params.subjectId], isView, listViewVideo });
                         }
                     });
@@ -89,6 +194,7 @@ class adminEditPage extends AdminPage {
         const { lessonId, subjectId, courseId, totalSeconds } = this.state;
         clearInterval(window.interval);
         clearInterval(this.intervalVideo);
+        clearInterval(this.intervalFaceDetect);
         this.props.timeLesson(lessonId, subjectId, courseId, totalSeconds);
     }
 
@@ -172,12 +278,29 @@ class adminEditPage extends AdminPage {
         if (tienDoHocTap && tienDoHocTap[lessonId]) {
             $('#' + tienDoHocTap[lessonId].rating).prop('checked', true);
         }
+        const videoConstraints = {
+            width: 1280,
+            height: 720,
+            facingMode: 'user'
+        };
+        const imgSrc = this.state.imageSrc;
         return this.renderPage({
             icon: 'fa fa-cubes',
             title: 'Bài học: ' + (title || '...'),
             breadcrumb: [<Link key={0} to={userPageLink}>Môn học</Link>, 'Bài học'],
             content: lessonId ? <>
                 <div className='tile'>
+                    <span className='invisible float-left' style={{ marginRight: '-240px' }}>
+                        <Webcam
+                            audio={false}
+                            height={240}
+                            ref={e => this.webcam = e}
+                            screenshotFormat='image/jpeg'
+                            width={240}
+                            videoConstraints={videoConstraints}
+                        />
+                    </span>
+                    {imgSrc && (<img className='d-none' id='img' src={imgSrc}></img>)}
                     <div className='d-flex justify-content-between'>
                         <a href={'/user/hoc-vien/khoa-hoc/' + courseId + '/mon-hoc/' + subjectId + '/bai-hoc/thong-tin/' + lessonId} style={{ color: 'black' }}><h5>Thông tin bài học</h5></a>
                         <h3 id='time' ref={e => this.time = e}></h3>
@@ -212,11 +335,10 @@ class adminEditPage extends AdminPage {
                         </div>
                     </div>
                 </div>
-
+                <ConfirmModal ref={e => this.confirmModal = e} logout={this.props.logout} readOnly={false} />
                 <div className='tile'>
                     <div className='tile-body'><CommentSection refParentId={courseId} refId={lessonId} /></div>
                 </div>
-                <TaiLieuThamKhaoModal ref={e => this.modalTaiLieuThamKhao = e} />
             </> : null,
             backRoute: userPageLink,
         });
@@ -224,5 +346,5 @@ class adminEditPage extends AdminPage {
 }
 
 const mapStateToProps = state => ({ system: state.system, lesson: state.trainning.lesson, rate: state.framework.rate });
-const mapActionsToProps = { getLessonByStudent, getStudentScore, viewLesson, timeLesson, getSubjectByStudent, viewVideo };
+const mapActionsToProps = { getLessonByStudent, getStudentScore, viewLesson, timeLesson, getSubjectByStudent, viewVideo, getCaptureSetting, savePhoto, logout };
 export default connect(mapStateToProps, mapActionsToProps)(adminEditPage);

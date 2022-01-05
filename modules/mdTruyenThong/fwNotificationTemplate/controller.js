@@ -35,9 +35,9 @@ module.exports = app => {
     });
 
     // Hook permissionHooks -------------------------------------------------------------------------------------------
-    app.permissionHooks.add('courseAdmin', 'notificationTemplate', (user) => new Promise(resolve => {
-        app.permissionHooks.pushUserPermission(user, 'notificationTemplate:read', 'notificationTemplate:write', 'notificationTemplate:delete');
-        resolve();
-    }));
+    // app.permissionHooks.add('courseAdmin', 'notificationTemplate', (user) => new Promise(resolve => {
+    //     app.permissionHooks.pushUserPermission(user, 'notificationTemplate:read', 'notificationTemplate:write', 'notificationTemplate:delete');
+    //     resolve();
+    // }));
 
 };
