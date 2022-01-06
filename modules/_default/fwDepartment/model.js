@@ -24,8 +24,8 @@ module.exports = app => {
         }),
 
         getAll: (condition, done) => done ?
-            model.find(condition).sort({ name: 1 }).exec(done) :
-            model.find({}).sort({ name: 1 }).exec(condition),
+            model.find(condition).sort({ title: 1 }).exec(done) :
+            model.find({}).sort({ title: 1 }).exec(condition),
         
 
         // changes = { $set, $unset, $push, $pull }
