@@ -98,3 +98,10 @@ export function deleteDepartment(_id) {
         }, error => console.error(error) || T.notify('Xóa phòng ban bị lỗi!', 'danger'));
     };
 }
+
+export const ajaxSelectDepartment = T.createAjaxAdapter(
+    '/api/department/page/1/20',
+    params => ({searchText: params.term}),
+    response => response && response.page && response.page.list ?
+        response.page.list.map(department => ({ id: department._id, text: department.title })) : [],
+);

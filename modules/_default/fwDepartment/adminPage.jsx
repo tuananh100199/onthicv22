@@ -42,7 +42,7 @@ class DepartmentModal extends AdminModal {
     }
 }
 
-class AdminQuestionPage extends AdminPage {
+class AdminDepartmentPage extends AdminPage {
     state = { };
     componentDidMount() {
         T.ready(() => {
@@ -96,4 +96,4 @@ class AdminQuestionPage extends AdminPage {
 
 const mapStateToProps = state => ({ system: state.system, department: state.framework.department });
 const mapActionsToProps = { getDepartmentAll,getDepartmentPage,createDepartment,updateDepartment,deleteDepartment };
-export default connect(mapStateToProps, mapActionsToProps)(AdminQuestionPage);
+export default connect(mapStateToProps, mapActionsToProps)(AdminDepartmentPage);
