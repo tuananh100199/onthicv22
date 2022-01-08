@@ -19,11 +19,6 @@ module.exports = (app) => {
             pageSize = parseInt(req.params.pageSize),
             condition=req.query.condition||{},
             pageCondition = { };
-            // if (req.session.user.isCourseAdmin && req.session.user.division && req.session.user.division.isOutside) { 
-            // Session user là quản trị viên khóa học
-            //     pageCondition.division = req.session.user.division._id;
-            // }
-
             if (condition.searchText) {
                 const value = { $regex: `.*${condition.searchText}.*`, $options: 'i' };
                 pageCondition['$or'] = [
@@ -33,9 +28,17 @@ module.exports = (app) => {
                     { msnv: value },
                 ];
             }
-
+            let isOutside = false;
+            // filter theo cơ sở
+            if (req.session.user.division && req.session.user.division.isOutside){
+                pageCondition.division = req.session.user.division._id;
+                isOutside=true;
+            } 
+            else if(condition.filterDivision && condition.filterDivision!='all'){
+                pageCondition.division=condition.filterDivision;
+            }
             app.model.staffInfo.getPage(pageNumber, pageSize, pageCondition, (error, page) => {
-                res.send({ error, page });
+                res.send({ error, page,isOutside });
             });
     });
 

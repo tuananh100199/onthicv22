@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { getStaffInfoPage,createStaffInfo,updateStaffInfo,deleteStaffInfo } from './redux';
 import { AdminPage, AdminModal,FormDatePicker,FormImageBox, FormRichTextBox,FormSelect, FormTextBox, TableCell, renderTable } from 'view/component/AdminPage';
 import Pagination from 'view/component/Pagination';
-import { ajaxSelectDivision } from 'modules/mdDaoTao/fwDivision/redux';
+import { ajaxSelectDivision,getDivisionAll } from 'modules/mdDaoTao/fwDivision/redux';
 import { ajaxSelectDepartment } from 'modules/_default/fwDepartment/redux';
 
 class StaffInfoModal extends AdminModal {
@@ -148,16 +148,41 @@ class StaffInfoModal extends AdminModal {
 }
 
 class AdminStaffInfoPage extends AdminPage {
-    state = { };
+    state = { filterDivisionData:[{id:'all',text:'Tất cả'}],filterDivision:'all',searchText:'',isOutside:false };
     componentDidMount() {
         T.ready(() => {
             T.showSearchBox();
-            this.props.getStaffInfoPage(1);
-            T.onSearch = (searchText) => this.props.getStaffInfoPage(1,undefined,{searchText});
+            this.props.getStaffInfoPage(undefined,undefined,{},(_,isOutside)=>{
+                this.setState({isOutside});
+                //get data division
+                !isOutside && this.props.getDivisionAll(list=>{
+                    const divisionData = list.map(division=>({id:division._id,text:division.title}));
+                    this.setState({filterDivisionData:[...this.state.filterDivisionData,...divisionData]},()=>{
+                        this.filterDivision.value(this.state.filterDivision);
+                    });
+                });
+            });
+
+            T.onSearch = (searchText) =>{
+                this.props.getStaffInfoPage(1,undefined,{searchText,filterDivision:this.state.filterDivision},()=>{
+                    this.setState({searchText});
+                });
+            }; 
+        });
+    }
+
+    onSearch = ({ pageNumber, pageSize, searchText, filterDivision }, done) => {
+        if (searchText == undefined) searchText = this.state.searchText;
+        if (filterDivision == undefined) filterDivision = this.state.filterDivision;
+        const condition = { searchText, filterDivision };
+        this.props.getStaffInfoPage(pageNumber,pageSize,condition,page=>{
+            done && done(page);
+            this.setState({searchText,filterDivision});
         });
     }
 
     edit = (e, item) => e.preventDefault() || this.modal.show(item);
+    
     delete = (e, item) => e.preventDefault() || T.confirm('Xóa nhân viên', 'Bạn có chắc bạn muốn xóa nhân viên này?', true, isConfirm =>
         isConfirm && this.props.deleteStaffInfo(item._id));
 
@@ -165,6 +190,10 @@ class AdminStaffInfoPage extends AdminPage {
         const permission = this.getUserPermission('staff-info');
         const { pageNumber, pageSize, pageTotal, totalItem,list } = this.props.staffInfo && this.props.staffInfo.page ?
         this.props.staffInfo.page : { pageNumber: 1, pageSize: 50, pageTotal: 1, totalItem: 0,list:[] };
+        const header = !this.state.isOutside?<>
+            <label style={{ lineHeight: '40px', marginBottom: 0 }}>Cơ sở đào tạo:</label>&nbsp;&nbsp;
+            <FormSelect ref={e => this.filterDivision = e} data={this.state.filterDivisionData} onChange={value => this.onSearch({ filterDivision: value.id })} style={{ minWidth: '200px', marginBottom: 0, marginRight: 12 }} />
+        </>:null;
         const table = renderTable({
             getDataSource: () => list,
             renderHead: () => (
@@ -193,6 +222,7 @@ class AdminStaffInfoPage extends AdminPage {
             icon: 'fa fa-users',
             title: 'Nhân viên',
             breadcrumb: ['Nhân viên'],
+            header:header,
             content: <>
                 <div className='tile'>{table}</div>
                 <Pagination name='pageStaffInfo' pageNumber={pageNumber} pageSize={pageSize} pageTotal={pageTotal} totalItem={totalItem}
@@ -206,5 +236,5 @@ class AdminStaffInfoPage extends AdminPage {
 }
 
 const mapStateToProps = state => ({ system: state.system, staffInfo: state.framework.staffInfo });
-const mapActionsToProps = { getStaffInfoPage,createStaffInfo,updateStaffInfo,deleteStaffInfo };
+const mapActionsToProps = { getStaffInfoPage,createStaffInfo,updateStaffInfo,deleteStaffInfo,getDivisionAll };
 export default connect(mapStateToProps, mapActionsToProps)(AdminStaffInfoPage);

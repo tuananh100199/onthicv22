@@ -44,7 +44,7 @@ export function getStaffInfoPage(pageNumber, pageSize, condition, done) {
                 T.notify('Lấy danh sách nhân viên bị lỗi!', 'danger');
                 console.error('GET: ' + url + '. ' + data.error);
             } else {
-                done && done(data.page.pageNumber, data.page.pageSize, data.page.pageTotal, data.page.totalItem);
+                done && done(data.page,data.isOutside);
                 dispatch({ type: StaffInfoGetPage, page: data.page });
             }
         }, error => console.error(error) || T.notify('Lấy danh sách nhân viên bị lỗi!', 'danger'));
