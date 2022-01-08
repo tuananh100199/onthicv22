@@ -28,17 +28,15 @@ module.exports = (app) => {
                     { msnv: value },
                 ];
             }
-            let isOutside = false;
             // filter theo cơ sở
             if (req.session.user.division && req.session.user.division.isOutside){
                 pageCondition.division = req.session.user.division._id;
-                isOutside=true;
             } 
             else if(condition.filterDivision && condition.filterDivision!='all'){
                 pageCondition.division=condition.filterDivision;
             }
             app.model.staffInfo.getPage(pageNumber, pageSize, pageCondition, (error, page) => {
-                res.send({ error, page,isOutside });
+                res.send({ error, page});
             });
     });
 

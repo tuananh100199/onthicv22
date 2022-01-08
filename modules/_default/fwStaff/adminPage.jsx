@@ -152,14 +152,16 @@ class AdminStaffInfoPage extends AdminPage {
     componentDidMount() {
         T.ready(() => {
             T.showSearchBox();
-            this.props.getStaffInfoPage(undefined,undefined,{},(_,isOutside)=>{
-                this.setState({isOutside});
-                //get data division
-                !isOutside && this.props.getDivisionAll(list=>{
-                    const divisionData = list.map(division=>({id:division._id,text:division.title}));
-                    this.setState({filterDivisionData:[...this.state.filterDivisionData,...divisionData]},()=>{
-                        this.filterDivision.value(this.state.filterDivision);
-                    });
+            this.props.getStaffInfoPage(1);
+
+            const isOutside = this.props.system && this.props.system.user && this.props.system.user.division 
+            && this.props.system.user.division.isOutside ? this.props.system.user.division.isOutside:false;
+            
+            //get data division
+            !isOutside && this.props.getDivisionAll(list=>{
+                const divisionData = list.map(division=>({id:division._id,text:division.title}));
+                this.setState({filterDivisionData:[...this.state.filterDivisionData,...divisionData]},()=>{
+                    this.filterDivision.value(this.state.filterDivision);
                 });
             });
 
@@ -190,7 +192,10 @@ class AdminStaffInfoPage extends AdminPage {
         const permission = this.getUserPermission('staff-info');
         const { pageNumber, pageSize, pageTotal, totalItem,list } = this.props.staffInfo && this.props.staffInfo.page ?
         this.props.staffInfo.page : { pageNumber: 1, pageSize: 50, pageTotal: 1, totalItem: 0,list:[] };
-        const header = !this.state.isOutside?<>
+        const isOutside = this.props.system && this.props.system.user && this.props.system.user.division 
+            && this.props.system.user.division.isOutside ? this.props.system.user.division.isOutside:false;
+    
+        const header = !isOutside?<>
             <label style={{ lineHeight: '40px', marginBottom: 0 }}>Cơ sở đào tạo:</label>&nbsp;&nbsp;
             <FormSelect ref={e => this.filterDivision = e} data={this.state.filterDivisionData} onChange={value => this.onSearch({ filterDivision: value.id })} style={{ minWidth: '200px', marginBottom: 0, marginRight: 12 }} />
         </>:null;
