@@ -208,6 +208,23 @@ module.exports = app => {
         });
     });
 
+    app.put('/api/user/token', app.permission.check('user:login'), (req, res) => {
+        const token = req.body.token;
+        app.model.user.get(req.body._id, (error, user) => {
+            if (error || user == null) {
+                res.send({ error: 'System has errors!' });
+            } else {
+                app.model.user.update(req.body._id, { fcmToken: token }, (error, user) => {
+                    if (error) {
+                        res.send({ error });
+                    } else {
+                        res.send({ error, user });
+                    }
+                });
+            }
+        });
+    });
+
     app.put('/api/profile', app.permission.check(), (req, res) => {
         const changes = req.body.changes,
             $unset = {};
