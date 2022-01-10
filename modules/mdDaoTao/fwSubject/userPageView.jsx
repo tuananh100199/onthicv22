@@ -64,7 +64,7 @@ class AdminEditPage extends AdminPage {
                         finishedLesson = index + 1;
                     }
                 } else {
-                    if (tienDoHocTap && tienDoHocTap[lesson._id] && tienDoHocTap[lesson._id].view) finishedLesson = index + 1;
+                    if (tienDoHocTap && tienDoHocTap[lesson._id] && (tienDoHocTap[lesson._id].view || (tienDoHocTap[lesson._id].viewedVideo && lesson.videos && Object.keys(tienDoHocTap[lesson._id].viewedVideo).length == lesson.videos.length))) finishedLesson = index + 1;
                 }
             });
         }
@@ -93,7 +93,7 @@ class AdminEditPage extends AdminPage {
                                     <div><p>Đã hoàn thành</p>{!monThucHanh && <p> Điểm ôn tập:{((tienDoHocTap[lesson._id].score ?
                                         tienDoHocTap[lesson._id].score : 0) + '/' + Math.min(lesson.numQuestion, Object.keys(tienDoHocTap[lesson._id].answers).length))}
                                         {(tienDoHocTap[lesson._id].diemTB && tienDoHocTap[lesson._id].diemTB >= 0.5) ? ' (Đạt)' : ' (Chưa đạt)'}</p>}</div>
-                                    : ((lesson.questions.length && !monThucHanh) ? <p>Chưa hoàn thành</p> : ((tienDoHocTap && tienDoHocTap[lesson._id] && tienDoHocTap[lesson._id].view ? <p>Đã hoàn thành</p> : <p>Chưa hoàn thành</p>)))}
+                                    : ((lesson.questions.length && !monThucHanh) ? <p>Chưa hoàn thành</p> : (((tienDoHocTap && tienDoHocTap[lesson._id] && (tienDoHocTap[lesson._id].view || (tienDoHocTap[lesson._id].viewedVideo && lesson.videos && Object.keys(tienDoHocTap[lesson._id].viewedVideo).length == lesson.videos.length))) ? <p>Đã hoàn thành</p> : <p>Chưa hoàn thành</p>)))}
                             </div>
                         </div>);
                         const show = (
