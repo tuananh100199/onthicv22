@@ -314,13 +314,13 @@ class adminEditPage extends AdminPage {
                                 : null}
                             {(monThucHanh || (lesson && lesson.questions && !lesson.questions.length)) ?
                                 <div className=''>
-                                    {!(isView === 'false') && nextLesson ?
+                                    {(!(isView === 'false') || listViewVideo && listViewVideo.length == videos.length) && nextLesson ?
                                         <a className={'btn btn-warning ml-5'} href={'/user/hoc-vien/khoa-hoc/' + courseId + '/mon-hoc/' + subjectId + '/bai-hoc/' + nextLesson._id}>
                                             <i className='fa fa-lg fa-arrow-right' /> Sang bài tiếp theo
                                         </a> :
                                         <button className='btn btn-secondary' onClick={() => T.alert('Thời gian học của bạn chưa đạt yêu cầu để sang bài tiếp theo!', 'error', false, 8000)}>Sang bài tiếp theo</button>}
                                 </div> :
-                                (!(isView === 'false') ?
+                                ((!(isView === 'false') || listViewVideo && listViewVideo.length == videos.length) ?
                                     <Link to={'/user/hoc-vien/khoa-hoc/' + courseId + '/mon-hoc/' + subjectId + '/bai-hoc/cau-hoi/' + lessonId} className='btn btn-warning'>Câu hỏi ôn tập</Link>
                                     : <button className='btn btn-secondary' onClick={() => T.alert('Bạn vui lòng hoàn thành các bài học để được mở khoá!', 'error', false, 8000)}>Câu hỏi ôn tập</button>)}
                         </div>

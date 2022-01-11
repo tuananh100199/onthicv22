@@ -155,6 +155,23 @@ export function updateUser(_id, changes, done) {
     };
 }
 
+export function updateUserToken(_id, token, done) {
+    return dispatch => {
+        const url = '/api/user/token';
+        T.put(url, { _id, token }, data => {
+            if (data.error || data.user == null) {
+                T.notify('Cập nhật token người dùng bị lỗi!', 'danger');
+                console.error('PUT: ' + url + '. ' + data.error);
+                done && done(data.error);
+            } else {
+                T.notify('Cập nhật token người dùng thành công!', 'success');
+                dispatch(changeUser(data.user));
+                done && done(data);
+            }
+        }, error => console.error(error) || T.notify('Cập nhật token người dùng bị lỗi!', 'danger'));
+    };
+}
+
 export function deleteUser(_id, done) {
     return dispatch => {
         const url = '/api/user';
@@ -173,21 +190,6 @@ export function deleteUser(_id, done) {
 
 export function changeUser(user) {
     return { type: UserUpdate, item: user };
-}
-
-export function userUpdateProfile(changes, done) {
-    return () => {
-        const url = '/api/user/profile';
-        T.put(url, { changes }, data => {
-            if (data.error) {
-                T.notify('Error when update profile!', 'danger');
-                console.error('PUT: ' + url + '. ' + data.error);
-            } else {
-                T.notify('Update profile successfully!', 'info');
-            }
-            done && done(data);
-        }, error => console.error(error) || T.notify('Error when update profile!', 'danger'));
-    };
 }
 
 export function switchUser(_id) {
@@ -222,7 +224,7 @@ export const ajaxSelectUserType = (userType, queryType) => T.createAjaxAdapter(
 export const ajaxSelectTeacher = (userType) => T.createAjaxAdapter(
     '/api/user/teacher/page/1/20?',
     // params => ({ condition: params.term ? { searchText: params.term } : { userType } }),
-    params => ({ condition: { searchText: params.term, userType} }),
+    params => ({ condition: { searchText: params.term, userType } }),
     response => response && response.page && response.page.list ?
         response.page.list.map(user => ({ id: user._id, text: `${user.lastname} ${user.firstname} ${user.identityCard ? '(' + user.identityCard + ')' : ''}` })) : [],
 );

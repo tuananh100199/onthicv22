@@ -11,7 +11,6 @@ class UserCourseFeedback extends AdminPage {
         const route = T.routeMatcher('/user/hoc-vien/khoa-hoc/:_id/phan-hoi'),
             _id = route.parse(window.location.pathname)._id;
         if (_id) {
-            this.course.value(true);
             this.setState({ courseId: _id });
             T.ready('/user/hoc-vien/khoa-hoc/' + _id, () => {
                 this.props.getCourseByStudent(_id, data => {
@@ -21,6 +20,7 @@ class UserCourseFeedback extends AdminPage {
                         const course = data.item.active && data.item;
                         if (data.teacher) {
                             this.setState({ teacher: data.teacher });
+                            this.course.value(true);
                         }
                         this.setState({ name: course.name });
                     }
@@ -34,21 +34,21 @@ class UserCourseFeedback extends AdminPage {
     onChange = (value, type) => {
         if (value) {
             this.setState({ type });
-            this[type == 'course' ? 'teacher' : 'course'].value(false);
+            if (this['teacher']) this[type == 'course' ? 'teacher' : 'course'].value(false);
         }
     }
     render() {
         const { name, courseId, teacher, type } = this.state, backRoute = '/user/hoc-vien/khoa-hoc/' + courseId;
         return this.renderPage({
             icon: 'fa fa-cubes',
-            title: 'Khóa học: ' + name,
+            title: 'Phản hồi khóa học: ' + name,
             breadcrumb: [<Link key={0} to={backRoute}>Khóa học của tôi</Link>, 'Phản hồi khóa học'],
             content: <>
-                <div className='tile' style={{ display: 'flex' }}>
+                {teacher && <div className='tile' style={{ display: 'flex' }}>
                     <FormCheckbox ref={e => this.course = e} onChange={value => this.onChange(value, 'course')} label='Phản hồi khóa học' />
                     &nbsp; &nbsp;
-                    {teacher && <FormCheckbox ref={e => this.teacher = e} onChange={value => this.onChange(value, 'teacher')} label={`Phản hồi giáo viên ${teacher.lastname} ${teacher.firstname}`} />}
-                </div>
+                    <FormCheckbox ref={e => this.teacher = e} onChange={value => this.onChange(value, 'teacher')} label={`Phản hồi giáo viên ${teacher.lastname} ${teacher.firstname}`} />
+                </div>}
                 {courseId && <FeedbackSection type={type} _refId={courseId} title={type == 'teacher' ? 'giáo viên' : 'khóa học'} />}
             </>,
             onBack: () => this.props.history.goBack(),
