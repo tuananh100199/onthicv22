@@ -1,4 +1,4 @@
-import './scss/bootstrap/bootstrap.scss';
+// import './scss/bootstrap/bootstrap.scss';
 import './scss/admin/main.scss';
 import './admin.scss';
 import 'rc-tooltip/assets/bootstrap.css';
