@@ -1,6 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { getAllDivisionByUser } from 'modules/mdDaoTao/fwDivision/redux';
+import 'modules/_default/fwHome/style.css';
 
 class Footer extends React.Component {
     componentDidMount() {
@@ -8,7 +9,7 @@ class Footer extends React.Component {
     }
 
     render() {
-        let { facebook, youtube, twitter, instagram, todayViews, allViews } = this.props.system ? this.props.system : { todayViews: 0, allViews: 0 };
+        let { facebook, youtube, twitter, instagram, footer } = this.props.system ? this.props.system : { footer: '/img/footer.jpg'};
         facebook = facebook ? <li><a href={facebook} target='_blank' rel='noreferrer'><i className='fa fa-facebook' aria-hidden='true' /></a></li> : '';
         youtube = youtube ? <li><a href={youtube} target='_blank' rel='noreferrer'><i className='fa fa-youtube' aria-hidden='true' /></a></li> : '';
         twitter = twitter ? <li><a href={twitter} target='_blank' rel='noreferrer'><i className='fa fa-twitter' aria-hidden='true' /></a></li> : '';
@@ -16,105 +17,76 @@ class Footer extends React.Component {
         const divisionsInside = this.props.division && this.props.division.list ?
             this.props.division.list.filter(division => !division.isOutside)
             : [];
-            console.log('divisionsInside', divisionsInside);
+            console.log('footer', footer);
         return (
-            <footer className='footer' id='lienHe' style={{ position: 'absolute', bottom: 0, width: '100%' }}>
-                <div className='footer_content'>
-                    <div className='container-fluid'>
-                        {/* <div className='wrapper_footer'>
-                                <div className='wrap-division'>
-                                    <div className='staff_group_title'>
-                                        <h3>{this.state.title}</h3>
-                                        Trung tâm dạy nghề lát xe
-                                        <span>HIEP PHAT</span>
-                                    </div>
-                                    <div className='staff_name' style={{ whiteSpace: 'nowrap' }}><h5>{staff.user.lastname + ' ' + staff.user.firstname}</h5></div>
-                                    <div className='staff_title' style={{ whiteSpace: 'nowrap' }}><h6>{staff.title}</h6></div>
-                                    <div className='text'>
-                                        <blockquote>
-                                            <p>&ldquo;hi&rdquo;</p>
-                                        </blockquote>
-                                    </div> 
-                                </div>
-                                <div className='division-img'>
-                                    <img src={divisionsInside && divisionsInside.length && divisionsInside[0].image} alt='Image' className='img-fluid' />
-                                </div>
-                            </div> */}
-                        <div className='row'>
-                            <div className='col-lg-5 footer_col'>
-                                <div className='footer_about'>
-                                    <div className='footer_logo'>
-                                        <a href='#' onClick={e => e.preventDefault()}>
-                                            <div>Lái xe<span>Hiệp Phát</span></div>
-                                            <div>Trung tâm dạy nghề lái xe11</div>
-                                        </a>
-                                    </div>
-                                    <div className='footer_about_text'>
-                                        <ul className=''>
-                                            {divisionsInside.length > 0 ?
-                                                divisionsInside.map((item, index) => (
-                                                    <li key={index} className='mb-2'>
-                                                        <div className='location_title'>{item.title}: {item.address ? item.address : ''}</div>
-                                                        <div className='location_text mt-0'>Điện thoại:<a href={'tel:' + item.phoneNumber}>{T.mobileDisplay(item.phoneNumber)}</a> &nbsp;&nbsp;Di động:&nbsp;<a href={'tel:' + item.mobile}>{T.mobileDisplay(item.mobile)}</a></div>
-                                                        <div className='location_text mt-0'>Email:&nbsp;<a href={'mailto:' + item.email}>{item.email}</a></div>
-                                                    </li>
-                                                )) : ''}
-                                        </ul>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div className='col-lg-3 footer_col'>
-                                <div className='footer_location'>
-                                    <div className='footer_title'>Thống kê truy cập</div>
-                                    <ul className='locations_list'>
-                                        <li>
-                                            <div className='location_title'>Hôm nay:</div>
-                                            <div className='location_text'>{todayViews}</div>
-                                        </li>
-                                        <li>
-                                            <div className='location_title'>Tổng truy cập:</div>
-                                            <div className='location_text'>{allViews}</div>
-                                        </li>
-                                    </ul>
-                                </div>
-                            </div>
-
-                            <div className='col-lg-4 footer_col'>
-                                {this.props.division && this.props.division.list && this.props.division.list.length > 0 ?
-                                    <div className='google_map_row'>
-                                        <div id='carouselFooter' className='carousel slide col' data-ride='carousel' data-interval='5000' style={{ height: 'auto' }}>
-                                            <div className='carousel-inner'>
-                                                {divisionsInside.map((item, index) => (
-                                                    <div className={'carousel-item' + (index == 0 ? ' active' : '')}
-                                                        key={index}
-                                                        style={{
-                                                            height: '200px',
-                                                            backgroundImage: `url('${T.url(item.image)}')`,
-                                                            backgroundRepeat: 'no-repeat',
-                                                            backgroundPosition: 'center center',
-                                                            border: '1px solid gray',
-                                                            backgroundSize: 'cover',
-                                                            cursor: 'pointer',
-                                                        }}
-                                                        onClick={() => window.open(item.mapURL, '_blank')}>
-                                                        <span style={{ position: 'fixed', bottom: '10px', left: '10px', color: '#4CA758', fontWeight: 'bold' }}>{item.title + ': ' + item.address}</span>
-                                                    </div>))}
-                                            </div>
-                                            <a className='carousel-control-prev' href='#carouselFooter' role='button' data-slide='prev' style={{ opacity: 1 }}>
-                                                <span className='carousel-control-prev-icon' style={{ backgroundColor: '#4ca758', backgroundSize: '70% 70%' }} />
-                                                <span className='sr-only'>Previous</span>
-                                            </a>
-                                            <a className='carousel-control-next' href='#carouselFooter' role='button' data-slide='next' style={{ opacity: 1 }}>
-                                                <span className='carousel-control-next-icon' style={{ backgroundColor: '#4ca758', backgroundSize: '70% 70%' }} />
-                                                <span className='sr-only'>Next</span>
+            <footer className='footer' style={{ position: 'absolute', bottom: 0, width: '100%' }}>
+                <div className='footer_content' style={{background: 'white'}}>
+                    <div className='pc'>
+                        <div className='container-fluid'>
+                            <div className='row'>
+                                <div className='col-lg-6 footer_col'>
+                                    <div className='footer_about'>
+                                        <div className='footer_logo'>
+                                            <a href='#' onClick={e => e.preventDefault()}>
+                                                <div className='title1' style={{}}>Trung tâm dạy nghề lái xe</div>
+                                                <div className='title2' style={{}}>HIEP PHAT</div>
                                             </a>
                                         </div>
-                                    </div> : <p>Chưa cập nhật địa chỉ</p>
-                                }
+                                        <div className='footer_about_text'>
+                                            <ul className=''>
+                                                {divisionsInside.length > 0 ?
+                                                    divisionsInside.map((item, index) => (
+                                                        <li key={index} className='mb-2' style={{color:'#4ca758', fontSize: 15, fontWeight: 500}}>
+                                                            <div className='location_title'>{item.title}: {item.address ? item.address : ''}</div>
+                                                            <div className='location_text mt-0'>Điện thoại:<a style={{color:'#4ca758'}} href={'tel:' + item.phoneNumber}>{T.mobileDisplay(item.phoneNumber)}</a> &nbsp;&nbsp;Di động:&nbsp;<a style={{color:'#4ca758'}} href={'tel:' + item.mobile}>{T.mobileDisplay(item.mobile)}</a></div>
+                                                            <div className='location_text mt-0'>Email:&nbsp;<a style={{color:'#4ca758'}} href={'mailto:' + item.email}>{item.email}</a></div>
+                                                        </li>
+                                                    )) : ''}
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className='col-lg-6' 
+                                    style={{
+                                            backgroundImage: `url('${T.url(divisionsInside[0] && divisionsInside[0].image)}')`,
+                                            backgroundRepeat: 'no-repeat',
+                                            backgroundPosition: 'center center',
+                                            backgroundSize: 'cover',
+                                            clipPath: 'polygon(0 0, 100% 0, 100% 100%, 29% 99%)'
+                                        }}>
+                                </div>
                             </div>
                         </div>
                     </div>
+                    <div className='mobile'>
+                        <div className='row'> 
+                            <div className='col-12'>
+                                <div className='wrap_title'>
+                                    <div className='title1'>HIỆP PHÁT</div>
+                                    <p className='title2'>Hệ thống đào tạo trực tuyến</p>
+                                    <div className='strike'></div>
+                                    <p className='description'>Hệ thống phục vụ cho công tác dạy - học trực tuyến &  quản lý đào tạo, sử dụng cho chương trình đào tạo và cấp giấy phép lái xe ôtô</p>
+                                </div>
+                            </div>
+                            <div className='col-12' 
+                                    // style={{
+                                    //         backgroundImage: `url('${T.url(footer)}')`,
+                                    //         backgroundRepeat: 'no-repeat',
+                                    //         backgroundPosition: 'center center',
+                                    //         backgroundSize: 'cover',
+                                    //         clipPath: 'polygon(0 0, 100% 0, 100% 100%, 29% 99%)'
+                                    //     }}
+                                        >
+                                <div className='wrap-img'>
+                                    <img alt='Loading' className='listViewLoading' src={footer}
+                                        style={{ width: '100%', height: 'auto' }} />
+                                    </div>
+                                </div>
+                               
+                        </div>
+                       
+                    </div>
+                    
                 </div>
                 <div className='footer_bar'>
                     <div className='container'>

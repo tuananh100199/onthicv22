@@ -4,18 +4,39 @@ import { login } from 'modules/_default/_init/redux';
 import './style.css';
 
 class SectionDenVoiHiepPhat extends React.Component {
+    // componentDidMount() {
+    //     $(document).ready(() => {
+    //         function denVoiHP() {
+    //             let denVoiHP = document.querySelectorAll('.detail');
+    //             for (let i = 0; i < denVoiHP.length; i++) {
+    //                 let windowHeight = window.innerHeight;
+    //                 let elementTop = denVoiHP[i].getBoundingClientRect().top;
+    //                 let elementVisible = 150;
+                
+    //                 if (elementTop < windowHeight - elementVisible) {
+    //                     denVoiHP[i].classList.add('active_den_voi_HP');
+    //                 } else {
+    //                     denVoiHP[i].classList.remove('active_den_voi_HP');
+    //                 }
+    //             }
+    //         }
+            
+    //         window.addEventListener('scroll', denVoiHP);
+    //     });
+    // }
+
     render() {
         return (
             <div className='section_den_voi_hp' style={{ backgroundColor: 'aliceblue' }}>
                 <div className='container' style={{ paddingTop: '20px' }}>
-                    <div className='intro_form_container'>
+                    <div className='form_den_voi_hp'>
                         <div className='form_title'>
                             <div>ĐẾN VỚI HIỆP PHÁT</div> 
                             <div className='strike1'/>
                         </div>
                         <div className='wrap_den_voi_HP'>
                             <div className='row'>
-                                <div className='col-lg-4 col-md-6 col-xs-12'>
+                                <div className='col-lg-4 col-sm-6 col-xs-12'>
                                     <div className='wrap_item'>
                                         <div className='item'>
                                             <div className='icon_item_den_voi_HP'>
@@ -33,7 +54,7 @@ class SectionDenVoiHiepPhat extends React.Component {
                                        </div>
                                     </div>
                                 </div>
-                                <div className='col-lg-4 col-md-6 col-xs-12'>
+                                <div className='col-lg-4 col-sm-6 col-xs-12'>
                                     <div className='wrap_item'>
                                         <div className='item'>
                                             <div className='icon_item_den_voi_HP'>
@@ -49,7 +70,7 @@ class SectionDenVoiHiepPhat extends React.Component {
                                        </div>
                                     </div>
                                 </div>
-                                <div className='col-lg-4 col-md-6 col-xs-12'>
+                                <div className='col-lg-4 col-sm-6 col-xs-12'>
                                     <div className='wrap_item'>
                                         <div className='item'>
                                             <div className='icon_item_den_voi_HP'>
@@ -66,7 +87,7 @@ class SectionDenVoiHiepPhat extends React.Component {
                                        </div>
                                     </div>
                                 </div>
-                                <div className='col-lg-4 col-md-6 col-xs-12'>
+                                <div className='col-lg-4 col-sm-6 col-xs-12'>
                                     <div className='wrap_item'>
                                         <div className='item'>
                                             <div className='icon_item_den_voi_HP'>
@@ -84,7 +105,7 @@ class SectionDenVoiHiepPhat extends React.Component {
                                        </div>
                                     </div>
                                 </div>
-                                <div className='col-lg-4 col-md-6 col-xs-12'>
+                                <div className='col-lg-4 col-sm-6 col-xs-12'>
                                     <div className='wrap_item'>
                                         <div className='item'>
                                             <div className='icon_item_den_voi_HP'>
@@ -100,7 +121,7 @@ class SectionDenVoiHiepPhat extends React.Component {
                                        </div>
                                     </div>
                                 </div>
-                                <div className='col-lg-4 col-md-6 col-xs-12'>
+                                <div className='col-lg-4 col-sm-6 col-xs-12'>
                                     <div className='wrap_item'>
                                         <div className='item'>
                                             <div className='icon_item_den_voi_HP'>
