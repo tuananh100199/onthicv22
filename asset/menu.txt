@@ -13,6 +13,8 @@
 	2100 - Thành phần giao diện (/user/component)
 	2110 - Thống kê (/user/statistic)
 	2120 - Tài liệu (/user/document)
+	2130 - Phòng ban (/user/department)
+	2140 - Thông tin nhân viên (/user/staff-info)
 3000. Truyền thông (undefined)
 	3001 - Đăng ký tư vấn (/user/candidate)
 	3002 - Liên hệ (/user/contact)
