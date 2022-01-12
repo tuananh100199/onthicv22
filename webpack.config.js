@@ -156,6 +156,7 @@ module.exports = (env, argv) => ({
         compress: true,
         historyApiFallback: true,
         open: true,
+        hot: true,
     },
     resolve: {
         alias: { exceljsFE: path.resolve(__dirname, 'node_modules/exceljs/dist/exceljs.min') },

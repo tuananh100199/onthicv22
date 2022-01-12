@@ -18,6 +18,16 @@ module.exports = app => {
                 });
             }
         });
+
+        // Redirect to webpack server
+        app.get('/*.hot-update.json', (req, res) => {
+            const http = require('http');
+            http.get('http://localhost:' + (app.port + 1) + req.originalUrl, response => {
+                let data = '';
+                response.on('data', chunk => data += chunk);
+                response.on('end', () => res.send(data));
+            });
+        });
     }
 
     app.post('/api/debug/switch-user', (req, res) => {

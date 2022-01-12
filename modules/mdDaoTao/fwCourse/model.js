@@ -80,7 +80,7 @@ module.exports = app => {
         get: (condition, done) => {
             const findTask = typeof condition == 'string' ? model.findById(condition) : model.findOne(condition);
             findTask.populate('courseType').populate('subjects', '-detailDescription').populate({
-                path: 'teacherGroups.teacher', select: '-password', populate: { path: 'user division' }
+                path: 'teacherGroups.teacher', select: '-password', populate: { path: 'division' }
             }).populate({
                 path: 'teacherGroups.student', populate: { path: 'user division courseType course', select: 'email title name image phoneNumber' }
             }).populate({

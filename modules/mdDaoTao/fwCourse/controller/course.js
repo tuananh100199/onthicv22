@@ -479,11 +479,11 @@ module.exports = (app) => {
                     if (listIdThiHetMon && listIdThiHetMon.length) {
                         for (let i = 0; i < monLyThuyet.length; i++) {
                             const index = listIdThiHetMon.findIndex(monThi => monThi == monLyThuyet[i]._id);
-                            if( index == -1){
+                            if (index == -1) {
                                 filterThiTotNghiep = false;
                                 break;
-                            } else{
-                                if(!(tienDoThiHetMon[listIdThiHetMon[index]].score && (parseInt(tienDoThiHetMon[listIdThiHetMon[index]].score) >= 5))){
+                            } else {
+                                if (!(tienDoThiHetMon[listIdThiHetMon[index]].score && (parseInt(tienDoThiHetMon[listIdThiHetMon[index]].score) >= 5))) {
                                     filterThiTotNghiep = false;
                                     break;
                                 }

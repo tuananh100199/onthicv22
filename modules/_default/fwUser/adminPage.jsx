@@ -84,7 +84,7 @@ class UserModal extends AdminModal {
         } else if (changes.division == null) {
             T.notify('Cơ sở đào tạo không được trống', 'danger');
             this.itemDivision.focus();
-        }else if (changes.daNghiDay && !changes.ngayNghiDay) {
+        } else if (changes.daNghiDay && !changes.ngayNghiDay) {
             T.notify('Ngày nghỉ dạy không được trống!', 'danger');
             this.itemNgayNghiDay.focus();
         } else {
@@ -171,7 +171,7 @@ class UserPasswordModal extends AdminModal {
             T.notify('Mật khẩu không trùng nhau!', 'danger');
             this.password1.focus();
         } else {
-            this.props.updateUser(this.data('_id'), { password: password1 }, ({error}) => error || this.hide());
+            this.props.updateUser(this.data('_id'), { password: password1 }, ({ error }) => error || this.hide());
         }
     }
 

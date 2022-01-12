@@ -31,18 +31,18 @@ class SettingsPage extends AdminPage {
     capture = (e) => {
         e.preventDefault;
         const imageSrc = this.webcam.getScreenshot();
-        this.setState({imageSrc},()=>{
-            faceApi.nets.ssdMobilenetv1.load('/models/').then(()=>{
+        this.setState({ imageSrc }, () => {
+            faceApi.nets.ssdMobilenetv1.load('/models/').then(() => {
                 const options = new faceApi.SsdMobilenetv1Options({
                     inputSize: 512,
                     scoreThreshold: 0.5
                 });
-                faceApi.detectSingleFace('img', options).then((result)=>{
-                    if(result) $('#result').text('Đã phát hiện khuôn mặt');
+                faceApi.detectSingleFace('img', options).then((result) => {
+                    if (result) $('#result').text('Đã phát hiện khuôn mặt');
                     else $('#result').text('Không phát hiện khuôn mặt');
                 });
             });
-        });   
+        });
     }
 
     render() {
@@ -90,7 +90,7 @@ class SettingsPage extends AdminPage {
                         {imgSrc && (<img id='img' src={imgSrc}></img>)}
                         {imgSrc && (<p id='result'></p>)}
                     </div>
-                    
+
                     {/* <ReactPlayer url='https://drive.google.com/file/d/1XWdDkazv6gyQvVd6jA8UD8GIE55eqBeD/preview' /> */}
                     {/* <div className='d-flex justify-content-center'>
                         <div className='embed-responsive embed-responsive-16by9' style={{ width: '70%', display: 'block' }} >
