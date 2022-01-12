@@ -20,7 +20,7 @@ module.exports = (app, http, appConfig) => {
     app.use(bodyParser.urlencoded({ limit: '50mb', extended: true, parameterLimit: 100000 }));
 
     // Cryptography
-    app.crypt = require('bcrypt-nodejs');
+    app.crypt = require('bcrypt');
     app.getToken = length => Array(length).fill('~!@#$%^&*()0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz').map(x => x[Math.floor(Math.random() * x.length)]).join('');
     // app.sha256 = require('crypto-js/sha256');
 

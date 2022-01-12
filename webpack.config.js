@@ -152,17 +152,18 @@ module.exports = (env, argv) => ({
         ]
     },
     devServer: {
-        contentBase: path.join(__dirname, 'public'),
         port: appConfig.port + 1,
         compress: true,
         historyApiFallback: true,
-        disableHostCheck: true,
         open: true,
     },
     resolve: {
         alias: { exceljsFE: path.resolve(__dirname, 'node_modules/exceljs/dist/exceljs.min') },
         modules: [path.resolve(__dirname, './'), 'node_modules'],
         extensions: ['.js', '.jsx', '.json'],
+        fallback: {
+            fs: false
+        }
     },
     optimization: { minimize: true },
 });
