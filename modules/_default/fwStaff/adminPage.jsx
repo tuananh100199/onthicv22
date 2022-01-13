@@ -64,7 +64,7 @@ class StaffInfoModal extends AdminModal {
             sex: this.itemSex.value(),
             division: this.itemDivision.value(),
             department: this.itemDepartment.value(),
-            msnv: this.itemMsnv.value(),
+            msnv: this.itemMsnv.value().toUpperCase(),
             chucVu:this.itemChucVu.value(),
             ngayBatDauLam:this.itemNgayBatDauLam.value(),
             trinhDoDaoTao:this.itemTrinhDoDaoTao.value(),
@@ -97,10 +97,7 @@ class StaffInfoModal extends AdminModal {
         } else if (!data.department) {
             T.notify('Phòng ban không được trống!', 'danger');
             this.itemDepartment.focus();
-        } else if (!data.chucVu) {
-            T.notify('Chức vụ không được trống!', 'danger');
-            this.itemChucVu.focus();
-        } else {
+        }else {
             this.state._id ? this.props.update(this.state._id, data, this.hide()) : this.props.create(data, this.hide);
         }
     }
@@ -132,7 +129,7 @@ class StaffInfoModal extends AdminModal {
                 <FormTextBox className='col-md-6' ref={e => this.itemIdentityIssuedBy = e} label='Nơi cấp CMND/CCCD' readOnly={readOnly} />
                 <FormSelect className='col-md-3' ref={e => this.itemDivision = e} label='Cơ sở đào tạo' data={ajaxSelectDivision} readOnly={readOnly} required />
                 <FormSelect className='col-md-3' ref={e => this.itemDepartment = e} label='Phòng ban' data={ajaxSelectDepartment} readOnly={readOnly} required />
-                <FormTextBox className='col-md-3' ref={e => this.itemChucVu = e} label='Chức vụ' required readOnly={readOnly}/>
+                <FormTextBox className='col-md-3' ref={e => this.itemChucVu = e} label='Chức vụ' readOnly={readOnly}/>
                 <FormTextBox className='col-md-3' ref={e => this.itemMsnv = e} label='Mã số nhân viên' readOnly={readOnly}/>
                 <FormDatePicker className='col-md-3' ref={e => this.itemNgayBatDauLam = e} label='Ngày bắt đầu làm'readOnly={readOnly} type='date-mask'/>
                 <FormTextBox className='col-md-3' ref={e => this.itemTrinhDoDaoTao = e} label='Trình độ đào tạo'readOnly={readOnly}/>
