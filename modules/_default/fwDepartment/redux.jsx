@@ -35,6 +35,7 @@ export function getDepartmentAll(searchText, done) {
     };
 }
 
+T.initCookiePage('pageDepartment', true);
 export function getDepartmentPage(pageNumber, pageSize, searchText, done) {
     const page = T.updatePage('pageDepartment', pageNumber, pageSize);
     return dispatch => {
