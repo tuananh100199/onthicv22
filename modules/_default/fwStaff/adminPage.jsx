@@ -14,9 +14,9 @@ class StaffInfoModal extends AdminModal {
 
     onShow = (item) => {
         const { _id,image, firstname, lastname, birthday,email,phoneNumber, sex, division, identityCard,identityDate,identityIssuedBy,department,
-        msnv,chucVu,ngayBatDauLam,trinhDoDaoTao,trinhDoHocVan,chuyenNganh,truongDaoTao,bangCapKhac,residence,regularResidence } = item || 
+        msnv,chucVu,ngayBatDauLam,trinhDoDaoTao,trinhDoVanHoa,chuyenNganh,truongDaoTao,bangCapKhac,residence,regularResidence } = item || 
         {_id:null,image:'',firstname:'',lastname:'',birthday:'',email:'',phoneNumber:'',user:null,sex:null,division:null,identityCard:'',identityDate:'',identityIssuedBy:'',department:'',
-    msnv:'',chucVu:'',ngayBatDauLam:'',trinhDoDaoTao:'',trinhDoHocVan:'',chuyenNganh:'',truongDaoTao:'',bangCapKhac:'',residence:'',regularResidence:''};
+    msnv:'',chucVu:'',ngayBatDauLam:'',trinhDoDaoTao:'',trinhDoVanHoa:'',chuyenNganh:'',truongDaoTao:'',bangCapKhac:'',residence:'',regularResidence:''};
         this.itemFirstname.value(firstname || '');
         this.itemLastname.value(lastname || '');
         this.itemBirthday.value(birthday);
@@ -32,7 +32,7 @@ class StaffInfoModal extends AdminModal {
         this.itemChucVu.value(chucVu||'');
         this.itemNgayBatDauLam.value(ngayBatDauLam||'');
         this.itemTrinhDoDaoTao.value(trinhDoDaoTao||'');
-        this.itemTrinhDoHocVan.value(trinhDoHocVan||'');
+        this.itemTrinhDoVanHoa.value(trinhDoVanHoa||'');
         this.itemChuyenNganh.value(chuyenNganh||'');
         this.itemTruongDaoTao.value(truongDaoTao||'');
         this.itemBangCapKhac.value(bangCapKhac||'');
@@ -68,7 +68,7 @@ class StaffInfoModal extends AdminModal {
             chucVu:this.itemChucVu.value(),
             ngayBatDauLam:this.itemNgayBatDauLam.value(),
             trinhDoDaoTao:this.itemTrinhDoDaoTao.value(),
-            trinhDoHocVan:this.itemTrinhDoHocVan.value(),
+            trinhDoVanHoa:this.itemTrinhDoVanHoa.value(),
             chuyenNganh:this.itemChuyenNganh.value(),
             truongDaoTao:this.itemTruongDaoTao.value(),
             bangCapKhac:this.itemBangCapKhac.value(),
@@ -132,8 +132,8 @@ class StaffInfoModal extends AdminModal {
                 <FormTextBox className='col-md-3' ref={e => this.itemChucVu = e} label='Chức vụ' readOnly={readOnly}/>
                 <FormTextBox className='col-md-3' ref={e => this.itemMsnv = e} label='Mã số nhân viên' readOnly={readOnly}/>
                 <FormDatePicker className='col-md-3' ref={e => this.itemNgayBatDauLam = e} label='Ngày bắt đầu làm'readOnly={readOnly} type='date-mask'/>
+                <FormTextBox className='col-md-3' ref={e => this.itemTrinhDoVanHoa = e} label='Trình độ văn hóa'readOnly={readOnly}/>
                 <FormTextBox className='col-md-3' ref={e => this.itemTrinhDoDaoTao = e} label='Trình độ đào tạo'readOnly={readOnly}/>
-                <FormTextBox className='col-md-3' ref={e => this.itemTrinhDoHocVan = e} label='Trình độ học vấn'readOnly={readOnly}/>
                 <FormTextBox className='col-md-3' ref={e => this.itemChuyenNganh = e} label='Chuyên ngành'readOnly={readOnly}/>
                 <FormTextBox className='col-md-6' ref={e => this.itemTruongDaoTao = e} label='Trường đào tạo'readOnly={readOnly}/>
                 <FormTextBox className='col-md-6' ref={e => this.itemBangCapKhac = e} label='Bằng cấp khác' readOnly={readOnly}/>
