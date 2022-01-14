@@ -34,7 +34,20 @@ module.exports = (app) => {
 
     const model = app.db.model('StaffInfo', schema);
     app.model.staffInfo = {
-        create: (data, done) => model.create(data, done),
+        create: (data, done) =>{
+            // xử lý trường hợp có msnv
+            if(data && data.msnv && data.msnv!=''){
+                model.findOne({msnv:data.msnv},(error,info)=>{
+                    if(error) done(error);
+                    else if(info) done('MSNV đã được sử dụng!');
+                    else{
+                        model.create(data,done);
+                    }
+                });
+            }else{//trường hợp không có msnv
+                model.create(data, done);
+            }
+        },
 
         get: (condition, done) =>(typeof condition == 'object' ? model.findOne(condition) : model.findById(condition))
             .populate('user', '-password').populate('division').populate('department').exec(done),
@@ -56,29 +69,18 @@ module.exports = (app) => {
             }
         }),
 
-        // changes = { $set, $unset, $push, $pull }
         update: (_id, changes, done) => {
-            if (changes && changes.course) {
-                app.model.course.get(changes.course, (error, item) => {
-                    if (error) {
-                        done(error);
-                    } else if (item) {
-                        changes.tienDoHocTap = {};
-                        changes.diemBoDeThi = {};
-                        item.subjects && item.subjects.forEach(subject => {
-                            const obj = {};
-                            obj[subject._id] = {};
-                            Object.assign(changes.tienDoHocTap, obj);
-                        });
-                        changes.modifiedDate = new Date();
+            if(changes && changes.msnv && changes.msnv!=''){
+                model.findOne({msnv:changes.msnv},(error,info)=>{
+                    if(error) done(error);
+                    else if(info && info._id !=_id){// MSNV của nv khác
+                        done('MSNV đã được sử dụng!');
+                    }else{
                         model.findOneAndUpdate({ _id }, changes, { new: true }).populate('user', 'email phoneNumber').populate('division', 'id title').exec(done);
-                    } else {
-                        done();
                     }
                 });
-            } else {
-                changes.modifiedDate = new Date();
-                model.findOneAndUpdate({ _id }, changes, { new: true }).populate('user', 'email phoneNumber').populate('division', 'id title').populate('course', 'name').exec(done);
+            }else{
+                model.findOneAndUpdate({ _id }, changes, { new: true }).populate('user', 'email phoneNumber').populate('division', 'id title').exec(done);
             }
         },
 
