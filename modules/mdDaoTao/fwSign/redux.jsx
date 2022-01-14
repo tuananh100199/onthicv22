@@ -57,6 +57,7 @@ export function getAllSigns(searchText, done) {
     };
 }
 
+T.initCookiePage('pageSign');
 export function getSignPage(pageNumber, pageSize, searchText, done) {
     const page = T.updatePage('pageSign', pageNumber, pageSize);
     return dispatch => {

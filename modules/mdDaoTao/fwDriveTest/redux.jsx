@@ -40,6 +40,7 @@ export function getAllDriveTests(condition, done) {
     };
 }
 
+T.initCookiePage('pageDriveTest');
 export function getDriveTestPage(pageNumber, pageSize, searchText, courseType, done) {
     const page = T.updatePage('pageDriveTest', pageNumber, pageSize);
     return dispatch => {

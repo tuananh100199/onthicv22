@@ -56,7 +56,7 @@ export function getAllDriveQuestions(searchText, done) {
         }, error => console.error(error) || T.notify('Lấy tất cả câu hỏi thi bị lỗi!', 'danger'));
     };
 }
-
+T.initCookiePage('pageDriveQuestion');
 export function getDriveQuestionPage(pageNumber, pageSize, searchText, done) {
     const page = T.updatePage('pageDriveQuestion', pageNumber, pageSize);
     return dispatch => {
