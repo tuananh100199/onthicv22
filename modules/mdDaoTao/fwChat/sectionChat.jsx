@@ -1,6 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { readAllChats, getAllChats, getUserChats, addChat } from './redux';
+import { readAllChats, getAllChats, getUserChats, addChat, getUserChatToken, getAllUserChatToken } from './redux';
+import axios from 'axios';
 import { getStudent, updateStudent } from '../fwStudent/redux';
 import { AdminPage } from 'view/component/AdminPage';
 import './chat.scss';
@@ -58,7 +59,7 @@ class SectionChat extends AdminPage {
 
     componentWillUnmount() {
         T.socket.off('chat:send');
-        const { studentId, tongThoiGianChat,user } = this.state;
+        const { studentId, tongThoiGianChat, user } = this.state;
         clearInterval(window.interval);
         user && !(user.isLecturer || user.isCourseAdmin) && this.props.updateStudent(studentId, { tongThoiGianChat });
     }
@@ -105,7 +106,7 @@ class SectionChat extends AdminPage {
     }
 
     selectUser = (user) => {
-        const userId = user.user ?  user.user._id : user._id;
+        const userId = user.user ? user.user._id : user._id;
         if (this.state._selectedUserId != userId && this.props.system && this.props.system.user) {
             this.props.getUserChats(userId, null, data => {
                 this.setState({
@@ -126,6 +127,51 @@ class SectionChat extends AdminPage {
         const receiver = this.state._selectedUserId ? this.state._selectedUserId : this.state.courseId,
             message = this.message.value;
         if (receiver && message !== '') {
+            const user = this.props.system.user;
+            if (this.state._selectedUserId && user.isLecturer) {
+                console.log(this.state._selectedUserId);
+                this.props.getUserChatToken(this.state._selectedUserId, data => {
+                    if (data && data.token) {
+                        axios.post('https://fcm.googleapis.com/fcm/send', {
+                            data: {
+                                _id: this.state._selectedUserId,
+                                type: 'chatPersonal',
+                                text: message,
+                                senderId: user._id,
+                                senderImage: user.image,
+                                senderName: user.lastname + ' ' + user.firstname
+                            },
+                            to: data.token
+                        },
+                            {
+                                headers: {
+                                    Authorization: 'key=AAAASwL7W64:APA91bFGza7Zqa4XcgOwUean5O5Ml_s7d9k3P9FSM5RrJty_qTlBXerAnjhebWIFnHsZuyW7Vh0veKkVl7XBQYLbpQya2iwRLPwtum9ecKKth2ZP_N7Gr2lPebU8dtcog13YsAI9OjEz'
+                                }
+                            });
+                    }
+                });
+            } else if (!this.state._selectedUserId) {
+                this.props.getAllUserChatToken(this.state.courseId, data => {
+                    if (data && data.list && data.list.length) {
+                        axios.post('https://fcm.googleapis.com/fcm/send', {
+                            data: {
+                                _id: this.state.courseId,
+                                type: 'chatAll',
+                                text: message,
+                                senderId: user._id,
+                                senderImage: user.image,
+                                senderName: user.lastname + ' ' + user.firstname
+                            },
+                            registration_ids: data.list
+                        },
+                            {
+                                headers: {
+                                    Authorization: 'key=AAAASwL7W64:APA91bFGza7Zqa4XcgOwUean5O5Ml_s7d9k3P9FSM5RrJty_qTlBXerAnjhebWIFnHsZuyW7Vh0veKkVl7XBQYLbpQya2iwRLPwtum9ecKKth2ZP_N7Gr2lPebU8dtcog13YsAI9OjEz'
+                                }
+                            });
+                    }
+                });
+            }
             T.socket.emit('chat:send', { receiver, message });
             this.message.value = '';
             this.message.focus();
@@ -297,5 +343,5 @@ class SectionChat extends AdminPage {
 }
 
 const mapStateToProps = state => ({ system: state.system });
-const mapActionsToProps = { readAllChats, getAllChats, getUserChats, addChat, getStudent, updateStudent };
+const mapActionsToProps = { readAllChats, getAllChats, getUserChats, addChat, getStudent, updateStudent, getUserChatToken, getAllUserChatToken };
 export default connect(mapStateToProps, mapActionsToProps)(SectionChat);

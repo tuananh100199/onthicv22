@@ -77,7 +77,7 @@ module.exports = app => {
                     const listStudent = item.teacherGroups.filter(teacherGroup => teacherGroup.teacher && teacherGroup.teacher._id == sessionUser._id);
                     let listUser = [];
                     item.admins && item.admins.length && item.admins.forEach(admin => listUser.push(admin));
-                    listUser =  listUser.concat(listStudent[0].student);
+                    listUser = listUser.concat(listStudent[0] ? listStudent[0].student : []);
                     res.send({ error, item: listUser });
                 }
             });
@@ -94,6 +94,91 @@ module.exports = app => {
                     student.user._id == sessionUser._id
                 ) != -1);
                 res.send({ error, item: lecturer.length ? lecturer[0].teacher : null });
+            }
+        });
+    });
+
+    // Mobile Chat API --------------------------------------------------------------------------------------------------------------------------
+
+    app.get('/api/chat/token', app.permission.check('user:login'), (req, res) => {
+        const { _id } = req.query;
+        app.model.user.get(_id, (error, user) => {
+            if (error || !user) {
+                res.send({ error: 'Không tìm thấy người dùng' });
+            } else {
+                res.send({ error, token: user.fcmToken });
+            }
+        });
+    });
+
+    app.get('/api/chat/token/all', app.permission.check('user:login'), (req, res) => {
+        const { _id } = req.query;
+        app.model.student.getAll({ course: _id }, (error, students) => {
+            if (error || !students) {
+                res.send({ error: 'Không tìm thấy người dùng' });
+            } else {
+                const listTokenStudent = [];
+                students.forEach(student => student.user && student.user.fcmToken && listTokenStudent.push(student.user.fcmToken));
+                res.send({ error, list: listTokenStudent });
+            }
+        });
+    });
+
+    app.post('/api/chat', app.permission.check('user:login'), (req, res) => {
+        const sessionUser = req.session.user;
+        const dataChat = req.body.dataChat;
+        sessionUser && app.model.user.get(dataChat.receiver, (error, receiver) => {
+            if (!error && receiver) {
+                app.model.chat.create({
+                    sender: sessionUser._id,
+                    receiver: receiver._id,
+                    message: dataChat.message,
+                }, (error, item) => {
+                    if (!error && item) {
+                        app.model.chat.get(item._id.toString(), (error, chat) => {
+                            if (!error && chat) {
+                                app.io.emit('chat:send', { chat });
+                                app.model.chat.getSocketIds(receiver._id, (error, socketIds) => {
+                                    let listSocketIds = [];
+                                    !error && socketIds && socketIds.map(socketId => {
+                                        listSocketIds.push(socketId);
+                                    });
+                                    app.io.to(listSocketIds).emit('chat:send', { chat });
+                                });
+                                app.model.chat.getSocketIds(sessionUser._id, (error, socketIds) => {
+                                    let listSocketIds = [];
+                                    !error && socketIds && socketIds.map(socketId => {
+                                        listSocketIds.push(socketId);
+                                    });
+                                    app.io.to(listSocketIds).emit('chat:send', { chat });
+                                });
+                            }
+                        });
+                    }
+                    res.send({ error, item });
+                });
+            } else {
+                app.model.course.get(dataChat.receiver, (error, receiver) => {
+                    if (!error && receiver) {
+                        app.model.chat.create({
+                            sender: sessionUser._id,
+                            receiver: receiver._id,
+                            message: dataChat.message,
+                        }, (error, item) => {
+                            if (!error && item) {
+                                app.model.chat.get(item._id.toString(), (error, chat) => {
+                                    if (!error && chat) {
+                                        chat.receiver = receiver._id;
+                                        app.io.in(receiver._id.toString()).emit('chat:send', { chat });
+                                    }
+                                });
+                            }
+                            res.send({ error, item });
+                        });
+                    } else {
+                        res.send({ error });
+                    }
+                });
             }
         });
     });
