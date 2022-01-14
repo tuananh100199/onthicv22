@@ -96,7 +96,7 @@ module.exports = (app) => {
                 condition = {};
             }
             model.find(condition)
-                .populate('user', 'email phoneNumber image')
+                .populate('user', 'email phoneNumber image fcmToken')
                 .populate('course', 'courseType name active')
                 .populate('division')
                 .populate('courseType', 'title')

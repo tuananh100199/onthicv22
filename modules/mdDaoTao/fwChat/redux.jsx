@@ -122,6 +122,37 @@ export function getAllChats(_courseId, sent, done) {
     };
 }
 
+export function getUserChatToken(_id, done) {
+    return dispatch => {
+        const url = '/api/chat/token';
+        T.get(url, { _id }, data => {
+            if (data.error) {
+                T.notify('System has errors!', 'danger');
+                console.error('GET: ' + url + '.', data.error);
+            } else if (data.token) {
+                dispatch({ type: ChatGetUserChats, token: data.token });
+            }
+            done && done(data);
+        }, error => console.error(error) || T.notify('System has errors!', 'danger'));
+    };
+}
+
+export function getAllUserChatToken(_id, done) {
+    return dispatch => {
+        const url = '/api/chat/token/all';
+        T.get(url, { _id }, data => {
+            if (data.error) {
+                T.notify('System has errors!', 'danger');
+                console.error('GET: ' + url + '.', data.error);
+            } else if (data.list) {
+                console.log(data.list);
+                dispatch({ type: ChatGetUserChats, list: data.list });
+            }
+            done && done(data);
+        }, error => console.error(error) || T.notify('System has errors!', 'danger'));
+    };
+}
+
 export function addChat(isSenderChat, chat) {
     return { type: ChatAddChat, isSenderChat, chat };
 }
