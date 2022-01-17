@@ -372,7 +372,7 @@ module.exports = (app) => {
     });
 
     app.put('/api/capture/save', app.permission.check('user:login'), (req, res) => {
-        const { imageSrc, user } = req.body;
+        const { imageSrc, user, address } = req.body;
         const base64Data = imageSrc.replace(/^data:image\/jpeg;base64,/, '');
         const folderName = user,
             dateFolderName = app.date.getDateFolderName();
@@ -381,7 +381,7 @@ module.exports = (app) => {
             app.path.join(app.publicPath, 'img', '/verifyStudent', folderName),
             app.path.join(app.publicPath, 'img', '/verifyStudent', folderName, dateFolderName),
         );
-        app.fs.writeFile(app.path.join(app.publicPath, 'img/verifyStudent', folderName, dateFolderName, new Date().getTime() + '.png'), base64Data, 'base64', (error) => {
+        app.fs.writeFile(app.path.join(app.publicPath, 'img/verifyStudent', folderName, dateFolderName, new Date().getTime() + address + '.png'), base64Data, 'base64', (error) => {
             res.send({ error });
         });
     });
@@ -398,8 +398,14 @@ module.exports = (app) => {
                 const listDate = app.fs.readdirSync(app.publicPath + '/img/verifyStudent/' + user);
                 if (listDate && listDate.length) {
                     if (listDate.findIndex(dateName => dateFolderName == dateName) != -1) {
-                        const list = app.fs.readdirSync(app.publicPath + '/img/verifyStudent/' + user + '/' + dateFolderName);
-                        res.send({ item: list ? list : [], path: '/img/verifyStudent/' + user + '/' + dateFolderName });
+                        const list = app.fs.readdirSync(app.publicPath + '/img/verifyStudent/' + user + '/' + dateFolderName, 'utf8');
+                        const newList = [];
+                        list.forEach(file => {
+                            if ((app.fs.statSync(app.publicPath + '/img/verifyStudent/' + user + '/' + dateFolderName + '/' + file).size) > 0) {
+                                newList.push(file);
+                            }
+                        });
+                        res.send({ item: newList ? newList : [], path: '/img/verifyStudent/' + user + '/' + dateFolderName });
                     } else {
                         res.send({ item: [], path: '/img/verifyStudent/' + user + '/' + dateFolderName });
                     }

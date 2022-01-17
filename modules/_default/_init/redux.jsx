@@ -128,10 +128,10 @@ export function updateCaptureSetting(changes, done) {
     };
 }
 
-export function savePhoto(imageSrc, user, done) {
+export function savePhoto(imageSrc, user, address, done) {
     return dispatch => {
         const url = '/api/capture/save';
-        T.put(url, { imageSrc, user }, data => {
+        T.put(url, { imageSrc, user, address }, data => {
             if (data.error) {
                 // T.notify(data.error, 'danger');
                 console.error('PUT: ' + url + '.', data.error);

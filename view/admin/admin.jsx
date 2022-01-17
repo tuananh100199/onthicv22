@@ -10,7 +10,7 @@ import { connect, Provider } from 'react-redux';
 import { BrowserRouter, Switch, Route } from 'react-router-dom';
 import thunk from 'redux-thunk';
 import { composeWithDevTools } from 'redux-devtools-extension';
-import { getSystemState, updateSystemState, getCaptureSetting, savePhoto, logout } from 'modules/_default/_init/redux';
+import { getSystemState, updateSystemState, getCaptureSetting, logout } from 'modules/_default/_init/redux';
 import { changeUser } from 'modules/_default/fwUser/redux';
 import Loadable from 'react-loadable';
 import Loading from 'view/component/Loading';
@@ -72,5 +72,5 @@ class App extends React.Component {
     }
 }
 
-const Main = connect(state => ({ system: state.system }), { getSystemState, updateSystemState, savePhoto, getCaptureSetting, logout })(App);
+const Main = connect(state => ({ system: state.system }), { getSystemState, updateSystemState, getCaptureSetting, logout })(App);
 ReactDOM.render(<Provider store={store}><Main /></Provider>, document.getElementById('app'));

@@ -274,6 +274,11 @@ module.exports = (app) => {
         resolve();
     }));
 
+    app.permissionHooks.add('lecturer', 'lession', (user) => new Promise(resolve => {
+        app.permissionHooks.pushUserPermission(user, 'lesson:read');
+        resolve();
+    }));
+
     // Hook upload images ---------------------------------------------------------------------------------------------
     app.createFolder(app.path.join(app.publicPath, '/img/lesson-video'));
 
