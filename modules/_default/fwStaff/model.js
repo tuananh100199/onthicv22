@@ -60,7 +60,7 @@ module.exports = (app) => {
                 result.pageNumber = pageNumber === -1 ? result.pageTotal : Math.min(pageNumber, result.pageTotal);
                 const skipNumber = (result.pageNumber > 0 ? result.pageNumber - 1 : 0) * result.pageSize;
 
-                model.find(condition).sort({ lastname: 1 }).skip(skipNumber).limit(result.pageSize)
+                model.find(condition).sort({department:1,lastname: 1 }).skip(skipNumber).limit(result.pageSize)
                 .populate('user', '-password').populate('division', '_id title').populate('department', '_id title')
                 .exec((error, items) => {
                     result.list = error ? [] : items;

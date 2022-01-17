@@ -13,5 +13,9 @@ export default {
             path: '/user/staff-info',
             component: Loadable({ loading: Loading, loader: () => import('./adminPage') }),
         },
+        {
+            path: '/user/staff-info/:_id',
+            component: Loadable({ loading: Loading, loader: () => import('./adminEditPage') }),
+        },
     ]
 };

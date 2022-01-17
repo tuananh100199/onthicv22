@@ -78,6 +78,12 @@ module.exports = (app) => {
         tongThoiGianTaiLieu: Number,
         tongThoiGianForum: Number,
 
+        isDon:{ type: Boolean, default: false },
+        isHinh:{ type: Boolean, default: false },
+        isIdentityCard:{ type: Boolean, default: false },
+        isGiayKhamSucKhoe:{ type: Boolean, default: false },
+        isBangLaiA1:{ type: Boolean, default: false },
+
         createdDate: { type: Date, default: Date.now },                                             // Ngày tạo
         modifiedDate: { type: Date, default: Date.now },                                            // Ngày cập nhật cuối cùng
     });

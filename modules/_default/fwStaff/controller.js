@@ -11,7 +11,7 @@ module.exports = (app) => {
     );
 
     app.get('/user/staff-info', app.permission.check('staff-info:read'), app.templates.admin);
-
+    app.get('/user/staff-info/:id', app.permission.check('staff-info:write'), app.templates.admin);
 
     //APIs -----------------------------------------------------------------------------------------------
     app.get('/api/staff-info/page/:pageNumber/:pageSize', app.permission.check('staff-info:read'), (req, res) => {
@@ -38,6 +38,11 @@ module.exports = (app) => {
             app.model.staffInfo.getPage(pageNumber, pageSize, pageCondition, (error, page) => {
                 res.send({ error, page});
             });
+    });
+
+    app.get('/api/staff-info', app.permission.check('staff-info:write'), (req, res) => {
+        const { _id } = req.query;
+        app.model.staffInfo.get(_id, (error, item) => res.send({ error, item }));
     });
 
     app.post('/api/staff-info', app.permission.check('staff-info:write'), (req, res) => {
