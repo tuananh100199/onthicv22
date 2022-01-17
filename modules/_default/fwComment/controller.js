@@ -1,5 +1,5 @@
 module.exports = app => {
-    app.permission.add({ name: 'comment:write' }, { name: 'comment:delete' });
+    app.permission.add({ name: 'comment:read' }, { name: 'comment:write' }, { name: 'comment:delete' });
 
     // APIs -----------------------------------------------------------------------------------------------------------------------------------------
     app.get('/api/comment/page/:pageNumber/:pageSize', (req, res) => {
@@ -229,7 +229,7 @@ module.exports = app => {
     });
 
     app.permissionHooks.add('courseAdmin', 'comment', (user) => new Promise(resolve => {
-        app.permissionHooks.pushUserPermission(user, 'comment:write');
+        app.permissionHooks.pushUserPermission(user, 'comment:write', 'comment:read');
         resolve();
     }));
     app.permissionHooks.add('lecturer', 'comment', (user) => new Promise(resolve => {
