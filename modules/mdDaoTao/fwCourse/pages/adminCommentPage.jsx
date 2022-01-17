@@ -42,6 +42,7 @@ class AdminCommentPage extends AdminPage {
     }
 
     render() {
+        const user = this.props.system.user;
         const item = this.props.comment && this.props.comment.page && this.props.comment.page.list ? this.props.comment.page.list : [];
         item.sort((a, b) => (new Date(a.createdDate) - new Date(b.createdDate)));
         const { pageNumber, pageSize, pageTotal, totalItem } = this.props.comment && this.props.comment.page ?
@@ -73,8 +74,8 @@ class AdminCommentPage extends AdminPage {
         const backRoute = `/user/course/${course._id}`;
         return this.renderPage({
             icon: 'fa fa-comment-o',
-            title: 'Bình luận chờ duyệt: ' + course.name,
-            breadcrumb: [<Link key={0} to='/user/course'>Khóa học</Link>, course._id ? <Link key={0} to={backRoute}>{course.name}</Link> : '', 'Bình luận chờ duyệt'],
+            title: user.isCourseAdmin ? 'Bình luận chờ duyệt: ' : 'Bình luận của học viên: ' + course.name,
+            breadcrumb: [<Link key={0} to='/user/course'>Khóa học</Link>, course._id ? <Link key={0} to={backRoute}>{course.name}</Link> : '', user.isCourseAdmin ? 'Bình luận chờ duyệt' : 'Bình luận của học viên'],
             content: (
                 <div className='tile'>
                     <FormSelect ref={e => this.filter = e} data={dataSelect} onChange={data => this.getPage(undefined, undefined, data.id)} style={{ marginBottom: '10px', width: '300px' }} />

@@ -11,20 +11,20 @@ class SectionAdvisoryForm extends React.Component {
             function advisory() {
                 let advisory = document.querySelectorAll('.advisory');
                 console.log('advisory', advisory);
-              
+
                 for (let i = 0; i < advisory.length; i++) {
-                  let windowHeight = window.innerHeight;
-                  let elementTop = advisory[i].getBoundingClientRect().top;
-                  let elementVisible = 150;
-              
-                  if (elementTop < windowHeight - elementVisible) {
-                    advisory[i].classList.add('active');
-                  } else {
-                    advisory[i].classList.remove('active');
-                  }
+                    let windowHeight = window.innerHeight;
+                    let elementTop = advisory[i].getBoundingClientRect().top;
+                    let elementVisible = 150;
+
+                    if (elementTop < windowHeight - elementVisible) {
+                        advisory[i].classList.add('active');
+                    } else {
+                        advisory[i].classList.remove('active');
+                    }
                 }
             }
-              
+
             window.addEventListener('scroll', advisory);
             this.props.viewId ?
                 ajaxGetCourseType(this.props.viewId, data =>
@@ -60,7 +60,7 @@ class SectionAdvisoryForm extends React.Component {
         } else {
             this.props.createCandidate(data, () => {
                 !user ? this.firstname.value = this.lastname.value = this.email.value = this.phoneNumber.value = '' : null;
-                T.notify('Đăng ký tư vấn của bạn đã được gửi!', 'success', true, 3000);
+                T.notify('Đăng ký tư vấn của bạn đã được gửi!', 'success', true, 8000);
                 this.props.hide && this.props.hide();
             });
         }

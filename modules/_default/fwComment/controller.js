@@ -49,31 +49,70 @@ module.exports = app => {
                     });
                 };
                 item && item.length && item.map(comment => parentIdList.push(comment._id && comment._id.toString()));
-                const condition = { $or: [{ 'refParentId': courseId }, { 'parentId': { $in: parentIdList } }], state: 'waiting' };
-                app.model.comment.getPage(pageNumber, pageSize, condition, (error, page) => {
-                    page.listLesson = [{ id: 'all', text: 'Tất cả bài học' }];
-                    if (page && page.list && page.list.length) {
-                        const list = page.list;
-                        const handleGetLesson = (index = 0) => {
-                            if (index == list.length) {
-                                if (filter != 'all') page.list = page.list.filter(comment => comment.lessonId == filter);
-                                res.send({ error: err, page });
-                            } else {
-                                const comment = list[index];
-                                handleGetComment(comment._id, list, index, (newItem) => {
-                                    page.list[index] = newItem;
-                                    if (page.listLesson.findIndex(lesson => lesson.id == newItem.lessonId) == -1)
-                                        page.listLesson.push({ id: newItem.lessonId, text: newItem.lessonName });
-                                    handleGetLesson(index + 1);
-                                });
+                let condition = {};
+                if (req.session.user.isLecturer && !req.session.user.isCourseAdmin) {
+                    app.model.course.get(courseId, (error, item) => {
+                        if (error || !item) {
+                            err = error;
+                        } else {
+                            const listStudent = item.teacherGroups.filter(teacherGroup => teacherGroup.teacher && teacherGroup.teacher._id == req.session.user._id);
+                            const listIdStudent = [];
+                            listStudent[0] && listStudent[0].student.forEach(student => listIdStudent.push(student.user._id));
+                            condition = { state: 'approved', author: { $in: listIdStudent } };
+                            app.model.comment.getPage(pageNumber, pageSize, condition, (error, page) => {
+                                page.listLesson = [{ id: 'all', text: 'Tất cả bài học' }];
+                                if (page && page.list && page.list.length) {
+                                    const list = page.list;
+                                    const handleGetLesson = (index = 0) => {
+                                        if (index == list.length) {
+                                            if (filter != 'all') page.list = page.list.filter(comment => comment.lessonId == filter);
+                                            res.send({ error: err, page });
+                                        } else {
+                                            const comment = list[index];
+                                            handleGetComment(comment._id, list, index, (newItem) => {
+                                                page.list[index] = newItem;
+                                                if (page.listLesson.findIndex(lesson => lesson.id == newItem.lessonId) == -1)
+                                                    page.listLesson.push({ id: newItem.lessonId, text: newItem.lessonName });
+                                                handleGetLesson(index + 1);
+                                            });
+                                        }
+                                    };
+                                    handleGetLesson();
+                                } else {
+                                    res.send({ error, page });
+                                }
                             }
-                        };
-                        handleGetLesson();
-                    } else {
-                        res.send({ error, page });
+                            );
+                        }
+                    });
+                } else {
+                    condition = { $or: [{ 'refParentId': courseId }, { 'parentId': { $in: parentIdList } }], state: 'waiting' };
+                    app.model.comment.getPage(pageNumber, pageSize, condition, (error, page) => {
+                        page.listLesson = [{ id: 'all', text: 'Tất cả bài học' }];
+                        if (page && page.list && page.list.length) {
+                            const list = page.list;
+                            const handleGetLesson = (index = 0) => {
+                                if (index == list.length) {
+                                    if (filter != 'all') page.list = page.list.filter(comment => comment.lessonId == filter);
+                                    res.send({ error: err, page });
+                                } else {
+                                    const comment = list[index];
+                                    handleGetComment(comment._id, list, index, (newItem) => {
+                                        page.list[index] = newItem;
+                                        if (page.listLesson.findIndex(lesson => lesson.id == newItem.lessonId) == -1)
+                                            page.listLesson.push({ id: newItem.lessonId, text: newItem.lessonName });
+                                        handleGetLesson(index + 1);
+                                    });
+                                }
+                            };
+                            handleGetLesson();
+                        } else {
+                            res.send({ error, page });
+                        }
                     }
+                    );
                 }
-                );
+
             }
         });
     });
@@ -191,6 +230,10 @@ module.exports = app => {
 
     app.permissionHooks.add('courseAdmin', 'comment', (user) => new Promise(resolve => {
         app.permissionHooks.pushUserPermission(user, 'comment:write');
+        resolve();
+    }));
+    app.permissionHooks.add('lecturer', 'comment', (user) => new Promise(resolve => {
+        app.permissionHooks.pushUserPermission(user, 'comment:read');
         resolve();
     }));
 };

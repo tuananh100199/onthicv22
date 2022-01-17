@@ -163,7 +163,7 @@ class AdminCommentInfoPage extends AdminPage {
                             {videosRender}
                             <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                                 {taiLieuThamKhao != '' ? <button className='btn btn-success' onClick={() => this.modal.show()}>Tài liệu học tập</button> : null}
-                                {questions && questions.length ? <button className='btn btn-success' onClick={() => this.questionsModal.show()}>Câu hỏi ôn tập</button> : null}
+                                {questions && questions.length ? <button className='btn btn-warning' onClick={() => this.questionsModal.show()}>Câu hỏi ôn tập</button> : null}
                             </div>
                         </div>
                     </div>
