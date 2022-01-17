@@ -35,6 +35,7 @@ export function getStaffInfoAll(condition, done) {
     };
 }
 
+T.initCookiePage('pageStaffInfo', true);
 export function getStaffInfoPage(pageNumber, pageSize, condition, done) {
     const page = T.updatePage('pageStaffInfo', pageNumber, pageSize,condition);
     return dispatch => {

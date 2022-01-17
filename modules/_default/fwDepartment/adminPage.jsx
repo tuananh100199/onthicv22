@@ -33,7 +33,7 @@ class DepartmentModal extends AdminModal {
         const readOnly = this.props.readOnly;
         return this.renderModal({
             title: 'Phòng ban',
-            size: 'large',
+            size: 'medium',
             body: <div className='row'>
                 <FormTextBox ref={e => this.itemName = e} className='col-md-12' label='Tên phòng ban' readOnly={readOnly} />
                 <FormCheckbox ref={e => this.itemIsActive = e} className='col-md-6' label='Kích hoạt' readOnly={readOnly} />
