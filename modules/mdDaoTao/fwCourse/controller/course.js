@@ -178,7 +178,7 @@ module.exports = (app) => {
                                 res.send({ error: err });
                             } else {
                                 const data = {
-                                    name: list[index].name,
+                                    name: list[index].name + ' (Mặc định)',
                                     courseType: list[index]._id,
                                     isDefault: true,
                                     chatActive: false,

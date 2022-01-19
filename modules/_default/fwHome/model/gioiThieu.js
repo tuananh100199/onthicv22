@@ -3,6 +3,8 @@ module.exports = app => {
         title: String,
         titleVisible: { type: Boolean, default: true },
         abstract: String,
+        abstract2: String,
+        abstract3: String,
         image1: String,
         image2: String,
         image3: String,

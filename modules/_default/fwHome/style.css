@@ -164,6 +164,18 @@
     transition: 1s all ease;
     opacity: 0;
 }
+.warp_gioi_thieu_HP .text-gioi-thieu .description {
+    position: relative;
+    transform: translateX(-100px);
+    transition: 1s all ease;
+    opacity: 0;
+}
+
+.warp_gioi_thieu_HP .text-gioi-thieu .description.active_intro_desciption{
+    transform: translateX(0);
+    opacity: 1;
+}
+
 .warp_gioi_thieu_HP .text-gioi-thieu.active_intro_text{
     transform: translateX(0);
     opacity: 1;
@@ -271,7 +283,6 @@
 	border-radius: 0;
 }
 
-
 .img-intro1, .img-intro2, .img-intro3 {
     position: absolute;
     color: white;
@@ -286,6 +297,24 @@
     z-index: 1;
     top: -55px;
     left: 53px;
+}
+
+.img-intro1.img-intro-zindex {
+    z-index: 2;
+    transform: scale(1.05);
+    transition: 1s all ease;
+}
+
+.img-intro2.img-intro-zindex {
+    z-index: 2;
+    transform: scale(1.05);
+    transition: 1s all ease;
+}
+
+.img-intro3.img-intro-zindex {
+    z-index: 2;
+    transform: scale(1.05);
+    transition: 1s all ease;
 }
 
 .img-intro2 {

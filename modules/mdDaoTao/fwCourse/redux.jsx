@@ -143,7 +143,7 @@ export function createDefaultCourse(done) {
                 T.notify('Tạo khóa học bị lỗi!', 'danger');
                 console.error('POST: ' + url + '.', data.error);
             } else {
-                T.notify('Tạo khóa cơ bản thành công!', 'success');
+                T.notify('Cập nhật khóa cơ bản thành công!', 'success');
                 dispatch(getCoursePage({ isDefault: true }));
                 done && done(data);
             }
