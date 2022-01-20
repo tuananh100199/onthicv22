@@ -6,6 +6,7 @@ const CourseGetItem = 'CourseGetItem';
 const CourseGetUserChat = 'CourseGetUserChat';
 const CourseGetPageByUser = 'CourseGetPageByUser';
 const CourseUpdateStudentInfoInCourse = 'CourseUpdateStudentInfoInCourse';
+const CourseGetCourseByStudent = 'CourseGetCourseByStudent';
 const CourseGetLearningProgressPageByAdmin = 'CourseGetLearningProgressPageByAdmin';
 
 export default function courseReducer(state = {}, data) {
@@ -26,6 +27,10 @@ export default function courseReducer(state = {}, data) {
 
         case CourseGetLearningProgressPageByAdmin: {
             return Object.assign({}, state, { page: data.page, students: data.students, subjects: data.subjects });
+        }
+
+        case CourseGetCourseByStudent: {
+            return Object.assign({}, state, { student: data.student, item: data.item });
         }
 
         case CourseUpdateStudentInfoInCourse: {
@@ -341,7 +346,7 @@ export function getCourseByStudent(_id, done) {
                 console.error('GET: ' + url + '.', data.error);
             } else {
                 done && done(data);
-                dispatch({ type: CourseGetItem, item: data.item });
+                dispatch({ type: CourseGetCourseByStudent, item: data.item, student: data.student });
             }
         }, error => console.error(error) || T.notify('Lấy khóa học bị lỗi!', 'danger'));
     };

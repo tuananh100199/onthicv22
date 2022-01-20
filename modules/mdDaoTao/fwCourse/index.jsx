@@ -151,6 +151,10 @@ export default {
             path: '/user/hoc-vien/khoa-hoc/:_id/thoi-khoa-bieu',
             component: Loadable({ loading: Loading, loader: () => import('modules/mdDaoTao/fwTimeTable/studentView') })
         },
+        {
+            path: '/user/hoc-vien/khoa-hoc/:_id/tien-do-hoc-tap',
+            component: Loadable({ loading: Loading, loader: () => import('./userLearningProgressPage') })
+        },
     ],
     Section: {
         // SectionCourse, SectionCourseList,
