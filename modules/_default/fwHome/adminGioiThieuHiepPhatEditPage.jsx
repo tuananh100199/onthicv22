@@ -14,10 +14,12 @@ class ContentEditPage extends AdminPage {
                 if (data.error) {
                     this.props.history.push('/user/component');
                 } else if (data.item) {
-                    const { _id, title, titleVisible = true, abstract, image1 = '/img/avatar.jpg', image2 = '/img/avatar.jpg', image3 = '/img/avatar.jpg' } = data.item;
+                    const { _id, title, titleVisible = true, abstract, abstract2, abstract3, image1 = '/img/avatar.jpg', image2 = '/img/avatar.jpg', image3 = '/img/avatar.jpg' } = data.item;
                     this.itemTitle.focus();
                     this.itemTitle.value(title);
                     this.itemAbstract.value(abstract);
+                    this.itemAbstract2.value(abstract2 ? abstract2 : abstract);
+                    this.itemAbstract3.value(abstract3 ? abstract3 : abstract);
                     this.itemTitleVisible.value(titleVisible);
                     this.imageBox1.setData('gioi-thieu1:' + _id, image1);
                     this.imageBox2.setData('gioi-thieu2:' + _id, image2);
@@ -34,6 +36,8 @@ class ContentEditPage extends AdminPage {
         title: this.itemTitle.value().trim(),
         titleVisible: this.itemTitleVisible.value() ? 1 : 0,
         abstract: this.itemAbstract.value(),
+        abstract2: this.itemAbstract2.value(),
+        abstract3: this.itemAbstract3.value(),
     });
 
     render() {
@@ -48,7 +52,9 @@ class ContentEditPage extends AdminPage {
                         <div className='col-md-8'>
                             <FormTextBox ref={e => this.itemTitle = e} label='Tiêu đề' readOnly={!permission.write} onChange={e => this.setState({ title: e.target.value })} />
                             <FormCheckbox ref={e => this.itemTitleVisible = e} label='Hiển thị tiêu đề' readOnly={!permission.write} />
-                            <FormRichTextBox ref={e => this.itemAbstract = e} label='Mô tả ngắn' readOnly={!permission.write} />
+                            <FormRichTextBox ref={e => this.itemAbstract = e} label='Mô tả ngắn hình 1' readOnly={!permission.write} />
+                            <FormRichTextBox ref={e => this.itemAbstract2 = e} label='Mô tả ngắn hình 2' readOnly={!permission.write} />
+                            <FormRichTextBox ref={e => this.itemAbstract3 = e} label='Mô tả ngắn hình 3' readOnly={!permission.write} />
                         </div>
                         <div className='col-md-4'>
                             <FormImageBox ref={e => this.imageBox1 = e} label='Hình 1' uploadType='GioiThieuImage1' image={this.state.image1} readOnly={!permission.write} />

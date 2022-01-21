@@ -17,6 +17,8 @@ module.exports = app => {
             diemLiet: { type: Boolean, default: false },
         }],
 
+        isDefault: { type: Boolean, default: false },
+
         practiceNumOfHours: { type: Number },                                 // Tổng số giờ học thực hành
 
         subjects: [{ type: app.db.Schema.ObjectId, ref: 'Subject' }],       // Danh sách môn học
@@ -75,7 +77,7 @@ module.exports = app => {
             }
         }),
 
-        getAll: done => model.find({}).sort({ name: 1 }).exec(done),
+        getAll: (condition, done) => model.find(condition).sort({ priority: -1 }).exec(done),
 
         get: (condition, done) => {
             const findTask = typeof condition == 'string' ? model.findById(condition) : model.findOne(condition);

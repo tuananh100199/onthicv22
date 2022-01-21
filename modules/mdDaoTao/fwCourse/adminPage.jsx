@@ -1,8 +1,8 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { createCourse } from './redux';
+import { createCourse, createDefaultCourse } from './redux';
 import { getCourseTypeAll, ajaxSelectCourseType } from '../fwCourseType/redux';
-import { AdminPage, AdminModal, FormTextBox, FormSelect, FormTabs } from 'view/component/AdminPage';
+import { AdminPage, AdminModal, FormTextBox, FormSelect, FormTabs, CirclePageButton } from 'view/component/AdminPage';
 import AdminCourseFilterView from './adminCourseFilterView';
 
 class CourseModal extends AdminModal {
@@ -60,6 +60,7 @@ class CoursePage extends AdminPage {
             readOnly = (!permission.write || this.props.system.user.isLecturer) && (this.props.system.user && !this.props.system.user.isCourseAdmin);
         const courseTypes = this.state.courseTypes ? this.state.courseTypes : [];
         const tabs = courseTypes.length ? courseTypes.map(courseType => ({ title: courseType.text, component: <AdminCourseFilterView courseFilter={courseType.course} courseType={courseType.id} readOnly={readOnly} /> })) : [];
+        tabs.push({ title: 'Khóa cơ bản', component: <AdminCourseFilterView courseType={'defaultCourse'} readOnly={true} /> });
         return this.renderPage({
             icon: 'fa fa-cubes',
             title: 'Khóa học',
@@ -67,6 +68,7 @@ class CoursePage extends AdminPage {
             content: <>
                 <FormTabs id='coursePageTab' contentClassName='tile' tabs={tabs} />
                 <CourseModal create={this.props.createCourse} ref={e => this.modal = e} history={this.props.history} readOnly={!permission.write} />
+                {!readOnly && <CirclePageButton type='custom' customClassName='btn-warning' customIcon='fa-refresh' style={{ right: '75px' }} onClick={() => this.props.createDefaultCourse()} />}
             </>,
             onCreate: !readOnly ? this.create : null,
         });
@@ -74,5 +76,5 @@ class CoursePage extends AdminPage {
 }
 
 const mapStateToProps = state => ({ system: state.system, course: state.trainning.course });
-const mapActionsToProps = { createCourse, getCourseTypeAll };
+const mapActionsToProps = { createCourse, getCourseTypeAll, createDefaultCourse };
 export default connect(mapStateToProps, mapActionsToProps)(CoursePage);

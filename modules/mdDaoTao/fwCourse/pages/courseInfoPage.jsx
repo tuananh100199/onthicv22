@@ -106,7 +106,7 @@ class EditCoursePage extends AdminPage {
             previousRoute = '/user/course/' + (course ? course._id || '' : ''),
             { isLecturer, isCourseAdmin } = currentUser,
             lock = this.state.lock,
-            readOnly = (!permission.write || isLecturer) && !isCourseAdmin; //TODO: xem lại !isCourseAdmin
+            readOnly = course.isDefault || ((!permission.write || isLecturer) && !isCourseAdmin); //TODO: xem lại !isCourseAdmin
 
         return this.renderPage({
             icon: 'fa fa-cubes',

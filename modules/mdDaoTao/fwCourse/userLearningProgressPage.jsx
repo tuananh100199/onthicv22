@@ -1,32 +1,24 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { getCourse, getLearningProgressPage } from '../redux';
+import { getCourseByStudent } from './redux';
 import { Link } from 'react-router-dom';
 import { AdminPage, renderTable, TableCell } from 'view/component/AdminPage';
 
 class LecturerStudentPage extends AdminPage {
     state = {};
     componentDidMount() {
-        T.ready('/user/course', () => {
-            const params = T.routeMatcher('/user/course/:_id/your-students').parse(window.location.pathname);
-            if (params && params._id) {
-                const course = this.props.course ? this.props.course.item : null;
-                if (course) {
-                    this.props.getLearningProgressPage(undefined, undefined, { courseId: course._id, filter: 'all' });
-                } else {
-                    this.props.getCourse(params._id, data => {
-                        if (data.error) {
-                            T.notify('Lấy khóa học bị lỗi!', 'danger');
-                            this.props.history.push('/user/course/' + params._id);
-                        } else {
-                            this.props.getLearningProgressPage(undefined, undefined, { courseId: params._id, filter: 'all' });
-                        }
-                    });
-                }
-            } else {
-                this.props.history.push('/user/course/');
-            }
-        });
+        const route = T.routeMatcher('/user/hoc-vien/khoa-hoc/:_id/tien-do-hoc-tap'),
+            _id = route.parse(window.location.pathname)._id;
+        if (_id) {
+            this.setState({ courseId: _id });
+            T.ready('/user/hoc-vien/khoa-hoc/' + _id, () => {
+                this.props.getCourseByStudent(_id, data => {
+                    this.setState({ data });
+                });
+            });
+        } else {
+            this.props.history.goBack();
+        }
     }
 
     checkMonLyThuyet = (student, subject) => {
@@ -36,17 +28,17 @@ class LecturerStudentPage extends AdminPage {
     }
 
     render() {
-        const item = this.props.course && this.props.course.item ? this.props.course.item : {},
-            students = this.props.course && this.props.course && this.props.course.students ? this.props.course.students : [],
-            subjects = this.props.course && this.props.course.subjects ? this.props.course.subjects.sort((a, b) => a.monThucHanh - b.monThucHanh) : [];
-        const monLyThuyet = subjects.filter(subject => subject.monThucHanh == false);
+        const course = this.props.course;
+        const subjects = course && course.item && course.item.subjects;
+        const student = course && course.student;
+        const monLyThuyet = subjects ? subjects.filter(subject => subject.monThucHanh == false) : [];
         const subjectColumns = [];
         (monLyThuyet || []).forEach((subject, index) => {
             subjectColumns.push(<th key={index} style={{ width: 'auto', whiteSpace: 'pre', textAlign: 'center' }}  >{subject.title}</th>);
         });
-        // const teacherGroup = item && item.teacherGroups ? item.teacherGroups.find(group => group.teacher && group.teacher._id == currentUser._id) : null;
+        const list = student ? [student] : [];
         const table = renderTable({
-            getDataSource: () => students, stickyHead: true,
+            getDataSource: () => list, stickyHead: true,
             renderHead: () => (
                 <tr>
                     <th style={{ width: 'auto', textAlign: 'center' }}>#</th>
@@ -71,21 +63,21 @@ class LecturerStudentPage extends AdminPage {
                 </tr>),
         });
 
-        const backRoute = `/user/course/${item._id}`;
+        const userPageLink = '/user/hoc-vien/khoa-hoc/' + this.state.courseId;
         return this.renderPage({
-            icon: 'fa fa-users',
-            title: 'Học viên của bạn: ' + item.name,
-            breadcrumb: [<Link key={0} to='/user/course'>Khóa học</Link>, item._id ? <Link key={0} to={backRoute}>{item.name}</Link> : '', 'Học viên của bạn'],
+            icon: 'fa fa-line-chart',
+            title: 'Tiến độ học tập: ',
+            breadcrumb: [<Link key={0} to={userPageLink}>Khóa học</Link>, 'Tiến độ học tập'],
             content: (
                 <div className='tile'>
                     <div className='tile-body'>{table}</div>
                 </div>
             ),
-            backRoute,
+            backRoute: userPageLink,
         });
     }
 }
 
 const mapStateToProps = state => ({ system: state.system, course: state.trainning.course });
-const mapActionsToProps = { getCourse, getLearningProgressPage };
+const mapActionsToProps = { getCourseByStudent };
 export default connect(mapStateToProps, mapActionsToProps)(LecturerStudentPage);
