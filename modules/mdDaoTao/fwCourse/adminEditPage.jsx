@@ -50,10 +50,10 @@ class EditCoursePage extends AdminPage {
                     <PageIcon visible={isCourseAdmin || permission.write} to={`/user/course/${item._id}/rate-teacher`} icon='fa-star' iconBackgroundColor='orange' text='Đánh giá Giáo viên' />
                     <PageIcon visible={isCourseAdmin || permission.write || permissionFeedback.read} to={`/user/course/${item._id}/feedback`} icon='fa-heartbeat' iconBackgroundColor='teal' text='Phản hồi' />
                     <PageIcon to={`/user/course/${item._id}/forum`} icon='fa-users' iconBackgroundColor='#9ced65' text='Forum' />
-                    <PageIcon visible={ permission.delete } to={`/user/course/${item._id}/additional-profile`} icon='fa-folder' iconBackgroundColor='#1488db' text='Bổ sung hồ sơ học viên' />
                     <PageIcon visible={isLecturer || isCourseAdmin} to={`/user/course/${item._id}/comment`} icon='fa-comment-o' iconBackgroundColor='#900' text={isCourseAdmin ? 'Bình luận chờ duyệt' : 'Bình luận của học viên'} />
 
                     <PageIconHeader text='Đào tạo' />
+                    <PageIcon visible={ permission.delete } to={`/user/course/${item._id}/additional-profile`} icon='fa-folder' iconBackgroundColor='#1488db' text='Bổ sung hồ sơ học viên' />
                     <PageIcon visible={isLecturer} to={`/user/course/${item._id}/your-students`} icon='fa-graduation-cap' iconBackgroundColor='#18ffff' text='Học viên của bạn' />
                     <PageIcon visible={isLecturer || isCourseAdmin} to={`/user/course/${item._id}/learning`} icon='fa-line-chart' iconBackgroundColor='#69f0ae' text='Tiến độ học tập' />
                     <PageIcon visible={permission.delete} to={`/user/course/${item._id}/rate-subject`} icon='fa-folder-open' iconBackgroundColor='#900' text='Đánh giá bài học' />
