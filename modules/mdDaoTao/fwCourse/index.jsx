@@ -155,6 +155,14 @@ export default {
             path: '/user/course/:_id/additional-profile',
             component: Loadable({ loading: Loading, loader: () => import('./pages/adminAdditionalProfilePage') })
         },
+        {
+            path: '/user/hoc-vien/khoa-hoc/:_id/tien-do-hoc-tap',
+            component: Loadable({ loading: Loading, loader: () => import('./userLearningProgressPage') })
+        },
+        {
+            path: '/user/hoc-vien/khoa-hoc/:_id/cong-no',
+            component: Loadable({ loading: Loading, loader: () => import('./userPaymentInfo') })
+        },
     ],
     Section: {
         // SectionCourse, SectionCourseList,

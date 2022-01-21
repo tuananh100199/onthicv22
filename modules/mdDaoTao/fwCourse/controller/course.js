@@ -49,6 +49,8 @@ module.exports = (app) => {
     app.get('/user/hoc-vien/khoa-hoc/:_id', app.permission.check('user:login'), app.templates.admin);
     app.get('/user/hoc-vien/khoa-hoc/thong-tin/:_id', app.permission.check('user:login'), app.templates.admin);
     app.get('/user/hoc-vien/khoa-hoc/:_id/phan-hoi', app.permission.check('user:login'), app.templates.admin);
+    app.get('/user/hoc-vien/khoa-hoc/:_id/tien-do-hoc-tap', app.permission.check('user:login'), app.templates.admin);
+    app.get('/user/hoc-vien/khoa-hoc/:_id/cong-no', app.permission.check('user:login'), app.templates.admin);
 
     const getCourseData = (_id, sessionUser, done) => {
         app.model.course.get(_id, (error, item) => {
@@ -105,7 +107,13 @@ module.exports = (app) => {
             pageSize = parseInt(req.params.pageSize),
             sessionUser = req.session.user,
             condition = req.query.pageCondition || {};
-        if (req.query.courseType) condition.courseType = req.query.courseType;
+        if (req.query.courseType) {
+            if (typeof req.query.courseType == 'string') {
+                condition.courseType = req.query.courseType;
+                condition.isDefault = { $ne: true };
+            }
+            else condition.isDefault = true;
+        }
         if (sessionUser.isLecturer && !sessionUser.isCourseAdmin) {
             condition.teacherGroups = { $elemMatch: { teacher: sessionUser._id } };
             condition.active = true;
@@ -151,6 +159,46 @@ module.exports = (app) => {
 
     app.post('/api/course', app.permission.check('course:write'), (req, res) => {
         app.model.course.create(req.body.data || {}, (error, item) => res.send({ error, item }));
+    });
+
+    app.post('/api/course/default', app.permission.check('course:write'), (req, res) => {
+        app.model.course.getAll({ isDefault: true }, (error, courses) => {
+            if (error) res.send({ error });
+            else {
+                let err = null;
+                app.model.courseType.getAll({}, (error, courseTypes) => {
+                    if (error) res.send({ error });
+                    else {
+                        const listCourseType = courseTypes.map(courseType => ({ _id: courseType._id, name: courseType.title }));
+                        const listCourse = courses.map(course => (course.courseType));
+                        const list = [];
+                        for (let i = 0; i < listCourseType.length; i++) {
+                            if (listCourse.findIndex(course => course.toString() == listCourseType[i]._id.toString()) == -1)
+                                list.push(listCourseType[i]);
+                        }
+                        const handleCreateDefaultCourse = (index = 0) => {
+                            if (index == list.length) {
+                                res.send({ error: err });
+                            } else {
+                                const data = {
+                                    name: list[index].name + ' (Mặc định)',
+                                    courseType: list[index]._id,
+                                    isDefault: true,
+                                    chatActive: false,
+                                    commentActive: false,
+
+                                };
+                                app.model.course.create(data, (error) => {
+                                    err = error;
+                                    handleCreateDefaultCourse(index + 1);
+                                });
+                            }
+                        };
+                        handleCreateDefaultCourse();
+                    }
+                });
+            }
+        });
     });
 
     app.put('/api/course', (req, res, next) => (req.session.user && req.session.user.isCourseAdmin) ? next() : app.permission.check('course:write')(req, res, next), (req, res) => {

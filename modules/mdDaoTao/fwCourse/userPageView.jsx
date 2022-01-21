@@ -172,6 +172,8 @@ class UserCoursePageDetail extends AdminPage {
                     {/* check render */}
                     {teacher && <RateModal ref={e => this.modal = e} title='Đánh giá giáo viên' type='teacher' _refId={teacher._id} />}
                     {teacher && <PageIcon to='#' icon='fa-refresh' iconBackgroundColor='#D00' text='Thay đổi giáo viên' onClick={(e) => { e.preventDefault(); this.changeLecturerModal.show({ student, course }); }} />}
+                    <PageIcon to={`/user/hoc-vien/khoa-hoc/${courseId}/tien-do-hoc-tap`} icon='fa-line-chart' iconBackgroundColor='#69f0ae' text='Tiến độ học tập' />
+                    <PageIcon to={`/user/hoc-vien/khoa-hoc/${courseId}/cong-no`} icon='fa-money' iconBackgroundColor='#900' text='Học phí' />
                     {subjects.length ? <>
                         <PageIconHeader text='Môn học lý thuyết' />
                         {subjects.map((subject, index) =>

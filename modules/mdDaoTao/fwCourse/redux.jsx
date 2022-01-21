@@ -6,6 +6,7 @@ const CourseGetItem = 'CourseGetItem';
 const CourseGetUserChat = 'CourseGetUserChat';
 const CourseGetPageByUser = 'CourseGetPageByUser';
 const CourseUpdateStudentInfoInCourse = 'CourseUpdateStudentInfoInCourse';
+const CourseGetCourseByStudent = 'CourseGetCourseByStudent';
 const CourseGetLearningProgressPageByAdmin = 'CourseGetLearningProgressPageByAdmin';
 const CourseGetAdditionProfilePage = 'CourseGetAdditionProfilePage';
 
@@ -13,7 +14,7 @@ export default function courseReducer(state = {}, data) {
     switch (data.type) {
         case CourseGetPage: {
             const newState = {};
-            newState[data.courseType] = data.page;
+            newState[data.courseTypes] = data.page;
             return Object.assign({}, state, newState);
         }
 
@@ -31,6 +32,10 @@ export default function courseReducer(state = {}, data) {
 
         case CourseGetAdditionProfilePage: {
             return Object.assign({}, state, { profilePage: data.page });
+        }
+        
+        case CourseGetCourseByStudent: {
+            return Object.assign({}, state, { student: data.student, item: data.item });
         }
 
         case CourseUpdateStudentInfoInCourse: {
@@ -86,6 +91,7 @@ export default function courseReducer(state = {}, data) {
 T.initCookiePage('pageCourse');
 export function getCoursePage(courseType, pageNumber, pageSize, pageCondition, done) {
     const page = T.updatePage('pageCourse', pageNumber, pageSize);
+    const courseTypes = (typeof courseType == 'string') ? courseType : 'default';
     return (dispatch) => {
         const url = '/api/course/page/' + page.pageNumber + '/' + page.pageSize;
         T.get(url, { courseType, pageCondition }, data => {
@@ -94,7 +100,7 @@ export function getCoursePage(courseType, pageNumber, pageSize, pageCondition, d
                 console.error('GET: ' + url + '.', data.error);
             } else {
                 done && done(data);
-                dispatch({ type: CourseGetPage, courseType, page: data.page });
+                dispatch({ type: CourseGetPage, courseTypes, page: data.page });
             }
         }, error => console.error(error) || T.notify('Lấy danh sách khóa học bị lỗi!', 'danger'));
     };
@@ -133,6 +139,22 @@ export function createCourse(data, done) {
                 console.error('POST: ' + url + '.', data.error);
             } else {
                 dispatch(getCoursePage(data.item.courseType));
+                done && done(data);
+            }
+        }, error => console.error(error) || T.notify('Tạo khóa học bị lỗi!', 'danger'));
+    };
+}
+
+export function createDefaultCourse(done) {
+    return dispatch => {
+        const url = '/api/course/default';
+        T.post(url, {}, data => {
+            if (data.error) {
+                T.notify('Tạo khóa học bị lỗi!', 'danger');
+                console.error('POST: ' + url + '.', data.error);
+            } else {
+                T.notify('Cập nhật khóa cơ bản thành công!', 'success');
+                dispatch(getCoursePage({ isDefault: true }));
                 done && done(data);
             }
         }, error => console.error(error) || T.notify('Tạo khóa học bị lỗi!', 'danger'));
@@ -329,7 +351,7 @@ export function getCourseByStudent(_id, done) {
                 console.error('GET: ' + url + '.', data.error);
             } else {
                 done && done(data);
-                dispatch({ type: CourseGetItem, item: data.item });
+                dispatch({ type: CourseGetCourseByStudent, item: data.item, student: data.student });
             }
         }, error => console.error(error) || T.notify('Lấy khóa học bị lỗi!', 'danger'));
     };
@@ -429,7 +451,7 @@ export function exportLearningProgressToExcel(_courseId, filter) {
     T.download(T.url(`/api/course/learning-progress/export/${_courseId}/${filter}`));
 }
 
-export function exportFinalExam( _subjectId ,_studentId, done) {
+export function exportFinalExam(_subjectId, _studentId, done) {
     return () => {
         const url = `/api/course/final-exam/export/${_subjectId}/${_studentId}`;
         T.get(url, data => {
