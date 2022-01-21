@@ -45,7 +45,6 @@ class UserCourseInfo extends AdminPage {
 
     render() {
         const userPageLink = '/user/hoc-vien/khoa-hoc/' + this.state.courseId;
-        console.log(this.state);
         return this.renderPage({
             icon: 'fa fa-cubes',
             title: 'Khóa học: ' + (this.state.name),
@@ -78,7 +77,6 @@ class UserCourseInfo extends AdminPage {
 
                     <div className='tile'>
                         <h3 className='tile-title'>Thời gian</h3>
-                        <label className='col'>Thời gian khai giảng: <b>{this.state.thoiGianKhaiGiang ? T.dateToText(this.state.thoiGianKhaiGiang, 'dd/mm/yyyy ') : 'Chưa có'}</b></label>
                         <label className='col-md-6'>Thời gian bắt đầu: <b>{this.state.thoiGianBatDau ? T.dateToText(this.state.thoiGianBatDau, 'dd/mm/yyyy ') : 'Chưa có'}</b></label>
                         <label className='col-md-6'>Thời gian kết thúc: <b>{this.state.thoiGianKetThuc ? T.dateToText(this.state.thoiGianKetThuc, 'dd/mm/yyyy ') : 'Chưa có'}</b></label>
                         <label className='col-md-6'>Thời gian kết thúc môn dự kiến: <b>{this.state.thoiGianThiKetThucMonDuKien ? T.dateToText(this.state.thoiGianThiKetThucMonDuKien, 'dd/mm/yyyy ') : 'Chưa có'}</b></label>

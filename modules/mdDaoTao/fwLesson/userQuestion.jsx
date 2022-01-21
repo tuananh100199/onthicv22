@@ -124,7 +124,7 @@ class userQuestion extends AdminPage {
                     setTimeout(() => {
                         const user = this.props.system && this.props.system.user;
                         const imageSrc = this.webcam.getScreenshot();
-                        this.props.savePhoto(imageSrc, user._id);
+                        this.props.savePhoto(imageSrc, user._id, 'ques');
                     }, 1000);
                     this.props.getCaptureSetting(data => {
                         const user = this.props.system && this.props.system.user;
@@ -141,7 +141,7 @@ class userQuestion extends AdminPage {
                                         faceApi.detectSingleFace('img', options).then((result) => {
                                             if (result) {
                                                 this.setState({ faceDetect: 0 });
-                                                this.props.savePhoto(imageSrc, user._id);
+                                                this.props.savePhoto(imageSrc, user._id, 'ques');
                                             }
                                             else {
                                                 this.setState(prevState => ({

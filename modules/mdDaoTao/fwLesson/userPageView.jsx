@@ -126,8 +126,8 @@ class adminEditPage extends AdminPage {
                                 });
                                 const user = this.props.system && this.props.system.user;
                                 const imageSrc = this.webcam.getScreenshot();
-                                this.props.savePhoto(imageSrc, user._id);
-                            }, 1000);
+                                this.props.savePhoto(imageSrc, user._id, 'view' + lesson.title);
+                            }, 5000);
                             this.props.getCaptureSetting(data => {
                                 const user = this.props.system && this.props.system.user;
                                 const { numberOfMinScreenCapture = 5, activeCapture = false } = data || {};
@@ -143,7 +143,7 @@ class adminEditPage extends AdminPage {
                                                 faceApi.detectSingleFace('img', options).then((result) => {
                                                     if (result) {
                                                         this.setState({ faceDetect: 0 });
-                                                        this.props.savePhoto(imageSrc, user._id);
+                                                        this.props.savePhoto(imageSrc, user._id, 'view' + lesson.title);
                                                     }
                                                     else {
                                                         this.setState(prevState => ({

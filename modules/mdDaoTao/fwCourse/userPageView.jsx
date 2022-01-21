@@ -156,7 +156,6 @@ class UserCoursePageDetail extends AdminPage {
         const { name, courseId, teacher, student } = this.state, rate = this.props.rate.item && this.props.rate.item.value;
         const showDiemThiTotNghiep = student && student.diemThiTotNghiep && student.diemThiTotNghiep.length;
         const showMonThucHanh = subjects.length && student && student.tienDoThiHetMon && (subjects.findIndex(subject => (subject.monTienQuyet == true && !student.tienDoThiHetMon[subject._id])) == -1);
-        console.log(student && student.tienDoThiHetMon);
         return this.renderPage({
             icon: 'fa fa-cubes',
             title: `Khóa học: ${name}`,
