@@ -44,6 +44,15 @@ class AdminPhotoPage extends AdminPage {
         });
     }
 
+    getNameImage = (address) => {
+        if (address.startsWith('exam')) return 'Trang thi hết môn';
+        else if (address.startsWith('ques')) return 'Trang câu hỏi ôn tập';
+        else {
+            const listAddress = address.split('.');
+            return 'Bài giảng: ' + listAddress[0].slice(4);
+        }
+    }
+
     render() {
         const item = this.props.course && this.props.course.item ? this.props.course.item : {};
         const { studentName, data } = this.state;
@@ -60,7 +69,8 @@ class AdminPhotoPage extends AdminPage {
                             {data && data.item && data.item.length ? data.item.map((image, index) => (
                                 <div key={index} className='col-md-6 col-lg-4 col-xs-12'>
                                     <img src={data.path + '/' + image}></img>
-                                    <p>{T.dateToText(new Date(parseInt(image.slice(0, 13))))}</p>
+                                    <p className='mb-0'>{T.dateToText(new Date(parseInt(image.slice(0, 13))))}</p>
+                                    {image.slice(14, 17) == 'png' ? null : <p>{this.getNameImage(image.slice(13))}</p>}
                                 </div>
                             )) : <p className='col-md-3'>Chưa có dữ liệu!</p>}
                         </div>
