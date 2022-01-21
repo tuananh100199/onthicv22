@@ -7,10 +7,10 @@ import { AdminPage } from 'view/component/AdminPage';
 
 
 const previousRoute = '/user';
-class UserCourseInfo extends AdminPage {
+class UserPaymentInfo extends AdminPage {
     state = { name: '...' };
     componentDidMount() {
-        const route = T.routeMatcher('/user/hoc-vien/khoa-hoc/thong-tin/:_id'),
+        const route = T.routeMatcher('/user/hoc-vien/khoa-hoc/:_id/cong-no'),
             _id = route.parse(window.location.pathname)._id;
         this.setState({ courseId: _id });
         if (_id) {
@@ -45,30 +45,26 @@ class UserCourseInfo extends AdminPage {
 
     render() {
         const userPageLink = '/user/hoc-vien/khoa-hoc/' + this.state.courseId;
-        // const hocPhiConLai = this.state.hocPhiPhaiDong && T.numberDisplay(this.state.hocPhiPhaiDong - (this.state.hocPhiDaDong ? this.state.hocPhiDaDong : 0) - (this.state.hocPhiMienGiam ? this.state.hocPhiMienGiam : 0));
+        const hocPhiConLai = this.state.hocPhiPhaiDong && T.numberDisplay(this.state.hocPhiPhaiDong - (this.state.hocPhiDaDong ? this.state.hocPhiDaDong : 0) - (this.state.hocPhiMienGiam ? this.state.hocPhiMienGiam : 0));
         return this.renderPage({
-            icon: 'fa fa-cubes',
-            title: 'Khóa học: ' + (this.state.name),
-            breadcrumb: [<Link key={0} to={userPageLink}>Khóa học</Link>, 'Chi tiết khóa học'],
+            icon: 'fa fa-money',
+            title: 'Học phí: ' + (this.state.name),
+            breadcrumb: [<Link key={0} to={userPageLink}>Khóa học</Link>, 'Học phí'],
             content: (
                 <>
                     <div className='tile'>
-                        <h3 className='tile-title'>Thông tin chung</h3>
+                        <h3 className='tile-title'>Thông tin học phí</h3>
                         <div className='tile-body row'>
-                            <label className='col-md-6'>Tên khóa học: <b>{this.state.name}</b></label>
-                            <label className='col-md-6'>Loại khóa học: <b>{this.state.courseType ? this.state.courseType.title : ''}</b></label>
-                            {/* <label className='col-md-6'>Học phí phải đóng:  <b>{this.state.hocPhiPhaiDong ? T.numberDisplay(this.state.hocPhiPhaiDong) + ' đồng' : ''}</b></label>
+                            <label className='col-md-6'>Học phí phải đóng:  <b>{this.state.hocPhiPhaiDong ? T.numberDisplay(this.state.hocPhiPhaiDong) + ' đồng' : ''}</b></label>
                             {this.state.hocPhiMienGiam ? <label className='col-md-6'>Học phí miễn giảm: <b>{T.numberDisplay(this.state.hocPhiMienGiam) + ' đồng'}</b></label> : null}
                             <label className='col-md-6'>Học phí đã đóng:  <b>{this.state.hocPhiDaDong ? T.numberDisplay(this.state.hocPhiDaDong) + ' đồng' : ''}</b></label>
                             <label className='col-md-6'>Học phí còn lại:  <b>{hocPhiConLai ? (hocPhiConLai + ' đồng') : ''}</b></label>
-                            {this.state.ngayHetHanNopHocPhi ? <label className='col-md-6'>Ngày hết hạn nộp học phí: <b>{T.dateToText(this.state.ngayHetHanNopHocPhi, 'dd/mm/yyyy')}</b></label> : null} */}
-                            {this.state.shortDescription ? <div className='col-md-12'><label>Giới thiệu ngắn khóa học:</label> <b>{this.state.shortDescription}</b></div> : <></>}
-                            {this.state.detailDescription ? <div className='col-md-12'><label>Mô tả chi tiết: </label><p dangerouslySetInnerHTML={{ __html: this.state.detailDescription }} /> </div> : <></>}
+                            {this.state.ngayHetHanNopHocPhi ? <label className='col-md-6'>Ngày hết hạn nộp học phí: <b>{T.dateToText(this.state.ngayHetHanNopHocPhi, 'dd/mm/yyyy')}</b></label> : null}
                         </div>
                     </div>
 
-                    {/* {this.state.code ? <div className='tile'>
-                        <h3 className='tile-title'>Học phí</h3>
+                    {this.state.code ? <div className='tile'>
+                        <h3 className='tile-title'>Thanh toán</h3>
                         <div className='tile-body row'>
                             <label className='col-md-12'>Tên ngân hàng: <b>{this.state.code + ' - ' + this.state.nameBank}</b></label>
                             <label className='col-md-12'>Số tài khoản: <b>{this.state.accounts && this.state.accounts.number}</b></label>
@@ -76,19 +72,7 @@ class UserCourseInfo extends AdminPage {
                             <label className='col-md-12'>Học phí: <b>{this.state.hocPhiPhaiDong ? T.numberDisplay(this.state.hocPhiPhaiDong) + ' đồng' : ''}</b></label>
                             <label className='col-md-12'>Cú pháp chuyển khoản: <b>{this.state.contentSyntax}</b></label>
                         </div>
-                    </div> : null} */}
-
-                    <div className='tile'>
-                        <h3 className='tile-title'>Thời gian</h3>
-                        <label className='col-md-6'>Thời gian bắt đầu: <b>{this.state.thoiGianBatDau ? T.dateToText(this.state.thoiGianBatDau, 'dd/mm/yyyy ') : 'Chưa có'}</b></label>
-                        <label className='col-md-6'>Thời gian kết thúc: <b>{this.state.thoiGianKetThuc ? T.dateToText(this.state.thoiGianKetThuc, 'dd/mm/yyyy ') : 'Chưa có'}</b></label>
-                        <label className='col-md-6'>Thời gian kết thúc môn dự kiến: <b>{this.state.thoiGianThiKetThucMonDuKien ? T.dateToText(this.state.thoiGianThiKetThucMonDuKien, 'dd/mm/yyyy ') : 'Chưa có'}</b></label>
-                        {/* <label className='col-md-6'>Thời gian kết thúc môn chính thức: <b>{T.dateToText(this.state.thoiGianThiKetThucMonChinhThuc, 'dd/mm/yyyy ')}</b></label> */}
-                        <label className='col-md-6'>Thời gian tốt nghiệp dự kiến: <b>{this.state.thoiGianThiTotNghiepDuKien ? T.dateToText(this.state.thoiGianThiTotNghiepDuKien, 'dd/mm/yyyy ') : 'Chưa có'}</b></label>
-                        <label className='col-md-6'>Thời gian tốt nghiệp chính thức: <b>{this.state.thoiGianThiTotNghiepChinhThuc ? T.dateToText(this.state.thoiGianThiTotNghiepChinhThuc, 'dd/mm/yyyy ') : 'Chưa có'}</b></label>
-                        <label className='col-md-6'>Thời gian thi sát hạch: <b>{this.state.ngayDuKienThiSatHach ? T.dateToText(this.state.ngayDuKienThiSatHach, 'dd/mm/yyyy ') : 'Chưa có'}</b></label>
-                    </div>
-
+                    </div> : null}
                 </>
             ),
             backRoute: userPageLink,
@@ -98,4 +82,4 @@ class UserCourseInfo extends AdminPage {
 
 const mapStateToProps = state => ({ system: state.system, course: state.trainning.course });
 const mapActionsToProps = { getCourseByStudent, getBankByStudent };
-export default connect(mapStateToProps, mapActionsToProps)(UserCourseInfo);
+export default connect(mapStateToProps, mapActionsToProps)(UserPaymentInfo);
