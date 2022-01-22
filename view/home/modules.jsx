@@ -13,8 +13,9 @@ import fwChangeLecturer from 'modules/mdDaoTao/fwChangeLecturer/index';
 import fwCourse from 'modules/mdDaoTao/fwCourse/index';
 import fwCourseType from 'modules/mdDaoTao/fwCourseType/index';
 import fwDivision from 'modules/mdDaoTao/fwDivision/index';
+import fwFeeType from 'modules/mdDaoTao/fwFeeType/index';
 import fwContact from 'modules/mdTruyenThong/fwContact/index';
 import fwNews from 'modules/mdTruyenThong/fwNews/index';
 import fwSubscribe from 'modules/mdTruyenThong/fwSubscribe/index';
 
-export const modules = [_init, fwComment, fwDepartment, fwHome, fwMenu, fwNotification, fwStaff, fwUser, fwCandidate, fwCertificate, fwChangeLecturer, fwCourse, fwCourseType, fwDivision, fwContact, fwNews, fwSubscribe];
+export const modules = [_init, fwComment, fwDepartment, fwHome, fwMenu, fwNotification, fwStaff, fwUser, fwCandidate, fwCertificate, fwChangeLecturer, fwCourse, fwCourseType, fwDivision, fwFeeType, fwContact, fwNews, fwSubscribe];
