@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { getFeeTypePage,createFeeType,updateFeeType,deleteFeeType } from './redux';
+import { getFeeTypePage, createFeeType, updateFeeType, deleteFeeType } from './redux';
 import { AdminPage, AdminModal, FormCheckbox, FormTextBox, TableCell, renderTable } from 'view/component/AdminPage';
 import Pagination from 'view/component/Pagination';
 
@@ -10,7 +10,7 @@ class FeeTypeModal extends AdminModal {
     }
 
     onShow = (item) => {
-        let { _id=null, title='', active=true,official=false } = item || {};
+        let { _id = null, title = '', active = true, official = false } = item || {};
         this.itemName.value(title);
         this.itemActive.value(active);
         this.itemOfficial.value(official);
@@ -26,7 +26,7 @@ class FeeTypeModal extends AdminModal {
         if (data.title == '') {
             T.notify('Tên loại gói học phí bị trống!', 'danger');
             this.itemName.focus();
-        }else {
+        } else {
             this.state._id ? this.props.update(this.state._id, data, this.hide) : this.props.create(data, this.hide);
         }
     }
@@ -34,10 +34,10 @@ class FeeTypeModal extends AdminModal {
     render = () => {
         const readOnly = this.props.readOnly;
         return this.renderModal({
-            title: 'Phòng ban',
+            title: 'Loại gói học phí',
             size: 'medium',
             body: <div className='row'>
-                <FormTextBox ref={e => this.itemName = e} className='col-md-12' label='Tên phòng ban' readOnly={readOnly} />
+                <FormTextBox ref={e => this.itemName = e} className='col-md-12' label='Tên loại gói học phí' readOnly={readOnly} />
                 <FormCheckbox ref={e => this.itemActive = e} className='col-md-6' label='Kích hoạt' readOnly={readOnly} />
                 <FormCheckbox ref={e => this.itemOfficial = e} className='col-md-6' label='Chính thức' readOnly={readOnly} />
             </div>
@@ -46,7 +46,7 @@ class FeeTypeModal extends AdminModal {
 }
 
 class AdminFeeTypePage extends AdminPage {
-    state = { };
+    state = {};
     componentDidMount() {
         T.ready(() => {
             this.props.getFeeTypePage(1);
@@ -59,8 +59,8 @@ class AdminFeeTypePage extends AdminPage {
 
     render() {
         const permission = this.getUserPermission('fee-type');
-        const { pageNumber, pageSize, pageTotal, totalItem,list } = this.props.feeType && this.props.feeType.page ?
-        this.props.feeType.page : { pageNumber: 1, pageSize: 50, pageTotal: 1, totalItem: 0,list:null };
+        const { pageNumber, pageSize, pageTotal, totalItem, list } = this.props.feeType && this.props.feeType.page ?
+            this.props.feeType.page : { pageNumber: 1, pageSize: 50, pageTotal: 1, totalItem: 0, list: null };
         const table = renderTable({
             getDataSource: () => list,
             renderHead: () => (
@@ -73,7 +73,7 @@ class AdminFeeTypePage extends AdminPage {
                 </tr>),
             renderRow: (item, index) => (
                 <tr key={index}>
-                    <TableCell type='number' content={(pageNumber - 1) * pageSize+ index + 1} />
+                    <TableCell type='number' content={(pageNumber - 1) * pageSize + index + 1} />
                     <TableCell type='link' content={item.title} onClick={e => this.edit(e, item)} />
                     <TableCell type='checkbox' content={item.active} permission={permission} onChanged={active => this.props.updateFeeType(item._id, { active })} />
                     <TableCell type='checkbox' content={item.official} permission={permission} onChanged={official => this.props.updateFeeType(item._id, { official })} />
@@ -98,5 +98,5 @@ class AdminFeeTypePage extends AdminPage {
 }
 
 const mapStateToProps = state => ({ system: state.system, feeType: state.trainning.feeType });
-const mapActionsToProps = { getFeeTypePage,createFeeType,updateFeeType,deleteFeeType };
+const mapActionsToProps = { getFeeTypePage, createFeeType, updateFeeType, deleteFeeType };
 export default connect(mapStateToProps, mapActionsToProps)(AdminFeeTypePage);

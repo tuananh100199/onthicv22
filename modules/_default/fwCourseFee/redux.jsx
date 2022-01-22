@@ -97,6 +97,24 @@ export function updateCourseFee(_id, changes, done) {
     };
 }
 
+export function updateCourseFeeDefault(courseFee, done) {
+    return dispatch => {
+        const url = '/api/course-fee/default';
+        T.put(url, { courseFee }, data => {
+            if (data.error) {
+                T.notify('Cập nhật thông tin gói học phí bị lỗi!', 'danger');
+                console.error('PUT: ' + url + '.', data.error);
+                done && done(data.error);
+            } else {
+                dispatch({ type: CourseFeeGetItem, item: data.item });
+                dispatch(getCourseFeePage());
+                T.notify('Cập nhật gói học phí thành công!', 'success');
+                done && done();
+            }
+        }, error => console.error(error) || T.notify('Cập nhật gói học phí bị lỗi!', 'danger'));
+    };
+}
+
 export function deleteCourseFee(_id) {
     return dispatch => {
         const url = '/api/course-fee';

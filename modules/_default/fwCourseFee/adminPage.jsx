@@ -1,8 +1,9 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { getCourseFeePage, createCourseFee, updateCourseFee, deleteCourseFee } from './redux';
+import { getCourseFeePage, createCourseFee, updateCourseFee, updateCourseFeeDefault, deleteCourseFee } from './redux';
 import { ajaxSelectCourseType } from 'modules/mdDaoTao/fwCourseType/redux';
-import { AdminPage, AdminModal, FormTextBox, TableCell, renderTable, CirclePageButton, FormSelect } from 'view/component/AdminPage';
+import { ajaxSelectFeeType } from 'modules/_default/fwFeeType/redux';
+import { AdminPage, AdminModal, FormTextBox, TableCell, renderTable, CirclePageButton, FormSelect, FormRichTextBox } from 'view/component/AdminPage';
 import Pagination from 'view/component/Pagination';
 
 class CourseFeeModal extends AdminModal {
@@ -11,10 +12,12 @@ class CourseFeeModal extends AdminModal {
     }
 
     onShow = (item) => {
-        const { _id, name, courseType, type } = item || { _id: null, type: {}, name: '', courseType: null };
+        const { _id, name, courseType, feeType, fee, description } = item || { _id: null, name: '', courseType: null, fee: 0, description: '' };
         this.itemName.value(name);
-        this.itemCourseType.value(courseType);
-        this.itemType.value(type ? type._id : null);
+        this.itemCourseType.value(courseType ? { id: courseType._id, text: courseType.title } : null);
+        this.itemFee.value(fee);
+        this.itemType.value(feeType ? { id: feeType._id, text: feeType.title } : null);
+        this.itemDescription.value(description);
         this.setState({ _id });
     }
 
@@ -22,33 +25,31 @@ class CourseFeeModal extends AdminModal {
         const data = {
             name: this.itemName.value().trim(),
             courseType: this.itemCourseType.value(),
-            type: this.itemType.value(),
+            feeType: this.itemType.value(),
             fee: this.itemFee.value(),
+            description: this.itemDescription.value(),
         };
+
         if (data.name == '') {
             T.notify('Tên gói học phí bị trống!', 'danger');
             this.itemTitle.focus();
         } else if (!data.courseType) {
             T.notify('Loại khóa học không được trống!', 'danger');
             this.itemCourseType.focus();
-        } else if (!data.type) {
-            T.notify('Loại gói học phí không được trống!', 'danger');
-            this.itemType.focus();
         } else {
-            this.props.create(data, data => {
-                if (data.item) {
-                    this.hide();
-                    this.props.history.push('/user/course-fee/' + data.item._id);
-                }
-            });
+            this.state._id ? this.props.update(this.state._id, data, this.hide()) : this.props.create(data, this.hide());
         }
     }
     render = () => this.renderModal({
         title: 'Gói học phí',
         body: <>
             <FormTextBox ref={e => this.itemName = e} label='Tên gói học phí' />
-            <FormSelect ref={e => this.itemType = e} data={this.props.brandTypes} label='Loại gói' readOnly={this.props.readOnly} />
-            <FormSelect ref={e => this.itemCourseType = e} label='Loại khóa học' data={ajaxSelectCourseType} readOnly={this.props.readOnly} />
+            <div className='row'>
+                <FormSelect ref={e => this.itemType = e} className='col-md-6' data={ajaxSelectFeeType} label='Loại gói' readOnly={this.props.readOnly} />
+                <FormSelect ref={e => this.itemCourseType = e} className='col-md-6' label='Loại khóa học' data={ajaxSelectCourseType} readOnly={this.props.readOnly} />
+            </div>
+            <FormTextBox ref={e => this.itemFee = e} type='number' label='Giá tiền' />
+            <FormRichTextBox ref={e => this.itemDescription = e} rows={2} label='Mô tả' readOnly={this.props.readOnly} />
         </>
     });
 }
@@ -63,6 +64,16 @@ class CourseFeePage extends AdminPage {
     delete = (e, item) => e.preventDefault() || T.confirm('Gói học phí', 'Bạn có chắc bạn muốn xóa gói học phí này?', true, isConfirm =>
         isConfirm && this.props.deleteCourseFee(item._id));
 
+    edit = (e, item) => e.preventDefault() || this.modal.show(item);
+
+    changeDefault = (item, active) => {
+        if (active) {
+            if (item.feeType && item.feeType.official)
+                this.props.updateCourseFeeDefault(item);
+            else T.notify('Chỉ có thể gán gói chính thức thành gói mặc định', 'danger');
+        }
+    }
+
     render() {
         const permission = this.getUserPermission('courseFee'),
             { pageNumber, pageSize, pageTotal, totalItem, list } = this.props.courseFee && this.props.courseFee.page ?
@@ -72,31 +83,36 @@ class CourseFeePage extends AdminPage {
                 renderHead: () => (
                     <tr>
                         <th style={{ width: 'auto', textAlign: 'center' }}>#</th>
-                        <th style={{ width: '80%' }}>Tên</th>
-                        <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Hiển thị giá</th>
+                        <th style={{ width: '100%' }}>Tên</th>
+                        <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Hạng GPLX</th>
+                        <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Khóa mặc định</th>
+                        <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Loại gói học phí</th>
                         <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Giá (VNĐ)</th>
-                        <th style={{ width: '20%', textAlign: 'center' }} nowrap='true'>Hình ảnh</th>
                         <th style={{ width: 'auto' }} nowrap='true'>Thao tác</th>
                     </tr>),
                 renderRow: (item, index) => (
                     <tr key={index}>
                         <TableCell type='number' content={(pageNumber - 1) * pageSize + index + 1} />
-                        <TableCell type='link' content={item.title} url={`/user/course-type/${item._id}`} />
-                        <TableCell type='checkbox' content={item.isPriceDisplayed} permission={permission} onChanged={isPriceDisplayed => this.props.updateCourseFee(item._id, { isPriceDisplayed })} />
-                        <TableCell type='number' content={item.price} />
-                        <TableCell type='image' content={item.image || '/img/avatar.png'} />
-                        <TableCell type='buttons' content={item} permission={permission} onEdit={() => this.props.history.push('/user/course-type/' + item._id)} onDelete={this.delete} />
+                        <TableCell type='text' content={item.name} />
+                        <TableCell type='text' style={{ whiteSpace: 'nowrap' }} content={item.courseType && item.courseType.title} />
+                        <TableCell type='checkbox' content={item.isDefault} permission={permission} onChanged={active => this.changeDefault(item, active)} />
+                        <TableCell type='text' style={{ whiteSpace: 'nowrap' }} content={item.feeType && item.feeType.title} />
+                        <TableCell type='number' content={item.fee} />
+                        <TableCell type='buttons' content={item} permission={permission} onEdit={this.edit} onDelete={this.delete} />
                     </tr>),
             });
-        console.log(permission);
+        console.log(list);
 
         return this.renderPage({
-            icon: 'fa fa-file',
+            icon: 'fa fa-credit-card',
             title: 'Gói học phí',
             breadcrumb: ['Gói học phí'],
             content: <>
-                <div className='tile'>{table}</div>
-                <CourseFeeModal ref={e => this.modal = e} readOnly={!permission.write} create={this.props.createCourseFee} history={this.props.history} />
+                <div className='tile'>
+                    {/* <FormSelect ref={e => this.itemCourseType = e} className='col-md-4' label='Loại khóa học' data={ajaxSelectCourseType} readOnly={!permission.write} /> */}
+                    {table}
+                </div>
+                <CourseFeeModal ref={e => this.modal = e} readOnly={!permission.write} create={this.props.createCourseFee} update={this.props.updateCourseFee} />
                 <Pagination name='pageCourseFee' pageNumber={pageNumber} pageSize={pageSize} pageTotal={pageTotal} totalItem={totalItem} getPage={this.props.getCourseFeePage} />
                 {permission.write ? <CirclePageButton type='create' onClick={this.create} /> : null}
             </>
@@ -104,6 +120,6 @@ class CourseFeePage extends AdminPage {
     }
 }
 
-const mapStateToProps = state => ({ system: state.system, courseType: state.trainning.courseType });
-const mapActionsToProps = { getCourseFeePage, createCourseFee, updateCourseFee, deleteCourseFee };
+const mapStateToProps = state => ({ system: state.system, courseFee: state.accountant.courseFee });
+const mapActionsToProps = { getCourseFeePage, createCourseFee, updateCourseFee, updateCourseFeeDefault, deleteCourseFee };
 export default connect(mapStateToProps, mapActionsToProps)(CourseFeePage);

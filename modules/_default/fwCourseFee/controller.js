@@ -30,19 +30,35 @@ module.exports = (app) => {
         app.model.courseFee.get(req.query._id, (error, item) => res.send({ error, item }));
     });
 
-    app.post('/api/course-fee', app.permission.check('course-fee:write'), (req, res) => {
+    app.post('/api/course-fee', app.permission.check('courseFee:write'), (req, res) => {
         app.model.courseFee.create(req.body.data, (error, item) => res.send({ error, item }));
     });
 
-    app.put('/api/course-fee', app.permission.check('course-fee:write'), (req, res) => {
+    app.put('/api/course-fee', app.permission.check('courseFee:write'), (req, res) => {
         const { _id, changes } = req.body;
         app.model.courseFee.update(_id, changes, (error, item) => res.send({ error, item }));
 
     });
 
-    app.delete('/api/course-fee', app.permission.check('course-fee:delete'), (req, res) => {
+    app.put('/api/course-fee/default', app.permission.check('courseFee:write'), (req, res) => {
+        const { courseFee } = req.body;
+        app.model.feeType.get({ official: true }, (error, feeType) => {
+            if (error || feeType == null) res.send({ error });
+            else {
+                app.model.courseFee.update({ courseType: courseFee.courseType, feeType: feeType._id }, { isDefault: false }, (error) => {
+                    if (error) res.send({ error });
+                    else app.model.courseFee.update(courseFee._id, { isDefault: true }, (error, item) => {
+                        res.send({ error, item });
+                    });
+                });
+            }
+        });
+
+    });
+
+    app.delete('/api/course-fee', app.permission.check('courseFee:delete'), (req, res) => {
         const { _id } = req.body;
-        app.model.courseType.delete(_id, (error) => res.send({ error }));
+        app.model.courseFee.delete(_id, (error) => res.send({ error }));
     });
 
 };

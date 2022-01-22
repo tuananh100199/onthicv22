@@ -3,14 +3,17 @@ import T from 'view/js/common';
 // Reducer ------------------------------------------------------------------------------------------------------------
 const FeeTypeGetAll = 'FeeTypeGetAll';
 const FeeTypeGetPage = 'FeeTypeGetPage';
+const FeeTypeGetItem = 'FeeTypeGetItem';
 
 export default function feeTypeReducer(state = {}, data) {
     switch (data.type) {
         case FeeTypeGetAll:
             return Object.assign({}, state, { list: data.list });
-            
+
         case FeeTypeGetPage:
             return Object.assign({}, state, { page: data.page });
+        case FeeTypeGetItem:
+            return Object.assign({}, state, { item: data.item });
         default:
             return state;
     }
@@ -65,6 +68,18 @@ export function createFeeType(data, done) {
     };
 }
 
+export function getFeeType(_id, done) {
+    return dispatch => ajaxGetFeeType(_id, data => {
+        if (data.error) {
+            T.notify('Lấy loại gói học phí bị lỗi!', 'danger');
+            console.error('GET: getFeeType.', data.error);
+        } else {
+            done && done(data.item);
+            dispatch({ type: FeeTypeGetItem, item: data.item });
+        }
+    });
+}
+
 export function updateFeeType(_id, changes, done) {
     return dispatch => {
         const url = '/api/fee-type';
@@ -95,4 +110,18 @@ export function deleteFeeType(_id) {
             }
         }, error => console.error(error) || T.notify('Xóa loại gói học phí bị lỗi!', 'danger'));
     };
+}
+export const ajaxSelectFeeType = {
+    ajax: true,
+    url: '/api/fee-type/all',
+    data: {},
+    processResults: response => ({
+        results: response && response.list ? response.list.map(item => ({ id: item._id, text: item.title })) : []
+    }),
+    fetchOne: (_id, done) => getFeeType(_id, ({ item }) => done && done({ id: item._id, text: item.title }))
+};
+
+export function ajaxGetFeeType(_id, done) {
+    const url = '/api/fee-type';
+    T.get(url, { _id }, done, error => console.error(error) || T.notify('Lấy loại gói học phí bị lỗi!', 'danger'));
 }

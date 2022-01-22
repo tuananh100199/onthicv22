@@ -2,19 +2,20 @@ module.exports = (app) => {
     const schema = app.db.Schema({
         name: String,
         courseType: { type: app.db.Schema.ObjectId, ref: 'CourseType' },    // Loại khóa học
-        type: { type: app.db.Schema.ObjectId, ref: 'Category' },
+        feeType: { type: app.db.Schema.ObjectId, ref: 'FeeType' },
         fee: Number,
-        description: String
+        description: String,
+        isDefault: { type: Boolean, default: false },
     });
 
     const model = app.db.model('CourseFee', schema);
     app.model.courseFee = {
         create: (data, done) => model.create(data, done),
 
-        getAll: (condition, done) => model.find(condition).populate('courseType', 'title').sort({ priority: -1 }).exec(done),
+        getAll: (condition, done) => model.find(condition).populate('courseType', 'title').populate('feeType', 'title official').sort({ priority: -1 }).exec(done),
 
         get: (condition, done) => (typeof condition == 'object' ? model.findOne(condition) : model.findById(condition))
-            .populate('courseType', 'title').exec(done),
+            .populate('courseType', 'title').populate('feeType', 'title official').exec(done),
 
         getPage: (pageNumber, pageSize, condition, done) => model.countDocuments(condition, (error, totalItem) => {
             if (error) {
@@ -25,7 +26,7 @@ module.exports = (app) => {
                 const skipNumber = (result.pageNumber > 0 ? result.pageNumber - 1 : 0) * result.pageSize;
 
                 model.find(condition).sort({ lastname: 1 }).skip(skipNumber).limit(result.pageSize)
-                    .populate('courseType', 'title')
+                    .populate('courseType', 'title').populate('feeType', 'title official')
                     .exec((error, items) => {
                         result.list = error ? [] : items;
                         done(error, result);
