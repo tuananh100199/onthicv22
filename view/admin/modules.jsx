@@ -4,6 +4,7 @@ import fwBank from 'modules/_default/fwBank/index';
 import fwCategory from 'modules/_default/fwCategory/index';
 import fwCluster from 'modules/_default/fwCluster/index';
 import fwComment from 'modules/_default/fwComment/index';
+import fwCourseFee from 'modules/_default/fwCourseFee/index';
 import fwDepartment from 'modules/_default/fwDepartment/index';
 import fwEmail from 'modules/_default/fwEmail/index';
 import fwHome from 'modules/_default/fwHome/index';
@@ -39,4 +40,4 @@ import fwNews from 'modules/mdTruyenThong/fwNews/index';
 import fwNotificationTemplate from 'modules/mdTruyenThong/fwNotificationTemplate/index';
 import fwSubscribe from 'modules/mdTruyenThong/fwSubscribe/index';
 
-export const modules = [_init, fwBank, fwCategory, fwCluster, fwComment, fwDepartment, fwEmail, fwHome, fwMenu, fwNotification, fwRate, fwRole, fwStaff, fwUser, fwCandidate, fwCar, fwCertificate, fwChangeLecturer, fwChat, fwCourse, fwCourseType, fwDivision, fwDriveQuestion, fwDriveTest, fwFeeType, fwLesson, fwPayment, fwRegisterCalendar, fwSign, fwSms, fwStudent, fwSubject, fwTimeTable, fwContact, fwFeedback, fwForum, fwNews, fwNotificationTemplate, fwSubscribe];
+export const modules = [_init, fwBank, fwCategory, fwCluster, fwComment, fwCourseFee, fwDepartment, fwEmail, fwHome, fwMenu, fwNotification, fwRate, fwRole, fwStaff, fwUser, fwCandidate, fwCar, fwCertificate, fwChangeLecturer, fwChat, fwCourse, fwCourseType, fwDivision, fwDriveQuestion, fwDriveTest, fwFeeType, fwLesson, fwPayment, fwRegisterCalendar, fwSign, fwSms, fwStudent, fwSubject, fwTimeTable, fwContact, fwFeedback, fwForum, fwNews, fwNotificationTemplate, fwSubscribe];

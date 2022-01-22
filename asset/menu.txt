@@ -49,3 +49,5 @@
 6000. Ôn tập (undefined)
 	6010 - Bộ đề thi ngẫu nhiên (/user/hoc-vien/khoa-hoc/bo-de-thi-ngau-nhien)
 	6020 - Bộ đề thi thử (/user/hoc-vien/khoa-hoc/bo-de-thi-thu)
+7000. Kế toán (undefined)
+	7001 - Gói học phí (/user/course-fee)
