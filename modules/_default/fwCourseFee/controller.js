@@ -16,8 +16,9 @@ module.exports = (app) => {
     // APIs ------------------------------------------------------------------------------------------------------------
     app.get('/api/course-fee/page/:pageNumber/:pageSize', (req, res) => {
         const pageNumber = parseInt(req.params.pageNumber),
-            pageSize = parseInt(req.params.pageSize);
-        app.model.courseFee.getPage(pageNumber, pageSize, {}, (error, page) => {
+            pageSize = parseInt(req.params.pageSize),
+            condition = req.query.condition;
+        app.model.courseFee.getPage(pageNumber, pageSize, condition, (error, page) => {
             res.send({ page, error: error ? 'Danh sách gói học phí không sẵn sàng!' : null });
         });
     });

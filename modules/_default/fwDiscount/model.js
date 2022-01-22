@@ -1,21 +1,18 @@
 module.exports = (app) => {
     const schema = app.db.Schema({
         name: String,
-        courseType: { type: app.db.Schema.ObjectId, ref: 'CourseType' },    // Loại khóa học
-        feeType: { type: app.db.Schema.ObjectId, ref: 'FeeType' },
         fee: Number,
         description: String,
         isDefault: { type: Boolean, default: false },
     });
 
-    const model = app.db.model('CourseFee', schema);
-    app.model.courseFee = {
+    const model = app.db.model('Discount', schema);
+    app.model.discount = {
         create: (data, done) => model.create(data, done),
 
-        getAll: (condition, done) => model.find(condition).populate('courseType', 'title').populate('feeType', 'title official').sort({ priority: -1 }).exec(done),
+        getAll: (condition, done) => model.find(condition).sort({ fee: -1 }).exec(done),
 
-        get: (condition, done) => (typeof condition == 'object' ? model.findOne(condition) : model.findById(condition))
-            .populate('courseType', 'title').populate('feeType', 'title official').exec(done),
+        get: (condition, done) => (typeof condition == 'object' ? model.findOne(condition) : model.findById(condition)).exec(done),
 
         getPage: (pageNumber, pageSize, condition, done) => model.countDocuments(condition, (error, totalItem) => {
             if (error) {
@@ -25,8 +22,7 @@ module.exports = (app) => {
                 result.pageNumber = pageNumber === -1 ? result.pageTotal : Math.min(pageNumber, result.pageTotal);
                 const skipNumber = (result.pageNumber > 0 ? result.pageNumber - 1 : 0) * result.pageSize;
 
-                model.find(condition).sort({ courseType: 1 }).skip(skipNumber).limit(result.pageSize)
-                    .populate('courseType', 'title').populate('feeType', 'title official')
+                model.find(condition).sort({ fee: 1 }).skip(skipNumber).limit(result.pageSize)
                     .exec((error, items) => {
                         result.list = error ? [] : items;
                         done(error, result);

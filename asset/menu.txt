@@ -51,3 +51,4 @@
 7000. Kế toán (undefined)
 	7001 - Gói học phí (/user/course-fee)
 	7002 - Loại gói học phí (/user/fee-type)
+	7003 - Giảm giá (/user/discount)

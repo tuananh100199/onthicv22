@@ -1,14 +1,14 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { getCourseFeePage, createCourseFee, updateCourseFee, updateCourseFeeDefault, deleteCourseFee } from './redux';
-import { ajaxSelectCourseType } from 'modules/mdDaoTao/fwCourseType/redux';
+import { ajaxSelectCourseType, getCourseTypeAll } from 'modules/mdDaoTao/fwCourseType/redux';
 import { ajaxSelectFeeType } from 'modules/_default/fwFeeType/redux';
 import { AdminPage, AdminModal, FormTextBox, TableCell, renderTable, CirclePageButton, FormSelect, FormRichTextBox } from 'view/component/AdminPage';
 import Pagination from 'view/component/Pagination';
 
 class CourseFeeModal extends AdminModal {
     componentDidMount() {
-        $(document).ready(() => this.onShown(() => this.itemTitle.focus()));
+        $(document).ready(() => this.onShown(() => this.itemName.focus()));
     }
 
     onShow = (item) => {
@@ -55,8 +55,16 @@ class CourseFeeModal extends AdminModal {
 }
 
 class CourseFeePage extends AdminPage {
+    state = {};
     componentDidMount() {
+        T.ready();
         this.props.getCourseFeePage();
+        this.props.getCourseTypeAll(list => {
+            const courseTypes = [{ id: 0, text: 'Tất cả loại khóa học' }];
+            list.map(item => courseTypes.push({ id: item._id, text: item.title }));
+            this.setState({ courseTypes });
+            this.itemCourseType.value(0);
+        });
     }
 
     create = (e) => e.preventDefault() || this.modal.show();
@@ -70,7 +78,15 @@ class CourseFeePage extends AdminPage {
         if (active) {
             if (item.feeType && item.feeType.official)
                 this.props.updateCourseFeeDefault(item);
-            else T.notify('Chỉ có thể gán gói chính thức thành gói mặc định', 'danger');
+            else T.notify('Chỉ có thể gán gói học phí chính thức thành gói mặc định', 'danger');
+        }
+    }
+
+    getPage = (data) => {
+        if (data.id == 0) {
+            this.props.getCourseFeePage(undefined, undefined, {});
+        } else {
+            this.props.getCourseFeePage(undefined, undefined, { courseType: data.id });
         }
     }
 
@@ -101,7 +117,6 @@ class CourseFeePage extends AdminPage {
                         <TableCell type='buttons' content={item} permission={permission} onEdit={this.edit} onDelete={this.delete} />
                     </tr>),
             });
-        console.log(list);
 
         return this.renderPage({
             icon: 'fa fa-credit-card',
@@ -109,7 +124,9 @@ class CourseFeePage extends AdminPage {
             breadcrumb: ['Gói học phí'],
             content: <>
                 <div className='tile'>
-                    {/* <FormSelect ref={e => this.itemCourseType = e} className='col-md-4' label='Loại khóa học' data={ajaxSelectCourseType} readOnly={!permission.write} /> */}
+                    <div className='row'>
+                        <FormSelect ref={e => this.itemCourseType = e} className='col-md-4' label='Loại khóa học' data={this.state.courseTypes} onChange={data => this.getPage(data)} readOnly={!permission.write} />
+                    </div>
                     {table}
                 </div>
                 <CourseFeeModal ref={e => this.modal = e} readOnly={!permission.write} create={this.props.createCourseFee} update={this.props.updateCourseFee} />
@@ -121,5 +138,5 @@ class CourseFeePage extends AdminPage {
 }
 
 const mapStateToProps = state => ({ system: state.system, courseFee: state.accountant.courseFee });
-const mapActionsToProps = { getCourseFeePage, createCourseFee, updateCourseFee, updateCourseFeeDefault, deleteCourseFee };
+const mapActionsToProps = { getCourseFeePage, createCourseFee, updateCourseFee, updateCourseFeeDefault, deleteCourseFee, getCourseTypeAll };
 export default connect(mapStateToProps, mapActionsToProps)(CourseFeePage);

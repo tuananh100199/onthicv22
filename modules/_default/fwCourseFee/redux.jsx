@@ -21,11 +21,12 @@ export default function courseTypeReducer(state = {}, data) {
 
 // Actions ------------------------------------------------------------------------------------------------------------
 T.initCookiePage('pageCourseFee');
-export function getCourseFeePage(pageNumber, pageSize, done) {
+export function getCourseFeePage(pageNumber, pageSize, condition, done) {
     const page = T.updatePage('pageCourseFee', pageNumber, pageSize);
     return (dispatch) => {
         const url = `/api/course-fee/page/${page.pageNumber}/${page.pageSize}`;
-        T.get(url, data => {
+        console.log(condition);
+        T.get(url, { condition }, data => {
             if (data.error) {
                 T.notify('Lấy danh sách gói học phí bị lỗi!', 'danger');
                 console.error('GET: ' + url + '.', data.error);
