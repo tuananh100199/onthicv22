@@ -4,7 +4,7 @@ import { getCoursePaymentPage,createCoursePayment,updateCoursePayment,deleteCour
 import { AdminPage, AdminModal,FormSelect, FormRichTextBox, FormTextBox, TableCell, renderTable } from 'view/component/AdminPage';
 import Pagination from 'view/component/Pagination';
 
-const numPaymentData = [
+const numPaymentData = [// hiện tại chỉ có 2 loại là đóng hp 1 lần và 2 lần
     {id:1,text:'1 lần',},
     {id:2,text:'2 lần',},
 ];

@@ -1,7 +1,7 @@
 module.exports = (app) => {
     const schema = app.db.Schema({
         title: String,
-        numOfPayments: { type: Number, enum: [1,2], default: 2 },
+        numOfPayments: Number,
         description: String,
         default:{type:Boolean,default:false}
     });
