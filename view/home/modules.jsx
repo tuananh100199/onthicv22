@@ -1,6 +1,7 @@
 // That code below is generated automatically. Do not change them manually!
 import _init from 'modules/_default/_init/index';
 import fwComment from 'modules/_default/fwComment/index';
+import fwCourseFee from 'modules/_default/fwCourseFee/index';
 import fwDepartment from 'modules/_default/fwDepartment/index';
 import fwHome from 'modules/_default/fwHome/index';
 import fwMenu from 'modules/_default/fwMenu/index';
@@ -17,4 +18,4 @@ import fwContact from 'modules/mdTruyenThong/fwContact/index';
 import fwNews from 'modules/mdTruyenThong/fwNews/index';
 import fwSubscribe from 'modules/mdTruyenThong/fwSubscribe/index';
 
-export const modules = [_init, fwComment, fwDepartment, fwHome, fwMenu, fwNotification, fwStaff, fwUser, fwCandidate, fwCertificate, fwChangeLecturer, fwCourse, fwCourseType, fwDivision, fwContact, fwNews, fwSubscribe];
+export const modules = [_init, fwComment, fwCourseFee, fwDepartment, fwHome, fwMenu, fwNotification, fwStaff, fwUser, fwCandidate, fwCertificate, fwChangeLecturer, fwCourse, fwCourseType, fwDivision, fwContact, fwNews, fwSubscribe];
