@@ -76,9 +76,7 @@ class CourseFeePage extends AdminPage {
 
     changeDefault = (item, active) => {
         if (active) {
-            if (item.feeType && item.feeType.official)
-                this.props.updateCourseFeeDefault(item);
-            else T.notify('Chỉ có thể gán gói học phí chính thức thành gói mặc định', 'danger');
+            this.props.updateCourseFeeDefault(item);
         }
     }
 
@@ -111,7 +109,10 @@ class CourseFeePage extends AdminPage {
                         <TableCell type='number' content={(pageNumber - 1) * pageSize + index + 1} />
                         <TableCell type='text' content={item.name} />
                         <TableCell type='text' style={{ whiteSpace: 'nowrap' }} content={item.courseType && item.courseType.title} />
-                        <TableCell type='checkbox' content={item.isDefault} permission={permission} onChanged={active => this.changeDefault(item, active)} />
+                        {item.feeType && item.feeType.official ?
+                            <TableCell type='checkbox' content={item.isDefault} permission={permission} onChanged={active => this.changeDefault(item, active)} /> :
+                            <TableCell type='text' content={''} />
+                        }
                         <TableCell type='text' style={{ whiteSpace: 'nowrap' }} content={item.feeType && item.feeType.title} />
                         <TableCell type='number' content={item.fee} />
                         <TableCell type='buttons' content={item} permission={permission} onEdit={this.edit} onDelete={this.delete} />
