@@ -1,8 +1,8 @@
 module.exports = (app) => {
     const menu = {
-        parentMenu: app.parentMenu.trainning,
+        parentMenu: app.parentMenu.accountant,
         menus: {
-            4070: { title: 'Loại gói học phí', link: '/user/fee-type' },
+            7002: { title: 'Loại gói học phí', link: '/user/fee-type' },
         }
     };
 

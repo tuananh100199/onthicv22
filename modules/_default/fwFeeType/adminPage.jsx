@@ -82,7 +82,7 @@ class AdminFeeTypePage extends AdminPage {
         });
 
         return this.renderPage({
-            icon: 'fa fa-money',
+            icon: 'fa fa-list',
             title: 'Loại gói học phí',
             breadcrumb: ['Loại gói học phí'],
             content: <>

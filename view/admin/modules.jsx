@@ -24,7 +24,7 @@ import fwCourseType from 'modules/mdDaoTao/fwCourseType/index';
 import fwDivision from 'modules/mdDaoTao/fwDivision/index';
 import fwDriveQuestion from 'modules/mdDaoTao/fwDriveQuestion/index';
 import fwDriveTest from 'modules/mdDaoTao/fwDriveTest/index';
-import fwFeeType from 'modules/mdDaoTao/fwFeeType/index';
+import fwFeeType from 'modules/_default/fwFeeType/index';
 import fwLesson from 'modules/mdDaoTao/fwLesson/index';
 import fwPayment from 'modules/mdDaoTao/fwPayment/index';
 import fwRegisterCalendar from 'modules/mdDaoTao/fwRegisterCalendar/index';

@@ -43,7 +43,6 @@
 	4045 - Khóa học (/user/course)
 	4055 - Học viên chưa tốt nghiệp (/user/student/fail-graduation)
 	4060 - Học viên chưa đạt sát hạch (/user/student/fail-exam)
-	4070 - Loại gói học phí (/user/fee-type)
 	5000 - Thu công nợ (/user/payment)
 	5100 - SMS Banking (/user/sms)
 6000. Ôn tập (undefined)
@@ -51,3 +50,4 @@
 	6020 - Bộ đề thi thử (/user/hoc-vien/khoa-hoc/bo-de-thi-thu)
 7000. Kế toán (undefined)
 	7001 - Gói học phí (/user/course-fee)
+	7002 - Loại gói học phí (/user/fee-type)
