@@ -1,16 +1,16 @@
 //TEMPLATES: admin|home
 import Loadable from 'react-loadable';
 import Loading from 'view/component/Loading';
-import feeType from './redux';
+import coursePayment from './redux';
 
 export default {
     redux: {
         parent: 'accountant',
-        reducers: { feeType },
+        reducers: { coursePayment },
     },
     routes: [
         {
-            path: '/user/fee-type',
+            path: '/user/course-payment',
             component: Loadable({ loading: Loading, loader: () => import('./adminPage') }),
         },
     ]

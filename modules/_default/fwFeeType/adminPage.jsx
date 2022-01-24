@@ -54,7 +54,7 @@ class AdminFeeTypePage extends AdminPage {
     }
 
     edit = (e, item) => e.preventDefault() || this.modal.show(item);
-    delete = (e, item) => e.preventDefault() || T.confirm('Xóa phòng ban', 'Bạn có chắc bạn muốn xóa phòng ban này?', true, isConfirm =>
+    delete = (e, item) => e.preventDefault() || T.confirm('Xóa loại gói học phí', 'Bạn có chắc bạn muốn xóa loại gói học phí này?', true, isConfirm =>
         isConfirm && this.props.deleteFeeType(item._id));
 
     render() {
@@ -97,6 +97,6 @@ class AdminFeeTypePage extends AdminPage {
     }
 }
 
-const mapStateToProps = state => ({ system: state.system, feeType: state.trainning.feeType });
+const mapStateToProps = state => ({ system: state.system, feeType: state.accountant.feeType });
 const mapActionsToProps = { getFeeTypePage, createFeeType, updateFeeType, deleteFeeType };
 export default connect(mapStateToProps, mapActionsToProps)(AdminFeeTypePage);
