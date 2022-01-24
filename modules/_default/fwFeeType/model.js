@@ -31,7 +31,15 @@ module.exports = (app) => {
             }
         }),
 
-        update: (_id, changes, done) => model.findOneAndUpdate({ _id }, changes, { new: true }).exec(done),
+        update: (condition, changes, $unset, done) => {
+            if (!done) {
+                done = $unset;
+                $unset = {};
+            }
+            typeof condition == 'string' ?
+                model.findOneAndUpdate({ _id: condition }, { $set: changes, $unset }, { new: true }, done) :
+                model.updateMany(condition, { $set: changes, $unset }, { new: true }, done);
+        },
 
         delete: (_id, done) => model.findById(_id, (error, item) => {
             if (error) {

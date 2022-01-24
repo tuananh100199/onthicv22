@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { getFeeTypePage, createFeeType, updateFeeType, deleteFeeType } from './redux';
+import { getFeeTypePage, createFeeType, updateFeeType, deleteFeeType,updateFeeTypeDefault } from './redux';
 import { AdminPage, AdminModal, FormCheckbox, FormTextBox, TableCell, renderTable } from 'view/component/AdminPage';
 import Pagination from 'view/component/Pagination';
 
@@ -56,9 +56,15 @@ class AdminFeeTypePage extends AdminPage {
     edit = (e, item) => e.preventDefault() || this.modal.show(item);
     delete = (e, item) => e.preventDefault() || T.confirm('Xóa loại gói học phí', 'Bạn có chắc bạn muốn xóa loại gói học phí này?', true, isConfirm =>
         isConfirm && this.props.deleteFeeType(item._id));
+    
+    changeDefault = (item, active) => {
+        if (active) {
+            this.props.updateFeeTypeDefault(item);
+        }
+    }
 
     render() {
-        const permission = this.getUserPermission('fee-type');
+        const permission = this.getUserPermission('feeType');
         const { pageNumber, pageSize, pageTotal, totalItem, list } = this.props.feeType && this.props.feeType.page ?
             this.props.feeType.page : { pageNumber: 1, pageSize: 50, pageTotal: 1, totalItem: 0, list: null };
         const table = renderTable({
@@ -76,7 +82,7 @@ class AdminFeeTypePage extends AdminPage {
                     <TableCell type='number' content={(pageNumber - 1) * pageSize + index + 1} />
                     <TableCell type='link' content={item.title} onClick={e => this.edit(e, item)} />
                     <TableCell type='checkbox' content={item.active} permission={permission} onChanged={active => this.props.updateFeeType(item._id, { active })} />
-                    <TableCell type='checkbox' content={item.official} permission={permission} onChanged={official => this.props.updateFeeType(item._id, { official })} />
+                    <TableCell type='checkbox' content={item.official} permission={permission} onChanged={active => this.changeDefault(item,active)} />
                     <TableCell type='buttons' content={item} permission={permission} onEdit={this.edit} onDelete={this.delete} />
                 </tr>),
         });
@@ -98,5 +104,5 @@ class AdminFeeTypePage extends AdminPage {
 }
 
 const mapStateToProps = state => ({ system: state.system, feeType: state.accountant.feeType });
-const mapActionsToProps = { getFeeTypePage, createFeeType, updateFeeType, deleteFeeType };
+const mapActionsToProps = { getFeeTypePage, createFeeType, updateFeeType, deleteFeeType, updateFeeTypeDefault };
 export default connect(mapStateToProps, mapActionsToProps)(AdminFeeTypePage);
