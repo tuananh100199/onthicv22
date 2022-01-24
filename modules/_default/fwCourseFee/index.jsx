@@ -13,5 +13,9 @@ export default {
             path: '/user/course-fee',
             component: Loadable({ loading: Loading, loader: () => import('./adminPage') }),
         },
+        {
+            path: '/user/hoc-vien/khoa-hoc/:_id/cong-no/chinh-thuc',
+            component: Loadable({ loading: Loading, loader: () => import('./userPaymentInfo') })
+        },
     ]
 };

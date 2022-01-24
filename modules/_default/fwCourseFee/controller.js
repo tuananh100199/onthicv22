@@ -11,6 +11,7 @@ module.exports = (app) => {
     );
 
     app.get('/user/course-fee', app.permission.check('courseFee:read'), app.templates.admin);
+    app.get('/user/hoc-vien/khoa-hoc/:_id/cong-no/chinh-thuc', app.permission.check('user:login'), app.templates.admin);
 
 
     // APIs ------------------------------------------------------------------------------------------------------------

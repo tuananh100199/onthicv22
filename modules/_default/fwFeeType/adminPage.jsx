@@ -98,5 +98,5 @@ class AdminFeeTypePage extends AdminPage {
 }
 
 const mapStateToProps = state => ({ system: state.system, feeType: state.accountant.feeType });
-const mapActionsToProps = { getFeeTypePage,createFeeType,updateFeeType,deleteFeeType };
+const mapActionsToProps = { getFeeTypePage, createFeeType, updateFeeType, deleteFeeType };
 export default connect(mapStateToProps, mapActionsToProps)(AdminFeeTypePage);
