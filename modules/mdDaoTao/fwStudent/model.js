@@ -41,6 +41,10 @@ module.exports = (app) => {
         hocPhiMienGiam: Number,                                                                     // Số tiền được miễn giảm
         hocPhiDaDong: Number,                                                                       // Học phí đã đóng
         ngayHetHanNopHocPhi: Date,                                                                  // Ngày hết hạn nộp học phí
+        coursePayment: { type: app.db.Schema.ObjectId, ref: 'CoursePayment' },
+        discount: { type: app.db.Schema.ObjectId, ref: 'Discount' },
+        courseFee: { type: app.db.Schema.ObjectId, ref: 'CourseFee' },
+
 
         tienDoHocTap: {},
         tienDoThiHetMon: {},
@@ -89,7 +93,7 @@ module.exports = (app) => {
         create: (data, done) => model.create(data, done),
 
         get: (condition, done) => (typeof condition == 'object' ? model.findOne(condition) : model.findById(condition))
-            .populate('user', '-password').populate('division').populate('courseType').populate('course').exec(done),
+            .populate('user', '-password').populate('division').populate('courseType').populate('courseFee').populate('coursePayment').populate('discount').populate('course').exec(done),
 
         getAll: (condition, done) => {
             if (typeof condition == 'function') {
