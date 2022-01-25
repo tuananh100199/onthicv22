@@ -45,6 +45,7 @@
 	4060 - Học viên chưa đạt sát hạch (/user/student/fail-exam)
 	5000 - Thu công nợ (/user/payment)
 	5100 - SMS Banking (/user/sms)
+	5101 - Bổ sung hồ sơ học viên (/user/profile-student)
 6000. Ôn tập (undefined)
 	6010 - Bộ đề thi ngẫu nhiên (/user/hoc-vien/khoa-hoc/bo-de-thi-ngau-nhien)
 	6020 - Bộ đề thi thử (/user/hoc-vien/khoa-hoc/bo-de-thi-thu)
