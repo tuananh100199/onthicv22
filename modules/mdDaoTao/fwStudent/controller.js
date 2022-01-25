@@ -4,22 +4,31 @@ module.exports = (app) => {
         menus: {
             4040: { title: 'Ứng viên', link: '/user/pre-student' },
         }
-    }, menuFailStudent = {
-        parentMenu: app.parentMenu.trainning,
-        menus: {
-            4055: { title: 'Học viên chưa tốt nghiệp', link: '/user/student/fail-graduation' },
-            4060: { title: 'Học viên chưa đạt sát hạch', link: '/user/student/fail-exam' },
-        }
-    };
+    },
+        menuFailStudent = {
+            parentMenu: app.parentMenu.trainning,
+            menus: {
+                4055: { title: 'Học viên chưa tốt nghiệp', link: '/user/student/fail-graduation' },
+                4060: { title: 'Học viên chưa đạt sát hạch', link: '/user/student/fail-exam' },
+            }
+        },
+        menuDebt = {
+            parentMenu: app.parentMenu.accountant,
+            menus: {
+                7005: { title: 'Theo dõi công nợ', link: '/user/student/debt' },
+            }
+        };
 
     app.permission.add(
         { name: 'student:read' }, { name: 'student:write' }, { name: 'student:delete', menu }, { name: 'student:import' }, { name: 'student: fail', menu: menuFailStudent },//TODO: Thầy TÙNG
         { name: 'pre-student:read', menu }, { name: 'pre-student:write' }, { name: 'pre-student:delete' }, { name: 'pre-student:import' },
+        { name: 'debt:read', menu: menuDebt }, { name: 'debt:write' }, { name: 'debt:delete' },
     );
 
     app.get('/user/student/import-fail-pass', app.permission.check('student:import'), app.templates.admin);
     app.get('/user/student/fail-exam', app.permission.check('student:read'), app.templates.admin);
     app.get('/user/student/fail-graduation', app.permission.check('student:read'), app.templates.admin);
+    app.get('/user/student/debt', app.permission.check('debt:read'), app.templates.admin);
     app.get('/user/pre-student', app.permission.check('pre-student:read'), app.templates.admin);
     app.get('/user/pre-student/import', app.permission.check('pre-student:import'), app.templates.admin);
 

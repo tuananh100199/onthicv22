@@ -35,6 +35,10 @@ export default {
             path: '/user/pre-student/import',
             component: Loadable({ loading: Loading, loader: () => import('./adminImportPage') })
         },
+        {
+            path: '/user/student/debt',
+            component: Loadable({ loading: Loading, loader: () => import('./adminDebtTrackingPage') })
+        },
     ],
     Section: {
     }
