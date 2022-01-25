@@ -12,8 +12,8 @@ class AccountModal extends AdminModal {
         $(document).ready(() => this.onShown(() => this.itemNumber.focus()));
     }
 
-    onShow = ({item,index}) => {
-        if(item){ 
+    onShow = ({ item, index }) => {
+        if (item) {
             this.type = 'edit';
             this.index = index;
         } else {
@@ -40,12 +40,12 @@ class AccountModal extends AdminModal {
             T.notify('Số tài khoản bị trống!', 'danger');
             this.itemNumber.focus();
         } else {
-            if(this.type == 'edit'){
+            if (this.type == 'edit') {
                 accounts.splice(this.index, 1, changes);
             } else {
                 accounts.push(changes);
             }
-            this.props.updateBank(this.props._id, {accounts}, (item) => {
+            this.props.updateBank(this.props._id, { accounts }, (item) => {
                 this.props.getBank(item._id, this.hide);
             });
         }
@@ -55,9 +55,9 @@ class AccountModal extends AdminModal {
         title: 'Ngân hàng',
         size: 'large',
         body: <div>
-                <FormTextBox ref={e => this.itemNumber = e} label='Số tài khoản' readOnly={this.props.readOnly} />
-                <FormTextBox ref={e => this.itemName = e} label='Họ và tên người sở hữu tài khoản' readOnly={this.props.readOnly} />
-                <FormCheckbox ref={e => this.itemActive = e} label='Kích hoạt' readOnly={this.props.readOnly} />
+            <FormTextBox ref={e => this.itemNumber = e} label='Số tài khoản' readOnly={this.props.readOnly} />
+            <FormTextBox ref={e => this.itemName = e} label='Họ và tên người sở hữu tài khoản' readOnly={this.props.readOnly} />
+            <FormCheckbox ref={e => this.itemActive = e} label='Kích hoạt' readOnly={this.props.readOnly} />
         </div>,
     });
 }
@@ -78,23 +78,24 @@ class BankEditPage extends AdminPage {
                 this.moneyStr.value(item.moneyStr);
                 this.contentLine.value(item.contentLine);
                 this.contentStr.value(item.contentStr);
-                this.setState({code: item.code, _id: item._id});
+                this.setState({ code: item.code, _id: item._id });
             });
         });
     }
 
     getBanks = () => {
         fetch('https://api.vietqr.io/v1/banks').then(
-        (response) => response.json().then(
-          (jsonData) => {
-               this.setState({banks: jsonData.data && jsonData.data.map(({code, name, short_name})=>({id:code,text:short_name+' - '+name}))}, ()=>{
-                    this.bank.value(this.state.code);
-               });
-          }
-      )
-    );}
+            (response) => response.json().then(
+                (jsonData) => {
+                    this.setState({ banks: jsonData.data && jsonData.data.map(({ code, name, short_name }) => ({ id: code, text: short_name + ' - ' + name })) }, () => {
+                        this.bank.value(this.state.code);
+                    });
+                }
+            )
+        );
+    }
 
-    onChange = ({text}) => {
+    onChange = ({ text }) => {
         text = text.split('-');
         this.setState({
             name: text[1],
@@ -106,26 +107,26 @@ class BankEditPage extends AdminPage {
         const moneyStr = this.moneyStr.value();
         const moneyStartStr = moneyStr.split('/:money/')[0], moneyEndStr = moneyStr.split('/:money/')[1], reEscape = /[\-\[\]{}()+?.,\\\^$|#\s]/g;
         const preRegex = str => str.replace(reEscape, '\\$&');
-        const moneyRegex = new RegExp(preRegex(moneyStartStr) + '(.+)' + preRegex(moneyEndStr),  'i');
+        const moneyRegex = new RegExp(preRegex(moneyStartStr) + '(.+)' + preRegex(moneyEndStr), 'i');
         const moneyStrEx = this.moneyStrEx.value();
         const moneyPart = moneyStrEx.match(moneyRegex);
-        if(moneyPart){
-            let money = moneyPart[1].replace(/\D/g,''); // Strip all non-numeric characters from string
-            this.setState({money});
-        } else this.setState({money:'Chưa tính được'});
+        if (moneyPart) {
+            let money = moneyPart[1].replace(/\D/g, ''); // Strip all non-numeric characters from string
+            this.setState({ money });
+        } else this.setState({ money: 'Chưa tính được' });
     }
 
     parseContent = () => {
         const contentStr = this.contentStr.value();
         const contentStartStr = contentStr.split('/:content/')[0], contentEndStr = contentStr.split('/:content/')[1], reEscape = /[\-\[\]{}()+?.,\\\^$|#\s]/g;
         const preRegex = str => str.replace(reEscape, '\\$&');
-        const contentRegex = new RegExp(preRegex(contentStartStr) + '(.+)' + preRegex(contentEndStr),  'i');
+        const contentRegex = new RegExp(preRegex(contentStartStr) + '(.+)' + preRegex(contentEndStr), 'i');
         const contentStrEx = this.contentStrEx.value();
         const contentPart = contentStrEx.match(contentRegex);
-        if(contentPart){
+        if (contentPart) {
             let content = contentPart[1].trim();
-            this.setState({content});
-        } else this.setState({content:'Chưa tính được'});
+            this.setState({ content });
+        } else this.setState({ content: 'Chưa tính được' });
     }
 
     save = () => {
@@ -158,22 +159,22 @@ class BankEditPage extends AdminPage {
         } else {
             const { shortname, name, _id, code } = this.state;
             const bankCodeCurrent = this.bank.value().trim();
-            if(bankCodeCurrent != code){
+            if (bankCodeCurrent != code) {
                 changes.code = bankCodeCurrent;
                 changes.shortname = shortname.trim();
                 changes.name = name.trim();
             }
             this.props.updateBank(_id, changes, (item) => {
                 this.props.getBank(item._id);
-                this.setState({ code: item.code});
+                this.setState({ code: item.code });
             });
         }
     }
 
-    showModal = (e, {item, index}) => e.preventDefault() || this.modal.show({item,index});
+    showModal = (e, { item, index }) => e.preventDefault() || this.modal.show({ item, index });
 
-    delete = (e, {index}) => e.preventDefault() || T.confirm('Xóa tài khoản ngân hàng', 'Bạn có chắc bạn muốn xóa tài khoản ngân hàng này?', true, isConfirm => {
-        if(isConfirm){
+    delete = (e, { index }) => e.preventDefault() || T.confirm('Xóa tài khoản ngân hàng', 'Bạn có chắc bạn muốn xóa tài khoản ngân hàng này?', true, isConfirm => {
+        if (isConfirm) {
             const accounts = this.props.bank && this.props.bank.item && this.props.bank.item.accounts || [];
             accounts.splice(index, 1);
             this.props.updateBank(this.state._id, { accounts: accounts.length == 0 ? 'empty' : accounts }, (item) => this.props.getBank(item._id));
@@ -184,7 +185,7 @@ class BankEditPage extends AdminPage {
         const permission = this.getUserPermission('bank');
         const readOnly = !permission.write;
         const { _id } = this.state;
-        const bank = this.props.bank && this.props.bank.item || { shortname: ''}, accounts = bank && bank.accounts || [];
+        const bank = this.props.bank && this.props.bank.item || { shortname: '' }, accounts = bank && bank.accounts || [];
         const listParams = ['{cmnd}', '{ten_loai_khoa_hoc}'];
         const table = renderTable({
             getDataSource: () => accounts,
@@ -199,13 +200,14 @@ class BankEditPage extends AdminPage {
             renderRow: (item, index) => (
                 <tr key={index}>
                     <TableCell type='number' content={index + 1} />
-                    <TableCell type='link' content={item.number} onClick={e => this.showModal(e, {item, index})} />
+                    <TableCell type='link' content={item.number} onClick={e => this.showModal(e, { item, index })} />
                     <TableCell content={item.holder} />
-                    <TableCell type='checkbox' content={item.active} permission={permission} 
-                        onChanged={active => { accounts[index].active = active;
+                    <TableCell type='checkbox' content={item.active} permission={permission}
+                        onChanged={active => {
+                            accounts[index].active = active;
                             this.props.updateBank(_id, { accounts }, () => this.props.getBank(_id));
-                            }} />
-                    <TableCell type='buttons' content={{item,index}} permission={permission} onEdit={this.showModal} onDelete={this.delete} />
+                        }} />
+                    <TableCell type='buttons' content={{ item, index }} permission={permission} onEdit={this.showModal} onDelete={this.delete} />
                 </tr>),
         });
 
@@ -218,23 +220,23 @@ class BankEditPage extends AdminPage {
                     <h3 className='tile-title'>Cấu hình SMS</h3>
                     <div className='tile-body row'>
                         <div className='col-md-4'>
-                        <FormSelect ref={e => this.bank = e} label='Ngân hàng' data={this.state.banks} readOnly={readOnly} onChange={data => this.onChange(data)}/>
-                        <FormRichTextBox ref={e => this.contentSyntax = e} rows={1} listParams={listParams} label='Cú pháp chuyển tiền của học viên' readOnly={readOnly} />
-                        <FormCheckbox ref={e => this.active = e} label='Kích hoạt' readOnly={readOnly} />
+                            <FormSelect ref={e => this.bank = e} label='Ngân hàng' data={this.state.banks} readOnly={readOnly} onChange={data => this.onChange(data)} />
+                            <FormRichTextBox ref={e => this.contentSyntax = e} rows={1} listParams={listParams} label='Cú pháp chuyển tiền của học viên' readOnly={readOnly} />
+                            <FormCheckbox ref={e => this.active = e} label='Kích hoạt' readOnly={readOnly} />
                         </div>
                         <div className='col-md-4'>
-                        <FormTextBox ref={e => this.moneyLine = e} label='Dòng biến động số dư' readOnly={readOnly} />
-                        <FormTextBox ref={e => this.moneyStr = e} label='Chuỗi phần biến động số dư' readOnly={readOnly} />
-                        <FormTextBox ref={e => this.moneyStrEx = e} label='Chuỗi phần biến động số dư ví dụ' readOnly={readOnly} />
-                        <button className='btn btn-warning' type='button' onClick={()=>this.parseMoney()}>Tính
-                        </button> &nbsp; Số tiền(money): <label style={{fontWeight:'bold'}}>{this.state.money}</label>                      
+                            <FormTextBox ref={e => this.moneyLine = e} label='Dòng biến động số dư' readOnly={readOnly} />
+                            <FormTextBox ref={e => this.moneyStr = e} label='Chuỗi phần biến động số dư' readOnly={readOnly} />
+                            <FormTextBox ref={e => this.moneyStrEx = e} label='Chuỗi phần biến động số dư ví dụ' readOnly={readOnly} />
+                            <button className='btn btn-warning' type='button' onClick={() => this.parseMoney()}>Tính
+                            </button> &nbsp; Số tiền(money): <label style={{ fontWeight: 'bold' }}>{this.state.money}</label>
                         </div>
                         <div className='col-md-4'>
-                        <FormTextBox ref={e => this.contentLine = e} label='Dòng nội dung giao dịch' readOnly={readOnly} />
-                        <FormTextBox ref={e => this.contentStr = e} label='Chuỗi phần nội dung giao dịch' readOnly={readOnly} />
-                        <FormTextBox ref={e => this.contentStrEx = e} label='Chuỗi phần nội dung giao dịch ví dụ' readOnly={readOnly} />
-                        <button className='btn btn-warning' type='button' onClick={()=>this.parseContent()}>Tính
-                        </button> &nbsp; Nội dung(content): <label style={{fontWeight:'bold'}}>{this.state.content}</label>       
+                            <FormTextBox ref={e => this.contentLine = e} label='Dòng nội dung giao dịch' readOnly={readOnly} />
+                            <FormTextBox ref={e => this.contentStr = e} label='Chuỗi phần nội dung giao dịch' readOnly={readOnly} />
+                            <FormTextBox ref={e => this.contentStrEx = e} label='Chuỗi phần nội dung giao dịch ví dụ' readOnly={readOnly} />
+                            <button className='btn btn-warning' type='button' onClick={() => this.parseContent()}>Tính
+                            </button> &nbsp; Nội dung(content): <label style={{ fontWeight: 'bold' }}>{this.state.content}</label>
                         </div>
                     </div>
                     {permission.write &&
@@ -251,19 +253,19 @@ class BankEditPage extends AdminPage {
                         {table}
                         {permission.write &&
                             <div style={{ textAlign: 'right' }}>
-                                <button className='btn btn-success' type='button' onClick={(e) => this.showModal(e,{})}>
+                                <button className='btn btn-success' type='button' onClick={(e) => this.showModal(e, {})}>
                                     <i className='fa fa-fw fa-lg fa-plus' /> Thêm
                                 </button>
                             </div>}
                     </div>
                 </div>
-                <AccountModal ref={e => this.modal = e} updateBank={this.props.updateBank} readOnly={readOnly} _id={_id} getBank={this.props.getBank} accounts = {accounts}/>
+                <AccountModal ref={e => this.modal = e} updateBank={this.props.updateBank} readOnly={readOnly} _id={_id} getBank={this.props.getBank} accounts={accounts} />
             </>,
             backRoute: '/user/bank',
         });
     }
 }
 
-const mapStateToProps = state => ({ system: state.system, bank: state.framework.bank});
+const mapStateToProps = state => ({ system: state.system, bank: state.framework.bank });
 const mapActionsToProps = { getBank, updateBank };
 export default connect(mapStateToProps, mapActionsToProps)(BankEditPage);

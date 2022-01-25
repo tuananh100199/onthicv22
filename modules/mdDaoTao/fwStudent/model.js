@@ -44,6 +44,23 @@ module.exports = (app) => {
         coursePayment: { type: app.db.Schema.ObjectId, ref: 'CoursePayment' },
         discount: { type: app.db.Schema.ObjectId, ref: 'Discount' },
         courseFee: { type: app.db.Schema.ObjectId, ref: 'CourseFee' },
+        lichSuDongTien: [{
+            date: { type: Date, default: Date.now },
+            fee: { type: Number, default: 0 },
+            user: { type: app.db.Schema.ObjectId, ref: 'User' },                                    // Người xác nhận tiền 
+            isOnlinePayment: { type: Boolean, default: false },
+        }],
+
+        lichSuMuaThemGoi: [{
+            date: { type: Date, default: Date.now },
+            fee: { type: Number, default: 0 },
+            listCourseFee: [{
+                courseFee: { type: app.db.Schema.ObjectId, ref: 'CourseFee' },
+                quantity: Number
+            }],
+            user: { type: app.db.Schema.ObjectId, ref: 'User' },                                    // Người xác nhận tiền 
+            isOnlinePayment: { type: Boolean, default: false },
+        }],
 
 
         tienDoHocTap: {},

@@ -2,9 +2,10 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { getCourseByStudent } from 'modules/mdDaoTao/fwCourse/redux';
 import { getBankByStudent } from 'modules/_default/fwBank/redux';
+import { getCourseFeeByStudent } from './redux';
 import { Link } from 'react-router-dom';
 import { CopyToClipboard } from 'react-copy-to-clipboard';
-import { AdminPage, TableCell, renderTable, FormCheckbox, AdminModal, FormTextBox } from 'view/component/AdminPage';
+import { AdminPage, TableCell, renderTable, AdminModal, FormTextBox } from 'view/component/AdminPage';
 
 
 const previousRoute = '/user';
@@ -58,10 +59,11 @@ class PaymentInfoModal extends AdminModal {
             </div>),
     });
 }
+
 class UserPaymentInfo extends AdminPage {
-    state = { name: '...', soTienThanhToan: 0 };
+    state = { name: '...', soTienThanhToan: 0, cart: [] };
     componentDidMount() {
-        const route = T.routeMatcher('/user/hoc-vien/khoa-hoc/:_id/cong-no/chinh-thuc'),
+        const route = T.routeMatcher('/user/hoc-vien/khoa-hoc/:_id/cong-no/tang-them'),
             _id = route.parse(window.location.pathname)._id;
         this.setState({ courseId: _id });
         if (_id) {
@@ -82,6 +84,7 @@ class UserPaymentInfo extends AdminPage {
                                     code: item.code, nameBank: item.name,
                                     accounts: item.accounts.find(({ active }) => active == true),
                                 });
+                                this.props.getCourseFeeByStudent({ courseType: data.item.courseType._id });
                             }
                         });
                     } else {
@@ -106,74 +109,109 @@ class UserPaymentInfo extends AdminPage {
         }
     }
 
-    payment = (e) => e.preventDefault() || console.log('test');
+    addToCart = (item, quantity) => {
+        const cart = this.state.cart;
+        T.confirm('Thêm vào danh sách mua gói', 'Bạn có chắc thêm ' + quantity + ' gói ' + item.name + ' vào danh sách thanh toán không?', true, isConfirm => {
+            if (isConfirm) {
+                const index = cart.findIndex(courseFee => courseFee._id == item._id);
+                if (index == -1) {
+                    item.quantity = parseInt(quantity);
+                    item.fees = item.fee * parseInt(quantity);
+                    cart.push(item);
+                } else {
+                    cart[index].quantity = cart[index].quantity + parseInt(quantity);
+                    cart[index].fees = cart[index].fee * parseInt(quantity);
+                }
+                this.setState({ cart });
+            }
+        });
+    };
+
+    delete = (e, { item }) => {
+        e.preventDefault();
+        let cart = this.state.cart;
+        T.confirm('Xóa khỏi danh sách thanh toán', 'Bạn có chắc bạn muốn xóa gói học này?', true, isConfirm => {
+            if (isConfirm) {
+                cart = cart.filter(courseFee => courseFee._id != item._id);
+                this.setState({ cart });
+            }
+        });
+    }
 
     render() {
         const userPageLink = '/user/hoc-vien/khoa-hoc/' + this.state.courseId;
-        const { hocPhiPhaiDong, hocPhiMienGiam, soLanDong, ngayHetHanNopHocPhi, soTienThanhToan, lichSuDongTien } = this.state;
-        const list = [],
-            numOfPayments = soLanDong ? soLanDong.numOfPayments : 1;
-        const hocPhiDaDong = lichSuDongTien && lichSuDongTien.length ? lichSuDongTien.map(item => item.fee).reduce((prev, next) => prev + next) : 0;
-        const hocPhiConLai = hocPhiPhaiDong && hocPhiPhaiDong.fee && hocPhiPhaiDong.fee - (hocPhiDaDong ? hocPhiDaDong : 0) - ((hocPhiMienGiam && hocPhiMienGiam.fee) ? hocPhiMienGiam.fee : 0);
-        for (let i = 1; i <= numOfPayments; i++) {
-            if (lichSuDongTien && lichSuDongTien[i - 1]) {
-                list.push({ name: 'Thanh toán học phí lần ' + i, fee: lichSuDongTien[i - 1].fee, ngayThanhToan: lichSuDongTien[i - 1].date });
-            } else {
-                list.push({ name: 'Thanh toán học phí lần ' + i, fee: (hocPhiConLai ? hocPhiConLai : 0) / (numOfPayments - (lichSuDongTien ? lichSuDongTien.length : 0)) });
-            }
-
-        }
+        const { cart } = this.state;
+        const soTienThanhToan = cart && cart.length ? cart.map(item => item.fees).reduce((prev, next) => prev + next) : 0;
+        const listCourseFee = this.props.courseFee && this.props.courseFee.list;
+        const listCourseFeeExtra = listCourseFee && listCourseFee.length ? listCourseFee.filter(courseFee => courseFee.feeType && courseFee.feeType.official == false) : [];
         const table = renderTable({
-            getDataSource: () => list,
+            getDataSource: () => listCourseFeeExtra,
             renderHead: () => (
                 <tr>
                     <th style={{ width: 'auto', textAlign: 'center' }}>#</th>
-                    <th style={{ width: '100%' }}>Nội dung</th>
+                    <th style={{ width: '100%' }}>Tên gói</th>
                     <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Số tiền</th>
-                    <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Ngày thanh toán</th>
-                    <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Ngày dự kiến hết hạn</th>
+                    <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Loại gói học phí</th>
+                    <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Mô tả</th>
+                    <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Số lượng</th>
                     <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Chọn thanh toán</th>
-                    <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>In phiếu thu</th>
                 </tr>),
             renderRow: (item, index) => (
                 <tr key={index}>
                     <TableCell type='number' content={index + 1} />
                     <TableCell type='text' content={item.name} />
                     <TableCell type='number' content={item.fee} />
-                    <TableCell type='text' style={{ whiteSpace: 'nowrap', textAlign: 'center' }} content={item.ngayThanhToan ? T.dateToText(item.ngayThanhToan, 'dd/mm/yyyy') : ''} />
-                    <TableCell type='text' style={{ whiteSpace: 'nowrap', textAlign: 'center' }} content={T.dateToText(ngayHetHanNopHocPhi, 'dd/mm/yyyy')} />
-                    <TableCell type={item.ngayThanhToan ? 'text' : 'link'} onClick={() => { }} style={{ textAlign: 'center' }} content={item.ngayThanhToan ? 'Đã thanh toán' : <FormCheckbox ref={e => this[index] = e} onChange={value => this.onCheck(value, item.fee)} />} />
-                    <TableCell type='link' onClick={() => console.log('first')} style={{ textAlign: 'center' }} content={<i className='fa fa-print' aria-hidden='true'></i>} />
+                    <TableCell type='text' style={{ whiteSpace: 'nowrap', textAlign: 'center' }} content={item.feeType ? item.feeType.title : ''} />
+                    <TableCell type='text' style={{ whiteSpace: 'nowrap', textAlign: 'center' }} content={item.description} />
+                    <TableCell type='text' style={{ whiteSpace: 'nowrap', textAlign: 'center' }} content={<FormTextBox ref={e => this[index] = e} type='number' readOnly={false}>1</FormTextBox>} />
+                    <TableCell type='link' onClick={() => this.addToCart(item, this[index].value())} style={{ textAlign: 'center' }} content={<i className='fa fa-shopping-cart' aria-hidden='true'></i>} />
+                </tr>),
+        });
+
+        const tableUser = renderTable({
+            getDataSource: () => cart,
+            renderHead: () => (
+                <tr>
+                    <th style={{ width: 'auto', textAlign: 'center' }}>#</th>
+                    <th style={{ width: '100%' }}>Tên gói</th>
+                    <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Số tiền</th>
+                    <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Loại gói học phí</th>
+                    <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Mô tả</th>
+                    <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Số lượng</th>
+                    <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Thao tác</th>
+                </tr>),
+            renderRow: (item, index) => (
+                <tr key={index}>
+                    <TableCell type='number' content={index + 1} />
+                    <TableCell type='text' content={item.name} />
+                    <TableCell type='number' content={item.fee} />
+                    <TableCell type='text' style={{ whiteSpace: 'nowrap', textAlign: 'center' }} content={item.feeType ? item.feeType.title : ''} />
+                    <TableCell type='text' style={{ whiteSpace: 'nowrap', textAlign: 'center' }} content={item.description} />
+                    <TableCell type='text' style={{ whiteSpace: 'nowrap', textAlign: 'center' }} content={item.quantity} />
+                    <TableCell type='buttons' content={{ item, index }} permission={{ delete: true }} onDelete={this.delete} />
                 </tr>),
         });
         return this.renderPage({
             icon: 'fa fa-money',
-            title: 'Học phí chính thức: ' + (this.state.name),
+            title: 'Học phí tăng thêm: ' + (this.state.name),
             breadcrumb: [<Link key={0} to={userPageLink}>Khóa học</Link>, 'Học phí'],
             content: (
                 <>
                     <div className='tile'>
-                        <h3 className='tile-title'>Thông tin học phí</h3>
-                        <div className='tile-body row'>
-                            <label className='col-md-6'>Học phí phải đóng:  <b>{hocPhiPhaiDong ? T.numberDisplay(hocPhiPhaiDong.fee) + ' đồng' : ''}</b></label>
-                            {this.state.hocPhiMienGiam ? <label className='col-md-6'>Học phí miễn giảm: <b>{T.numberDisplay(hocPhiMienGiam.fee) + ' đồng'}</b></label> : null}
-                            <label className='col-md-6'>Học phí đã đóng:  <b>{this.state.hocPhiDaDong ? T.numberDisplay(hocPhiDaDong) + ' đồng' : ''}</b></label>
-                            <label className='col-md-6'>Học phí còn lại:  <b>{hocPhiConLai ? (hocPhiConLai + ' đồng') : ''}</b></label>
-                            {this.state.ngayHetHanNopHocPhi ? <label className='col-md-6'>Ngày hết hạn nộp học phí: <b>{T.dateToText(ngayHetHanNopHocPhi, 'dd/mm/yyyy')}</b></label> : null}
-                        </div>
+                        <h3 className='tile-title'>Chọn gói</h3>
+                        {table}
                     </div>
 
-
-                    <div className='tile'>
+                    {cart && cart.length ? <div className='tile'>
                         <h3 className='tile-title'>Thanh toán</h3>
-                        {table}
+                        {tableUser}
                         <div className='d-flex justify-content-between'>
                             <p>Số tiền thanh toán: <b>{T.numberDisplay(soTienThanhToan)} đồng</b></p>
                             <button className={'btn ' + (soTienThanhToan != 0 ? 'btn-success' : 'btn-secondary')} style={{ textAlign: 'right' }}
                                 onClick={() => (soTienThanhToan == 0) ? T.alert('Vui lòng chọn số tiền muốn thanh toán', 'error', false, 8000) : this.modal.show(this.state)}
                             >Thanh toán</button>
                         </div>
-                    </div>
+                    </div> : null}
 
                     {/* {this.state.code ? <div className='tile'>
                         <h3 className='tile-title'>Thanh toán</h3>
@@ -193,6 +231,6 @@ class UserPaymentInfo extends AdminPage {
     }
 }
 
-const mapStateToProps = state => ({ system: state.system, course: state.trainning.course });
-const mapActionsToProps = { getCourseByStudent, getBankByStudent };
+const mapStateToProps = state => ({ system: state.system, course: state.trainning.course, courseFee: state.accountant.courseFee });
+const mapActionsToProps = { getCourseByStudent, getBankByStudent, getCourseFeeByStudent };
 export default connect(mapStateToProps, mapActionsToProps)(UserPaymentInfo);

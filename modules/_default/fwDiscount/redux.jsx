@@ -145,7 +145,7 @@ export function getDiscountByUser(_id, done) {
     };
 }
 
-export const ajaxSelectCourseType = {
+export const ajaxSelectDiscount = {
     ajax: true,
     url: '/api/discount/all',
     data: {},

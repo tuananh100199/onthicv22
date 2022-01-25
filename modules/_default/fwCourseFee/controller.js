@@ -12,6 +12,7 @@ module.exports = (app) => {
 
     app.get('/user/course-fee', app.permission.check('courseFee:read'), app.templates.admin);
     app.get('/user/hoc-vien/khoa-hoc/:_id/cong-no/chinh-thuc', app.permission.check('user:login'), app.templates.admin);
+    app.get('/user/hoc-vien/khoa-hoc/:_id/cong-no/tang-them', app.permission.check('user:login'), app.templates.admin);
 
 
     // APIs ------------------------------------------------------------------------------------------------------------
@@ -24,8 +25,12 @@ module.exports = (app) => {
         });
     });
 
-    app.get('/api/course-fee/all', (req, res) => {//mobile
+    app.get('/api/course-fee/all', (req, res) => {
         app.model.courseFee.getAll((error, list) => res.send({ error, list }));
+    });
+
+    app.get('/api/course-fee/student', (req, res) => {
+        app.model.courseFee.getAll(req.query.condition, (error, list) => res.send({ error, list }));
     });
 
     app.get('/api/course-fee', (req, res) => {
