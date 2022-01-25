@@ -13,5 +13,13 @@ export default {
             path: '/user/certificate',
             component: Loadable({ loading: Loading, loader: () => import('./adminPage') }),
         },
+        {
+            path: '/user/certification',
+            component: Loadable({ loading: Loading, loader: () => import('./adminCertificationPage') }),
+        },
+        {
+            path: '/user/license',
+            component: Loadable({ loading: Loading, loader: () => import('./adminLicensePage') }),
+        },
     ]
 };

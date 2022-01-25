@@ -68,9 +68,12 @@ module.exports = (app) => {
         totNghiep: { type: Boolean, default: false },
         ngayDuKienThiSatHach: Date,
         liDoChuaDatSatHach: String,
-
         ngayDuKienThiTotNghiep: Date,
         liDoChuaTotNghiep: String,
+
+        // nhận chứng chỉ sơ cấp, giấy phép lái xe
+        isCertification:{ type: Boolean, default: false },
+        isLisence:{ type: Boolean, default: false },
 
         ngayNhanChungChiHoanThanhKhoaHoc: Date,
         ngayNhanGiayPhepLaiXe: Date,
