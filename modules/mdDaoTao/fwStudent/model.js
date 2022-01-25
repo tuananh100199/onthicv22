@@ -41,6 +41,10 @@ module.exports = (app) => {
         hocPhiMienGiam: Number,                                                                     // Số tiền được miễn giảm
         hocPhiDaDong: Number,                                                                       // Học phí đã đóng
         ngayHetHanNopHocPhi: Date,                                                                  // Ngày hết hạn nộp học phí
+        coursePayment: { type: app.db.Schema.ObjectId, ref: 'CoursePayment' },
+        discount: { type: app.db.Schema.ObjectId, ref: 'Discount' },
+        courseFee: { type: app.db.Schema.ObjectId, ref: 'CourseFee' },
+
 
         tienDoHocTap: {},
         tienDoThiHetMon: {},
@@ -98,7 +102,7 @@ module.exports = (app) => {
         create: (data, done) => model.create(data, done),
 
         get: (condition, done) => (typeof condition == 'object' ? model.findOne(condition) : model.findById(condition))
-            .populate('user', '-password').populate('division').populate('courseType').populate('course').exec(done),
+            .populate('user', '-password').populate('division').populate('courseType').populate('courseFee').populate('coursePayment').populate('discount').populate('course').exec(done),
 
         getAll: (condition, done) => {
             if (typeof condition == 'function') {
@@ -160,7 +164,8 @@ module.exports = (app) => {
                             model.find({ _id: { $in: _ids }, ...condition }).sort(sort).skip(skipNumber).limit(result.pageSize)
                                 .populate('user', '-password').populate('division', '_id title isOutside').populate('planLecturer', '_id lastname firstname').populate('courseType').populate('course').populate({
                                     path: 'course', populate: { path: 'subjects', select: '-detailDescription' }
-                                }).exec((error, list) => {
+                                }).populate('courseFee','_id name').populate('_id name').populate('_id name')
+                                .exec((error, list) => {
                                     result.list = list;
                                     done(error, result);
                                 });
@@ -172,7 +177,8 @@ module.exports = (app) => {
                     model.find(condition).sort(sort).skip(skipNumber).limit(result.pageSize)
                         .populate('user', '-password').populate('division', '_id title isOutside').populate('planLecturer', '_id lastname firstname').populate('courseType').populate('course').populate({
                             path: 'course', populate: { path: 'subjects', select: '-detailDescription' }
-                        }).exec((error, list) => {
+                        }).populate('courseFee').populate('discount').populate('coursePayment')
+                        .exec((error, list) => {
                             result.list = list;
                             done(error, result);
                         });

@@ -26,7 +26,7 @@ class CourseTypeModal extends AdminModal {
         }
     }
     render = () => this.renderModal({
-        title: 'Bài viết',
+        title: 'Loại khóa học mới',
         body: <FormTextBox ref={e => this.itemTitle = e} label='Tên loại khóa học' />
     });
 }
