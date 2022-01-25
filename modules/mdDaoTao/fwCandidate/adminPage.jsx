@@ -6,14 +6,16 @@ import { getCourseTypeAll, ajaxSelectCourseType, ajaxGetCourseType } from 'modul
 import { AdminPage, AdminModal, FormTextBox, TableCell, renderTable, FormSelect, FormDatePicker } from 'view/component/AdminPage';
 import Dropdown from 'view/component/Dropdown';
 import { ajaxSelectDivision, ajaxGetDivision, getDivisionAll } from 'modules/mdDaoTao/fwDivision/redux';
-
+import {ajaxSelectCourseFeeByCourseType} from 'modules/_default/fwCourseFee/redux';
+import {ajaxSelectCoursePayment} from 'modules/_default/fwCoursePayment/redux';
+import {ajaxSelectDiscount} from 'modules/_default/fwDiscount/redux';
 class CandidateModal extends AdminModal {
     state = {};
     componentDidMount() {
         $(document).ready(() => this.onShown(() => this.itemLastname.focus()));
     }
 
-    onShow = ({ _id, firstname = '', lastname = '', email = '', phoneNumber = '', identityCard = '', birthday = null, planCourse = '', onUpdated, courseType = '', state = '', division = '' }) => {
+    onShow = ({ _id, courseFee , discount , coursePayment , firstname = '', lastname = '', email = '', phoneNumber = '', identityCard = '', birthday = null, planCourse = '', onUpdated, courseType = '', state = '', division = '' }) => {
         this.onUpdated = onUpdated;
         this.itemFirstname.value(firstname);
         this.itemLastname.value(lastname);
@@ -23,13 +25,18 @@ class CandidateModal extends AdminModal {
         this.itemBirthday.value(birthday);
         this.itemPlanCourse.value(planCourse);
         ajaxGetCourseType(courseType, data => { //TODO: cần xem lại đoạn code này
-            this.setState({ courseTypeTitle: data.item.title });
-            this.courseType.value(data && data.item ? { id: data.item._id, text: data.item.title } : null);
+            this.setState({ courseTypeTitle: data.item.title,courseFee },()=>{
+                this.courseType.value(data && data.item ? { id: data.item._id, text: data.item.title } : null);
+            });
         });
         ajaxGetDivision(division, data => //TODO: cần xem lại đoạn code này
             this.division.value(data && data.item ? { id: data.item._id, text: data.item.title } : null));
         this.states.value(state);
-        this.setState({ _id });
+        this.itemDiscount.value(discount?{id:discount._id,text:discount.name}:null);
+        this.itemCoursePayment.value(coursePayment?{id:coursePayment._id,text:coursePayment.title}:null);
+        this.setState({ _id,courseId:courseType._id },()=>{
+            this.itemCourseFee.value(courseFee?{id:courseFee._id,text:courseFee.name}:null);
+        });
     }
 
     onSubmit = () => {
@@ -44,6 +51,9 @@ class CandidateModal extends AdminModal {
             courseType: this.courseType.value(),
             division: this.division.value(),
             state: this.states.value(),
+            courseFee:this.itemCourseFee.value(),
+            discount:this.itemDiscount.value(),
+            coursePayment:this.itemCoursePayment.value(),
         };
         if (data.lastname == '') {
             T.notify('Họ không được trống!', 'danger');
@@ -90,7 +100,10 @@ class CandidateModal extends AdminModal {
             courseType: this.courseType.value(),
             division: this.division.value(),
             state: this.states.value(),
-            _id: this.state._id
+            _id: this.state._id,
+            courseFee:this.itemCourseFee.value()!=''?this.itemCourseFee.value():null,
+            discount:this.itemDiscount.value()!=''?this.itemDiscount.value():null,
+            coursePayment:this.itemCoursePayment.value()?this.itemCoursePayment.value():null,
         };
         if (data.lastname == '') {
             T.notify('Họ không được trống!', 'danger');
@@ -123,6 +136,10 @@ class CandidateModal extends AdminModal {
         }
     }
 
+    onChangeCourseType = data => data && data.id && this.setState({courseId:data.id},()=>{
+        if(this.state.courseFee && this.state.courseFee.courseType!=data.id) this.itemCourseFee.value(null); 
+        })
+
     render = () => this.renderModal({
         title: 'Đăng ký tư vấn',
         size: 'large',
@@ -131,12 +148,15 @@ class CandidateModal extends AdminModal {
             <FormTextBox className='col-md-6' ref={e => this.itemFirstname = e} label='Tên' />
             <FormTextBox className='col-md-6' ref={e => this.itemEmail = e} type='email' label='Email' />
             <FormTextBox className='col-md-6' ref={e => this.itemPhoneNumber = e} type='phone' label='Số điện thoại' />
-            <FormSelect className='col-md-6' ref={e => this.courseType = e} label='Loại khóa học' data={ajaxSelectCourseType} />
+            <FormSelect className='col-md-6' ref={e => this.courseType = e} label='Loại khóa học' data={ajaxSelectCourseType} onChange = {this.onChangeCourseType} />
             <FormSelect className='col-md-6' ref={e => this.states = e} label='Trạng thái' data={this.props.states} />
             <FormSelect className='col-md-6' ref={e => this.division = e} label='Cơ sở đào tạo' data={ajaxSelectDivision} />
             <FormTextBox className='col-md-6' ref={e => this.itemIdentityCard = e} label='CMND/CCCD' />
             <FormDatePicker className='col-md-6' ref={e => this.itemBirthday = e} label='Ngày sinh' type='date-mask' />
             <FormTextBox className='col-md-6' ref={e => this.itemPlanCourse = e} label='Khóa dự kiến' />
+            <FormSelect className='col-md-6' ref={e => this.itemCourseFee = e} label='Gói học phí' data={ajaxSelectCourseFeeByCourseType(this.state.courseId)} />
+            <FormSelect className='col-md-6' ref={e => this.itemDiscount = e} label='Giảm giá' data={ajaxSelectDiscount} />
+            <FormSelect className='col-md-6' ref={e => this.itemCoursePayment = e} label='Số lần thanh toán' data={ajaxSelectCoursePayment} />
         </div>,
         buttons: this.props.permission.write ?
             <a className='btn btn-warning' href='#' onClick={e => this.onUpStudent(e)} style={{ color: 'white' }}>

@@ -51,7 +51,7 @@ export function getCoursePaymentAll(done) {
     };
 }
 
-export function getCourseFee(_id, done) {
+export function getCoursePayment(_id, done) {
     return dispatch => ajaxGetCoursePayment(_id, data => {
         if (data.error) {
             T.notify('Lấy số lần thanh toán học phí bị lỗi!', 'danger');
@@ -114,3 +114,13 @@ export function ajaxGetCoursePayment(_id, done) {
     const url = '/api/course-payment';
     T.get(url, { _id }, done, error => console.error(error) || T.notify('Lấy số lần thanh toán học phí bị lỗi!', 'danger'));
 }
+
+export const ajaxSelectCoursePayment = {
+    ajax: true,
+    url: '/api/course-payment/all',
+    data: {},
+    processResults: response => ({
+        results: response && response.list ? response.list.map(item => ({ id: item._id, text: item.title })) : []
+    }),
+    fetchOne: (_id, done) => getCoursePayment(_id, ({ item }) => done && done({ id: item._id, text: item.title }))
+};

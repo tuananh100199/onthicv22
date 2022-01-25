@@ -208,6 +208,47 @@ module.exports = (app) => {
         }
     });
 
+    const getDefaultCourseFee = data=>new Promise((resolve,reject)=>{// thêm courseFee mặc định
+        if(!data.courseType){
+            reject('Không có loại khóa học!');
+        }else if(data.courseFee && data.courseFee!=''){// Có gói học phí
+            resolve(data.courseFee);
+        }else{
+            app.model.courseFee.get({isDefault:true,courseType:data.courseType},(error,item)=>{
+                if(error || !item) reject('Lỗi không tìm thấy gói học phí!');
+                else{
+                    resolve(item._id);
+                }
+            });
+        }
+    });
+
+    const getDefaultDiscount = data=>new Promise((resolve,reject)=>{// thêm discount mặc định
+        if(data.discount&& data.discount!=''){// Có giảm giá
+            resolve(data.discount);
+        }else{
+            app.model.discount.get({isDefault:true},(error,item)=>{
+                if(error || !item) reject('Lỗi không tìm thấy giảm giá!');
+                else{
+                    resolve(item._id);
+                }
+            });
+        }
+    });
+
+    const getDefaultCoursePayment = data=>new Promise((resolve,reject)=>{// thêm coursePayment mặc định
+        if(data.coursePayment && data.coursePayment!=''){// Có số lần đóng học phí
+            resolve(data.coursePayment);
+        }else{
+            app.model.coursePayment.get({default:true},(error,item)=>{
+                if(error || !item) reject('Lỗi không tìm thấy số lần đóng học phí!');
+                else{
+                    resolve(item._id);
+                }
+            });
+        }
+    });
+
     app.post('/api/pre-student', app.permission.check('pre-student:write'), (req, res) => {
         let data = req.body.student;
         function convert(str) {
@@ -217,7 +258,8 @@ module.exports = (app) => {
             return [day, mnth, date.getFullYear()].join('');
         }
         delete data.course; // Không được gán khóa học cho pre-student
-        new Promise((resolve, reject) => { // Tạo user cho pre
+        
+        const createNewUser = new Promise((resolve, reject) => { // Tạo user cho pre
             app.model.user.get({ identityCard: data.identityCard }, (error, user) => {
                 if (error) {
                     reject('Lỗi khi đọc thông tin người dùng!');
@@ -254,10 +296,27 @@ module.exports = (app) => {
                     });
                 }
             });
-        }).then(_userId => { // Tạo student 
+        });
+        // .then(_userId => { // Tạo student 
+        //     data.user = _userId;   // assign id of user to user field of prestudent
+        //     delete data.email;
+        //     delete data.phoneNumber;
+        //     app.model.student.create(data, (error, item) => {
+        //         if (error || item == null || item.image == null) {
+        //             res.send({ error, item });
+        //         } else {
+        //             app.uploadImage('pre-student', app.model.student.get, item._id, item.image, data => {
+        //                 res.send(data);
+        //             });
+        //         }
+        //     });
+        // }).catch(error => res.send({ error }));
+
+        Promise.all([createNewUser,getDefaultCourseFee(data),getDefaultDiscount(data),getDefaultCoursePayment(data)]).then(([_userId,_courseFeeId,_discountId,_coursePaymentId])=>{
             data.user = _userId;   // assign id of user to user field of prestudent
-            delete data.email;
-            delete data.phoneNumber;
+            data.courseFee=_courseFeeId;
+            data.discount=_discountId;
+            data.coursePayment=_coursePaymentId;
             app.model.student.create(data, (error, item) => {
                 if (error || item == null || item.image == null) {
                     res.send({ error, item });
@@ -267,7 +326,7 @@ module.exports = (app) => {
                     });
                 }
             });
-        }).catch(error => res.send({ error }));
+        }).catch(error =>console.log(error)||res.send({ error }));
     });
 
     app.post('/api/pre-student/import', app.permission.check('pre-student:write'), (req, res) => {
@@ -332,7 +391,12 @@ module.exports = (app) => {
     app.put('/api/pre-student', app.permission.check('pre-student:write'), (req, res) => {
         let { _id, changes } = req.body;
         delete changes.course; // Không được gán khóa học cho pre-student
-        app.model.student.update(_id, changes, (error, item) => res.send({ error, item }));
+        Promise.all([getDefaultCourseFee(changes),getDefaultDiscount(changes),getDefaultCoursePayment(changes)]).then(([_courseFeeId,_discountId,_coursePaymentId])=>{
+            changes.courseFee=_courseFeeId;
+            changes.discount=_discountId;
+            changes.coursePayment=_coursePaymentId;
+            app.model.student.update(_id, changes, (error, item) => res.send({ error, item }));
+        }).catch(error=>console.log(error)||res.send({error}));
     });
 
     app.delete('/api/pre-student', app.permission.check('pre-student:delete'), (req, res) => {

@@ -18,14 +18,18 @@ module.exports = (app) => {
     app.get('/api/course-fee/page/:pageNumber/:pageSize', (req, res) => {
         const pageNumber = parseInt(req.params.pageNumber),
             pageSize = parseInt(req.params.pageSize),
-            condition = req.query.condition;
+            condition = req.query.condition||{};
         app.model.courseFee.getPage(pageNumber, pageSize, condition, (error, page) => {
             res.send({ page, error: error ? 'Danh sách gói học phí không sẵn sàng!' : null });
         });
     });
 
     app.get('/api/course-fee/all', (req, res) => {//mobile
-        app.model.courseFee.getAll((error, list) => res.send({ error, list }));
+        const condition = req.query.condition || {};
+        if(req.query.courseType){
+            condition.courseType=req.query.courseType;
+        }
+        app.model.courseFee.getAll(condition,(error, list) => res.send({ error, list }));
     });
 
     app.get('/api/course-fee', (req, res) => {

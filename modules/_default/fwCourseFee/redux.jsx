@@ -25,7 +25,6 @@ export function getCourseFeePage(pageNumber, pageSize, condition, done) {
     const page = T.updatePage('pageCourseFee', pageNumber, pageSize);
     return (dispatch) => {
         const url = `/api/course-fee/page/${page.pageNumber}/${page.pageSize}`;
-        console.log(condition);
         T.get(url, { condition }, data => {
             if (data.error) {
                 T.notify('Lấy danh sách gói học phí bị lỗi!', 'danger');
@@ -160,3 +159,13 @@ export function ajaxGetCourseFee(_id, done) {
     const url = '/api/course-fee';
     T.get(url, { _id }, done, error => console.error(error) || T.notify('Lấy gói học phí bị lỗi!', 'danger'));
 }
+
+export const ajaxSelectCourseFeeByCourseType = (courseType,isOfficial=true) => ({
+    ajax: true,
+    url: '/api/course-fee/all' + (courseType ? `?courseType=${courseType}` : ''),
+    data: {},
+    processResults: response => ({
+        results: response  && response.list ? response.list.filter(item=>item.feeType && item.feeType.official==isOfficial).map(item => ({ id: item._id, text: item.name })) : []
+    }),
+    fetchOne: (_id, done) => getCourseFee(_id, ({ item }) => done && done({ id: item._id, text: item.name }))
+});

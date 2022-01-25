@@ -145,14 +145,14 @@ export function getDiscountByUser(_id, done) {
     };
 }
 
-export const ajaxSelectCourseType = {
+export const ajaxSelectDiscount = {
     ajax: true,
     url: '/api/discount/all',
     data: {},
     processResults: response => ({
-        results: response && response.list ? response.list.map(item => ({ id: item._id, text: item.title })) : []
+        results: response && response.list ? response.list.map(item => ({ id: item._id, text: item.name })) : []
     }),
-    fetchOne: (_id, done) => getDiscount(_id, ({ item }) => done && done({ id: item._id, text: item.title }))
+    fetchOne: (_id, done) => getDiscount(_id, ({ item }) => done && done({ id: item._id, text: item.name }))
 };
 
 export function ajaxGetDiscount(_id, done) {
