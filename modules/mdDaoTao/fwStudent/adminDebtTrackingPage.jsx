@@ -1,18 +1,43 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { getStudentPage, updateStudent } from './redux';
+import { getDebtStudentPage, updateStudent } from './redux';
 import { createNotification } from 'modules/_default/fwNotification/redux';
 import { getNotificationTemplateAll, getNotificationTemplate } from 'modules/mdTruyenThong/fwNotificationTemplate/redux';
 import { getCourseTypeAll } from 'modules/mdDaoTao/fwCourseType/redux';
 import { AdminPage, renderTable, TableCell } from 'view/component/AdminPage';
 import Pagination from 'view/component/Pagination';
+import T from 'view/js/common';
 
 class DebtTrackingPage extends AdminPage {
     state = { searchText: '' };
     componentDidMount() {
         T.ready();
-        this.props.getStudentPage();
+        this.props.getDebtStudentPage();
     }
+
+    renderLichSuDongTien = (lichSuDongTien, type) => {
+        let text = '';
+        if (lichSuDongTien.length) {
+            lichSuDongTien.forEach((item, index) => {
+                let i = index + 1;
+                if (type == 'fee') text = text + 'Lần ' + i + ': ' + item.fee + '\n';
+                else if (type == 'isOnline') text = text + 'Lần ' + i + ': ' + (item.isOnlinePayment ? 'Thanh toán online' : 'Thanh toán trực tiếp') + '\n';
+                else if (type == 'sum') text = parseInt(text + item.fee);
+            });
+            return <>{type == 'sum' ? T.numberDisplay(text) : <p>{text}</p>}</>;
+        } else return text;
+    }
+
+    chechHocPhiConLai = (item) => {
+        const lichSuDongTien = item && item.lichSuDongTien;
+        let fee = item && item.courseFee ? item.courseFee.fee - (item.discount ? item.discount.fee : 0) : 0;
+        let soTienDaDong = 0;
+        lichSuDongTien && lichSuDongTien.length ? lichSuDongTien.forEach(item => {
+            soTienDaDong = parseInt(soTienDaDong + item.fee);
+        }) : 0;
+        return fee - soTienDaDong;
+    }
+
     render() {
         let { pageNumber, pageSize, pageTotal, pageCondition, totalItem, list } = this.props.student && this.props.student.page ?
             this.props.student.page : { pageNumber: 1, pageSize: 50, pageTotal: 1, pageCondition: {}, totalItem: 0, list: [] };
@@ -28,8 +53,8 @@ class DebtTrackingPage extends AdminPage {
                     <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Giảm giá</th>
                     <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Số tiền phải đóng</th>
                     <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Số lần thanh toán</th>
-                    <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Số tiền đóng</th>
-                    <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Hình thức đóng</th>
+                    <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Số tiền thanh toán</th>
+                    <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Hình thức thanh toán</th>
                     <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Thông tin đóng</th>
                     <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Số tiền đã đóng</th>
                     <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Số tiền còn nợ</th>
@@ -41,18 +66,18 @@ class DebtTrackingPage extends AdminPage {
                     <TableCell type='number' content={index + 1} />
                     <TableCell content={<>{`${item.lastname} ${item.firstname}`}<br />{item.identityCard}</>} style={{ whiteSpace: 'nowrap' }} />
                     <TableCell content={item.course && item.course.name} style={{ whiteSpace: 'nowrap' }} />
-                    <TableCell type='number' content={index + 1} />
-                    <TableCell type='number' content={index + 1} />
-                    <TableCell type='number' content={index + 1} />
-                    <TableCell type='number' content={index + 1} />
-                    <TableCell type='number' content={index + 1} />
-                    <TableCell type='number' content={index + 1} />
-                    <TableCell type='number' content={index + 1} />
-                    <TableCell type='number' content={index + 1} />
-                    <TableCell type='number' content={index + 1} />
-                    <TableCell type='number' content={index + 1} />
-                    <TableCell type='number' content={index + 1} />
-                    <TableCell type='number' content={index + 1} />
+                    <TableCell type='text' content={item.courseFee ? item.courseFee.name : ''} />
+                    <TableCell type='number' content={item.courseFee ? item.courseFee.fee : ''} />
+                    <TableCell type='number' content={item.discount ? item.discount.fee : ''} />
+                    <TableCell type='number' content={item.courseFee ? item.courseFee.fee - (item.discount ? item.discount.fee : 0) : ''} />
+                    <TableCell type='number' content={item.coursePayment ? item.coursePayment.numOfPayments : ''} />
+                    <TableCell type='text' content={item.lichSuDongTien ? this.renderLichSuDongTien(item.lichSuDongTien, 'fee') : ''} />
+                    <TableCell type='number' content={item.lichSuDongTien ? this.renderLichSuDongTien(item.lichSuDongTien, 'isOnline') : ''} />
+                    <TableCell type='number' content={''} />
+                    <TableCell type='number' content={item.lichSuDongTien ? this.renderLichSuDongTien(item.lichSuDongTien, 'sum') : ''} />
+                    <TableCell type='number' content={this.chechHocPhiConLai(item) ? T.numberDisplay(this.chechHocPhiConLai(item)) : ''} />
+                    <TableCell type='number' content={item.ngayHetHanNopHocPhi ? T.dateToText(item.ngayHetHanNopHocPhi, 'dd/mm/yyyy') : ''} />
+                    <TableCell type='link' onClick={() => console.log('first')} style={{ textAlign: 'center' }} content={<i className='fa fa-print' aria-hidden='true'></i>} />
                 </tr>)
         });
         return this.renderPage({
@@ -72,5 +97,5 @@ class DebtTrackingPage extends AdminPage {
 }
 
 const mapStateToProps = state => ({ system: state.system, student: state.trainning.student });
-const mapActionsToProps = { getStudentPage, updateStudent, createNotification, getCourseTypeAll, getNotificationTemplateAll, getNotificationTemplate };
+const mapActionsToProps = { getDebtStudentPage, updateStudent, createNotification, getCourseTypeAll, getNotificationTemplateAll, getNotificationTemplate };
 export default connect(mapStateToProps, mapActionsToProps)(DebtTrackingPage);

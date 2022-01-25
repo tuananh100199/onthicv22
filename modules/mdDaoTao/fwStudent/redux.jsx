@@ -68,6 +68,23 @@ export function getStudentPage(pageNumber, pageSize, pageCondition, done) {
     };
 }
 
+export function getDebtStudentPage(pageNumber, pageSize, pageCondition, done) {
+    const page = T.updatePage('adminStudent', pageNumber, pageSize);
+    return dispatch => {
+        const url = `/api/student/debt/page/${page.pageNumber}/${page.pageSize}`;
+        T.get(url, { pageCondition }, data => {
+            if (data.error) {
+                T.notify('Lấy danh sách học viên bị lỗi!', 'danger');
+                console.error(`GET: ${url}. ${data.error}`);
+            } else {
+                if (pageCondition) data.page.pageCondition = pageCondition;
+                done && done(data.page);
+                dispatch({ type: StudentGetPage, page: data.page });
+            }
+        }, error => console.error(error) || T.notify('Lấy danh sách học viên bị lỗi!', 'danger'));
+    };
+}
+
 export function updateStudent(_id, changes, done) {
     return dispatch => {
         const url = '/api/student';

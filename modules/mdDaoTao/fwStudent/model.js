@@ -172,7 +172,8 @@ module.exports = (app) => {
                             model.find({ _id: { $in: _ids }, ...condition }).sort(sort).skip(skipNumber).limit(result.pageSize)
                                 .populate('user', '-password').populate('division', '_id title isOutside').populate('planLecturer', '_id lastname firstname').populate('courseType').populate('course').populate({
                                     path: 'course', populate: { path: 'subjects', select: '-detailDescription' }
-                                }).exec((error, list) => {
+                                }).populate('courseFee','_id name').populate('_id name').populate('_id name')
+                                .exec((error, list) => {
                                     result.list = list;
                                     done(error, result);
                                 });
@@ -184,7 +185,8 @@ module.exports = (app) => {
                     model.find(condition).sort(sort).skip(skipNumber).limit(result.pageSize)
                         .populate('user', '-password').populate('division', '_id title isOutside').populate('planLecturer', '_id lastname firstname').populate('courseType').populate('course').populate({
                             path: 'course', populate: { path: 'subjects', select: '-detailDescription' }
-                        }).exec((error, list) => {
+                        }).populate('courseFee').populate('discount').populate('coursePayment')
+                        .exec((error, list) => {
                             result.list = list;
                             done(error, result);
                         });

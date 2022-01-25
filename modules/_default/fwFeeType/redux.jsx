@@ -97,6 +97,23 @@ export function updateFeeType(_id, changes, done) {
     };
 }
 
+export function updateFeeTypeDefault(feeType, done) {
+    return dispatch => {
+        const url = '/api/fee-type/default';
+        T.put(url, { feeType }, data => {
+            if (data.error) {
+                T.notify('Cập nhật loại gói học phí bị lỗi!', 'danger');
+                console.error('PUT: ' + url + '.', data.error);
+                done && done(data.error);
+            } else {
+                dispatch(getFeeTypePage());
+                T.notify('Cập nhật loại gói học phí thành công!', 'success');
+                done && done();
+            }
+        }, error => console.error(error) || T.notify('Cập nhật loại gói học phí bị lỗi!', 'danger'));
+    };
+}
+
 export function deleteFeeType(_id) {
     return dispatch => {
         const url = '/api/fee-type';
