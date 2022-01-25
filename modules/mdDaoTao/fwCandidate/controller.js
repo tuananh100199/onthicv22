@@ -121,7 +121,7 @@ module.exports = app => {
 
     app.put('/api/candidate', app.permission.check('candidate:write'), (req, res) => {
         const changes = req.body.changes;
-        // changes.staff = req.session.user;
+        changes.staff = req.session.user;
         changes.modifiedDate = new Date();
         changes.courseFee=='' && delete changes.courseFee;
         changes.discount=='' && delete changes.discount;
