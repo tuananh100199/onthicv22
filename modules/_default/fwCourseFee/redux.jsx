@@ -52,6 +52,21 @@ export function getCourseFeeAll(done) {
     };
 }
 
+export function getCourseFeeByStudent(condition, done) {
+    return dispatch => {
+        const url = '/api/course-fee/student';
+        T.get(url, { condition }, data => {
+            if (data.error) {
+                T.notify('Lấy gói học phí bị lỗi', 'danger');
+                console.error('GET: ' + url + '. ' + data.error);
+            } else {
+                done && data && done(data.list);
+                dispatch({ type: CourseFeeGetAll, list: data.list });
+            }
+        }, error => console.error(error) || T.notify('Lấy gói học phí bị lỗi', 'danger'));
+    };
+}
+
 export function getCourseFee(_id, done) {
     return dispatch => ajaxGetCourseFee(_id, data => {
         if (data.error) {

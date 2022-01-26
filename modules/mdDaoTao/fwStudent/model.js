@@ -44,7 +44,39 @@ module.exports = (app) => {
         coursePayment: { type: app.db.Schema.ObjectId, ref: 'CoursePayment' },
         discount: { type: app.db.Schema.ObjectId, ref: 'Discount' },
         courseFee: { type: app.db.Schema.ObjectId, ref: 'CourseFee' },
+        lichSuDongTien: [{
+            date: { type: Date, default: Date.now },
+            fee: { type: Number, default: 0 },
+            user: { type: app.db.Schema.ObjectId, ref: 'User' },                                    // Người xác nhận tiền 
+            isOnlinePayment: { type: Boolean, default: false },
+        }],
 
+        lichSuMuaThemGoi: [{
+            date: { type: Date, default: Date.now },
+            fee: { type: Number, default: 0 },
+            listCourseFee: [{
+                courseFee: { type: app.db.Schema.ObjectId, ref: 'CourseFee' },
+                quantity: Number
+            }],
+            user: { type: app.db.Schema.ObjectId, ref: 'User' },                                    // Người xác nhận tiền 
+            isOnlinePayment: { type: Boolean, default: false },
+        }],
+
+        cart: {
+            transactionId: String,
+            item: [{
+                isDefault: { type: Boolean, default: false },
+                _id: { type: app.db.Schema.ObjectId },
+                name: String,
+                courseType: { type: app.db.Schema.ObjectId, ref: 'CourseType' },
+                feeType: { type: app.db.Schema.ObjectId, ref: 'FeeType' },
+                fee: Number,
+                description: String,
+                quantity: Number,
+                fees: Number,
+            }],
+            lock: { type: Boolean, default: false }
+        },
 
         tienDoHocTap: {},
         tienDoThiHetMon: {},
@@ -108,7 +140,7 @@ module.exports = (app) => {
         create: (data, done) => model.create(data, done),
 
         get: (condition, done) => (typeof condition == 'object' ? model.findOne(condition) : model.findById(condition))
-            .populate('user', '-password').populate('division').populate('courseType').populate('courseFee').populate('coursePayment').populate('discount').populate('course').exec(done),
+            .populate('user', '-password').populate('division').populate('courseType').populate('courseFee').populate('feeType').populate('coursePayment').populate('discount').populate('course').exec(done),
 
         getAll: (condition, done) => {
             if (typeof condition == 'function') {
@@ -170,7 +202,7 @@ module.exports = (app) => {
                             model.find({ _id: { $in: _ids }, ...condition }).sort(sort).skip(skipNumber).limit(result.pageSize)
                                 .populate('user', '-password').populate('division', '_id title isOutside').populate('planLecturer', '_id lastname firstname').populate('courseType').populate('course').populate({
                                     path: 'course', populate: { path: 'subjects', select: '-detailDescription' }
-                                }).populate('courseFee','_id name').populate('_id name').populate('_id name')
+                                }).populate('courseFee', '_id name').populate('_id name').populate('_id name')
                                 .exec((error, list) => {
                                     result.list = list;
                                     done(error, result);

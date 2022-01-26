@@ -136,6 +136,7 @@
     "passport-google-oauth": "^2.0.0",
     "pizzip": "^3.0.6",
     "pug": "^3.0.0",
+    "react-copy-to-clipboard": "^5.0.4",
     "react-datetime": "^3.0.4",
     "react-player": "^2.9.0",
     "react-qr-code": "^2.0.3",

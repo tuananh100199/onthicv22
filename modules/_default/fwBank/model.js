@@ -3,7 +3,7 @@ module.exports = app => {
         code: String,
         name: String,
         shortname: String,
-        accounts:[{
+        accounts: [{
             holder: String,
             number: String,
             active: { type: Boolean, default: false },
@@ -14,6 +14,7 @@ module.exports = app => {
         contentLine: { type: Number, default: 0 },
         contentStr: { type: String, default: 'ND:/:content/' },
         contentSyntax: { type: String, default: '{cmnd} {ten_loai_khoa_hoc}' },
+        contentSyntaxExtra: { type: String, default: '{cmnd} {ten_loai_khoa_hoc} {ma_giao_dich}' },
     });
 
     const model = app.db.model('Bank', schema);

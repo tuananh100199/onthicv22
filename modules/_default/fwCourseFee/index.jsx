@@ -17,5 +17,9 @@ export default {
             path: '/user/hoc-vien/khoa-hoc/:_id/cong-no/chinh-thuc',
             component: Loadable({ loading: Loading, loader: () => import('./userPaymentInfo') })
         },
+        {
+            path: '/user/hoc-vien/khoa-hoc/:_id/cong-no/tang-them',
+            component: Loadable({ loading: Loading, loader: () => import('./userPaymentExtraInfo') })
+        },
     ]
 };
