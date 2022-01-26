@@ -220,7 +220,7 @@ class UserPaymentInfo extends AdminPage {
                     <TableCell type='number' content={item.fee} />
                     <TableCell type='text' style={{ whiteSpace: 'nowrap', textAlign: 'center' }} content={item.feeType ? item.feeType.title : ''} />
                     <TableCell type='text' style={{ whiteSpace: 'nowrap', textAlign: 'center' }} content={item.description} />
-                    <TableCell type='text' style={{ whiteSpace: 'nowrap', textAlign: 'center' }} content={<FormTextBox ref={e => this[index] = e} type='number' readOnly={false}>1</FormTextBox>} />
+                    <TableCell type='text' style={{ whiteSpace: 'nowrap', textAlign: 'center' }} content={<FormTextBox ref={e => this[index] = e} style={{ width: '60px' }} type='number' min={1} max={100} readOnly={false}></FormTextBox>} />
                     <TableCell type='link' onClick={() => this.addToCart(item, this[index].value())} style={{ textAlign: 'center' }} content={<i className='fa fa-shopping-cart' aria-hidden='true'></i>} />
                 </tr>),
         });
