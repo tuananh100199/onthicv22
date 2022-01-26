@@ -6,16 +6,16 @@ import { getCourseTypeAll, ajaxSelectCourseType, ajaxGetCourseType } from 'modul
 import { AdminPage, AdminModal, FormTextBox, TableCell, renderTable, FormSelect, FormDatePicker } from 'view/component/AdminPage';
 import Dropdown from 'view/component/Dropdown';
 import { ajaxSelectDivision, ajaxGetDivision, getDivisionAll } from 'modules/mdDaoTao/fwDivision/redux';
-import {ajaxSelectCourseFeeByCourseType} from 'modules/_default/fwCourseFee/redux';
-import {ajaxSelectCoursePayment} from 'modules/_default/fwCoursePayment/redux';
-import {ajaxSelectDiscount} from 'modules/_default/fwDiscount/redux';
+import {ajaxSelectCourseFeeByCourseType,getCourseFeeAll} from 'modules/_default/fwCourseFee/redux';
+import {ajaxSelectCoursePayment,getCoursePaymentAll} from 'modules/_default/fwCoursePayment/redux';
+import {ajaxSelectDiscount,getDiscountAll} from 'modules/_default/fwDiscount/redux';
 class CandidateModal extends AdminModal {
     state = {};
     componentDidMount() {
         $(document).ready(() => this.onShown(() => this.itemLastname.focus()));
     }
 
-    onShow = ({ _id, courseFee , discount , coursePayment , firstname = '', lastname = '', email = '', phoneNumber = '', identityCard = '', birthday = null, planCourse = '', onUpdated, courseType = '', state = '', division = '' }) => {
+    onShow = ({ _id, courseFee , discount , coursePayment , firstname = '', lastname = '', email = '', phoneNumber = '', identityCard = '', birthday = null, planCourse = '', onUpdated, courseType = null, state = '', division = '' }) => {
         this.onUpdated = onUpdated;
         this.itemFirstname.value(firstname);
         this.itemLastname.value(lastname);
@@ -25,18 +25,45 @@ class CandidateModal extends AdminModal {
         this.itemBirthday.value(birthday);
         this.itemPlanCourse.value(planCourse);
         ajaxGetCourseType(courseType, data => { //TODO: cần xem lại đoạn code này
-            this.setState({ courseTypeTitle: data.item.title,courseFee },()=>{
-                this.courseType.value(data && data.item ? { id: data.item._id, text: data.item.title } : null);
-            });
+            this.setState({ courseTypeTitle: data.item.title,courseFee });
         });
+        this.courseType.value(courseType?{id:courseType._id,text:courseType.title}:null);
         ajaxGetDivision(division, data => //TODO: cần xem lại đoạn code này
             this.division.value(data && data.item ? { id: data.item._id, text: data.item.title } : null));
         this.states.value(state);
-        this.itemDiscount.value(discount?{id:discount._id,text:discount.name}:null);
-        this.itemCoursePayment.value(coursePayment?{id:coursePayment._id,text:coursePayment.title}:null);
+        this.setValueDiscount(discount);
+        this.setValueCoursePayment(coursePayment);
         this.setState({ _id,courseId:courseType._id },()=>{
-            this.itemCourseFee.value(courseFee?{id:courseFee._id,text:courseFee.name}:null);
+            this.setValueCourseFee(courseType?courseType._id:null,courseFee);
         });
+    }
+
+    setValueCourseFee = (courseTypeId,courseFee=null)=>{
+        if(!courseTypeId){
+            this.itemCourseFee.value(null);
+        }
+        else if(courseFee){
+            this.itemCourseFee.value({id:courseFee._id,text:courseFee.name});    
+        }else{
+            courseFee = this.props.defaultCourseFees.find(item=>item.courseType._id==courseTypeId);
+            this.itemCourseFee.value(courseFee?{id:courseFee._id,text:courseFee.name}:null);
+        }
+    }
+
+    setValueDiscount = (discount)=>{
+        if(discount){
+            this.itemDiscount.value({id:discount._id,text:discount.name});
+        }else{
+            this.itemDiscount.value(this.props.defaultDiscount?{id:this.props.defaultDiscount._id,text:this.props.defaultDiscount.name}:null);
+        }
+    }
+
+    setValueCoursePayment = coursePayment=>{
+        if(coursePayment){
+            this.itemCoursePayment.value({id:coursePayment._id,text:coursePayment.title});
+        }else{
+            this.itemCoursePayment.value(this.props.defaultCoursePayment?{id:this.props.defaultCoursePayment._id,text:this.props.defaultCoursePayment.title}:null);
+        }
     }
 
     onSubmit = () => {
@@ -137,8 +164,8 @@ class CandidateModal extends AdminModal {
     }
 
     onChangeCourseType = data => data && data.id && this.setState({courseId:data.id},()=>{
-        if(this.state.courseFee && this.state.courseFee.courseType!=data.id) this.itemCourseFee.value(null); 
-        })
+        this.setValueCourseFee(data.id);
+    });
 
     render = () => this.renderModal({
         title: 'Đăng ký tư vấn',
@@ -185,6 +212,18 @@ class CandidatePage extends AdminPage {
         this.props.getDivisionAll(list => {
             const division = list.map(item => ({ id: item._id, text: item.title }));
             this.setState({ division });
+        });
+
+        this.props.getCourseFeeAll({isDefault:true},defaultCourseFees=>{//get default courseFee
+            this.setState({defaultCourseFees});
+        });
+
+        this.props.getDiscountAll({isDefault:true},defaultDiscounts=>{//get default discount
+            this.setState({defaultDiscount:defaultDiscounts? defaultDiscounts[0]:null});
+        });
+
+        this.props.getCoursePaymentAll({default:true},defaultCoursePayments=>{//get default coursePayment
+            this.setState({defaultCoursePayment:defaultCoursePayments? defaultCoursePayments[0]:null});
         });
         T.onSearch = (searchText) => this.props.getCandidatePage(1, 50, searchText);
     }
@@ -254,7 +293,8 @@ class CandidatePage extends AdminPage {
             content: <>
                 <div className='tile'>{table}</div>
                 <Pagination name='pageCandidate' pageNumber={pageNumber} pageSize={pageSize} pageTotal={pageTotal} totalItem={totalItem} getPage={this.props.getCandidatePage} />
-                <CandidateModal ref={e => this.candidateModal = e} update={this.props.updateCandidate} states={states} upStudent={this.upStudent} permission={permission} />
+                <CandidateModal ref={e => this.candidateModal = e} update={this.props.updateCandidate} states={states} upStudent={this.upStudent} permission={permission}
+                 defaultCourseFees={this.state.defaultCourseFees} defaultDiscount={this.state.defaultDiscount} defaultCoursePayment={this.state.defaultCoursePayment} />
             </>,
             onExport: permission.export ? exportCandidateToExcel : null,
         });
@@ -262,5 +302,5 @@ class CandidatePage extends AdminPage {
 }
 
 const mapStateToProps = state => ({ system: state.system, candidate: state.communication.candidate });
-const mapActionsToProps = { getCourseTypeAll, getCandidatePage, getCandidate, updateCandidate, deleteCandidate, getDivisionAll };
+const mapActionsToProps = { getCourseTypeAll, getCandidatePage, getCandidate, updateCandidate, deleteCandidate, getDivisionAll,getCourseFeeAll,getCoursePaymentAll,getDiscountAll };
 export default connect(mapStateToProps, mapActionsToProps)(CandidatePage);

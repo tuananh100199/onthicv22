@@ -37,10 +37,10 @@ export function getCourseFeePage(pageNumber, pageSize, condition, done) {
     };
 }
 
-export function getCourseFeeAll(done) {
+export function getCourseFeeAll(condition,done) {
     return dispatch => {
         const url = '/api/course-fee/all';
-        T.get(url, data => {
+        T.get(url,{condition}, data => {
             if (data.error) {
                 T.notify('Lấy gói học phí bị lỗi', 'danger');
                 console.error('GET: ' + url + '. ' + data.error);

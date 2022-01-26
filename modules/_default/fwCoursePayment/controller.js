@@ -24,7 +24,8 @@ module.exports = (app) => {
     });
 
     app.get('/api/course-payment/all', (req, res) => {
-        app.model.coursePayment.getAll((error, list) => res.send({ error, list }));
+        const condition = req.query.condition || {};
+        app.model.coursePayment.getAll(condition,(error, list) => res.send({ error, list }));
     });
 
     app.get('/api/course-payment', (req, res) => {

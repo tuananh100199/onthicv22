@@ -36,10 +36,10 @@ export function getCoursePaymentPage(pageNumber, pageSize, done) {
     };
 }
 
-export function getCoursePaymentAll(done) {
+export function getCoursePaymentAll(condition,done) {
     return dispatch => {
         const url = '/api/course-payment/all';
-        T.get(url, data => {
+        T.get(url,{condition}, data => {
             if (data.error) {
                 T.notify('Lấy số lần thanh toán học phí bị lỗi', 'danger');
                 console.error('GET: ' + url + '. ' + data.error);

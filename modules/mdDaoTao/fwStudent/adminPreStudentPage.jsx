@@ -6,9 +6,9 @@ import { ajaxSelectLecturer } from 'modules/_default/fwUser/redux';
 import Pagination from 'view/component/Pagination';
 import { AdminPage, CirclePageButton, FormImageBox, FormDatePicker, AdminModal, FormTextBox, FormRichTextBox, FormSelect, TableCell, renderTable } from 'view/component/AdminPage';
 import { ajaxSelectDivision } from 'modules/mdDaoTao/fwDivision/redux';
-import {ajaxSelectCourseFeeByCourseType} from 'modules/_default/fwCourseFee/redux';
-import {ajaxSelectCoursePayment} from 'modules/_default/fwCoursePayment/redux';
-import {ajaxSelectDiscount} from 'modules/_default/fwDiscount/redux';
+import {ajaxSelectCourseFeeByCourseType,getCourseFeeAll} from 'modules/_default/fwCourseFee/redux';
+import {ajaxSelectCoursePayment,getCoursePaymentAll} from 'modules/_default/fwCoursePayment/redux';
+import {ajaxSelectDiscount,getDiscountAll} from 'modules/_default/fwDiscount/redux';
 class PreStudenModal extends AdminModal {
     state = {courseType:''};
     componentDidMount() {
@@ -31,12 +31,44 @@ class PreStudenModal extends AdminModal {
         // this.itemHocPhiPhaiDong.value(hocPhiPhaiDong || '');
         this.itemRegularResidence.value(regularResidence || '');
         this.imageBox.setData(`pre-student:${_id || 'new'}`);
+        this.setValueDiscount(discount);
+        // this.itemCoursePayment.value(coursePayment?{id:coursePayment._id,text:coursePayment.title}:null);
+        this.setValueCoursePayment(coursePayment);
         this.setState({ _id, divisionId: division && division._id, image,courseType:courseType?courseType._id:'' }, () => {
             this.itemPlanLecturer.value(planLecturer ? { id: planLecturer._id, text: `${planLecturer.lastname} ${planLecturer.firstname}` } : null);
-            this.itemCourseFee.value(courseFee?{id:courseFee._id,text:courseFee.name}:null);
-            this.itemDiscount.value(discount?{id:discount._id,text:discount.name}:null);
-            this.itemCoursePayment.value(coursePayment?{id:coursePayment._id,text:coursePayment.title}:null);
+            this.setValueCourseFee(courseType?courseType._id:null,courseFee);
+            // this.itemCourseFee.value(courseFee?{id:courseFee._id,text:courseFee.name}:null);
+            // this.itemDiscount.value(discount?{id:discount._id,text:discount.name}:null);
+            // this.itemCoursePayment.value(coursePayment?{id:coursePayment._id,text:coursePayment.title}:null);
         });
+    }
+
+    setValueCourseFee = (courseTypeId,courseFee=null)=>{
+        if(!courseTypeId){
+            this.itemCourseFee.value(null);    
+        }
+        else if(courseFee){
+            this.itemCourseFee.value({id:courseFee._id,text:courseFee.name});    
+        }else{
+            courseFee = this.props.defaultCourseFees.find(item=>item.courseType._id==courseTypeId);
+            this.itemCourseFee.value(courseFee?{id:courseFee._id,text:courseFee.name}:null);
+        }
+    }
+
+    setValueDiscount = (discount)=>{
+        if(discount){
+            this.itemDiscount.value({id:discount._id,text:discount.name});
+        }else{
+            this.itemDiscount.value(this.props.defaultDiscount?{id:this.props.defaultDiscount._id,text:this.props.defaultDiscount.name}:null);
+        }
+    }
+
+    setValueCoursePayment = coursePayment=>{
+        if(coursePayment){
+            this.itemCoursePayment.value({id:coursePayment._id,text:coursePayment.title});
+        }else{
+            this.itemCoursePayment.value(this.props.defaultCoursePayment?{id:this.props.defaultCoursePayment._id,text:this.props.defaultCoursePayment.title}:null);
+        }
     }
 
     onSubmit = () => {
@@ -108,7 +140,7 @@ class PreStudenModal extends AdminModal {
     });
 
     onChangeCourseType = (data) =>data && data.id && this.setState({courseType:data.id},()=>{
-        this.itemCourseFee.value(null);
+        this.setValueCourseFee(data.id);
     });
 
     render = () => {
@@ -153,6 +185,18 @@ class PreStudentPage extends AdminPage {
         this.props.getPreStudentPage(1, 50, undefined);
         T.onSearch = (searchText) => this.props.getPreStudentPage(undefined, undefined, searchText ? { searchText } : null, () => {
             this.setState({ searchText, isSearching: searchText != '' });
+        });
+
+        this.props.getCourseFeeAll({isDefault:true},defaultCourseFees=>{//get default courseFee
+            this.setState({defaultCourseFees});
+        });
+
+        this.props.getDiscountAll({isDefault:true},defaultDiscounts=>{//get default discount
+            this.setState({defaultDiscount:defaultDiscounts? defaultDiscounts[0]:null});
+        });
+
+        this.props.getCoursePaymentAll({default:true},defaultCoursePayments=>{//get default coursePayment
+            this.setState({defaultCoursePayment:defaultCoursePayments? defaultCoursePayments[0]:null});
         });
     }
 
@@ -200,7 +244,8 @@ class PreStudentPage extends AdminPage {
                 <div className='tile'>{table}</div>
                 <Pagination name='adminPreStudent' pageCondition={pageCondition} pageNumber={pageNumber} pageSize={pageSize} pageTotal={pageTotal} totalItem={totalItem}
                     getPage={this.props.getPreStudentPage} />
-                <PreStudenModal readOnly={!permission.write} ref={e => this.modal = e} create={this.props.createPreStudent} update={this.props.updatePreStudent} />
+                <PreStudenModal readOnly={!permission.write} ref={e => this.modal = e} create={this.props.createPreStudent} update={this.props.updatePreStudent} 
+                defaultCourseFees={this.state.defaultCourseFees} defaultDiscount={this.state.defaultDiscount} defaultCoursePayment={this.state.defaultCoursePayment} />
                 {permission.import ? <CirclePageButton type='import' style={{ right: '70px' }} onClick={() => this.props.history.push('/user/pre-student/import')} /> : null}
             </>,
             onCreate: permission.write ? this.edit : null,
@@ -209,5 +254,5 @@ class PreStudentPage extends AdminPage {
 }
 
 const mapStateToProps = state => ({ system: state.system, student: state.trainning.student });
-const mapActionsToProps = { getPreStudentPage, deletePreStudent, createPreStudent, updatePreStudent };
+const mapActionsToProps = { getPreStudentPage, deletePreStudent, createPreStudent, updatePreStudent,getCourseFeeAll,getCoursePaymentAll,getDiscountAll };
 export default connect(mapStateToProps, mapActionsToProps)(PreStudentPage);

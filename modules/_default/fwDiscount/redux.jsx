@@ -37,10 +37,10 @@ export function getDiscountPage(pageNumber, pageSize, done) {
     };
 }
 
-export function getDiscountAll(done) {
+export function getDiscountAll(condition,done) {
     return dispatch => {
         const url = '/api/discount/all';
-        T.get(url, data => {
+        T.get(url,{condition}, data => {
             if (data.error) {
                 T.notify('Lấy giảm giá bị lỗi', 'danger');
                 console.error('GET: ' + url + '. ' + data.error);

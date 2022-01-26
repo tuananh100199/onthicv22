@@ -23,7 +23,8 @@ module.exports = (app) => {
     });
 
     app.get('/api/discount/all', (req, res) => {//mobile
-        app.model.discount.getAll((error, list) => res.send({ error, list }));
+        const condition = req.query.condition || {};
+        app.model.discount.getAll(condition,(error, list) => res.send({ error, list }));
     });
 
     app.get('/api/discount', (req, res) => {
