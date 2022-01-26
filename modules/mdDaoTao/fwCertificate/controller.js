@@ -2,7 +2,7 @@ module.exports = app => {
     const menu = {
         parentMenu: app.parentMenu.trainning,
         menus: {
-            4008: { title: 'Phát chứng chỉ, giấy phép', link: '/user/certificate', icon: 'fa fa-university', backgroundColor: 'rgb(106, 90, 205)' },
+            // 4008: { title: 'Phát chứng chỉ, giấy phép', link: '/user/certificate', icon: 'fa fa-university', backgroundColor: 'rgb(106, 90, 205)' },
             4009: { title: 'Phát chứng chỉ sơ cấp', link: '/user/certification'},
             4010: { title: 'Phát giấy phép lái xe', link: '/user/license'},
         }
@@ -41,9 +41,7 @@ module.exports = app => {
         
         if(condition.totNghiep||condition.totNghiep=='true') pageCondition.totNghiep=true;
         if(condition.datSatHach||condition.datSatHach=='true') pageCondition.datSatHach=true;
-        console.log('condition: ',condition);
         if (pageCondition.$or.length == 0) delete pageCondition.$or;
-        console.log('pageCOndition: ',pageCondition);
 
         app.model.student.getPage(pageNumber, pageSize, pageCondition, (error, page) => res.send({ error, page }));
     });

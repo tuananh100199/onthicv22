@@ -70,14 +70,20 @@ module.exports = (app) => {
 
         datSatHach: { type: Boolean, default: false },
         totNghiep: { type: Boolean, default: false },
+        kySatHach:String,
+
+        // nhận chứng chỉ sơ cấp, giấy phép lái xe
+        isCertification:{ type: Boolean, default: false },  // trung tâm đã có CCSC
+        hasCertification:{type: Boolean, default: false},   // Học viên đã nhận được CCSC
+        isLicense:{ type: Boolean, default: false },        // Trung tâm đã có GPLX
+        hasLicense:{type: Boolean, default: false},         // Học viên đã nhận được GPLX
+
         ngayDuKienThiSatHach: Date,
         liDoChuaDatSatHach: String,
         ngayDuKienThiTotNghiep: Date,
         liDoChuaTotNghiep: String,
 
-        // nhận chứng chỉ sơ cấp, giấy phép lái xe
-        isCertification:{ type: Boolean, default: false },
-        isLisence:{ type: Boolean, default: false },
+
 
         ngayNhanChungChiHoanThanhKhoaHoc: Date,
         ngayNhanGiayPhepLaiXe: Date,

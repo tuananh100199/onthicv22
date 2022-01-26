@@ -34,7 +34,6 @@
 	4005 - Cơ sở đào tạo (/user/division)
 	4006 - Bộ đề thi (/user/drive-test)
 	4007 - Thay đổi giáo viên (/user/change-lecturer)
-	4008 - Phát chứng chỉ, giấy phép (/user/certificate)
 	4009 - Phát chứng chỉ sơ cấp (/user/certification)
 	4010 - Phát giấy phép lái xe (/user/license)
 	4015 - Loại khóa học (/user/course-type)
