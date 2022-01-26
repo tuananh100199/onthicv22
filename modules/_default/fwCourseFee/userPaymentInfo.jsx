@@ -163,7 +163,6 @@ class UserPaymentInfo extends AdminPage {
                         </div>
                     </div>
 
-
                     <div className='tile'>
                         <h3 className='tile-title'>Thanh toán</h3>
                         {table}
@@ -174,17 +173,6 @@ class UserPaymentInfo extends AdminPage {
                             >Thanh toán</button>
                         </div>
                     </div>
-
-                    {/* {this.state.code ? <div className='tile'>
-                        <h3 className='tile-title'>Thanh toán</h3>
-                        <div className='tile-body row'>
-                            <label className='col-md-12'>Tên ngân hàng: <b>{this.state.code + ' - ' + this.state.nameBank}</b></label>
-                            <label className='col-md-12'>Số tài khoản: <b>{this.state.accounts && this.state.accounts.number}</b></label>
-                            <label className='col-md-12'>Người sỡ hữu tài khoản: <b>{this.state.accounts && this.state.accounts.holder}</b></label>
-                            <label className='col-md-12'>Học phí: <b>{courseFee ? T.numberDisplay(courseFee) + ' đồng' : ''}</b></label>
-                            <label className='col-md-12'>Cú pháp chuyển khoản: <b>{this.state.contentSyntax}</b></label>
-                        </div>
-                    </div> : null} */}
                     <PaymentInfoModal fee={soTienThanhToan} accountsNumber={this.state.accounts && this.state.accounts.number} contentSyntax={this.state.contentSyntax} readOnly={true} ref={e => this.modal = e} />
                 </>
             ),

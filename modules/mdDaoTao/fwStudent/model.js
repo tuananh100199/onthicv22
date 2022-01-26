@@ -73,8 +73,9 @@ module.exports = (app) => {
                 fee: Number,
                 description: String,
                 quantity: Number,
-                fees: Number
-            }]
+                fees: Number,
+            }],
+            lock: { type: Boolean, default: false }
         },
 
         tienDoHocTap: {},
@@ -124,7 +125,7 @@ module.exports = (app) => {
         create: (data, done) => model.create(data, done),
 
         get: (condition, done) => (typeof condition == 'object' ? model.findOne(condition) : model.findById(condition))
-            .populate('user', '-password').populate('division').populate('courseType').populate('courseFee').populate('coursePayment').populate('discount').populate('course').exec(done),
+            .populate('user', '-password').populate('division').populate('courseType').populate('courseFee').populate('feeType').populate('coursePayment').populate('discount').populate('course').exec(done),
 
         getAll: (condition, done) => {
             if (typeof condition == 'function') {

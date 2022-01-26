@@ -18,7 +18,7 @@ class PaymentInfoModal extends AdminModal {
     }
 
     onShow = (item) => {
-        const { code, nameBank, accounts, contentSyntaxExtra } = item || { code: '', nameBank: '', accounts: {}, contentSyntax: '' };
+        const { code, nameBank, accounts, contentSyntaxExtra } = item || { code: '', nameBank: '', accounts: {}, contentSyntaxExtra: '' };
         this.itemBankName.value(code + ' - ' + nameBank);
         this.itemAccounts.value(accounts && accounts.number ? accounts.number : '');
         this.itemAccountsUser.value(accounts && accounts.holder ? accounts.holder : '');
@@ -58,6 +58,17 @@ class PaymentInfoModal extends AdminModal {
                     </div>
                 </div>
             </div>),
+        buttons:
+            <a className='btn btn-warning' href='#' onClick={e => {
+                e.preventDefault();
+                let { cart, studentId, transactionId } = this.props;
+                this.props.updateStudent(studentId, { cart: { item: cart, transactionId, lock: true } }, () => {
+                    this.hide();
+                    window.location.reload();
+                });
+            }} style={{ color: 'white' }}>
+                <i className='fa fa-lg fa-paper-plane' /> Xác nhận thanh toán
+            </a>
     });
 }
 
@@ -80,6 +91,8 @@ class UserPaymentInfo extends AdminPage {
                         this.setState({
                             ...data.item,
                             cart: data.student.cart ? data.student.cart.item : [],
+                            lock: data.student.cart ? data.student.cart.lock : false,
+                            transactionId: data.student.cart ? data.student.cart.transactionId : '',
                             student: data.student
                         });
                         this.props.getBankByStudent({ active: true }, (item) => {
@@ -90,6 +103,16 @@ class UserPaymentInfo extends AdminPage {
                                     code: item.code, nameBank: item.name,
                                     accounts: item.accounts.find(({ active }) => active == true),
                                 });
+                                if (data.student.cart.lock) {
+                                    const cart = data.student.cart ? data.student.cart.item : [];
+                                    const accounts = item.accounts.find(({ active }) => active == true);
+                                    const soTienThanhToan = cart && cart.length ? cart.map(item => item.fees).reduce((prev, next) => parseInt(prev) + parseInt(next)) : 0;
+                                    this.itemBankName.value(item.code + ' - ' + item.name);
+                                    this.itemAccounts.value(accounts && accounts.number ? accounts.number : '');
+                                    this.itemAccountsUser.value(accounts && accounts.holder ? accounts.holder : '');
+                                    this.itemFee.value(T.numberDisplay(soTienThanhToan));
+                                    this.itemContentSyntaxExtra.value(item.contentSyntaxExtra && item.contentSyntaxExtra.replace('{cmnd}', data.student.identityCard).replace('{ten_loai_khoa_hoc}', data.student.courseType.title).replace('{ma_giao_dich}', data.student.cart ? data.student.cart.transactionId : ''));
+                                }
                                 this.props.getCourseFeeByStudent({ courseType: data.item.courseType._id });
                             }
                         });
@@ -116,12 +139,12 @@ class UserPaymentInfo extends AdminPage {
     }
 
     addToCart = (item, quantity) => {
-        const cart = this.state.cart;
-        const { studentId, defaultContentSyntaxExtra, courseName, identityCard } = this.state.student;
+        const { cart = [], defaultContentSyntaxExtra } = this.state;
+        const { _id, courseType, identityCard } = this.state.student;
         T.confirm('Thêm vào danh sách mua gói', 'Bạn có chắc thêm ' + quantity + ' gói ' + item.name + ' vào danh sách thanh toán không?', true, isConfirm => {
             if (isConfirm) {
-                const index = cart.findIndex(courseFee => courseFee._id == item._id);
-                if (index == -1) {
+                const index = cart && cart.findIndex(courseFee => courseFee._id == item._id);
+                if (index == -1 || !index) {
                     item.quantity = parseInt(quantity);
                     item.fees = item.fee * parseInt(quantity);
                     cart.push(item);
@@ -131,10 +154,11 @@ class UserPaymentInfo extends AdminPage {
                 }
                 let transactionId = this.makeId(5);
                 this.setState({
+                    transactionId,
                     cart,
-                    contentSyntaxExtra: defaultContentSyntaxExtra && defaultContentSyntaxExtra.replace('{cmnd}', identityCard).replace('{ten_loai_khoa_hoc}', courseName).replace('{ma_giao_dich}', transactionId),
+                    contentSyntaxExtra: defaultContentSyntaxExtra && defaultContentSyntaxExtra.replace('{cmnd}', identityCard).replace('{ten_loai_khoa_hoc}', courseType ? courseType.title : '').replace('{ma_giao_dich}', transactionId),
                 }, () => {
-                    this.props.updateStudent(studentId, { cart: { transactionId, item: cart } });
+                    this.props.updateStudent(_id, { cart: { transactionId, item: cart } });
                 });
             }
         });
@@ -142,17 +166,18 @@ class UserPaymentInfo extends AdminPage {
 
     delete = (e, { item }) => {
         e.preventDefault();
-        const { studentId, defaultContentSyntaxExtra, courseName, identityCard } = this.state.student;
-        let cart = this.state.cart;
+        let { cart, defaultContentSyntaxExtra } = this.state;
+        const { _id, courseType, identityCard } = this.state.student;
         T.confirm('Xóa khỏi danh sách thanh toán', 'Bạn có chắc bạn muốn xóa gói học này?', true, isConfirm => {
             if (isConfirm) {
                 cart = cart.filter(courseFee => courseFee._id != item._id);
                 let transactionId = this.makeId(5);
                 this.setState({
+                    transactionId,
                     cart,
-                    contentSyntaxExtra: defaultContentSyntaxExtra && defaultContentSyntaxExtra.replace('{cmnd}', identityCard).replace('{ten_loai_khoa_hoc}', courseName).replace('{ma_giao_dich}', transactionId),
+                    contentSyntaxExtra: defaultContentSyntaxExtra && defaultContentSyntaxExtra.replace('{cmnd}', identityCard).replace('{ten_loai_khoa_hoc}', courseType ? courseType.title : '').replace('{ma_giao_dich}', transactionId),
                 }, () => {
-                    this.props.updateStudent(studentId, { cart: { transactionId, item: cart } });
+                    this.props.updateStudent(_id, { cart: { transactionId, item: cart } });
                 });
             }
         });
@@ -171,7 +196,8 @@ class UserPaymentInfo extends AdminPage {
 
     render() {
         const userPageLink = '/user/hoc-vien/khoa-hoc/' + this.state.courseId;
-        const { cart } = this.state;
+        const { cart, transactionId, lock, accounts, contentSyntaxExtra } = this.state;
+        const studentId = this.state.student && this.state.student._id;
         const soTienThanhToan = cart && cart.length ? cart.map(item => item.fees).reduce((prev, next) => parseInt(prev) + parseInt(next)) : 0;
         const listCourseFee = this.props.courseFee && this.props.courseFee.list;
         const listCourseFeeExtra = listCourseFee && listCourseFee.length ? listCourseFee.filter(courseFee => courseFee.feeType && courseFee.feeType.official == false) : [];
@@ -206,20 +232,20 @@ class UserPaymentInfo extends AdminPage {
                     <th style={{ width: 'auto', textAlign: 'center' }}>#</th>
                     <th style={{ width: '100%' }}>Tên gói</th>
                     <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Số tiền</th>
-                    <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Loại gói học phí</th>
+                    {/* <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Loại gói học phí</th> */}
                     <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Mô tả</th>
                     <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Số lượng</th>
-                    <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Thao tác</th>
+                    {!lock ? <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Thao tác</th> : null}
                 </tr>),
             renderRow: (item, index) => (
                 <tr key={index}>
                     <TableCell type='number' content={index + 1} />
                     <TableCell type='text' content={item.name} />
                     <TableCell type='number' content={item.fee} />
-                    <TableCell type='text' style={{ whiteSpace: 'nowrap', textAlign: 'center' }} content={item.feeType ? item.feeType.title : ''} />
+                    {/* <TableCell type='text' style={{ whiteSpace: 'nowrap', textAlign: 'center' }} content={item.feeType ? item.feeType.title : ''} /> */}
                     <TableCell type='text' style={{ whiteSpace: 'nowrap', textAlign: 'center' }} content={item.description} />
                     <TableCell type='text' style={{ whiteSpace: 'nowrap', textAlign: 'center' }} content={item.quantity} />
-                    <TableCell type='buttons' content={{ item, index }} permission={{ delete: true }} onDelete={this.delete} />
+                    {!lock ? <TableCell type='buttons' content={{ item, index }} permission={{ delete: true }} onDelete={this.delete} /> : null}
                 </tr>),
         });
         return this.renderPage({
@@ -228,33 +254,59 @@ class UserPaymentInfo extends AdminPage {
             breadcrumb: [<Link key={0} to={userPageLink}>Khóa học</Link>, 'Học phí'],
             content: (
                 <>
-                    <div className='tile'>
+                    {!lock ? <div className='tile'>
                         <h3 className='tile-title'>Chọn gói</h3>
                         {table}
-                    </div>
-
-                    {cart && cart.length ? <div className='tile'>
-                        <h3 className='tile-title'>Thanh toán</h3>
-                        {tableUser}
-                        <div className='d-flex justify-content-between'>
-                            <p>Số tiền thanh toán: <b>{T.numberDisplay(soTienThanhToan)} đồng</b></p>
-                            <button className={'btn ' + (soTienThanhToan != 0 ? 'btn-success' : 'btn-secondary')} style={{ textAlign: 'right' }}
-                                onClick={() => (soTienThanhToan == 0) ? T.alert('Vui lòng chọn số tiền muốn thanh toán', 'error', false, 8000) : this.modal.show(this.state)}
-                            >Thanh toán</button>
-                        </div>
                     </div> : null}
 
-                    {/* {this.state.code ? <div className='tile'>
-                        <h3 className='tile-title'>Thanh toán</h3>
-                        <div className='tile-body row'>
-                            <label className='col-md-12'>Tên ngân hàng: <b>{this.state.code + ' - ' + this.state.nameBank}</b></label>
-                            <label className='col-md-12'>Số tài khoản: <b>{this.state.accounts && this.state.accounts.number}</b></label>
-                            <label className='col-md-12'>Người sỡ hữu tài khoản: <b>{this.state.accounts && this.state.accounts.holder}</b></label>
-                            <label className='col-md-12'>Học phí: <b>{courseFee ? T.numberDisplay(courseFee) + ' đồng' : ''}</b></label>
-                            <label className='col-md-12'>Cú pháp chuyển khoản: <b>{this.state.contentSyntax}</b></label>
+                    {cart && cart.length ? <div className='tile'>
+                        <h3 className='tile-title'>{!lock ? 'Thanh toán' : 'Thanh toán (đang chờ thanh toán)'}</h3>
+                        {tableUser}
+
+                        <div className='d-flex justify-content-between'>
+                            <p className={lock ? 'invisible' : 'visible'}>Số tiền thanh toán: <b>{T.numberDisplay(soTienThanhToan)} đồng</b></p>
+                            {!lock ? <button className='btn btn-success' style={{ textAlign: 'right' }}
+                                onClick={() => this.modal.show(this.state)}
+                            >Thanh toán</button> :
+                                <button className='btn btn-danger' style={{ textAlign: 'right' }}
+                                    onClick={() => T.confirm('Xóa gói học phí chờ thanh toán', 'Bạn có chắc bạn vẫn chưa thanh toán và muốn xóa gói học phí này ?', true, isConfirm => {
+                                        isConfirm && this.props.updateStudent(studentId, { cart: { item: cart, transactionId: transactionId, lock: false } }, () => {
+                                            window.location.reload();
+                                        });
+                                    })}
+                                >Hủy</button>
+                            }
                         </div>
-                    </div> : null} */}
-                    <PaymentInfoModal fee={soTienThanhToan} accountsNumber={this.state.accounts && this.state.accounts.number} contentSyntax={this.state.contentSyntax} readOnly={true} ref={e => this.modal = e} />
+                    </div> : null}
+                    {lock ? <div className='tile'>
+                        <h3 className='tile-title'>Thông tin thanh toán</h3>
+                        <div className='tile-body'>
+                            <FormTextBox ref={e => this.itemBankName = e} type='text' label='Tên ngân hàng' readOnly={true} />
+                            <div className='d-flex justify-content-between'>
+                                <FormTextBox ref={e => this.itemAccounts = e} type='text' label='Số tài khoản' readOnly={true} />
+                                <CopyToClipboard text={accounts && accounts.number ? accounts.number : ''}
+                                    onCopy={() => T.notify('Đã copy', 'success')}>
+                                    <span><i className='fa fa-clone'></i></span>
+                                </CopyToClipboard>
+                            </div>
+                            <FormTextBox ref={e => this.itemAccountsUser = e} type='text' label='Chủ tài khoản' readOnly={true} />
+                            <div className='d-flex justify-content-between'>
+                                <FormTextBox ref={e => this.itemFee = e} type='text' label='Số tiền' readOnly={true} />
+                                <CopyToClipboard text={soTienThanhToan}
+                                    onCopy={() => T.notify('Đã copy', 'success')}>
+                                    <span><i className='fa fa-clone'></i></span>
+                                </CopyToClipboard>
+                            </div>
+                            <div className='d-flex justify-content-between'>
+                                <FormTextBox ref={e => this.itemContentSyntaxExtra = e} type='text' label='Cú pháp chuyển khoản' readOnly={true} />
+                                <CopyToClipboard text={contentSyntaxExtra ? contentSyntaxExtra : ''}
+                                    onCopy={() => T.notify('Đã copy', 'success')}>
+                                    <span><i className='fa fa-clone'></i></span>
+                                </CopyToClipboard>
+                            </div>
+                        </div>
+                    </div> : null}
+                    <PaymentInfoModal fee={soTienThanhToan} accountsNumber={accounts && accounts.number} contentSyntaxExtra={contentSyntaxExtra} readOnly={true} updateStudent={this.props.updateStudent} cart={cart} transactionId={transactionId} studentId={studentId} ref={e => this.modal = e} />
                 </>
             ),
             backRoute: userPageLink,
