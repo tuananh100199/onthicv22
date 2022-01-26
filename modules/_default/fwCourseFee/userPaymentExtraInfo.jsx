@@ -79,17 +79,8 @@ class UserPaymentInfo extends AdminPage {
                     } else if (data.item && data.student) {
                         this.setState({
                             ...data.item,
-                            ngayDuKienThiSatHach: data.student.ngayDuKienThiSatHach,
-                            hocPhiPhaiDong: data.student.courseFee,
-                            hocPhiDaDong: data.student.hocPhiDaDong,
-                            hocPhiMienGiam: data.student.discount,
-                            ngayHetHanNopHocPhi: data.student.ngayHetHanNopHocPhi,
-                            soLanDong: data.student.coursePayment,
-                            lichSuDongTien: data.student.lichSuDongTien,
-                            studentId: data.student._id,
                             cart: data.student.cart ? data.student.cart.item : [],
-                            identityCard: data.student.identityCard,
-                            courseName: data.student.courseType.title
+                            student: data.student
                         });
                         this.props.getBankByStudent({ active: true }, (item) => {
                             if (item) {
@@ -126,7 +117,7 @@ class UserPaymentInfo extends AdminPage {
 
     addToCart = (item, quantity) => {
         const cart = this.state.cart;
-        const { studentId, defaultContentSyntaxExtra, courseName, identityCard } = this.state;
+        const { studentId, defaultContentSyntaxExtra, courseName, identityCard } = this.state.student;
         T.confirm('Thêm vào danh sách mua gói', 'Bạn có chắc thêm ' + quantity + ' gói ' + item.name + ' vào danh sách thanh toán không?', true, isConfirm => {
             if (isConfirm) {
                 const index = cart.findIndex(courseFee => courseFee._id == item._id);
@@ -151,7 +142,7 @@ class UserPaymentInfo extends AdminPage {
 
     delete = (e, { item }) => {
         e.preventDefault();
-        const { studentId, defaultContentSyntaxExtra, courseName, identityCard } = this.state;
+        const { studentId, defaultContentSyntaxExtra, courseName, identityCard } = this.state.student;
         let cart = this.state.cart;
         T.confirm('Xóa khỏi danh sách thanh toán', 'Bạn có chắc bạn muốn xóa gói học này?', true, isConfirm => {
             if (isConfirm) {
