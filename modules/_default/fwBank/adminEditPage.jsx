@@ -74,6 +74,7 @@ class BankEditPage extends AdminPage {
                 // this.bank.value(item.code);
                 this.active.value(item.active || false);
                 this.contentSyntax.value(item.contentSyntax);
+                this.contentSyntaxExtra.value(item.contentSyntaxExtra);
                 this.moneyLine.value(item.moneyLine);
                 this.moneyStr.value(item.moneyStr);
                 this.contentLine.value(item.contentLine);
@@ -133,14 +134,18 @@ class BankEditPage extends AdminPage {
         const changes = {
             active: this.active.value(),
             contentSyntax: this.contentSyntax.value().trim(),
+            contentSyntaxExtra: this.contentSyntaxExtra.value().trim(),
             moneyLine: parseInt(this.moneyLine.value()),
             moneyStr: this.moneyStr.value().trim(),
             contentLine: parseInt(this.contentLine.value()),
             contentStr: this.contentStr.value().trim(),
         };
         if (changes.contentSyntax == '') {
-            T.notify('Cú pháp chuyển tiền của học viên bị trống!', 'danger');
+            T.notify('Cú pháp chuyển tiền học phí chính thức của học viên bị trống!', 'danger');
             this.contentSyntax.focus();
+        } if (changes.contentSyntaxExtra == '') {
+            T.notify('Cú pháp chuyển tiền học phí tăng thêm của học viên bị trống!', 'danger');
+            this.contentSyntaxExtra.focus();
         } else if (changes.moneyLine == '') {
             T.notify('Dòng biến động số dư bị trống!', 'danger');
             this.moneyLine.focus();
@@ -187,6 +192,7 @@ class BankEditPage extends AdminPage {
         const { _id } = this.state;
         const bank = this.props.bank && this.props.bank.item || { shortname: '' }, accounts = bank && bank.accounts || [];
         const listParams = ['{cmnd}', '{ten_loai_khoa_hoc}'];
+        const listParamsExtra = ['{cmnd}', '{ten_loai_khoa_hoc}, {ma_giao_dich}'];
         const table = renderTable({
             getDataSource: () => accounts,
             renderHead: () => (
@@ -221,7 +227,8 @@ class BankEditPage extends AdminPage {
                     <div className='tile-body row'>
                         <div className='col-md-4'>
                             <FormSelect ref={e => this.bank = e} label='Ngân hàng' data={this.state.banks} readOnly={readOnly} onChange={data => this.onChange(data)} />
-                            <FormRichTextBox ref={e => this.contentSyntax = e} rows={1} listParams={listParams} label='Cú pháp chuyển tiền của học viên' readOnly={readOnly} />
+                            <FormRichTextBox ref={e => this.contentSyntax = e} rows={1} listParams={listParams} label='Cú pháp chuyển tiền học phí chính thức ' readOnly={readOnly} />
+                            <FormRichTextBox ref={e => this.contentSyntaxExtra = e} rows={1} listParams={listParamsExtra} label='Cú pháp chuyển tiền học phí tăng thêm' readOnly={readOnly} />
                             <FormCheckbox ref={e => this.active = e} label='Kích hoạt' readOnly={readOnly} />
                         </div>
                         <div className='col-md-4'>

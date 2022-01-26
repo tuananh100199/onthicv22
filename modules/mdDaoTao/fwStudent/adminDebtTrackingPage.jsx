@@ -41,6 +41,7 @@ class DebtTrackingPage extends AdminPage {
     render() {
         let { pageNumber, pageSize, pageTotal, pageCondition, totalItem, list } = this.props.student && this.props.student.page ?
             this.props.student.page : { pageNumber: 1, pageSize: 50, pageTotal: 1, pageCondition: {}, totalItem: 0, list: [] };
+
         const table = renderTable({
             getDataSource: () => list, stickyHead: true,
             renderHead: () => (
@@ -59,7 +60,7 @@ class DebtTrackingPage extends AdminPage {
                     <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Số tiền đã đóng</th>
                     <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Số tiền còn nợ</th>
                     <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Thời hạn đóng</th>
-                    <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Phiếu thu</th>
+                    <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Thao tác</th>
                 </tr>),
             renderRow: (item, index) => (
                 <tr key={index}>
@@ -77,7 +78,14 @@ class DebtTrackingPage extends AdminPage {
                     <TableCell type='number' content={item.lichSuDongTien ? this.renderLichSuDongTien(item.lichSuDongTien, 'sum') : ''} />
                     <TableCell type='number' content={this.chechHocPhiConLai(item) ? T.numberDisplay(this.chechHocPhiConLai(item)) : ''} />
                     <TableCell type='number' content={item.ngayHetHanNopHocPhi ? T.dateToText(item.ngayHetHanNopHocPhi, 'dd/mm/yyyy') : ''} />
-                    <TableCell type='link' onClick={() => console.log('first')} style={{ textAlign: 'center' }} content={<i className='fa fa-print' aria-hidden='true'></i>} />
+                    <TableCell type='buttons' content={item} permission={true} onEdit={this.edit}>
+                        <a className='btn btn-warning' href='#' onClick={(e) => this.sendNotification(e, item)}>
+                            <i className='fa fa-lg fa-print' />
+                        </a>
+                        <a className='btn btn-success' href='#' onClick={(e) => this.sendNotification(e, item)}>
+                            <i className='fa fa-lg fa-money' />
+                        </a>
+                    </TableCell>
                 </tr>)
         });
         return this.renderPage({

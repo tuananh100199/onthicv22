@@ -2,6 +2,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { getCourseByStudent } from 'modules/mdDaoTao/fwCourse/redux';
 import { getBankByStudent } from 'modules/_default/fwBank/redux';
+import { updateStudent } from 'modules/mdDaoTao/fwStudent/redux';
 import { getCourseFeeByStudent } from './redux';
 import { Link } from 'react-router-dom';
 import { CopyToClipboard } from 'react-copy-to-clipboard';
@@ -17,12 +18,12 @@ class PaymentInfoModal extends AdminModal {
     }
 
     onShow = (item) => {
-        const { code, nameBank, accounts, contentSyntax } = item || { code: '', nameBank: '', accounts: {}, contentSyntax: '' };
+        const { code, nameBank, accounts, contentSyntaxExtra } = item || { code: '', nameBank: '', accounts: {}, contentSyntax: '' };
         this.itemBankName.value(code + ' - ' + nameBank);
         this.itemAccounts.value(accounts && accounts.number ? accounts.number : '');
         this.itemAccountsUser.value(accounts && accounts.holder ? accounts.holder : '');
         this.itemFee.value(this.props.fee ? T.numberDisplay(this.props.fee) + ' đồng' : 0);
-        this.itemContentSyntax.value(contentSyntax);
+        this.itemContentSyntaxExtra.value(contentSyntaxExtra);
         this.setState(item);
     }
 
@@ -49,8 +50,8 @@ class PaymentInfoModal extends AdminModal {
                         </CopyToClipboard>
                     </div>
                     <div className='d-flex justify-content-between'>
-                        <FormTextBox ref={e => this.itemContentSyntax = e} type='text' label='Cú pháp chuyển khoản' readOnly={this.props.readOnly} />
-                        <CopyToClipboard text={this.props.contentSyntax ? this.props.contentSyntax : ''}
+                        <FormTextBox ref={e => this.itemContentSyntaxExtra = e} type='text' label='Cú pháp chuyển khoản' readOnly={this.props.readOnly} />
+                        <CopyToClipboard text={this.props.contentSyntaxExtra ? this.props.contentSyntaxExtra : ''}
                             onCopy={() => T.notify('Đã copy', 'success')}>
                             <span><i className='fa fa-clone'></i></span>
                         </CopyToClipboard>
@@ -76,11 +77,25 @@ class UserPaymentInfo extends AdminPage {
                         T.alert(data.notify, 'error', false, 2000);
                         this.props.history.push(previousRoute);
                     } else if (data.item && data.student) {
-                        this.setState({ ...data.item, ngayDuKienThiSatHach: data.student.ngayDuKienThiSatHach, hocPhiPhaiDong: data.student.courseFee, hocPhiDaDong: data.student.hocPhiDaDong, hocPhiMienGiam: data.student.discount, ngayHetHanNopHocPhi: data.student.ngayHetHanNopHocPhi, soLanDong: data.student.coursePayment, lichSuDongTien: data.student.lichSuDongTien });
+                        this.setState({
+                            ...data.item,
+                            ngayDuKienThiSatHach: data.student.ngayDuKienThiSatHach,
+                            hocPhiPhaiDong: data.student.courseFee,
+                            hocPhiDaDong: data.student.hocPhiDaDong,
+                            hocPhiMienGiam: data.student.discount,
+                            ngayHetHanNopHocPhi: data.student.ngayHetHanNopHocPhi,
+                            soLanDong: data.student.coursePayment,
+                            lichSuDongTien: data.student.lichSuDongTien,
+                            studentId: data.student._id,
+                            cart: data.student.cart ? data.student.cart.item : [],
+                            identityCard: data.student.identityCard,
+                            courseName: data.student.courseType.title
+                        });
                         this.props.getBankByStudent({ active: true }, (item) => {
                             if (item) {
                                 this.setState({
-                                    contentSyntax: item.contentSyntax && item.contentSyntax.replace('{cmnd}', data.student.identityCard).replace('{ten_loai_khoa_hoc}', data.student.courseType.title),
+                                    defaultContentSyntaxExtra: item.contentSyntaxExtra,
+                                    contentSyntaxExtra: item.contentSyntaxExtra && item.contentSyntaxExtra.replace('{cmnd}', data.student.identityCard).replace('{ten_loai_khoa_hoc}', data.student.courseType.title).replace('{ma_giao_dich}', data.student.cart ? data.student.cart.transactionId : ''),
                                     code: item.code, nameBank: item.name,
                                     accounts: item.accounts.find(({ active }) => active == true),
                                 });
@@ -111,6 +126,7 @@ class UserPaymentInfo extends AdminPage {
 
     addToCart = (item, quantity) => {
         const cart = this.state.cart;
+        const { studentId, defaultContentSyntaxExtra, courseName, identityCard } = this.state;
         T.confirm('Thêm vào danh sách mua gói', 'Bạn có chắc thêm ' + quantity + ' gói ' + item.name + ' vào danh sách thanh toán không?', true, isConfirm => {
             if (isConfirm) {
                 const index = cart.findIndex(courseFee => courseFee._id == item._id);
@@ -120,28 +136,52 @@ class UserPaymentInfo extends AdminPage {
                     cart.push(item);
                 } else {
                     cart[index].quantity = cart[index].quantity + parseInt(quantity);
-                    cart[index].fees = cart[index].fee * parseInt(quantity);
+                    cart[index].fees = cart[index].fee * cart[index].quantity;
                 }
-                this.setState({ cart });
+                let transactionId = this.makeId(5);
+                this.setState({
+                    cart,
+                    contentSyntaxExtra: defaultContentSyntaxExtra && defaultContentSyntaxExtra.replace('{cmnd}', identityCard).replace('{ten_loai_khoa_hoc}', courseName).replace('{ma_giao_dich}', transactionId),
+                }, () => {
+                    this.props.updateStudent(studentId, { cart: { transactionId, item: cart } });
+                });
             }
         });
     };
 
     delete = (e, { item }) => {
         e.preventDefault();
+        const { studentId, defaultContentSyntaxExtra, courseName, identityCard } = this.state;
         let cart = this.state.cart;
         T.confirm('Xóa khỏi danh sách thanh toán', 'Bạn có chắc bạn muốn xóa gói học này?', true, isConfirm => {
             if (isConfirm) {
                 cart = cart.filter(courseFee => courseFee._id != item._id);
-                this.setState({ cart });
+                let transactionId = this.makeId(5);
+                this.setState({
+                    cart,
+                    contentSyntaxExtra: defaultContentSyntaxExtra && defaultContentSyntaxExtra.replace('{cmnd}', identityCard).replace('{ten_loai_khoa_hoc}', courseName).replace('{ma_giao_dich}', transactionId),
+                }, () => {
+                    this.props.updateStudent(studentId, { cart: { transactionId, item: cart } });
+                });
             }
         });
+    }
+
+    makeId = (length) => {
+        let result = '';
+        let characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+        let charactersLength = characters.length;
+        for (let i = 0; i < length; i++) {
+            result += characters.charAt(Math.floor(Math.random() *
+                charactersLength));
+        }
+        return result;
     }
 
     render() {
         const userPageLink = '/user/hoc-vien/khoa-hoc/' + this.state.courseId;
         const { cart } = this.state;
-        const soTienThanhToan = cart && cart.length ? cart.map(item => item.fees).reduce((prev, next) => prev + next) : 0;
+        const soTienThanhToan = cart && cart.length ? cart.map(item => item.fees).reduce((prev, next) => parseInt(prev) + parseInt(next)) : 0;
         const listCourseFee = this.props.courseFee && this.props.courseFee.list;
         const listCourseFeeExtra = listCourseFee && listCourseFee.length ? listCourseFee.filter(courseFee => courseFee.feeType && courseFee.feeType.official == false) : [];
         const table = renderTable({
@@ -232,5 +272,5 @@ class UserPaymentInfo extends AdminPage {
 }
 
 const mapStateToProps = state => ({ system: state.system, course: state.trainning.course, courseFee: state.accountant.courseFee });
-const mapActionsToProps = { getCourseByStudent, getBankByStudent, getCourseFeeByStudent };
+const mapActionsToProps = { getCourseByStudent, getBankByStudent, getCourseFeeByStudent, updateStudent };
 export default connect(mapStateToProps, mapActionsToProps)(UserPaymentInfo);
