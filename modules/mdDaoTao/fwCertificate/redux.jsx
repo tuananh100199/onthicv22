@@ -4,6 +4,8 @@ import T from 'view/js/common';
 const Certificate = 'Certificate';
 const CertificateGetAll = 'CertificateGetAll';
 const CertificateGetPage = 'CertificateGetPage';
+const CertificationGetPage = 'CertificatitonGetPage';
+const LicenseGetPage = 'LicenseGetPage';
 
 export default function certificateReducer(state = {}, data) {
     switch (data.type) {
@@ -16,6 +18,12 @@ export default function certificateReducer(state = {}, data) {
 
         case CertificateGetPage:
             return Object.assign({}, state, { page: data.page });
+        
+        case CertificationGetPage:
+            return Object.assign({}, state, { certificationPage: data.page });
+        
+        case LicenseGetPage:
+            return Object.assign({}, state, { licensePage: data.page });
 
         default:
             return state;
@@ -69,9 +77,47 @@ export function updateCertificate(_id, changes, done) {
             } else {
                 dispatch({ type: Certificate, item: data.item });
                 T.notify('Cập nhật chứng chỉ thành công!', 'success');
-                dispatch(getCertificatePage());
+                // dispatch(getCertificatePage());
                 done && done();
             }
         }, error => console.error(error) || T.notify('Cập nhật chứng chỉ bị lỗi!', 'danger'));
+    };
+}
+
+// Actions ------------------------------------------------------------------------------------------------------------
+T.initCookiePage('pageCertification');
+export function getCertificationPage(pageNumber, pageSize, condition, done) {
+    const page = T.updatePage('pageCertification', pageNumber, pageSize);
+    return dispatch => {
+        const url = `/api/certificate/page/${page.pageNumber}/${page.pageSize}`;
+        T.get(url, { condition }, data => {
+            if (data.error) {
+                T.notify('Lấy danh sách chứng chỉ bị lỗi!', 'danger');
+                console.error(`GET: ${url}. ${data.error}`);
+            } else {
+                if (condition) data.page.pageCondition = condition;
+                done && done(data.page);
+                dispatch({ type: CertificationGetPage, page: data.page });
+            }
+        }, error => console.error(error) || T.notify('Lấy danh sách chứng chỉ bị lỗi!', 'danger'));
+    };
+}
+
+// Actions ------------------------------------------------------------------------------------------------------------
+T.initCookiePage('pageLicense');
+export function getLicensePage(pageNumber, pageSize, condition, done) {
+    const page = T.updatePage('pageLicense', pageNumber, pageSize);
+    return dispatch => {
+        const url = `/api/certificate/page/${page.pageNumber}/${page.pageSize}`;
+        T.get(url, { condition }, data => {
+            if (data.error) {
+                T.notify('Lấy danh sách giấy phép lái xe bị lỗi!', 'danger');
+                console.error(`GET: ${url}. ${data.error}`);
+            } else {
+                if (condition) data.page.pageCondition = condition;
+                done && done(data.page);
+                dispatch({ type: LicenseGetPage, page: data.page });
+            }
+        }, error => console.error(error) || T.notify('Lấy danh sách giấy phép lái xe bị lỗi!', 'danger'));
     };
 }

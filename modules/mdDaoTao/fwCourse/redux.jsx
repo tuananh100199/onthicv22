@@ -8,6 +8,7 @@ const CourseGetPageByUser = 'CourseGetPageByUser';
 const CourseUpdateStudentInfoInCourse = 'CourseUpdateStudentInfoInCourse';
 const CourseGetCourseByStudent = 'CourseGetCourseByStudent';
 const CourseGetLearningProgressPageByAdmin = 'CourseGetLearningProgressPageByAdmin';
+const CourseGetAdditionProfilePage = 'CourseGetAdditionProfilePage';
 
 export default function courseReducer(state = {}, data) {
     switch (data.type) {
@@ -29,6 +30,10 @@ export default function courseReducer(state = {}, data) {
             return Object.assign({}, state, { page: data.page, students: data.students, subjects: data.subjects });
         }
 
+        case CourseGetAdditionProfilePage: {
+            return Object.assign({}, state, { profilePage: data.page });
+        }
+        
         case CourseGetCourseByStudent: {
             return Object.assign({}, state, { student: data.student, item: data.item });
         }
@@ -369,6 +374,38 @@ export function getLearningProgressPage(pageNumber, pageSize, pageCondition, don
     };
 }
 
+// Additional Profile ----------------------------------------------------------------------------------------------------
+T.initCookiePage('additionalProfilePage');
+export function getAdditionalProfilePage(pageNumber, pageSize, pageCondition, done) {
+    const page = T.updatePage('additionalProfilePage', pageNumber, pageSize);
+    return dispatch => {
+        const url = `/api/course/additional-profile/page/${page.pageNumber}/${page.pageSize}`;
+        T.get(url, { pageCondition }, data => {
+            if (data.error) {
+                T.notify('Lấy hồ sơ học viên bị lỗi!', 'danger');
+                console.error(`GET: ${url}. ${data.error}`);
+            } else {
+                dispatch({ type: CourseGetAdditionProfilePage, page: data.page });
+                done && done(data);
+            }
+        }, error => console.error(error) || T.notify('Lấy hồ sơ học viên bị lỗi!', 'danger'));
+    };
+}
+
+export function updateAdditionalProfile(_id,changes, done) {
+    return () => {
+        const url = '/api/course/additional-profile';
+        T.put(url, { _id,changes }, data => {
+            if (data.error) {
+                T.notify('Cập nhật hồ sơ học viên bị lỗi!', 'danger');
+                console.error(`PUT: ${url}. ${data.error}`);
+            } else {
+                T.notify('Cập nhật hồ sơ học viên thành công', 'success');
+                done && done(data);
+            }
+        }, error => console.error(error) || T.notify('Cập nhật hồ sơ học viên bị lỗi!', 'danger'));
+    };
+}
 // Import Excel ----------------------------------------------------------------------------------------------------
 export function importScore(score, courseId, done) {
     return () => {

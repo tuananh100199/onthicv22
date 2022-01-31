@@ -6,15 +6,17 @@ import { ajaxSelectLecturer } from 'modules/_default/fwUser/redux';
 import Pagination from 'view/component/Pagination';
 import { AdminPage, CirclePageButton, FormImageBox, FormDatePicker, AdminModal, FormTextBox, FormRichTextBox, FormSelect, TableCell, renderTable } from 'view/component/AdminPage';
 import { ajaxSelectDivision } from 'modules/mdDaoTao/fwDivision/redux';
-
+import {ajaxSelectCourseFeeByCourseType,getCourseFeeAll} from 'modules/_default/fwCourseFee/redux';
+import {ajaxSelectCoursePayment,getCoursePaymentAll} from 'modules/_default/fwCoursePayment/redux';
+import {ajaxSelectDiscount,getDiscountAll} from 'modules/_default/fwDiscount/redux';
 class PreStudenModal extends AdminModal {
-    state = {};
+    state = {courseType:''};
     componentDidMount() {
         $(document).ready(() => this.onShown(() => this.itemLastname.focus()));
     }
 
     onShow = (item) => {
-        const { _id, firstname, lastname, birthday, user, image, residence, regularResidence, courseType, sex, division, planLecturer, identityCard, planCourse, hocPhiPhaiDong } = item || { _id: null, firstname: '', lastname: '', birthday: '', user: {}, image, residence: '', regularResidence: '', identityCard: '', planCourse: '', hocPhiPhaiDong: '' };
+        const { _id, firstname, lastname, birthday, user, image, residence, regularResidence, courseType, sex, division, planLecturer, identityCard, planCourse,courseFee,discount,coursePayment } = item || { _id: null, firstname: '', lastname: '', birthday: '', user: {}, image, residence: '', regularResidence: '', identityCard: '', planCourse: '', hocPhiPhaiDong: '' };
         this.itemFirstname.value(firstname || '');
         this.itemLastname.value(lastname || '');
         this.itemBirthday.value(birthday);
@@ -26,13 +28,47 @@ class PreStudenModal extends AdminModal {
         this.itemResidence.value(residence || '');
         this.itemCourseType.value(courseType ? { id: courseType._id, text: courseType.title } : null);
         this.itemDivision.value(division ? { id: division._id, text: division.title } : null);
-        this.itemHocPhiPhaiDong.value(hocPhiPhaiDong || '');
+        // this.itemHocPhiPhaiDong.value(hocPhiPhaiDong || '');
         this.itemRegularResidence.value(regularResidence || '');
         this.imageBox.setData(`pre-student:${_id || 'new'}`);
-
-        this.setState({ _id, divisionId: division && division._id, image }, () => {
+        this.setValueDiscount(discount);
+        // this.itemCoursePayment.value(coursePayment?{id:coursePayment._id,text:coursePayment.title}:null);
+        this.setValueCoursePayment(coursePayment);
+        this.setState({ _id, divisionId: division && division._id, image,courseType:courseType?courseType._id:'' }, () => {
             this.itemPlanLecturer.value(planLecturer ? { id: planLecturer._id, text: `${planLecturer.lastname} ${planLecturer.firstname}` } : null);
+            this.setValueCourseFee(courseType?courseType._id:null,courseFee);
+            // this.itemCourseFee.value(courseFee?{id:courseFee._id,text:courseFee.name}:null);
+            // this.itemDiscount.value(discount?{id:discount._id,text:discount.name}:null);
+            // this.itemCoursePayment.value(coursePayment?{id:coursePayment._id,text:coursePayment.title}:null);
         });
+    }
+
+    setValueCourseFee = (courseTypeId,courseFee=null)=>{
+        if(!courseTypeId){
+            this.itemCourseFee.value(null);    
+        }
+        else if(courseFee){
+            this.itemCourseFee.value({id:courseFee._id,text:courseFee.name});    
+        }else{
+            courseFee = this.props.defaultCourseFees.find(item=>item.courseType._id==courseTypeId);
+            this.itemCourseFee.value(courseFee?{id:courseFee._id,text:courseFee.name}:null);
+        }
+    }
+
+    setValueDiscount = (discount)=>{
+        if(discount){
+            this.itemDiscount.value({id:discount._id,text:discount.name});
+        }else{
+            this.itemDiscount.value(this.props.defaultDiscount?{id:this.props.defaultDiscount._id,text:this.props.defaultDiscount.name}:null);
+        }
+    }
+
+    setValueCoursePayment = coursePayment=>{
+        if(coursePayment){
+            this.itemCoursePayment.value({id:coursePayment._id,text:coursePayment.title});
+        }else{
+            this.itemCoursePayment.value(this.props.defaultCoursePayment?{id:this.props.defaultCoursePayment._id,text:this.props.defaultCoursePayment.title}:null);
+        }
     }
 
     onSubmit = () => {
@@ -51,7 +87,10 @@ class PreStudenModal extends AdminModal {
             courseType: this.itemCourseType.value(),
             division: this.itemDivision.value(),
             planLecturer: this.itemPlanLecturer.value(),
-            hocPhiPhaiDong: this.itemHocPhiPhaiDong.value(),
+            // hocPhiPhaiDong: this.itemHocPhiPhaiDong.value(),
+            courseFee:this.itemCourseFee.value(),
+            discount:this.itemDiscount.value(),
+            coursePayment:this.itemCoursePayment.value(),
         };
         if (data.lastname == '') {
             T.notify('Họ không được trống!', 'danger');
@@ -74,10 +113,12 @@ class PreStudenModal extends AdminModal {
         } else if (!data.division) {
             T.notify('Cơ sở đào tạo không được trống!', 'danger');
             this.itemDivision.focus();
-        } else if (!data.hocPhiPhaiDong) {
-            T.notify('Học phí không được trống!', 'danger');
-            this.itemHocPhiPhaiDong.focus();
-        } else if (!data.planLecturer) {
+        } 
+        // else if (!data.hocPhiPhaiDong) {
+        //     T.notify('Học phí không được trống!', 'danger');
+        //     this.itemHocPhiPhaiDong.focus();
+        // } 
+        else if (!data.planLecturer) {
             T.notify('Giáo viên dự kiến không được trống!', 'danger');
             this.itemPlanLecturer.focus();
         } else {
@@ -96,6 +137,10 @@ class PreStudenModal extends AdminModal {
 
     onChangeDivision = (data) => data && data.id && this.setState({ divisionId: data.id }, () => {
         this.itemPlanLecturer.value(null);
+    });
+
+    onChangeCourseType = (data) =>data && data.id && this.setState({courseType:data.id},()=>{
+        this.setValueCourseFee(data.id);
     });
 
     render = () => {
@@ -117,13 +162,16 @@ class PreStudenModal extends AdminModal {
                 <FormTextBox className='col-md-4' ref={e => this.itemIdentityCard = e} label='CMND/CCCD' readOnly={readOnly} required />
                 <FormDatePicker className='col-md-4' ref={e => this.itemBirthday = e} label='Ngày sinh' readOnly={readOnly} type='date-mask' required />
                 <FormSelect className='col-md-4' ref={e => this.itemSex = e} label='Giới tính' data={[{ id: 'female', text: 'Nữ' }, { id: 'male', text: 'Nam' }]} readOnly={readOnly} />
-                <FormSelect className='col-md-4' ref={e => this.itemCourseType = e} label='Hạng đăng ký' data={ajaxSelectCourseType} readOnly={readOnly} required />
+                <FormSelect className='col-md-4' ref={e => this.itemCourseType = e} label='Hạng đăng ký' data={ajaxSelectCourseType} readOnly={readOnly} required onChange = {this.onChangeCourseType}/>
                 <FormSelect className='col-md-4' ref={e => this.itemDivision = e} label='Cơ sở đào tạo' data={ajaxSelectDivision} onChange={this.onChangeDivision} readOnly={readOnly} required />
-                <FormTextBox className='col-md-4' ref={e => this.itemHocPhiPhaiDong = e} label='Học phí' readOnly={readOnly} required />
+                {/* <FormTextBox className='col-md-4' ref={e => this.itemHocPhiPhaiDong = e} label='Học phí' readOnly={readOnly} required /> */}
+                <FormSelect className='col-md-4' ref={e => this.itemCourseFee = e} label='Gói học phí' data={ajaxSelectCourseFeeByCourseType(this.state.courseType,true)} readOnly={readOnly} />
+                <FormSelect className='col-md-6' ref={e => this.itemDiscount = e} label='Giảm giá' data={ajaxSelectDiscount} readOnly={readOnly} />
+                <FormSelect className='col-md-6' ref={e => this.itemCoursePayment = e} label='Số lần thanh toán' data={ajaxSelectCoursePayment} readOnly={readOnly} />
                 <FormSelect className='col-md-6' ref={e => this.itemPlanLecturer = e} label='Giáo viên dự kiến' data={ajaxSelectLecturer(this.state.divisionId)} readOnly={readOnly} required />
                 <FormTextBox className='col-md-6' ref={e => this.itemPlanCourse = e} label='Khóa dự kiến' readOnly={readOnly} />
-                <FormRichTextBox ref={e => this.itemResidence = e} className='col-md-12' label='Nơi cư trú' readOnly={readOnly} rows='2' />
-                <FormRichTextBox ref={e => this.itemRegularResidence = e} className='col-md-12' label='Nơi đăng ký hộ khẩu thường trú' readOnly={readOnly} rows='2' />
+                <FormRichTextBox ref={e => this.itemResidence = e} className='col-md-6' label='Nơi cư trú' readOnly={readOnly} rows='2' />
+                <FormRichTextBox ref={e => this.itemRegularResidence = e} className='col-md-6' label='Nơi đăng ký hộ khẩu thường trú' readOnly={readOnly} rows='2' />
             </div >
         });
     }
@@ -137,6 +185,18 @@ class PreStudentPage extends AdminPage {
         this.props.getPreStudentPage(1, 50, undefined);
         T.onSearch = (searchText) => this.props.getPreStudentPage(undefined, undefined, searchText ? { searchText } : null, () => {
             this.setState({ searchText, isSearching: searchText != '' });
+        });
+
+        this.props.getCourseFeeAll({isDefault:true},defaultCourseFees=>{//get default courseFee
+            this.setState({defaultCourseFees});
+        });
+
+        this.props.getDiscountAll({isDefault:true},defaultDiscounts=>{//get default discount
+            this.setState({defaultDiscount:defaultDiscounts? defaultDiscounts[0]:null});
+        });
+
+        this.props.getCoursePaymentAll({default:true},defaultCoursePayments=>{//get default coursePayment
+            this.setState({defaultCoursePayment:defaultCoursePayments? defaultCoursePayments[0]:null});
         });
     }
 
@@ -184,7 +244,8 @@ class PreStudentPage extends AdminPage {
                 <div className='tile'>{table}</div>
                 <Pagination name='adminPreStudent' pageCondition={pageCondition} pageNumber={pageNumber} pageSize={pageSize} pageTotal={pageTotal} totalItem={totalItem}
                     getPage={this.props.getPreStudentPage} />
-                <PreStudenModal readOnly={!permission.write} ref={e => this.modal = e} create={this.props.createPreStudent} update={this.props.updatePreStudent} />
+                <PreStudenModal readOnly={!permission.write} ref={e => this.modal = e} create={this.props.createPreStudent} update={this.props.updatePreStudent} 
+                defaultCourseFees={this.state.defaultCourseFees} defaultDiscount={this.state.defaultDiscount} defaultCoursePayment={this.state.defaultCoursePayment} />
                 {permission.import ? <CirclePageButton type='import' style={{ right: '70px' }} onClick={() => this.props.history.push('/user/pre-student/import')} /> : null}
             </>,
             onCreate: permission.write ? this.edit : null,
@@ -193,5 +254,5 @@ class PreStudentPage extends AdminPage {
 }
 
 const mapStateToProps = state => ({ system: state.system, student: state.trainning.student });
-const mapActionsToProps = { getPreStudentPage, deletePreStudent, createPreStudent, updatePreStudent };
+const mapActionsToProps = { getPreStudentPage, deletePreStudent, createPreStudent, updatePreStudent,getCourseFeeAll,getCoursePaymentAll,getDiscountAll };
 export default connect(mapStateToProps, mapActionsToProps)(PreStudentPage);

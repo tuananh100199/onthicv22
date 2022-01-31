@@ -44,6 +44,7 @@ module.exports = (app) => {
     app.get('/user/course/:_courseId/comment/:_id', app.permission.check('comment:read'), app.templates.admin);
     app.get('/user/course/:_id/import-final-score', app.permission.check('course:import'), app.templates.admin);
     app.get('/user/course/:_courseId/photo/:_id', app.permission.check('user:login'), app.templates.admin);
+    app.get('/user/course/:_courseId/additional-profile', app.permission.check('course:read'), app.templates.admin);
 
     app.get('/user/hoc-vien/khoa-hoc/:_id', app.permission.check('user:login'), app.templates.admin);
     app.get('/user/hoc-vien/khoa-hoc/thong-tin/:_id', app.permission.check('user:login'), app.templates.admin);
@@ -552,6 +553,53 @@ module.exports = (app) => {
             }));
             res.send({ page: pageReturn ? pageReturn : null, students, subjects });
         }).catch(error => console.error(error) || res.send({ error }));
+    });
+
+    //additional-profile API
+
+    app.get('/api/course/additional-profile/page/:pageNumber/:pageSize', app.permission.check('course:read'), (req, res) => {
+        const pageNumber = parseInt(req.params.pageNumber),
+            pageSize = parseInt(req.params.pageSize),
+            condition = req.query.pageCondition || {},
+            pageCondition = {course:condition.courseId};
+        // handle searchText
+        pageCondition['$or'] =[];
+        if (condition.searchText) {
+            const value = { $regex: `.*${condition.searchText}.*`, $options: 'i' };
+            pageCondition['$or'] = [
+                { firstname: value },
+                { lastname: value },
+                { identityCard: value },
+            ];
+        }
+
+        // handleFilter
+        if(condition.filterCondition && condition.filterCondition.profileType){
+            let filterCondition = condition.filterCondition;
+            if(condition.filterCondition.profileType=='done'){
+                pageCondition.isDon=true;
+                pageCondition.isHinh=true;
+                pageCondition.isIdentityCard=true;
+                pageCondition.isGiayKhamSucKhoe=true;
+                pageCondition.isBangLaiA1=true;
+            }else if(condition.filterCondition.profileType=='notDone'){
+                delete filterCondition.profileType;
+                if(filterCondition.isDon=='false' && filterCondition.isHinh=='false' &&filterCondition.isIdentityCard=='false' && filterCondition.isGiayKhamSucKhoe=='false' && filterCondition.isBangLaiA1=='false'){
+                    for(const key in filterCondition) pageCondition['$or'].push({[key]:false});
+                }else{
+                    for(const key in filterCondition) filterCondition[key]=='true' && pageCondition['$or'].push({[key]:false});
+                }
+            }
+        }
+        if(pageCondition['$or'].length==0) delete delete pageCondition.$or;
+        app.model.student.getPage(pageNumber, pageSize, pageCondition, (error, page) => {
+            res.send({error,page});
+            // res.send({ page, error: error || page == null ? 'Danh sách trống!' : null });
+        });
+    });
+
+    app.put('/api/course/additional-profile', app.permission.check('course:write'), (req, res) => {
+        app.model.student.update(req.body._id, req.body.changes, (error, item) => res.send({ error, item }));
     });
 
     // API: Mobile

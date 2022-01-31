@@ -152,6 +152,10 @@ export default {
             component: Loadable({ loading: Loading, loader: () => import('modules/mdDaoTao/fwTimeTable/studentView') })
         },
         {
+            path: '/user/course/:_id/additional-profile',
+            component: Loadable({ loading: Loading, loader: () => import('./pages/adminAdditionalProfilePage') })
+        },
+        {
             path: '/user/hoc-vien/khoa-hoc/:_id/tien-do-hoc-tap',
             component: Loadable({ loading: Loading, loader: () => import('./userLearningProgressPage') })
         },

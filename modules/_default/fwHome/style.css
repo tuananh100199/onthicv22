@@ -153,6 +153,7 @@
     background-color: #199d76;
     padding-top: 100px;
     padding-bottom: 100px;
+    height: calc(100vh - 25px);
 }
 .warp_gioi_thieu_HP {
     margin: 0 50px;

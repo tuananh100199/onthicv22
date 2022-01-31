@@ -2,7 +2,7 @@ module.exports = (app) => {
     const menu = {
         parentMenu: app.parentMenu.trainning,
         menus: {
-            4010: { title: 'Loại khóa học', link: '/user/course-type' },
+            4015: { title: 'Loại khóa học', link: '/user/course-type' },
         }
     };
 

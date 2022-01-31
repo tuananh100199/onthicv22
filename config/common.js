@@ -16,7 +16,7 @@ module.exports = (app, appName) => {
         }
         return result;
     };
-    
+
     // Response template - html file ---------------------------------------------------------------------------------------------------------------------------
     app.templates = {};
     app.createTemplate = function () {
@@ -50,6 +50,7 @@ module.exports = (app, appName) => {
         user: { index: 1000, title: 'Trang cá nhân', link: '/user', icon: 'fa-user' },
         setting: { index: 2000, title: 'Cấu hình', icon: 'fa-cog' },
         communication: { index: 3000, title: 'Truyền thông', icon: 'fa fa-bullhorn' },
+        accountant: { index: 7000, title: 'Kế toán', icon: 'fa-money' },
         trainning: { index: 4000, title: 'Đào tạo', icon: 'fa-graduation-cap' },
         driveTest: { index: 6000, title: 'Ôn tập', icon: 'fa-graduation-cap' },
     };

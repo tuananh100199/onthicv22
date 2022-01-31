@@ -41,6 +41,42 @@ module.exports = (app) => {
         hocPhiMienGiam: Number,                                                                     // Số tiền được miễn giảm
         hocPhiDaDong: Number,                                                                       // Học phí đã đóng
         ngayHetHanNopHocPhi: Date,                                                                  // Ngày hết hạn nộp học phí
+        coursePayment: { type: app.db.Schema.ObjectId, ref: 'CoursePayment' },
+        discount: { type: app.db.Schema.ObjectId, ref: 'Discount' },
+        courseFee: { type: app.db.Schema.ObjectId, ref: 'CourseFee' },
+        lichSuDongTien: [{
+            date: { type: Date, default: Date.now },
+            fee: { type: Number, default: 0 },
+            user: { type: app.db.Schema.ObjectId, ref: 'User' },                                    // Người xác nhận tiền 
+            isOnlinePayment: { type: Boolean, default: false },
+        }],
+
+        lichSuMuaThemGoi: [{
+            date: { type: Date, default: Date.now },
+            fee: { type: Number, default: 0 },
+            listCourseFee: [{
+                courseFee: { type: app.db.Schema.ObjectId, ref: 'CourseFee' },
+                quantity: Number
+            }],
+            user: { type: app.db.Schema.ObjectId, ref: 'User' },                                    // Người xác nhận tiền 
+            isOnlinePayment: { type: Boolean, default: false },
+        }],
+
+        cart: {
+            transactionId: String,
+            item: [{
+                isDefault: { type: Boolean, default: false },
+                _id: { type: app.db.Schema.ObjectId },
+                name: String,
+                courseType: { type: app.db.Schema.ObjectId, ref: 'CourseType' },
+                feeType: { type: app.db.Schema.ObjectId, ref: 'FeeType' },
+                fee: Number,
+                description: String,
+                quantity: Number,
+                fees: Number,
+            }],
+            lock: { type: Boolean, default: false }
+        },
 
         tienDoHocTap: {},
         tienDoThiHetMon: {},
@@ -66,11 +102,20 @@ module.exports = (app) => {
 
         datSatHach: { type: Boolean, default: false },
         totNghiep: { type: Boolean, default: false },
+        kySatHach:String,
+
+        // nhận chứng chỉ sơ cấp, giấy phép lái xe
+        isCertification:{ type: Boolean, default: false },  // trung tâm đã có CCSC
+        hasCertification:{type: Boolean, default: false},   // Học viên đã nhận được CCSC
+        isLicense:{ type: Boolean, default: false },        // Trung tâm đã có GPLX
+        hasLicense:{type: Boolean, default: false},         // Học viên đã nhận được GPLX
+
         ngayDuKienThiSatHach: Date,
         liDoChuaDatSatHach: String,
-
         ngayDuKienThiTotNghiep: Date,
         liDoChuaTotNghiep: String,
+
+
 
         ngayNhanChungChiHoanThanhKhoaHoc: Date,
         ngayNhanGiayPhepLaiXe: Date,
@@ -78,6 +123,12 @@ module.exports = (app) => {
         tongThoiGianChat: Number,
         tongThoiGianTaiLieu: Number,
         tongThoiGianForum: Number,
+
+        isDon:{ type: Boolean, default: false },
+        isHinh:{ type: Boolean, default: false },
+        isIdentityCard:{ type: Boolean, default: false },
+        isGiayKhamSucKhoe:{ type: Boolean, default: false },
+        isBangLaiA1:{ type: Boolean, default: false },
 
         createdDate: { type: Date, default: Date.now },                                             // Ngày tạo
         modifiedDate: { type: Date, default: Date.now },                                            // Ngày cập nhật cuối cùng
@@ -89,7 +140,7 @@ module.exports = (app) => {
         create: (data, done) => model.create(data, done),
 
         get: (condition, done) => (typeof condition == 'object' ? model.findOne(condition) : model.findById(condition))
-            .populate('user', '-password').populate('division').populate('courseType').populate('course').exec(done),
+            .populate('user', '-password').populate('division').populate('courseType').populate('courseFee').populate('feeType').populate('coursePayment').populate('discount').populate('course').exec(done),
 
         getAll: (condition, done) => {
             if (typeof condition == 'function') {
@@ -151,7 +202,8 @@ module.exports = (app) => {
                             model.find({ _id: { $in: _ids }, ...condition }).sort(sort).skip(skipNumber).limit(result.pageSize)
                                 .populate('user', '-password').populate('division', '_id title isOutside').populate('planLecturer', '_id lastname firstname').populate('courseType').populate('course').populate({
                                     path: 'course', populate: { path: 'subjects', select: '-detailDescription' }
-                                }).exec((error, list) => {
+                                }).populate('courseFee', '_id name').populate('_id name').populate('_id name')
+                                .exec((error, list) => {
                                     result.list = list;
                                     done(error, result);
                                 });
@@ -163,7 +215,8 @@ module.exports = (app) => {
                     model.find(condition).sort(sort).skip(skipNumber).limit(result.pageSize)
                         .populate('user', '-password').populate('division', '_id title isOutside').populate('planLecturer', '_id lastname firstname').populate('courseType').populate('course').populate({
                             path: 'course', populate: { path: 'subjects', select: '-detailDescription' }
-                        }).exec((error, list) => {
+                        }).populate('courseFee').populate('discount').populate('coursePayment')
+                        .exec((error, list) => {
                             result.list = list;
                             done(error, result);
                         });

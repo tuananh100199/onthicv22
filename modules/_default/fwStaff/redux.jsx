@@ -3,13 +3,16 @@ import T from 'view/js/common';
 // Reducer ------------------------------------------------------------------------------------------------------------
 const StaffInfoGetAll = 'StaffInfoGetAll';
 const StaffInfoGetPage = 'StaffInfoGetPage';
-
-export default function departmentReducer(state = {}, data) {
+const StaffInfoGetItem = 'StaffInfoGetItem';
+export default function staffInfoReducer(state = {}, data) {
     switch (data.type) {
         case StaffInfoGetAll:
             return Object.assign({}, state, { list: data.list });
         case StaffInfoGetPage:
             return Object.assign({}, state, { page: data.page });
+        case StaffInfoGetItem: 
+            return Object.assign({}, state, { item: data.item });
+        
         default:
             return state;
     }
@@ -50,6 +53,18 @@ export function getStaffInfoPage(pageNumber, pageSize, condition, done) {
             }
         }, error => console.error(error) || T.notify('Lấy danh sách nhân viên bị lỗi!', 'danger'));
     };
+}
+
+export function getStaffInfo(_id, done) {
+    return dispatch => ajaxGetStaffInfo(_id, data => {
+        if (data.error) {
+            T.notify('Lấy thông tin nhân viên bị lỗi!', 'danger');
+            console.error('GET: getStaffInfo', data.error);
+        } else {
+            dispatch({ type: StaffInfoGetItem, item: data.item });
+        }
+        done && done(data);
+    });
 }
 
 export function createStaffInfo(data, done) {
@@ -98,4 +113,11 @@ export function deleteStaffInfo(_id) {
             }
         }, error => console.error(error) || T.notify('Xóa thông tin nhân viên bị lỗi!', 'danger'));
     };
+}
+
+// AJAX ---------------------------------------------------------------------------------------------------------------
+
+export function ajaxGetStaffInfo(_id, done) {
+    const url = '/api/staff-info';
+    T.get(url, { _id }, done, error => console.error(error) || T.notify('Lấy thông tin nhân viên bị lỗi!', 'danger'));
 }
