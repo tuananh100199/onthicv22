@@ -128,7 +128,7 @@ export function getStudent(_id, done) {
             } else {
                 // T.alert('Lấy thông tin học viên thành công!', 'info', false, 800);
                 done && done(data.item);
-                dispatch({ type: StudentUpdate, item: data.item });
+                dispatch({ type: StudentGetItem, item: data.item });
             }
         }, error => console.error(error) || T.notify('Lấy thông tin học viên bị lỗi', 'danger'));
     };

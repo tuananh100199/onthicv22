@@ -39,6 +39,10 @@ export default {
             path: '/user/student/debt',
             component: Loadable({ loading: Loading, loader: () => import('./adminDebtTrackingPage') })
         },
+        {
+            path: '/user/student/payment/:_id',
+            component: Loadable({ loading: Loading, loader: () => import('./adminThanhToanTrucTiepPage') })
+        },
     ],
     Section: {
     }

@@ -3,7 +3,6 @@ import { connect } from 'react-redux';
 import { getCourseByStudent } from './redux';
 import { createChangeLecturer } from 'modules/mdDaoTao/fwChangeLecturer/redux';
 import { getRateByUser } from 'modules/_default/fwRate/redux';
-import { getStudent } from 'modules/mdDaoTao/fwStudent/redux';
 import RateModal from 'modules/_default/fwRate/RateModal';
 import { AdminPage, CirclePageButton, PageIconHeader, PageIcon, AdminModal, FormTextBox, FormRichTextBox, FormDatePicker } from 'view/component/AdminPage';
 
@@ -205,5 +204,5 @@ class UserCoursePageDetail extends AdminPage {
 }
 
 const mapStateToProps = state => ({ system: state.system, course: state.trainning.course, driveTest: state.trainning.driveTest, rate: state.framework.rate });
-const mapActionsToProps = { getCourseByStudent, getRateByUser, getStudent, createChangeLecturer };
+const mapActionsToProps = { getCourseByStudent, getRateByUser, createChangeLecturer };
 export default connect(mapStateToProps, mapActionsToProps)(UserCoursePageDetail);
