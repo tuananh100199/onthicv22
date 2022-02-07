@@ -103,7 +103,8 @@ module.exports = (app) => {
         datSatHach: { type: Boolean, default: false },
         totNghiep: { type: Boolean, default: false },
         kySatHach:String,
-
+        ngaySatHach:Date,
+        
         // nhận chứng chỉ sơ cấp, giấy phép lái xe
         isCertification:{ type: Boolean, default: false },  // trung tâm đã có CCSC
         hasCertification:{type: Boolean, default: false},   // Học viên đã nhận được CCSC

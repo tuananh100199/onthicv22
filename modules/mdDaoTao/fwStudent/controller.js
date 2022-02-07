@@ -550,7 +550,6 @@ module.exports = (app) => {
                         startRow = parseInt(userDatas[1]), endRow = parseInt(userDatas[2]),
                         // totalRow = endRow - startRow + 1,
                         colCourseType = userDatas[6], courseTypeSelected = userDatas[7], colIdCard = userDatas[8];
-
                     const handleUpload = (index = startRow) => {
                         if (index > endRow) { // end loop  
                             if (data.some(({ identityCard }) => identityCard == undefined)) { //check map not 100%, map fail then not push identityCard to data
@@ -657,7 +656,7 @@ module.exports = (app) => {
                         if (index == student.length) {
                             res.send({ error: err });
                         } else {
-                            const { identityCard, course } = student[index];
+                            const { identityCard, course,kySatHach,ngaySatHach } = student[index];
                             app.model.student.get({ identityCard, course }, (error, item) => {
                                 if (error || !item) {
                                     err = error;
@@ -666,6 +665,10 @@ module.exports = (app) => {
                                     Object.entries(changes[parseInt(type)]).forEach(([key, value]) => {
                                         item[key] = value;
                                     });
+
+                                    // thêm kỳ sát hạch và ngày sát hạch
+                                    item.kySatHach= kySatHach;
+                                    item.ngaySatHach=ngaySatHach;
                                     item.modifiedDate = new Date();
                                     item.save((error, student) => {
                                         if (error || !student) {
