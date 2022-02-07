@@ -86,11 +86,15 @@ class LicensePage extends AdminPage {
         if(isLicense) this.props.updateCertificate(_id,changes,()=>this.onSearch({}));
     }
 
+    printDeliveryForm = (e,item)=>{
+        e.preventDefault();
+        console.log('get file docs!',item);
+    }
+
     render() {
         const permission = this.getUserPermission('certificate');
         let { pageNumber, pageSize, pageTotal, totalItem, list } = this.props.certificate && this.props.certificate.licensePage ?
             this.props.certificate.licensePage : { pageNumber: 1, pageSize: 50, pageTotal: 1, totalItem: 0, list: null };
-        console.log('list: ',list);
             const table = renderTable({
             getDataSource: () => list, stickyHead: true,
             renderHead: () => (
@@ -99,8 +103,8 @@ class LicensePage extends AdminPage {
                     <th style={{ width: '40%' }} nowrap='true'>Học viên</th>
                     <th style={{ width: '40%' }} nowrap='true'>CMND/CCCD</th>
                     <th style={{ width: '20%' }} nowrap='true'>Loại khóa học</th>
-                    <th style={{ width: 'auto' }} nowrap='true'>Đã có GPLX</th>
                     <th style={{ width: 'auto' }} nowrap='true'>Kỳ sát hạch</th>
+                    <th style={{ width: 'auto' }} nowrap='true'>Đã có GPLX</th>
                     <th style={{ width: 'auto' }} nowrap='true'>Cấp phát</th>
                     <th style={{ width: 'auto' }} nowrap='true'>Thao tác</th>
                 </tr>),
@@ -110,11 +114,15 @@ class LicensePage extends AdminPage {
                     <TableCell type='link' content={<>{item.lastname} {item.firstname}</>} onClick={e => this.edit(e, item)} />
                     <TableCell type='text' content={item.identityCard} />
                     <TableCell type='text' content={item.courseType && item.courseType.title} />
-                    <TableCell type='checkbox' content={item.isLicense} permission={permission} onChanged = {value=>this.update(item._id,{isLicense:value,hasLicense:0})}/>
                     <TableCell type='text' content={item.kySatHach} style={{whiteSpace:'nowrap'}} />
+                    <TableCell type='checkbox' content={item.isLicense} permission={permission} onChanged = {value=>this.update(item._id,{isLicense:value,hasLicense:0})}/>
                     {item.isLicense && <TableCell type='checkbox' content={item.hasLicense} permission={permission} onChanged = {value=>this.updateHasLicense(item._id,item.isLicense,{hasLicense:value})}/>}
                     {!item.isLicense && <TableCell type='text' content=''/>}
-                    <TableCell type='buttons' content={item} permission={permission} onEdit={this.edit} onDelete={this.delete} />
+                    <TableCell type='buttons' content={item} permission={permission} onEdit={this.edit}>
+                        <a className='btn btn-warning' href='#' onClick={(e) => this.printDeliveryForm(e, item)}>
+                            <i className='fa fa-lg fa-print' />
+                        </a>
+                    </TableCell>
                 </tr>),
         });
 
