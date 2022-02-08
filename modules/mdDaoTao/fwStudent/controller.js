@@ -29,6 +29,7 @@ module.exports = (app) => {
     app.get('/user/student/fail-exam', app.permission.check('student:read'), app.templates.admin);
     app.get('/user/student/fail-graduation', app.permission.check('student:read'), app.templates.admin);
     app.get('/user/student/debt', app.permission.check('debt:read'), app.templates.admin);
+    app.get('/user/student/payment/:_id', app.permission.check('debt:write'), app.templates.admin);
     app.get('/user/pre-student', app.permission.check('pre-student:read'), app.templates.admin);
     app.get('/user/pre-student/import', app.permission.check('pre-student:import'), app.templates.admin);
 
@@ -67,11 +68,20 @@ module.exports = (app) => {
     app.get('/api/student/debt/page/:pageNumber/:pageSize', app.permission.check('student:read'), (req, res) => {
         let pageNumber = parseInt(req.params.pageNumber),
             pageSize = parseInt(req.params.pageSize),
-            // condition = req.query.pageCondition || {},
-            pageCondition = req.query.pageCondition || {};
+            condition = req.query.pageCondition || {},
+            pageCondition = {};
+
         try {
             if (req.session.user.isCourseAdmin && req.session.user.division && req.session.user.division.isOutside) { // Session user là quản trị viên khóa học
                 pageCondition.division = req.session.user.division._id;
+            }
+            if (condition.searchText) {
+                const value = { $regex: `.*${condition.searchText}.*`, $options: 'i' };
+                pageCondition.$or = [
+                    { firstname: value },
+                    { lastname: value },
+                    { identityCard: value },
+                ];
             }
             app.model.student.getPage(pageNumber, pageSize, pageCondition, (error, page) => res.send({ error, page }));
         } catch (error) {

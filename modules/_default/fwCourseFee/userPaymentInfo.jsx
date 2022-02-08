@@ -109,7 +109,7 @@ class UserPaymentInfo extends AdminPage {
     payment = (e) => e.preventDefault() || console.log('test');
 
     render() {
-        const userPageLink = '/user/hoc-vien/khoa-hoc/' + this.state.courseId;
+        const userPageLink = '/user/hoc-vien/khoa-hoc/' + this.state.courseId + '/cong-no';
         const { hocPhiPhaiDong, hocPhiMienGiam, soLanDong, ngayHetHanNopHocPhi, soTienThanhToan, lichSuDongTien } = this.state;
         const list = [],
             numOfPayments = soLanDong ? soLanDong.numOfPayments : 1;
