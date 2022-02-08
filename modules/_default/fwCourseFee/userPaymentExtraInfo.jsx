@@ -162,6 +162,32 @@ class CartModal extends AdminModal {
     }
 }
 
+class CancelPaymentModal extends AdminModal {
+    state = { };
+    componentDidMount() {
+        T.ready(() => this.onShown(() => {}));
+    }
+
+    render = () => this.renderModal({
+        title: 'Huỷ thanh toán gói tăng thêm',
+        dataBackdrop: 'static',
+        body: (
+            <div>
+                <div className='tile-body'>
+                    <FormTextBox ref={e => this.itemLyDo = e} onChange={e => this.setState({ lyDo: e.target.value })} type='text' label='Lý do huỷ gói tăng thêm' readOnly={false} />
+                </div>
+            </div>),
+        buttons:
+        this.state.lyDo ? <button className='btn btn-danger' style={{ textAlign: 'right' }}
+            onClick={() => {
+                this.props.updateStudent(this.props.studentId, { cart: { item: this.props.cart, transactionId: this.props.transactionId, lock: false } }, () => {
+                    window.location.reload();
+                });
+            }}
+        >Xác nhận huỷ thanh toán</button> : null
+    });
+}
+
 class UserPaymentInfo extends AdminPage {
     state = { name: '...', soTienThanhToan: 0, cart: [],count: 0 };
     componentDidMount() {
@@ -358,10 +384,8 @@ class UserPaymentInfo extends AdminPage {
                                 onClick={() => this.modal.show(this.state)}
                             >Thanh toán</button> :
                                 <button className='btn btn-danger' style={{ textAlign: 'right' }}
-                                    onClick={() => T.confirm('Xóa gói học phí chờ thanh toán', 'Bạn có chắc bạn vẫn chưa thanh toán và muốn xóa gói học phí này ?', true, isConfirm => {
-                                        isConfirm && this.props.updateStudent(studentId, { cart: { item: cart, transactionId: transactionId, lock: false } }, () => {
-                                            window.location.reload();
-                                        });
+                                    onClick={() => T.confirm('Xóa gói học phí chờ thanh toán', 'Bạn có chắc bạn chưa thanh toán và muốn huỷ gói học phí này ?', true, isConfirm => {
+                                        isConfirm && this.cancelModal.show();
                                     })}
                                 >Hủy</button>
                             }
@@ -397,6 +421,7 @@ class UserPaymentInfo extends AdminPage {
                     </div> : null}
                     <PaymentInfoModal fee={soTienThanhToan} code={this.state.code} nameBank={this.state.nameBank} accounts={this.state.accounts} accountsNumber={accounts && accounts.number} contentSyntaxExtra={contentSyntaxExtra} readOnly={true} updateStudent={this.props.updateStudent} cart={cart} transactionId={transactionId} studentId={studentId} ref={e => this.modal = e} />
                     <CartModal fee={soTienThanhToan} updateState={this.updateState} defaultContentSyntaxExtra={this.state.defaultContentSyntaxExtra} count={count} student={this.state.student} showPayment={this.modal && this.modal.show}  lock={lock} contentSyntaxExtra={contentSyntaxExtra} readOnly={true} updateStudent={this.props.updateStudent} cart={cart} transactionId={transactionId} studentId={studentId} ref={e => this.cartModal = e} />
+                    <CancelPaymentModal  readOnly={true} updateStudent={this.props.updateStudent} cart={cart} transactionId={transactionId} studentId={studentId} ref={e => this.cancelModal = e} />
                 </>
             ),
             backRoute: userPageLink,
