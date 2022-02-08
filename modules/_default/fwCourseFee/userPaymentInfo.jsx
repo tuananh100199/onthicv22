@@ -78,7 +78,7 @@ class UserPaymentInfo extends AdminPage {
                         this.props.getBankByStudent({ active: true }, (item) => {
                             if (item) {
                                 this.setState({
-                                    contentSyntax: item.contentSyntax && item.contentSyntax.replace('{cmnd}', data.student.identityCard).replace('{ten_loai_khoa_hoc}', data.student.courseType.title),
+                                    contentSyntax: item.contentSyntax && item.contentSyntax.replace('{cmnd}', data.student.identityCard).replace('{ten_loai_khoa_hoc}', data.student.courseType.contentSyntax),
                                     code: item.code, nameBank: item.name,
                                     accounts: item.accounts.find(({ active }) => active == true),
                                 });

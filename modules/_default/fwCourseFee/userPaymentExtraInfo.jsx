@@ -106,9 +106,9 @@ class CartModal extends AdminModal {
                     transactionId,
                     cart,
                     count: count - parseInt(item.quantity),
-                    contentSyntaxExtra: defaultContentSyntaxExtra && defaultContentSyntaxExtra.replace('{cmnd}', identityCard).replace('{ten_loai_khoa_hoc}', courseType ? courseType.title : '').replace('{ma_giao_dich}', transactionId),
+                    contentSyntaxExtra: defaultContentSyntaxExtra && defaultContentSyntaxExtra.replace('{cmnd}', identityCard).replace('{ten_loai_khoa_hoc}', courseType ? courseType.contentSyntax : '').replace('{ma_giao_dich}', transactionId),
                 }, () => {
-                    this.props.updateState({transactionId,cart,count: count - parseInt(item.quantity),contentSyntaxExtra: defaultContentSyntaxExtra && defaultContentSyntaxExtra.replace('{cmnd}', identityCard).replace('{ten_loai_khoa_hoc}', courseType ? courseType.title : '').replace('{ma_giao_dich}', transactionId)});
+                    this.props.updateState({transactionId,cart,count: count - parseInt(item.quantity),contentSyntaxExtra: defaultContentSyntaxExtra && defaultContentSyntaxExtra.replace('{cmnd}', identityCard).replace('{ten_loai_khoa_hoc}', courseType ? courseType.contentSyntax : '').replace('{ma_giao_dich}', transactionId)});
                     this.props.updateStudent(_id, { cart: { transactionId, item: cart } });
                 });
             }
@@ -192,7 +192,7 @@ class UserPaymentInfo extends AdminPage {
                             if (item) {
                                 this.setState({
                                     defaultContentSyntaxExtra: item.contentSyntaxExtra,
-                                    contentSyntaxExtra: item.contentSyntaxExtra && item.contentSyntaxExtra.replace('{cmnd}', data.student.identityCard).replace('{ten_loai_khoa_hoc}', data.student.courseType.title).replace('{ma_giao_dich}', data.student.cart ? data.student.cart.transactionId : ''),
+                                    contentSyntaxExtra: item.contentSyntaxExtra && item.contentSyntaxExtra.replace('{cmnd}', data.student.identityCard).replace('{ten_loai_khoa_hoc}', data.student.courseType.contentSyntax).replace('{ma_giao_dich}', data.student.cart ? data.student.cart.transactionId : ''),
                                     code: item.code, nameBank: item.name,
                                     accounts: item.accounts.find(({ active }) => active == true),
                                 });
@@ -204,7 +204,7 @@ class UserPaymentInfo extends AdminPage {
                                     this.itemAccounts.value(accounts && accounts.number ? accounts.number : '');
                                     this.itemAccountsUser.value(accounts && accounts.holder ? accounts.holder : '');
                                     this.itemFee.value(T.numberDisplay(soTienThanhToan));
-                                    this.itemContentSyntaxExtra.value(item.contentSyntaxExtra && item.contentSyntaxExtra.replace('{cmnd}', data.student.identityCard).replace('{ten_loai_khoa_hoc}', data.student.courseType.title).replace('{ma_giao_dich}', data.student.cart ? data.student.cart.transactionId : ''));
+                                    this.itemContentSyntaxExtra.value(item.contentSyntaxExtra && item.contentSyntaxExtra.replace('{cmnd}', data.student.identityCard).replace('{ten_loai_khoa_hoc}', data.student.courseType.contentSyntax).replace('{ma_giao_dich}', data.student.cart ? data.student.cart.transactionId : ''));
                                 }
                                 this.props.getCourseFeeByStudent({ courseType: data.item.courseType._id });
                             }
@@ -238,7 +238,7 @@ class UserPaymentInfo extends AdminPage {
     addToCart = (item, quantity,indexCart) => {
         const { cart = [], defaultContentSyntaxExtra, count } = this.state;
         const { _id, courseType, identityCard } = this.state.student;
-        T.confirm('Thêm vào danh sách mua gói', 'Bạn có chắc thêm ' + quantity + ' gói ' + item.name + ' vào danh sách thanh toán không?', true, isConfirm => {
+        T.confirm('Thêm vào danh sách mua gói', 'Bạn có chắc thêm ' + quantity + ' gói ' + item.name + ' vào danh sách thanh toán không?', 'info', isConfirm => {
             if (isConfirm) {
                 if(quantity){
                     const index = cart && cart.findIndex(courseFee => courseFee._id == item._id);
@@ -255,7 +255,7 @@ class UserPaymentInfo extends AdminPage {
                         transactionId,
                         cart,
                         count: count + parseInt(quantity),
-                        contentSyntaxExtra: defaultContentSyntaxExtra && defaultContentSyntaxExtra.replace('{cmnd}', identityCard).replace('{ten_loai_khoa_hoc}', courseType ? courseType.title : '').replace('{ma_giao_dich}', transactionId),
+                        contentSyntaxExtra: defaultContentSyntaxExtra && defaultContentSyntaxExtra.replace('{cmnd}', identityCard).replace('{ten_loai_khoa_hoc}', courseType ? courseType.contentSyntax : '').replace('{ma_giao_dich}', transactionId),
                     }, () => {
                         this[indexCart].value('');
                         this.props.updateStudent(_id, { cart: { transactionId, item: cart } });

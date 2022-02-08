@@ -6,6 +6,7 @@ module.exports = app => {
         shortDescription: String,
         detailDescription: String,
         image: String,
+        contentSyntax: String,
         subjects: [{ type: app.db.Schema.ObjectId, ref: 'Subject' }],
         questionTypes: [{
             category: { type: app.db.Schema.ObjectId, ref: 'Category' },
