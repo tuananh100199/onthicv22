@@ -1,9 +1,9 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { getLicensePage, updateCertificate } from './redux';
+import { getLicensePage, updateCertificate,exportFinalLicense } from './redux';
 import Pagination from 'view/component/Pagination';
-import { AdminPage, AdminModal, FormTextBox, TableCell, renderTable, FormCheckbox } from 'view/component/AdminPage';
-
+import { AdminPage, AdminModal, FormTextBox, TableCell, renderTable, FormCheckbox,CirclePageButton } from 'view/component/AdminPage';
+import FileSaver from 'file-saver';
 class CertificateModal extends AdminModal {
     state = {isLicense:false};
     onShow = (item) => {
@@ -53,18 +53,18 @@ class CertificateModal extends AdminModal {
 }
 
 class LicensePage extends AdminPage {
-    state = {};
+    state = {listStudent:[]};
     componentDidMount() {
         T.ready('/user/license', () => {
             T.showSearchBox();
             T.onSearch = (searchText) => this.onSearch({ searchText });
-            this.props.getLicensePage(1, 50, {datSatHach:true});
+            this.props.getLicensePage(1, 50, {});
         });
     }
 
     onSearch = ({ pageNumber, pageSize, searchText }, done) => {
         if (searchText == undefined) searchText = this.state.searchText;
-        this.setState({ isSearching: true }, () => this.props.getLicensePage(pageNumber, pageSize, { searchText,datSatHach:true }, (page) => {
+        this.setState({ isSearching: true }, () => this.props.getLicensePage(pageNumber, pageSize, searchText, (page) => {
             this.setState({ searchText, isSearching: false });
             done && done(page);
         }));
@@ -73,6 +73,11 @@ class LicensePage extends AdminPage {
     edit = (e, item) => {
         e.preventDefault();
         this.modal.show(item);
+    }
+
+    exportMulti = (e,item)=>{
+        e.preventDefault();
+        this.exportModal.show(item);
     }
 
     update = (_id,changes,done)=>{
@@ -86,9 +91,31 @@ class LicensePage extends AdminPage {
         if(isLicense) this.props.updateCertificate(_id,changes,()=>this.onSearch({}));
     }
 
-    printDeliveryForm = (e,item)=>{
+    exportOne = (e, item) => {
         e.preventDefault();
-        console.log('get file docs!',item);
+        if (item) {
+            this.props.exportFinalLicense([item._id], (data) => {
+                FileSaver.saveAs(new Blob([new Uint8Array(data.buf.data)]), 'Biên bản GPLX.docx');
+            });
+        }
+    };
+
+    exportFinal = (e)=>{
+        e.preventDefault();
+        this.props.exportFinalLicense(this.state.listStudent, (data) => {
+            FileSaver.saveAs(new Blob([new Uint8Array(data.buf.data)]), 'Biên bản GPLX.docx');
+            this.setState({listStudent:[]});
+        });
+    }
+
+    changeExportItem = (value,_id)=>{
+        let listStudent = this.state.listStudent;
+        if(value){
+            listStudent.push(_id);
+        }else{
+            listStudent = listStudent.filter(item=>item!=_id);
+        }
+        this.setState({listStudent});
     }
 
     render() {
@@ -106,6 +133,7 @@ class LicensePage extends AdminPage {
                     <th style={{ width: 'auto' }} nowrap='true'>Kỳ sát hạch</th>
                     <th style={{ width: 'auto' }} nowrap='true'>Đã có GPLX</th>
                     <th style={{ width: 'auto' }} nowrap='true'>Cấp phát</th>
+                    <th style={{ width: 'auto' }} nowrap='true'>In biên bản</th>
                     <th style={{ width: 'auto' }} nowrap='true'>Thao tác</th>
                 </tr>),
             renderRow: (item, index) => (
@@ -118,10 +146,8 @@ class LicensePage extends AdminPage {
                     <TableCell type='checkbox' content={item.isLicense} permission={permission} onChanged = {value=>this.update(item._id,{isLicense:value,hasLicense:0})}/>
                     {item.isLicense && <TableCell type='checkbox' content={item.hasLicense} permission={permission} onChanged = {value=>this.updateHasLicense(item._id,item.isLicense,{hasLicense:value})}/>}
                     {!item.isLicense && <TableCell type='text' content=''/>}
+                    {<TableCell type='checkbox' content={this.state.listStudent.find(studentId=>studentId==item._id)} permission={permission} onChanged = {value=>this.changeExportItem(value,item._id)}/>}
                     <TableCell type='buttons' content={item} permission={permission} onEdit={this.edit}>
-                        <a className='btn btn-warning' href='#' onClick={(e) => this.printDeliveryForm(e, item)}>
-                            <i className='fa fa-lg fa-print' />
-                        </a>
                     </TableCell>
                 </tr>),
         });
@@ -136,6 +162,9 @@ class LicensePage extends AdminPage {
                     <Pagination pageNumber={pageNumber} pageSize={pageSize} pageTotal={pageTotal} totalItem={totalItem}
                         pageName = 'pageLicense' getPage={(pageNumber, pageSize) => this.onSearch({ pageNumber, pageSize })} />
                     <CertificateModal ref={e => this.modal = e} update={this.update} readOnly={!permission.write} />
+                    {this.state.listStudent.length>0 ? <CirclePageButton type='custom' customClassName='btn-warning' customIcon='fa-print' style={{ right: '10px' }} onClick={(e) => this.exportFinal(e)} />
+                    : null}
+
                 </div>
             ),
         });
@@ -143,5 +172,5 @@ class LicensePage extends AdminPage {
 }
 
 const mapStateToProps = state => ({ system: state.system, certificate: state.trainning.certificate });
-const mapActionsToProps = { getLicensePage, updateCertificate };
+const mapActionsToProps = { getLicensePage, updateCertificate,exportFinalLicense };
 export default connect(mapStateToProps, mapActionsToProps)(LicensePage);
