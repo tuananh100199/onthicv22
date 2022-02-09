@@ -32,7 +32,7 @@ class MessageModal extends AdminModal {
             } else if (this.itemState && data.state == null) {
                 T.notify('Trạng thái bài viết bị trống!', 'danger');
             } else {
-                if (data.content.length > 200) data.content = data.content.substring(0, 200);
+                if (data.content.length > 500) data.content = data.content.substring(0, 500);
                 new Promise(resolve => this.state._id ? this.props.update(this.state._id, data, resolve) : this.props.create(data, resolve)).then(() => {
                     this.hide();
                     if (!(this.props.permission && this.props.permission.forumOwner)) T.alert('Bạn vui lòng chờ Quản trị viên duyệt bài của bạn. Cảm ơn', 'success', false);

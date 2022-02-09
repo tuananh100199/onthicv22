@@ -51,16 +51,24 @@ module.exports = (app) => {
             isOnlinePayment: { type: Boolean, default: false },
         }],
 
-        lichSuMuaThemGoi: [{
-            date: { type: Date, default: Date.now },
-            fee: { type: Number, default: 0 },
-            listCourseFee: [{
-                courseFee: { type: app.db.Schema.ObjectId, ref: 'CourseFee' },
-                quantity: Number
-            }],
-            user: { type: app.db.Schema.ObjectId, ref: 'User' },                                    // Người xác nhận tiền 
-            isOnlinePayment: { type: Boolean, default: false },
-        }],
+        lichSuMuaThemGoi: [
+            {
+                transactionId: String,
+                item: [{
+                    isDefault: { type: Boolean, default: false },
+                    _id: { type: app.db.Schema.ObjectId },
+                    name: String,
+                    courseType: { type: app.db.Schema.ObjectId, ref: 'CourseType' },
+                    feeType: { type: app.db.Schema.ObjectId, ref: 'FeeType' },
+                    fee: Number,
+                    description: String,
+                    quantity: Number,
+                    fees: Number,
+                }],
+                date: { type: Date, default: Date.now },
+
+            }
+        ],
 
         cart: {
             transactionId: String,
@@ -357,6 +365,9 @@ module.exports = (app) => {
             });
         },
 
+        addPayment: (_id, data, done) => {
+            model.findOneAndUpdate(_id, { $push: { lichSuDongTien: data } }, { new: true }).exec(done);
+        },
 
         addFeedback: (data, done) => {
             app.model.student.get(data.studentId, (error, student) => {

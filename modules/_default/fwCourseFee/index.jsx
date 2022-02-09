@@ -21,5 +21,9 @@ export default {
             path: '/user/hoc-vien/khoa-hoc/:_id/cong-no/tang-them',
             component: Loadable({ loading: Loading, loader: () => import('./userPaymentExtraInfo') })
         },
+        {
+            path: '/user/hoc-vien/khoa-hoc/:_id/cong-no/lich-su',
+            component: Loadable({ loading: Loading, loader: () => import('./userPaymentHistory') })
+        },
     ]
 };
