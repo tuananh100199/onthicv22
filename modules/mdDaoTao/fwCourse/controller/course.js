@@ -186,7 +186,7 @@ module.exports = (app) => {
                                     isDefault: true,
                                     chatActive: false,
                                     commentActive: false,
-
+                                    active: true,
                                 };
                                 app.model.course.create(data, (error) => {
                                     err = error;

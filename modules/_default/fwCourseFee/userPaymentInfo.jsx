@@ -78,7 +78,7 @@ class UserPaymentInfo extends AdminPage {
                         this.props.getBankByStudent({ active: true }, (item) => {
                             if (item) {
                                 this.setState({
-                                    contentSyntax: item.contentSyntax && item.contentSyntax.replace('{cmnd}', data.student.identityCard).replace('{ten_loai_khoa_hoc}', data.student.courseType.title),
+                                    contentSyntax: item.contentSyntax && item.contentSyntax.replace('{cmnd}', data.student.identityCard).replace('{ten_loai_khoa_hoc}', data.student.courseType.contentSyntax),
                                     code: item.code, nameBank: item.name,
                                     accounts: item.accounts.find(({ active }) => active == true),
                                 });
@@ -109,19 +109,24 @@ class UserPaymentInfo extends AdminPage {
     payment = (e) => e.preventDefault() || console.log('test');
 
     render() {
-        const userPageLink = '/user/hoc-vien/khoa-hoc/' + this.state.courseId;
+        const userPageLink = '/user/hoc-vien/khoa-hoc/' + this.state.courseId + '/cong-no';
         const { hocPhiPhaiDong, hocPhiMienGiam, soLanDong, ngayHetHanNopHocPhi, soTienThanhToan, lichSuDongTien } = this.state;
         const list = [],
             numOfPayments = soLanDong ? soLanDong.numOfPayments : 1;
         const hocPhiDaDong = lichSuDongTien && lichSuDongTien.length ? lichSuDongTien.map(item => item.fee).reduce((prev, next) => prev + next) : 0;
         const hocPhiConLai = hocPhiPhaiDong && hocPhiPhaiDong.fee && hocPhiPhaiDong.fee - (hocPhiDaDong ? hocPhiDaDong : 0) - ((hocPhiMienGiam && hocPhiMienGiam.fee) ? hocPhiMienGiam.fee : 0);
-        for (let i = 1; i <= numOfPayments; i++) {
-            if (lichSuDongTien && lichSuDongTien[i - 1]) {
-                list.push({ name: 'Thanh toán học phí lần ' + i, fee: lichSuDongTien[i - 1].fee, ngayThanhToan: lichSuDongTien[i - 1].date });
-            } else {
-                list.push({ name: 'Thanh toán học phí lần ' + i, fee: (hocPhiConLai ? hocPhiConLai : 0) / (numOfPayments - (lichSuDongTien ? lichSuDongTien.length : 0)) });
+        if(lichSuDongTien){
+            for (let i = 1; i <= lichSuDongTien.length; i++) {
+                if (lichSuDongTien && lichSuDongTien[i - 1]) {
+                    list.push({ name: 'Thanh toán học phí lần ' + i, fee: lichSuDongTien[i - 1].fee, ngayThanhToan: lichSuDongTien[i - 1].date });
+                } else {
+                    list.push({ name: 'Thanh toán học phí lần ' + i, fee: (hocPhiConLai ? hocPhiConLai : 0) / (numOfPayments - (lichSuDongTien ? lichSuDongTien.length : 0)) });
+                }
+    
             }
-
+        }
+        if(lichSuDongTien && lichSuDongTien.length >= numOfPayments && hocPhiConLai!=0){
+            list.push({ name: 'Thanh toán học phí lần ' + parseInt(lichSuDongTien.length + 1 ), fee: hocPhiConLai });
         }
         const table = renderTable({
             getDataSource: () => list,
@@ -158,7 +163,7 @@ class UserPaymentInfo extends AdminPage {
                             <label className='col-md-6'>Học phí phải đóng:  <b>{hocPhiPhaiDong ? T.numberDisplay(hocPhiPhaiDong.fee) + ' đồng' : ''}</b></label>
                             {this.state.hocPhiMienGiam ? <label className='col-md-6'>Học phí miễn giảm: <b>{T.numberDisplay(hocPhiMienGiam.fee) + ' đồng'}</b></label> : null}
                             <label className='col-md-6'>Học phí đã đóng:  <b>{this.state.hocPhiDaDong ? T.numberDisplay(hocPhiDaDong) + ' đồng' : ''}</b></label>
-                            <label className='col-md-6'>Học phí còn lại:  <b>{hocPhiConLai ? (hocPhiConLai + ' đồng') : ''}</b></label>
+                            <label className='col-md-6'>Học phí còn lại:  <b>{hocPhiConLai ? T.numberDisplay(hocPhiConLai + ' đồng') : ''}</b></label>
                             {this.state.ngayHetHanNopHocPhi ? <label className='col-md-6'>Ngày hết hạn nộp học phí: <b>{T.dateToText(ngayHetHanNopHocPhi, 'dd/mm/yyyy')}</b></label> : null}
                         </div>
                     </div>

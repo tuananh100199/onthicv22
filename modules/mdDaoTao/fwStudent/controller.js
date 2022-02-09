@@ -29,6 +29,7 @@ module.exports = (app) => {
     app.get('/user/student/fail-exam', app.permission.check('student:read'), app.templates.admin);
     app.get('/user/student/fail-graduation', app.permission.check('student:read'), app.templates.admin);
     app.get('/user/student/debt', app.permission.check('debt:read'), app.templates.admin);
+    app.get('/user/student/payment/:_id', app.permission.check('debt:write'), app.templates.admin);
     app.get('/user/pre-student', app.permission.check('pre-student:read'), app.templates.admin);
     app.get('/user/pre-student/import', app.permission.check('pre-student:import'), app.templates.admin);
 
@@ -67,11 +68,20 @@ module.exports = (app) => {
     app.get('/api/student/debt/page/:pageNumber/:pageSize', app.permission.check('student:read'), (req, res) => {
         let pageNumber = parseInt(req.params.pageNumber),
             pageSize = parseInt(req.params.pageSize),
-            // condition = req.query.pageCondition || {},
-            pageCondition = req.query.pageCondition || {};
+            condition = req.query.pageCondition || {},
+            pageCondition = {};
+
         try {
             if (req.session.user.isCourseAdmin && req.session.user.division && req.session.user.division.isOutside) { // Session user là quản trị viên khóa học
                 pageCondition.division = req.session.user.division._id;
+            }
+            if (condition.searchText) {
+                const value = { $regex: `.*${condition.searchText}.*`, $options: 'i' };
+                pageCondition.$or = [
+                    { firstname: value },
+                    { lastname: value },
+                    { identityCard: value },
+                ];
             }
             app.model.student.getPage(pageNumber, pageSize, pageCondition, (error, page) => res.send({ error, page }));
         } catch (error) {
@@ -85,6 +95,33 @@ module.exports = (app) => {
 
     app.put('/api/student', app.permission.check('user:login'), (req, res) => {
         app.model.student.update(req.body._id, req.body.changes, (error, item) => res.send({ error, item }));
+    });
+
+    app.post('/api/student/payment', app.permission.check('courseFee:write'), (req, res) => {
+        const studentId = req.body._studentId,
+            data = req.body.payment,
+            {courseFee, fee} = req.body;
+        app.model.student.get({ _id: studentId }, (error, item) => {
+            if (error) {
+                res.send({ error });
+            } else if (!item) {
+                res.send({ check: 'Không tìm thấy học viên!' });
+            } else {
+                app.model.student.addPayment({ _id: item._id }, data, (error, item) => {
+                    if(error) res.send({error});
+                    else{
+                        if(courseFee && (fee-data.fee) <= (courseFee/2) && !item.course){
+                            app.model.course.get({isDefault: true, courseType: item.courseType}, (error,course) =>{
+                                if(error || !course) res.send({error, item});
+                                else{
+                                    app.model.student.update({_id: item._id},{course: course._id}, (error, student) => res.send({ error, item: student}));
+                                }
+                            });
+                        } else res.send({ error, student: item });
+                    }
+                });
+            }
+        });
     });
 
     app.delete('/api/student', app.permission.check('student:delete'), (req, res) => {
