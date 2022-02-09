@@ -123,6 +123,9 @@ class UserPaymentInfo extends AdminPage {
             }
 
         }
+        if(lichSuDongTien && lichSuDongTien.length >= numOfPayments && hocPhiConLai!=0){
+            list.push({ name: 'Thanh toán học phí lần ' + parseInt(lichSuDongTien.length + 1 ), fee: hocPhiConLai });
+        }
         const table = renderTable({
             getDataSource: () => list,
             renderHead: () => (
@@ -158,7 +161,7 @@ class UserPaymentInfo extends AdminPage {
                             <label className='col-md-6'>Học phí phải đóng:  <b>{hocPhiPhaiDong ? T.numberDisplay(hocPhiPhaiDong.fee) + ' đồng' : ''}</b></label>
                             {this.state.hocPhiMienGiam ? <label className='col-md-6'>Học phí miễn giảm: <b>{T.numberDisplay(hocPhiMienGiam.fee) + ' đồng'}</b></label> : null}
                             <label className='col-md-6'>Học phí đã đóng:  <b>{this.state.hocPhiDaDong ? T.numberDisplay(hocPhiDaDong) + ' đồng' : ''}</b></label>
-                            <label className='col-md-6'>Học phí còn lại:  <b>{hocPhiConLai ? (hocPhiConLai + ' đồng') : ''}</b></label>
+                            <label className='col-md-6'>Học phí còn lại:  <b>{hocPhiConLai ? T.numberDisplay(hocPhiConLai + ' đồng') : ''}</b></label>
                             {this.state.ngayHetHanNopHocPhi ? <label className='col-md-6'>Ngày hết hạn nộp học phí: <b>{T.dateToText(ngayHetHanNopHocPhi, 'dd/mm/yyyy')}</b></label> : null}
                         </div>
                     </div>

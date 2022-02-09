@@ -24,7 +24,6 @@ class PaymentInfoModal extends AdminModal {
         this.itemAccountsUser.value(accounts && accounts.holder ? accounts.holder : '');
         this.itemFee.value(this.props.fee ? T.numberDisplay(this.props.fee) + ' đồng' : 0);
         this.itemContentSyntaxExtra.value(contentSyntaxExtra);
-        // this.setState(item);
     }
 
     render = () => this.renderModal({
@@ -168,13 +167,40 @@ class CancelPaymentModal extends AdminModal {
         T.ready(() => this.onShown(() => {}));
     }
 
+    checkOther = (item) => {
+        if(item && item != ''){
+            $('#khac').prop('checked',true);
+        } else{
+            $('#khac').prop('checked',false);
+        }
+    }
+
     render = () => this.renderModal({
         title: 'Huỷ thanh toán gói tăng thêm',
         dataBackdrop: 'static',
         body: (
             <div>
                 <div className='tile-body'>
-                    <FormTextBox ref={e => this.itemLyDo = e} onChange={e => this.setState({ lyDo: e.target.value })} type='text' label='Lý do huỷ gói tăng thêm' readOnly={false} />
+                    <div><b>Chọn lý do huỷ gói học phí:</b></div>
+                    <div className='form-check'>
+                        <input className='form-check-input' type='radio' name='lyDo' id='doiGoi'/>
+                        <label className='form-check-label' htmlFor='doiGoi'>
+                            Đổi gói
+                        </label>
+                    </div>
+                    <div className='form-check'>
+                        <input className='form-check-input' type='radio' name='lyDo' id='chonNhamGoi'/>
+                        <label className='form-check-label' htmlFor='chonNhamGoi'>
+                            Chọn nhầm gói
+                        </label>
+                    </div>
+                    <div className='form-check'>
+                        <input className='form-check-input' type='radio' name='lyDo' id='khac'/>
+                        <label className='form-check-label' htmlFor='khac'>
+                            Khác:
+                            <FormTextBox ref={e => this.itemLyDo = e} onChange={e => this.checkOther(e.target.value)} type='text' readOnly={false} />
+                        </label>
+                    </div>
                 </div>
             </div>),
         buttons:
