@@ -100,7 +100,7 @@ module.exports = (app) => {
     app.post('/api/student/payment', app.permission.check('courseFee:write'), (req, res) => {
         const studentId = req.body._studentId,
             data = req.body.payment,
-            courseFee = req.body.courseFee;
+            {courseFee, fee} = req.body;
         app.model.student.get({ _id: studentId }, (error, item) => {
             if (error) {
                 res.send({ error });
@@ -110,7 +110,7 @@ module.exports = (app) => {
                 app.model.student.addPayment({ _id: item._id }, data, (error, item) => {
                     if(error) res.send({error});
                     else{
-                        if(courseFee && data.fee >= (courseFee/2) && !item.course){
+                        if(courseFee && (fee-data.fee) <= (courseFee/2) && !item.course){
                             app.model.course.get({isDefault: true, courseType: item.courseType}, (error,course) =>{
                                 if(error || !course) res.send({error, item});
                                 else{

@@ -32,7 +32,7 @@ class PaymentInfoModal extends AdminModal {
             <a className='btn btn-warning' href='#' onClick={e => {
                 e.preventDefault();
                 let { studentId } = this.props;
-                this.props.addStudentPayment(studentId, {fee: this.props.fee, user: this.props.userId},this.props.hocPhi, () => {
+                this.props.addStudentPayment(studentId, {fee: this.props.fee, user: this.props.userId}, this.props.hocPhi, this.props.hocPhiConLai, () => {
                     this.hide();
                     window.location.reload();
                 });
@@ -90,13 +90,15 @@ class ThanhToanTrucTiepPage extends AdminPage {
         const hocPhiDaDong = lichSuDongTien && lichSuDongTien.length ? lichSuDongTien.map(item => item.fee).reduce((prev, next) => prev + next) : 0;
         const hocPhiConLai = courseFee && courseFee.fee && courseFee.fee - (hocPhiDaDong ? hocPhiDaDong : 0) - ((discount && discount.fee) ? discount.fee : 0);
         const hocPhi = courseFee && courseFee.fee && courseFee.fee - ((discount && discount.fee) ? discount.fee : 0);
-        for (let i = 1; i <= numOfPayments; i++) {
-            if (lichSuDongTien && lichSuDongTien[i - 1]) {
-                list.push({ name: 'Thanh toán học phí lần ' + i, fee: lichSuDongTien[i - 1].fee, ngayThanhToan: lichSuDongTien[i - 1].date });
-            } else {
-                list.push({ name: 'Thanh toán học phí lần ' + i, fee: (hocPhiConLai ? hocPhiConLai : 0) / (numOfPayments - (lichSuDongTien ? lichSuDongTien.length : 0)) });
+        if(lichSuDongTien){
+            for (let i = 1; i <= lichSuDongTien.length; i++) {
+                if (lichSuDongTien && lichSuDongTien[i - 1]) {
+                    list.push({ name: 'Thanh toán học phí lần ' + i, fee: lichSuDongTien[i - 1].fee, ngayThanhToan: lichSuDongTien[i - 1].date });
+                } else {
+                    list.push({ name: 'Thanh toán học phí lần ' + i, fee: (hocPhiConLai ? hocPhiConLai : 0) / (numOfPayments - (lichSuDongTien ? lichSuDongTien.length : 0)) });
+                }
+    
             }
-
         }
         if(lichSuDongTien && lichSuDongTien.length >= numOfPayments && hocPhiConLai!=0){
             list.push({ name: 'Thanh toán học phí lần ' + parseInt(lichSuDongTien.length + 1 ), fee: hocPhiConLai });
@@ -166,7 +168,7 @@ class ThanhToanTrucTiepPage extends AdminPage {
                 </div>
                 {showOfficial ? official : null}
                 {showExtra ? extra : null}
-                <PaymentInfoModal fee={this.state.soTienDong} hocPhi={hocPhi} name={name} userId={userId} courseFeeName={student && student.courseFee ? student.courseFee.name : ''} accounts={this.state.accounts} readOnly={true} addStudentPayment={this.props.addStudentPayment} studentId={studentId} ref={e => this.modal = e} />
+                <PaymentInfoModal fee={this.state.soTienDong} hocPhi={hocPhi} hocPhiConLai={hocPhiConLai} name={name} userId={userId} courseFeeName={student && student.courseFee ? student.courseFee.name : ''} accounts={this.state.accounts} readOnly={true} addStudentPayment={this.props.addStudentPayment} studentId={studentId} ref={e => this.modal = e} />
             </>,
             backRoute: '/user/student/debt'
         });
