@@ -103,10 +103,10 @@ export function updateStudent(_id, changes, done) {
     };
 }
 
-export function addStudentPayment(_studentId, payment, done) {
+export function addStudentPayment(_studentId, payment,courseFee, done) {
     return dispatch => {
         const url = '/api/student/payment';
-        T.post(url, { _studentId, payment }, data => {
+        T.post(url, { _studentId, payment, courseFee }, data => {
             if (data.error) {
                 T.notify('Thêm thanh toán bị lỗi!', 'danger');
                 console.error('POST: ' + url + '.', data.error);

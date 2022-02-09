@@ -99,14 +99,27 @@ module.exports = (app) => {
 
     app.post('/api/student/payment', app.permission.check('courseFee:write'), (req, res) => {
         const studentId = req.body._studentId,
-            data = req.body.payment;
+            data = req.body.payment,
+            courseFee = req.body.courseFee;
         app.model.student.get({ _id: studentId }, (error, item) => {
             if (error) {
                 res.send({ error });
             } else if (!item) {
                 res.send({ check: 'Không tìm thấy học viên!' });
             } else {
-                app.model.student.addPayment({ _id: item._id }, data, (error, item) => res.send({ error, student: item }));
+                app.model.student.addPayment({ _id: item._id }, data, (error, item) => {
+                    if(error) res.send({error});
+                    else{
+                        if(courseFee && data.fee >= (courseFee/2) && !item.course){
+                            app.model.course.get({isDefault: true, courseType: item.courseType}, (error,course) =>{
+                                if(error || !course) res.send({error, item});
+                                else{
+                                    app.model.student.update({_id: item._id},{course: course._id}, (error, student) => res.send({ error, item: student}));
+                                }
+                            });
+                        } else res.send({ error, student: item });
+                    }
+                });
             }
         });
     });
