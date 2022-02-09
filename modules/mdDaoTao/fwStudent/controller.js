@@ -232,47 +232,6 @@ module.exports = (app) => {
         }
     });
 
-    const getDefaultCourseFee = data => new Promise((resolve, reject) => {// thêm courseFee mặc định
-        if (!data.courseType) {
-            reject('Không có loại khóa học!');
-        } else if (data.courseFee && data.courseFee != '') {// Có gói học phí
-            resolve(data.courseFee);
-        } else {
-            app.model.courseFee.get({ isDefault: true, courseType: data.courseType }, (error, item) => {
-                if (error || !item) reject('Lỗi không tìm thấy gói học phí!');
-                else {
-                    resolve(item._id);
-                }
-            });
-        }
-    });
-
-    const getDefaultDiscount = data => new Promise((resolve, reject) => {// thêm discount mặc định
-        if (data.discount && data.discount != '') {// Có giảm giá
-            resolve(data.discount);
-        } else {
-            app.model.discount.get({ isDefault: true }, (error, item) => {
-                if (error || !item) reject('Lỗi không tìm thấy giảm giá!');
-                else {
-                    resolve(item._id);
-                }
-            });
-        }
-    });
-
-    const getDefaultCoursePayment = data => new Promise((resolve, reject) => {// thêm coursePayment mặc định
-        if (data.coursePayment && data.coursePayment != '') {// Có số lần đóng học phí
-            resolve(data.coursePayment);
-        } else {
-            app.model.coursePayment.get({ default: true }, (error, item) => {
-                if (error || !item) reject('Lỗi không tìm thấy số lần đóng học phí!');
-                else {
-                    resolve(item._id);
-                }
-            });
-        }
-    });
-
     app.post('/api/pre-student', app.permission.check('pre-student:write'), (req, res) => {
         let data = req.body.student;
         function convert(str) {
@@ -282,7 +241,7 @@ module.exports = (app) => {
             return [day, mnth, date.getFullYear()].join('');
         }
         delete data.course; // Không được gán khóa học cho pre-student
-
+        if(!data.discount||data.discount=='') delete data.discount;
         const createNewUser = new Promise((resolve, reject) => { // Tạo user cho pre
             app.model.user.get({ identityCard: data.identityCard }, (error, user) => {
                 if (error) {
@@ -336,11 +295,10 @@ module.exports = (app) => {
         //     });
         // }).catch(error => res.send({ error }));
 
-        Promise.all([createNewUser, getDefaultCourseFee(data), getDefaultDiscount(data), getDefaultCoursePayment(data)]).then(([_userId, _courseFeeId, _discountId, _coursePaymentId]) => {
+        Promise.all([createNewUser]).then(([_userId]) => {
             data.user = _userId;   // assign id of user to user field of prestudent
-            data.courseFee = _courseFeeId;
-            data.discount = _discountId;
-            data.coursePayment = _coursePaymentId;
+            delete data.email;
+            delete data.phoneNumber;
             app.model.student.create(data, (error, item) => {
                 if (error || item == null || item.image == null) {
                     res.send({ error, item });
@@ -415,12 +373,14 @@ module.exports = (app) => {
     app.put('/api/pre-student', app.permission.check('pre-student:write'), (req, res) => {
         let { _id, changes } = req.body;
         delete changes.course; // Không được gán khóa học cho pre-student
-        Promise.all([getDefaultCourseFee(changes), getDefaultDiscount(changes), getDefaultCoursePayment(changes)]).then(([_courseFeeId, _discountId, _coursePaymentId]) => {
-            changes.courseFee = _courseFeeId;
-            changes.discount = _discountId;
-            changes.coursePayment = _coursePaymentId;
-            app.model.student.update(_id, changes, (error, item) => res.send({ error, item }));
-        }).catch(error => console.log(error) || res.send({ error }));
+        if(!changes.discount||changes.discount=='') delete changes.discount;
+        app.model.student.update(_id, changes, (error, item) => res.send({ error, item }));
+        // Promise.all([getDefaultCourseFee(changes), getDefaultDiscount(changes), getDefaultCoursePayment(changes)]).then(([_courseFeeId, _discountId, _coursePaymentId]) => {
+        //     changes.courseFee = _courseFeeId;
+        //     changes.discount = _discountId;
+        //     changes.coursePayment = _coursePaymentId;
+        //     app.model.student.update(_id, changes, (error, item) => res.send({ error, item }));
+        // }).catch(error => console.log(error) || res.send({ error }));
     });
 
     app.delete('/api/pre-student', app.permission.check('pre-student:delete'), (req, res) => {
@@ -498,6 +458,31 @@ module.exports = (app) => {
                                 return values.length >= 10 ? new Date(values.slice(6, 10), values.slice(3, 5) - 1, values.slice(0, 2)) : null;
                             };
                             const email = values[4] && values[4] != undefined ? values[4] : '';
+                            // data.push({
+                            //     id: index - 1,
+                            //     lastname: values[2],
+                            //     firstname: values[3],
+                            //     email: email.text || email,
+                            //     phoneNumber: values[5],
+                            //     sex: values[6] && values[6].toLowerCase().trim() == 'nam' ? 'male' : 'female',
+                            //     birthday: stringToDate(values[7]),
+                            //     nationality: values[8],
+                            //     residence: values[9],
+                            //     regularResidence: values[10],
+                            //     identityCard: values[11],
+                            //     identityIssuedBy: values[12],
+                            //     identityDate: stringToDate(values[13]),
+                            //     giayPhepLaiXe2BanhSo: values[14],
+                            //     giayPhepLaiXe2BanhNgay: stringToDate(values[15]),
+                            //     giayPhepLaiXe2BanhNoiCap: values[16],
+                            //     giayKhamSucKhoe: values[17] && values[17].toLowerCase().trim() == 'x' ? true : false,
+                            //     giayKhamSucKhoeNgayKham: values[17] && values[17].toLowerCase().trim() == 'x' ? stringToDate(values[18]) : null,
+                            //     hinhThe3x4: values[19] && values[19].toLowerCase().trim() == 'x' ? true : false,
+                            //     hinhChupTrucTiep: values[20] && values[20].toLowerCase().trim() == 'x' ? true : false,
+                            //     lecturerIdentityCard: values[21],
+                            //     lecturerName: values[22],
+                            //     hocPhiPhaiDong: values[23],
+                            // });
                             data.push({
                                 id: index - 1,
                                 lastname: values[2],
@@ -512,16 +497,20 @@ module.exports = (app) => {
                                 identityCard: values[11],
                                 identityIssuedBy: values[12],
                                 identityDate: stringToDate(values[13]),
-                                giayPhepLaiXe2BanhSo: values[14],
-                                giayPhepLaiXe2BanhNgay: stringToDate(values[15]),
-                                giayPhepLaiXe2BanhNoiCap: values[16],
-                                giayKhamSucKhoe: values[17] && values[17].toLowerCase().trim() == 'x' ? true : false,
-                                giayKhamSucKhoeNgayKham: values[17] && values[17].toLowerCase().trim() == 'x' ? stringToDate(values[18]) : null,
-                                hinhThe3x4: values[19] && values[19].toLowerCase().trim() == 'x' ? true : false,
-                                hinhChupTrucTiep: values[20] && values[20].toLowerCase().trim() == 'x' ? true : false,
-                                lecturerIdentityCard: values[21],
-                                lecturerName: values[22],
-                                hocPhiPhaiDong: values[23],
+                                isIdentityCard:values[14] && values[14].toLowerCase().trim() == 'x' ? true : false,
+                                giayPhepLaiXe2BanhSo: values[15],
+                                giayPhepLaiXe2BanhNgay: stringToDate(values[16]),
+                                giayPhepLaiXe2BanhNoiCap: values[17],
+                                isBangLaiA1:values[18] && values[18].toLowerCase().trim() == 'x' ? true : false,
+                                giayKhamSucKhoe: values[19] && values[19].toLowerCase().trim() == 'x' ? true : false,
+                                giayKhamSucKhoeNgayKham: values[19] && values[19].toLowerCase().trim() == 'x' ? stringToDate(values[20]) : null,
+                                hinhThe3x4: values[21] && values[21].toLowerCase().trim() == 'x' ? true : false,
+                                hinhChupTrucTiep: values[22] && values[22].toLowerCase().trim() == 'x' ? true : false,
+                                lecturerIdentityCard: values[23],
+                                lecturerName: values[24],
+                                isDon:values[25] && values[25].toLowerCase().trim() == 'x' ? true : false,
+                                isGiayKhamSucKhoe: values[19] && values[19].toLowerCase().trim() == 'x' ? true : false,
+                                isHinh: values[21] && values[21].toLowerCase().trim() == 'x' ? true : false,
                             });
                             handleUpload(index + 1);
                         }

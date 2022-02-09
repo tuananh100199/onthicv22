@@ -195,6 +195,11 @@ module.exports = app => {
                         courseFee:_courseFeeId,
                         discount:_discountId,
                         coursePayment:_coursePaymentId,
+                        isDon:item.isDon,
+                        isHinh:item.isHinh,
+                        isIdentityCard:item.isIdentityCard,
+                        isGiayKhamSucKhoe:item.isGiayKhamSucKhoe,
+                        isBangLaiA1:item.isBangLaiA1,
                     };
                     app.model.student.create(dataStudent, (error) => res.send({ error, item }));
                 }).catch(error=>res.send({error}));

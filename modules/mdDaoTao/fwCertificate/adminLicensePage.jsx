@@ -87,8 +87,8 @@ class LicensePage extends AdminPage {
         });
     }
 
-    updateHasLicense = (_id,isLicense,changes)=>{
-        if(isLicense) this.props.updateCertificate(_id,changes,()=>this.onSearch({}));
+    updateIsLicense = (_id,hasLicense,changes)=>{
+        if(!hasLicense) this.props.updateCertificate(_id,changes,()=>this.onSearch({}));
     }
 
     exportOne = (e, item) => {
@@ -143,10 +143,9 @@ class LicensePage extends AdminPage {
                     <TableCell type='text' content={item.identityCard} />
                     <TableCell type='text' content={item.courseType && item.courseType.title} />
                     <TableCell type='text' content={item.kySatHach} style={{whiteSpace:'nowrap'}} />
-                    <TableCell type='checkbox' content={item.isLicense} permission={permission} onChanged = {value=>this.update(item._id,{isLicense:value,hasLicense:0})}/>
-                    {item.isLicense && <TableCell type='checkbox' content={item.hasLicense} permission={permission} onChanged = {value=>this.updateHasLicense(item._id,item.isLicense,{hasLicense:value})}/>}
-                    {!item.isLicense && <TableCell type='text' content=''/>}
-                    {<TableCell type='checkbox' content={this.state.listStudent.find(studentId=>studentId==item._id)} permission={permission} onChanged = {value=>this.changeExportItem(value,item._id)}/>}
+                    <TableCell type='checkbox' content={item.isLicense} permission={permission} onChanged = {value=>this.updateIsLicense(item._id,item.hasLicense,{isLicense:value,hasLicense:0})}/>
+                    {item.isLicense ? <TableCell type='checkbox' content={item.hasLicense} permission={permission} onChanged = {value=>this.update(item._id,{hasLicense:value})}/>:<TableCell type='text' content=''/>}
+                    {item.isLicense ?<TableCell type='checkbox' content={this.state.listStudent.find(studentId=>studentId==item._id)} permission={permission} onChanged = {value=>this.changeExportItem(value,item._id)}/>: <TableCell type='text' content=''/>}
                     <TableCell type='buttons' content={item} permission={permission} onEdit={this.edit}>
                     </TableCell>
                 </tr>),

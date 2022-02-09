@@ -8,13 +8,18 @@ import { AdminPage, AdminModal, FormFileBox, FormCheckbox, FormDatePicker, FormT
 
 class EditModal extends AdminModal {
     state = {};
+    componentDidMount() {
+        $(document).ready(() => this.onShown(() => this.itemLastname.focus()));
+    }
     onShow = (item) => {
         let { id, firstname, lastname, email, phoneNumber, sex, birthday, nationality, residence, regularResidence, identityCard, identityIssuedBy, identityDate,
-            giayPhepLaiXe2BanhSo, giayPhepLaiXe2BanhNgay, giayPhepLaiXe2BanhNoiCap, giayKhamSucKhoe, giayKhamSucKhoeNgayKham, hinhThe3x4, hinhChupTrucTiep, lecturerIdentityCard, lecturerName, hocPhiPhaiDong } = item || {
+            giayPhepLaiXe2BanhSo, giayPhepLaiXe2BanhNgay, giayPhepLaiXe2BanhNoiCap, giayKhamSucKhoe, giayKhamSucKhoeNgayKham, hinhThe3x4, hinhChupTrucTiep, lecturerIdentityCard, lecturerName,
+            isDon,isIdentityCard,isGiayKhamSucKhoe,isBangLaiA1 } = item || {
                 firstname: '', lastname: '', email: '', phoneNumber: '', sex: '', birthday: '', nationality: '', residence: '', regularResidence: '', identityCard: '', identityIssuedBy: '', identityDate: '',
-                giayPhepLaiXe2BanhSo: '', giayPhepLaiXe2BanhNgay: '', giayPhepLaiXe2BanhNoiCap: '', giayKhamSucKhoe: '', giayKhamSucKhoeNgayKham: '', hinhThe3x4: '', hinhChupTrucTiep: '', lecturerIdentityCard: '', lecturerName: '', hocPhiPhaiDong: ''
+                giayPhepLaiXe2BanhSo: '', giayPhepLaiXe2BanhNgay: '', giayPhepLaiXe2BanhNoiCap: '', giayKhamSucKhoe: '', giayKhamSucKhoeNgayKham: '', hinhThe3x4: '', hinhChupTrucTiep: '', lecturerIdentityCard: '', lecturerName: '', hocPhiPhaiDong: '',
+                isDon:false,isHinh:false,isIdentityCard:false,isGiayKhamSucKhoe:false,isBangLaiA1:false
             };
-        this.setState({ id: id, className: giayKhamSucKhoe ? 'col-md-4' : 'invisible' });
+        this.setState({ id: id, className: giayKhamSucKhoe ? 'col-md-4' : 'invisible',isGiayKhamSucKhoe,isBangLaiA1 });
         this.itemFirstname.value(firstname);
         this.itemLastname.value(lastname);
         this.itemEmail.value(email);
@@ -36,11 +41,18 @@ class EditModal extends AdminModal {
         this.itemHinhChupTrucTiep.value(hinhChupTrucTiep);
         this.itemLecturerIdentityCard.value(lecturerIdentityCard);
         this.itemLecturerName.value(lecturerName);
-        this.itemHocPhiPhaiDong.value(hocPhiPhaiDong);
+        // this.itemHocPhiPhaiDong.value(hocPhiPhaiDong);
+
+        this.itemIsDon.value(isDon);
+        // this.itemIsHinh.value(isHinh);
+        this.itemIsIdentityCard.value(isIdentityCard);
+        // this.itemIsGiayKhamSucKhoe.value(isGiayKhamSucKhoe);
+        this.itemIsBangLaiA1.value(isBangLaiA1);
     }
 
     isChecked = (checked) => {
-        this.setState({ className: checked ? 'col-md-4' : 'invisible' });
+        console.log('checked: ',checked);
+        this.setState({ className: checked ? 'col-md-4' : 'invisible',isGiayKhamSucKhoe:checked });
     }
 
     onSubmit = () => {
@@ -66,7 +78,12 @@ class EditModal extends AdminModal {
             hinhThe3x4: this.itemHinhThe3x4.value(),
             hinhChupTrucTiep: this.itemHinhChupTrucTiep.value(),
             lecturerIdentityCard: this.itemLecturerIdentityCard.value(),
-            hocPhiPhaiDong: this.itemHocPhiPhaiDong.value()
+            // hocPhiPhaiDong: this.itemHocPhiPhaiDong.value(),
+            isDon:this.itemIsDon.value(),
+            isHinh:this.itemHinhThe3x4.value(),
+            isIdentityCard:this.itemIsIdentityCard.value(),
+            isGiayKhamSucKhoe:this.itemGiayKhamSucKhoe.value(),
+            isBangLaiA1:this.itemIsBangLaiA1.value()
         };
         if (data.lastname == '') {
             T.notify('Họ không được trống!', 'danger');
@@ -83,10 +100,12 @@ class EditModal extends AdminModal {
         } else if (data.giayKhamSucKhoeNgayKham == 'Invalid Date') {
             T.notify('Ngày khám sức khỏe không chính xác!', 'danger');
             this.itemGiayKhamSucKhoeNgayKham.focus();
-        } else if (data.hocPhiPhaiDong == '') {
-            T.notify('Học phí phải đóng không được trống!', 'danger');
-            this.itemHocPhiPhaiDong.focus();
-        } else {
+        } 
+        // else if (data.hocPhiPhaiDong == '') {
+        //     T.notify('Học phí phải đóng không được trống!', 'danger');
+        //     this.itemHocPhiPhaiDong.focus();
+        // } 
+        else {
             this.props.edit(this.state.id, data);
             T.notify('Cập nhật thông tin ứng viên thành công!', 'success');
             this.hide();
@@ -98,7 +117,7 @@ class EditModal extends AdminModal {
         size: 'large',
         body: (
             <div className='row'>
-                <FormTextBox ref={e => this.itemLastname = e} className='col-md-8' label='Họ ứng viên' readOnly={this.props.readOnly} required />
+                {/* <FormTextBox ref={e => this.itemLastname = e} className='col-md-8' label='Họ ứng viên' readOnly={this.props.readOnly} required />
                 <FormTextBox ref={e => this.itemFirstname = e} className='col-md-4' label='Tên ứng viên' readOnly={this.props.readOnly} required />
                 <FormTextBox ref={e => this.itemEmail = e} className='col-md-6' label='Email' readOnly={this.props.readOnly} required />
                 <FormTextBox ref={e => this.itemPhoneNumber = e} className='col-md-6' label='Số điện thoại' readOnly={this.props.readOnly} />
@@ -119,7 +138,36 @@ class EditModal extends AdminModal {
                 <FormCheckbox ref={e => this.itemHinhThe3x4 = e} className='col-md-6' label='Hình thẻ 3x4' readOnly={this.props.readOnly} />
                 <FormCheckbox ref={e => this.itemHinhChupTrucTiep = e} className='col-md-6' label='Hình chụp trực tiếp' readOnly={this.props.readOnly} />
                 <FormTextBox ref={e => this.itemLecturerIdentityCard = e} className='col-md-6' label='Số CMND,CCCD của giáo viên dự kiến' readOnly={this.props.readOnly} required />
-                <FormTextBox ref={e => this.itemLecturerName = e} className='col-md-6' label='Tên giáo viên dự kiến' readOnly={this.props.readOnly} required />
+                <FormTextBox ref={e => this.itemLecturerName = e} className='col-md-6' label='Tên giáo viên dự kiến' readOnly={this.props.readOnly} required /> */}
+
+                <FormTextBox ref={e => this.itemLastname = e} className='col-md-8' label='Họ ứng viên' readOnly={this.props.readOnly} required />
+                <FormTextBox ref={e => this.itemFirstname = e} className='col-md-4' label='Tên ứng viên' readOnly={this.props.readOnly} required />
+                <FormTextBox ref={e => this.itemEmail = e} className='col-md-6' label='Email' readOnly={this.props.readOnly} required />
+                <FormTextBox ref={e => this.itemPhoneNumber = e} className='col-md-6' label='Số điện thoại' readOnly={this.props.readOnly} />
+                <FormSelect ref={e => this.itemSex = e} className='col-md-3' label='Giới tính' data={[{ id: 'female', text: 'Nữ' }, { id: 'male', text: 'Nam' }]} readOnly={this.props.readOnly} />
+                <FormDatePicker ref={e => this.itemBirthday = e} className='col-md-3' label='Năm sinh' readOnly={this.props.readOnly} required />
+                <FormTextBox ref={e => this.itemNationality = e} className='col-md-6' label='Quốc tịch' readOnly={this.props.readOnly} />
+                <FormTextBox ref={e => this.itemResidence = e} className='col-md-6' label='Nơi cư trú' readOnly={this.props.readOnly} />
+                <FormTextBox ref={e => this.itemRegularResidence = e} className='col-md-6' label='Nơi đăng ký hộ khẩu thường trú' readOnly={this.props.readOnly} />
+                <FormTextBox ref={e => this.itemIdentityCard = e} className='col-md-4' label='Số CMND,CCCD' readOnly={this.props.readOnly} required />
+                <FormDatePicker ref={e => this.itemIdentityDate = e} className='col-md-4' label='Ngày cấp' readOnly={this.props.readOnly} />
+                <FormTextBox ref={e => this.itemIdentityIssuedBy = e} className='col-md-4' label='Nơi cấp' readOnly={this.props.readOnly} />
+                <FormTextBox ref={e => this.itemLincenseNumber = e} className='col-md-4' label='Số giấy phép lái xe 2 bánh' readOnly={this.props.readOnly} />
+                <FormDatePicker ref={e => this.itemLincenseDate = e} className='col-md-4' label='Ngày trúng tuyển' readOnly={this.props.readOnly} />
+                <FormTextBox ref={e => this.itemLincenseIssuedBy = e} className='col-md-4' label='Nơi cấp' readOnly={this.props.readOnly} />
+                <FormCheckbox className='col-md-4' ref={e => this.itemIsDon = e} label='Đơn' readOnly={this.props.readOnly} />
+                <FormCheckbox ref={e => this.itemHinhThe3x4 = e} className='col-md-4' label='Hình thẻ 3x4' readOnly={this.props.readOnly} />
+                <FormCheckbox ref={e => this.itemHinhChupTrucTiep = e} className='col-md-4' label='Hình chụp trực tiếp' readOnly={this.props.readOnly} />
+                <FormCheckbox className='col-md-4' ref={e => this.itemIsIdentityCard = e} label='Bản sao CMND/CCCD' readOnly={this.props.readOnly} />
+                <FormCheckbox className='col-md-4' ref={e => this.itemIsBangLaiA1 = e} label='Photo bằng lái A1' readOnly={this.props.readOnly} />
+                <FormCheckbox ref={e => this.itemGiayKhamSucKhoe = e} className='col-md-4' label='Đã có giấy khám sức khỏe' readOnly={this.props.readOnly} onChange={this.isChecked} />
+                <FormTextBox ref={e => this.itemLecturerIdentityCard = e} className='col-md-4' label='CMND,CCCD giáo viên dự kiến' readOnly={this.props.readOnly} required />
+                <FormTextBox ref={e => this.itemLecturerName = e} className='col-md-4' label='Tên giáo viên dự kiến' readOnly={this.props.readOnly} required />
+                <div className="col-md-4" style={{display:this.state.isGiayKhamSucKhoe?'block':'none'}}>
+                <FormDatePicker ref={e => this.itemGiayKhamSucKhoeNgayKham = e} label='Ngày khám sức khỏe' readOnly={this.props.readOnly} />
+                </div>
+                {/* <FormCheckbox className='col-md-3' ref={e => this.itemIsGiayKhamSucKhoe = e} label='GKSK' readOnly={this.props.readOnly} /> */}
+
             </div>),
     });
 }
