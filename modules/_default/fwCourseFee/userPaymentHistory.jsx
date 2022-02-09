@@ -69,9 +69,10 @@ class UserPaymentHistory extends AdminPage {
         }
         if(student && student.cart && student.cart.lock && student.cart.item.length){
             student.cart.name = 'Thanh toán học phí tăng thêm lần ' + (student.lichSuMuaThemGoi ? student.lichSuMuaThemGoi.length + 1 : 1);
-            student.cart.fee = student.cart.item.reduce((a,b) => parseInt(a.fees) + parseInt(b.fees));
+            student.cart.fee = student.cart.item.length == 1 ? student.cart.item[0].fees : student.cart.item.reduce((a,b) => parseInt(a.fees) + parseInt(b.fees));
             list.push(student.cart);
         }
+        console.log(list);
         const table = renderTable({
             getDataSource: () => list,
             renderHead: () => (
