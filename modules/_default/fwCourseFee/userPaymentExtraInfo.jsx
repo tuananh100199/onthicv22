@@ -162,7 +162,7 @@ class CartModal extends AdminModal {
 }
 
 class CancelPaymentModal extends AdminModal {
-    state = { };
+    state = { showSubmitBtn: false};
     componentDidMount() {
         T.ready(() => this.onShown(() => {}));
     }
@@ -175,6 +175,10 @@ class CancelPaymentModal extends AdminModal {
         }
     }
 
+    checked = () =>{
+        this.setState({showSubmitBtn: true});
+    }
+
     render = () => this.renderModal({
         title: 'Huỷ thanh toán gói tăng thêm',
         dataBackdrop: 'static',
@@ -183,19 +187,19 @@ class CancelPaymentModal extends AdminModal {
                 <div className='tile-body'>
                     <div><b>Chọn lý do huỷ gói học phí:</b></div>
                     <div className='form-check'>
-                        <input className='form-check-input' type='radio' name='lyDo' id='doiGoi'/>
+                        <input className='form-check-input' type='radio' name='lyDo' id='doiGoi' onChange={this.checked}/>
                         <label className='form-check-label' htmlFor='doiGoi'>
                             Đổi gói
                         </label>
                     </div>
                     <div className='form-check'>
-                        <input className='form-check-input' type='radio' name='lyDo' id='chonNhamGoi'/>
+                        <input className='form-check-input' type='radio' name='lyDo' id='chonNhamGoi' onChange={this.checked}/>
                         <label className='form-check-label' htmlFor='chonNhamGoi'>
                             Chọn nhầm gói
                         </label>
                     </div>
                     <div className='form-check'>
-                        <input className='form-check-input' type='radio' name='lyDo' id='khac'/>
+                        <input className='form-check-input' type='radio' name='lyDo' id='khac' onChange={this.checked}/>
                         <label className='form-check-label' htmlFor='khac'>
                             Khác:
                             <FormTextBox ref={e => this.itemLyDo = e} onChange={e => this.checkOther(e.target.value)} type='text' readOnly={false} />
@@ -204,7 +208,7 @@ class CancelPaymentModal extends AdminModal {
                 </div>
             </div>),
         buttons:
-        this.state.lyDo ? <button className='btn btn-danger' style={{ textAlign: 'right' }}
+        this.state.showSubmitBtn ? <button className='btn btn-danger' style={{ textAlign: 'right' }}
             onClick={() => {
                 this.props.updateStudent(this.props.studentId, { cart: { item: this.props.cart, transactionId: this.props.transactionId, lock: false } }, () => {
                     window.location.reload();
