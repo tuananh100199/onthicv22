@@ -1,18 +1,24 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { getDebtStudentPage, updateStudent } from './redux';
-import { createNotification } from 'modules/_default/fwNotification/redux';
-import { getNotificationTemplateAll, getNotificationTemplate } from 'modules/mdTruyenThong/fwNotificationTemplate/redux';
-import { getCourseTypeAll } from 'modules/mdDaoTao/fwCourseType/redux';
 import { AdminPage, renderTable, TableCell } from 'view/component/AdminPage';
 import Pagination from 'view/component/Pagination';
-import T from 'view/js/common';
-
 class DebtTrackingPage extends AdminPage {
-    state = { searchText: '' };
+    state = { isSearching: false, searchText: '' };
     componentDidMount() {
-        T.ready();
+        T.ready(() => {
+            T.showSearchBox(() => this.setState({ dateStart: '', dateEnd: '' }));
+            T.onSearch = (searchText) => this.onSearch({ searchText });
+        });
         this.props.getDebtStudentPage();
+    }
+
+    onSearch = ({ pageNumber, pageSize, searchText }, done) => {
+        if (searchText == undefined) searchText = this.state.searchText;
+        this.setState({ isSearching: true }, () => this.props.getDebtStudentPage(pageNumber, pageSize, { searchText }, (page) => {
+            this.setState({ searchText, isSearching: false });
+            done && done(page);
+        }));
     }
 
     renderLichSuDongTien = (lichSuDongTien, type) => {
@@ -82,7 +88,7 @@ class DebtTrackingPage extends AdminPage {
                         <a className='btn btn-warning' href='#' onClick={(e) => this.sendNotification(e, item)}>
                             <i className='fa fa-lg fa-print' />
                         </a>
-                        <a className='btn btn-success' href='#' onClick={(e) => this.sendNotification(e, item)}>
+                        <a className='btn btn-success' href={'/user/student/payment/' + item._id}>
                             <i className='fa fa-lg fa-money' />
                         </a>
                     </TableCell>
@@ -105,5 +111,5 @@ class DebtTrackingPage extends AdminPage {
 }
 
 const mapStateToProps = state => ({ system: state.system, student: state.trainning.student });
-const mapActionsToProps = { getDebtStudentPage, updateStudent, createNotification, getCourseTypeAll, getNotificationTemplateAll, getNotificationTemplate };
+const mapActionsToProps = { getDebtStudentPage, updateStudent };
 export default connect(mapStateToProps, mapActionsToProps)(DebtTrackingPage);
