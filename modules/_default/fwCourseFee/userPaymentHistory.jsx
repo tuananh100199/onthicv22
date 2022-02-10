@@ -52,7 +52,6 @@ class UserPaymentHistory extends AdminPage {
     render() {
         const userPageLink = '/user/hoc-vien/khoa-hoc/' + this.state.courseId + '/cong-no';
         const {student, courseId} = this.state;
-        console.log(student);
         let list = [];
         if(student && student.lichSuDongTien && student.lichSuDongTien.length){
             for(let i = 1; i <= student.lichSuDongTien.length; i++){
@@ -63,16 +62,15 @@ class UserPaymentHistory extends AdminPage {
         if(student && student.lichSuMuaThemGoi && student.lichSuMuaThemGoi.length){
             for(let i = 1; i <= student.lichSuMuaThemGoi.length; i++){
                 student.lichSuMuaThemGoi[i-1].name = 'Thanh toán học phí tăng thêm lần ' + i;
-                student.lichSuMuaThemGoi[i-1].fee = student.lichSuMuaThemGoi[i-1].item.reduce((a,b) => parseInt(a.fees) + parseInt(b.fees));
+                student.lichSuMuaThemGoi[i-1].fee = student.lichSuMuaThemGoi[i-1].item.reduce((result,item) =>result+parseInt(item.fees) ,0);
                 list.push(student.lichSuMuaThemGoi[i-1]);
             }
         }
         if(student && student.cart && student.cart.lock && student.cart.item.length){
             student.cart.name = 'Thanh toán học phí tăng thêm lần ' + (student.lichSuMuaThemGoi ? student.lichSuMuaThemGoi.length + 1 : 1);
-            student.cart.fee = student.cart.item.length == 1 ? student.cart.item[0].fees : student.cart.item.reduce((a,b) => parseInt(a.fees) + parseInt(b.fees));
+            student.cart.fee =  student.cart.item.reduce((result,item) => result + parseInt(item.fees) , 0);
             list.push(student.cart);
         }
-        console.log(list);
         const table = renderTable({
             getDataSource: () => list,
             renderHead: () => (

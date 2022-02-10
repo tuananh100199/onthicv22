@@ -369,6 +369,10 @@ module.exports = (app) => {
             model.findOneAndUpdate(_id, { $push: { lichSuDongTien: data } }, { new: true }).exec(done);
         },
 
+        addPaymentExtra: (_id, data, done) => {
+            model.findOneAndUpdate(_id, { $push: { lichSuMuaThemGoi: data } }, { new: true }).exec(done);
+        },
+
         addFeedback: (data, done) => {
             app.model.student.get(data.studentId, (error, student) => {
                 if (error) {

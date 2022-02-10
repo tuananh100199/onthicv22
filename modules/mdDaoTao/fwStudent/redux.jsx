@@ -120,6 +120,23 @@ export function addStudentPayment(_studentId, payment,courseFee, fee, done) {
     };
 }
 
+export function addStudentPaymentExtra(_studentId, done) {
+    return dispatch => {
+        const url = '/api/student/payment-extra';
+        T.post(url, { _studentId }, data => {
+            if (data.error) {
+                T.notify('Thêm thanh toán bị lỗi!', 'danger');
+                console.error('POST: ' + url + '.', data.error);
+            } else if (data.check) {
+                T.notify(data.check, 'danger');
+            } else {
+                dispatch({ type: StudentGetItem, item:  data.item});
+                done && done(data.item);
+            }
+        }, error => console.error('POST: ' + url + '.', error));
+    };
+}
+
 export function deleteStudent(_id) {
     return dispatch => {
         const url = '/api/student';

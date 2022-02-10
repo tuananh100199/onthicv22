@@ -124,6 +124,27 @@ module.exports = (app) => {
         });
     });
 
+    app.post('/api/student/payment-extra', app.permission.check('courseFee:write'), (req, res) => {
+        const studentId = req.body._studentId;
+        app.model.student.get({ _id: studentId }, (error, student) => {
+            if (error) {
+                res.send({ error });
+            } else if (!student) {
+                res.send({ check: 'Không tìm thấy học viên!' });
+            } else {
+                const cartItem = student.cart ? student.cart.item : [],
+                transactionId = student.cart ? student.cart.transactionId : '';
+                const data = {item:  cartItem, transactionId};
+                app.model.student.addPaymentExtra({ _id: student._id }, data, (error) => {
+                    if(error) res.send({error});
+                    else{
+                        app.model.student.update({_id: student._id}, {cart: {}}, (error, student) => res.send({ error, item: student}));
+                    }
+                });
+            }
+        });
+    });
+
     app.delete('/api/student', app.permission.check('student:delete'), (req, res) => {
         app.model.student.delete(req.body._id, (error) => res.send({ error }));
     });
