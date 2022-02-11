@@ -5,6 +5,7 @@ import FileBox from 'view/component/FileBox';
 import Editor from 'view/component/CkEditor4';
 import Datetime from 'react-datetime';
 import InputMask from 'react-input-mask';
+import NumberFormat from 'react-number-format';
 import 'react-datetime/css/react-datetime.css';
 
 // Table components ---------------------------------------------------------------------------------------------------
@@ -193,13 +194,89 @@ export class FormCheckbox extends React.Component {
     }
 }
 
+class FormNumberBox extends React.Component {
+    exactValue = null;
+    state = { value: '' };
+
+    value = function (text) {
+        if (arguments.length) {
+            this.exactValue = null;
+            this.setState({ value: text }, () => {
+                if (this.exactValue == null) this.exactValue = this.state.value;
+            });
+        } else {
+            return this.exactValue;
+        }
+    }
+
+    focus = () => this.input.focus();
+
+    checkMinMax = (val) => {
+        const { min = '', max = '' } = this.props;
+        if (!isNaN(parseFloat(min)) || !isNaN(parseFloat(max))) { // Có properties min hoặc max
+            if (!isNaN(parseFloat(min)) && val < parseFloat(min)) { // Có properties min và val < min
+                return min.toString();
+            }
+            if (!isNaN(parseFloat(max)) && val > parseFloat(max)) { // Có properties max và val > max
+                return max.toString();
+            }
+            return false;
+        } else {
+            return false;
+        }
+    }
+
+    render() {
+        let { smallText = '', label = '', placeholder = '', className = '', style = {}, readOnly = false, onChange = null, required = false, step = false } = this.props,
+            readOnlyText = this.exactValue ? this.exactValue : this.state.value;
+        const properties = {
+            className: 'form-control',
+            placeholder: label || placeholder,
+            value: this.exactValue ? this.exactValue : this.state.value,
+            thousandSeparator: ',',
+            decimalSeparator: step ? '.' : false,
+            onValueChange: val => {
+                const newValue = this.checkMinMax(val.floatValue);
+                if (newValue != false) {
+                    this.setState({ value: newValue });
+                } else {
+                    this.exactValue = val.floatValue;
+                    onChange && onChange(val.floatValue);
+                }
+            },
+            getInputRef: e => this.input = e
+        };
+        readOnlyText = readOnlyText ? T.numberDisplay(readOnlyText, ',') : '';
+        let displayElement = '';
+        if (label) {
+            displayElement = <><label onClick={() => this.input.focus()}>{label}{!readOnly && required ? <span style={{ color: 'red' }}> *</span> : ''}</label>{readOnly ? <>: <b>{readOnlyText}</b></> : ''}</>;
+        } else {
+            displayElement = readOnly ? <b>{readOnlyText}</b> : '';
+        }
+
+        return (
+            <div className={'form-group ' + (className || '')} style={style}>
+                {displayElement}
+                <NumberFormat style={{ display: readOnly ? 'none' : 'block' }} {...properties} />
+                {smallText ? <small>{smallText}</small> : null}
+            </div>);
+    }
+}
+
 export class FormTextBox extends React.Component {
     state = { value: '' };
 
     value = function (text) {
         if (arguments.length) {
-            this.setState({ value: text });
+            if (this.props.type == 'number') {
+                this.input.value(text);
+            } else {
+                this.setState({ value: text });
+            }
         } else {
+            if (this.props.type == 'number') {
+                return this.input.value();
+            }
             return this.state.value;
         }
     }
@@ -220,39 +297,37 @@ export class FormTextBox extends React.Component {
     focus = () => this.input.focus();
 
     render() {
-        let { type = 'text', smallText = '', label = '', className = '', readOnly = false, onChange = null, required = false, min = '', max = '', style, listParams = [] } = this.props,
+        let { type = 'text', smallText = '', label = '', className = '', readOnly = false, onChange = null, required = false, style, listParams = [] } = this.props,
             readOnlyText = this.state.value;
         type = type.toLowerCase(); // type = text | number | email | password | phone
-        const properties = {
-            type,
-            className: 'form-control',
-            placeholder: label,
-            value: this.state.value,
-            onChange: e => this.setState({ value: e.target.value }, () => onChange && onChange(e)),
-        };
-        if (type == 'password') properties.autoComplete = 'new-password';
-        if (type == 'phone') {
-            if (readOnlyText) readOnlyText = T.mobileDisplay(readOnlyText);
-            properties.onKeyPress = e => ((!/[0-9]/.test(e.key)) && e.preventDefault());
-        }
         if (type == 'number') {
-            properties.min = min;
-            properties.max = max;
-            readOnlyText = readOnlyText ? T.numberDisplay(readOnlyText) : '';
-            properties.onKeyPress = e => ((!/[0-9]/.test(e.key)) && e.preventDefault());
+            return <FormNumberBox ref={e => this.input = e} {...this.props} />;
+        } else {
+            const properties = {
+                type,
+                className: 'form-control',
+                placeholder: label,
+                value: this.state.value,
+                onChange: e => this.setState({ value: e.target.value }, () => onChange && onChange(e)),
+            };
+            if (type == 'password') properties.autoComplete = 'new-password';
+            if (type == 'phone') {
+                if (readOnlyText) readOnlyText = T.mobileDisplay(readOnlyText);
+                properties.onKeyPress = e => ((!/[0-9]/.test(e.key)) && e.preventDefault());
+            }
+            return (
+                <div className={'form-group ' + (className || '')}>
+                    <label onClick={() => this.input.focus()}>{label}{!readOnly && required ? <span style={{ color: 'red' }}> *</span> : ''}</label>{readOnly ? <>: <b>{readOnlyText}</b></> : ''}
+                    {!readOnly && <div className='d-flex'>
+                        {smallText ? <p className='form-text  mb-1 '><small className='text-muted'>{smallText}</small></p> : null}
+                        {listParams.length ?
+                            <p className='form-text  mb-1 '>
+                                {listParams.map((param, index) => (<small className='ml-1 text-primary' style={{ cursor: 'pointer' }} key={index} onClick={(e) => this.insert(e)}>{param}</small>))}
+                            </p> : null}
+                    </div>}
+                    <input ref={e => this.input = e} style={{ ...style, display: readOnly ? 'none' : 'block' }}{...properties} />
+                </div>);
         }
-        return (
-            <div className={'form-group ' + (className || '')}>
-                <label onClick={() => this.input.focus()}>{label}{!readOnly && required ? <span style={{ color: 'red' }}> *</span> : ''}</label>{readOnly ? <>: <b>{readOnlyText}</b></> : ''}
-                {!readOnly && <div className='d-flex'>
-                    {smallText ? <p className='form-text  mb-1 '><small className='text-muted'>{smallText}</small></p> : null}
-                    {listParams.length ?
-                        <p className='form-text  mb-1 '>
-                            {listParams.map((param, index) => (<small className='ml-1 text-primary' style={{ cursor: 'pointer' }} key={index} onClick={(e) => this.insert(e)}>{param}</small>))}
-                        </p> : null}
-                </div>}
-                <input ref={e => this.input = e} style={{ ...style, display: readOnly ? 'none' : 'block' }}{...properties} />
-            </div>);
     }
 }
 
