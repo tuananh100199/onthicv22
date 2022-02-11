@@ -37,7 +37,6 @@ class UserProfilePage extends AdminPage {
                         <PageIconHeader text='Khóa học của bạn' />
                         {students.map((student, index) => {
                             const { _id, name, active, isDefault } = student.course || {};
-                            console.log(active);
                             const text = () => <>
                                 <h4>Khóa học hạng {student.courseType && student.courseType.title ? student.courseType.title : ''}</h4>
                                 <p style={{ fontWeight: 'bold' }}>{(active || isDefault) ? 'Lớp: ' + name : 'Đang chờ khóa'}</p>
