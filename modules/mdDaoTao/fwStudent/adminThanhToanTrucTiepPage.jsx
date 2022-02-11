@@ -479,7 +479,7 @@ class ThanhToanTrucTiepPage extends AdminPage {
                     {table}
                     <p>Số tiền cần thanh toán: <b>{T.numberDisplay(soTienThanhToan)} đồng</b></p>
                     {hocPhiConLai > 0 ? <div className='d-flex justify-content-between'>
-                        <FormTextBox style={{width: '300px'}}  ref={e => this.itemFee = e} onChange={e => this.setState({ soTienDong: e.target.value })} type='number' min={1} label='Số tiền học viên đóng'/>
+                        <FormTextBox style={{width: '300px'}}  ref={e => this.itemFee = e} onChange={() => this.setState({ soTienDong: this.itemFee.value() })} type='number' min={1} label='Số tiền học viên đóng'/>
                         {this.state.soTienDong ? <div><button onClick={() => this.modal.show()} className='btn btn-success'>Thanh toán</button></div> : null}
                     </div> : null}
                     
