@@ -34,7 +34,7 @@ class LecturerStudentPage extends AdminPage {
         const monLyThuyet = subjects ? subjects.filter(subject => subject.monThucHanh == false) : [];
         const subjectColumns = [];
         (monLyThuyet || []).forEach((subject, index) => {
-            subjectColumns.push(<th key={index} style={{ width: 'auto', whiteSpace: 'pre', textAlign: 'center' }}  >{subject.title}</th>);
+            subjectColumns.push(<th key={index} style={{ width: 'auto', textAlign: 'center' }}  >{subject.title}</th>);
         });
         const list = student ? [student] : [];
         const table = renderTable({
@@ -46,9 +46,9 @@ class LecturerStudentPage extends AdminPage {
                     <th style={{ width: 'auto' }} nowrap='true'>CMND/CCCD</th>
                     <th style={{ width: 'auto' }} nowrap='true'>Số điện thoại</th>
                     {subjectColumns}
-                    <th style={{ width: 'auto' }} nowrap='true'>Thực hành</th>
-                    <th style={{ width: 'auto' }} nowrap='true'>Thi tốt nghiệp</th>
-                    <th style={{ width: 'auto' }} nowrap='true'>Thi sát hạch</th>
+                    <th style={{ width: 'auto' }} >Thực hành</th>
+                    <th style={{ width: 'auto' }} >Thi tốt nghiệp</th>
+                    <th style={{ width: 'auto' }} >Thi sát hạch</th>
                 </tr>),
             renderRow: (item, index) => (
                 <tr key={index}>

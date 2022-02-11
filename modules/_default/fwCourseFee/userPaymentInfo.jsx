@@ -115,8 +115,17 @@ class UserPaymentInfo extends AdminPage {
             numOfPayments = soLanDong ? soLanDong.numOfPayments : 1;
         const hocPhiDaDong = lichSuDongTien && lichSuDongTien.length ? lichSuDongTien.map(item => item.fee).reduce((prev, next) => prev + next) : 0;
         const hocPhiConLai = hocPhiPhaiDong && hocPhiPhaiDong.fee && hocPhiPhaiDong.fee - (hocPhiDaDong ? hocPhiDaDong : 0) - ((hocPhiMienGiam && hocPhiMienGiam.fee) ? hocPhiMienGiam.fee : 0);
-        if(lichSuDongTien){
+        if(lichSuDongTien && lichSuDongTien.length > numOfPayments){
             for (let i = 1; i <= lichSuDongTien.length; i++) {
+                if (lichSuDongTien && lichSuDongTien[i - 1]) {
+                    list.push({ name: 'Thanh toán học phí lần ' + i, fee: lichSuDongTien[i - 1].fee, ngayThanhToan: lichSuDongTien[i - 1].date });
+                } else {
+                    list.push({ name: 'Thanh toán học phí lần ' + i, fee: (hocPhiConLai ? hocPhiConLai : 0) / (numOfPayments - (lichSuDongTien ? lichSuDongTien.length : 0)) });
+                }
+    
+            }
+        } else {
+            for (let i = 1; i <= numOfPayments; i++) {
                 if (lichSuDongTien && lichSuDongTien[i - 1]) {
                     list.push({ name: 'Thanh toán học phí lần ' + i, fee: lichSuDongTien[i - 1].fee, ngayThanhToan: lichSuDongTien[i - 1].date });
                 } else {

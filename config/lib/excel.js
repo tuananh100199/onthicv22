@@ -35,7 +35,6 @@ module.exports = app => {
                         cell.numFmt = '#,##0';
                     } else {
                         cell.value = '0';
-                        console.log('Write number 0');
                         cell.alignment = { vertical: 'middle', horizontal: 'right' };
                     }
                 } else if (item.value) {
