@@ -1,6 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { getStudent, addStudentPayment, addStudentPaymentExtra, updateStudent } from './redux';
+import { createNotification } from 'modules/_default/fwNotification/redux';
 import { getCourseFeeByStudent } from 'modules/_default/fwCourseFee/redux';
 import { Link } from 'react-router-dom';
 import { AdminPage, FormSelect, FormTextBox, renderTable, TableCell, FormCheckbox, AdminModal } from 'view/component/AdminPage';
@@ -12,10 +13,13 @@ class PaymentInfoModal extends AdminModal {
     }
 
     onShow = () => {
-        const { name, courseFeeName, fee } = this.props || { name: '', courseFeeName: ''};
+        const { name, courseFeeName, fee, student } = this.props || { name: '', courseFeeName: ''};
+        const userId = student && student.user ? student.user._id : '';
+        console.log(courseFeeName);
         this.itemName.value(name);
         this.itemCourseFeeName.value(courseFeeName);
         this.itemFee.value(fee ? T.numberDisplay(fee) + ' đồng' : 0);
+        this.setState({ userId });
     }
 
     render = () => this.renderModal({
@@ -34,8 +38,19 @@ class PaymentInfoModal extends AdminModal {
                 e.preventDefault();
                 let { studentId } = this.props;
                 this.props.addStudentPayment(studentId, {fee: this.props.fee, user: this.props.userId}, this.props.hocPhi, this.props.hocPhiConLai, () => {
-                    this.hide();
-                    window.location.reload();
+                    const data = {
+                        title: 'Thông báo thanh toán gói học phí thành công!',
+                        abstract: 'Bạn đã thanh toán thành công gói học phí khoá ' + this.props.courseFeeName,
+                        content: '<p>Bạn đã thanh toán thành công gói ' + this.props.courseFeeName +'<p>\n <p>Số tiền thanh toán: ' + T.numberDisplay(this.props.fee) + ' đồng<p> \n <p>Số tiền còn lại phải đóng: ' + T.numberDisplay(parseInt(this.props.hocPhiConLai ? this.props.hocPhiConLai : 0) - parseInt(this.props.fee ? this.props.fee : 0)) + ' đồng<p>',
+                        type: '0',
+                        user: this.state.userId,
+                        sentDate: new Date(),
+                    };
+                    this.props.create(data, () => {
+                        T.notify('Gửi thông báo thành công!', 'success');
+                        this.hide();
+                        window.location.reload();
+                    });
                 });
             }} style={{ color: 'white' }}>
                 <i className='fa fa-lg fa-paper-plane' /> Xác nhận đã thanh toán
@@ -51,9 +66,17 @@ class PaymentExtraInfoModal extends AdminModal {
 
     onShow = (item) => {
         const { name, fee } = item || { name: ''};
+        const userId = this.props.student && this.props.student.user ? this.props.student.user._id : '';
+        const cart = this.props.cart ? this.props.cart : [];
+        let description = '';
+        cart.forEach(item => {
+            description = description + '<p>&nbsp;&nbsp;&nbsp;- ' + item.quantity + ' ' + item.name + '<p>\n';
+        });
+        console.log(description);
         this.itemName.value(name);
         this.itemCourseFeeName.value('Thanh toán gói học phí tăng thêm');
         this.itemFee.value(fee ? T.numberDisplay(fee) + ' đồng' : 0);
+        this.setState({ userId, description }); 
     }
 
     render = () => this.renderModal({
@@ -71,8 +94,19 @@ class PaymentExtraInfoModal extends AdminModal {
             <a className='btn btn-warning' href='#' onClick={e => {
                 e.preventDefault();
                 this.props.addStudentPaymentExtra(this.props.studentId, () => {
-                    this.hide();
-                    window.location.reload();
+                    const data = {
+                        title: 'Thông báo thanh toán gói tăng thêm thành công!',
+                        abstract: 'Bạn đã thanh toán gói tăng thêm thành công',
+                        content: '<p>Nội dung gói:</p>\n' + this.state.description,
+                        type: '0',
+                        user: this.state.userId,
+                        sentDate: new Date(),
+                    };
+                    this.props.create(data, () => {
+                        T.notify('Gửi thông báo thành công!', 'success');
+                        this.hide();
+                        window.location.reload();
+                    });
                 });
             }} style={{ color: 'white' }}>
                 <i className='fa fa-lg fa-paper-plane' /> Xác nhận đã thanh toán
@@ -499,10 +533,10 @@ class ThanhToanTrucTiepPage extends AdminPage {
                 </div>
                 {showOfficial ? official : null}
                 {showExtra ? extra : null}
-                <PaymentInfoModal fee={this.state.soTienDong} hocPhi={hocPhi} hocPhiConLai={hocPhiConLai} name={name} userId={userId} courseFeeName={student && student.courseFee ? student.courseFee.name : ''} accounts={this.state.accounts} readOnly={true} addStudentPayment={this.props.addStudentPayment} studentId={studentId} ref={e => this.modal = e} />
+                <PaymentInfoModal fee={this.state.soTienDong} student={this.state.data} hocPhi={hocPhi} create={this.props.createNotification} hocPhiConLai={hocPhiConLai} name={name} userId={userId} courseFeeName={student && student.courseFee ? student.courseFee.name : ''} accounts={this.state.accounts} readOnly={true} addStudentPayment={this.props.addStudentPayment} studentId={studentId} ref={e => this.modal = e} />
                 <CartModal fee={soTienThanhToan} showPayment={this.paymentExtraModal && this.paymentExtraModal.show} updateState={this.updateState} count={count} student={this.state.data}  lock={lock} readOnly={true} updateStudent={this.props.updateStudent} cart={cart} transactionId={transactionId} studentId={studentId} ref={e => this.cartModal = e} />
                 <CancelPaymentModal  readOnly={true}  updateStudent={this.props.updateStudent} cart={cart} transactionId={transactionId} studentId={studentId} ref={e => this.cancelModal = e} />
-                <PaymentExtraInfoModal readOnly={true} addStudentPaymentExtra={this.props.addStudentPaymentExtra} studentId={studentId} ref={e => this.paymentExtraModal = e} />
+                <PaymentExtraInfoModal readOnly={true} cart={cart} create={this.props.createNotification} student={this.state.data} addStudentPaymentExtra={this.props.addStudentPaymentExtra} studentId={studentId} ref={e => this.paymentExtraModal = e} />
             </>,
             backRoute: '/user/student/debt'
         });
@@ -510,5 +544,5 @@ class ThanhToanTrucTiepPage extends AdminPage {
 }
 
 const mapStateToProps = state => ({ system: state.system, student: state.trainning.student, courseFee: state.accountant.courseFee });
-const mapActionsToProps = { getStudent, addStudentPayment, getCourseFeeByStudent, updateStudent, addStudentPaymentExtra };
+const mapActionsToProps = { getStudent, addStudentPayment, getCourseFeeByStudent, updateStudent, addStudentPaymentExtra, createNotification };
 export default connect(mapStateToProps, mapActionsToProps)(ThanhToanTrucTiepPage);
