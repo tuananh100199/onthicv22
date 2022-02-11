@@ -11,9 +11,10 @@ module.exports = (app) => {
     );
 
     app.get('/user/course-fee', app.permission.check('courseFee:read'), app.templates.admin);
-    app.get('/user/hoc-vien/khoa-hoc/:_id/cong-no/chinh-thuc', app.permission.check('user:login'), app.templates.admin);
-    app.get('/user/hoc-vien/khoa-hoc/:_id/cong-no/tang-them', app.permission.check('user:login'), app.templates.admin);
-    app.get('/user/hoc-vien/khoa-hoc/:_id/cong-no/lich-su', app.permission.check('user:login'), app.templates.admin);
+    app.get('/user/hoc-vien/cong-no/:_id/chinh-thuc', app.permission.check('user:login'), app.templates.admin);
+    app.get('/user/hoc-vien/cong-no/:_id/tang-them', app.permission.check('user:login'), app.templates.admin);
+    app.get('/user/hoc-vien/cong-no/:_id/lich-su', app.permission.check('user:login'), app.templates.admin);
+    app.get('/user/hoc-vien/cong-no/:_id', app.permission.check('user:login'), app.templates.admin);
 
     // APIs ------------------------------------------------------------------------------------------------------------
     app.get('/api/course-fee/page/:pageNumber/:pageSize', (req, res) => {
