@@ -43,6 +43,10 @@ export default {
             path: '/user/student/payment/:_id',
             component: Loadable({ loading: Loading, loader: () => import('./adminThanhToanTrucTiepPage') })
         },
+        {
+            path: '/user/student/active-course',
+            component: Loadable({ loading: Loading, loader: () => import('./adminActiveCoursePage') })
+        },
     ],
     Section: {
     }

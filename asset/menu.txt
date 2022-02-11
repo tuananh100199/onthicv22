@@ -56,3 +56,4 @@
 	7003 - Giảm giá (/user/discount)
 	7005 - Theo dõi công nợ (/user/student/debt)
 	7006 - Số lần thanh toán (/user/course-payment)
+	7007 - Kích hoạt khóa học (/user/student/active-course)

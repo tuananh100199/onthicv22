@@ -17,12 +17,19 @@ module.exports = (app) => {
             menus: {
                 7005: { title: 'Theo dõi công nợ', link: '/user/student/debt' },
             }
+        },
+        menuActiveCourse = {
+            parentMenu: app.parentMenu.accountant,
+            menus: {
+                7007: { title: 'Kích hoạt khóa học', link: '/user/student/active-course' },
+            }
         };
 
     app.permission.add(
         { name: 'student:read' }, { name: 'student:write' }, { name: 'student:delete', menu }, { name: 'student:import' }, { name: 'student: fail', menu: menuFailStudent },//TODO: Thầy TÙNG
         { name: 'pre-student:read', menu }, { name: 'pre-student:write' }, { name: 'pre-student:delete' }, { name: 'pre-student:import' },
         { name: 'debt:read', menu: menuDebt }, { name: 'debt:write' }, { name: 'debt:delete' },
+        { name: 'activeCourse:read', menu: menuActiveCourse }, { name: 'activeCourse:write' }, { name: 'activeCourse:delete' },
     );
 
     app.get('/user/student/import-fail-pass', app.permission.check('student:import'), app.templates.admin);
@@ -32,7 +39,7 @@ module.exports = (app) => {
     app.get('/user/student/payment/:_id', app.permission.check('debt:write'), app.templates.admin);
     app.get('/user/pre-student', app.permission.check('pre-student:read'), app.templates.admin);
     app.get('/user/pre-student/import', app.permission.check('pre-student:import'), app.templates.admin);
-
+    app.get('/user/student/active-course',app.permission.check('activeCourse:read'), app.templates.admin);
     // Student APIs ---------------------------------------------------------------------------------------------------
     app.get('/api/student/page/:pageNumber/:pageSize', app.permission.check('student:read'), (req, res) => {
         let pageNumber = parseInt(req.params.pageNumber),
@@ -65,7 +72,7 @@ module.exports = (app) => {
         }
     });
 
-    app.get('/api/student/debt/page/:pageNumber/:pageSize', app.permission.check('student:read'), (req, res) => {
+    app.get('/api/student/debt/page/:pageNumber/:pageSize', app.permission.check('debt:read'), (req, res) => {
         let pageNumber = parseInt(req.params.pageNumber),
             pageSize = parseInt(req.params.pageSize),
             condition = req.query.pageCondition || {},
@@ -88,6 +95,8 @@ module.exports = (app) => {
             res.send({ error });
         }
     });
+
+
 
     app.get('/api/student', app.permission.check('user:login'), (req, res) => {
         app.model.student.get(req.query._id, (error, item) => res.send({ error, item }));
@@ -238,6 +247,60 @@ module.exports = (app) => {
             res.send({ error });
         }
     });
+    // Active Course APIs -----------------------------------------------------------------------------------------------
+
+    app.get('/api/student/active-course/page/:pageNumber/:pageSize', app.permission.check('activeCourse:read'), (req, res) => {
+        let pageNumber = parseInt(req.params.pageNumber),
+            pageSize = parseInt(req.params.pageSize),
+            condition = req.query.pageCondition || {},
+            pageCondition = {};
+
+        try {
+            if (req.session.user.isCourseAdmin && req.session.user.division && req.session.user.division.isOutside) { // Session user là quản trị viên khóa học
+                pageCondition.division = req.session.user.division._id;
+            }
+            if (condition.searchText) {
+                const value = { $regex: `.*${condition.searchText}.*`, $options: 'i' };
+                pageCondition.$or = [
+                    { firstname: value },
+                    { lastname: value },
+                    { identityCard: value },
+                ];
+            }
+            app.model.student.getPage(pageNumber, pageSize, pageCondition, (error, page) => res.send({ error, page }));
+        } catch (error) {
+            res.send({ error });
+        }
+    });
+
+    app.put('/api/student/active-course', app.permission.check('activeCourse:write'), (req, res) => {
+            const {_id, type} = req.body;
+        app.model.student.get({ _id }, (error, item) => {
+            if (error) {
+                res.send({ error });
+            } else if (!item) {
+                res.send({ check: 'Không tìm thấy học viên!' });
+            } else {
+                if(type=='lyThuyet'){//TODO:Gán khóa học mặc định cho học viên,
+                    app.model.course.get({isDefault: true, courseType: item.courseType}, (error,course) =>{
+                        if(error || !course) res.send({error:'Không tìm thấy khóa học mặc định!'});
+                        else{
+                            app.model.student.update({_id: item._id},{course: course._id,activeKhoaLyThuyet:true}, (error, student) => res.send({ error, item: student}));
+                        }
+                    });
+                }else if(type=='thucHanh'){
+                    //TODO: Gán khóa học mặc định cho học viên.
+                    // Để trong khi chờ courseAdmin gán khóa học thì học viên vẫn có khóa học lý thuyết để học trước.
+                    app.model.course.get({isDefault: true, courseType: item.courseType}, (error,course) =>{
+                        if(error || !course) res.send({error:'Không tìm thấy khóa học mặc định!'});
+                        else{
+                            app.model.student.update({_id: item._id},{course: course._id,activeKhoaLyThuyet:true,activeKhoaThucHanh:true}, (error, student) => res.send({ error, item: student}));
+                        }
+                    }); 
+                }
+            }
+        });
+    });
 
     // Pre-student APIs -----------------------------------------------------------------------------------------------
     app.get('/api/pre-student/page/:pageNumber/:pageSize', app.permission.check('pre-student:read'), (req, res) => {
@@ -267,6 +330,59 @@ module.exports = (app) => {
         } catch (error) {
             res.send({ error });
         }
+    });
+
+    app.get('/api/pre-student/course/page/:pageNumber/:pageSize/:courseType', app.permission.check('pre-student:read'), (req, res) => {
+        let pageNumber = parseInt(req.params.pageNumber),
+            pageSize = parseInt(req.params.pageSize),
+            courseType = req.params.courseType,
+            condition = req.query.condition || {};
+            app.model.course.get({courseType,isDefault:true},(error,defaultCourse)=>{
+                if(error||!defaultCourse) res.send({error:'không tìm thấy khóa mặc định!'});
+                else{
+                    let pageCondition = { 
+                        ['$and']:[{
+                        //điều kiện ứng viên: chưa có khóa chính thức.
+                            ['$or']:[
+                                {course:null},
+                                {course:defaultCourse}
+                            ]
+                        }] 
+                    };
+                    if (req.session.user.isCourseAdmin && req.session.user.division && req.session.user.division.isOutside) { // Session user là quản trị viên khóa học
+                        // pageCondition.division = req.session.user.division._id;
+                        pageCondition['$and'].push({division:req.session.user.division._id});
+                    }
+
+                    // if (condition.searchPlanCourse) pageCondition.planCourse = { $regex: `.*${condition.searchPlanCourse}.*`, $options: 'i' };
+                    if (condition.searchPlanCourse) pageCondition['$and'].push({planCourse:{ $regex: `.*${condition.searchPlanCourse}.*`, $options: 'i' }});
+                    if (condition.searchText) {
+                        const value = { $regex: `.*${condition.searchText}.*`, $options: 'i' };   
+                        pageCondition['$and'].push({['$or']:[
+                            { firstname: value },
+                            { lastname: value },
+                            { identityCard: value },
+                        ]});
+                    }
+
+                    //TODO: thêm các điều kiện được phép gán course vào
+                        // 2 điều kiện: Đã đóng đủ tiền hoặc được kích hoạt thủ công
+                    pageCondition['$and'].push(
+                        {['$or']:[
+                            {activeKhoaThucHanh:true}
+                        ]},
+                        //active khi đóng đủ tiền học
+                    );
+        
+                    if(pageCondition['$and'].length==0) delete pageCondition.$and;
+        
+                    app.model.student.getPage(pageNumber, pageSize, pageCondition, req.query.sort, (error, page) => {
+                        res.send({ error, page });
+                    });
+                }
+            });
+            
+            
     });
 
     app.post('/api/pre-student', app.permission.check('pre-student:write'), (req, res) => {

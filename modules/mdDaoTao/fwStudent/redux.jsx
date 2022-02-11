@@ -187,12 +187,64 @@ export function exportExamStudent(_courseId, filter) {
     T.download(T.url(`/api/student/export/${_courseId}/${filter}`));
 }
 
+// Active Course Actions ------------------------------------------------------------------------------------------------
+export function getActiveCourseStudentPage(pageNumber, pageSize, pageCondition, done) {
+    const page = T.updatePage('adminStudent', pageNumber, pageSize);
+    return dispatch => {
+        const url = `/api/student/active-course/page/${page.pageNumber}/${page.pageSize}`;
+        T.get(url, { pageCondition }, data => {
+            if (data.error) {
+                T.notify('Lấy danh sách học viên bị lỗi!', 'danger');
+                console.error(`GET: ${url}. ${data.error}`);
+            } else {
+                if (pageCondition) data.page.pageCondition = pageCondition;
+                done && done(data.page);
+                dispatch({ type: StudentGetPage, page: data.page });
+            }
+        }, error => console.error(error) || T.notify('Lấy danh sách học viên bị lỗi!', 'danger'));
+    };
+}
+
+export function updateActiveCourse(_id, type, done) {
+    return () => {
+        const url = '/api/student/active-course';
+        T.put(url, { _id, type }, data => {
+            if (data.error) {
+                T.notify('Kích hoạt khóa học bị lỗi!', 'danger');
+                console.error(`PUT: ${url}. ${data.error}`);
+            } else {
+                T.notify('Kích hoạt khóa học thành công!', 'success');
+                done && done(data.item);
+            }
+        }, error => console.error(error) || T.notify('Kích hoạt khóa học bị lỗi!', 'danger'));
+    };
+}
+
+
+
 // Pre-student Actions ------------------------------------------------------------------------------------------------
 T.initCookiePage('adminPreStudent');
 export function getPreStudentPage(pageNumber, pageSize, pageCondition, sort, done) {
     const page = T.updatePage('adminPreStudent', pageNumber, pageSize);
     return dispatch => {
         const url = `/api/pre-student/page/${page.pageNumber}/${page.pageSize}`;
+        T.get(url, { condition: pageCondition, sort }, data => {
+            if (data.error) {
+                T.notify('Lấy danh sách học viên bị lỗi!', 'danger');
+                console.error(`GET: ${url}. ${data.error}`);
+            } else {
+                if (pageCondition) data.page.pageCondition = pageCondition;
+                done && done(data.page);
+                dispatch({ type: PreStudentGetPage, page: data.page });
+            }
+        }, error => console.error(error) || T.notify('Lấy danh sách học viên bị lỗi!', 'danger'));
+    };
+}
+
+export function getPreStudentByCourseTypePage(pageNumber, pageSize, pageCondition, sort,courseType, done) {
+    const page = T.updatePage('adminPreStudent', pageNumber, pageSize);
+    return dispatch => {
+        const url = `/api/pre-student/course/page/${page.pageNumber}/${page.pageSize}/${courseType}`;
         T.get(url, { condition: pageCondition, sort }, data => {
             if (data.error) {
                 T.notify('Lấy danh sách học viên bị lỗi!', 'danger');

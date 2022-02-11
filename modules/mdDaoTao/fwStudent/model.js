@@ -85,6 +85,9 @@ module.exports = (app) => {
             }],
             lock: { type: Boolean, default: false }
         },
+        // active manual
+        activeKhoaLyThuyet:{type:Boolean, default:false},
+        activeKhoaThucHanh:{type:Boolean, default:false},
 
         tienDoHocTap: {},
         tienDoThiHetMon: {},
@@ -247,7 +250,11 @@ module.exports = (app) => {
         },
 
         // changes = { $set, $unset, $push, $pull }
-        update: (_id, changes, done) => {
+        update: (_id, changes,$unset, done) => {
+            if (!done) {
+                done = $unset;
+                $unset = {};
+            }
             if (changes && changes.course) {
                 app.model.course.get(changes.course, (error, item) => {
                     if (error) {
@@ -261,14 +268,14 @@ module.exports = (app) => {
                             Object.assign(changes.tienDoHocTap, obj);
                         });
                         changes.modifiedDate = new Date();
-                        model.findOneAndUpdate({ _id }, changes, { new: true }).populate('user', 'email phoneNumber').populate('division', 'id title').exec(done);
+                        model.findOneAndUpdate({ _id }, {$set:changes,$unset}, { new: true }).populate('user', 'email phoneNumber').populate('division', 'id title').exec(done);
                     } else {
                         done();
                     }
                 });
             } else {
                 changes.modifiedDate = new Date();
-                model.findOneAndUpdate({ _id }, changes, { new: true }).populate('user', 'email phoneNumber').populate('division', 'id title').populate('course', 'name').exec(done);
+                model.findOneAndUpdate({ _id }, {$set:changes,$unset}, { new: true }).populate('user', 'email phoneNumber').populate('division', 'id title').populate('course', 'name').exec(done);
             }
         },
 
