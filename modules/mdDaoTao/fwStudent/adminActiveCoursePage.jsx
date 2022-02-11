@@ -57,8 +57,6 @@ class DebtTrackingPage extends AdminPage {
         let { pageNumber, pageSize, pageTotal, pageCondition, totalItem, list } = this.props.student && this.props.student.page ?
             this.props.student.page : { pageNumber: 1, pageSize: 50, pageTotal: 1, pageCondition: {}, totalItem: 0 };
         
-        //percent: Hiện tại 0.5 ứng với 50% tổng tiền => mở khóa lớp lý thuyết . 1 => mở khóa lớp thực hành
-        const activeKhoaThucHanhPercent = 1;
         
         const table = renderTable({
             getDataSource: () => list, stickyHead: true,
@@ -69,10 +67,9 @@ class DebtTrackingPage extends AdminPage {
                     <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Loại khóa học</th>
                     <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Khóa học</th>
                     <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Khóa lý thuyết</th>
-                    <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Khóa chính thức</th>
+                    <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Khóa thực hành</th>
                 </tr>),
             renderRow: (item, index) => {
-                const isAutoActiveThucHanh = this.isAutoActiveCourse(item,activeKhoaThucHanhPercent);
                 return <tr key={index}>
                 <TableCell type='number' content={index + 1} />
                 <TableCell content={<>{`${item.lastname} ${item.firstname}`}<br />{item.identityCard}</>} style={{ whiteSpace: 'nowrap' }} />
@@ -81,7 +78,7 @@ class DebtTrackingPage extends AdminPage {
                 {/* <TableCell type='checkbox' content={isAutoActiveLyThuyet || item.activeKhoaLyThuyet} permission={permission} onChanged = {value=>this.activeCourse(isAutoActiveLyThuyet,item._id,{activeKhoaLyThuyet:value})}/> */}
                 {/* <TableCell type='checkbox' content={isAutoActiveThucHanh || item.activeKhoaThucHanh} permission={permission} onChanged = {value=>this.activeCourse(isAutoActiveThucHanh,item._id,{activeKhoaThucHanh:value})}/> */}
                 <TableCell type='checkbox' content={item.course!=null} permission={permission} onChanged = {value=>this.activeCourse(value,item,'lyThuyet')}/>
-                <TableCell type='checkbox' content={(item.course &&!item.course.isDefault) || isAutoActiveThucHanh || item.activeKhoaThucHanh} permission={permission} onChanged = {value=>this.activeCourse(value,item,'thucHanh')}/>
+                <TableCell type='checkbox' content={(item.course &&!item.course.isDefault)} permission={permission}/>
             </tr>;
             }
         });

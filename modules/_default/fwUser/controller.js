@@ -7,9 +7,9 @@ module.exports = app => {
     };
 
     const menuLecturer = {
-        parentMenu: app.parentMenu.setting,
+        parentMenu: app.parentMenu.enrollment,
         menus: {
-            2070: { title: 'Quản lý giáo viên', link: '/user/manage-lecturer', icon: 'fa-bars', backgroundColor: '#00b0ff' }
+            8050: { title: 'Quản lý giáo viên', link: '/user/manage-lecturer', icon: 'fa-bars', backgroundColor: '#00b0ff' }
         }
     };
 

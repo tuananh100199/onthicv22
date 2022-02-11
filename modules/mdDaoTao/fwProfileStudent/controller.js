@@ -1,8 +1,8 @@
 module.exports = app => {
     const menu = { 
-        parentMenu: app.parentMenu.trainning, 
+        parentMenu: app.parentMenu.enrollment, 
         menus: {
-            5101: { title: 'Bổ sung hồ sơ học viên', link: '/user/profile-student' }
+            8030: { title: 'Bổ sung hồ sơ học viên', link: '/user/profile-student' }
         } 
     };
     app.permission.add(

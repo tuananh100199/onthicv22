@@ -1,8 +1,8 @@
 module.exports = (app) => {
     const menu = {
-        parentMenu: app.parentMenu.trainning,
+        parentMenu: app.parentMenu.enrollment,
         menus: {
-            4040: { title: 'Ứng viên', link: '/user/pre-student' },
+            8020: { title: 'Ứng viên', link: '/user/pre-student' },
         }
     },
         menuFailStudent = {
@@ -339,12 +339,12 @@ module.exports = (app) => {
             condition = req.query.condition || {};
             app.model.course.get({courseType,isDefault:true},(error,defaultCourse)=>{
                 if(error||!defaultCourse) res.send({error:'không tìm thấy khóa mặc định!'});
+                // Những ứng viên được phép gán khóa học chính thức thì phải có khóa mặc định
                 else{
                     let pageCondition = { 
                         ['$and']:[{
                         //điều kiện ứng viên: chưa có khóa chính thức.
                             ['$or']:[
-                                {course:null},
                                 {course:defaultCourse}
                             ]
                         }] 
@@ -364,15 +364,6 @@ module.exports = (app) => {
                             { identityCard: value },
                         ]});
                     }
-
-                    //TODO: thêm các điều kiện được phép gán course vào
-                        // 2 điều kiện: Đã đóng đủ tiền hoặc được kích hoạt thủ công
-                    pageCondition['$and'].push(
-                        {['$or']:[
-                            {activeKhoaThucHanh:true}
-                        ]},
-                        //active khi đóng đủ tiền học
-                    );
         
                     if(pageCondition['$and'].length==0) delete pageCondition.$and;
         

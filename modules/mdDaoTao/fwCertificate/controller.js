@@ -1,10 +1,10 @@
 module.exports = app => {
     const menu = {
-        parentMenu: app.parentMenu.trainning,
+        parentMenu: app.parentMenu.enrollment,
         menus: {
             // 4008: { title: 'Phát chứng chỉ, giấy phép', link: '/user/certificate', icon: 'fa fa-university', backgroundColor: 'rgb(106, 90, 205)' },
-            4009: { title: 'Phát chứng chỉ sơ cấp', link: '/user/certification'},
-            4010: { title: 'Phát giấy phép lái xe', link: '/user/license'},
+            // 4009: { title: 'Phát chứng chỉ sơ cấp', link: '/user/certification'},
+            8040: { title: 'Phát chứng chỉ, giấy phép', link: '/user/license'},
         }
     };
     app.permission.add({ name: 'certificate:read', menu }, { name: 'certificate:write' }, { name: 'certificate:delete' });

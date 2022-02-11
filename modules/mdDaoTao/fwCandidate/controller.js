@@ -1,8 +1,8 @@
 module.exports = app => {
     const menu = {
-        parentMenu: app.parentMenu.communication,
+        parentMenu: app.parentMenu.enrollment,
         menus: {
-            3001: { title: 'Đăng ký tư vấn', link: '/user/candidate', icon: 'fa-envelope-o', backgroundColor: '#00897b' },
+            8010: { title: 'Đăng ký tư vấn', link: '/user/candidate', icon: 'fa-envelope-o', backgroundColor: '#00897b' },
         },
     };
     app.permission.add({ name: 'candidate:read', menu }, { name: 'candidate:write' }, { name: 'candidate:delete' }, { name: 'candidate:export' });
