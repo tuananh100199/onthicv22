@@ -208,7 +208,7 @@ class BankEditPage extends AdminPage {
                     <TableCell type='number' content={index + 1} />
                     <TableCell type='link' content={item.number} onClick={e => this.showModal(e, { item, index })} />
                     <TableCell content={item.holder} />
-                    <TableCell type='checkbox' content={item.active} permission={permission}
+                    <TableCell type='checkbox' content={item.active} permission={permission} isSwitch={false}
                         onChanged={active => {
                             accounts[index].active = active;
                             this.props.updateBank(_id, { accounts }, () => this.props.getBank(_id));

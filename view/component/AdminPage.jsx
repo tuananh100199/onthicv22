@@ -10,7 +10,7 @@ import 'react-datetime/css/react-datetime.css';
 // Table components ---------------------------------------------------------------------------------------------------
 export class TableCell extends React.Component { // type = number | date | link | image | checkbox | buttons | text (default)
     render() {
-        let { type = 'text', content = '', permission = {}, className = '', style = {}, contentStyle = {}, alt = '', display = true, rowSpan = 1, dateFormat } = this.props;
+        let { type = 'text', content = '', permission = {}, className = '', style = {}, contentStyle = {}, alt = '', display = true, rowSpan = 1, dateFormat, isSwitch = true } = this.props;
         if (style == null) style = {};
 
         if (display != true) {
@@ -34,11 +34,17 @@ export class TableCell extends React.Component { // type = number | date | link 
                 <td style={{ textAlign: 'center', ...style }} className={className} rowSpan={rowSpan}><img src={content} alt={alt} style={{ height: '32px' }} /></td> :
                 <td style={{ textAlign: 'center', ...style }} className={className} rowSpan={rowSpan}>{alt}</td>;
         } else if (type == 'checkbox') {
-            return (
+            return isSwitch ? (
                 <td style={{ textAlign: 'center', ...style }} className={'toggle ' + className} rowSpan={rowSpan}>
                     <label>
                         <input type='checkbox' checked={content} onChange={() => permission.write && this.props.onChanged(content ? 0 : 1)} />
                         <span className='button-indecator' />
+                    </label>
+                </td>) :
+                (<td style={{ textAlign: 'center', ...style }} className={'animated-checkbox ' + className}>
+                    <label>
+                        <input type='checkbox' checked={content} onChange={() => permission.write && this.props.onChanged(content ? 0 : 1)} />
+                        <span className='label-text' />
                     </label>
                 </td>);
         } else if (type == 'buttons') {
