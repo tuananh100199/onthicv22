@@ -5,6 +5,64 @@ import Pagination from 'view/component/Pagination';
 import { AdminPage, AdminModal, FormTextBox, TableCell, renderTable, FormCheckbox,CirclePageButton } from 'view/component/AdminPage';
 import FileSaver from 'file-saver';
 
+class ExportModal extends AdminModal {
+    state = { copied: false,listStudent:[] };
+    componentDidMount() {
+        T.ready(() => this.onShown(() => {}));
+    }
+
+    onShow = () => {
+        this.setState({listStudent:this.props.listStudent});
+    }
+
+    delete = (e,item) => {
+        e.preventDefault();
+        let listStudent = this.state.listStudent.filter(student=>student._id!=item._id);
+        console.log(listStudent);
+        this.setState({listStudent});
+        this.props.updateState({listStudent});
+    }
+
+
+    render = () => {
+        const listStudent = this.state.listStudent;
+        const tableUser = renderTable({
+            getDataSource: () => listStudent,
+            stickyHead:true,
+            renderHead: () => (
+                <tr>
+                    <th style={{ width: 'auto', textAlign: 'center' }}>#</th>
+                    <th style={{ width: '100%' }}>Học viên</th>
+                    <th style={{ width: '100%' }}>CMND</th>
+                    <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Khóa học</th>
+                    {/* <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Loại gói học phí</th> */}
+                    <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>kỳ sát hạch</th>
+                    <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Thao tác</th>
+                </tr>),
+            renderRow: (item, index) => (
+                <tr key={index}>
+                    <TableCell type='number' content={index + 1} />
+                    <TableCell type='text' content={`${item.lastname} ${item.firstname}`} />
+                    <TableCell type='text' content={item.identityCard} />
+                    {/* <TableCell type='text' style={{ whiteSpace: 'nowrap', textAlign: 'center' }} content={item.feeType ? item.feeType.title : ''} /> */}
+                    <TableCell type='text' style={{ whiteSpace: 'nowrap', textAlign: 'center' }} content={item.course && item.course.name} />
+                    <TableCell type='text' style={{ whiteSpace: 'nowrap', textAlign: 'center' }} content={item.kySatHach} />
+                    <TableCell type='buttons' content={{ item, index }} permission={{ delete: true }} onDelete={e=>this.delete(e,item)} />
+                </tr>),
+        });
+        return this.renderModal({
+        title: 'In biên bản',
+        dataBackdrop: 'static',
+        size: 'large',
+        body: (<div>
+                <div className='tile-body'>{tableUser}</div>
+            </div>),
+        buttons:
+        listStudent && listStudent.length ? <button className='btn btn-success' style={{ textAlign: 'right' }}
+            onClick={(e)=>this.props.exportFinal(e,this.hide)}>In biên bản</button> : null
+    });
+    }
+}
 class CertificateModal extends AdminModal {
     state = {showCapPhat:false};
     onShow = (item) => {
@@ -104,20 +162,26 @@ class LicensePage extends AdminPage {
         }
     };
 
-    exportFinal = (e)=>{
+    exportFinal = (e,done)=>{
         e.preventDefault();
-        this.props.exportFinalLicense(this.state.listStudent, (data) => {
+        const listStudentId = this.state.listStudent.map(item=>item._id);
+        this.props.exportFinalLicense(listStudentId, (data) => {
             FileSaver.saveAs(new Blob([new Uint8Array(data.buf.data)]), 'Biên bản GPLX.docx');
             this.setState({listStudent:[]});
+            done && done();
         });
     }
 
-    changeExportItem = (value,_id)=>{
+    updateState = (newItem)=>{
+        this.setState({...newItem});
+    }
+
+    changeExportItem = (value,student)=>{
         let listStudent = this.state.listStudent;
         if(value){
-            listStudent.push(_id);
+            listStudent.push(student);
         }else{
-            listStudent = listStudent.filter(item=>item!=_id);
+            listStudent = listStudent.filter(item=>item._id!=student._id);
         }
         this.setState({listStudent});
     }
@@ -153,7 +217,7 @@ class LicensePage extends AdminPage {
                     <TableCell type='checkbox' content={item.isCertification} permission={permission} onChanged = {value=>this.updateIsLicense(item._id,item.hasLicense,{isCertification:value})}/>
                     <TableCell type='checkbox' content={item.isLicense} permission={permission} onChanged = {value=>this.updateIsLicense(item._id,item.hasLicense,{isLicense:value})}/>
                     {item.isLicense && item.isCertification ? <TableCell type='checkbox' content={item.hasLicense} permission={permission} onChanged = {value=>this.update(item._id,{hasLicense:value})}/>:<TableCell type='text' content=''/>}
-                    {item.isLicense && item.isCertification ? <TableCell type='checkbox' isSwitch={false} content={this.state.listStudent.find(studentId=>studentId==item._id)} permission={permission} onChanged = {value=>this.changeExportItem(value,item._id)}/>: <TableCell type='text' content=''/>}
+                    {item.isLicense && item.isCertification ? <TableCell type='checkbox' isSwitch={false} content={this.state.listStudent.find(studentId=>studentId._id==item._id)} permission={permission} onChanged = {value=>this.changeExportItem(value,item)}/>: <TableCell type='text' content=''/>}
                     <TableCell type='buttons' content={item} permission={permission} onEdit={this.edit}>
                     </TableCell>
                 </tr>),
@@ -168,8 +232,11 @@ class LicensePage extends AdminPage {
                 <div className='tile'>
                     <div className='tile-body'>{table}</div>
                     <CertificateModal ref={e => this.modal = e} update={this.update} readOnly={!permission.write} />
-                    {this.state.listStudent.length>0 ? <CirclePageButton type='custom' customClassName='btn-warning' customIcon='fa-print' style={{ right: '10px' }} onClick={(e) => this.exportFinal(e)} />: null}
+                    {/* {this.state.listStudent.length>0 ? <CirclePageButton type='custom' customClassName='btn-warning' customIcon='fa-print' style={{ right: '10px' }} onClick={e=>this.exportFinal(e)} />: null} */}
+                    {this.state.listStudent.length>0 ? <CirclePageButton type='custom' customClassName='btn-warning' customIcon='fa-print' style={{ right: '10px' }} onClick={()=>this.exportModal.show()} />: null}
                 </div>
+
+                <ExportModal ref={e => this.exportModal = e} exportFinal={this.exportFinal}  updateState={this.updateState} listStudent={this.state.listStudent} />
                 <Pagination pageNumber={pageNumber} pageSize={pageSize} pageTotal={pageTotal} totalItem={totalItem}
                     pageName = 'pageLicense' getPage={(pageNumber, pageSize) => this.onSearch({ pageNumber, pageSize })} />
             
