@@ -634,7 +634,7 @@ module.exports = (app) => {
             } else if (!student) {
                 res.send({ notify: 'Bạn không thuộc khóa học này!' });
             } else {
-                if (student.course && student.course.active) {
+                if (student.course && (student.course.active || student.course.isDefault)) {
                     app.model.course.get(_courseId, (error, item) => {
                         const _studentId = student._id,
                             teacherGroups = item.teacherGroups.find(({ student }) => student.find(({ _id }) => _id == _studentId.toString()) != null),
