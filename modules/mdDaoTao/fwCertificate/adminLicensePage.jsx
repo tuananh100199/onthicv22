@@ -4,6 +4,7 @@ import { getLicensePage, updateCertificate,exportFinalLicense } from './redux';
 import Pagination from 'view/component/Pagination';
 import { AdminPage, AdminModal, FormTextBox, TableCell, renderTable, FormCheckbox,CirclePageButton } from 'view/component/AdminPage';
 import FileSaver from 'file-saver';
+
 class CertificateModal extends AdminModal {
     state = {showCapPhat:false};
     onShow = (item) => {
@@ -152,7 +153,7 @@ class LicensePage extends AdminPage {
                     <TableCell type='checkbox' content={item.isCertification} permission={permission} onChanged = {value=>this.updateIsLicense(item._id,item.hasLicense,{isCertification:value})}/>
                     <TableCell type='checkbox' content={item.isLicense} permission={permission} onChanged = {value=>this.updateIsLicense(item._id,item.hasLicense,{isLicense:value})}/>
                     {item.isLicense && item.isCertification ? <TableCell type='checkbox' content={item.hasLicense} permission={permission} onChanged = {value=>this.update(item._id,{hasLicense:value})}/>:<TableCell type='text' content=''/>}
-                    {item.isLicense && item.isCertification ? <TableCell type='checkbox' content={this.state.listStudent.find(studentId=>studentId==item._id)} permission={permission} onChanged = {value=>this.changeExportItem(value,item._id)}/>: <TableCell type='text' content=''/>}
+                    {item.isLicense && item.isCertification ? <TableCell type='checkbox' isSwitch={false} content={this.state.listStudent.find(studentId=>studentId==item._id)} permission={permission} onChanged = {value=>this.changeExportItem(value,item._id)}/>: <TableCell type='text' content=''/>}
                     <TableCell type='buttons' content={item} permission={permission} onEdit={this.edit}>
                     </TableCell>
                 </tr>),
@@ -167,8 +168,7 @@ class LicensePage extends AdminPage {
                 <div className='tile'>
                     <div className='tile-body'>{table}</div>
                     <CertificateModal ref={e => this.modal = e} update={this.update} readOnly={!permission.write} />
-                    {this.state.listStudent.length>0 ? <CirclePageButton type='custom' customClassName='btn-warning' customIcon='fa-print' style={{ right: '10px' }} onClick={(e) => this.exportFinal(e)} />
-                    : null}
+                    {this.state.listStudent.length>0 ? <CirclePageButton type='custom' customClassName='btn-warning' customIcon='fa-print' style={{ right: '10px' }} onClick={(e) => this.exportFinal(e)} />: null}
                 </div>
                 <Pagination pageNumber={pageNumber} pageSize={pageSize} pageTotal={pageTotal} totalItem={totalItem}
                     pageName = 'pageLicense' getPage={(pageNumber, pageSize) => this.onSearch({ pageNumber, pageSize })} />

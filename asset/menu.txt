@@ -57,3 +57,4 @@
 	8030 - Bổ sung hồ sơ học viên (/user/profile-student)
 	8040 - Phát chứng chỉ, giấy phép (/user/license)
 	8050 - Quản lý giáo viên (/user/manage-lecturer)
+	8060 - Theo dõi công nợ (/user/student/debt-enroll)

@@ -3,6 +3,7 @@ module.exports = (app) => {
         parentMenu: app.parentMenu.enrollment,
         menus: {
             8020: { title: 'Ứng viên', link: '/user/pre-student' },
+            8060: { title: 'Theo dõi công nợ', link: '/user/student/debt-enroll' },
         }
     },
         menuFailStudent = {
@@ -40,6 +41,7 @@ module.exports = (app) => {
     app.get('/user/pre-student', app.permission.check('pre-student:read'), app.templates.admin);
     app.get('/user/pre-student/import', app.permission.check('pre-student:import'), app.templates.admin);
     app.get('/user/student/active-course',app.permission.check('activeCourse:read'), app.templates.admin);
+    app.get('/user/student/debt-enroll', app.permission.check('debt:read'), app.templates.admin);
     // Student APIs ---------------------------------------------------------------------------------------------------
     app.get('/api/student/page/:pageNumber/:pageSize', app.permission.check('student:read'), (req, res) => {
         let pageNumber = parseInt(req.params.pageNumber),
