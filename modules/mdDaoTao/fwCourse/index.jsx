@@ -162,11 +162,7 @@ export default {
         {
             path: '/user/hoc-vien/khoa-hoc/:_id/cong-no',
             component: Loadable({ loading: Loading, loader: () => import('./userPaymentInfo') })
-        },
-        {
-            path: '/user/course/enroll',
-            component: Loadable({ loading: Loading, loader: () => import('./adminPage') })
-        },
+        }
     ],
     Section: {
         // SectionCourse, SectionCourseList,
