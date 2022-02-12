@@ -12,18 +12,18 @@ class UserProfilePage extends AdminPage {
 
     render() {
         const { students } = this.state ? this.state : { students: [] };
-        let currentCourseType = '';
-        for(let i = 0; i < students.length; i++){
-            if(!students[i].course){
-                currentCourseType = students[i].courseType._id;
-                break;
-            } else if (students[i].course.isDefault){
-                currentCourseType = students[i].courseType._id;
-                break;
-            } else{
-                currentCourseType = students[i].courseType._id;
-            }
-        }
+        // let currentCourseType = '';
+        // for(let i = 0; i < students.length; i++){
+        //     if(!students[i].course){
+        //         currentCourseType = students[i].courseType._id;
+        //         break;
+        //     } else if (students[i].course.isDefault){
+        //         currentCourseType = students[i].courseType._id;
+        //         break;
+        //     } else{
+        //         currentCourseType = students[i].courseType._id;
+        //     }
+        // }
         return this.renderPage({
             icon: 'fa fa-user',
             title: 'Trang cá nhân',
@@ -49,12 +49,12 @@ class UserProfilePage extends AdminPage {
                     <PageIcon to='/user/hoc-vien/khoa-hoc/bo-de-thi-thu' icon='fa-sitemap' iconBackgroundColor='#7cb342' text='Bộ đề thi thử' />
                     <PageIcon to='/user/hoc-vien/khoa-hoc/bo-de-thi-ngau-nhien' icon='fa-share-alt' iconBackgroundColor='#69f0ae' text='Bộ đề thi ngẫu nhiên' />
 
-                    {currentCourseType != '' ? 
+                    {/* {currentCourseType != '' ? 
                         <>
                             <PageIconHeader text='Công nợ' />
                             <PageIcon to={`/user/hoc-vien/cong-no/${currentCourseType}`} icon='fa-money' iconBackgroundColor='#900' text='Theo dõi công nợ' />
                         </>
-                     : null}
+                     : null} */}
                 </div>),
         });
     }

@@ -55,6 +55,7 @@ module.exports = (app) => {
     app.get('/user/hoc-vien/khoa-hoc/:_id/cong-no/tang-them', app.permission.check('user:login'), app.templates.admin);
     app.get('/user/hoc-vien/khoa-hoc/:_id/cong-no/lich-su', app.permission.check('user:login'), app.templates.admin);
 
+    
     const getCourseData = (_id, sessionUser, done) => {
         app.model.course.get(_id, (error, item) => {
             if (error || !item) {
