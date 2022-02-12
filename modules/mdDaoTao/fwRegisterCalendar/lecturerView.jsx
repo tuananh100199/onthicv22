@@ -90,6 +90,7 @@ class RegisterCalendarModal extends AdminModal {
     render = () => {
         const { _id, state } = this.state;
         const courseItem = this.props.courseItem;
+        const readOnly=this.props.readOnly;
         return this.renderModal({
             title: 'Lịch dạy thực hành',
             size: 'large',
@@ -97,9 +98,9 @@ class RegisterCalendarModal extends AdminModal {
                 <div className='row'>
                     <p className='col-md-6'>Khóa học: <b>{courseItem && courseItem.name ? courseItem.name   : ''}</b>. Hạng LX: <b>{courseItem && courseItem.courseType ? courseItem.courseType.title : ''}</b></p>
                     <p  className='col-lg-6' label='Giáo viên' readOnly={true} >Giáo viên: <span style={{fontWeight: 700}}>{this.props.lecturerName}</span> </p>
-                    <FormSelect className='col-md-4' ref={e => this.itemState = e} label='Trạng thái' data={RegisterCalendarStates} readOnly={!this.props.isCourseAdmin} /> 
-                    <FormDatePicker className='col-md-4' ref={e => this.itemDate = e} label='Ngày nghỉ' onChange={this.onSelectDate} readOnly={(state == 'approved' || state == 'reject') && this.props.isLecturer} type='date-mask' required />
-                    <FormSelect className='col-md-4' ref={e => this.itemTimeOff = e} label='Thời gian nghỉ'  data={timeOffStates} readOnly={(state == 'approved' || state == 'reject') && this.props.isLecturer} /> 
+                    <FormSelect className='col-md-4' ref={e => this.itemState = e} label='Trạng thái' data={RegisterCalendarStates} readOnly={!this.props.isCourseAdmin||readOnly} /> 
+                    <FormDatePicker className='col-md-4' ref={e => this.itemDate = e} label='Ngày nghỉ' onChange={this.onSelectDate} readOnly={(state == 'approved' || state == 'reject'||readOnly) && this.props.isLecturer} type='date-mask' required />
+                    <FormSelect className='col-md-4' ref={e => this.itemTimeOff = e} label='Thời gian nghỉ'  data={timeOffStates} readOnly={(state == 'approved' || state == 'reject'||readOnly) && this.props.isLecturer} /> 
                 </div>
             </>,
             buttons: <>
@@ -298,13 +299,13 @@ class LecturerView extends AdminPage {
                     <div id='calendar' ref={e => this.calendar = e}></div>
                     : null} 
                 </div>
-                <RegisterCalendarModal ref={e => this.modalCourseAdmin = e} readOnly={false} isCourseAdmin={this.state.isCourseAdmin} isLecturer={this.state.isLecturer} courseItem={courseItem} courseId={this.props.courseId} lecturerId={this.props.lecturerId} filterOn={this.props.filterOn} filterType={this.props.filterType} calendar={this.props.calendar} lecturerName={this.props.lecturerName}
+                <RegisterCalendarModal ref={e => this.modalCourseAdmin = e} readOnly={!permission.write} isCourseAdmin={this.state.isCourseAdmin} isLecturer={this.state.isLecturer} courseItem={courseItem} courseId={this.props.courseId} lecturerId={this.props.lecturerId} filterOn={this.props.filterOn} filterType={this.props.filterType} calendar={this.props.calendar} lecturerName={this.props.lecturerName}
                     create={this.props.createRegisterCalendarByAdmin} update={this.props.updateRegisterCalendarByAdmin} delete={this.deleteCalendar} getPage={this.props.getRegisterCalendarPageByAdmin} getRegisterCalendarOfLecturer={this.props.getRegisterCalendarOfLecturer} onSave={this.onModalFormSave}  /> 
                  <Pagination name='pageRegisterCalendar' pageNumber={pageNumber} pageSize={pageSize} pageTotal={pageTotal} totalItem={totalItem} style={{ left: 320 }}
                         getPage={this.getPage} />
-                <button type='button' className='btn btn-success btn-circle' style={{ position: 'fixed', right: '10px', bottom: '10px' }} onClick={this.edit}>
+                {permission.write && <button type='button' className='btn btn-success btn-circle' style={{ position: 'fixed', right: '10px', bottom: '10px' }} onClick={this.edit}>
                     <i className='fa fa-lg fa-plus' />
-                </button>
+                </button>}
             </>
         );
     }
