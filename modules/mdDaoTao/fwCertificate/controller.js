@@ -1,10 +1,10 @@
 module.exports = app => {
     const menu = {
-        parentMenu: app.parentMenu.trainning,
+        parentMenu: app.parentMenu.enrollment,
         menus: {
             // 4008: { title: 'Phát chứng chỉ, giấy phép', link: '/user/certificate', icon: 'fa fa-university', backgroundColor: 'rgb(106, 90, 205)' },
-            4009: { title: 'Phát chứng chỉ sơ cấp', link: '/user/certification'},
-            4010: { title: 'Phát giấy phép lái xe', link: '/user/license'},
+            // 4009: { title: 'Phát chứng chỉ sơ cấp', link: '/user/certification'},
+            8040: { title: 'Phát chứng chỉ, giấy phép', link: '/user/license'},
         }
     };
     app.permission.add({ name: 'certificate:read', menu }, { name: 'certificate:write' }, { name: 'certificate:delete' });
@@ -52,5 +52,61 @@ module.exports = app => {
     app.put('/api/certificate', app.permission.check('certificate:write'), (req, res) => {
         let { _id, changes } = req.body;
         app.model.student.update(_id, changes, (error, item) => res.send({ error, item }));
+    });
+
+    app.get('/api/license/page/:pageNumber/:pageSize', app.permission.check('certificate:read'), (req, res) => {
+        let pageNumber = parseInt(req.params.pageNumber),
+            pageSize = parseInt(req.params.pageSize),
+            {searchText,isLicense}=req.query,
+            pageCondition = {};
+        pageCondition.$or = [];
+
+        if (searchText){
+            const value = { $regex: `.*${searchText}.*`, $options: 'i' };
+            pageCondition.$or.push(
+                { identityCard: value },
+                { firstname: value },
+                { lastname: value },
+            );
+        }
+        if(isLicense) pageCondition.isLicense=true;
+
+        pageCondition.datSatHach=true;
+        if (pageCondition.$or.length == 0) delete pageCondition.$or;
+        app.model.student.getPage(pageNumber, pageSize, pageCondition, (error, page) => res.send({ error, page }));
+    });
+
+    app.get('/api/certificate/license/export', app.permission.check('user:login'), (req, res) => {
+        const {listStudents} = req.query;
+        let students = [];
+        const handleExport = (index=0)=>{
+            if(index>=listStudents.length){
+                const currentDate = new Date();
+                const dateFormat = require('dateformat');
+                const data = {
+                    currentdate:dateFormat(currentDate, 'dd/mm/yyyy'),
+                    students
+                };
+                app.docx.generateFile('/document/BIEN_BAN_BAN_GIAO_GPLX.docx', data, (error, buf) => {
+                    res.send({ error: error, buf: buf });
+                });
+            }else{
+                const _studentId = listStudents[index];
+                app.model.student.get({_id:_studentId}, (error, student) => {
+                    if(error || !student){
+                        res.send({error:'Lấy thông tin học viên bị lỗi'});
+                    }else{
+                        const {birthday,courseType,lastname,firstname} = student;                        
+                        students.push({
+                            idx:index+1,birth:new Date(birthday).getFullYear().toString(),title:courseType.title,lastname,firstname
+                        });
+                        handleExport(index+1);
+
+                    }
+                });
+            }
+        };
+
+        handleExport();
     });
 };

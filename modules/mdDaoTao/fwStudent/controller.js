@@ -1,8 +1,9 @@
 module.exports = (app) => {
     const menu = {
-        parentMenu: app.parentMenu.trainning,
+        parentMenu: app.parentMenu.enrollment,
         menus: {
-            4040: { title: 'Ứng viên', link: '/user/pre-student' },
+            8020: { title: 'Ứng viên', link: '/user/pre-student' },
+            8060: { title: 'Theo dõi công nợ', link: '/user/student/debt-enroll' },
         }
     },
         menuFailStudent = {
@@ -17,12 +18,19 @@ module.exports = (app) => {
             menus: {
                 7005: { title: 'Theo dõi công nợ', link: '/user/student/debt' },
             }
+        },
+        menuActiveCourse = {
+            parentMenu: app.parentMenu.accountant,
+            menus: {
+                7007: { title: 'Kích hoạt khóa học', link: '/user/student/active-course' },
+            }
         };
 
     app.permission.add(
         { name: 'student:read' }, { name: 'student:write' }, { name: 'student:delete', menu }, { name: 'student:import' }, { name: 'student: fail', menu: menuFailStudent },//TODO: Thầy TÙNG
         { name: 'pre-student:read', menu }, { name: 'pre-student:write' }, { name: 'pre-student:delete' }, { name: 'pre-student:import' },
         { name: 'debt:read', menu: menuDebt }, { name: 'debt:write' }, { name: 'debt:delete' },
+        { name: 'activeCourse:read', menu: menuActiveCourse }, { name: 'activeCourse:write' }, { name: 'activeCourse:delete' },
     );
 
     app.get('/user/student/import-fail-pass', app.permission.check('student:import'), app.templates.admin);
@@ -32,7 +40,8 @@ module.exports = (app) => {
     app.get('/user/student/payment/:_id', app.permission.check('debt:write'), app.templates.admin);
     app.get('/user/pre-student', app.permission.check('pre-student:read'), app.templates.admin);
     app.get('/user/pre-student/import', app.permission.check('pre-student:import'), app.templates.admin);
-
+    app.get('/user/student/active-course',app.permission.check('activeCourse:read'), app.templates.admin);
+    app.get('/user/student/debt-enroll', app.permission.check('debt:read'), app.templates.admin);
     // Student APIs ---------------------------------------------------------------------------------------------------
     app.get('/api/student/page/:pageNumber/:pageSize', app.permission.check('student:read'), (req, res) => {
         let pageNumber = parseInt(req.params.pageNumber),
@@ -65,7 +74,7 @@ module.exports = (app) => {
         }
     });
 
-    app.get('/api/student/debt/page/:pageNumber/:pageSize', app.permission.check('student:read'), (req, res) => {
+    app.get('/api/student/debt/page/:pageNumber/:pageSize', app.permission.check('debt:read'), (req, res) => {
         let pageNumber = parseInt(req.params.pageNumber),
             pageSize = parseInt(req.params.pageSize),
             condition = req.query.pageCondition || {},
@@ -88,6 +97,8 @@ module.exports = (app) => {
             res.send({ error });
         }
     });
+
+
 
     app.get('/api/student', app.permission.check('user:login'), (req, res) => {
         app.model.student.get(req.query._id, (error, item) => res.send({ error, item }));
@@ -259,6 +270,60 @@ module.exports = (app) => {
             res.send({ error });
         }
     });
+    // Active Course APIs -----------------------------------------------------------------------------------------------
+
+    app.get('/api/student/active-course/page/:pageNumber/:pageSize', app.permission.check('activeCourse:read'), (req, res) => {
+        let pageNumber = parseInt(req.params.pageNumber),
+            pageSize = parseInt(req.params.pageSize),
+            condition = req.query.pageCondition || {},
+            pageCondition = {};
+
+        try {
+            if (req.session.user.isCourseAdmin && req.session.user.division && req.session.user.division.isOutside) { // Session user là quản trị viên khóa học
+                pageCondition.division = req.session.user.division._id;
+            }
+            if (condition.searchText) {
+                const value = { $regex: `.*${condition.searchText}.*`, $options: 'i' };
+                pageCondition.$or = [
+                    { firstname: value },
+                    { lastname: value },
+                    { identityCard: value },
+                ];
+            }
+            app.model.student.getPage(pageNumber, pageSize, pageCondition, (error, page) => res.send({ error, page }));
+        } catch (error) {
+            res.send({ error });
+        }
+    });
+
+    app.put('/api/student/active-course', app.permission.check('activeCourse:write'), (req, res) => {
+            const {_id, type} = req.body;
+        app.model.student.get({ _id }, (error, item) => {
+            if (error) {
+                res.send({ error });
+            } else if (!item) {
+                res.send({ check: 'Không tìm thấy học viên!' });
+            } else {
+                if(type=='lyThuyet'){//TODO:Gán khóa học mặc định cho học viên,
+                    app.model.course.get({isDefault: true, courseType: item.courseType}, (error,course) =>{
+                        if(error || !course) res.send({error:'Không tìm thấy khóa học mặc định!'});
+                        else{
+                            app.model.student.update({_id: item._id},{course: course._id,activeKhoaLyThuyet:true}, (error, student) => res.send({ error, item: student}));
+                        }
+                    });
+                }else if(type=='thucHanh'){
+                    //TODO: Gán khóa học mặc định cho học viên.
+                    // Để trong khi chờ courseAdmin gán khóa học thì học viên vẫn có khóa học lý thuyết để học trước.
+                    app.model.course.get({isDefault: true, courseType: item.courseType}, (error,course) =>{
+                        if(error || !course) res.send({error:'Không tìm thấy khóa học mặc định!'});
+                        else{
+                            app.model.student.update({_id: item._id},{course: course._id,activeKhoaLyThuyet:true,activeKhoaThucHanh:true}, (error, student) => res.send({ error, item: student}));
+                        }
+                    }); 
+                }
+            }
+        });
+    });
 
     // Pre-student APIs -----------------------------------------------------------------------------------------------
     app.get('/api/pre-student/page/:pageNumber/:pageSize', app.permission.check('pre-student:read'), (req, res) => {
@@ -290,45 +355,48 @@ module.exports = (app) => {
         }
     });
 
-    const getDefaultCourseFee = data => new Promise((resolve, reject) => {// thêm courseFee mặc định
-        if (!data.courseType) {
-            reject('Không có loại khóa học!');
-        } else if (data.courseFee && data.courseFee != '') {// Có gói học phí
-            resolve(data.courseFee);
-        } else {
-            app.model.courseFee.get({ isDefault: true, courseType: data.courseType }, (error, item) => {
-                if (error || !item) reject('Lỗi không tìm thấy gói học phí!');
-                else {
-                    resolve(item._id);
-                }
-            });
-        }
-    });
+    app.get('/api/pre-student/course/page/:pageNumber/:pageSize/:courseType', app.permission.check('pre-student:read'), (req, res) => {
+        let pageNumber = parseInt(req.params.pageNumber),
+            pageSize = parseInt(req.params.pageSize),
+            courseType = req.params.courseType,
+            condition = req.query.condition || {};
+            app.model.course.get({courseType,isDefault:true},(error,defaultCourse)=>{
+                if(error||!defaultCourse) res.send({error:'không tìm thấy khóa mặc định!'});
+                // Những ứng viên được phép gán khóa học chính thức thì phải có khóa mặc định
+                else{
+                    let pageCondition = { 
+                        ['$and']:[{
+                        //điều kiện ứng viên: chưa có khóa chính thức.
+                            ['$or']:[
+                                {course:defaultCourse}
+                            ]
+                        }] 
+                    };
+                    if (req.session.user.isCourseAdmin && req.session.user.division && req.session.user.division.isOutside) { // Session user là quản trị viên khóa học
+                        // pageCondition.division = req.session.user.division._id;
+                        pageCondition['$and'].push({division:req.session.user.division._id});
+                    }
 
-    const getDefaultDiscount = data => new Promise((resolve, reject) => {// thêm discount mặc định
-        if (data.discount && data.discount != '') {// Có giảm giá
-            resolve(data.discount);
-        } else {
-            app.model.discount.get({ isDefault: true }, (error, item) => {
-                if (error || !item) reject('Lỗi không tìm thấy giảm giá!');
-                else {
-                    resolve(item._id);
+                    // if (condition.searchPlanCourse) pageCondition.planCourse = { $regex: `.*${condition.searchPlanCourse}.*`, $options: 'i' };
+                    if (condition.searchPlanCourse) pageCondition['$and'].push({planCourse:{ $regex: `.*${condition.searchPlanCourse}.*`, $options: 'i' }});
+                    if (condition.searchText) {
+                        const value = { $regex: `.*${condition.searchText}.*`, $options: 'i' };   
+                        pageCondition['$and'].push({['$or']:[
+                            { firstname: value },
+                            { lastname: value },
+                            { identityCard: value },
+                        ]});
+                    }
+        
+                    if(pageCondition['$and'].length==0) delete pageCondition.$and;
+        
+                    app.model.student.getPage(pageNumber, pageSize, pageCondition, req.query.sort, (error, page) => {
+                        res.send({ error, page });
+                    });
                 }
             });
-        }
-    });
-
-    const getDefaultCoursePayment = data => new Promise((resolve, reject) => {// thêm coursePayment mặc định
-        if (data.coursePayment && data.coursePayment != '') {// Có số lần đóng học phí
-            resolve(data.coursePayment);
-        } else {
-            app.model.coursePayment.get({ default: true }, (error, item) => {
-                if (error || !item) reject('Lỗi không tìm thấy số lần đóng học phí!');
-                else {
-                    resolve(item._id);
-                }
-            });
-        }
+            
+            
     });
 
     app.post('/api/pre-student', app.permission.check('pre-student:write'), (req, res) => {
@@ -340,7 +408,7 @@ module.exports = (app) => {
             return [day, mnth, date.getFullYear()].join('');
         }
         delete data.course; // Không được gán khóa học cho pre-student
-
+        if(!data.discount||data.discount=='') delete data.discount;
         const createNewUser = new Promise((resolve, reject) => { // Tạo user cho pre
             app.model.user.get({ identityCard: data.identityCard }, (error, user) => {
                 if (error) {
@@ -394,11 +462,10 @@ module.exports = (app) => {
         //     });
         // }).catch(error => res.send({ error }));
 
-        Promise.all([createNewUser, getDefaultCourseFee(data), getDefaultDiscount(data), getDefaultCoursePayment(data)]).then(([_userId, _courseFeeId, _discountId, _coursePaymentId]) => {
+        Promise.all([createNewUser]).then(([_userId]) => {
             data.user = _userId;   // assign id of user to user field of prestudent
-            data.courseFee = _courseFeeId;
-            data.discount = _discountId;
-            data.coursePayment = _coursePaymentId;
+            delete data.email;
+            delete data.phoneNumber;
             app.model.student.create(data, (error, item) => {
                 if (error || item == null || item.image == null) {
                     res.send({ error, item });
@@ -473,12 +540,14 @@ module.exports = (app) => {
     app.put('/api/pre-student', app.permission.check('pre-student:write'), (req, res) => {
         let { _id, changes } = req.body;
         delete changes.course; // Không được gán khóa học cho pre-student
-        Promise.all([getDefaultCourseFee(changes), getDefaultDiscount(changes), getDefaultCoursePayment(changes)]).then(([_courseFeeId, _discountId, _coursePaymentId]) => {
-            changes.courseFee = _courseFeeId;
-            changes.discount = _discountId;
-            changes.coursePayment = _coursePaymentId;
-            app.model.student.update(_id, changes, (error, item) => res.send({ error, item }));
-        }).catch(error => console.log(error) || res.send({ error }));
+        if(!changes.discount||changes.discount=='') delete changes.discount;
+        app.model.student.update(_id, changes, (error, item) => res.send({ error, item }));
+        // Promise.all([getDefaultCourseFee(changes), getDefaultDiscount(changes), getDefaultCoursePayment(changes)]).then(([_courseFeeId, _discountId, _coursePaymentId]) => {
+        //     changes.courseFee = _courseFeeId;
+        //     changes.discount = _discountId;
+        //     changes.coursePayment = _coursePaymentId;
+        //     app.model.student.update(_id, changes, (error, item) => res.send({ error, item }));
+        // }).catch(error => console.log(error) || res.send({ error }));
     });
 
     app.delete('/api/pre-student', app.permission.check('pre-student:delete'), (req, res) => {
@@ -556,6 +625,31 @@ module.exports = (app) => {
                                 return values.length >= 10 ? new Date(values.slice(6, 10), values.slice(3, 5) - 1, values.slice(0, 2)) : null;
                             };
                             const email = values[4] && values[4] != undefined ? values[4] : '';
+                            // data.push({
+                            //     id: index - 1,
+                            //     lastname: values[2],
+                            //     firstname: values[3],
+                            //     email: email.text || email,
+                            //     phoneNumber: values[5],
+                            //     sex: values[6] && values[6].toLowerCase().trim() == 'nam' ? 'male' : 'female',
+                            //     birthday: stringToDate(values[7]),
+                            //     nationality: values[8],
+                            //     residence: values[9],
+                            //     regularResidence: values[10],
+                            //     identityCard: values[11],
+                            //     identityIssuedBy: values[12],
+                            //     identityDate: stringToDate(values[13]),
+                            //     giayPhepLaiXe2BanhSo: values[14],
+                            //     giayPhepLaiXe2BanhNgay: stringToDate(values[15]),
+                            //     giayPhepLaiXe2BanhNoiCap: values[16],
+                            //     giayKhamSucKhoe: values[17] && values[17].toLowerCase().trim() == 'x' ? true : false,
+                            //     giayKhamSucKhoeNgayKham: values[17] && values[17].toLowerCase().trim() == 'x' ? stringToDate(values[18]) : null,
+                            //     hinhThe3x4: values[19] && values[19].toLowerCase().trim() == 'x' ? true : false,
+                            //     hinhChupTrucTiep: values[20] && values[20].toLowerCase().trim() == 'x' ? true : false,
+                            //     lecturerIdentityCard: values[21],
+                            //     lecturerName: values[22],
+                            //     hocPhiPhaiDong: values[23],
+                            // });
                             data.push({
                                 id: index - 1,
                                 lastname: values[2],
@@ -570,16 +664,20 @@ module.exports = (app) => {
                                 identityCard: values[11],
                                 identityIssuedBy: values[12],
                                 identityDate: stringToDate(values[13]),
-                                giayPhepLaiXe2BanhSo: values[14],
-                                giayPhepLaiXe2BanhNgay: stringToDate(values[15]),
-                                giayPhepLaiXe2BanhNoiCap: values[16],
-                                giayKhamSucKhoe: values[17] && values[17].toLowerCase().trim() == 'x' ? true : false,
-                                giayKhamSucKhoeNgayKham: values[17] && values[17].toLowerCase().trim() == 'x' ? stringToDate(values[18]) : null,
-                                hinhThe3x4: values[19] && values[19].toLowerCase().trim() == 'x' ? true : false,
-                                hinhChupTrucTiep: values[20] && values[20].toLowerCase().trim() == 'x' ? true : false,
-                                lecturerIdentityCard: values[21],
-                                lecturerName: values[22],
-                                hocPhiPhaiDong: values[23],
+                                isIdentityCard:values[14] && values[14].toLowerCase().trim() == 'x' ? true : false,
+                                giayPhepLaiXe2BanhSo: values[15],
+                                giayPhepLaiXe2BanhNgay: stringToDate(values[16]),
+                                giayPhepLaiXe2BanhNoiCap: values[17],
+                                isBangLaiA1:values[18] && values[18].toLowerCase().trim() == 'x' ? true : false,
+                                giayKhamSucKhoe: values[19] && values[19].toLowerCase().trim() == 'x' ? true : false,
+                                giayKhamSucKhoeNgayKham: values[19] && values[19].toLowerCase().trim() == 'x' ? stringToDate(values[20]) : null,
+                                hinhThe3x4: values[21] && values[21].toLowerCase().trim() == 'x' ? true : false,
+                                hinhChupTrucTiep: values[22] && values[22].toLowerCase().trim() == 'x' ? true : false,
+                                lecturerIdentityCard: values[23],
+                                lecturerName: values[24],
+                                isDon:values[25] && values[25].toLowerCase().trim() == 'x' ? true : false,
+                                isGiayKhamSucKhoe: values[19] && values[19].toLowerCase().trim() == 'x' ? true : false,
+                                isHinh: values[21] && values[21].toLowerCase().trim() == 'x' ? true : false,
                             });
                             handleUpload(index + 1);
                         }
@@ -608,7 +706,6 @@ module.exports = (app) => {
                         startRow = parseInt(userDatas[1]), endRow = parseInt(userDatas[2]),
                         // totalRow = endRow - startRow + 1,
                         colCourseType = userDatas[6], courseTypeSelected = userDatas[7], colIdCard = userDatas[8];
-
                     const handleUpload = (index = startRow) => {
                         if (index > endRow) { // end loop  
                             if (data.some(({ identityCard }) => identityCard == undefined)) { //check map not 100%, map fail then not push identityCard to data
@@ -715,7 +812,7 @@ module.exports = (app) => {
                         if (index == student.length) {
                             res.send({ error: err });
                         } else {
-                            const { identityCard, course } = student[index];
+                            const { identityCard, course,kySatHach,ngaySatHach } = student[index];
                             app.model.student.get({ identityCard, course }, (error, item) => {
                                 if (error || !item) {
                                     err = error;
@@ -724,6 +821,10 @@ module.exports = (app) => {
                                     Object.entries(changes[parseInt(type)]).forEach(([key, value]) => {
                                         item[key] = value;
                                     });
+
+                                    // thêm kỳ sát hạch và ngày sát hạch
+                                    item.kySatHach= kySatHach;
+                                    item.ngaySatHach=ngaySatHach;
                                     item.modifiedDate = new Date();
                                     item.save((error, student) => {
                                         if (error || !student) {

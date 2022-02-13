@@ -13,7 +13,7 @@ const filterConditionData = [
 class ProfileStudentPage extends AdminPage {
     state = {defaultFilterValue:'all',filterCondition:{},searchText:'',isExpandFilter:true};
     componentDidMount() {
-        T.ready('/user/student-profile', () => {
+        T.ready('/user/profile-student', () => {
             T.showSearchBox(() => {this.setState({filterCondition:{}});});
             T.onSearch = (searchText) => this.onSearch({searchText},()=>this.setState({searchText}));
             this.itemHoanTat.value(this.state.defaultFilterValue);
@@ -97,11 +97,11 @@ class ProfileStudentPage extends AdminPage {
                     <TableCell type='number' content={(pageNumber - 1) * pageSize +index + 1} />
                     <TableCell type='text' content={<>{item.lastname} {item.firstname} <br/> {item.identityCard}</>} />
                     <TableCell type='text' content={item.user ? <>{item.user.email} <br/> {item.user.phoneNumber}</> : ''} />
-                    <TableCell type='checkbox' content={item.isDon} permission={permission} onChanged={active => this.update(item._id, { isDon:active })}/>
-                    <TableCell type='checkbox' content={item.isHinh} permission={permission} onChanged={active => this.update(item._id, { isHinh:active })}/>
-                    <TableCell type='checkbox' content={item.isIdentityCard} permission={permission} onChanged={active => this.update(item._id, { isIdentityCard:active })}/>
-                    <TableCell type='checkbox' content={item.isGiayKhamSucKhoe} permission={permission} onChanged={active => this.update(item._id, { isGiayKhamSucKhoe:active })}/>
-                    <TableCell type='checkbox' content={item.isBangLaiA1} permission={permission} onChanged={active => this.update(item._id, { isBangLaiA1:active })}/>
+                    <TableCell type='checkbox' isSwitch={false} content={item.isDon} permission={permission} onChanged={active => this.update(item._id, { isDon:active })}/>
+                    <TableCell type='checkbox' isSwitch={false} content={item.isHinh} permission={permission} onChanged={active => this.update(item._id, { isHinh:active })}/>
+                    <TableCell type='checkbox' isSwitch={false} content={item.isIdentityCard} permission={permission} onChanged={active => this.update(item._id, { isIdentityCard:active })}/>
+                    <TableCell type='checkbox' isSwitch={false} content={item.isGiayKhamSucKhoe} permission={permission} onChanged={active => this.update(item._id, { isGiayKhamSucKhoe:active })}/>
+                    <TableCell type='checkbox' isSwitch={false} content={item.isBangLaiA1} permission={permission} onChanged={active => this.update(item._id, { isBangLaiA1:active })}/>
                     <TableCell type='checkbox' content={item.isDon && item.isHinh && item.isIdentityCard && item.isGiayKhamSucKhoe && item.isBangLaiA1} />
                 
                 </tr>),

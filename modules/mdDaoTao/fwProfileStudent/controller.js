@@ -1,8 +1,8 @@
 module.exports = app => {
     const menu = { 
-        parentMenu: app.parentMenu.trainning, 
+        parentMenu: app.parentMenu.enrollment, 
         menus: {
-            5101: { title: 'Bổ sung hồ sơ học viên', link: '/user/profile-student' }
+            8030: { title: 'Bổ sung hồ sơ học viên', link: '/user/profile-student' }
         } 
     };
     app.permission.add(
@@ -45,7 +45,7 @@ module.exports = app => {
                 if(filterCondition.isDon=='false' && filterCondition.isHinh=='false' &&filterCondition.isIdentityCard=='false' && filterCondition.isGiayKhamSucKhoe=='false' && filterCondition.isBangLaiA1=='false'){
                     for(const key in filterCondition) pageCondition['$or'].push({[key]:false});
                 }else{
-                    for(const key in filterCondition) filterCondition[key]=='true' && pageCondition['$or'].push({[key]:false});
+                    for(const key in filterCondition) filterCondition[key]=='true' && Object.assign(pageCondition,{[key]:false});
                 }
             }
         }

@@ -270,24 +270,33 @@ module.exports = (app) => {
                             resolve();
                         solve();
                     } else if (type == 'remove') {
-                        const solve = (index = 0) => {
-                            if (index < _studentIds.length) {
-                                app.model.student.get({ _id: _studentIds[index], course: _courseId }, (error, student) => {
-                                    if (error) {
-                                        reject('Lỗi khi cập nhật khóa học!');
-                                    } else if (student) {
-                                        course.teacherGroups.forEach(group => group.student.forEach((item, index) => item._id == student._id.toString() && group.student.splice(index, 1)));
-                                        student.course = null;
-                                        student.save(error => error ? reject('Lỗi khi cập nhật khóa học!') : solve(index + 1));
+                        // gán khóa mặc định khi remove course.
+                        const {courseType} = course;
+                        app.model.course.get({courseType,isDefault:true},(error,defaultCourse)=>{
+                            if(error) reject('không tìm thấy khóa mặc định');
+                            else{
+                                const solve = (index = 0) => {
+                                    if (index < _studentIds.length) {
+                                        app.model.student.get({ _id: _studentIds[index], course: _courseId }, (error, student) => {
+                                            if (error) {
+                                                reject('Lỗi khi cập nhật khóa học!');
+                                            } else if (student) {
+                                                course.teacherGroups.forEach(group => group.student.forEach((item, index) => item._id == student._id.toString() && group.student.splice(index, 1)));
+                                                //gán lại khóa mặc định
+                                                student.course = defaultCourse;
+                                                student.save(error => error ? reject('Lỗi khi cập nhật khóa học!') : solve(index + 1));
+                                            } else {
+                                                solve(index + 1);
+                                            }
+                                        });
                                     } else {
-                                        solve(index + 1);
+                                        course.save(error => error ? reject('Lỗi khi cập nhật khóa học!') : resolve());
                                     }
-                                });
-                            } else {
-                                course.save(error => error ? reject('Lỗi khi cập nhật khóa học!') : resolve());
+                                };
+                                solve();
                             }
-                        };
-                        solve();
+                        });
+                        
                     } else {
                         reject('Dữ liệu không hợp lệ!');
                     }

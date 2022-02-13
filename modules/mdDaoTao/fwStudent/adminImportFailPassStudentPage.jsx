@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { importFailPassStudent, downloadFailPassStudentFile } from './redux';
 import { Link } from 'react-router-dom';
 import { ajaxSelectCourseType } from 'modules/mdDaoTao/fwCourseType/redux';
-import { AdminPage, FormSelect, FormFileBox, FormTextBox, TableCell, renderTable } from 'view/component/AdminPage';
+import { AdminPage, FormSelect, FormFileBox, FormTextBox, TableCell, renderTable, FormDatePicker } from 'view/component/AdminPage';
 
 const importTypes = [
     { id: 0, text: 'Đạt' },
@@ -50,10 +50,11 @@ class ImportPage extends AdminPage {
         if (text) {
             this.onChangeCourseType(text);
         }
-        const params = ['startRow', 'endRow', 'fullnameCol', 'birthdayCol', 'courseCol', 'courseTypeCol', 'courseType', 'idCardCol'],
+        const params = ['startRow', 'endRow', 'fullnameCol', 'birthdayCol', 'courseCol', 'courseTypeCol', 'courseType', 'idCardCol','kySatHach','ngaySatHach'],
             isFileBoxHide = params.some(item => [null, ''].includes(this[item].value()));
-        this.setState({ isFileBoxHide }, () => {
+        this.setState({ isFileBoxHide,kySatHach:this.kySatHach.value(),ngaySatHach:this.ngaySatHach.value() }, () => {
             if (!this.state.isFileBoxHide) {
+                params.slice(-2);//không đưa kỳ sát hạch,ngày sát hạch xuống backend.
                 const userData = params.reduce((result, item) => `${result}:${item == 'courseType' ? this.state.courseTypeName : this[item].value()}`, 'FailPassStudentFile');
                 this.fileBox.setData(userData);
             }
@@ -67,7 +68,7 @@ class ImportPage extends AdminPage {
 
     save = () => {
         if (this.state.data && this.state.data.length > 0) {
-            this.props.importFailPassStudent(this.state.data.map(({ identityCard, course }) => ({ identityCard, course })), this.importType.value(), () => this.setState({ data: [], isFileBoxHide: false }));
+            this.props.importFailPassStudent(this.state.data.map(({ identityCard, course }) => ({ identityCard, course,ngaySatHach:this.state.ngaySatHach,kySatHach:this.state.kySatHach })), this.importType.value(), () => this.setState({ data: [], isFileBoxHide: false }));
         } else T.notify('Chưa có thông tin học viên!', 'danger');
     }
 
@@ -104,6 +105,8 @@ class ImportPage extends AdminPage {
                         <FormSelect ref={e => this.courseType = e} data={ajaxSelectCourseType} label='Loại khóa học'
                             onChange={data => this.onChange(undefined, data.text)} className='col-md-6' />
                         <FormSelect ref={e => this.importType = e} label='Loại file tải lên' data={importTypes} className='col-md-6' />
+                        <FormTextBox ref={e => this.kySatHach = e} onChange={e => this.onChange(e)} label='Kỳ sát hạch' className='col-md-6' type='text' />
+                        <FormDatePicker ref={e => this.ngaySatHach = e} onChange={() => this.onChange()} label='Ngày sát hạch' type='date-mask' className='col-md-6' />
                         <FormTextBox ref={e => this.startRow = e} onChange={e => this.onChange(e)} label='Dòng bắt đầu' className='col-md-6' type='number' min={2} max={this.endRow ? parseInt(this.endRow.value()) : ''} />
                         <FormTextBox ref={e => this.endRow = e} onChange={e => this.onChange(e)} label='Dòng kết thúc' className='col-md-6' type='number' min={this.startRow ? parseInt(this.startRow.value()) : ''} />
                         <FormTextBox ref={e => this.fullnameCol = e} onChange={e => this.onChange(e)} label='Cột Họ và tên' className='col-md-4' />
