@@ -15,7 +15,6 @@ class PaymentInfoModal extends AdminModal {
     onShow = () => {
         const { name, courseFeeName, fee, student } = this.props || { name: '', courseFeeName: ''};
         const userId = student && student.user ? student.user._id : '';
-        console.log(courseFeeName);
         this.itemName.value(name);
         this.itemCourseFeeName.value(courseFeeName);
         this.itemFee.value(fee ? T.numberDisplay(fee) + ' đồng' : 0);

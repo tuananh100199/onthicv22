@@ -121,13 +121,8 @@ module.exports = (app) => {
                 app.model.student.addPayment({ _id: item._id }, data, (error, item) => {
                     if(error) res.send({error});
                     else{
-                        if(courseFee && (fee-data.fee) <= (courseFee/2) && !item.course){
-                            app.model.course.get({isDefault: true, courseType: item.courseType}, (error,course) =>{
-                                if(error || !course) res.send({error, item});
-                                else{
-                                    app.model.student.update({_id: item._id},{course: course._id}, (error, student) => res.send({ error, item: student}));
-                                }
-                            });
+                        if(courseFee && (fee-data.fee) <= (courseFee/2)){
+                            app.model.student.update({_id: item._id}, {activeKhoaLyThuyet: true}, (error, student) => res.send({ error, item: student}));
                         } else res.send({ error, student: item });
                     }
                 });
