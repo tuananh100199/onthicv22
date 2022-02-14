@@ -10,46 +10,46 @@ module.exports = app => {
     app.get('/user/candidate', app.permission.check('candidate:read'), app.templates.admin);
 
     // APIs -----------------------------------------------------------------------------------------------------------------------------------------
-    const getDefaultCourseFee = data=>new Promise((resolve,reject)=>{// thêm courseFee mặc định
-        if(!data.courseType){
-            reject('Không có loại khóa học!');
-        }else if(data.courseFee && data.courseFee!=''){// Có gói học phí
-            resolve(data.courseFee);
-        }else{
-            app.model.courseFee.get({isDefault:true,courseType:data.courseType},(error,item)=>{
-                if(error || !item) reject('Lỗi không tìm thấy gói học phí mặc định!');
-                else{
-                    resolve(item._id);
-                }
-            });
-        }
-    });
+    // const getDefaultCourseFee = data=>new Promise((resolve,reject)=>{// thêm courseFee mặc định
+    //     if(!data.courseType){
+    //         reject('Không có loại khóa học!');
+    //     }else if(data.courseFee && data.courseFee!=''){// Có gói học phí
+    //         resolve(data.courseFee);
+    //     }else{
+    //         app.model.courseFee.get({isDefault:true,courseType:data.courseType},(error,item)=>{
+    //             if(error || !item) reject('Lỗi không tìm thấy gói học phí mặc định!');
+    //             else{
+    //                 resolve(item._id);
+    //             }
+    //         });
+    //     }
+    // });
 
-    const getDefaultDiscount = data=>new Promise((resolve,reject)=>{// thêm discount mặc định
-        if(data.discount&& data.discount!=''){// Có giảm giá
-            resolve(data.discount);
-        }else{
-            app.model.discount.get({isDefault:true},(error,item)=>{
-                if(error || !item) reject('Lỗi không tìm thấy giảm giá mặc định!');
-                else{
-                    resolve(item._id);
-                }
-            });
-        }
-    });
+    // const getDefaultDiscount = data=>new Promise((resolve,reject)=>{// thêm discount mặc định
+    //     if(data.discount&& data.discount!=''){// Có giảm giá
+    //         resolve(data.discount);
+    //     }else{
+    //         app.model.discount.get({isDefault:true},(error,item)=>{
+    //             if(error || !item) reject('Lỗi không tìm thấy giảm giá mặc định!');
+    //             else{
+    //                 resolve(item._id);
+    //             }
+    //         });
+    //     }
+    // });
 
-    const getDefaultCoursePayment = data=>new Promise((resolve,reject)=>{// thêm coursePayment mặc định
-        if(data.coursePayment && data.coursePayment!=''){// Có số lần đóng học phí
-            resolve(data.coursePayment);
-        }else{
-            app.model.coursePayment.get({default:true},(error,item)=>{
-                if(error || !item) reject('Lỗi không tìm thấy số lần đóng học phí mặc định!');
-                else{
-                    resolve(item._id);
-                }
-            });
-        }
-    });
+    // const getDefaultCoursePayment = data=>new Promise((resolve,reject)=>{// thêm coursePayment mặc định
+    //     if(data.coursePayment && data.coursePayment!=''){// Có số lần đóng học phí
+    //         resolve(data.coursePayment);
+    //     }else{
+    //         app.model.coursePayment.get({default:true},(error,item)=>{
+    //             if(error || !item) reject('Lỗi không tìm thấy số lần đóng học phí mặc định!');
+    //             else{
+    //                 resolve(item._id);
+    //             }
+    //         });
+    //     }
+    // });
     
     app.get('/api/candidate/page/:pageNumber/:pageSize', app.permission.check('candidate:read'), (req, res) => {
         const pageNumber = parseInt(req.params.pageNumber),
@@ -123,13 +123,22 @@ module.exports = app => {
         const changes = req.body.changes;
         changes.staff = req.session.user;
         changes.modifiedDate = new Date();
-        changes.courseFee=='' && delete changes.courseFee;
-        changes.discount=='' && delete changes.discount;
-        changes.coursePayment=='' && delete changes.coursePayment;
+        // changes.courseFee=='' && delete changes.courseFee;
+        changes.discount=='' && delete changes.discount;//Không phải học viên nào cũng có discount
+        // changes.coursePayment=='' && delete changes.coursePayment;
         app.model.candidate.update(req.body._id, changes, (error, item) => {
             if (error) {
                 res.send({ error });
             } else if (changes.state == 'UngVien') {
+                const getDefaultCourse = new Promise((resolve,reject)=>{
+                    const courseTypeId = changes.courseType;
+                    app.model.course.get({courseType:courseTypeId,isDefault:true},(error,item)=>{
+                        if(error || !item) reject('Không tìm thấy khóa học mặc định');
+                        else{
+                            resolve(item);
+                        }
+                    });
+                });
                 const createUser = new Promise((resolve, reject) => { // Tạo user cho candidate
                     const condition = {};
                     if (item.identityCard) {
@@ -179,8 +188,8 @@ module.exports = app => {
                         }
                     });
                 });
-                Promise.all([createUser,getDefaultCourseFee(changes),getDefaultDiscount(changes),getDefaultCoursePayment(changes)])// Gán gói học phí , giảm giá, số lần thanh toán mặc định
-                .then(([_userId,_courseFeeId,_discountId,_coursePaymentId])=>{
+                Promise.all([createUser,getDefaultCourse])// Gán gói học phí , giảm giá, số lần thanh toán mặc định
+                .then(([_userId,defaultCourse])=>{
                     item.user = _userId;
                     item.save();
                     const dataStudent = {
@@ -192,14 +201,15 @@ module.exports = app => {
                         lastname: item.lastname,
                         courseType: item.courseType,
                         division: item.division,
-                        courseFee:_courseFeeId,
-                        discount:_discountId,
-                        coursePayment:_coursePaymentId,
+                        courseFee:item.courseFee,
+                        discount:item.discount,
+                        coursePayment:item.coursePayment,
                         isDon:item.isDon,
                         isHinh:item.isHinh,
                         isIdentityCard:item.isIdentityCard,
                         isGiayKhamSucKhoe:item.isGiayKhamSucKhoe,
                         isBangLaiA1:item.isBangLaiA1,
+                        course:defaultCourse
                     };
                     app.model.student.create(dataStudent, (error) => res.send({ error, item }));
                 }).catch(error=>res.send({error}));

@@ -77,7 +77,7 @@ class DebtTrackingPage extends AdminPage {
                 <TableCell content={item.course && item.course.name} style={{ whiteSpace: 'nowrap' }} />
                 {/* <TableCell type='checkbox' content={isAutoActiveLyThuyet || item.activeKhoaLyThuyet} permission={permission} onChanged = {value=>this.activeCourse(isAutoActiveLyThuyet,item._id,{activeKhoaLyThuyet:value})}/> */}
                 {/* <TableCell type='checkbox' content={isAutoActiveThucHanh || item.activeKhoaThucHanh} permission={permission} onChanged = {value=>this.activeCourse(isAutoActiveThucHanh,item._id,{activeKhoaThucHanh:value})}/> */}
-                <TableCell type='checkbox' content={item.course!=null} permission={permission} onChanged = {value=>this.activeCourse(value,item,'lyThuyet')}/>
+                <TableCell type='checkbox' content={item.activeKhoaLyThuyet} permission={permission} onChanged = {value=>this.activeCourse(value,item,'lyThuyet')}/>
                 <TableCell type='checkbox' content={(item.course &&!item.course.isDefault)}/>
             </tr>;
             }
