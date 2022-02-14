@@ -45,7 +45,7 @@ class DebtTrackingPage extends AdminPage {
     }
 
     render() {
-        const permission = this.getCurrentPermissions('debt');
+        const permission = this.getUserPermission('debt');
         let { pageNumber, pageSize, pageTotal, pageCondition, totalItem, list } = this.props.student && this.props.student.page ?
             this.props.student.page : { pageNumber: 1, pageSize: 50, pageTotal: 1, pageCondition: {}, totalItem: 0, list: [] };
 
