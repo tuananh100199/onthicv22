@@ -110,6 +110,7 @@ class CourseTypeEditPage extends AdminPage {
                         this.itemPracticeNumOfReviewHours.value(item.practiceNumOfReviewHours);
                         this.itemSoLuongCauHoiThi.value(item.soLuongCauHoiThi);
                         this.itemSoLuongCauDat.value(item.soLuongCauDat);
+                        this.itemContentSyntax.value(item.contentSyntax);
                         this.itemImage.setData('course-type:' + item._id);
 
                         this.itemTitle.focus();
