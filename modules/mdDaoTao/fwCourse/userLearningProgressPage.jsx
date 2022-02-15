@@ -144,7 +144,7 @@ class LecturerStudentPage extends AdminPage {
                 } iconBackgroundColor='#18ffff' text={'Thi sát hạch'} />
                 <PageIcon className='col-md-4' to={'#'} icon='fa-id-card' subtitle={
                     <p>
-                        {(student.datSatHach) ? 'Đã nhận' : 'Chưa nhận'}
+                        {(student.isLicense) ? 'Đã có tại trung tâm' : 'Chưa có'}
                     </p>
                 } iconBackgroundColor='#1488db' text={'Nhận GPLX'} />
             </div>
