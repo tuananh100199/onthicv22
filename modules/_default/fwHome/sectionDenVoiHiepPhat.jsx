@@ -36,6 +36,58 @@ class SectionDenVoiHiepPhat extends React.Component {
                         </div>
                         <div className='wrap_den_voi_HP'>
                             <div className='row'>
+                            <div className='col-lg-4 col-sm-6 col-xs-12'>
+                                    <div className='wrap_item'>
+                                        <div className='item'>
+                                            <div className='icon_item_den_voi_HP'>
+                                                <i className='fa fa-handshake-o' aria-hidden='true' />
+                                            </div>
+                                            <p className='title_item_den_voi_HP'>Đào tạo chất lượng</p>
+                                        </div>
+                                       <div className='detail'>
+                                            <h4 className='hover_title_item'>Đào tạo chất lượng</h4>
+                                            <p className='description'>Kiến thức đầy đủ, chương trình giảng dạy khoa học, 1 giáo viên dạy kèm 1 học viên.
+                                            </p>
+                                            <p  className='description'>Tỷ lệ thi đậu sát hạch Hiệp Phát luôn đảm bảo trên 90%.
+                                            </p>
+                                       </div>
+                                    </div>
+                                </div>
+
+                                <div className='col-lg-4 col-sm-6 col-xs-12'>
+                                    <div className='wrap_item'>
+                                        <div className='item'>
+                                            <div className='icon_item_den_voi_HP'>
+                                                <i className='fa fa-map' aria-hidden='true' />
+                                            </div>
+                                            <p className='title_item_den_voi_HP'>Sân tập lái hiện đại</p>
+                                        </div>
+                                       <div className='detail'>
+                                            <h4 className='hover_title_item'>Sân tập lái hiện đại</h4>
+                                            <p className='description'>Hệ thống sân tập đạt chuẩn Singapore, được thiết kế hợp lý, giúp học viên
+                                            đạt hiệu quả nhất khi học
+                                            </p>
+                                       </div>
+                                    </div>
+                                </div>
+
+                                <div className='col-lg-4 col-sm-6 col-xs-12'>
+                                    <div className='wrap_item'>
+                                        <div className='item'>
+                                            <div className='icon_item_den_voi_HP'>
+                                                <i className='fa fa-car' aria-hidden='true' />
+                                            </div>
+                                            <p className='title_item_den_voi_HP'>Xe đời mới</p>
+                                        </div>
+                                       <div className='detail'>
+                                            <h4 className='hover_title_item'>Xe đời mới</h4>
+                                            <p className='description'>Đến với Hiệp Phát bạn sẽ được học với những dòng xe hiện đại nhất,
+                                            có khả năng tiếp xúc đến những công nghệ hàng đầu của thế giới.
+                                            </p>
+                                       </div>
+                                    </div>
+                                </div>
+
                                 <div className='col-lg-4 col-sm-6 col-xs-12'>
                                     <div className='wrap_item'>
                                         <div className='item'>
@@ -70,23 +122,7 @@ class SectionDenVoiHiepPhat extends React.Component {
                                        </div>
                                     </div>
                                 </div>
-                                <div className='col-lg-4 col-sm-6 col-xs-12'>
-                                    <div className='wrap_item'>
-                                        <div className='item'>
-                                            <div className='icon_item_den_voi_HP'>
-                                                <i className='fa fa-handshake-o' aria-hidden='true' />
-                                            </div>
-                                            <p className='title_item_den_voi_HP'>Đào tạo chất lượng</p>
-                                        </div>
-                                       <div className='detail'>
-                                            <h4 className='hover_title_item'>Đào tạo chất lượng</h4>
-                                            <p className='description'>Kiến thức đầy đủ, chương trình giảng dạy khoa học, 1 giáo viên dạy kèm 1 học viên.
-                                            </p>
-                                            <p  className='description'>Tỷ lệ thi đậu sát hạch Hiệp Phát luôn đảm bảo trên 90%.
-                                            </p>
-                                       </div>
-                                    </div>
-                                </div>
+                                
                                 <div className='col-lg-4 col-sm-6 col-xs-12'>
                                     <div className='wrap_item'>
                                         <div className='item'>
@@ -105,38 +141,8 @@ class SectionDenVoiHiepPhat extends React.Component {
                                        </div>
                                     </div>
                                 </div>
-                                <div className='col-lg-4 col-sm-6 col-xs-12'>
-                                    <div className='wrap_item'>
-                                        <div className='item'>
-                                            <div className='icon_item_den_voi_HP'>
-                                                <i className='fa fa-map' aria-hidden='true' />
-                                            </div>
-                                            <p className='title_item_den_voi_HP'>Sân tập lái hiện đại</p>
-                                        </div>
-                                       <div className='detail'>
-                                            <h4 className='hover_title_item'>Sân tập lái hiện đại</h4>
-                                            <p className='description'>Hệ thống sân tập đạt chuẩn Singapore, được thiết kế hợp lý, giúp học viên
-                                            đạt hiệu quả nhất khi học
-                                            </p>
-                                       </div>
-                                    </div>
-                                </div>
-                                <div className='col-lg-4 col-sm-6 col-xs-12'>
-                                    <div className='wrap_item'>
-                                        <div className='item'>
-                                            <div className='icon_item_den_voi_HP'>
-                                                <i className='fa fa-car' aria-hidden='true' />
-                                            </div>
-                                            <p className='title_item_den_voi_HP'>Xe đời mới</p>
-                                        </div>
-                                       <div className='detail'>
-                                            <h4 className='hover_title_item'>Xe đời mới</h4>
-                                            <p className='description'>Đến với Hiệp Phát bạn sẽ được học với những dòng xe hiện đại nhất,
-                                            có khả năng tiếp xúc đến những công nghệ hàng đầu của thế giới.
-                                            </p>
-                                       </div>
-                                    </div>
-                                </div>
+                                
+                                
                             </div>
                         </div>
                     </div>
