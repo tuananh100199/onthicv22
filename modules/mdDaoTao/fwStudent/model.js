@@ -85,6 +85,9 @@ module.exports = (app) => {
             }],
             lock: { type: Boolean, default: false }
         },
+        // active manual
+        activeKhoaLyThuyet:{type:Boolean, default:false},
+        activeKhoaThucHanh:{type:Boolean, default:false},
 
         tienDoHocTap: {},
         tienDoThiHetMon: {},
@@ -111,7 +114,8 @@ module.exports = (app) => {
         datSatHach: { type: Boolean, default: false },
         totNghiep: { type: Boolean, default: false },
         kySatHach:String,
-
+        ngaySatHach:Date,
+        
         // nhận chứng chỉ sơ cấp, giấy phép lái xe
         isCertification:{ type: Boolean, default: false },  // trung tâm đã có CCSC
         hasCertification:{type: Boolean, default: false},   // Học viên đã nhận được CCSC
@@ -246,7 +250,11 @@ module.exports = (app) => {
         },
 
         // changes = { $set, $unset, $push, $pull }
-        update: (_id, changes, done) => {
+        update: (_id, changes,$unset, done) => {
+            if (!done) {
+                done = $unset;
+                $unset = {};
+            }
             if (changes && changes.course) {
                 app.model.course.get(changes.course, (error, item) => {
                     if (error) {
@@ -260,14 +268,14 @@ module.exports = (app) => {
                             Object.assign(changes.tienDoHocTap, obj);
                         });
                         changes.modifiedDate = new Date();
-                        model.findOneAndUpdate({ _id }, changes, { new: true }).populate('user', 'email phoneNumber').populate('division', 'id title').exec(done);
+                        model.findOneAndUpdate({ _id }, {$set:changes,$unset}, { new: true }).populate('user', 'email phoneNumber').populate('division', 'id title').exec(done);
                     } else {
                         done();
                     }
                 });
             } else {
                 changes.modifiedDate = new Date();
-                model.findOneAndUpdate({ _id }, changes, { new: true }).populate('user', 'email phoneNumber').populate('division', 'id title').populate('course', 'name').exec(done);
+                model.findOneAndUpdate({ _id }, {$set:changes,$unset}, { new: true }).populate('user', 'email phoneNumber').populate('division', 'id title').populate('course', 'name').exec(done);
             }
         },
 
@@ -367,6 +375,10 @@ module.exports = (app) => {
 
         addPayment: (_id, data, done) => {
             model.findOneAndUpdate(_id, { $push: { lichSuDongTien: data } }, { new: true }).exec(done);
+        },
+
+        addPaymentExtra: (_id, data, done) => {
+            model.findOneAndUpdate(_id, { $push: { lichSuMuaThemGoi: data } }, { new: true }).exec(done);
         },
 
         addFeedback: (data, done) => {

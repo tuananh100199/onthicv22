@@ -1,12 +1,12 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { getStudentByUser } from 'modules/mdDaoTao/fwStudent/redux';
+import { getCourseByStudent } from 'modules/mdDaoTao/fwCourse/redux';
 import { getBankByStudent } from 'modules/_default/fwBank/redux';
 import { updateStudent } from 'modules/mdDaoTao/fwStudent/redux';
-import { getCourseFeeByStudent } from './redux';
+import { getCourseFeeByStudent } from 'modules/_default/fwCourseFee/redux';
 import { Link } from 'react-router-dom';
 import { CopyToClipboard } from 'react-copy-to-clipboard';
-import { AdminPage, TableCell, renderTable, AdminModal, FormTextBox, FormRichTextBox } from 'view/component/AdminPage';
+import { AdminPage, TableCell, renderTable, AdminModal, FormTextBox } from 'view/component/AdminPage';
 
 
 const previousRoute = '/user';
@@ -167,17 +167,16 @@ class CancelPaymentModal extends AdminModal {
         T.ready(() => this.onShown(() => {}));
     }
 
-    onShow = () => {
-        this.setState({ className: 'd-none'});
+    checkOther = (item) => {
+        if(item && item != ''){
+            $('#khac').prop('checked',true);
+        } else{
+            $('#khac').prop('checked',false);
+        }
     }
 
-    checked = (e) =>{
+    checked = () =>{
         this.setState({showSubmitBtn: true});
-        if(e.target.id == 'khac'){
-            this.setState({className: 'd-block'});
-        } else{
-            this.setState({ className: 'd-none'});
-        }
     }
 
     render = () => this.renderModal({
@@ -200,11 +199,11 @@ class CancelPaymentModal extends AdminModal {
                         </label>
                     </div>
                     <div className='form-check'>
-                        <input className='form-check-input' type='radio' name='lyDo' id='khac' onChange={e => this.checked(e)}/>
+                        <input className='form-check-input' type='radio' name='lyDo' id='khac' onChange={this.checked}/>
                         <label className='form-check-label' htmlFor='khac'>
                             Khác:
+                            <FormTextBox ref={e => this.itemLyDo = e} onChange={e => this.checkOther(e.target.value)} type='text' readOnly={false} />
                         </label>
-                        <FormRichTextBox className={this.state.className} ref={e => this.itemLyDo = e} readOnly={false} />
                     </div>
                 </div>
             </div>),
@@ -222,43 +221,48 @@ class CancelPaymentModal extends AdminModal {
 class UserPaymentInfo extends AdminPage {
     state = { name: '...', soTienThanhToan: 0, cart: [],count: 0 };
     componentDidMount() {
-        const route = T.routeMatcher('/user/hoc-vien/cong-no/:_id/tang-them'),
+        const route = T.routeMatcher('/user/hoc-vien/khoa-hoc/:_id/cong-no/tang-them'),
             _id = route.parse(window.location.pathname)._id;
-        const userId = this.props.system && this.props.system.user && this.props.system.user._id;
-        this.setState({ courseTypeId: _id });
+        this.setState({ courseId: _id });
         if (_id) {
-            T.ready('/user', () => {
-                this.props.getStudentByUser({user: userId, courseType: _id}, data => {
-                    if (data) {
+            T.ready('/user/hoc-vien/khoa-hoc/' + _id, () => {
+                this.props.getCourseByStudent(_id, data => {
+                    if (data.error) {
+                        T.notify('Lấy khóa học bị lỗi!', 'danger');
+                        this.props.history.push(previousRoute);
+                    } else if (data.notify) {
+                        T.alert(data.notify, 'error', false, 2000);
+                        this.props.history.push(previousRoute);
+                    } else if (data.item && data.student) {
                         let count = 0;
-                        data.cart && data.cart.item && data.cart.item.forEach(item => count = count + item.quantity);
+                        data.student.cart && data.student.cart.item && data.student.cart.item.forEach(item => count = count + item.quantity);
                         this.setState({
                             ...data.item,
-                            cart: data.cart ? data.cart.item : [],
+                            cart: data.student.cart ? data.student.cart.item : [],
                             count: count,
-                            lock: data.cart ? data.cart.lock : false,
-                            transactionId: data.cart ? data.cart.transactionId : '',
-                            student: data
+                            lock: data.student.cart ? data.student.cart.lock : false,
+                            transactionId: data.student.cart ? data.student.cart.transactionId : '',
+                            student: data.student
                         });
                         this.props.getBankByStudent({ active: true }, (item) => {
                             if (item) {
                                 this.setState({
                                     defaultContentSyntaxExtra: item.contentSyntaxExtra,
-                                    contentSyntaxExtra: item.contentSyntaxExtra && item.contentSyntaxExtra.replace('{cmnd}', data.identityCard).replace('{ten_loai_khoa_hoc}', data.courseType.contentSyntax).replace('{ma_giao_dich}', data.cart ? data.cart.transactionId : ''),
+                                    contentSyntaxExtra: item.contentSyntaxExtra && item.contentSyntaxExtra.replace('{cmnd}', data.student.identityCard).replace('{ten_loai_khoa_hoc}', data.student.courseType.contentSyntax).replace('{ma_giao_dich}', data.student.cart ? data.student.cart.transactionId : ''),
                                     code: item.code, nameBank: item.name,
                                     accounts: item.accounts.find(({ active }) => active == true),
                                 });
-                                if (data.cart.lock) {
-                                    const cart = data.cart ? data.cart.item : [];
+                                if (data.student.cart.lock) {
+                                    const cart = data.student.cart ? data.student.cart.item : [];
                                     const accounts = item.accounts.find(({ active }) => active == true);
                                     const soTienThanhToan = cart && cart.length ? cart.map(item => item.fees).reduce((prev, next) => parseInt(prev) + parseInt(next)) : 0;
                                     this.itemBankName.value(item.code + ' - ' + item.name);
                                     this.itemAccounts.value(accounts && accounts.number ? accounts.number : '');
                                     this.itemAccountsUser.value(accounts && accounts.holder ? accounts.holder : '');
                                     this.itemFee.value(T.numberDisplay(soTienThanhToan));
-                                    this.itemContentSyntaxExtra.value(item.contentSyntaxExtra && item.contentSyntaxExtra.replace('{cmnd}', data.identityCard).replace('{ten_loai_khoa_hoc}', data.courseType.contentSyntax).replace('{ma_giao_dich}', data.cart ? data.cart.transactionId : ''));
+                                    this.itemContentSyntaxExtra.value(item.contentSyntaxExtra && item.contentSyntaxExtra.replace('{cmnd}', data.student.identityCard).replace('{ten_loai_khoa_hoc}', data.student.courseType.contentSyntax).replace('{ma_giao_dich}', data.student.cart ? data.student.cart.transactionId : ''));
                                 }
-                                this.props.getCourseFeeByStudent({ courseType: data.courseType._id });
+                                this.props.getCourseFeeByStudent({ courseType: data.item.courseType._id });
                             }
                         });
                     } else {
@@ -333,8 +337,8 @@ class UserPaymentInfo extends AdminPage {
     }
 
     render() {
-        const userPageLink = '/user/hoc-vien/cong-no/' + this.state.courseTypeId ;
-        const { cart, transactionId, lock, accounts, contentSyntaxExtra,count, student } = this.state;
+        const userPageLink = '/user/hoc-vien/khoa-hoc/' + this.state.courseId + '/cong-no';
+        const { cart, transactionId, lock, accounts, contentSyntaxExtra,count } = this.state;
         const studentId = this.state.student && this.state.student._id;
         const soTienThanhToan = cart && cart.length ? cart.map(item => item.fees).reduce((prev, next) => parseInt(prev) + parseInt(next)) : 0;
         const listCourseFee = this.props.courseFee && this.props.courseFee.list;
@@ -370,6 +374,7 @@ class UserPaymentInfo extends AdminPage {
                     <th style={{ width: 'auto', textAlign: 'center' }}>#</th>
                     <th style={{ width: '100%' }}>Tên gói</th>
                     <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Số tiền</th>
+                    {/* <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Loại gói học phí</th> */}
                     <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Mô tả</th>
                     <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Số lượng</th>
                 </tr>),
@@ -378,14 +383,15 @@ class UserPaymentInfo extends AdminPage {
                     <TableCell type='number' content={index + 1} />
                     <TableCell type='text' content={item.name} />
                     <TableCell type='number' content={item.fee} />
+                    {/* <TableCell type='text' style={{ whiteSpace: 'nowrap', textAlign: 'center' }} content={item.feeType ? item.feeType.title : ''} /> */}
                     <TableCell type='text' style={{ whiteSpace: 'nowrap', textAlign: 'center' }} content={item.description} />
                     <TableCell type='text' style={{ whiteSpace: 'nowrap', textAlign: 'center' }} content={item.quantity} />
                 </tr>),
         });
         return this.renderPage({
             icon: 'fa fa-money',
-            title: 'Học phí tăng thêm: ' + (student && student.courseType && student.courseType.title ? student.courseType.title: ''),
-            breadcrumb: [<Link key={0} to={userPageLink}>Theo dõi công nợ</Link>, 'Học phí tăng thêm'],
+            title: 'Học phí tăng thêm: ' + (this.state.name),
+            breadcrumb: [<Link key={0} to={userPageLink}>Khóa học</Link>, 'Học phí'],
             content: (
                 <>
                     {!lock ? <div className='tile'>
@@ -454,5 +460,5 @@ class UserPaymentInfo extends AdminPage {
 }
 
 const mapStateToProps = state => ({ system: state.system, course: state.trainning.course, courseFee: state.accountant.courseFee });
-const mapActionsToProps = { getStudentByUser, getBankByStudent, getCourseFeeByStudent, updateStudent };
+const mapActionsToProps = { getCourseByStudent, getBankByStudent, getCourseFeeByStudent, updateStudent };
 export default connect(mapStateToProps, mapActionsToProps)(UserPaymentInfo);

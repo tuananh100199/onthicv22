@@ -43,7 +43,6 @@ module.exports = (app) => {
 
     app.put('/api/fee-type/default', app.permission.check('feeType:write'), (req, res) => {
         const { feeType } = req.body;
-        console.log('feeType: ',feeType);
         app.model.feeType.update({}, { official: false }, (error) => {
             if (error) res.send({ error });
             else app.model.feeType.update(feeType._id, { official: true }, (error, item) => {

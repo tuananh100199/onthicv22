@@ -164,7 +164,7 @@ class UserCoursePageDetail extends AdminPage {
                     <PageIconHeader text='Thông tin chung' />
 
                     <PageIcon to={`/user/hoc-vien/khoa-hoc/thong-tin/${courseId}`} icon='fa-info' iconBackgroundColor='#17a2b8' text='Thông tin khóa học' />
-                    <PageIcon to='#' icon='fa-graduation-cap ' text='Xem điểm thi tốt nghiệp' iconBackgroundColor={showDiemThiTotNghiep ? '#8d6e63' : 'secondary'} onClick={(e) => { e.preventDefault(); showDiemThiTotNghiep ? this.viewScoreModal.show({ student, course }) : T.alert('Bạn chưa có điểm thi tốt nghiệp!', 'error', false, 8000); }} />
+                    {course && !course.isDefault ? <PageIcon to='#' icon='fa-graduation-cap ' text='Xem điểm thi tốt nghiệp' iconBackgroundColor={showDiemThiTotNghiep ? '#8d6e63' : 'secondary'} onClick={(e) => { e.preventDefault(); showDiemThiTotNghiep ? this.viewScoreModal.show({ student, course }) : T.alert('Bạn chưa có điểm thi tốt nghiệp!', 'error', false, 8000); }} /> : null}
                     <PageIcon to={`/user/course/${courseId}/forum`} icon='fa-users' iconBackgroundColor='#3e24aa' text='Forum' />
                     <PageIcon to={''} icon='fa-star' iconBackgroundColor='orange' text='Đánh giá giáo viên' visible={teacher != null}
                         onClick={(e) => { e.preventDefault(); this.modal.show(); }} subtitle={rate ? rate + ' sao' : 'Chưa đánh giá'} />
@@ -173,14 +173,21 @@ class UserCoursePageDetail extends AdminPage {
                     {teacher && <PageIcon to='#' icon='fa-refresh' iconBackgroundColor='#D00' text='Thay đổi giáo viên' onClick={(e) => { e.preventDefault(); this.changeLecturerModal.show({ student, course }); }} />}
                     <PageIcon to={`/user/hoc-vien/khoa-hoc/${courseId}/tien-do-hoc-tap`} icon='fa-line-chart' iconBackgroundColor='#69f0ae' text='Tiến độ học tập' />
                     <PageIcon to={`/user/hoc-vien/khoa-hoc/${courseId}/cong-no`} icon='fa-money' iconBackgroundColor='#900' text='Học phí' />
-                    {subjects.length ? <>
+                    {course && !course.isDefault && subjects.length ? 
+                    <>
                         <PageIconHeader text='Môn học lý thuyết' />
                         {subjects.map((subject, index) =>
                             !subject.monThucHanh && <PageIcon key={index} to={`/user/hoc-vien/khoa-hoc/${courseId}/mon-hoc/${subject._id}`} icon='fa-briefcase' iconBackgroundColor='#1488db' text={subject ? subject.title : ''} />
                         )}
-                    </> : null}
+                    </> : (course && course.isDefault && student && student.activeKhoaLyThuyet ? 
+                    <>
+                        <PageIconHeader text='Môn học lý thuyết' />
+                        {subjects.map((subject, index) =>
+                            !subject.monThucHanh && <PageIcon key={index} to={`/user/hoc-vien/khoa-hoc/${courseId}/mon-hoc/${subject._id}`} icon='fa-briefcase' iconBackgroundColor='#1488db' text={subject ? subject.title : ''} />
+                        )}
+                    </> : null)}
 
-                    {subjects.length ? <>
+                    {course && !course.isDefault && subjects.length ? <>
                         <PageIconHeader text='Môn học thực hành' />
                         {subjects.map((subject, index) =>
                             subject.monThucHanh && <PageIcon key={index} to={`/user/hoc-vien/khoa-hoc/${courseId}/mon-hoc/${subject._id}`} onClick={() => !showMonThucHanh ? T.alert('Vui lòng hoàn thành hai môn học: Pháp luật giao thông đường bộ và Kỹ thuật lái xe để mở khóa!', 'error', false, 8000) : null} notify={!showMonThucHanh} icon='fa-briefcase' iconBackgroundColor={showMonThucHanh ? '#1488db' : 'secondary'} text={subject ? subject.title : ''} />
@@ -188,12 +195,14 @@ class UserCoursePageDetail extends AdminPage {
                         {teacher && <PageIcon to={`/user/hoc-vien/khoa-hoc/${courseId}/dang-ky-lich-hoc`} onClick={() => !showMonThucHanh ? T.alert('Vui lòng hoàn thành hai môn học: Pháp luật giao thông đường bộ và Kỹ thuật lái xe để mở khóa!', 'error', false, 8000) : null} icon='fa-calendar-plus-o' notify={!showMonThucHanh} iconBackgroundColor={showMonThucHanh ? '#8d74aa' : 'secondary'} text='Đăng ký lịch học' />}
                         <PageIcon to={`/user/hoc-vien/khoa-hoc/${courseId}/thoi-khoa-bieu`} icon='fa-calendar' onClick={() => !showMonThucHanh ? T.alert('Vui lòng hoàn thành hai môn học: Pháp luật giao thông đường bộ và Kỹ thuật lái xe để mở khóa!', 'error', false, 8000) : null} notify={!showMonThucHanh} iconBackgroundColor={showMonThucHanh ? '#ffc107' : 'secondary'} text='Thời khóa biểu' />
                     </> : null}
-
-                    <PageIconHeader text='Liên lạc' />
-                    <PageIcon to={`/user/chat/${courseId}`} icon='fa-comments-o' iconBackgroundColor='#28a745' text='Chat' visible={this.state.chatActive} />
-                    <PageIcon to={`/user/hoc-vien/khoa-hoc/${courseId}/phan-hoi`} icon='fa-commenting-o' iconBackgroundColor='#dc3545' text='Phản hồi' />
-
-                    <CirclePageButton type='custom' customClassName='btn-success' customIcon='fa-comments-o' onClick={() => this.props.history.push('/user/chat/' + this.state.courseId)} />
+                    
+                    {course && !course.isDefault ?
+                    <>
+                        <PageIconHeader text='Liên lạc' />
+                        <PageIcon to={`/user/chat/${courseId}`} icon='fa-comments-o' iconBackgroundColor='#28a745' text='Chat' visible={this.state.chatActive} />
+                        <PageIcon to={`/user/hoc-vien/khoa-hoc/${courseId}/phan-hoi`} icon='fa-commenting-o' iconBackgroundColor='#dc3545' text='Phản hồi' />
+                        <CirclePageButton type='custom' customClassName='btn-success' customIcon='fa-comments-o' onClick={() => this.props.history.push('/user/chat/' + this.state.courseId)} />
+                    </> : null}
 
                     <ViewScoreModal ref={e => this.viewScoreModal = e} />
                     <ChangeLecturerModal ref={e => this.changeLecturerModal = e} create={this.props.createChangeLecturer} />

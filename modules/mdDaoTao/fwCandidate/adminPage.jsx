@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { getCandidatePage, getCandidate, updateCandidate, deleteCandidate, exportCandidateToExcel } from './redux';
 import Pagination from 'view/component/Pagination';
 import { getCourseTypeAll, ajaxSelectCourseType, ajaxGetCourseType } from 'modules/mdDaoTao/fwCourseType/redux';
-import { AdminPage, AdminModal, FormTextBox, TableCell, renderTable, FormSelect, FormDatePicker } from 'view/component/AdminPage';
+import { AdminPage, AdminModal, FormTextBox, TableCell, renderTable, FormSelect, FormDatePicker,FormCheckbox } from 'view/component/AdminPage';
 import Dropdown from 'view/component/Dropdown';
 import { ajaxSelectDivision, ajaxGetDivision, getDivisionAll } from 'modules/mdDaoTao/fwDivision/redux';
 import {ajaxSelectCourseFeeByCourseType,getCourseFeeAll} from 'modules/_default/fwCourseFee/redux';
@@ -15,7 +15,9 @@ class CandidateModal extends AdminModal {
         $(document).ready(() => this.onShown(() => this.itemLastname.focus()));
     }
 
-    onShow = ({ _id, courseFee , discount , coursePayment , firstname = '', lastname = '', email = '', phoneNumber = '', identityCard = '', birthday = null, planCourse = '', onUpdated, courseType = null, state = '', division = '' }) => {
+    onShow = ({ _id, courseFee , discount , coursePayment , firstname = '', lastname = '', email = '', phoneNumber = '',
+     identityCard = '', birthday = null, planCourse = '', onUpdated, courseType = null, state = '', division = '',
+     isDon=false,isHinh=false,isIdentityCard=false,isGiayKhamSucKhoe=false,isBangLaiA1=false }) => {
         this.onUpdated = onUpdated;
         this.itemFirstname.value(firstname);
         this.itemLastname.value(lastname);
@@ -36,13 +38,19 @@ class CandidateModal extends AdminModal {
         this.setState({ _id,courseId:courseType._id },()=>{
             this.setValueCourseFee(courseType?courseType._id:null,courseFee);
         });
+        this.itemIsDon.value(isDon);
+        this.itemIsHinh.value(isHinh);
+        this.itemIsIdentityCard.value(isIdentityCard);
+        this.itemIsGiayKhamSucKhoe.value(isGiayKhamSucKhoe);
+        this.itemIsBangLaiA1.value(isBangLaiA1);
     }
 
     setValueCourseFee = (courseTypeId,courseFee=null)=>{
         if(!courseTypeId){
             this.itemCourseFee.value(null);
         }
-        else if(courseFee){
+        else if(courseFee && courseFee.courseType==courseTypeId){
+            // cho trường hợp không bị thay đổi courseType từ bên ngoài modal
             this.itemCourseFee.value({id:courseFee._id,text:courseFee.name});    
         }else{
             courseFee = this.props.defaultCourseFees.find(item=>item.courseType._id==courseTypeId);
@@ -81,6 +89,11 @@ class CandidateModal extends AdminModal {
             courseFee:this.itemCourseFee.value(),
             discount:this.itemDiscount.value(),
             coursePayment:this.itemCoursePayment.value(),
+            isDon:this.itemIsDon.value(),
+            isHinh:this.itemIsHinh.value(),
+            isIdentityCard:this.itemIsIdentityCard.value(),
+            isGiayKhamSucKhoe:this.itemIsGiayKhamSucKhoe.value(),
+            isBangLaiA1:this.itemIsBangLaiA1.value(),
         };
         if (data.lastname == '') {
             T.notify('Họ không được trống!', 'danger');
@@ -106,6 +119,12 @@ class CandidateModal extends AdminModal {
         } else if (data.planCourse == '') {
             T.notify('Khóa dự kiến không được trống!', 'danger');
             this.itemPlanCourse.focus();
+        }else if (!data.courseFee) {
+            T.notify('Gói học phí không được trống!', 'danger');
+            this.itemCourseFee.focus();
+        }else if (!data.coursePayment) {
+            T.notify('Số lần thanh toán không được trống!', 'danger');
+            this.itemCoursePayment.focus();
         } else {
             this.props.update(this.state._id, data, (error) => {
                 this.onUpdated && this.onUpdated(error);
@@ -156,6 +175,12 @@ class CandidateModal extends AdminModal {
         } else if (data.planCourse == '') {
             T.notify('Khóa dự kiến không được trống!', 'danger');
             this.itemPlanCourse.focus();
+        }else if (!data.courseFee) {
+            T.notify('Gói học phí không được trống!', 'danger');
+            this.itemCourseFee.focus();
+        }else if (!data.coursePayment) {
+            T.notify('Số lần thanh toán không được trống!', 'danger');
+            this.itemCoursePayment.focus();
         } else {
             data.state = 'UngVien';
             this.props.upStudent(e, data, this.state.courseTypeTitle);
@@ -171,19 +196,25 @@ class CandidateModal extends AdminModal {
         title: 'Đăng ký tư vấn',
         size: 'large',
         body: <div className='row'>
-            <FormTextBox className='col-md-6' ref={e => this.itemLastname = e} label='Họ' />
-            <FormTextBox className='col-md-6' ref={e => this.itemFirstname = e} label='Tên' />
+            <FormTextBox className='col-md-6' ref={e => this.itemLastname = e} label='Họ' required/>
+            <FormTextBox className='col-md-6' ref={e => this.itemFirstname = e} label='Tên' required/>
             <FormTextBox className='col-md-6' ref={e => this.itemEmail = e} type='email' label='Email' />
-            <FormTextBox className='col-md-6' ref={e => this.itemPhoneNumber = e} type='phone' label='Số điện thoại' />
-            <FormSelect className='col-md-6' ref={e => this.courseType = e} label='Loại khóa học' data={ajaxSelectCourseType} onChange = {this.onChangeCourseType} />
+            <FormTextBox className='col-md-6' ref={e => this.itemPhoneNumber = e} type='phone' label='Số điện thoại' required/>
+            <FormSelect className='col-md-6' ref={e => this.courseType = e} label='Loại khóa học' data={ajaxSelectCourseType} onChange = {this.onChangeCourseType} required/>
             <FormSelect className='col-md-6' ref={e => this.states = e} label='Trạng thái' data={this.props.states} />
-            <FormSelect className='col-md-6' ref={e => this.division = e} label='Cơ sở đào tạo' data={ajaxSelectDivision} />
-            <FormTextBox className='col-md-6' ref={e => this.itemIdentityCard = e} label='CMND/CCCD' />
-            <FormDatePicker className='col-md-6' ref={e => this.itemBirthday = e} label='Ngày sinh' type='date-mask' />
-            <FormTextBox className='col-md-6' ref={e => this.itemPlanCourse = e} label='Khóa dự kiến' />
-            <FormSelect className='col-md-6' ref={e => this.itemCourseFee = e} label='Gói học phí' data={ajaxSelectCourseFeeByCourseType(this.state.courseId)} />
+            <FormSelect className='col-md-6' ref={e => this.division = e} label='Cơ sở đào tạo' data={ajaxSelectDivision} required/>
+            <FormTextBox className='col-md-6' ref={e => this.itemIdentityCard = e} label='CMND/CCCD' required/>
+            <FormDatePicker className='col-md-6' ref={e => this.itemBirthday = e} label='Ngày sinh' type='date-mask' required/>
+            <FormTextBox className='col-md-6' ref={e => this.itemPlanCourse = e} label='Khóa dự kiến' required/>
+            <FormCheckbox className='col-md-2' ref={e => this.itemIsDon = e} label='Đơn' readOnly={this.props.readOnly} />
+            <FormCheckbox className='col-md-2' ref={e => this.itemIsHinh = e} label='Hình' readOnly={this.props.readOnly} />
+            <FormCheckbox className='col-md-2' ref={e => this.itemIsGiayKhamSucKhoe = e} label='GKSK' readOnly={this.props.readOnly} />
+            <FormCheckbox className='col-md-3' ref={e => this.itemIsIdentityCard = e} label='CMND/CCCD' readOnly={this.props.readOnly} />
+            <FormCheckbox className='col-md-3' ref={e => this.itemIsBangLaiA1 = e} label='Bằng lái A1' readOnly={this.props.readOnly} />
+            <FormSelect className='col-md-6' ref={e => this.itemCourseFee = e} label='Gói học phí' data={ajaxSelectCourseFeeByCourseType(this.state.courseId)} required/>
             <FormSelect className='col-md-6' ref={e => this.itemDiscount = e} label='Giảm giá' data={ajaxSelectDiscount} />
-            <FormSelect className='col-md-6' ref={e => this.itemCoursePayment = e} label='Số lần thanh toán' data={ajaxSelectCoursePayment} />
+            <FormSelect className='col-md-6' ref={e => this.itemCoursePayment = e} label='Số lần thanh toán' data={ajaxSelectCoursePayment} required/>
+
         </div>,
         buttons: this.props.permission.write ?
             <a className='btn btn-warning' href='#' onClick={e => this.onUpStudent(e)} style={{ color: 'white' }}>
@@ -246,7 +277,7 @@ class CandidatePage extends AdminPage {
         const permission = this.getUserPermission('candidate', ['read', 'write', 'delete', 'export']);
         const { pageNumber, pageSize, pageTotal, totalItem, list } = this.props.candidate && this.props.candidate.page ?
             this.props.candidate.page : { pageNumber: 1, pageSize: 50, pageTotal: 1, totalItem: 0 };
-        const table = renderTable({
+            const table = renderTable({
             getDataSource: () => list, stickyHead: true,
             renderHead: () => (
                 <tr>

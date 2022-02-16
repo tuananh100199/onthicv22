@@ -10,10 +10,9 @@ class FeeTypeModal extends AdminModal {
     }
 
     onShow = (item) => {
-        let { _id = null, title = '', active = true, official = false } = item || {};
+        let { _id = null, title = '', active = true } = item || {};
         this.itemName.value(title);
         this.itemActive.value(active);
-        this.itemOfficial.value(official);
         this.setState({ _id });
     }
 
@@ -21,7 +20,6 @@ class FeeTypeModal extends AdminModal {
         const data = {
             title: this.itemName.value(),
             active: this.itemActive.value(),
-            official: this.itemOfficial.value(),
         };
         if (data.title == '') {
             T.notify('Tên loại gói học phí bị trống!', 'danger');
@@ -39,7 +37,6 @@ class FeeTypeModal extends AdminModal {
             body: <div className='row'>
                 <FormTextBox ref={e => this.itemName = e} className='col-md-12' label='Tên loại gói học phí' readOnly={readOnly} />
                 <FormCheckbox ref={e => this.itemActive = e} className='col-md-6' label='Kích hoạt' readOnly={readOnly} />
-                <FormCheckbox ref={e => this.itemOfficial = e} className='col-md-6' label='Chính thức' readOnly={readOnly} />
             </div>
         });
     }

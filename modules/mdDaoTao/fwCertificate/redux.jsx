@@ -105,19 +105,41 @@ export function getCertificationPage(pageNumber, pageSize, condition, done) {
 
 // Actions ------------------------------------------------------------------------------------------------------------
 T.initCookiePage('pageLicense');
-export function getLicensePage(pageNumber, pageSize, condition, done) {
+export function getLicensePage(pageNumber, pageSize, searchText, done) {
     const page = T.updatePage('pageLicense', pageNumber, pageSize);
     return dispatch => {
-        const url = `/api/certificate/page/${page.pageNumber}/${page.pageSize}`;
-        T.get(url, { condition }, data => {
+        const url = `/api/license/page/${page.pageNumber}/${page.pageSize}`;
+        T.get(url, { searchText }, data => {
             if (data.error) {
                 T.notify('Lấy danh sách giấy phép lái xe bị lỗi!', 'danger');
                 console.error(`GET: ${url}. ${data.error}`);
             } else {
-                if (condition) data.page.pageCondition = condition;
+                // if (condition) data.page.pageCondition = condition;
                 done && done(data.page);
                 dispatch({ type: LicenseGetPage, page: data.page });
             }
         }, error => console.error(error) || T.notify('Lấy danh sách giấy phép lái xe bị lỗi!', 'danger'));
     };
 }
+
+export function exportFinalLicense(listStudents, done) {
+    return () => {
+        const url = '/api/certificate/license/export';
+        T.get(url,{listStudents}, data => {
+            if (data.error) {
+                T.notify('Xuất file word bị lỗi!', 'danger');
+                console.error(`GET: ${url}.`, data.error);
+            } else {
+                if (done) done(data);
+                T.notify('Xuất file word thành công!', 'success');
+            }
+        }, error => console.error(error) || T.notify('Xuất file word bị lỗi!', 'danger'));
+    };
+}
+
+export const ajaxSelectStudentPassLicense = T.createAjaxAdapter(
+    '/api/license/page/1/20',
+    params => ({searchText: params.term,isLicense:true}),
+    response => response && response.page && response.page.list ?
+        response.page.list.map(student => ({ id: student._id, text: `${student.lastname} ${student.firstname}${student.identityCard?' ('+student.identityCard+')':''}` })) : [],
+);

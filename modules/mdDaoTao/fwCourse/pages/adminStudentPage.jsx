@@ -1,7 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { getCourse, updateCourseStudents, updateStudentInfoInCourse, exportStudentInfoToExcel, autoAssignStudent } from '../redux';
-import { getPreStudentPage, updateStudent } from 'modules/mdDaoTao/fwStudent/redux';
+import { getPreStudentPage, updateStudent,getPreStudentByCourseTypePage } from 'modules/mdDaoTao/fwStudent/redux';
 import { Link } from 'react-router-dom';
 import Pagination from 'view/component/Pagination';
 import AdminStudentModal from '../adminStudentModal';
@@ -44,7 +44,7 @@ class AdminStudentPage extends AdminPage {
         if (searchPlanCourse == undefined) searchPlanCourse = this.state.searchPreStudentCourse;
         if (sort == undefined) sort = { lastname: 1, firstname: 1 };
         if (sort.division == undefined) sort.division = this.state.sortType == 'division' ? 1 : 0;
-        this.props.getPreStudentPage(pageNumber, pageSize, { searchText, searchPlanCourse, courseType }, sort, () => {
+        this.props.getPreStudentByCourseTypePage(pageNumber, pageSize, { searchText, searchPlanCourse }, sort,courseType._id, () => {
             this.setState({
                 searchPreStudentText: searchText,
                 searchPreStudentPlanCourse: searchPlanCourse,
@@ -268,5 +268,5 @@ class AdminStudentPage extends AdminPage {
 }
 
 const mapStateToProps = state => ({ system: state.system, course: state.trainning.course, student: state.trainning.student });
-const mapActionsToProps = { autoAssignStudent, getCourse, updateCourseStudents, getPreStudentPage, updateStudent, updateStudentInfoInCourse, exportStudentInfoToExcel };
+const mapActionsToProps = { autoAssignStudent, getCourse, updateCourseStudents, getPreStudentPage, updateStudent, updateStudentInfoInCourse, exportStudentInfoToExcel,getPreStudentByCourseTypePage };
 export default connect(mapStateToProps, mapActionsToProps)(AdminStudentPage);
