@@ -31,8 +31,8 @@ class SectionDenVoiHiepPhat extends React.Component {
                 <div className='container' style={{ paddingTop: '20px' }}>
                     <div className='form_den_voi_hp'>
                         <div className='form_title'>
-                            <div>ĐẾN VỚI HIỆP PHÁT</div> 
-                            <div className='strike1'/>
+                            <h3>ĐẾN VỚI HIỆP PHÁT</h3> 
+                            {/* <div className='strike1'/> */}
                         </div>
                         <div className='wrap_den_voi_HP'>
                             <div className='row'>

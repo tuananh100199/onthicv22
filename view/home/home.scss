@@ -678,11 +678,10 @@ $breakpoint-xs: 'only screen and (max-width:767px)';
     position: absolute;
     top: 0;
     left: 0;
-    width: 336px;
+    padding:0 32px;
     height: 80px;
     background: #199d76;
     line-height: 80px;
-    text-align: center;
     font-size: 24px;
     font-weight: 600;
     color: white;
@@ -780,17 +779,20 @@ $breakpoint-xs: 'only screen and (max-width:767px)';
     width: 100%;
     font-size: 14px;
     font-weight: 700;
-    color: #FFFFFF;
+    color: #199d76;
     text-transform: uppercase;
-    border: solid 2px transparent;
+    border: solid 2px #199d76;
+    background-color: white;
+    // border: solid 2px transparent;
     cursor: pointer;
+    transition: all .3s linear;
 }
 
 .intro_button:hover {
     background: transparent;
     border: solid 2px #199d76;
-    color: #199d76;
-    background-color: white;
+    color: white;
+    background-color: #199d76;
 }
 
 

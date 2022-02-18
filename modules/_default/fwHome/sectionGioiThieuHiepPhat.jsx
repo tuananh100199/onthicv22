@@ -21,8 +21,17 @@ class SectionGioiThieuHiepPhat extends React.Component {
                     }
                 }
             }
-
-            window.addEventListener('scroll', introText);
+            if(this.props.system && this.props.system.user){
+                // Có User => trang giới thiệu HP sẽ là trang đầu
+                // => auto kích hoạt 
+                let introText = document.querySelector('.text-gioi-thieu');
+                let introImg = document.querySelector('.img-gioi-thieu');
+                introText.classList.add('active_intro_text');
+                introImg.classList.add('active_intro_img');
+            }else{
+                window.addEventListener('scroll', introText);
+                window.addEventListener('scroll', introImg);
+            }
 
             function introImg() {
                 let introImg = document.querySelectorAll('.img-gioi-thieu');
@@ -40,7 +49,6 @@ class SectionGioiThieuHiepPhat extends React.Component {
                 }
             }
 
-            window.addEventListener('scroll', introImg);
             if (this.props.viewId) {
                 this.props.getGioiThieu(this.props.viewId, data => {
                     data && data.item && this.setState(data.item);
@@ -58,17 +66,23 @@ class SectionGioiThieuHiepPhat extends React.Component {
                             <div className='col-lg-5 col-md-12 text-gioi-thieu'>
                                 <div className='title_gioi_thieu'>
                                     Giới thiệu
-                                    <span>{title}</span>
+                                    <h4>{title}</h4>
                                 </div>
                                 <div>
                                     <div className='description active_intro_desciption' ref={e => this.abstract1 = e}>
-                                        {abstract}<a href='/ve-chung-toi'> Xem thêm &gt;&gt;</a>
+                                        {abstract}
+                                            <br />
+                                            <a href='/ve-chung-toi'> Xem thêm</a>
                                     </div>
                                     <div style={{ position: 'absolute', top: 0, left: 0 }} className='description' ref={e => this.abstract2 = e}>
-                                        {abstract2}<a href='/ve-chung-toi'> Xem thêm &gt;&gt;</a>
+                                        {abstract2}
+                                        <br />
+                                        <a href='/ve-chung-toi'> Xem thêm</a>
                                     </div>
                                     <div style={{ position: 'absolute', top: 0, left: 0 }} className='description' ref={e => this.abstract3 = e}>
-                                        {abstract3}<a href='/ve-chung-toi'> Xem thêm &gt;&gt;</a>
+                                        {abstract3}
+                                        <br />
+                                        <a href='/ve-chung-toi'> Xem thêm</a>
                                     </div>
                                 </div>
 
@@ -82,6 +96,7 @@ class SectionGioiThieuHiepPhat extends React.Component {
                                 </div> */}
                             </div>
                             <div className='col-lg-7 col-md-12 img-gioi-thieu'>
+
                                 <div>
                                     <img src={image1} ref={e => this.img1 = e} className='img-intro1' alt='image 1' onMouseEnter={() => {
                                         this.img1.classList.add('img-intro-zindex');

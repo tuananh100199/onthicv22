@@ -17,6 +17,10 @@
     padding-bottom: 36px;
     padding-top: 112px;
 }
+
+.advisory .advisory_form_container__form-select:hover .select2-selection{
+    border: solid 2px #199d76 !important;
+}
 @media (max-width: 768px) {
     .advisory .advisory_form_container {
         width: 100%;
