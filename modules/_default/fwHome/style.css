@@ -48,7 +48,8 @@
     height: 5px;
     background-color: var(--color-primary);
     position: absolute;
-    left: 0;
+    left: 50%;
+    transform: translateX(-50%);
     bottom:-16px;
 }
 
@@ -533,6 +534,7 @@
 
 .pc .staff_info .staff_group_title h3{
     position: relative;
+    display: inline-block;
 }
 
 .pc .staff_info .staff_group_title h3::after{
@@ -542,7 +544,8 @@
     height: 5px;
     background-color: var(--color-white);
     position: absolute;
-    left: 0;
+    left: 50%;
+    transform: translateX(-50%);
     bottom: -16px;
 }
 
@@ -904,6 +907,13 @@
     top:2px;
     right:0;
 }
+
+@media (max-width: 992px){
+    #dangKyTuVan .col-md-12{
+        margin-bottom: 32px;
+    }
+}
+
 @media (max-width: 767px) {
     .section_hang_GPLX .intro_hang_GPLX .wrap_GPLX .wrap_item_GPLX .img_item{
         padding: 0;
