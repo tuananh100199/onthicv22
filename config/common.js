@@ -53,6 +53,7 @@ module.exports = (app, appName) => {
         accountant: { index: 7000, title: 'Kế toán', icon: 'fa-money' },
         trainning: { index: 4000, title: 'Đào tạo', icon: 'fa-graduation-cap' },
         driveTest: { index: 6000, title: 'Ôn tập', icon: 'fa-graduation-cap' },
+        enrollment: { index: 8000, title: 'Tuyển sinh', icon: 'fa fa-user-plus' },
     };
 
     // Upload Hook -----------------------------------------------------------------------------------------------------

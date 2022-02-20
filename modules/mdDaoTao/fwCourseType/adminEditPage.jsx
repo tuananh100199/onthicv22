@@ -110,6 +110,7 @@ class CourseTypeEditPage extends AdminPage {
                         this.itemPracticeNumOfReviewHours.value(item.practiceNumOfReviewHours);
                         this.itemSoLuongCauHoiThi.value(item.soLuongCauHoiThi);
                         this.itemSoLuongCauDat.value(item.soLuongCauDat);
+                        this.itemContentSyntax.value(item.contentSyntax);
                         this.itemImage.setData('course-type:' + item._id);
 
                         this.itemTitle.focus();
@@ -256,7 +257,7 @@ class CourseTypeEditPage extends AdminPage {
                     <div className='col-md-9 order-md-1'>
                         <div className='row'>
                             <FormTextBox className='col-md-8' ref={e => this.itemTitle = e} label='Tên loại khóa học' value={this.state.title} onChange={e => this.setState({ title: e.target.value })} readOnly={readOnly} />
-                            <FormTextBox className='col-md-4' ref={e => this.totalTime = e} label='Thời gian làm bài thi' value={this.state.totalTime} onChange={e => this.setState({ totalTime: e.target.value })} type='number' readOnly={readOnly} />
+                            <FormTextBox className='col-md-4' ref={e => this.totalTime = e} label='Thời gian làm bài thi' type='number' readOnly={readOnly} />
                             <FormTextBox className='col-md-8' ref={e => this.itemPrice = e} label='Giá loại khóa học' type='number' readOnly={readOnly} />
                             <FormCheckbox className='col-md-4' ref={e => this.itemIsPriceDisplayed = e} label='Hiển thị giá' readOnly={readOnly} />
                         </div>

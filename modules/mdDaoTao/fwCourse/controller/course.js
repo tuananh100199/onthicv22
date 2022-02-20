@@ -51,7 +51,11 @@ module.exports = (app) => {
     app.get('/user/hoc-vien/khoa-hoc/:_id/phan-hoi', app.permission.check('user:login'), app.templates.admin);
     app.get('/user/hoc-vien/khoa-hoc/:_id/tien-do-hoc-tap', app.permission.check('user:login'), app.templates.admin);
     app.get('/user/hoc-vien/khoa-hoc/:_id/cong-no', app.permission.check('user:login'), app.templates.admin);
+    app.get('/user/hoc-vien/khoa-hoc/:_id/cong-no/chinh-thuc', app.permission.check('user:login'), app.templates.admin);
+    app.get('/user/hoc-vien/khoa-hoc/:_id/cong-no/tang-them', app.permission.check('user:login'), app.templates.admin);
+    app.get('/user/hoc-vien/khoa-hoc/:_id/cong-no/lich-su', app.permission.check('user:login'), app.templates.admin);
 
+    
     const getCourseData = (_id, sessionUser, done) => {
         app.model.course.get(_id, (error, item) => {
             if (error || !item) {
@@ -267,24 +271,33 @@ module.exports = (app) => {
                             resolve();
                         solve();
                     } else if (type == 'remove') {
-                        const solve = (index = 0) => {
-                            if (index < _studentIds.length) {
-                                app.model.student.get({ _id: _studentIds[index], course: _courseId }, (error, student) => {
-                                    if (error) {
-                                        reject('Lỗi khi cập nhật khóa học!');
-                                    } else if (student) {
-                                        course.teacherGroups.forEach(group => group.student.forEach((item, index) => item._id == student._id.toString() && group.student.splice(index, 1)));
-                                        student.course = null;
-                                        student.save(error => error ? reject('Lỗi khi cập nhật khóa học!') : solve(index + 1));
+                        // gán khóa mặc định khi remove course.
+                        const {courseType} = course;
+                        app.model.course.get({courseType,isDefault:true},(error,defaultCourse)=>{
+                            if(error) reject('không tìm thấy khóa mặc định');
+                            else{
+                                const solve = (index = 0) => {
+                                    if (index < _studentIds.length) {
+                                        app.model.student.get({ _id: _studentIds[index], course: _courseId }, (error, student) => {
+                                            if (error) {
+                                                reject('Lỗi khi cập nhật khóa học!');
+                                            } else if (student) {
+                                                course.teacherGroups.forEach(group => group.student.forEach((item, index) => item._id == student._id.toString() && group.student.splice(index, 1)));
+                                                //gán lại khóa mặc định
+                                                student.course = defaultCourse;
+                                                student.save(error => error ? reject('Lỗi khi cập nhật khóa học!') : solve(index + 1));
+                                            } else {
+                                                solve(index + 1);
+                                            }
+                                        });
                                     } else {
-                                        solve(index + 1);
+                                        course.save(error => error ? reject('Lỗi khi cập nhật khóa học!') : resolve());
                                     }
-                                });
-                            } else {
-                                course.save(error => error ? reject('Lỗi khi cập nhật khóa học!') : resolve());
+                                };
+                                solve();
                             }
-                        };
-                        solve();
+                        });
+                        
                     } else {
                         reject('Dữ liệu không hợp lệ!');
                     }
@@ -631,7 +644,7 @@ module.exports = (app) => {
             } else if (!student) {
                 res.send({ notify: 'Bạn không thuộc khóa học này!' });
             } else {
-                if (student.course && student.course.active) {
+                if (student.course && (student.course.active || student.course.isDefault)) {
                     app.model.course.get(_courseId, (error, item) => {
                         const _studentId = student._id,
                             teacherGroups = item.teacherGroups.find(({ student }) => student.find(({ _id }) => _id == _studentId.toString()) != null),

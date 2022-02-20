@@ -18,6 +18,12 @@ module.exports = app => {
         coursePayment: { type: app.db.Schema.ObjectId, ref: 'CoursePayment' },
         discount: { type: app.db.Schema.ObjectId, ref: 'Discount' },
         courseFee: { type: app.db.Schema.ObjectId, ref: 'CourseFee' },
+        // thêm phần bổ sung hồ sơ
+        isDon:{ type: Boolean, default: false },
+        isHinh:{ type: Boolean, default: false },
+        isIdentityCard:{ type: Boolean, default: false },
+        isGiayKhamSucKhoe:{ type: Boolean, default: false },
+        isBangLaiA1:{ type: Boolean, default: false },
     });
     const model = app.db.model('Candidate', schema);
 

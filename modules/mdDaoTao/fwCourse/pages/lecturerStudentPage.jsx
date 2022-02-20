@@ -31,7 +31,7 @@ class LecturerStudentPage extends AdminPage {
 
     checkMonLyThuyet = (student, subject) => {
         const tienDoThiHetMon = student && student.tienDoThiHetMon;
-        const result = tienDoThiHetMon[subject._id] && tienDoThiHetMon[subject._id].score && parseInt(tienDoThiHetMon[subject._id].score) >= 5;
+        const result = tienDoThiHetMon && tienDoThiHetMon[subject._id] && tienDoThiHetMon[subject._id].score && parseInt(tienDoThiHetMon[subject._id].score) >= 5;
         return result;
     }
 

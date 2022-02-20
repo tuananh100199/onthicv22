@@ -12,6 +12,18 @@ class UserProfilePage extends AdminPage {
 
     render() {
         const { students } = this.state ? this.state : { students: [] };
+        // let currentCourseType = '';
+        // for(let i = 0; i < students.length; i++){
+        //     if(!students[i].course){
+        //         currentCourseType = students[i].courseType._id;
+        //         break;
+        //     } else if (students[i].course.isDefault){
+        //         currentCourseType = students[i].courseType._id;
+        //         break;
+        //     } else{
+        //         currentCourseType = students[i].courseType._id;
+        //     }
+        // }
         return this.renderPage({
             icon: 'fa fa-user',
             title: 'Trang cá nhân',
@@ -24,18 +36,25 @@ class UserProfilePage extends AdminPage {
                     {students && students.length ? <>
                         <PageIconHeader text='Khóa học của bạn' />
                         {students.map((student, index) => {
-                            const { _id, name, active } = student.course || {};
+                            const { _id, name, active, isDefault } = student.course || {};
                             const text = () => <>
                                 <h4>Khóa học hạng {student.courseType && student.courseType.title ? student.courseType.title : ''}</h4>
-                                <p style={{ fontWeight: 'bold' }}>{active ? 'Lớp: ' + name : 'Đang chờ khóa'}</p>
+                                <p style={{ fontWeight: 'bold' }}>{(active || isDefault) ? 'Lớp: ' + name : 'Đang chờ khóa'}</p>
                             </>;
-                            return _id ? <PageIcon key={index} to={`/user/hoc-vien/khoa-hoc/${_id}`} icon='fa-cubes' iconBackgroundColor='#1488db' text={text} disabled={!active} /> : '';
+                            return _id ? <PageIcon key={index} to={`/user/hoc-vien/khoa-hoc/${_id}`} icon='fa-cubes' iconBackgroundColor='#1488db' text={text} disabled={!(active || isDefault)} /> : '';
                         })}
                     </> : null}
 
                     <PageIconHeader text='Ôn tập' />
                     <PageIcon to='/user/hoc-vien/khoa-hoc/bo-de-thi-thu' icon='fa-sitemap' iconBackgroundColor='#7cb342' text='Bộ đề thi thử' />
                     <PageIcon to='/user/hoc-vien/khoa-hoc/bo-de-thi-ngau-nhien' icon='fa-share-alt' iconBackgroundColor='#69f0ae' text='Bộ đề thi ngẫu nhiên' />
+
+                    {/* {currentCourseType != '' ? 
+                        <>
+                            <PageIconHeader text='Công nợ' />
+                            <PageIcon to={`/user/hoc-vien/cong-no/${currentCourseType}`} icon='fa-money' iconBackgroundColor='#900' text='Theo dõi công nợ' />
+                        </>
+                     : null} */}
                 </div>),
         });
     }

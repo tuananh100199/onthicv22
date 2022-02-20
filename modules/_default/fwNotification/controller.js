@@ -1,6 +1,7 @@
 module.exports = (app) => {
     app.permission.add(
         { name: 'user:login', menu: { parentMenu: { index: 1100, title: 'Thông báo', icon: 'fa-comment', link: '/user/notification' } } },
+        { name: 'notification:accountantWrite' },
         { name: 'notification:write' },
         { name: 'notification:delete' },
     );
@@ -33,7 +34,7 @@ module.exports = (app) => {
     app.post('/api/notification', app.permission.check('user:login'), (req, res) => { //TODO: Hùng
         const user = req.session.user,
             permissions = user && user.permissions && user.permissions.length ? user.permissions : [];
-        if (user.isCourseAdmin || permissions.includes('notification:write')) {
+        if (user.isCourseAdmin || permissions.includes('notification:write') || permissions.includes('notification:accountantWrite')) {
             app.model.notification.create(req.body.data, (error, item) => res.send({ error, item }));
         } else {
             res.send({ error: 'Bạn không có quyền!' });

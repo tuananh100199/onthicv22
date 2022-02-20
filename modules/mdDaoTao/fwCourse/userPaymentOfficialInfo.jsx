@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { getStudentByUser } from 'modules/mdDaoTao/fwStudent/redux';
+import { getCourseByStudent } from 'modules/mdDaoTao/fwCourse/redux';
 import { getBankByStudent } from 'modules/_default/fwBank/redux';
 import { Link } from 'react-router-dom';
 import { CopyToClipboard } from 'react-copy-to-clipboard';
@@ -60,19 +60,24 @@ class PaymentInfoModal extends AdminModal {
 class UserPaymentInfo extends AdminPage {
     state = { name: '...', soTienThanhToan: 0 };
     componentDidMount() {
-        const route = T.routeMatcher('/user/hoc-vien/cong-no/:_id/chinh-thuc'),
+        const route = T.routeMatcher('/user/hoc-vien/khoa-hoc/:_id/cong-no/chinh-thuc'),
             _id = route.parse(window.location.pathname)._id;
-        const userId = this.props.system && this.props.system.user && this.props.system.user._id;
-        this.setState({ courseTypeId: _id });
+        this.setState({ courseId: _id });
         if (_id) {
-            T.ready('/user', () => {
-                this.props.getStudentByUser({user: userId, courseType: _id}, data => {
-                    if (data) {
-                        this.setState({ hocPhiPhaiDong: data.courseFee, hocPhiDaDong: data.hocPhiDaDong, hocPhiMienGiam: data.discount, ngayHetHanNopHocPhi: data.ngayHetHanNopHocPhi, soLanDong: data.coursePayment, lichSuDongTien: data.lichSuDongTien });
+            T.ready('/user/hoc-vien/khoa-hoc/' + _id, () => {
+                this.props.getCourseByStudent(_id, data => {
+                    if (data.error) {
+                        T.notify('Lấy khóa học bị lỗi!', 'danger');
+                        this.props.history.push(previousRoute);
+                    } else if (data.notify) {
+                        T.alert(data.notify, 'error', false, 2000);
+                        this.props.history.push(previousRoute);
+                    } else if (data.item && data.student) {
+                        this.setState({ ...data.item, ngayDuKienThiSatHach: data.student.ngayDuKienThiSatHach, hocPhiPhaiDong: data.student.courseFee, hocPhiDaDong: data.student.hocPhiDaDong, hocPhiMienGiam: data.student.discount, ngayHetHanNopHocPhi: data.student.ngayHetHanNopHocPhi, soLanDong: data.student.coursePayment, lichSuDongTien: data.student.lichSuDongTien });
                         this.props.getBankByStudent({ active: true }, (item) => {
                             if (item) {
                                 this.setState({
-                                    contentSyntax: item.contentSyntax && item.contentSyntax.replace('{cmnd}', data.identityCard).replace('{ten_loai_khoa_hoc}', data.courseType.contentSyntax),
+                                    contentSyntax: item.contentSyntax && item.contentSyntax.replace('{cmnd}', data.student.identityCard).replace('{ten_loai_khoa_hoc}', data.student.courseType.contentSyntax),
                                     code: item.code, nameBank: item.name,
                                     accounts: item.accounts.find(({ active }) => active == true),
                                 });
@@ -103,7 +108,7 @@ class UserPaymentInfo extends AdminPage {
     payment = (e) => e.preventDefault() || console.log('test');
 
     render() {
-        const userPageLink = '/user/hoc-vien/cong-no/' + this.state.courseTypeId ;
+        const userPageLink = '/user/hoc-vien/khoa-hoc/' + this.state.courseId + '/cong-no';
         const { hocPhiPhaiDong, hocPhiMienGiam, soLanDong, ngayHetHanNopHocPhi, soTienThanhToan, lichSuDongTien } = this.state;
         const list = [],
             numOfPayments = soLanDong ? soLanDong.numOfPayments : 1;
@@ -158,8 +163,8 @@ class UserPaymentInfo extends AdminPage {
         });
         return this.renderPage({
             icon: 'fa fa-money',
-            title: 'Học phí chính thức',
-            breadcrumb: [<Link key={0} to={userPageLink}>Theo dõi công nợ</Link>, 'Học phí chính thức'],
+            title: 'Học phí chính thức: ' + (this.state.name),
+            breadcrumb: [<Link key={0} to={userPageLink}>Khóa học</Link>, 'Học phí'],
             content: (
                 <>
                     <div className='tile'>
@@ -193,5 +198,5 @@ class UserPaymentInfo extends AdminPage {
 }
 
 const mapStateToProps = state => ({ system: state.system, course: state.trainning.course });
-const mapActionsToProps = { getStudentByUser, getBankByStudent };
+const mapActionsToProps = { getCourseByStudent, getBankByStudent };
 export default connect(mapStateToProps, mapActionsToProps)(UserPaymentInfo);

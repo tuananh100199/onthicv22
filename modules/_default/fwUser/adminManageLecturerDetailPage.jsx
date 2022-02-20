@@ -27,6 +27,17 @@ class AdminTeacherRatePage extends AdminPage {
         }));
     }
 
+    renderRating = (value)=>{
+        const valueToStyle = {
+            1:'text-danger',
+            2:'text-warning',
+            3:'text-primary',
+            4:'text-info',
+            5:'text-success',
+        };
+        return <span className={`text ${valueToStyle[value]}`}>{value}</span>;
+    }
+
     render() {
         let { pageNumber, pageSize, pageTotal, pageCondition, totalItem, list, lecturer } = this.props.rate && this.props.rate.page ?
             this.props.rate.page : { pageNumber: 1, pageSize: 50, pageTotal: 1, pageCondition: {}, totalItem: 0, list: [] };
@@ -44,7 +55,7 @@ class AdminTeacherRatePage extends AdminPage {
                 <tr key={index}>
                     <TableCell type='number' content={index + 1} />
                     <TableCell type='text' content={`${item.user && item.user.lastname} ${item.user && item.user.firstname}`} />
-                    <TableCell type='number' content={item.value} />
+                    <TableCell type='number' content={this.renderRating(item.value)} />
                     <TableCell type='text' content={item.note || ''} />
                     <TableCell type='date' content={new Date(item.createdDate).getShortText()} />
                 </tr>),
