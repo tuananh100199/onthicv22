@@ -19,7 +19,7 @@ class Footer extends React.Component {
         </li>;
 
     render() {
-        let { facebook, youtube, twitter, instagram, footer } = this.props.system ? this.props.system : { footer: '/img/footer.jpg'};
+        let { facebook, youtube, twitter, instagram, footer,logo } = this.props.system ? this.props.system : { footer: '/img/footer.jpg'};
         facebook = facebook ? <li><a href={facebook} target='_blank' rel='noreferrer'><i className='fa fa-facebook' aria-hidden='true' /></a></li> : '';
         youtube = youtube ? <li><a href={youtube} target='_blank' rel='noreferrer'><i className='fa fa-youtube' aria-hidden='true' /></a></li> : '';
         twitter = twitter ? <li><a href={twitter} target='_blank' rel='noreferrer'><i className='fa fa-twitter' aria-hidden='true' /></a></li> : '';
@@ -70,11 +70,10 @@ class Footer extends React.Component {
                             <div className='row'>
                                 <div className='col-md-4'>
                                     <div className='footer_about'>
-                                        <div className='footer_logo'>
-                                            <a href='#' onClick={e => e.preventDefault()}>
-                                                <h5>Trung tâm dạy nghề lái xe</h5>
-                                                <h2 className='footer_logo__title'>HIỆP PHÁT</h2>
-                                            </a>
+                                        <div className='footer_logo d-flex flex-column align-items-center'>
+                                            <h5>Trung tâm dạy nghề lái xe</h5>
+                                            <h2 className='footer_logo__title'>HIỆP PHÁT</h2>
+                                            <img src={logo} alt='logo' />
                                         </div>
                                         
                                     </div>

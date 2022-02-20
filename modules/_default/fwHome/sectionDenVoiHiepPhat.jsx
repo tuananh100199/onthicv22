@@ -77,10 +77,10 @@ class SectionDenVoiHiepPhat extends React.Component {
                                             <div className='icon_item_den_voi_HP'>
                                                 <i className='fa fa-car' aria-hidden='true' />
                                             </div>
-                                            <p className='title_item_den_voi_HP'>Xe đời mới</p>
+                                            <p className='title_item_den_voi_HP'>Xe hiện đại</p>
                                         </div>
                                        <div className='detail'>
-                                            <h4 className='hover_title_item'>Xe đời mới</h4>
+                                            <h4 className='hover_title_item'>Xe hiện đại</h4>
                                             <p className='description'>Đến với Hiệp Phát bạn sẽ được học với những dòng xe hiện đại nhất,
                                             có khả năng tiếp xúc đến những công nghệ hàng đầu của thế giới.
                                             </p>
@@ -94,10 +94,10 @@ class SectionDenVoiHiepPhat extends React.Component {
                                             <div className='icon_item_den_voi_HP'>
                                                 <i className='fa fa-calendar' aria-hidden='true' />
                                             </div>
-                                            <p className='title_item_den_voi_HP'>Giờ học linh hoạt</p>
+                                            <p className='title_item_den_voi_HP'>Giờ học mọi lúc mọi nơi</p>
                                         </div>
                                        <div className='detail'>
-                                            <h4 className='hover_title_item'>Giờ học linh hoạt</h4>
+                                            <h4 className='hover_title_item'>Giờ học mọi lúc mọi nơi</h4>
                                             <p className='description'>Bạn có thể tham gia chương trình học lý thuyết các môn cơ sở và hướng dẫn thực hành vào mọi nơi,
                                                 bất kể khi nào có thời gian rảnh.
                                             </p>
@@ -129,10 +129,10 @@ class SectionDenVoiHiepPhat extends React.Component {
                                             <div className='icon_item_den_voi_HP'>
                                                 <i className='fa fa-money' aria-hidden='true' />
                                             </div>
-                                            <p className='title_item_den_voi_HP'>Học phí trọn gói rõ ràng</p>
+                                            <p className='title_item_den_voi_HP'>Học phí trọn gói</p>
                                         </div>
                                        <div className='detail'>
-                                            <h4 className='hover_title_item'>Học phí trọn gói rõ ràng</h4>
+                                            <h4 className='hover_title_item'>Học phí trọn gói</h4>
                                             <p className='description'>Học phí được tư vấn rõ ràng khi bạn đến với Hiệp Phát, Hiệp Phát cam kết
                                             không phát sinh bất cứ chi phí nào đến khi bạn hoàn thành khóa học.
                                             </p>

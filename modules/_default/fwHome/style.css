@@ -1002,6 +1002,10 @@
     padding-top: 0px;
 }
 
+.footer_logo{
+    
+}
+
 .footer_logo a>div:first-child {
     font-size: 30px;
     font-weight: 700;
@@ -1022,8 +1026,20 @@
     margin-top: 6px;
 }
 
+.footer_logo h5{
+    display:inline-block;
+    font-size:20.5px;
+}
+
 .footer_logo .footer_logo__title{
     color:var(--color-red);
+    font-weight: 700;
+    display: inline-block;
+}
+
+.footer_logo img{
+    width: 150px;
+    height: auto;
 }
 
 .footer_about_text {
@@ -1053,7 +1069,7 @@
 }
 
 .footer_about_text .footer_hotline li{
-    margin-bottom: 32px;
+    margin-bottom: 24px;
     font-size: 18px;
 }
 
