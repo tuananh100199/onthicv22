@@ -53,11 +53,25 @@ class HomeMenu extends React.Component {
                 setTimeout(() => $(window).trigger('resize.px.parallax'), 375);
             });
 
-            $(document).on('scroll', () => setHeader());
+            $(document).on('scroll', () =>{
+                setHeader();
+                // this.activeMenu();
+            } );
 
             done();
         });
     }
+
+    // activeMenu = ()=>{
+    //     const menus = this.props.system && this.props.system.menus ? this.props.system.menus :null;
+    //     if(menus){
+    //         menus.forEach(menu=>{
+    //             const link = menu.link && menu.link!='/' ? menu.link:'';
+    //             const item = document.querySelector(link);
+    //             console.log(item);
+    //         });
+    //     }
+    // }
 
     onMenuClick = (link) => {
         this.setState({ link }, () => $(this.nav).classyNav());
@@ -68,12 +82,37 @@ class HomeMenu extends React.Component {
 
     showCandidateModal = (e) => e.preventDefault() || this.candidateModal.show();
 
-    scroll = (link) => {
-        document.getElementById({link}) && document.getElementById('gioiThieu').scrollIntoView({
-            block: 'end',
-            behavior: 'smooth',
-            inline: 'nearest'
-        });
+    // scroll = (link) => {
+    //     document.getElementById(link) && document.getElementById('gioiThieu').scrollIntoView({
+    //         block: 'end',
+    //         behavior: 'smooth',
+    //         inline: 'nearest'
+    //     });
+    // }
+
+    getMenuHeight = ()=>{
+        let height = 75;//large devices;
+        const viewportWidth = $(window).width();
+        if(viewportWidth<=576) height=60;//small menu
+        return height;
+    }
+
+    scroll = (event,hash) =>{
+        // Make sure this.hash has a value before overriding default behavior
+        if (hash !== '') {
+            // Prevent default anchor click behavior
+            event.preventDefault();
+            const height = this.getMenuHeight();
+            // Using jQuery's animate() method to add smooth page scroll
+            // The optional number (800) specifies the number of milliseconds it takes to scroll to the specified area
+            $('html, body').animate({
+            scrollTop: $(hash).offset().top - height
+            }, 800, ()=>{
+            // Add hash (#) to URL when done scrolling (default click behavior)
+            // window.location.hash = hash;
+            this.setState({link:hash});
+            });
+        } // End if
     }
 
     render() {
@@ -89,10 +128,10 @@ class HomeMenu extends React.Component {
                     link = item.link ? item.link : '#';
                     return (item.submenus && item.submenus.length > 0) ? (
                         <li key={index} className={currentLink == item.link || item.submenus.some(item => item.link == currentLink) ? 'active' : ''}>
-                            {isExternalLink ? <a href={link} target='_blank' rel='noreferrer'>{item.title}</a> : 
+                            {isExternalLink ? <a href={link} target='_blank' rel='noreferrer'>{item.title} test 1</a> : 
                                 (item.link ?
-                                    <Link to={link} onClick={() => this.onMenuClick(link)}>{item.title}</Link> :
-                                    <a href='#' onClick={e => e.preventDefault()}>{item.title}</a>
+                                    <Link to={link} onClick={() => this.onMenuClick(link)}>{item.title} test 4</Link> :
+                                    <a href='#' onClick={e => e.preventDefault()}>{item.title} test 5</a>
                                 )
                             }
                             <ul className='dropdown'>{
@@ -110,8 +149,8 @@ class HomeMenu extends React.Component {
                         </li>
                     ) : (
                         <li key={index} className={currentLink == link ? 'active' : ''}>
-                            {isExternalLink ? <a href={link} target='_blank' rel='noreferrer'>{item.title}</a> :
-                                (link.startsWith('#') ? <a href={link} onClick={() => this.scroll(link)}>{item.title}</a> : <Link to={link} onClick={() => this.onMenuClick(link)}>{item.title}  </Link>)}
+                            {isExternalLink ? <a href={link} target='_blank' rel='noreferrer'>{item.title} test2</a> :
+                                (link.startsWith('#') ? <a href={link} onClick={(e) => this.scroll(e,link)}>{item.title}</a> : <Link to={link} onClick={() => this.onMenuClick(link)}>{item.title}  </Link>)}
                         </li>);
                 }
             });

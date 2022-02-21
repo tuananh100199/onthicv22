@@ -2,7 +2,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { getNewsFeed } from './redux';
 import { Link } from 'react-router-dom';
-
+import './style.css';
 class SectionNews extends React.Component {
     state = {}
     componentDidMount() {
@@ -19,23 +19,32 @@ class SectionNews extends React.Component {
     render() {
         const newsFeed = this.props.news && this.props.news.newsFeed ? this.props.news.newsFeed : [];
         return (
-            <div className='services' style={{ backgroundColor: 'aliceblue' }}>
+            <div className='services news' style={{ backgroundColor: 'aliceblue' }}>
                 <div className='container' >
-                    <div style={{ height: '50px', width: '420px', backgroundColor: '#199d76', marginBottom: '20px', paddingLeft: '10px' }}>
-                        <h3 className='section_title' style={{ color: 'white', paddingTop: '5px' }}>Tin Tức Mới Nhất</h3>
+                    <div className='news_title'>
+                        <h3>Tin Tức Mới Nhất</h3>
                     </div>
                     <div>{this.state.viewport == 'big' ?
                         (<div className='row' style={{ margin: 'auto'}}>
                             {newsFeed.map((item, index) => (
-                                <div key={index} className='team_col ftco-animate col-md-4' style={{}}>
-                                    <div className='wrap_item'  style={{ margin: '0px -5px', border: '5px solid #199d76', height: '100%', backgroundColor: 'white', borderRadius: '30px' }}>
+                                <div key={index} className='team_col ftco-animate col-md-4'>
+                                    <div className='wrap_item'>
                                         <div className='team_item text-center d-flex flex-column align-items-center justify-content' style={{ borderRadius: '25px' }}>
-                                            <div className='team_image' ><Link to={item.link ? '/tintuc/' + item.link : '/news/' + item._id} style={{ color: '#4CA758' }}><img src={item.image} alt='lastnews' /></Link></div>
-                                            <div className='team_content text-center'>
-                                                <div className='team_name'>
-                                                    <Link to={item.link ? '/tintuc/' + item.link : '/news/' + item._id} style={{ color: '#4CA758' }}>{item.title}</Link>
+                                            <Link className='news_link' to={item.link ? '/tintuc/' + item.link : '/news/' + item._id} style={{ color: '#4CA758' }}>
+                                                <div className="news_image">
+                                                    <img src={item.image} alt='lastnews' />
                                                 </div>
-                                                <div className='team_text'>
+                                                {/* <div className='news_image' style={{backgroundImage: 'url(' + item.image + ')',}}></div> */}
+
+                                            </Link>
+                                            
+                                            <div className='team_content text-center news_content'>
+                                                <div className='news_content_title'>
+                                                    <h5>
+                                                    <Link to={item.link ? '/tintuc/' + item.link : '/news/' + item._id}>{item.title}</Link>
+                                                    </h5>
+                                                </div>
+                                                <div className='news_content_text'>
                                                     <blockquote>
                                                         <p>&ldquo;{item.abstract}&rdquo;</p>
                                                     </blockquote>

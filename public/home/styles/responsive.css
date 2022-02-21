@@ -160,9 +160,9 @@
     .price_col:not(:last-child) {
         margin-bottom: 57px;
     }
-    .footer_col:not(:last-child) {
+    /* .footer_col:not(:last-child) {
         margin-bottom: 80px;
-    }
+    } */
     .footer_location,
     .footer_contact {
         padding-top: 0;

@@ -16,7 +16,7 @@ class SectionStaffGroup extends React.Component {
 
     render() {
         return <>
-        <div id='carouselLastNews' className='carousel slide ftco-animate' data-ride='carousel' data-interval='5000' style={{ height: 'auto' }}>
+        <div id='carouselLastNews' className='carousel slide ftco-animate' data-ride='carousel' data-interval='500000' style={{ height: 'auto' }}>
             <div className='carousel-inner'>
                 { this.state.items && this.state.items.map((staff, index) => (
                     <div className={'container_staff team_col carousel-item' + (index == 0 ? ' active' : '')}
@@ -27,9 +27,9 @@ class SectionStaffGroup extends React.Component {
                                     <div className='staff_group_title'>
                                         <h3>{this.state.title}</h3>
                                     </div>
-                                    <div className='strike1'/>
-                                    <div className='staff_name' style={{ whiteSpace: 'nowrap' }}><h5>{staff.user.lastname + ' ' + staff.user.firstname}</h5></div>
-                                    <div className='staff_title' style={{ whiteSpace: 'nowrap' }}><h6>{staff.title}</h6></div>
+                                    {/* <div className='strike1'/> */}
+                                    <div className='staff_name' style={{ whiteSpace: 'nowrap' }}><h4>{staff.user.lastname + ' ' + staff.user.firstname}</h4></div>
+                                    <div className='staff_title' style={{ whiteSpace: 'nowrap' }}><h5>{staff.title}</h5></div>
                                     <div className='strike2'/>
                                     <div className='text'>
                                         <blockquote>
