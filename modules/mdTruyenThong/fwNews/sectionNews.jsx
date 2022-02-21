@@ -49,6 +49,9 @@ class SectionNews extends React.Component {
                                                         <p>&ldquo;{item.abstract}&rdquo;</p>
                                                     </blockquote>
                                                 </div>
+                                                <div className='text-align-center'>
+                                                <a href={item.link ? '/tintuc/' + item.link : '/news/' + item._id} className="link_watch_more text-main">Xem thêm</a>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>

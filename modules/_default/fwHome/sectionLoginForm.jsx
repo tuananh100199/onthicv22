@@ -52,7 +52,9 @@ class SectionLoginForm extends React.Component {
                                             <h4 className='text-white'>{item.title}</h4>
                                         </div>
                                         <div className="wrap_content">
-                                        <p className='content'>{item.content}</p>
+                                        <p className='content'>{item.content}
+                                        </p>
+                                        <a href="#" className="link_watch_more text-main mb-4"> Xem thêm</a>
                                         <form action='#' className='intro_form' id='intro_form' onSubmit={this.onLogin}>
                                             <div className='d-flex flex-row align-items-start justify-content-between flex-wrap'>
                                                 <div className='wrap-box'>

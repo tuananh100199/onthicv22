@@ -205,7 +205,7 @@ class HomeMenu extends React.Component {
                                     </div> :
                                     <div className='btn-group'>
                                         <div className='button button_2 mr-1 large_btn'>
-                                            <a href={'tel:' + mobile}><i className='fa fa-phone' />{mobile}</a>
+                                            <a href={'tel:' + mobile}><i className='fa fa-phone' /> {mobile}</a>
                                         </div>
                                         <div className='button button_1 mr-1 large_btn'>
                                             <a href='#' onClick={this.showCandidateModal}>Đăng ký tư vấn</a>
