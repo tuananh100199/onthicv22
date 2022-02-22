@@ -133,9 +133,9 @@ export const ajaxSelectFeeType = {
     url: '/api/fee-type/all',
     data: {},
     processResults: response => ({
-        results: response && response.list ? response.list.map(item => ({ id: item._id, text: item.title })) : []
+        results: response && response.list ? response.list.map(item => ({ id: item._id, text: item.title, isExtra: item.isExtra })) : []
     }),
-    fetchOne: (_id, done) => getFeeType(_id, ({ item }) => done && done({ id: item._id, text: item.title }))
+    fetchOne: (_id, done) => getFeeType(_id, ({ item }) => done && done({ id: item._id, text: item.title, isExtra: item.isExtra }))
 };
 
 export function ajaxGetFeeType(_id, done) {

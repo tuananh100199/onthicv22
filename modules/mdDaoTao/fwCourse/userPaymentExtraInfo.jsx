@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { getCourseByStudent } from 'modules/mdDaoTao/fwCourse/redux';
 import { getBankByStudent } from 'modules/_default/fwBank/redux';
 import { updateStudent } from 'modules/mdDaoTao/fwStudent/redux';
-import { getCourseFeeByStudent } from 'modules/_default/fwCourseFee/redux';
+import { getCourseFeeByStudent, updateCourseFeeByStudent } from 'modules/_default/fwCourseFee/redux';
 import { Link } from 'react-router-dom';
 import { CopyToClipboard } from 'react-copy-to-clipboard';
 import { AdminPage, TableCell, renderTable, AdminModal, FormTextBox } from 'view/component/AdminPage';
@@ -109,6 +109,7 @@ class CartModal extends AdminModal {
                 }, () => {
                     this.props.updateState({transactionId,cart,count: count - parseInt(item.quantity),contentSyntaxExtra: defaultContentSyntaxExtra && defaultContentSyntaxExtra.replace('{cmnd}', identityCard).replace('{ten_loai_khoa_hoc}', courseType ? courseType.contentSyntax : '').replace('{ma_giao_dich}', transactionId)});
                     this.props.updateStudent(_id, { cart: { transactionId, item: cart } });
+                    this.props.updateCourseFeeByStudent(item._id, item.quantity, 'remove');
                 });
             }
         });
@@ -219,7 +220,7 @@ class CancelPaymentModal extends AdminModal {
 }
 
 class UserPaymentInfo extends AdminPage {
-    state = { name: '...', soTienThanhToan: 0, cart: [],count: 0 };
+    state = { name: '...', soTienThanhToan: 0, cart: [],count: 0, listWaiting: [] };
     componentDidMount() {
         const route = T.routeMatcher('/user/hoc-vien/khoa-hoc/:_id/cong-no/tang-them'),
             _id = route.parse(window.location.pathname)._id;
@@ -235,11 +236,16 @@ class UserPaymentInfo extends AdminPage {
                         this.props.history.push(previousRoute);
                     } else if (data.item && data.student) {
                         let count = 0;
-                        data.student.cart && data.student.cart.item && data.student.cart.item.forEach(item => count = count + item.quantity);
+                        const listWaiting = [];
+                        data.student.cart && data.student.cart.item && data.student.cart.item.forEach(item => {
+                            count = count + item.quantity;
+                            listWaiting.push(item._id);
+                        });
                         this.setState({
                             ...data.item,
                             cart: data.student.cart ? data.student.cart.item : [],
                             count: count,
+                            listWaiting,
                             lock: data.student.cart ? data.student.cart.lock : false,
                             transactionId: data.student.cart ? data.student.cart.transactionId : '',
                             student: data.student
@@ -292,7 +298,7 @@ class UserPaymentInfo extends AdminPage {
     }
 
     addToCart = (item, quantity,indexCart) => {
-        const { cart = [], defaultContentSyntaxExtra, count } = this.state;
+        const { cart = [], defaultContentSyntaxExtra, count, listWaiting = [] } = this.state;
         const { _id, courseType, identityCard } = this.state.student;
         T.confirm('Thêm vào danh sách mua gói', 'Bạn có chắc thêm ' + quantity + ' gói ' + item.name + ' vào danh sách thanh toán không?', 'info', isConfirm => {
             if (isConfirm) {
@@ -306,16 +312,20 @@ class UserPaymentInfo extends AdminPage {
                         cart[index].quantity = cart[index].quantity + parseInt(quantity);
                         cart[index].fees = cart[index].fee * cart[index].quantity;
                     }
+                    listWaiting.indexOf(item._id) == -1 && listWaiting.push(item._id);
                     let transactionId = this.makeId(5);
                     this.setState({
                         transactionId,
                         cart,
+                        listWaiting,
                         count: count + parseInt(quantity),
                         contentSyntaxExtra: defaultContentSyntaxExtra && defaultContentSyntaxExtra.replace('{cmnd}', identityCard).replace('{ten_loai_khoa_hoc}', courseType ? courseType.contentSyntax : '').replace('{ma_giao_dich}', transactionId),
                     }, () => {
-                        this[indexCart].value('');
+                        item.feeType && !item.feeType.isExtra && this[indexCart].value('');
                         this.props.updateStudent(_id, { cart: { transactionId, item: cart } });
-                        T.notify('Cập nhật giỏ hàng thành công', 'success');
+                        this.props.updateCourseFeeByStudent(item._id, quantity, 'add');
+                        T.notify('Cập nhật giỏ hàng thành công', 'success', () => window.location.reload());
+                        
                     });
                 } else{
                     T.notify('Vui lòng nhập số lượng gói !', 'danger');
@@ -342,7 +352,7 @@ class UserPaymentInfo extends AdminPage {
         const studentId = this.state.student && this.state.student._id;
         const soTienThanhToan = cart && cart.length ? cart.map(item => item.fees).reduce((prev, next) => parseInt(prev) + parseInt(next)) : 0;
         const listCourseFee = this.props.courseFee && this.props.courseFee.list;
-        const listCourseFeeExtra = listCourseFee && listCourseFee.length ? listCourseFee.filter(courseFee => courseFee.feeType && courseFee.feeType.official == false) : [];
+        const listCourseFeeExtra = listCourseFee && listCourseFee.length ? listCourseFee.filter(courseFee => courseFee.feeType && courseFee.feeType.official == false ) : [];
         const table = renderTable({
             getDataSource: () => listCourseFeeExtra,
             renderHead: () => (
@@ -352,6 +362,8 @@ class UserPaymentInfo extends AdminPage {
                     <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Số tiền</th>
                     <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Loại gói học phí</th>
                     <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Mô tả</th>
+                    <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Ngày áp dụng</th>
+                    <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Còn lại</th>
                     <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Số lượng</th>
                     <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Chọn thanh toán</th>
                 </tr>),
@@ -362,8 +374,10 @@ class UserPaymentInfo extends AdminPage {
                     <TableCell type='number' content={item.fee} />
                     <TableCell type='text' style={{ whiteSpace: 'nowrap', textAlign: 'center' }} content={item.feeType ? item.feeType.title : ''} />
                     <TableCell type='text' style={{ whiteSpace: 'nowrap', textAlign: 'center' }} content={item.description} />
-                    <TableCell type='text' style={{ whiteSpace: 'nowrap', textAlign: 'center' }} content={<FormTextBox ref={e => this[index] = e} style={{ width: '60px' }} type='number' min={1} max={100} readOnly={false}></FormTextBox>} />
-                    <TableCell type='link' onClick={() => this.addToCart(item, this[index].value(),index)} style={{ textAlign: 'center' }} content={<i className='fa fa-shopping-cart' aria-hidden='true'></i>} />
+                    <TableCell type='text' style={{ whiteSpace: 'nowrap', textAlign: 'center' }} content={T.dateToText(item.start, 'dd/mm/yyyy')} />
+                    <TableCell type='text' style={{ whiteSpace: 'nowrap', textAlign: 'center' }} content={item.quantity} />
+                    <TableCell type='text' style={{ whiteSpace: 'nowrap', textAlign: 'center' }} content={item.feeType && !item.feeType.isExtra ? <FormTextBox ref={e => this[index] = e} style={{ width: '60px' }} type='number' min={1} max={100} readOnly={false}></FormTextBox> : 1} />
+                    <TableCell type={this.state.listWaiting.indexOf(item._id) == -1 ? 'link' : 'text'} onClick={() => this.addToCart(item,item.feeType && !item.feeType.isExtra ?  this[index].value() : 1,index)} style={{ textAlign: 'center' }} content={this.state.listWaiting.indexOf(item._id) == -1 ? <i className='fa fa-shopping-cart' aria-hidden='true'></i> : 'Đã mua'} />
                 </tr>),
         });
 
@@ -450,7 +464,7 @@ class UserPaymentInfo extends AdminPage {
                         </div>
                     </div> : null}
                     <PaymentInfoModal fee={soTienThanhToan} code={this.state.code} nameBank={this.state.nameBank} accounts={this.state.accounts} accountsNumber={accounts && accounts.number} contentSyntaxExtra={contentSyntaxExtra} readOnly={true} updateStudent={this.props.updateStudent} cart={cart} transactionId={transactionId} studentId={studentId} ref={e => this.modal = e} />
-                    <CartModal fee={soTienThanhToan} updateState={this.updateState} defaultContentSyntaxExtra={this.state.defaultContentSyntaxExtra} count={count} student={this.state.student} showPayment={this.modal && this.modal.show}  lock={lock} contentSyntaxExtra={contentSyntaxExtra} readOnly={true} updateStudent={this.props.updateStudent} cart={cart} transactionId={transactionId} studentId={studentId} ref={e => this.cartModal = e} />
+                    <CartModal fee={soTienThanhToan} updateState={this.updateState} defaultContentSyntaxExtra={this.state.defaultContentSyntaxExtra} count={count} student={this.state.student} showPayment={this.modal && this.modal.show}  lock={lock} contentSyntaxExtra={contentSyntaxExtra} readOnly={true} updateStudent={this.props.updateStudent}  updateCourseFeeByStudent={this.props.updateCourseFeeByStudent} cart={cart} transactionId={transactionId} studentId={studentId} ref={e => this.cartModal = e} />
                     <CancelPaymentModal  readOnly={true} updateStudent={this.props.updateStudent} cart={cart} transactionId={transactionId} studentId={studentId} ref={e => this.cancelModal = e} />
                 </>
             ),
@@ -460,5 +474,5 @@ class UserPaymentInfo extends AdminPage {
 }
 
 const mapStateToProps = state => ({ system: state.system, course: state.trainning.course, courseFee: state.accountant.courseFee });
-const mapActionsToProps = { getCourseByStudent, getBankByStudent, getCourseFeeByStudent, updateStudent };
+const mapActionsToProps = { getCourseByStudent, getBankByStudent, getCourseFeeByStudent, updateCourseFeeByStudent, updateStudent };
 export default connect(mapStateToProps, mapActionsToProps)(UserPaymentInfo);

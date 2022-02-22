@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { getCourseFeePage, createCourseFee, updateCourseFee, updateCourseFeeDefault, deleteCourseFee } from './redux';
 import { ajaxSelectCourseType, getCourseTypeAll } from 'modules/mdDaoTao/fwCourseType/redux';
 import { ajaxSelectFeeType } from 'modules/_default/fwFeeType/redux';
-import { AdminPage, AdminModal, FormTextBox, TableCell, renderTable, CirclePageButton, FormSelect, FormRichTextBox } from 'view/component/AdminPage';
+import { AdminPage, AdminModal, FormTextBox, TableCell, renderTable, CirclePageButton, FormSelect, FormRichTextBox, FormCheckbox } from 'view/component/AdminPage';
 import Pagination from 'view/component/Pagination';
 
 class CourseFeeModal extends AdminModal {
@@ -12,31 +12,50 @@ class CourseFeeModal extends AdminModal {
     }
 
     onShow = (item) => {
-        const { _id, name, courseType, feeType, fee, description } = item || { _id: null, name: '', courseType: null, fee: 0, description: '' };
+        const { _id, name, courseType, feeType, fee, description, quantity, start, isDaily,  } = item || { _id: null, name: '', courseType: null, fee: 0, description: '', quantity: 0, numOfHour : 0, type: null, isExtra: false };
         this.itemName.value(name);
         this.itemCourseType.value(courseType ? { id: courseType._id, text: courseType.title } : null);
         this.itemFee.value(fee);
-        this.itemType.value(feeType ? { id: feeType._id, text: feeType.title } : null);
+        this.itemQuantity.value(quantity);
+        this.itemType.value(feeType ? { id: feeType._id, text: feeType.title, isExtra: feeType.isExtra } : null);
+        // this.itemNumOfHour.value(numOfHour)
         this.itemDescription.value(description);
-        this.setState({ _id });
+        this.itemStart.value(start && new Date(start).getHours());
+        this.itemIsDaily.value(isDaily);
+        // this.itemTypeExtra.value(type ? { id: type, text: type== 'cuoiTuan' ? 'Cuối tuần' : (type == 'ngoaiGio' ? 'Ngoài giờ' : 'Ngày thường') } : {id: 'ngayThuong', text: 'Ngày thường'});
+        this.setState({ _id, className: (feeType && feeType.isExtra) ? 'visible' : 'd-none', });
     }
 
     onSubmit = () => {
+        const isExtra = this.state.className == 'visible';
         const data = {
             name: this.itemName.value().trim(),
             courseType: this.itemCourseType.value(),
             feeType: this.itemType.value(),
             fee: this.itemFee.value(),
             description: this.itemDescription.value(),
+            quantity: this.itemQuantity.value(),
+            start: this.itemStart.value(),
+            isDaily: this.itemIsDaily.value(),
         };
-
         if (data.name == '') {
             T.notify('Tên gói học phí bị trống!', 'danger');
             this.itemTitle.focus();
         } else if (!data.courseType) {
             T.notify('Loại khóa học không được trống!', 'danger');
             this.itemCourseType.focus();
-        } else {
+        } else if(isExtra && (data.start > 20 || data.start < 7)){
+            T.notify('Thời gian bắt đầu phải nằm trong khoảng từ 7-20!', 'danger');
+            this.itemStartDate.focus();
+        } else if(isExtra && (!data.quantity || data.quantity <= 0)){
+            T.notify('Số gói còn lại phải lớn hơn 0!', 'danger');
+            this.itemQuantity.focus();
+        }else {
+            let d = new Date();
+            let d2 = new Date( d );
+            d2 = d2.setDate(d.getDate() + 1);
+            data.start = new Date( d2 ).setHours(data.start);
+            // console.log(data.start);
             this.state._id ? this.props.update(this.state._id, data, this.hide()) : this.props.create(data, this.hide());
         }
     }
@@ -45,12 +64,20 @@ class CourseFeeModal extends AdminModal {
         body: <>
             <FormTextBox ref={e => this.itemName = e} label='Tên gói học phí' />
             <div className='row'>
-                <FormSelect ref={e => this.itemType = e} className='col-md-6' data={ajaxSelectFeeType} label='Loại gói' readOnly={this.props.readOnly} />
-                <FormSelect ref={e => this.itemCourseType = e} className='col-md-6' label='Loại khóa học' data={ajaxSelectCourseType} readOnly={this.props.readOnly} />
+                <FormSelect ref={e => this.itemType = e} className='col-md-6' data={ajaxSelectFeeType} onChange={select => this.setState({ className: select.isExtra ? 'visible' : 'd-none'})} label='Loại gói' readOnly={this.props.readOnly} />
+                <FormSelect ref={e => this.itemCourseType = e} className='col-md-3' label='Loại khóa học' data={ajaxSelectCourseType} readOnly={this.props.readOnly} />
+                <FormTextBox ref={e => this.itemFee = e} type='number' className='col-md-3' label='Giá tiền' />  
             </div>
-            <FormTextBox ref={e => this.itemFee = e} type='number' label='Giá tiền' />
+            <div className={'row ' + this.state.className}>
+                {/* <FormTextBox ref={e => this.itemNumOfHour = e} type='number' className='col-md-6' label='Số giờ học mua thêm' />   */}
+                <FormTextBox ref={e => this.itemQuantity = e} type='number' className='col-md-4' label='Số lượng gói còn lại' />  
+                <FormTextBox ref={e => this.itemStart = e} type='number' className='col-md-4' min={1} max={21} label='Giờ bắt đầu học (7-20)' />  
+                {/* <FormDatePicker type='time' className='col-md-4' ref={e => this.itemEndDate = e} label='Ngày kết thúc bán' /> */}
+                <FormCheckbox className='col-md-4' ref={e => this.itemIsDaily = e} isSwitch={true} label='Gói hàng ngày' readOnly={this.props.readOnly} />
+            </div>
             <FormRichTextBox ref={e => this.itemDescription = e} rows={2} label='Mô tả' readOnly={this.props.readOnly} />
-        </>
+        </>,
+        size: 'large'
     });
 }
 

@@ -307,14 +307,24 @@ module.exports = (app) => {
             if (error || student == null) {
                 res.send({ error: 'Lỗi khi tạo lịch học học viên' });
             } else {
-                data.student = student._id;
-                app.model.timeTable.create(data, (error, item) => {
-                    if (error && !item) {
-                        res.send({ error });
-                    } else {
-                        app.model.timeTable.get(item._id, (error, item) => res.send({ error, item }));
-                    }
-                });
+                const soGioHoc = student && student.course && student.course.practiceNumOfHours ? student.course.practiceNumOfHours : 0;
+                const soGioThucHanhDaHoc = student && student.soGioThucHanhDaHoc ? student.soGioThucHanhDaHoc : 0;
+                if(parseInt(soGioHoc) - parseInt(soGioThucHanhDaHoc)){
+                    data.student = student._id;
+                    app.model.timeTable.create(data, (error, item) => {
+                        if (error && !item) {
+                            res.send({ error });
+                        } else {
+                            app.model.student.update(student._id , { soGioThucHanhDaHoc: parseInt(soGioThucHanhDaHoc) + 1}, (error, item) => {
+                                if(error) res.send({ error});
+                                else {
+                                    app.model.timeTable.get(item._id, (error, item) => res.send({ error, item }));
+                                }
+                            });
+                        }
+                    });
+                } else res.send({notify: 'Bạn đã hết thời gian học thực hành. Vui lòng mua thêm gói!'});
+                
             }
         });
     });
@@ -325,6 +335,34 @@ module.exports = (app) => {
                 res.send({ error });
             } else {
                 app.model.timeTable.get(item._id, (error, item) => res.send({ error, item }));
+            }
+        });
+    });
+
+    app.post('/api/time-table/accountant', app.permission.check('user:login'), (req, res) => {
+        const { _id, cart} = req.body;
+        app.model.student.get(_id, ( error, student) => {
+            if( error || !student){
+                res.send({ error: error ? error : 'Không tìm thấy học viên!'});
+            } else {
+                const handleCreateTimeTable = (index = 0) => {
+                    if (index == cart.length) {
+                        res.send({ error: error });
+                    } else {
+                        const currentCart = cart[index];
+                        const data = {
+                            numOfHours: 1,
+                            startHour: new Date(currentCart.start).getHours(),
+                            state: 'approved',
+                            date: new Date(currentCart.start),
+                            student: student._id
+                        };
+                        app.model.timeTable.create(data, (error, item) => {
+                            res.send({ error, item});
+                        });
+                    }
+                };
+                handleCreateTimeTable();
             }
         });
     });
