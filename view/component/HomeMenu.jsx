@@ -165,12 +165,16 @@ class HomeMenu extends React.Component {
         return <>
             <header className='header trans_400'>
                 <div className='header_content d-flex flex-row align-items-center jusity-content-start trans_400 classy-nav-container breakpoint-off'>
+                    {/* Hamburger */}
+                    <div className='hamburger'><i className='fa fa-bars' aria-hidden='true' /></div>
+                    {/* logo */}
                     <div className='logo' style={{ height: '100%' }}>
                         <Link to='/' onClick={() => this.setState({ link: '/' }, () => $(this.nav).classyNav())}>
                             <img src={logo} alt='Logo' style={{ marginTop: '2%', height: '96%', width: 'auto' }} />
                             {/*<div style={{ whiteSpace: 'nowrap' }}>Hiệp Phát</div>*/}
                         </Link>
                     </div>
+                    {/* menu horizon */}
                     <nav className='classy-navbar justify-content-between' ref={e => this.nav = e}>
                         <div className='classy-menu'>
                             <nav className='main_nav classynav'>
@@ -178,6 +182,7 @@ class HomeMenu extends React.Component {
                             </nav>
                         </div>
                     </nav>
+                    {/* login logout horizon */}
                     <div className='header_extra d-flex flex-row align-items-center justify-content-end ml-auto'>
                         <div className='social'>
                             <ul className='d-flex flex-row align-items-center justify-content-start'>
@@ -224,8 +229,10 @@ class HomeMenu extends React.Component {
                                 {/* {twitter}{facebook}{youtube}{instagram} */}
                             </ul>
                         </div>
-                        <div className='hamburger'><i className='fa fa-bars' aria-hidden='true' /></div>
+                        {/* <div className='hamburger'><i className='fa fa-bars' aria-hidden='true' /></div> */}
                     </div>
+
+                    <div className="search-button"><i className="fa fa-search" aria-hidden="true"></i></div>
                 </div>
             </header>
             <div className='menu_overlay trans_400' />

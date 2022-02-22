@@ -22,7 +22,7 @@ class SectionNews extends React.Component {
             <div className='services news' style={{ backgroundColor: 'aliceblue' }}>
                 <div className='container' >
                     <div className='news_title'>
-                        <h3>Tin Tức Mới Nhất</h3>
+                        <h3 className='text-title text-main'>Tin Tức Mới Nhất</h3>
                     </div>
                     <div>{this.state.viewport == 'big' ?
                         (<div className='row' style={{ margin: 'auto'}}>

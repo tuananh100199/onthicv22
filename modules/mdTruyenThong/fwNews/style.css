@@ -6,16 +6,9 @@
 }
 
 .news .news_title{
-    background-color: var(--color-primary);
     display: inline-block;
     padding:16px;
     margin-bottom: 25px;
-}
-
-.news .news_title h3{
-    color: var(--color-background-white);
-    display: inline-block;
-    margin-bottom: 0;
 }
 
 .news .wrap_item{

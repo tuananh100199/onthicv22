@@ -31,7 +31,7 @@ class Footer extends React.Component {
         return (
             <footer className='footer' style={{ position: 'absolute', bottom: 0, width: '100%' }}>
                 <div className='footer_content'>    
-                    <div className='pc'>
+                    <div className=''>
                         <div className='container-fluid'>
                             {/* <div className='row'>
                                 <div className='col-lg-6 footer_col'>
@@ -89,7 +89,7 @@ class Footer extends React.Component {
                                                 </li>
 
                                                 <li>
-                                                    <div className="footer_hotline__app-wrap">
+                                                    {/* <div className="footer_hotline__app-wrap">
                                                         <div className="footer_hotline__app">
                                                             <div className="footer_hotline__app-image">
                                                                 <img src='/img/ch-play.jpg' alt="image" />
@@ -108,9 +108,30 @@ class Footer extends React.Component {
                                                                 <h5>App Store</h5>
                                                                 </div>
                                                         </div>
-                                                    </div>
+                                                    </div> */}
                                                 </li>
                                             </ul>
+
+                                            <div className="app-button-wrap">
+                                                        <div className="app-button-item">
+                                                            <div className="app-button-image">
+                                                                <img src='/img/ch-play.jpg' alt="image" />
+                                                            </div>
+                                                            <div className="app-button-content">
+                                                                <p>Get it on</p>
+                                                                <h5>Google Play</h5>
+                                                            </div>
+                                                        </div>
+                                                        <div className="app-button-item">
+                                                            <div className="app-button-image">
+                                                            <img src='/img/app-store.jpg' alt="image" />
+                                                            </div>
+                                                            <div className="app-button-content">
+                                                                <p>Download on the</p>
+                                                                <h5>App Store</h5>
+                                                                </div>
+                                                        </div>
+                                                    </div>
                                         </div>
                                         
                                     </div>
@@ -130,7 +151,7 @@ class Footer extends React.Component {
                             </div>
                         </div>
                     </div>
-                    <div className='mobile'>
+                    {/* <div className='mobile'>
                         <div className='row'> 
                             <div className='col-12'>
                                 <div className='wrap_title'>
@@ -157,7 +178,7 @@ class Footer extends React.Component {
                                
                         </div>
                        
-                    </div>
+                    </div> */}
                     
                 </div>
                 <div className='footer_bar'>

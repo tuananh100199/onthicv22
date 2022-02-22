@@ -115,7 +115,14 @@
         left: calc((100vw - 690px) / 2);
     }
     .hamburger {
+        flex-grow: 1;
         display: block;
+    }
+
+    .search-button{
+        display: flex;
+        justify-content: end;
+        flex-grow: 1;
     }
     .intro_form_container {
         margin-top: 102px;
@@ -252,7 +259,7 @@
         font-size: 13px;
     }
     h2 {
-        font-size: 36px;
+        font-size: 42px;
     }
     .header.scrolled .header_content,
     .header_content {

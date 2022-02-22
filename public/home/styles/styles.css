@@ -392,7 +392,7 @@ section {
 .header_content {
     width: 100%;
     height: 100px;
-    padding-left: 100px;
+    padding-left: 78px;
     padding-right: 102px;
 }
 
@@ -538,6 +538,28 @@ section {
     padding-right: 7px;
 }
 
+.search-button {
+    display: none;
+    cursor: pointer;
+    border: solid 1px transparent;
+    border-radius: 7px;
+    -webkit-transition: all 200ms ease;
+    -moz-transition: all 200ms ease;
+    -ms-transition: all 200ms ease;
+    -o-transition: all 200ms ease;
+    transition: all 200ms ease;
+}
+
+.search-button i{
+    font-size: 20px;
+    color: #404040;
+    padding-top: 5px;
+    padding-bottom: 5px;
+    padding-left: 7px;
+    padding-right: 7px;  
+}
+
+
 
 /*********************************
 4. Menu
@@ -546,7 +568,8 @@ section {
 .menu {
     position: fixed;
     top: 0;
-    right: -350px;
+    /* right: -350px; */
+    left:-100%;
     width: 350px;
     height: 100vh;
     /*background: #4ca758;*/
@@ -558,13 +581,14 @@ section {
 }
 
 .menu.active {
-    right: 0;
+    left: 0;
 }
 
 .menu_overlay {
     position: fixed;
     top: 0;
-    right: 0;
+    /* right: 0; */
+    left:0;
     width: 100vw;
     height: 100vh;
     background: rgba(255, 255, 255, 0.75);

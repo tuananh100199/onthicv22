@@ -41,6 +41,14 @@ class SectionLoginForm extends React.Component {
                     <div className='container-fluid intro_form_login' style={{backgroundImage: 'url(' + item.imageBackground + ')', backgroundSize: 'cover'}}>
                         
                             <div className='row'>
+
+                                <div className="col-12 login-mobile">
+                                    <h2>HIỆP PHÁT</h2>
+                                    <h5>Hệ thống đào tạo trực tuyến</h5>
+                                    <div className="strike"></div>
+                                    <p>{item.content}</p>
+                                    <a href="#" className="link_watch_more text-main mb-2"> Xem thêm</a>
+                                </div>
                                 <div className='col-lg-7 col-md-12 intro_col' style={{ width: '100%'}}>
                                     <div className='wrap_image'>
                                         <img src={item.image} style={{ width: '100%', objectFit: 'contain' }} alt='Image' />                                        
