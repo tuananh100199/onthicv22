@@ -386,6 +386,27 @@ module.exports = (app) => {
         });
     });
 
+    app.put('/api/capture/avatar', app.permission.check('user:login'), (req, res) => {
+        const { imageSrc, user } = req.body;
+        const base64Data = imageSrc.replace(/^data:image\/jpeg;base64,/, '');
+        app.createFolder(
+            app.path.join(app.publicPath, 'img', '/user'),
+        );
+        app.model.user.get({_id: user}, (error, item) => {
+            if(error) res.send({ error });
+            else {
+                app.fs.writeFile(app.path.join(app.publicPath, 'img/user', user + '.jpg'), base64Data, 'base64', (error) => {
+                    if(error) res.send({ error });
+                    else {
+                        const image ='img/user' + user + '.jpg';
+                        item.image = image + '?t=' + new Date().getTime().toString().slice(-8);
+                        item.save((error) => res.send({ error, item, image: item.image }));
+                    }
+                });
+            }
+        });
+    });
+
     app.get('/api/capture/photo', app.permission.check('course:audit'), (req, res) => {
         const { date, user } = req.query;
         const dateFolderName = app.date.getDateFolderName(new Date(date));
