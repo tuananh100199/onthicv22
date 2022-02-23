@@ -10,7 +10,6 @@ class SectionAdvisoryForm extends React.Component {
         $(document).ready(() => {
             function advisory() {
                 let advisory = document.querySelectorAll('.advisory');
-                console.log('advisory', advisory);
 
                 for (let i = 0; i < advisory.length; i++) {
                     let windowHeight = window.innerHeight;
