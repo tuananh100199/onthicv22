@@ -105,12 +105,12 @@ class HomeMenu extends React.Component {
             const height = this.getMenuHeight();
             // Using jQuery's animate() method to add smooth page scroll
             // The optional number (800) specifies the number of milliseconds it takes to scroll to the specified area
+            this.setState({link:hash});
             $('html, body').animate({
             scrollTop: $(hash).offset().top - height
             }, 800, ()=>{
             // Add hash (#) to URL when done scrolling (default click behavior)
             // window.location.hash = hash;
-            this.setState({link:hash});
             });
         } // End if
     }

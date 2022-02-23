@@ -242,6 +242,7 @@
 .warp_gioi_thieu_HP .text-gioi-thieu .description.active_intro_desciption{
     transform: translateX(0);
     opacity: 1;
+    z-index: 1;
 }
 
 .warp_gioi_thieu_HP .text-gioi-thieu.active_intro_text{
@@ -544,6 +545,11 @@
 /* ĐỘI NGŨ GIẢNG VIÊN */
 
 #carouselLastNews .carousel-inner{
+    height: 100%; 
+}
+
+#carouselLastNews .carousel-inner .carousel-item{
+    /* height: 100%;  */
 }
 
 .container_staff {

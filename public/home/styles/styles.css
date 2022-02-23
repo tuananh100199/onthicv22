@@ -1397,8 +1397,13 @@ section {
     max-width: 100%;
 }
 
-.team_content {
-    padding: 32px 0;
+.news_mobile .team_content {
+    padding:0;
+}
+
+.news_mobile .team_content a,
+.news_mobile .team_content .team_text p{
+    color:var(--color-primary);
 }
 
 .team_title {
