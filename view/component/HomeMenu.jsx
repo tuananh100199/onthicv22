@@ -105,12 +105,12 @@ class HomeMenu extends React.Component {
             const height = this.getMenuHeight();
             // Using jQuery's animate() method to add smooth page scroll
             // The optional number (800) specifies the number of milliseconds it takes to scroll to the specified area
+            this.setState({link:hash});
             $('html, body').animate({
             scrollTop: $(hash).offset().top - height
             }, 800, ()=>{
             // Add hash (#) to URL when done scrolling (default click behavior)
             // window.location.hash = hash;
-            this.setState({link:hash});
             });
         } // End if
     }
@@ -165,12 +165,16 @@ class HomeMenu extends React.Component {
         return <>
             <header className='header trans_400'>
                 <div className='header_content d-flex flex-row align-items-center jusity-content-start trans_400 classy-nav-container breakpoint-off'>
+                    {/* Hamburger */}
+                    <div className='hamburger'><i className='fa fa-bars' aria-hidden='true' /></div>
+                    {/* logo */}
                     <div className='logo' style={{ height: '100%' }}>
                         <Link to='/' onClick={() => this.setState({ link: '/' }, () => $(this.nav).classyNav())}>
                             <img src={logo} alt='Logo' style={{ marginTop: '2%', height: '96%', width: 'auto' }} />
                             {/*<div style={{ whiteSpace: 'nowrap' }}>Hiệp Phát</div>*/}
                         </Link>
                     </div>
+                    {/* menu horizon */}
                     <nav className='classy-navbar justify-content-between' ref={e => this.nav = e}>
                         <div className='classy-menu'>
                             <nav className='main_nav classynav'>
@@ -178,6 +182,7 @@ class HomeMenu extends React.Component {
                             </nav>
                         </div>
                     </nav>
+                    {/* login logout horizon */}
                     <div className='header_extra d-flex flex-row align-items-center justify-content-end ml-auto'>
                         <div className='social'>
                             <ul className='d-flex flex-row align-items-center justify-content-start'>
@@ -205,7 +210,7 @@ class HomeMenu extends React.Component {
                                     </div> :
                                     <div className='btn-group'>
                                         <div className='button button_2 mr-1 large_btn'>
-                                            <a href={'tel:' + mobile}><i className='fa fa-phone' />{mobile}</a>
+                                            <a href={'tel:' + mobile}><i className='fa fa-phone' /> {mobile}</a>
                                         </div>
                                         <div className='button button_1 mr-1 large_btn'>
                                             <a href='#' onClick={this.showCandidateModal}>Đăng ký tư vấn</a>
@@ -224,8 +229,10 @@ class HomeMenu extends React.Component {
                                 {/* {twitter}{facebook}{youtube}{instagram} */}
                             </ul>
                         </div>
-                        <div className='hamburger'><i className='fa fa-bars' aria-hidden='true' /></div>
+                        {/* <div className='hamburger'><i className='fa fa-bars' aria-hidden='true' /></div> */}
                     </div>
+
+                    <div className="search-button"><i className="fa fa-search" aria-hidden="true"></i></div>
                 </div>
             </header>
             <div className='menu_overlay trans_400' />

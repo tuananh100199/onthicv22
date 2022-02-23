@@ -10,7 +10,6 @@ class SectionAdvisoryForm extends React.Component {
         $(document).ready(() => {
             function advisory() {
                 let advisory = document.querySelectorAll('.advisory');
-                console.log('advisory', advisory);
 
                 for (let i = 0; i < advisory.length; i++) {
                     let windowHeight = window.innerHeight;
@@ -77,8 +76,8 @@ class SectionAdvisoryForm extends React.Component {
 
         return (
             <div className='advisory'>
-                <div className='intro_col'>
-                    <div className='advisory_form_container' style={{ boxShadow: 'rgb(0 0 0 / 20%) 0px 25px 38px', backgroundColor: 'white' }}>
+                {/* <div className='intro_col'> */}
+                    <div className='advisory_form_container'>
                         <div className='intro_form_title'>Đăng ký tư vấn</div>
                         <form action='#' className='intro_form' id='intro_form' onSubmit={this.onSubmit}>
                             <div className='d-flex flex-row align-items-start justify-content-between flex-wrap'>
@@ -121,7 +120,7 @@ class SectionAdvisoryForm extends React.Component {
                             <button className='button button_1 intro_button trans_200 advisory_btn'>Đăng ký</button>
                         </form>
                     </div>
-                </div>
+                {/* </div> */}
             </div>
         );
     }

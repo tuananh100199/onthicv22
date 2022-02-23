@@ -25,7 +25,7 @@ class SectionStaffGroup extends React.Component {
                             <div className='wrapper_staff'>
                                 <div className='staff_info'>
                                     <div className='staff_group_title'>
-                                        <h3>{this.state.title}</h3>
+                                        <h3 className='text-title text-white'>{this.state.title}</h3>
                                     </div>
                                     {/* <div className='strike1'/> */}
                                     <div className='staff_name' style={{ whiteSpace: 'nowrap' }}><h4>{staff.user.lastname + ' ' + staff.user.firstname}</h4></div>

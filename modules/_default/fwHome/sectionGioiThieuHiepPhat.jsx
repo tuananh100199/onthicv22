@@ -72,7 +72,7 @@ class SectionGioiThieuHiepPhat extends React.Component {
                                     <div className='description active_intro_desciption' ref={e => this.abstract1 = e}>
                                         {abstract}
                                             <br />
-                                            <a href='/ve-chung-toi'> Xem thêm</a>
+                                            <a className='link_watch_more text-logo font-weight-italic' href='/ve-chung-toi'> Xem thêm</a>
                                     </div>
                                     <div style={{ position: 'absolute', top: 0, left: 0 }} className='description' ref={e => this.abstract2 = e}>
                                         {abstract2}

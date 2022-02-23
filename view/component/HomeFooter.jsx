@@ -19,7 +19,7 @@ class Footer extends React.Component {
         </li>;
 
     render() {
-        let { facebook, youtube, twitter, instagram, footer,logo } = this.props.system ? this.props.system : { footer: '/img/footer.jpg'};
+        let { facebook, youtube, twitter, instagram, footer } = this.props.system ? this.props.system : { footer: '/img/footer.jpg'};
         facebook = facebook ? <li><a href={facebook} target='_blank' rel='noreferrer'><i className='fa fa-facebook' aria-hidden='true' /></a></li> : '';
         youtube = youtube ? <li><a href={youtube} target='_blank' rel='noreferrer'><i className='fa fa-youtube' aria-hidden='true' /></a></li> : '';
         twitter = twitter ? <li><a href={twitter} target='_blank' rel='noreferrer'><i className='fa fa-twitter' aria-hidden='true' /></a></li> : '';
@@ -31,8 +31,8 @@ class Footer extends React.Component {
         return (
             <footer className='footer' style={{ position: 'absolute', bottom: 0, width: '100%' }}>
                 <div className='footer_content'>    
-                    <div className='pc'>
-                        <div className='container'>
+                    <div className=''>
+                        <div className='container-fluid'>
                             {/* <div className='row'>
                                 <div className='col-lg-6 footer_col'>
                                     <div className='footer_about'>
@@ -70,10 +70,68 @@ class Footer extends React.Component {
                             <div className='row'>
                                 <div className='col-md-4'>
                                     <div className='footer_about'>
-                                        <div className='footer_logo d-flex flex-column align-items-center'>
-                                            <h5>Trung tâm dạy nghề lái xe</h5>
+                                        <div className='footer_logo d-flex flex-column'>
+                                            <p className = 'footer_logo__title--small'>Trung tâm dạy nghề lái xe</p>
                                             <h2 className='footer_logo__title'>HIỆP PHÁT</h2>
-                                            <img src={logo} alt='logo' />
+                                            {/* <img src={logo} alt='logo' /> */}
+
+                                            <ul className='footer_hotline'>
+                                                <li>
+                                                    <a href={'mailto:' + email}>
+                                                        <span className='footer_hotline__icon'><i className="fa fa-link" aria-hidden="true"></i></span>
+                                                        {email}</a>
+                                                </li>
+                                                <li>
+                                                    <a href={'tel:' + mobile}>
+                                                        <span className="footer_hotline__icon"><i className="fa fa-phone" aria-hidden="true"></i></span>
+                                                        {T.mobileDisplay(mobile)}
+                                                    </a>
+                                                </li>
+
+                                                <li>
+                                                    {/* <div className="footer_hotline__app-wrap">
+                                                        <div className="footer_hotline__app">
+                                                            <div className="footer_hotline__app-image">
+                                                                <img src='/img/ch-play.jpg' alt="image" />
+                                                            </div>
+                                                            <div className="footer_hotline__app-content">
+                                                                <p>Get it on</p>
+                                                                <h5>Google Play</h5>
+                                                            </div>
+                                                        </div>
+                                                        <div className="footer_hotline__app">
+                                                            <div className="footer_hotline__app-image">
+                                                            <img src='/img/app-store.jpg' alt="image" />
+                                                            </div>
+                                                            <div className="footer_hotline__app-content">
+                                                                <p>Download on the</p>
+                                                                <h5>App Store</h5>
+                                                                </div>
+                                                        </div>
+                                                    </div> */}
+                                                </li>
+                                            </ul>
+
+                                            <div className="app-button-wrap">
+                                                        <div className="app-button-item">
+                                                            <div className="app-button-image">
+                                                                <img src='/img/ch-play.jpg' alt="image" />
+                                                            </div>
+                                                            <div className="app-button-content">
+                                                                <p>Get it on</p>
+                                                                <h5>Google Play</h5>
+                                                            </div>
+                                                        </div>
+                                                        <div className="app-button-item">
+                                                            <div className="app-button-image">
+                                                            <img src='/img/app-store.jpg' alt="image" />
+                                                            </div>
+                                                            <div className="app-button-content">
+                                                                <p>Download on the</p>
+                                                                <h5>App Store</h5>
+                                                                </div>
+                                                        </div>
+                                                    </div>
                                         </div>
                                         
                                     </div>
@@ -88,49 +146,12 @@ class Footer extends React.Component {
                                 </div>
 
                                 <div className="col-md-4">
-                                    <div className='footer_about_text'>
-                                        <ul className='footer_hotline'>
-                                            <li>
-                                                <a href={'mailto:' + email}>
-                                                    <span className='footer_hotline__icon'><i className="fa fa-link" aria-hidden="true"></i></span>
-                                                    {email}</a>
-                                            </li>
-                                            <li>
-                                                <a href={'tel:' + mobile}>
-                                                    <span className="footer_hotline__icon"><i className="fa fa-phone" aria-hidden="true"></i></span>
-                                                    {T.mobileDisplay(mobile)}
-                                                </a>
-                                            </li>
-
-                                            <li>
-                                                <div className="footer_hotline__app-wrap">
-                                                    <div className="footer_hotline__app">
-                                                        <div className="footer_hotline__app-image">
-                                                            <img src='/img/ch-play.jpg' alt="image" />
-                                                        </div>
-                                                        <div className="footer_hotline__app-content">
-                                                            <p>Get it on</p>
-                                                            <h5>Google Play</h5>
-                                                        </div>
-                                                    </div>
-                                                    <div className="footer_hotline__app">
-                                                        <div className="footer_hotline__app-image">
-                                                        <img src='/img/app-store.jpg' alt="image" />
-                                                        </div>
-                                                        <div className="footer_hotline__app-content">
-                                                            <p>Download on the</p>
-                                                            <h5>App Store</h5>
-                                                            </div>
-                                                    </div>
-                                                </div>
-                                            </li>
-                                        </ul>
-                                    </div>
+                                    <img alt='Loading' src={footer} className='footer_image' />
                                 </div>
                             </div>
                         </div>
                     </div>
-                    <div className='mobile'>
+                    {/* <div className='mobile'>
                         <div className='row'> 
                             <div className='col-12'>
                                 <div className='wrap_title'>
@@ -157,7 +178,7 @@ class Footer extends React.Component {
                                
                         </div>
                        
-                    </div>
+                    </div> */}
                     
                 </div>
                 <div className='footer_bar'>
