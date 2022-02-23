@@ -50,8 +50,8 @@ class AdminImportDiemThiTotNghiepPage extends AdminPage {
     }
 
 
-    change = (e) => {
-        e && e.preventDefault();
+    change = () => {
+        // e && e.preventDefault();
         const { monThiTotNghiep } = this.props.course && this.props.course.item,
             monThiTotNghiepIds = monThiTotNghiep.map(({ _id }) => _id),
             listDiemLiet = this.state.listDiemLiet,

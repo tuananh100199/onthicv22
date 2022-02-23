@@ -1,7 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { getRegisterCalendarOfLecturerByStudent, createTimeTableByStudent, deleteTimeTableByStudent } from './redux';
-import { getStudentByUser } from 'modules/mdDaoTao/fwStudent/redux';
+import { getStudentByUser, updateStudent } from 'modules/mdDaoTao/fwStudent/redux';
 import { AdminPage, AdminModal, TableCell, renderTable, FormDatePicker, FormSelect, FormCheckbox } from 'view/component/AdminPage';
 import { Link } from 'react-router-dom';
 import { RegisterCalendarStates, RegisterCalendarStatesMapper, timeOffStatesMapper, sectionHours, sectionOverTimeHours } from './index';
@@ -109,8 +109,11 @@ class RegisterTimeTableModal extends AdminModal {
            
         let today  = new Date();
         const currentDate = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+        const currentHour = new Date(today).getHours();
+        const result = selectedSectionHours.filter(select => select.startHour  <= currentHour);
+        const dataDate = new Date(data.date).getDate();
         data.date = new Date(data.date.getFullYear(), data.date.getMonth(), data.date.getDate(), '07', '00', '00');
-        if (!_id && data.date <= currentDate) {
+        if (!_id && data.date <= currentDate || (dataDate == new Date(currentDate).getDate() && result.length)) {
             T.notify('Thời gian tối thiểu đăng ký là trước 1 ngày!', 'danger');
             this.itemDate.focus();
         } 
@@ -254,8 +257,8 @@ class StudentView extends AdminPage {
             this.setState({ courseId: _id });
             T.ready('/user/hoc-vien/khoa-hoc/' + _id, () => {
                 this.props.getStudentByUser({ user: this.props.system.user && this.props.system.user._id }, student => {
-                    this.setState({ student });
                     if (student) {
+                        this.setState({ student, soGioThucHanhDaHoc: student.soGioThucHanhDaHoc });
                         this.props.getRegisterCalendarOfLecturerByStudent({}, data => {
                             if (data.error) {
                                 this.props.history.push(`/user/hoc-vien/khoa-hoc/${this.state.courseId}`);
@@ -367,30 +370,45 @@ class StudentView extends AdminPage {
     onModalFormSave = (_id, data, done) => {
         const { selectedSectionHours, selectedSectionOverTimeHours } = data;
         // if (selectedSectionHours && selectedSectionHours.length) {
-            selectedSectionHours.concat(selectedSectionOverTimeHours).forEach(selectedSectionHour => {
-                let newData = { 
-                    date: data.date, 
-                    startHour: selectedSectionHour.startHour, 
-                    numOfHours: 1 
-                };
-                if(this.state.car) {
-                    newData.car = this.state.car && this.state.car._id;
-                }
-                this.props.createTimeTableByStudent(newData, item => {
+            const list = selectedSectionHours.concat(selectedSectionOverTimeHours);
+            const handleCreateTimeTable = (index = 0) => {
+                if (index == list.length) {
                     done && done();
-                    const newEvent = this.getEventObject({}, item);
-                    $(this.calendar).fullCalendar('renderEvent', newEvent);
-                });
-            });
+                    window.location.reload();
+                } else {
+                    let newData = { 
+                        date: data.date, 
+                        startHour: list[index].startHour, 
+                        numOfHours: 1 
+                    };
+                    if(this.state.car) {
+                        newData.car = this.state.car && this.state.car._id;
+                    }
+                    this.props.createTimeTableByStudent(newData, item => {
+                        handleCreateTimeTable(index + 1);
+                        const newEvent = this.getEventObject({}, item);
+                        $(this.calendar).fullCalendar('renderEvent', newEvent);
+                    });
+                }
+            };
+            handleCreateTimeTable();
         // }
     }
 
     deleteCalendar = (_id, condition) => {
-        this.props.deleteTimeTableByStudent(_id, condition);
-        if (this.eventSelect) {
-            $(this.calendar).fullCalendar('removeEvents', [this.eventSelect._id]);
-            this.eventSelect = null;
-        }
+        const { student } = this.state;
+        this.props.getStudentByUser(student && student._id, data => {
+            if(data) {
+                this.props.updateStudent(data._id, { soGioThucHanhDaHoc:  (data.soGioThucHanhDaHoc - 1)}, () => {
+                    this.setState({ soGioThucHanhDaHoc: parseInt(data.soGioThucHanhDaHoc) - 1 });
+                });
+                this.props.deleteTimeTableByStudent(_id, condition);
+                if (this.eventSelect) {
+                    $(this.calendar).fullCalendar('removeEvents', [this.eventSelect._id]);
+                    this.eventSelect = null;
+                }
+            }
+        });
     }
 
     edit = (e, item) => {
@@ -404,12 +422,17 @@ class StudentView extends AdminPage {
     render() {
         const courseName = this.state.student && this.state.student.course ? this.state.student.course.name : '';
         const userPageLink = '/user/hoc-vien/khoa-hoc/' + this.state.courseId;
+        const { student, soGioThucHanhDaHoc} = this.state;
+        const soGioHoc = student && student.course && student.course.practiceNumOfHours ? student.course.practiceNumOfHours : 0;
+        // const soGioThucHanhDaHoc = student && student.soGioThucHanhDaHoc ? student.soGioThucHanhDaHoc : 0;
         return this.renderPage({
             icon: 'fa fa-cubes',
             title: 'Khóa học: ' + courseName,
             breadcrumb: [<Link key={0} to={'/user/hoc-vien/khoa-hoc/' + this.state.courseId}>Khóa học</Link>, 'Đăng ký lịch học'],
             content: <>
                 <div className='tile'>
+                    <div>Số giờ học chính thức: {soGioHoc}</div>
+                    <div>Số giờ học còn lại: {parseInt(soGioHoc) - parseInt(soGioThucHanhDaHoc)}</div>
                     <div ref={e => this.calendar = e}></div>
                 </div>
                 <RegisterTimeTableModal ref={e => this.modal = e} readOnly={false} userId={this.props.system && this.props.system.user && this.props.system.user._id} student={this.state.student} courseId={this.state.courseId} listRegisterCalendar={this.state.listRegisterCalendar} filterOn={this.props.filterOn} calendar={this.props.calendar} lecturerName={this.props.lecturerName}
@@ -421,5 +444,5 @@ class StudentView extends AdminPage {
 }
 
 const mapStateToProps = state => ({ system: state.system, registerCalendar: state.trainning.registerCalendar });
-const mapActionsToProps = { getRegisterCalendarOfLecturerByStudent, createTimeTableByStudent, deleteTimeTableByStudent, getStudentByUser  };
+const mapActionsToProps = { getRegisterCalendarOfLecturerByStudent, createTimeTableByStudent, deleteTimeTableByStudent, getStudentByUser, updateStudent  };
 export default connect(mapStateToProps, mapActionsToProps)(StudentView);

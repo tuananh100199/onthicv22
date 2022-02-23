@@ -3,6 +3,7 @@ module.exports = (app) => {
         title: String,
         active: { type: Boolean, default: true },
         official: { type: Boolean, default: false },
+        isExtra: {type: Boolean, default: false},
     });
 
     const model = app.db.model('FeeType', schema);

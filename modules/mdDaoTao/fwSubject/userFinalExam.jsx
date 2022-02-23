@@ -226,6 +226,9 @@ class UserPageRandomDriveTestDetail extends AdminPage {
 
             });
             clearInterval(window.interval);
+            if(result.score >=5){
+                console.log('Thêm modal chúc mừng');//Vinh
+            }
         });
     }
 

@@ -67,7 +67,7 @@ class AdminPhotoPage extends AdminPage {
                         <FormDatePicker className='col-md-2' ref={e => this.itemNgayLuaChon = e} label='Ngày chụp' onChange={(item) => this.handleFilterByTime(item)} />
                         <div className='row'>
                             {data && data.item && data.item.length ? data.item.map((image, index) => (
-                                <div key={index} className='col-md-6 col-lg-4 col-xs-12'>
+                                !isNaN(image.slice(0, 13)) && <div key={index} className='col-md-6 col-lg-4 col-xs-12'>
                                     <img src={data.path + '/' + image}></img>
                                     <p className='mb-0'>{T.dateToText(new Date(parseInt(image.slice(0, 13))))}</p>
                                     {image.slice(14, 17) == 'png' ? null : <p>{this.getNameImage(image.slice(13))}</p>}

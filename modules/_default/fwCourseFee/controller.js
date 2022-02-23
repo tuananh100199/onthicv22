@@ -52,6 +52,17 @@ module.exports = (app) => {
 
     });
 
+    app.put('/api/course-fee/student', app.permission.check('user:login'), (req, res) => {
+        const { _id, quantity, type } = req.body;
+        app.model.courseFee.get(_id, (error, item) => {
+            if( error || !item) res.send({ error: error ? error : 'Không tìm thấy gói!' });
+            else {
+                const newQuantity =  type == 'add' ?  (parseInt(item.quantity) - parseInt(quantity)) : (parseInt(item.quantity) + parseInt(quantity));
+                app.model.courseFee.update(_id, { quantity: newQuantity}, (error, item) => res.send({ error, item }));
+            }
+        });
+    });
+
     app.put('/api/course-fee/default', app.permission.check('courseFee:write'), (req, res) => {
         const { courseFee } = req.body;
         app.model.feeType.get({ official: true }, (error, feeType) => {

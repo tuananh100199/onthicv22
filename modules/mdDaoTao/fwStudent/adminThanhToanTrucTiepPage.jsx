@@ -2,7 +2,8 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { getStudent, addStudentPayment, addStudentPaymentExtra, updateStudent } from './redux';
 import { createNotification } from 'modules/_default/fwNotification/redux';
-import { getCourseFeeByStudent } from 'modules/_default/fwCourseFee/redux';
+import { getCourseFeeByStudent, updateCourseFeeByStudent } from 'modules/_default/fwCourseFee/redux';
+import { updateTimeTableByAccountant } from 'modules/mdDaoTao/fwRegisterCalendar/redux';
 import { Link } from 'react-router-dom';
 import { AdminPage, FormSelect, FormTextBox, renderTable, TableCell, FormCheckbox, AdminModal } from 'view/component/AdminPage';
 
@@ -71,11 +72,10 @@ class PaymentExtraInfoModal extends AdminModal {
         cart.forEach(item => {
             description = description + '<p>&nbsp;&nbsp;&nbsp;- ' + item.quantity + ' ' + item.name + '<p>\n';
         });
-        console.log(description);
         this.itemName.value(name);
         this.itemCourseFeeName.value('Thanh toán gói học phí tăng thêm');
         this.itemFee.value(fee ? T.numberDisplay(fee) + ' đồng' : 0);
-        this.setState({ userId, description }); 
+        this.setState({ userId, description, cart }); 
     }
 
     render = () => this.renderModal({
@@ -101,10 +101,12 @@ class PaymentExtraInfoModal extends AdminModal {
                         user: this.state.userId,
                         sentDate: new Date(),
                     };
-                    this.props.create(data, () => {
-                        T.notify('Gửi thông báo thành công!', 'success');
-                        this.hide();
-                        window.location.reload();
+                    this.props.updateTimeTableByAccountant(this.props.studentId, this.state.cart, () => {
+                        this.props.create(data, () => {
+                            T.notify('Gửi thông báo thành công!', 'success');
+                            this.hide();
+                            window.location.reload();
+                        });
                     });
                 });
             }} style={{ color: 'white' }}>
@@ -136,20 +138,23 @@ class CartModal extends AdminModal {
 
     delete = (e, { item }) => {
         e.preventDefault();
-        let { count } = this.props;
+        let { count, listWaiting } = this.props;
         let cart = this.state.cart;
         const { _id } = this.props.student;
         T.confirm('Xóa khỏi danh sách thanh toán', 'Bạn có chắc bạn muốn xóa gói học này?', true, isConfirm => {
             if (isConfirm) {
                 cart = cart.filter(courseFee => courseFee._id != item._id);
+                listWaiting = listWaiting.filter(courseFee => courseFee != item._id);
                 let transactionId = this.makeId(5);
                 this.setState({
                     transactionId,
                     cart,
+                    listWaiting,
                     count: count - parseInt(item.quantity),
                 }, () => {
-                    this.props.updateState({ transactionId, cart, count: count - parseInt(item.quantity)});
+                    this.props.updateState({ transactionId, cart, listWaiting, count: count - parseInt(item.quantity)});
                     this.props.updateStudent(_id, { cart: { transactionId, item: cart } });
+                    this.props.updateCourseFeeByStudent(item._id, item.quantity, 'remove');
                 });
             }
         });
@@ -271,7 +276,7 @@ class CancelPaymentModal extends AdminModal {
 }
 
 class ThanhToanTrucTiepPage extends AdminPage {
-    state = { showOfficial: true, showExtra: false, data: {}, soTienThanhToan: 0, soTienDong: 0, count: 0 };
+    state = { showOfficial: true, showExtra: false, data: {}, soTienThanhToan: 0, soTienDong: 0, count: 0, listWaiting: [] };
     componentDidMount() {
         T.ready('/user/student/debt', () => {
             const route = T.routeMatcher('/user/student/payment/:_id'),
@@ -280,7 +285,11 @@ class ThanhToanTrucTiepPage extends AdminPage {
             this.props.getStudent(_id, data => {
                 if (data){
                     let count = 0;
-                        data.cart && data.cart.item && data.cart.item.forEach(item => count = count + item.quantity);
+                    const listWaiting = [];
+                    data.cart && data.cart.item && data.cart.item.forEach(item => {
+                        count = count + item.quantity;
+                        listWaiting.push(item._id);
+                    });
                         this.setState({
                             ...data.item,
                             cart: data.cart ? data.cart.item : [],
@@ -321,7 +330,7 @@ class ThanhToanTrucTiepPage extends AdminPage {
     }
 
     addToCart = (item, quantity,indexCart) => {
-        const { cart = [], count } = this.state;
+        const { cart = [], count, listWaiting = [] } = this.state;
         const { _id } = this.state.data;
         T.confirm('Thêm vào danh sách mua gói', 'Bạn có chắc thêm ' + quantity + ' gói ' + item.name + ' vào danh sách thanh toán không?', 'info', isConfirm => {
             if (isConfirm) {
@@ -335,14 +344,17 @@ class ThanhToanTrucTiepPage extends AdminPage {
                         cart[index].quantity = cart[index].quantity + parseInt(quantity);
                         cart[index].fees = cart[index].fee * cart[index].quantity;
                     }
+                    listWaiting.indexOf(item._id) == -1 && listWaiting.push(item._id);
                     let transactionId = this.makeId(5);
                     this.setState({
                         transactionId,
                         cart,
+                        listWaiting,
                         count: count + parseInt(quantity),
                     }, () => {
-                        this[indexCart].value('');
+                        item.feeType && !item.feeType.isExtra && this[indexCart].value('');
                         this.props.updateStudent(_id, { cart: { transactionId, item: cart } });
+                        this.props.updateCourseFeeByStudent(item._id, quantity, 'add');
                         T.notify('Cập nhật giỏ hàng thành công', 'success');
                     });
                 } else{
@@ -434,6 +446,7 @@ class ThanhToanTrucTiepPage extends AdminPage {
                     <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Số tiền</th>
                     <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Loại gói học phí</th>
                     <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Mô tả</th>
+                    <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Còn lại</th>
                     <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Số lượng</th>
                     <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Chọn thanh toán</th>
                 </tr>),
@@ -444,8 +457,9 @@ class ThanhToanTrucTiepPage extends AdminPage {
                     <TableCell type='number' content={item.fee} />
                     <TableCell type='text' style={{ whiteSpace: 'nowrap', textAlign: 'center' }} content={item.feeType ? item.feeType.title : ''} />
                     <TableCell type='text' style={{ whiteSpace: 'nowrap', textAlign: 'center' }} content={item.description} />
-                    <TableCell type='text' style={{ whiteSpace: 'nowrap', textAlign: 'center' }} content={<FormTextBox ref={e => this[index] = e} style={{ width: '60px' }} type='number' min={1} max={100} readOnly={false}></FormTextBox>} />
-                    <TableCell type='link' onClick={() => this.addToCart(item, this[index].value(),index)} style={{ textAlign: 'center' }} content={<i className='fa fa-shopping-cart' aria-hidden='true'></i>} />
+                    <TableCell type='text' style={{ whiteSpace: 'nowrap', textAlign: 'center' }} content={item.quantity} />
+                    <TableCell type='text' style={{ whiteSpace: 'nowrap', textAlign: 'center' }} content={item.feeType && !item.feeType.isExtra ? <FormTextBox ref={e => this[index] = e} style={{ width: '60px' }} type='number' min={1} max={100} readOnly={false}></FormTextBox> : 1} />
+                    <TableCell type={this.state.listWaiting.indexOf(item._id) == -1 ? 'link' : 'text'} onClick={() => this.addToCart(item,item.feeType && !item.feeType.isExtra ?  this[index].value() : 1,index)} style={{ textAlign: 'center' }} content={this.state.listWaiting.indexOf(item._id) == -1 ? <i className='fa fa-shopping-cart' aria-hidden='true'></i> : 'Đã mua'} />
                 </tr>),
         });
         const tableUser = renderTable({
@@ -533,9 +547,9 @@ class ThanhToanTrucTiepPage extends AdminPage {
                 {showOfficial ? official : null}
                 {showExtra ? extra : null}
                 <PaymentInfoModal fee={this.state.soTienDong} student={this.state.data} hocPhi={hocPhi} create={this.props.createNotification} hocPhiConLai={hocPhiConLai} name={name} userId={userId} courseFeeName={student && student.courseFee ? student.courseFee.name : ''} accounts={this.state.accounts} readOnly={true} addStudentPayment={this.props.addStudentPayment} studentId={studentId} ref={e => this.modal = e} />
-                <CartModal fee={soTienThanhToan} showPayment={this.paymentExtraModal && this.paymentExtraModal.show} updateState={this.updateState} count={count} student={this.state.data}  lock={lock} readOnly={true} updateStudent={this.props.updateStudent} cart={cart} transactionId={transactionId} studentId={studentId} ref={e => this.cartModal = e} />
+                <CartModal fee={soTienThanhToan} showPayment={this.paymentExtraModal && this.paymentExtraModal.show} updateState={this.updateState} listWaiting={this.state.listWaiting} count={count} student={this.state.data}  lock={lock} readOnly={true} updateStudent={this.props.updateStudent} updateCourseFeeByStudent={this.props.updateCourseFeeByStudent} cart={cart} transactionId={transactionId} studentId={studentId} ref={e => this.cartModal = e} />
                 <CancelPaymentModal  readOnly={true}  updateStudent={this.props.updateStudent} cart={cart} transactionId={transactionId} studentId={studentId} ref={e => this.cancelModal = e} />
-                <PaymentExtraInfoModal readOnly={true} cart={cart} create={this.props.createNotification} student={this.state.data} addStudentPaymentExtra={this.props.addStudentPaymentExtra} studentId={studentId} ref={e => this.paymentExtraModal = e} />
+                <PaymentExtraInfoModal readOnly={true} cart={cart} updateTimeTableByAccountant={this.props.updateTimeTableByAccountant} create={this.props.createNotification} student={this.state.data} addStudentPaymentExtra={this.props.addStudentPaymentExtra} studentId={studentId} ref={e => this.paymentExtraModal = e} />
             </>,
             backRoute: '/user/student/debt'
         });
@@ -543,5 +557,5 @@ class ThanhToanTrucTiepPage extends AdminPage {
 }
 
 const mapStateToProps = state => ({ system: state.system, student: state.trainning.student, courseFee: state.accountant.courseFee });
-const mapActionsToProps = { getStudent, addStudentPayment, getCourseFeeByStudent, updateStudent, addStudentPaymentExtra, createNotification };
+const mapActionsToProps = { getStudent, addStudentPayment, getCourseFeeByStudent, updateStudent, addStudentPaymentExtra, createNotification, updateTimeTableByAccountant, updateCourseFeeByStudent };
 export default connect(mapStateToProps, mapActionsToProps)(ThanhToanTrucTiepPage);

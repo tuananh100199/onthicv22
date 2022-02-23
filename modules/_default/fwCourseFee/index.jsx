@@ -14,20 +14,8 @@ export default {
             component: Loadable({ loading: Loading, loader: () => import('./adminPage') }),
         },
         {
-            path: '/user/hoc-vien/cong-no/:_id/chinh-thuc',
-            component: Loadable({ loading: Loading, loader: () => import('./userPaymentInfo') })
-        },
-        {
             path: '/user/hoc-vien/cong-no/:_id',
             component: Loadable({ loading: Loading, loader: () => import('./userPayment') })
-        },
-        {
-            path: '/user/hoc-vien/cong-no/:_id/tang-them',
-            component: Loadable({ loading: Loading, loader: () => import('./userPaymentExtraInfo') })
-        },
-        {
-            path: '/user/hoc-vien/cong-no/:_id/lich-su',
-            component: Loadable({ loading: Loading, loader: () => import('./userPaymentHistory') })
         },
     ]
 };
