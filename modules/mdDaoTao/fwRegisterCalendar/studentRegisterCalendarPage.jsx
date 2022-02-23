@@ -257,8 +257,8 @@ class StudentView extends AdminPage {
             this.setState({ courseId: _id });
             T.ready('/user/hoc-vien/khoa-hoc/' + _id, () => {
                 this.props.getStudentByUser({ user: this.props.system.user && this.props.system.user._id }, student => {
-                    this.setState({ student });
                     if (student) {
+                        this.setState({ student, soGioThucHanhDaHoc: student.soGioThucHanhDaHoc });
                         this.props.getRegisterCalendarOfLecturerByStudent({}, data => {
                             if (data.error) {
                                 this.props.history.push(`/user/hoc-vien/khoa-hoc/${this.state.courseId}`);
@@ -374,6 +374,7 @@ class StudentView extends AdminPage {
             const handleCreateTimeTable = (index = 0) => {
                 if (index == list.length) {
                     done && done();
+                    window.location.reload();
                 } else {
                     let newData = { 
                         date: data.date, 
@@ -396,13 +397,18 @@ class StudentView extends AdminPage {
 
     deleteCalendar = (_id, condition) => {
         const { student } = this.state;
-        this.props.updateStudent(student && student._id, { soGioThucHanhDaHoc: student && (student.soGioThucHanhDaHoc - 1)}, () => {
-            this.props.deleteTimeTableByStudent(_id, condition);
+        this.props.getStudentByUser(student && student._id, data => {
+            if(data) {
+                this.props.updateStudent(data._id, { soGioThucHanhDaHoc:  (data.soGioThucHanhDaHoc - 1)}, () => {
+                    this.setState({ soGioThucHanhDaHoc: parseInt(data.soGioThucHanhDaHoc) - 1 });
+                });
+                this.props.deleteTimeTableByStudent(_id, condition);
+                if (this.eventSelect) {
+                    $(this.calendar).fullCalendar('removeEvents', [this.eventSelect._id]);
+                    this.eventSelect = null;
+                }
+            }
         });
-        if (this.eventSelect) {
-            $(this.calendar).fullCalendar('removeEvents', [this.eventSelect._id]);
-            this.eventSelect = null;
-        }
     }
 
     edit = (e, item) => {
@@ -416,9 +422,9 @@ class StudentView extends AdminPage {
     render() {
         const courseName = this.state.student && this.state.student.course ? this.state.student.course.name : '';
         const userPageLink = '/user/hoc-vien/khoa-hoc/' + this.state.courseId;
-        const student = this.state.student;
+        const { student, soGioThucHanhDaHoc} = this.state;
         const soGioHoc = student && student.course && student.course.practiceNumOfHours ? student.course.practiceNumOfHours : 0;
-        const soGioThucHanhDaHoc = student && student.soGioThucHanhDaHoc ? student.soGioThucHanhDaHoc : 0;
+        // const soGioThucHanhDaHoc = student && student.soGioThucHanhDaHoc ? student.soGioThucHanhDaHoc : 0;
         return this.renderPage({
             icon: 'fa fa-cubes',
             title: 'Khóa học: ' + courseName,
