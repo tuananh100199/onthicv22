@@ -41,7 +41,6 @@ class SectionLoginForm extends React.Component {
                     <div className='container-fluid intro_form_login' style={{backgroundImage: 'url(' + item.imageBackground + ')', backgroundSize: 'cover'}}>
                         
                             <div className='row'>
-
                                 <div className="col-12 login-mobile">
                                     <h2>HIỆP PHÁT</h2>
                                     <h5>Hệ thống đào tạo trực tuyến</h5>
@@ -85,6 +84,29 @@ class SectionLoginForm extends React.Component {
                                         </form>
                                         </div>
                                         
+                                    </div>
+                                </div>
+
+                                <div className="col-12 pt-4 login-mobile mb-0">
+                                    <div className="app-button-wrap">
+                                        <div className="app-button-item">
+                                                <div className="app-button-image">
+                                                    <img src='/img/ch-play.jpg' alt="image" />
+                                                </div>
+                                                <div className="app-button-content">
+                                                    <p style={{color:'white'}}>Get it on</p>
+                                                    <h5 style={{color:'white'}}>Google Play</h5>
+                                                </div>
+                                            </div>
+                                            <div className="app-button-item">
+                                                <div className="app-button-image">
+                                                <img src='/img/app-store.jpg' alt="image" />
+                                                </div>
+                                                <div className="app-button-content">
+                                                    <p style={{color:'white'}}>Download on the</p>
+                                                    <h5 style={{color:'white'}}>App Store</h5>
+                                                    </div>
+                                            </div>
                                     </div>
                                 </div>
                             </div> 

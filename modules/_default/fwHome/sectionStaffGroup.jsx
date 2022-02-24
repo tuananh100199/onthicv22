@@ -7,7 +7,20 @@ import './style.css';
 class SectionStaffGroup extends React.Component {
     state = {};
     componentDidMount() {
-        this.props.viewId && this.props.homeGetStaffGroup(this.props.viewId, data => this.setState(data));
+        this.props.viewId && this.props.homeGetStaffGroup(this.props.viewId, 
+            data => {
+                this.setState(data);
+                const single = data.items && data.items.length>1 ? false:true;
+                $('#staffCarousel').owlCarousel({
+                    items:1,
+                    loop:!single,
+                    margin:10,
+                    autoplay: !single,
+                    autoplayTimeout:3000,
+                    autoplayHoverPause: true,
+                    
+                });
+            });
     }
 
     componentDidUpdate() {
@@ -16,7 +29,7 @@ class SectionStaffGroup extends React.Component {
 
     render() {
         return <>
-        <div id='carouselLastNews' className='carousel slide ftco-animate' data-ride='carousel' data-interval='500000' style={{ height: 'auto' }}>
+        {/* <div id='carouselLastNews' className='carousel slide ftco-animate' data-ride='carousel' data-interval='500000' style={{ height: 'auto' }}>
             <div className='carousel-inner'>
                 { this.state.items && this.state.items.map((staff, index) => (
                     <div className={'container_staff team_col carousel-item' + (index == 0 ? ' active' : '')}
@@ -27,7 +40,6 @@ class SectionStaffGroup extends React.Component {
                                     <div className='staff_group_title'>
                                         <h3 className='text-title text-white'>{this.state.title}</h3>
                                     </div>
-                                    {/* <div className='strike1'/> */}
                                     <div className='staff_name' style={{ whiteSpace: 'nowrap' }}><h4>{staff.user.lastname + ' ' + staff.user.firstname}</h4></div>
                                     <div className='staff_title' style={{ whiteSpace: 'nowrap' }}><h5>{staff.title}</h5></div>
                                     <div className='strike2'/>
@@ -80,7 +92,108 @@ class SectionStaffGroup extends React.Component {
                 <span className='carousel-control-next-icon' />
                 <span className='sr-only'>Next</span>
             </a>
+        </div> */}
+
+        {/* <div className="owl-carousel news_carousel" id='staffCarousel'>
+        { this.state.items && this.state.items.map((staff, index) => (
+                <div className={'container_staff team_col carousel-item' + (index == 0 ? ' active' : '')}
+                    key={index}>
+                    <div className='pc'>
+                        <div className='wrapper_staff'>
+                            <div className='staff_info'>
+                                <div className='staff_group_title'>
+                                    <h3 className='text-title text-white'>{this.state.title}</h3>
+                                </div>
+                                <div className='staff_name' style={{ whiteSpace: 'nowrap' }}><h4>{staff.user.lastname + ' ' + staff.user.firstname}</h4></div>
+                                <div className='staff_title' style={{ whiteSpace: 'nowrap' }}><h5>{staff.title}</h5></div>
+                                <div className='strike2'/>
+                                <div className='text'>
+                                    <blockquote>
+                                        <p>&ldquo;{staff.description}&rdquo;</p>
+                                    </blockquote>
+                                </div> 
+                            </div>
+                            <div className='staff_img'>
+                                <img src={staff.image} alt='Image' className='img-fluid' />
+                            </div>
+                        </div>
+                    </div>
+                    <div className='mobile'>
+                        <div className='wrapper_staff'>
+                            <div className='row'>
+                                <div className='col-12'>
+                                    <div className='staff_info'>
+                                        <div className='staff_group_title'>
+                                            <h3>{this.state.title}</h3>
+                                        </div>
+                                        <div className='strike1'/>
+                                        <div className='staff_name' style={{ whiteSpace: 'nowrap' }}><h5>{staff.user.lastname + ' ' + staff.user.firstname}</h5></div>
+                                        <div className='staff_title' style={{ whiteSpace: 'nowrap' }}><h6>{staff.title}</h6></div>
+                                        <div className='strike2'/>
+                                        <div className='text'>
+                                            <blockquote>
+                                                <p>&ldquo;{staff.description}&rdquo;</p>
+                                            </blockquote>
+                                        </div> 
+                                    </div>
+                                </div>
+                            <div className='col-12' style={{ padding: 'inherit'}}>
+                            <div className='staff_img'>
+                                    <img src={staff.image} alt='Image' className='img-fluid' />
+                                </div>
+                            </div>
+                        </div>
+                            
+                        </div>
+                    </div>
+            </div>))}
+        </div> */}
+
+        <div className='section_staff'>
+            <div className="container-fluid mobile pt-4">
+                <h3 className='text-title text-white'>{this.state.title}</h3>
             </div>
+            
+
+            <div className="owl-carousel news_carousel carousel_equal_height" id='staffCarousel'>
+            { this.state.items && this.state.items.map((staff, index) => (
+                    <div className='container_staff'
+                        key={index}>
+                            <div className='wrapper_staff'>
+                                <div className="staff_info">
+                                    <div className='staff_group_title pc'>
+                                        <h3 className='text-title text-white'>{this.state.title}</h3>
+                                    </div>
+                                    <div style={{width:'100%'}}>
+                                        <div className='staff_name' style={{ whiteSpace: 'nowrap' }}><h4>{staff.user.lastname + ' ' + staff.user.firstname}</h4></div>
+                                        <div className='staff_title' style={{ whiteSpace: 'nowrap' }}><h5>{staff.title}</h5></div>
+                                        <div className='strike2'/>
+                                    </div>
+                                    
+                                    <div className='text'>
+                                        <blockquote>
+                                            <p>&ldquo;{staff.description}&rdquo;</p>
+                                        </blockquote>
+                                    </div>
+
+                                    <div style={{width:'100%'}}>
+                                        <a href='#' className="link_watch_more text-white">Xem thêm</a>
+                                    </div> 
+                                </div>
+
+                                <div>
+                                    <div className="staff_img">
+                                    <img src={staff.image} alt='Image' className='img-fluid' />
+                                    </div>
+                                </div>    
+                                
+                        </div>
+                </div>))}
+            </div>
+
+        </div>
+        
+
         </>;
     }
 }

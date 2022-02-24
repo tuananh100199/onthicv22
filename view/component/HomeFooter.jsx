@@ -68,7 +68,7 @@ class Footer extends React.Component {
                             </div> */}
 
                             <div className='row'>
-                                <div className='col-md-4'>
+                                <div className='col-lg-4'>
                                     <div className='footer_about'>
                                         <div className='footer_logo d-flex flex-column'>
                                             <p className = 'footer_logo__title--small'>Trung tâm dạy nghề lái xe</p>
@@ -112,31 +112,31 @@ class Footer extends React.Component {
                                                 </li>
                                             </ul>
 
-                                            <div className="app-button-wrap">
-                                                        <div className="app-button-item">
-                                                            <div className="app-button-image">
-                                                                <img src='/img/ch-play.jpg' alt="image" />
-                                                            </div>
-                                                            <div className="app-button-content">
-                                                                <p>Get it on</p>
-                                                                <h5>Google Play</h5>
-                                                            </div>
-                                                        </div>
-                                                        <div className="app-button-item">
-                                                            <div className="app-button-image">
-                                                            <img src='/img/app-store.jpg' alt="image" />
-                                                            </div>
-                                                            <div className="app-button-content">
-                                                                <p>Download on the</p>
-                                                                <h5>App Store</h5>
-                                                                </div>
-                                                        </div>
+                                            <div className="app-button-wrap" style={{paddingTop:'32px'}}>
+                                                <div className="app-button-item">
+                                                    <div className="app-button-image">
+                                                        <img src='/img/ch-play.jpg' alt="image" />
                                                     </div>
+                                                    <div className="app-button-content">
+                                                        <p>Get it on</p>
+                                                        <h5>Google Play</h5>
+                                                    </div>
+                                                </div>
+                                                <div className="app-button-item">
+                                                    <div className="app-button-image">
+                                                    <img src='/img/app-store.jpg' alt="image" />
+                                                    </div>
+                                                    <div className="app-button-content">
+                                                        <p>Download on the</p>
+                                                        <h5>App Store</h5>
+                                                        </div>
+                                                </div>
+                                            </div>
                                         </div>
                                         
                                     </div>
                                 </div>
-                                <div className="col-md-4">
+                                <div className="col-lg-4">
                                     <div className='footer_about_text'>
                                         <ul className='footer_about_contact'>
                                             {divisionsInside.length > 0 ?
@@ -145,7 +145,7 @@ class Footer extends React.Component {
                                     </div>
                                 </div>
 
-                                <div className="col-md-4">
+                                <div className="col-lg-4">
                                     <img alt='Loading' src={footer} className='footer_image' />
                                 </div>
                             </div>

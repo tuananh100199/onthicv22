@@ -14,7 +14,7 @@ class SectionNews extends React.Component {
                     items:1,
                     loop:true,
                     margin:10,
-                    // autoplay: true,
+                    autoplay: true,
                     autoplayTimeout:3000,
                     autoplayHoverPause: true,
                     
@@ -185,9 +185,9 @@ class SectionNews extends React.Component {
                             <div className="owl-carousel news_carousel" id='newCarousel'>
                                 {newsFeed.map((item, index) => (
                                         <div key={index} className='item team_col'>
-                                            <div className='team_item d-flex flex-column align-items-center justify-content-between'>
-                                            <div className="container d-flex flex-column justify-content-center" style={{flexGrow:1}}>
-                                                <div className='team_content'>
+                                            <div className='team_item d-flex flex-column'>
+                                            <div className="container-fluid" style={{flexGrow:1}}>
+                                                <div className='team_content  d-flex flex-column justify-content-between'>
                                                     <div className='team_name'>
                                                         <Link to={item.link ? '/tintuc/' + item.link : '/news/' + item._id}>{item.title}</Link>
                                                     </div>
@@ -196,7 +196,7 @@ class SectionNews extends React.Component {
                                                             <p>&ldquo;{item.abstract}&rdquo;</p>
                                                         </blockquote>
                                                     </div>
-                                                    <div style={{marginBottom:'16px'}}>
+                                                    <div>
                                                         <a href={item.link ? '/tintuc/' + item.link : '/news/' + item._id} className="link_watch_more text-main">Xem thêm</a>
                                                     </div>
                                                 </div>

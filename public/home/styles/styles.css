@@ -160,13 +160,16 @@ h5 {
 }
 
 @media (max-width: 991px) {
+    h2{
+        font-size: 42px;
+    }
 
     h3{
-        font-size: 24px;
+        font-size: 26px;
     }
 
     h4{
-        font-size: 20px;
+        font-size: 22px;
     }
 
     h5{
@@ -392,8 +395,8 @@ section {
 .header_content {
     width: 100%;
     height: 100px;
-    padding-left: 78px;
-    padding-right: 102px;
+    padding-left: 15px;
+    padding-right: 15px;
 }
 
 .header.scrolled .header_content {
@@ -540,7 +543,6 @@ section {
 
 .search-button {
     display: none;
-    cursor: pointer;
     border: solid 1px transparent;
     border-radius: 7px;
     -webkit-transition: all 200ms ease;
@@ -551,6 +553,7 @@ section {
 }
 
 .search-button i{
+    cursor: pointer;
     font-size: 20px;
     color: #404040;
     padding-top: 5px;
@@ -1398,7 +1401,8 @@ section {
 }
 
 .news_mobile .team_content {
-    padding:0;
+    padding:16px 0;
+    height: 100%;
 }
 
 .news_mobile .team_content a,
