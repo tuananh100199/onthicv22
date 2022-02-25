@@ -519,41 +519,49 @@ module.exports = (app) => {
                 day = ('0' + date.getDate()).slice(-2);
             return [day, mnth, date.getFullYear()].join('');
         }
-        if (students && students.length) {
-            const handleCreateStudent = (index = 0) => {
-                if (index == students.length) {
-                    res.send({ error: err, studentError });
-                } else {
-                    const student = students[index];
-                    student.division = req.body.division;
-                    const dataPassword = convert(student.birthday),
-                        newUser = { ...student, password: dataPassword, active: true };
-                    app.model.user.create(newUser, (error, user) => {
-                        if (error && !user) {
-                            err = error;
-                            handleCreateStudent(index + 1);
-                        } else { 
-                            student.user = user._id;   // assign id of user to user field of prestudent
-                            student.courseType = req.body.courseType;
-                            app.model.user.get({ identityCard: student.lecturerIdentityCard, isLecturer: true }, (error, user) => {
-                                if (error || !user) {
-                                    studentError.push({ error: `${student.lecturerIdentityCard}` });
-                                    handleCreateStudent(index + 1);
-                                } else {
-                                    student.planLecturer = user._id;
-                                    app.model.student.create(student, () => {
+
+        getDefaultCourse(req.body.courseType).then(defaultCourse=>{
+            if (students && students.length) {
+                const handleCreateStudent = (index = 0) => {
+                    if (index == students.length) {
+                        res.send({ error: err, studentError });
+                    } else {
+                        const student = students[index];
+                        student.division = req.body.division;
+                        const dataPassword = convert(student.birthday),
+                            newUser = { ...student, password: dataPassword, active: true };
+                        app.model.user.create(newUser, (error, user) => {
+                            if (error && !user) {
+                                err = error;
+                                handleCreateStudent(index + 1);
+                            } else { 
+                                student.user = user._id;   // assign id of user to user field of prestudent
+                                student.courseType = req.body.courseType;
+                                student.course = defaultCourse._id;
+                                student.courseFee = req.body.courseFee;
+                                student.discount = req.body.discount && req.body.discount!=''?req.body.discount:null;
+                                student.coursePayment = req.body.coursePayment;
+                                app.model.user.get({ identityCard: student.lecturerIdentityCard, isLecturer: true }, (error, user) => {
+                                    if (error || !user) {
+                                        studentError.push({ error: `${student.lecturerIdentityCard}` });
                                         handleCreateStudent(index + 1);
-                                    });
-                                }
-                            });
-                        }
-                    });
-                }
-            };
-            handleCreateStudent();
-        } else {
-            res.send({ error: 'Danh sách ứng viên trống!' });
-        }
+                                    } else {
+                                        student.planLecturer = user._id;
+                                        app.model.student.create(student, () => {
+                                            handleCreateStudent(index + 1);
+                                        });
+                                    }
+                                });
+                            }
+                        });
+                    }
+                };
+                handleCreateStudent();
+            } else {
+                res.send({ error: 'Danh sách ứng viên trống!' });
+            }
+        }).catch(error=>console.log(error) || res.send({error}));
+        
     });
 
     app.put('/api/pre-student', app.permission.check('pre-student:write'), (req, res) => {

@@ -321,10 +321,10 @@ export function deletePreStudent(_id) {
     };
 }
 
-export function importPreStudent(students, division, courseType, done) {
+export function importPreStudent(students, division, courseType,courseFee,discount,coursePayment, done) {
     return dispatch => {
         const url = '/api/pre-student/import';
-        T.post(url, { students, division, courseType }, data => {
+        T.post(url, { students, division, courseType,courseFee,discount,coursePayment }, data => {
             if (data.error) {
                 T.notify('Tạo học viên bị lỗi!', 'danger');
                 console.error(`POST: ${url}. ${data.error}`);

@@ -5,7 +5,9 @@ import { ajaxSelectCourseType } from 'modules/mdDaoTao/fwCourseType/redux';
 import { importPreStudent } from './redux';
 import { Link } from 'react-router-dom';
 import { AdminPage, AdminModal, FormFileBox, FormCheckbox, FormDatePicker, FormTextBox, FormSelect, TableCell, renderTable } from 'view/component/AdminPage';
-
+import {ajaxSelectCourseFeeByCourseType,getCourseFeeAll} from 'modules/_default/fwCourseFee/redux';
+import {ajaxSelectCoursePayment,getCoursePaymentAll} from 'modules/_default/fwCoursePayment/redux';
+import {ajaxSelectDiscount,getDiscountAll} from 'modules/_default/fwDiscount/redux';
 class EditModal extends AdminModal {
     state = {};
     componentDidMount() {
@@ -174,9 +176,24 @@ class EditModal extends AdminModal {
 
 class ImportPage extends AdminPage {
     fileBox = React.createRef();
-    state = {};
+    state = {courseType:''};
     componentDidMount() {
         T.ready('/user/pre-student');
+        this.props.getCourseFeeAll({isDefault:true},defaultCourseFees=>{//get default courseFee
+            this.setState({defaultCourseFees});
+        });
+
+        this.props.getDiscountAll({isDefault:true},defaultDiscounts=>{//get default discount
+            this.setState({defaultDiscount:defaultDiscounts? defaultDiscounts[0]:null});
+            console.log(defaultDiscounts);
+            this.itemDiscount.value(defaultDiscounts?{id:defaultDiscounts[0]._id,text:defaultDiscounts[0].name}:null);
+        });
+
+        this.props.getCoursePaymentAll({default:true},defaultCoursePayments=>{//get default coursePayment
+            this.setState({defaultCoursePayment:defaultCoursePayments? defaultCoursePayments[0]:null});
+            console.log(defaultCoursePayments);
+            this.itemCoursePayment.value(defaultCoursePayments?{id:defaultCoursePayments[0]._id,text:defaultCoursePayments[0].title}:null);
+        });
     }
 
     onUploadSuccess = (data) => {
@@ -210,8 +227,14 @@ class ImportPage extends AdminPage {
         } else if (!this.itemCourseType.value()) {
             T.notify('Chưa chọn loại khóa học!', 'danger');
             this.itemCourseType.focus();
-        } else {
-            T.confirm('Lưu thông tin ứng viên', 'Bạn có chắc bạn muốn lưu file danh sách ứng viên này?', true, isConfirm => isConfirm && this.props.importPreStudent(this.state.data, this.itemDivision.value(), this.itemCourseType.value(), data => {
+        }else if (!this.itemCourseFee.value()) {
+            T.notify('Chưa chọn gói học phí!', 'danger');
+            this.itemCourseFee.focus();
+        } else if (!this.itemCoursePayment.value()) {
+            T.notify('Chưa chọn số lần thanh toán!', 'danger');
+            this.itemCoursePayment.focus();
+        }  else {
+            T.confirm('Lưu thông tin ứng viên', 'Bạn có chắc bạn muốn lưu file danh sách ứng viên này?', true, isConfirm => isConfirm && this.props.importPreStudent(this.state.data, this.itemDivision.value(), this.itemCourseType.value(), this.itemCourseFee.value(), this.itemDiscount.value(), this.itemCoursePayment.value(), data => {
                 if (data.error) {
                     T.notify('Import ứng viên bị lỗi!', 'danger');
                 } else {
@@ -221,6 +244,22 @@ class ImportPage extends AdminPage {
                     this.props.history.push('/user/pre-student');
                 }
             }));
+        }
+    }
+
+    onChangeCourseType = (data) =>data && data.id && this.setState({courseType:data.id},()=>{
+        this.setValueCourseFee(data.id);
+    });
+
+    setValueCourseFee = (courseTypeId,courseFee=null)=>{
+        if(!courseTypeId){
+            this.itemCourseFee.value(null);    
+        }
+        else if(courseFee){
+            this.itemCourseFee.value({id:courseFee._id,text:courseFee.name});    
+        }else{
+            courseFee = this.state.defaultCourseFees.find(item=>item.courseType._id==courseTypeId);
+            this.itemCourseFee.value(courseFee?{id:courseFee._id,text:courseFee.name}:null);
         }
     }
 
@@ -272,12 +311,29 @@ class ImportPage extends AdminPage {
                 <div className='tile row'>
                     <div className='col-md-6'>
                         <h3 className='tile-title'>Chọn cơ sở</h3>
-                        <FormSelect ref={e => this.itemDivision = e} labelStyle={{ display: 'none' }} label={'Chọn cơ sở'} data={ajaxSelectDivision} readOnly={readOnly} />
+                        <FormSelect ref={e => this.itemDivision = e} labelStyle={{ display: 'none' }} label={'Chọn cơ sở'} data={ajaxSelectDivision} readOnly={readOnly} required />
                     </div>
+
                     <div className='col-md-6'>
                         <h3 className='tile-title'>Chọn loại khóa học</h3>
-                        <FormSelect ref={e => this.itemCourseType = e} labelStyle={{ display: 'none' }} label={'Chọn loại khóa học'} data={ajaxSelectCourseType} readOnly={readOnly} />
+                        <FormSelect ref={e => this.itemCourseType = e} labelStyle={{ display: 'none' }} onChange={this.onChangeCourseType} label={'Chọn loại khóa học'} data={ajaxSelectCourseType} readOnly={readOnly} required />
                     </div>
+                    <div className='col-md-4'>
+                        <h3 className='tile-title'>Chọn gói học phí</h3>
+                        <FormSelect ref={e => this.itemCourseFee = e} labelStyle={{ display: 'none' }} label={'Chọn gói học phí'} data={ajaxSelectCourseFeeByCourseType(this.state.courseType,true)} readOnly={readOnly} required />
+                    </div>
+
+                    <div className='col-md-4'>
+                        <h3 className='tile-title'>Chọn gói giảm giá</h3>
+                        <FormSelect ref={e => this.itemDiscount = e} labelStyle={{ display: 'none' }} label={'Chọn gói giảm giá'} data={ajaxSelectDiscount} readOnly={readOnly} required/>
+                    </div>
+
+                    <div className='col-md-4'>
+                        <h3 className='tile-title'>Chọn số lần thanh toán</h3>
+                        <FormSelect ref={e => this.itemCoursePayment = e} labelStyle={{ display: 'none' }} label={'Chọn số lần thanh toán'} data={ajaxSelectCoursePayment} readOnly={readOnly} required/>
+                    </div>
+
+                    
                     <div className='col-md-12'>
                         <h3 className='tile-title'>Danh sách ứng viên</h3>
                         <div className='tile-body' style={{ overflowX: 'auto' }}>
@@ -297,17 +353,21 @@ class ImportPage extends AdminPage {
                 <EditModal ref={e => this.modalEdit = e} readOnly={readOnly} edit={this.edit} />
             </div>
         );
+        const isUpload = this.state.data && this.state.data.length;
         return this.renderPage({
             icon: 'fa fa-graduation-cap',
             title: 'Nhập ứng viên bằng Excel',
             breadcrumb: [<Link key={0} to='/user/pre-student'>Ứng viên</Link>, 'Nhập ứng viên bằng Excel'],
             content: <>
-                {this.state.data && this.state.data.length ? list : filebox}
+                <div style={{display:isUpload?'none':'block'}}>{filebox}</div>
+                {/* {this.state.data && this.state.data.length ? list : filebox} */}
+                <div style={{display:!isUpload?'none':'block'}}>{list}</div>
+
             </>,
             backRoute: '/user/pre-student',
         });
     }
 }
 const mapStateToProps = state => ({ system: state.system });
-const mapActionsToProps = { importPreStudent };
+const mapActionsToProps = { importPreStudent,getCourseFeeAll,getCoursePaymentAll,getDiscountAll };
 export default connect(mapStateToProps, mapActionsToProps)(ImportPage);
