@@ -72,6 +72,7 @@ class AdminFeeTypePage extends AdminPage {
                     <th style={{ width: '100%' }}>Tên</th>
                     <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Kích hoạt</th>
                     <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Chính thức</th>
+                    <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Gói giờ học thực hành</th>
                     <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Thao tác</th>
                 </tr>),
             renderRow: (item, index) => (
@@ -80,6 +81,7 @@ class AdminFeeTypePage extends AdminPage {
                     <TableCell type='link' content={item.title} onClick={e => this.edit(e, item)} />
                     <TableCell type='checkbox' content={item.active} permission={permission} onChanged={active => this.props.updateFeeType(item._id, { active })} />
                     <TableCell type='checkbox' content={item.official} permission={permission} onChanged={active => this.changeDefault(item,active)} />
+                    <TableCell type='checkbox' content={item.isExtra} permission={permission} onChanged={active => this.props.updateFeeType(item._id, { isExtra: active })} />
                     <TableCell type='buttons' content={item} permission={permission} onEdit={this.edit} onDelete={this.delete} />
                 </tr>),
         });

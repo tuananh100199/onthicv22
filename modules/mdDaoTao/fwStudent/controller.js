@@ -532,19 +532,7 @@ module.exports = (app) => {
                         if (error && !user) {
                             err = error;
                             handleCreateStudent(index + 1);
-                        } else { // pre chưa là user
-                            // if (!error && user) {
-                            // app.model.setting.get('email', 'emailPassword', 'emailCreateMemberByAdminTitle', 'emailCreateMemberByAdminText', 'emailCreateMemberByAdminHtml', result => {
-                            //     const url = `${app.isDebug || app.rootUrl}/active-user/${user._id}`,
-                            //         fillParams = (student) => student.replaceAll('{name}', `${user.lastname} ${user.firstname}`)
-                            //             .replaceAll('{firstname}', user.firstname).replaceAll('{lastname}', user.lastname)
-                            //             .replaceAll('{email}', user.email).replaceAll('{password}', dataPassword).replaceAll('{url}', url),
-                            //         mailTitle = result.emailCreateMemberByAdminTitle,
-                            //         mailText = fillParams(result.emailCreateMemberByAdminText),
-                            //         mailHtml = fillParams(result.emailCreateMemberByAdminHtml);
-                            //     app.email.sendEmail(result.email, result.emailPassword, user.email, app.email.cc, mailTitle, mailText, mailHtml, null);
-                            // });
-                            // }
+                        } else { 
                             student.user = user._id;   // assign id of user to user field of prestudent
                             student.courseType = req.body.courseType;
                             app.model.user.get({ identityCard: student.lecturerIdentityCard, isLecturer: true }, (error, user) => {

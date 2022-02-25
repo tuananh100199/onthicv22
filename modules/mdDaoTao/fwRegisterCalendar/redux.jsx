@@ -148,17 +148,38 @@ export function getRegisterCalendarOfLecturerByStudent(condition, done) {
 }
 
 export function createTimeTableByStudent(data, done) {
-    return () => {
+    return dispatch => {
         const url = '/api/time-table/student';
         T.post(url, { data }, data => {
             if (data.error) {
                 T.notify('Đăng ký lịch học bị lỗi!', 'danger');
                 console.error(`POST: ${url}. ${data.error}`);
+            } else if(data.notify) {
+                T.notify( data.notify, 'danger');
+                done && done(data.item);
+                dispatch(getRegisterCalendarOfLecturerByStudent());
             } else {
                 T.notify('Đăng ký lịch học thành công!', 'success');
                 done && done(data.item);
+                dispatch(getRegisterCalendarOfLecturerByStudent());
             }
         }, error => console.error(error) || T.notify('Đăng ký lịch học bị lỗi!', 'danger'));
+    };
+}
+
+export function updateTimeTableByAccountant(_id, cart, done) {
+    return () => {
+        const url = '/api/time-table/accountant';
+        T.post(url, { _id, cart }, data => {
+            if (data.error) {
+                T.notify('Cập nhật trạng thái lịch học bị lỗi!', 'danger');
+                console.error(`PUT: ${url}. ${data.error}`);
+            } else {
+                T.notify('Cập nhật trạng thái lịch học thành công!', 'success');
+                done && done(data.item);
+            }
+            done && done(data.error);
+        }, error => console.error(error) || T.notify('Cập nhật trạng thái lịch học bị lỗi!', 'danger'));
     };
 }
 
