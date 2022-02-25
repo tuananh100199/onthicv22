@@ -114,15 +114,20 @@
     .home_slider_dots {
         left: calc((100vw - 690px) / 2);
     }
+
+    .header_content {
+        padding: 15px 0;
+    }
     .hamburger {
-        flex-grow: 1;
+        flex: auto;
         display: block;
     }
 
     .search-button{
-        display: flex;
-        justify-content: end;
-        flex-grow: 1;
+        display: block;
+        /* justify-content: end; */
+        /* flex-grow: 1; */
+        flex:auto;
     }
     .intro_form_container {
         margin-top: 102px;

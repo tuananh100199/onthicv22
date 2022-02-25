@@ -42,17 +42,17 @@ class SectionSubscribe extends React.Component {
         let subscribe = this.props && this.props.system && this.props.system.subscribe ? this.props.system.subscribe : '/img/subscribe.jpg';
         return (
             <div className='newsletter'>
-                <div ref={e => this.background = e} className='parallax_background parallax-window' data-parallax='scroll' data-image-src={subscribe} data-speed='0.8' style={{backgroundColor: 'black', opacity: '0.8'}}/>
+                <div ref={e => this.background = e} className='parallax_background parallax-window' data-parallax='scroll' data-image-src={subscribe} data-speed='0.8'/>
                 <div className='container'>
                     <div className='row'>
                         <div className='col text-center'>
                             <div className='newsletter_title'>Theo dõi để nhận được thông tin mới nhất từ chúng tôi</div>
                         </div>
                     </div>
-                    <div className='row newsletter_row'>
-                        <div className='col-lg-8 offset-lg-2'>
+                    <div className='row newsletter_row justify-content-center'>
+                        <div className='col-lg-8'>
                             <div className='newsletter_form_container'>
-                                <form action='#' id='newsleter_form' className='newsletter_form' onSubmit={this.sendMessage}>
+                                <form action='#' id='newsleter_form' className='newsletter_form d-flex' onSubmit={this.sendMessage}>
                                     <input type='email' className='newsletter_input' ref={e => this.email = e} placeholder='Email của bạn' />
                                     <button className='newsletter_button'>Đăng ký</button>
                                 </form>

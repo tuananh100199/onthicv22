@@ -14,7 +14,7 @@ class SectionNews extends React.Component {
                     items:1,
                     loop:true,
                     margin:10,
-                    autoplay: true,
+                    // autoplay: true,
                     autoplayTimeout:3000,
                     autoplayHoverPause: true,
                     
@@ -186,7 +186,7 @@ class SectionNews extends React.Component {
                                 {newsFeed.map((item, index) => (
                                         <div key={index} className='item team_col'>
                                             <div className='team_item d-flex flex-column'>
-                                            <div className="container-fluid" style={{flexGrow:1}}>
+                                            <div className="container-fluid" style={{flex:'auto'}}>
                                                 <div className='team_content  d-flex flex-column justify-content-between'>
                                                     <div className='team_name'>
                                                         <Link to={item.link ? '/tintuc/' + item.link : '/news/' + item._id}>{item.title}</Link>

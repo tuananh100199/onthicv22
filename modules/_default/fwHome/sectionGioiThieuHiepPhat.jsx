@@ -2,7 +2,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { getGioiThieu } from './redux/reduxGioiThieuHiepPhat';
 import './style.css';
-
+import { Link } from 'react-router-dom';
 class SectionGioiThieuHiepPhat extends React.Component {
     state = {};
     componentDidMount() {
@@ -69,14 +69,14 @@ class SectionGioiThieuHiepPhat extends React.Component {
         });
     }
 
-    renderItem = ({text,image,imageAlt='Image',href='/ve-chung-toi'})=>{
+    renderItem = ({text,image,imageAlt='Image',content=null})=>{
         return (
             <div className="d-flex flex-column" style={{height:'100%'}}>
                 <div className="container-fluid" style={{flexGrow:1}}>
                     <div className='intro_carousel_content d-flex flex-column justify-content-between'>
                         <p>{text}</p>
                         <div className="mt-2">
-                            <a className='link_watch_more text-logo font-weight-italic' href={href}> Xem thêm</a>
+                            <Link className='link_watch_more text-logo font-weight-italic' to={`/content/${content?content._id:''}`}> Xem thêm</Link>
                         </div>
                     </div>
                 </div>
@@ -88,7 +88,7 @@ class SectionGioiThieuHiepPhat extends React.Component {
         );
     }
     render() {
-        const { image1, image2, image3, abstract, abstract2, abstract3, title } = this.state;
+        const { image1, image2, image3, abstract, abstract2, abstract3, title,content1,content2,content3 } = this.state;
         return (
             <div className='section-intro-hp' style={{}}>
                 <div className="pc">
@@ -104,17 +104,17 @@ class SectionGioiThieuHiepPhat extends React.Component {
                                         <div className='description active_intro_desciption' ref={e => this.abstract1 = e}>
                                             {abstract}
                                                 <br />
-                                                <a className='link_watch_more text-logo font-weight-italic' href='/ve-chung-toi'> Xem thêm</a>
+                                                <Link className='link_watch_more text-logo font-weight-italic' to={`/content/${content1?content1._id:''}`}> Xem thêm</Link>
                                         </div>
                                         <div style={{ position: 'absolute', top: 0, left: 0 }} className='description' ref={e => this.abstract2 = e}>
                                             {abstract2}
                                             <br />
-                                            <a href='/ve-chung-toi'> Xem thêm</a>
+                                            <Link className='link_watch_more text-logo font-weight-italic' to={`/content/${content1?content1._id:''}`}> Xem thêm</Link>
                                         </div>
                                         <div style={{ position: 'absolute', top: 0, left: 0 }} className='description' ref={e => this.abstract3 = e}>
                                             {abstract3}
                                             <br />
-                                            <a href='/ve-chung-toi'> Xem thêm</a>
+                                            <Link className='link_watch_more text-logo font-weight-italic' to={`/content/${content1?content1._id:''}`}> Xem thêm</Link>
                                         </div>
                                     </div>
 
@@ -169,9 +169,9 @@ class SectionGioiThieuHiepPhat extends React.Component {
                         </div>
                     </div>                        
                 <div className='owl-carousel intro_carousel carousel_equal_height carousel_nav' id='introCarousel'>
-                        {this.renderItem({text:abstract,image:image1})}
-                        {this.renderItem({text:abstract2,image:image2})}
-                        {this.renderItem({text:abstract3,image:image3})}
+                        {this.renderItem({text:abstract,image:image1,content:content1})}
+                        {this.renderItem({text:abstract2,image:image2,content:content2})}
+                        {this.renderItem({text:abstract3,image:image3,content:content3})}
                     </div>                                
                 </div>
             </div>

@@ -8,6 +8,10 @@
     --color-red:red;
     --color-background-image:rgb(178,222,209);
 }
+
+.section_den_voi_hp{
+    padding:25px 0 50px 0;
+}
 .wrap_den_voi_HP {
     width: 100%;
     margin-top: 20px;
@@ -218,8 +222,8 @@
 /* GIỚI THIỆU HIỆP PHÁT */
 .section-intro-hp {
     background-color: var(--color-primary);
-    padding-top: 120px;
-    padding-bottom: 120px;
+    padding-top: 100px;
+    padding-bottom: 180px;
     /* min-height: 100vh; */
 }
 
@@ -312,7 +316,6 @@
 
 .section-intro-hp .title_gioi_thieu {
     font-size: 20px;
-    padding-left: 10px;
     display: grid;
     /* background-color: white; */
     height: 75px;
@@ -437,13 +440,13 @@
 .img-intro1 {
     /* Chiều cao sẽ phải được thử lại trên nhiều thiết bị khác nhau */
     /* Đo trực tiếp trên website,với màn hình là 1920*1080 */
-    /* width: 255px;
-    height: 380px; */
-    width: 220px;
-    height: 330px;
+    width: 255px;
+    height: 380px;
+    /* width: 220px;
+    height: 330px; */
     z-index: 1;
     top: -30px;
-    right:300px;
+    right:330px;
     object-fit: cover;
 }
 
@@ -467,22 +470,22 @@
 
 .img-intro2 {
     border: solid;
-    /* width: 405px;
-    height: 275px; */
-    width: 360px;
-    height: 245px;
+    width: 405px;
+    height: 275px;
+    /* width: 360px;
+    height: 245px; */
     top: 20px;
     right:15px;
 }
 
 .img-intro3 {
     border: solid;
-    /* width: 390px;
-    height: 250px; */
-    width: 350px;
-    height: 225px;
-    top: 160px;
-    right: 100px;
+    width: 390px;
+    height: 250px;
+    /* width: 350px;
+    height: 225px; */
+    top: 200px;
+    right: 80px;
 } 
 
 @media (max-width: 1200px){
@@ -574,8 +577,8 @@
 }
 
 .wrapper_staff .staff_info {
-    padding-left: 90px;
-    padding-right: 16px;
+    padding-left: 70px;
+    padding-right: 70px;
     margin-left: auto;
     display: block;
     /* height: 100%; */
@@ -593,6 +596,7 @@
     color: white;
     font-size: 15px;
     text-transform: uppercase;
+    width: 100%;
 }
 
 /* .pc .staff_info .staff_group_title h3{
@@ -650,7 +654,7 @@
 }
 
 .wrapper_staff .staff_img {
-    width: 30vw;
+    width: 60vw;
     overflow: hidden;
     position: relative;
 }
@@ -658,7 +662,7 @@
 .wrapper_staff .staff_img::after{
     content: "";
     display: block;
-    padding-bottom: 133.33%;
+    padding-bottom: 600px;
 }
 .wrapper_staff .staff_img img{
     position: absolute;
@@ -667,14 +671,22 @@
     width: 100%;
     height: 100%;
     object-fit: cover;
+    object-position: top;
 }
 .wrapper_staff .staff_info .text {
     color: white;
     margin-top: 50px;
+    max-width: 400px;
 }
 
 .wrapper_staff .staff_info .text p{
-    color: yellow;  
+    color: yellow;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 5;
+    line-clamp: 5;
+    -webkit-box-orient: vertical;  
 }
 
 .wrapper_staff .staff_img .text {
@@ -685,20 +697,21 @@
 .container_staff .mobile {
     display: none;
 }
-
+/* 
 @media (max-width: 1200px){
     .wrapper_staff .staff_img {
         width: 35vw;
     }
-}
+} */
+
 
 @media (max-width: 991px){
     .wrapper_staff .staff_img {
-        width: 50vw;
+        width: 66vw;
     }
 
     .wrapper_staff .staff_info {
-        padding-left: 42px;
+        padding-left: 15px;
     }
 
     .wrapper_staff .staff_info .text p{
@@ -742,10 +755,11 @@
         -webkit-box-flex:0;
         -ms-flex-positive:0;
         flex-grow:0;
-        height: 500px;
+        height: 400px;
     }
 
     .wrapper_staff .staff_info{
+        width: 100%;
         padding:15px;
         display: flex;
         flex-direction: column;
@@ -781,6 +795,8 @@
 
     .wrapper_staff .staff_info .text{
         margin-top: 16px;
+        width: 100%;
+        max-width: unset;
     }
 
     .container_staff .pc .wrapper_staff {
@@ -898,7 +914,7 @@
 
 @media (max-width: 576px){
     .wrapper_staff .wrapper_staff_img{
-        height: 350px;
+        height: 300px;
     }
 }
 
@@ -1052,6 +1068,8 @@
         background-image: none !important;
         height: unset;
         min-height: unset;
+        padding-left:15px;
+        padding-right: 15px;
     }
     .login_form .intro_form_login .login-mobile{
         display: block;
@@ -1315,7 +1333,7 @@
 }
 
 .footer_image{
-    width: 100%;
+    width: calc(100% + 15px);
     height: 100%;
     object-fit: cover;
 }
@@ -1594,6 +1612,10 @@
 @media (max-width: 991px){
     .footer .footer_about .app-button-wrap{
         display: none;
+    }
+
+    .footer_image{
+        width: 100%;
     }
 }
 
