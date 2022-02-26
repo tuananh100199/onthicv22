@@ -74,8 +74,12 @@ class HomeMenu extends React.Component {
     // }
 
     onMenuClick = (link) => {
-        this.setState({ link }, () => $(this.nav).classyNav());
-        $('.hamburger').css('display') == 'block' && $('.menu_close').click();
+        if(link==window.location.pathname){
+            this.scrollToTop(link);
+        }else{
+            this.setState({ link }, () => $(this.nav).classyNav());
+            $('.hamburger').css('display') == 'block' && $('.menu_close').click();
+        }
     }
 
     logout = (e) => e.preventDefault() || (this.props.system && this.props.system.user && this.props.logout());
@@ -113,6 +117,16 @@ class HomeMenu extends React.Component {
             // window.location.hash = hash;
             });
         } // End if
+    }
+
+    scrollToTop = (link)=>{
+        this.setState({link});
+        $('html, body').animate({
+            scrollTop: 0
+            }, 800, ()=>{
+            // Add hash (#) to URL when done scrolling (default click behavior)
+            // window.location.hash = hash;
+            });
     }
 
     render() {
@@ -156,7 +170,7 @@ class HomeMenu extends React.Component {
             });
         }
 
-        let { logo, user, facebook, youtube, twitter, instagram, mobile, email } = this.props.system ? this.props.system : { logo: '', user: '', facebook: '', youtube: '', twitter: '', instagram: '', mobile: '', email: '' };
+        let { logo, user, facebook, youtube, twitter, instagram, mobile } = this.props.system ? this.props.system : { logo: '', user: '', facebook: '', youtube: '', twitter: '', instagram: '', mobile: '', email: '' };
         facebook = facebook ? <li><a href={facebook} target='_blank' rel='noreferrer'><i className='fa fa-facebook' aria-hidden='true' /></a></li> : '';
         youtube = youtube ? <li><a href={youtube} target='_blank' rel='noreferrer'><i className='fa fa-youtube' aria-hidden='true' /></a></li> : '';
         twitter = twitter ? <li><a href={twitter} target='_blank' rel='noreferrer'><i className='fa fa-twitter' aria-hidden='true' /></a></li> : '';
@@ -169,7 +183,7 @@ class HomeMenu extends React.Component {
                     <div className='hamburger'><i className='fa fa-bars' aria-hidden='true' /></div>
                     {/* logo */}
                     <div className='logo' style={{ height: '100%' }}>
-                        <Link to='/' onClick={() => this.setState({ link: '/' }, () => $(this.nav).classyNav())}>
+                        <Link to='/' onClick={() => this.onMenuClick('/')}>
                             <img src={logo} alt='Logo' style={{ marginTop: '2%', height: '96%', width: 'auto' }} />
                             {/*<div style={{ whiteSpace: 'nowrap' }}>Hiệp Phát</div>*/}
                         </Link>
@@ -242,10 +256,11 @@ class HomeMenu extends React.Component {
                 </div>
                 <nav className='menu_nav'>
                     <ul>{menus}</ul>
-                    {user && user._id ? <div className='btn-group mt-4'>
+                    
+                    {/* {user && user._id ? <div className='btn-group mt-4'>
                         <div className='button button_2 mr-1'><a href={'mailto:' + email}>Email</a></div>
                         <div className='button button_1 mr-1'><a href='#' onClick={this.logout}><i className='fa fa-power-off' /> Thoát</a></div>
-                    </div> : <div className='button button_4 mr-1 text-center'><a href='#' onClick={this.props.showLoginModal}>Đăng nhập</a></div>}
+                    </div> : <div className='button button_4 mr-1 text-center'><a href='#' onClick={this.props.showLoginModal}>Đăng nhập</a></div>} */}
                 </nav>
                 <div className='menu_extra'>
                     <div className='menu_link'>Hotline liên hệ: {mobile}</div>

@@ -2,7 +2,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { getGioiThieu } from './redux/reduxGioiThieuHiepPhat';
 import './style.css';
-
+import { Link } from 'react-router-dom';
 class SectionGioiThieuHiepPhat extends React.Component {
     state = {};
     componentDidMount() {
@@ -49,62 +49,91 @@ class SectionGioiThieuHiepPhat extends React.Component {
                 }
             }
 
+
             if (this.props.viewId) {
                 this.props.getGioiThieu(this.props.viewId, data => {
                     data && data.item && this.setState(data.item);
+                    $('#introCarousel').owlCarousel({
+                        items:1,
+                        loop:true,
+                        margin:10,
+                        autoplay: true,
+                        autoplayTimeout:3000,
+                        autoplayHoverPause: true,
+                        // nav:true,
+                        // navText:['<i class="fa fa-angle-left" aria-hidden="true"></i>','<i class="fa fa-angle-right" aria-hidden="true"></i>']
+                        
+                    });
                 });
             }
         });
     }
+
+    renderItem = ({text,image,imageAlt='Image',content=null})=>{
+        return (
+            <div className="d-flex flex-column" style={{height:'100%'}}>
+                <div className="container-fluid" style={{flexGrow:1}}>
+                    <div className='intro_carousel_content d-flex flex-column justify-content-between'>
+                        <p>{text}</p>
+                        <div className="mt-2">
+                            <Link className='link_watch_more text-logo font-weight-italic' to={`/content/${content?content._id:''}`}> Xem thêm</Link>
+                        </div>
+                    </div>
+                </div>
+                
+                <div className='intro_carousel_img'>
+                    <img src={image} alt={imageAlt}/>
+                </div>
+            </div>
+        );
+    }
     render() {
-        const { image1, image2, image3, abstract, abstract2, abstract3, title } = this.state;
+        const { image1, image2, image3, abstract, abstract2, abstract3, title,content1,content2,content3 } = this.state;
         return (
             <div className='section-intro-hp' style={{}}>
-                <div className='container'>
-                    <div className='warp_gioi_thieu_HP'>
-                        <div className='row'>
-                            <div className='col-lg-5 col-md-12 text-gioi-thieu'>
-                                <div className='title_gioi_thieu'>
-                                    Giới thiệu
-                                    <h4>{title}</h4>
-                                </div>
-                                <div>
-                                    <div className='description active_intro_desciption' ref={e => this.abstract1 = e}>
-                                        {abstract}
+                <div className="pc">
+                    <div className='container'>
+                        <div className='warp_gioi_thieu_HP'>
+                            <div className='row'>
+                                <div className='col-lg-5 col-md-12 text-gioi-thieu'>
+                                    <div className='title_gioi_thieu'>
+                                        Giới thiệu
+                                        <h4>{title}</h4>
+                                    </div>
+                                    <div>
+                                        <div className='description active_intro_desciption' ref={e => this.abstract1 = e}>
+                                            {abstract}
+                                                <br />
+                                                <Link className='link_watch_more text-logo font-weight-italic' to={`/content/${content1?content1._id:''}`}> Xem thêm</Link>
+                                        </div>
+                                        <div style={{ position: 'absolute', top: 0, left: 0 }} className='description' ref={e => this.abstract2 = e}>
+                                            {abstract2}
                                             <br />
-                                            <a className='link_watch_more text-logo font-weight-italic' href='/ve-chung-toi'> Xem thêm</a>
+                                            <Link className='link_watch_more text-logo font-weight-italic' to={`/content/${content1?content1._id:''}`}> Xem thêm</Link>
+                                        </div>
+                                        <div style={{ position: 'absolute', top: 0, left: 0 }} className='description' ref={e => this.abstract3 = e}>
+                                            {abstract3}
+                                            <br />
+                                            <Link className='link_watch_more text-logo font-weight-italic' to={`/content/${content1?content1._id:''}`}> Xem thêm</Link>
+                                        </div>
                                     </div>
-                                    <div style={{ position: 'absolute', top: 0, left: 0 }} className='description' ref={e => this.abstract2 = e}>
-                                        {abstract2}
-                                        <br />
-                                        <a href='/ve-chung-toi'> Xem thêm</a>
-                                    </div>
-                                    <div style={{ position: 'absolute', top: 0, left: 0 }} className='description' ref={e => this.abstract3 = e}>
-                                        {abstract3}
-                                        <br />
-                                        <a href='/ve-chung-toi'> Xem thêm</a>
-                                    </div>
+
+                                    {/* <div className='social_gioi_thieu'>
+                                        <ul className='social-menu'>
+                                            <li><a href='https://facebook.com/'><i className='fa fa-facebook' /></a></li>
+                                            <li><a href='https://instagram.com/'><i className='fa fa-instagram' /> </a></li>
+                                            <li><a href='https://twitter.com/'><i className='fa fa-twitter' /></a></li>
+                                            <li><a href='https://youtube.com/'><i className='fa fa-youtube' /> </a></li>
+                                        </ul>
+                                    </div> */}
                                 </div>
+                                <div className='col-lg-7 col-md-12 img-gioi-thieu'>
 
-                                {/* <div className='social_gioi_thieu'>
-                                    <ul className='social-menu'>
-                                        <li><a href='https://facebook.com/'><i className='fa fa-facebook' /></a></li>
-                                        <li><a href='https://instagram.com/'><i className='fa fa-instagram' /> </a></li>
-                                        <li><a href='https://twitter.com/'><i className='fa fa-twitter' /></a></li>
-                                        <li><a href='https://youtube.com/'><i className='fa fa-youtube' /> </a></li>
-                                    </ul>
-                                </div> */}
-                            </div>
-                            <div className='col-lg-7 col-md-12 img-gioi-thieu'>
-
-                                <div>
                                     <img src={image1} ref={e => this.img1 = e} className='img-intro1' alt='image 1' onMouseEnter={() => {
                                         this.img1.classList.add('img-intro-zindex');
                                         this.abstract1.classList.add('active_intro_desciption');
                                     }} onMouseLeave={() => this.img1.classList.remove('img-intro-zindex')}
                                     ></img>
-                                </div>
-                                <div>
                                     <img src={image2} ref={e => this.img2 = e} className='img-intro2' alt='image 2' onMouseLeave={() => {
                                         this.abstract1.classList.add('active_intro_desciption');
                                         this.abstract2.classList.remove('active_intro_desciption');
@@ -114,8 +143,6 @@ class SectionGioiThieuHiepPhat extends React.Component {
                                         this.img2.classList.add('img-intro-zindex');
                                         this.abstract1.classList.remove('active_intro_desciption');
                                     }}></img>
-                                </div>
-                                <div>
                                     <img src={image3} ref={e => this.img3 = e} className='img-intro3' alt='image 3' onMouseLeave={() => {
                                         this.abstract1.classList.add('active_intro_desciption');
                                         this.abstract3.classList.remove('active_intro_desciption');
@@ -130,7 +157,27 @@ class SectionGioiThieuHiepPhat extends React.Component {
                         </div>
                     </div>
                 </div>
+                
+
+                <div className="mobile">
+                    <div className="container-fluid">
+                        <div className='pt-4 pb-4'>
+                            <div className='title_gioi_thieu'>
+                                Giới thiệu
+                                <h4>{title}</h4>
+                            </div>
+                        </div>
+                    </div>                        
+                <div className='owl-carousel intro_carousel carousel_equal_height carousel_nav' id='introCarousel'>
+                        {this.renderItem({text:abstract,image:image1,content:content1})}
+                        {this.renderItem({text:abstract2,image:image2,content:content2})}
+                        {this.renderItem({text:abstract3,image:image3,content:content3})}
+                    </div>                                
+                </div>
             </div>
+                    // </div>
+                
+            // </div>
 
         );
     }
