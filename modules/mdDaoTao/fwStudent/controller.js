@@ -300,12 +300,8 @@ module.exports = (app) => {
                 res.send({ check: 'Không tìm thấy học viên!' });
             } else {
                 if(type=='lyThuyet'){//TODO:Gán khóa học mặc định cho học viên,
-                    app.model.course.get({isDefault: true, courseType: item.courseType}, (error,course) =>{
-                        if(error || !course) res.send({error:'Không tìm thấy khóa học mặc định!'});
-                        else{
-                            app.model.student.update({_id: item._id},{course: course._id,activeKhoaLyThuyet:true}, (error, student) => res.send({ error, item: student}));
-                        }
-                    });
+                    app.model.student.update({_id: item._id},{activeKhoaLyThuyet:true}, (error, student) => res.send({ error, item: student}));
+
                 }else if(type=='thucHanh'){
                     //TODO: Gán khóa học mặc định cho học viên.
                     // Để trong khi chờ courseAdmin gán khóa học thì học viên vẫn có khóa học lý thuyết để học trước.
@@ -326,28 +322,53 @@ module.exports = (app) => {
             pageSize = parseInt(req.params.pageSize),
             condition = req.query.condition || {},
             pageCondition = { course: null };
-        try {
-            if (req.session.user.isCourseAdmin && req.session.user.division && req.session.user.division.isOutside) { // Session user là quản trị viên khóa học
-                pageCondition.division = req.session.user.division._id;
-            }
-
-            if (condition.courseType) pageCondition.courseType = condition.courseType;
-            if (condition.searchPlanCourse) pageCondition.planCourse = { $regex: `.*${condition.searchPlanCourse}.*`, $options: 'i' };
-            if (condition.searchText) {
-                const value = { $regex: `.*${condition.searchText}.*`, $options: 'i' };
-                pageCondition['$or'] = [
-                    { firstname: value },
-                    { lastname: value },
-                    { identityCard: value },
-                ];
-            }
-
-            app.model.student.getPage(pageNumber, pageSize, pageCondition, req.query.sort, (error, page) => {
-                res.send({ error, page });
+            app.model.course.getAll({isDefault:true},(error,defaultCourses)=>{
+                if(error)res.send('không có khóa học mặc định');
+                else{
+                    const defaultIds = defaultCourses.map(item=>item._id.toString());
+                    pageCondition.course={};
+                    pageCondition.course={['$in']:defaultIds};
+                    if (req.session.user.isCourseAdmin && req.session.user.division && req.session.user.division.isOutside) { // Session user là quản trị viên khóa học
+                        pageCondition.division = req.session.user.division._id;
+                    }
+        
+                    if (condition.courseType) pageCondition.courseType = condition.courseType;
+                    if (condition.searchPlanCourse) pageCondition.planCourse = { $regex: `.*${condition.searchPlanCourse}.*`, $options: 'i' };
+                    if (condition.searchText) {
+                        const value = { $regex: `.*${condition.searchText}.*`, $options: 'i' };
+                        pageCondition['$or'] = [
+                            { firstname: value },
+                            { lastname: value },
+                            { identityCard: value },
+                        ];
+                    }
+                    app.model.student.getPage(pageNumber, pageSize, pageCondition, req.query.sort, (error, page) => {
+                        res.send({ error, page });
+                    });
+                }
             });
-        } catch (error) {
-            res.send({ error });
-        }
+            // try {
+            // if (req.session.user.isCourseAdmin && req.session.user.division && req.session.user.division.isOutside) { // Session user là quản trị viên khóa học
+            //     pageCondition.division = req.session.user.division._id;
+            // }
+
+            // if (condition.courseType) pageCondition.courseType = condition.courseType;
+            // if (condition.searchPlanCourse) pageCondition.planCourse = { $regex: `.*${condition.searchPlanCourse}.*`, $options: 'i' };
+            // if (condition.searchText) {
+            //     const value = { $regex: `.*${condition.searchText}.*`, $options: 'i' };
+            //     pageCondition['$or'] = [
+            //         { firstname: value },
+            //         { lastname: value },
+            //         { identityCard: value },
+            //     ];
+            // }
+
+            // app.model.student.getPage(pageNumber, pageSize, pageCondition, req.query.sort, (error, page) => {
+            //     res.send({ error, page });
+            // });
+            // } catch (error) {
+            //     res.send({ error });
+            // }
     });
 
     app.get('/api/pre-student/course/page/:pageNumber/:pageSize/:courseType', app.permission.check('pre-student:read'), (req, res) => {
@@ -392,6 +413,20 @@ module.exports = (app) => {
             });
             
             
+    });
+
+    const getDefaultCourse = courseType=>new Promise((resolve,reject)=>{//hàm lấy khóa học mặc định
+        if(!courseType){
+            reject('Không tìm thấy khóa học mặc định');
+        }else{
+            app.model.course.get({courseType,isDefault:true},(error,item)=>{
+                if(error || !item) reject('Không tìm thấy khóa học mặc định');
+                else{
+                    resolve(item._id);
+                }
+            });
+        }
+        
     });
 
     app.post('/api/pre-student', app.permission.check('pre-student:write'), (req, res) => {
@@ -457,10 +492,11 @@ module.exports = (app) => {
         //     });
         // }).catch(error => res.send({ error }));
 
-        Promise.all([createNewUser]).then(([_userId]) => {
+        Promise.all([createNewUser,getDefaultCourse(data.courseType)]).then(([_userId,_defaultCourseId]) => {
             data.user = _userId;   // assign id of user to user field of prestudent
             delete data.email;
             delete data.phoneNumber;
+            data.course=_defaultCourseId;
             app.model.student.create(data, (error, item) => {
                 if (error || item == null || item.image == null) {
                     res.send({ error, item });
@@ -483,48 +519,63 @@ module.exports = (app) => {
                 day = ('0' + date.getDate()).slice(-2);
             return [day, mnth, date.getFullYear()].join('');
         }
-        if (students && students.length) {
-            const handleCreateStudent = (index = 0) => {
-                if (index == students.length) {
-                    res.send({ error: err, studentError });
-                } else {
-                    const student = students[index];
-                    student.division = req.body.division;
-                    const dataPassword = convert(student.birthday),
-                        newUser = { ...student, password: dataPassword, active: true };
-                    app.model.user.create(newUser, (error, user) => {
-                        if (error && !user) {
-                            err = error;
-                            handleCreateStudent(index + 1);
-                        } else { 
-                            student.user = user._id;   // assign id of user to user field of prestudent
-                            student.courseType = req.body.courseType;
-                            app.model.user.get({ identityCard: student.lecturerIdentityCard, isLecturer: true }, (error, user) => {
-                                if (error || !user) {
-                                    studentError.push({ error: `${student.lecturerIdentityCard}` });
-                                    handleCreateStudent(index + 1);
-                                } else {
-                                    student.planLecturer = user._id;
-                                    app.model.student.create(student, () => {
+
+        getDefaultCourse(req.body.courseType).then(defaultCourse=>{
+            if (students && students.length) {
+                const handleCreateStudent = (index = 0) => {
+                    if (index == students.length) {
+                        res.send({ error: err, studentError });
+                    } else {
+                        const student = students[index];
+                        student.division = req.body.division;
+                        const dataPassword = convert(student.birthday),
+                            newUser = { ...student, password: dataPassword, active: true };
+                        app.model.user.create(newUser, (error, user) => {
+                            if (error && !user) {
+                                err = error;
+                                handleCreateStudent(index + 1);
+                            } else { 
+                                student.user = user._id;   // assign id of user to user field of prestudent
+                                student.courseType = req.body.courseType;
+                                student.course = defaultCourse._id;
+                                student.courseFee = req.body.courseFee;
+                                student.discount = req.body.discount && req.body.discount!=''?req.body.discount:null;
+                                student.coursePayment = req.body.coursePayment;
+                                app.model.user.get({ identityCard: student.lecturerIdentityCard, isLecturer: true }, (error, user) => {
+                                    if (error || !user) {
+                                        studentError.push({ error: `${student.lecturerIdentityCard}` });
                                         handleCreateStudent(index + 1);
-                                    });
-                                }
-                            });
-                        }
-                    });
-                }
-            };
-            handleCreateStudent();
-        } else {
-            res.send({ error: 'Danh sách ứng viên trống!' });
-        }
+                                    } else {
+                                        student.planLecturer = user._id;
+                                        app.model.student.create(student, () => {
+                                            handleCreateStudent(index + 1);
+                                        });
+                                    }
+                                });
+                            }
+                        });
+                    }
+                };
+                handleCreateStudent();
+            } else {
+                res.send({ error: 'Danh sách ứng viên trống!' });
+            }
+        }).catch(error=>console.log(error) || res.send({error}));
+        
     });
 
     app.put('/api/pre-student', app.permission.check('pre-student:write'), (req, res) => {
         let { _id, changes } = req.body;
         delete changes.course; // Không được gán khóa học cho pre-student
         if(!changes.discount||changes.discount=='') delete changes.discount;
-        app.model.student.update(_id, changes, (error, item) => res.send({ error, item }));
+        if(changes.courseType && changes.courseType!=''){
+            getDefaultCourse(changes.courseType).then(_defaultCourseId=>{
+                changes.course=_defaultCourseId;
+                app.model.student.update(_id, changes, (error, item) => res.send({ error, item }));
+            }).catch(error=>res.send({error}));
+        }else{
+            app.model.student.update(_id, changes, (error, item) => res.send({ error, item }));
+        }
         // Promise.all([getDefaultCourseFee(changes), getDefaultDiscount(changes), getDefaultCoursePayment(changes)]).then(([_courseFeeId, _discountId, _coursePaymentId]) => {
         //     changes.courseFee = _courseFeeId;
         //     changes.discount = _discountId;

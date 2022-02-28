@@ -145,8 +145,8 @@ class TimeTableModal extends AdminModal {
     });
 
     onChangeHour = () => {
-        let startHour = this.itemStartHour.value(),
-            numOfHours = this.itemNumOfHours.value();
+        let startHour = this.itemStartHour?this.itemStartHour.value():null,
+            numOfHours = this.itemNumOfHours?this.itemNumOfHours.value():null;
         if (startHour && numOfHours) {
             startHour = Number(startHour);
             numOfHours = Number(numOfHours);

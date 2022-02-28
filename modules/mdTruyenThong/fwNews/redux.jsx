@@ -187,8 +187,8 @@ export function getNewsFeed(done) {
                 T.notify('Lấy new feed bị lỗi!', 'danger');
                 console.error('GET: ' + url + '.', data.error);
             } else {
-                done && done(data.page.list);
                 dispatch({ type: NewsGetNewsFeed, list: data.page.list });
+                done && done(data.page.list);
             }
         }, error => console.error(error) || T.notify('Lấy new feed bị lỗi!', 'danger'));
     };

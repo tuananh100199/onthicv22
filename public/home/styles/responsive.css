@@ -114,8 +114,20 @@
     .home_slider_dots {
         left: calc((100vw - 690px) / 2);
     }
+
+    .header_content {
+        padding: 15px 0;
+    }
     .hamburger {
+        flex: auto;
         display: block;
+    }
+
+    .search-button{
+        display: block;
+        /* justify-content: end; */
+        /* flex-grow: 1; */
+        flex:auto;
     }
     .intro_form_container {
         margin-top: 102px;
@@ -160,12 +172,16 @@
     .price_col:not(:last-child) {
         margin-bottom: 57px;
     }
-    .footer_col:not(:last-child) {
+    /* .footer_col:not(:last-child) {
         margin-bottom: 80px;
-    }
+    } */
     .footer_location,
     .footer_contact {
         padding-top: 0;
+    }
+
+    .services {
+        padding: 0;
     }
 }
 
@@ -252,7 +268,7 @@
         font-size: 13px;
     }
     h2 {
-        font-size: 36px;
+        font-size: 42px;
     }
     .header.scrolled .header_content,
     .header_content {
@@ -274,7 +290,7 @@
     }
     .header_content {
         padding-left: 15px;
-        padding-right: 30px;
+        padding-right: 15px;
     }
     .button {
         height: 40px;
