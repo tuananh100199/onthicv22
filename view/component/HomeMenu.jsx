@@ -53,27 +53,80 @@ class HomeMenu extends React.Component {
                 setTimeout(() => $(window).trigger('resize.px.parallax'), 375);
             });
 
-            $(document).on('scroll', () => setHeader());
+            $(document).on('scroll', () =>{
+                setHeader();
+                // this.activeMenu();
+            } );
 
             done();
         });
     }
 
+    // activeMenu = ()=>{
+    //     const menus = this.props.system && this.props.system.menus ? this.props.system.menus :null;
+    //     if(menus){
+    //         menus.forEach(menu=>{
+    //             const link = menu.link && menu.link!='/' ? menu.link:'';
+    //             const item = document.querySelector(link);
+    //             console.log(item);
+    //         });
+    //     }
+    // }
+
     onMenuClick = (link) => {
-        this.setState({ link }, () => $(this.nav).classyNav());
-        $('.hamburger').css('display') == 'block' && $('.menu_close').click();
+        if(link==window.location.pathname){
+            this.scrollToTop(link);
+        }else{
+            this.setState({ link }, () => $(this.nav).classyNav());
+            $('.hamburger').css('display') == 'block' && $('.menu_close').click();
+        }
     }
 
     logout = (e) => e.preventDefault() || (this.props.system && this.props.system.user && this.props.logout());
 
     showCandidateModal = (e) => e.preventDefault() || this.candidateModal.show();
 
-    scroll = (link) => {
-        document.getElementById({link}) && document.getElementById('gioiThieu').scrollIntoView({
-            block: 'end',
-            behavior: 'smooth',
-            inline: 'nearest'
-        });
+    // scroll = (link) => {
+    //     document.getElementById(link) && document.getElementById('gioiThieu').scrollIntoView({
+    //         block: 'end',
+    //         behavior: 'smooth',
+    //         inline: 'nearest'
+    //     });
+    // }
+
+    getMenuHeight = ()=>{
+        let height = 75;//large devices;
+        const viewportWidth = $(window).width();
+        if(viewportWidth<=576) height=60;//small menu
+        return height;
+    }
+
+    scroll = (event,hash) =>{
+        // Make sure this.hash has a value before overriding default behavior
+        if (hash !== '') {
+            // Prevent default anchor click behavior
+            event.preventDefault();
+            const height = this.getMenuHeight();
+            // Using jQuery's animate() method to add smooth page scroll
+            // The optional number (800) specifies the number of milliseconds it takes to scroll to the specified area
+            this.setState({link:hash});
+            $('html, body').animate({
+            scrollTop: $(hash).offset().top - height
+            }, 800, ()=>{
+            // Add hash (#) to URL when done scrolling (default click behavior)
+            // window.location.hash = hash;
+            });
+        } // End if
+    }
+
+    scrollToTop = (link)=>{
+        this.setState({link});
+        $('html, body').animate({
+            scrollTop: 0
+            }, 800, ()=>{
+            // Add hash (#) to URL when done scrolling (default click behavior)
+            // window.location.hash = hash;
+            });
     }
 
     render() {
@@ -89,10 +142,10 @@ class HomeMenu extends React.Component {
                     link = item.link ? item.link : '#';
                     return (item.submenus && item.submenus.length > 0) ? (
                         <li key={index} className={currentLink == item.link || item.submenus.some(item => item.link == currentLink) ? 'active' : ''}>
-                            {isExternalLink ? <a href={link} target='_blank' rel='noreferrer'>{item.title}</a> : 
+                            {isExternalLink ? <a href={link} target='_blank' rel='noreferrer'>{item.title} test 1</a> : 
                                 (item.link ?
-                                    <Link to={link} onClick={() => this.onMenuClick(link)}>{item.title}</Link> :
-                                    <a href='#' onClick={e => e.preventDefault()}>{item.title}</a>
+                                    <Link to={link} onClick={() => this.onMenuClick(link)}>{item.title} test 4</Link> :
+                                    <a href='#' onClick={e => e.preventDefault()}>{item.title} test 5</a>
                                 )
                             }
                             <ul className='dropdown'>{
@@ -110,14 +163,14 @@ class HomeMenu extends React.Component {
                         </li>
                     ) : (
                         <li key={index} className={currentLink == link ? 'active' : ''}>
-                            {isExternalLink ? <a href={link} target='_blank' rel='noreferrer'>{item.title}</a> :
-                                (link.startsWith('#') ? <a href={link} onClick={() => this.scroll(link)}>{item.title}</a> : <Link to={link} onClick={() => this.onMenuClick(link)}>{item.title}  </Link>)}
+                            {isExternalLink ? <a href={link} target='_blank' rel='noreferrer'>{item.title} test2</a> :
+                                (link.startsWith('#') ? <a href={link} onClick={(e) => this.scroll(e,link)}>{item.title}</a> : <Link to={link} onClick={() => this.onMenuClick(link)}>{item.title}  </Link>)}
                         </li>);
                 }
             });
         }
 
-        let { logo, user, facebook, youtube, twitter, instagram, mobile, email } = this.props.system ? this.props.system : { logo: '', user: '', facebook: '', youtube: '', twitter: '', instagram: '', mobile: '', email: '' };
+        let { logo, user, facebook, youtube, twitter, instagram, mobile } = this.props.system ? this.props.system : { logo: '', user: '', facebook: '', youtube: '', twitter: '', instagram: '', mobile: '', email: '' };
         facebook = facebook ? <li><a href={facebook} target='_blank' rel='noreferrer'><i className='fa fa-facebook' aria-hidden='true' /></a></li> : '';
         youtube = youtube ? <li><a href={youtube} target='_blank' rel='noreferrer'><i className='fa fa-youtube' aria-hidden='true' /></a></li> : '';
         twitter = twitter ? <li><a href={twitter} target='_blank' rel='noreferrer'><i className='fa fa-twitter' aria-hidden='true' /></a></li> : '';
@@ -126,12 +179,16 @@ class HomeMenu extends React.Component {
         return <>
             <header className='header trans_400'>
                 <div className='header_content d-flex flex-row align-items-center jusity-content-start trans_400 classy-nav-container breakpoint-off'>
+                    {/* Hamburger */}
+                    <div className='hamburger'><i className='fa fa-bars' aria-hidden='true' /></div>
+                    {/* logo */}
                     <div className='logo' style={{ height: '100%' }}>
-                        <Link to='/' onClick={() => this.setState({ link: '/' }, () => $(this.nav).classyNav())}>
+                        <Link to='/' onClick={() => this.onMenuClick('/')}>
                             <img src={logo} alt='Logo' style={{ marginTop: '2%', height: '96%', width: 'auto' }} />
                             {/*<div style={{ whiteSpace: 'nowrap' }}>Hiệp Phát</div>*/}
                         </Link>
                     </div>
+                    {/* menu horizon */}
                     <nav className='classy-navbar justify-content-between' ref={e => this.nav = e}>
                         <div className='classy-menu'>
                             <nav className='main_nav classynav'>
@@ -139,6 +196,7 @@ class HomeMenu extends React.Component {
                             </nav>
                         </div>
                     </nav>
+                    {/* login logout horizon */}
                     <div className='header_extra d-flex flex-row align-items-center justify-content-end ml-auto'>
                         <div className='social'>
                             <ul className='d-flex flex-row align-items-center justify-content-start'>
@@ -166,7 +224,7 @@ class HomeMenu extends React.Component {
                                     </div> :
                                     <div className='btn-group'>
                                         <div className='button button_2 mr-1 large_btn'>
-                                            <a href={'tel:' + mobile}><i className='fa fa-phone' />{mobile}</a>
+                                            <a href={'tel:' + mobile}><i className='fa fa-phone' /> {mobile}</a>
                                         </div>
                                         <div className='button button_1 mr-1 large_btn'>
                                             <a href='#' onClick={this.showCandidateModal}>Đăng ký tư vấn</a>
@@ -185,8 +243,10 @@ class HomeMenu extends React.Component {
                                 {/* {twitter}{facebook}{youtube}{instagram} */}
                             </ul>
                         </div>
-                        <div className='hamburger'><i className='fa fa-bars' aria-hidden='true' /></div>
+                        {/* <div className='hamburger'><i className='fa fa-bars' aria-hidden='true' /></div> */}
                     </div>
+
+                    <div className="search-button"><i className="fa fa-search" aria-hidden="true"></i></div>
                 </div>
             </header>
             <div className='menu_overlay trans_400' />
@@ -196,10 +256,11 @@ class HomeMenu extends React.Component {
                 </div>
                 <nav className='menu_nav'>
                     <ul>{menus}</ul>
-                    {user && user._id ? <div className='btn-group mt-4'>
+                    
+                    {/* {user && user._id ? <div className='btn-group mt-4'>
                         <div className='button button_2 mr-1'><a href={'mailto:' + email}>Email</a></div>
                         <div className='button button_1 mr-1'><a href='#' onClick={this.logout}><i className='fa fa-power-off' /> Thoát</a></div>
-                    </div> : <div className='button button_4 mr-1 text-center'><a href='#' onClick={this.props.showLoginModal}>Đăng nhập</a></div>}
+                    </div> : <div className='button button_4 mr-1 text-center'><a href='#' onClick={this.props.showLoginModal}>Đăng nhập</a></div>} */}
                 </nav>
                 <div className='menu_extra'>
                     <div className='menu_link'>Hotline liên hệ: {mobile}</div>

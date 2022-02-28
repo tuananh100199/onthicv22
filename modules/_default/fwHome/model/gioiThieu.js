@@ -8,6 +8,9 @@ module.exports = app => {
         image1: String,
         image2: String,
         image3: String,
+        content1: { type: app.db.Schema.ObjectId, ref: 'Content' },
+        content2: { type: app.db.Schema.ObjectId, ref: 'Content' },
+        content3: { type: app.db.Schema.ObjectId, ref: 'Content' },
     });
     const model = app.db.model('GioiThieu', schema);
 
@@ -21,7 +24,9 @@ module.exports = app => {
                 let result = { totalItem, pageSize, pageTotal: Math.ceil(totalItem / pageSize) };
                 result.pageNumber = pageNumber === -1 ? result.pageTotal : Math.min(pageNumber, result.pageTotal);
                 const skipNumber = (result.pageNumber > 0 ? result.pageNumber - 1 : 0) * result.pageSize;
-                model.find(condition).sort({ title: 1 }).skip(skipNumber).limit(result.pageSize).exec((error, list) => {
+                model.find(condition).sort({ title: 1 }).skip(skipNumber).limit(result.pageSize)
+                .populate('content1').populate('content2','_id title').populate('content3','_id title')
+                .exec((error, list) => {
                     result.list = list;
                     done(error, result);
                 });
@@ -30,7 +35,8 @@ module.exports = app => {
 
         getAll: (done) => model.find({}, '-content').sort({ _id: -1 }).exec(done),
 
-        get: (condition, done) => typeof condition == 'string' ? model.findById(condition, done) : model.findOne(condition, done),
+        get: (condition, done) => typeof condition == 'string' ? model.findById(condition).populate('content1','_id title').populate('content2','_id title').populate('content3','_id title').exec(done) 
+        : model.findOne(condition, done).populate('content1').populate('content2','_id title').populate('content3','_id title').exec(done),
 
         update: (_id, changes, done) => model.findOneAndUpdate({ _id }, { $set: changes }, { new: true }, done),
 
