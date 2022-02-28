@@ -398,7 +398,7 @@ module.exports = (app) => {
                 app.fs.writeFile(app.path.join(app.publicPath, 'img/user', user + '.jpg'), base64Data, 'base64', (error) => {
                     if(error) res.send({ error });
                     else {
-                        const image ='img/user' + user + '.jpg';
+                        const image ='/img/user/' + user + '.jpg';
                         item.image = image + '?t=' + new Date().getTime().toString().slice(-8);
                         item.save((error) => res.send({ error, item, image: item.image }));
                     }
