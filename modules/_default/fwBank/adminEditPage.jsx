@@ -67,33 +67,43 @@ class BankEditPage extends AdminPage {
 
     componentDidMount() {
         T.ready('/user/bank', () => {
-            this.getBanks();
             const route = T.routeMatcher('/user/bank/:_id'),
                 params = route.parse(window.location.pathname);
-            this.props.getBank(params._id, item => {
-                // this.bank.value(item.code);
-                this.active.value(item.active || false);
-                this.contentSyntax.value(item.contentSyntax);
-                this.contentSyntaxExtra.value(item.contentSyntaxExtra);
-                this.moneyLine.value(item.moneyLine);
-                this.moneyStr.value(item.moneyStr);
-                this.contentLine.value(item.contentLine);
-                this.contentStr.value(item.contentStr);
-                this.setState({ code: item.code, _id: item._id });
-            });
+                if(params._id){
+                    this.getBanks(this.getData(params._id));
+                }else{
+                    this.props.history.push('/user/bank');
+                }
+
         });
     }
 
-    getBanks = () => {
+    getBanks = (done) => {
         fetch('https://api.vietqr.io/v1/banks').then(
             (response) => response.json().then(
                 (jsonData) => {
                     this.setState({ banks: jsonData.data && jsonData.data.map(({ code, name, short_name }) => ({ id: code, text: short_name + ' - ' + name })) }, () => {
-                        this.bank.value(this.state.code);
+                        // this.bank.value(this.state.code);
+                        done && done();
                     });
                 }
             )
         );
+    }
+
+    getData = (id)=>{
+        this.props.getBank(id, item => {
+            // this.bank.value(item.code);
+            this.active.value(item.active || false);
+            this.contentSyntax.value(item.contentSyntax);
+            this.contentSyntaxExtra.value(item.contentSyntaxExtra);
+            this.moneyLine.value(item.moneyLine);
+            this.moneyStr.value(item.moneyStr);
+            this.contentLine.value(item.contentLine);
+            this.contentStr.value(item.contentStr);
+            this.setState({ code: item.code, _id: item._id });
+            this.bank.value(this.state.code);
+        });
     }
 
     onChange = ({ text }) => {
@@ -135,24 +145,25 @@ class BankEditPage extends AdminPage {
             active: this.active.value(),
             contentSyntax: this.contentSyntax.value().trim(),
             contentSyntaxExtra: this.contentSyntaxExtra.value().trim(),
-            moneyLine: parseInt(this.moneyLine.value()),
+            moneyLine: this.moneyLine.value(),
             moneyStr: this.moneyStr.value().trim(),
-            contentLine: parseInt(this.contentLine.value()),
+            contentLine: this.contentLine.value(),
             contentStr: this.contentStr.value().trim(),
         };
+        console.log('changes: ',changes);
         if (changes.contentSyntax == '') {
             T.notify('Cú pháp chuyển tiền học phí chính thức của học viên bị trống!', 'danger');
             this.contentSyntax.focus();
         } if (changes.contentSyntaxExtra == '') {
             T.notify('Cú pháp chuyển tiền học phí tăng thêm của học viên bị trống!', 'danger');
             this.contentSyntaxExtra.focus();
-        } else if (changes.moneyLine == '') {
+        } else if (changes.moneyLine == '' && changes.contentLine!==0) {
             T.notify('Dòng biến động số dư bị trống!', 'danger');
             this.moneyLine.focus();
         } else if (changes.moneyStr == '') {
             T.notify('Chuỗi biến động số dư bị trống!', 'danger');
             this.moneyStr.focus();
-        } else if (changes.contentLine == '') {
+        } else if (changes.contentLine == '' && changes.contentLine!==0) {
             T.notify('Dòng nội dung giao dịch bị trống!', 'danger');
             this.contentLine.focus();
         } else if (changes.contentStr == '') {

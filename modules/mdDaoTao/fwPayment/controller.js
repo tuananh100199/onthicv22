@@ -7,7 +7,7 @@ module.exports = app => {
 
     app.get('/user/payment', app.permission.check('payment:read'), app.templates.admin);
 
-    app.post('/api/payment', app.permission.check(), (req, res) => {
+    app.post('/api/payment', (req, res) => {
         app.redis.get(`${app.appName}:state:smsAPIToken`, (error, token) => { //get token to auth app
             if (error || !token) {
                 res.send({
