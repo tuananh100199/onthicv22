@@ -7,7 +7,7 @@ module.exports = app => {
 
     app.get('/user/payment', app.permission.check('payment:read'), app.templates.admin);
 
-    app.post('/api/payment', app.permission.check(), (req, res) => {
+    app.post('/api/payment', (req, res) => {
         app.redis.get(`${app.appName}:state:smsAPIToken`, (error, token) => { //get token to auth app
             if (error || !token) {
                 res.send({
@@ -110,7 +110,7 @@ module.exports = app => {
                                                             payment.creditObject = identityCard;
                                                             payment.courseTypeName = courseTypeName;
                                                             app.model.courseType.get({ title: { $regex: courseTypeName, $options: 'i'}}, (error, item) => {
-                                                    if (error || !item) {
+                                                                if (error || !item) {
                                                         res.send({
                                                             error: 'Nonexist courseType'
                                                         });
@@ -125,26 +125,61 @@ module.exports = app => {
                                                                     error: 'Nonexist student'
                                                                 });
                                                             } else {
-                                                                item.hocPhiDaDong = (item.hocPhiDaDong || 0) + payment.moneyAmount; // plus fee paid
-                                                                item.save((error, student) => {
-                                                                    if (error || !student) {
-                                                                        res.send({
-                                                                            error
-                                                                        });
-                                                                    } else {
-                                                                        payment.sms = sms._id;
-                                                                        payment.student = item._id;
-                                                                        payment.firstname = item.firstname;
-                                                                        payment.lastname = item.lastname;
-                                                                        payment.courseType = item.courseType && item.courseType._id;
-                                                                        app.model.payment.create(payment, (error, item) =>{
-                                                                            if(error || !item){
-                                                                                res.send({error: error || 'Lỗi khi tạo thu công nợ'});
-                                                                            } else {
-                                                                                sms.isHandled = true;
-                                                                                sms.save((error, item) => res.send({error, item}));
-                                                                            }
-                                                                        });
+                                                                const { courseFee, discount, lichSuDongTien } = item;
+                                                                const hocPhiDaDong = lichSuDongTien && lichSuDongTien.length ? lichSuDongTien.map(item => item.fee).reduce((prev, next) => prev + next) : 0;
+                                                                const hocPhiConLai = courseFee && courseFee.fee && courseFee.fee - (hocPhiDaDong ? hocPhiDaDong : 0) - ((discount && discount.fee) ? discount.fee : 0);
+                                                                const hocPhi = courseFee && courseFee.fee && courseFee.fee - ((discount && discount.fee) ? discount.fee : 0);
+                                                                const data = {
+                                                                    fee: payment.moneyAmount,
+                                                                    isOnlinePayment: true,
+                                                                };
+                                                                app.model.student.addPayment({ _id: item._id }, data, (error, item) => {
+                                                                    payment.sms = sms._id;
+                                                                    payment.student = item._id;
+                                                                    payment.firstname = item.firstname;
+                                                                    payment.lastname = item.lastname;
+                                                                    payment.courseType = item.courseType && item.courseType._id;
+                                                                    if(error) res.send({error});
+                                                                    else{
+                                                                        if(hocPhi && (hocPhiConLai-data.fee) <= (0)){
+                                                                            app.model.student.update({_id: item._id}, {activeKhoaThucHanh: true}, (error) => {
+                                                                                if(error) res.send({ error });
+                                                                                else {
+                                                                                    app.model.payment.create(payment, (error, item) =>{
+                                                                                        if(error || !item){
+                                                                                            res.send({error: error || 'Lỗi khi tạo thu công nợ'});
+                                                                                        } else {
+                                                                                            sms.isHandled = true;
+                                                                                            sms.save((error, item) => res.send({error, item}));
+                                                                                        }
+                                                                                    });
+                                                                                }
+                                                                            });
+                                                                        } 
+                                                                        else if(hocPhi && (hocPhiConLai-data.fee) <= (hocPhi/2)){
+                                                                            app.model.student.update({_id: item._id}, {activeKhoaLyThuyet: true}, (error) => {
+                                                                                if(error) res.send({ error });
+                                                                                else {
+                                                                                    app.model.payment.create(payment, (error, item) =>{
+                                                                                        if(error || !item){
+                                                                                            res.send({error: error || 'Lỗi khi tạo thu công nợ'});
+                                                                                        } else {
+                                                                                            sms.isHandled = true;
+                                                                                            sms.save((error, item) => res.send({error, item}));
+                                                                                        }
+                                                                                    });
+                                                                                }
+                                                                            });
+                                                                        }  else {
+                                                                            app.model.payment.create(payment, (error, item) =>{
+                                                                                if(error || !item){
+                                                                                    res.send({error: error || 'Lỗi khi tạo thu công nợ'});
+                                                                                } else {
+                                                                                    sms.isHandled = true;
+                                                                                    sms.save((error, item) => res.send({error, item}));
+                                                                                    }
+                                                                                });
+                                                                        }
                                                                     }
                                                                 });
                                                             }

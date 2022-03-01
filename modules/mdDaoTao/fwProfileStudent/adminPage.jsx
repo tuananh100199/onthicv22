@@ -86,6 +86,7 @@ class ProfileStudentPage extends AdminPage {
                     <th style={{ width: '100%' }}>Học viên</th>
                     <th style={{ width: 'auto' }} nowrap='true'>Thông tin liên lạc</th>
                     <th style={{ width: 'auto' }} nowrap='true'>Đơn</th>
+                    {/* <TableHeadCell content='Đơn' style={{width:'auto'}} nowrap='true' filter = {filterConditionData}/> */}
                     <th style={{ width: 'auto' }} nowrap='true'>Hình</th>
                     <th style={{ width: 'auto' }} nowrap='true'>CMND/CCCD</th>
                     <th style={{ width: 'auto' }} nowrap='true'>Giấy khám sức khỏe</th>

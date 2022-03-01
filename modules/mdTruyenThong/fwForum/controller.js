@@ -174,6 +174,19 @@ module.exports = app => {
         });
     });
 
+    app.get('/api/forum/message/all', (req, res) => {//mobile
+        const condition = req.query.condition || {};
+        const user = req.session.user;
+        condition['$or'] = [//Message của học viên và những mess đã được approved
+            { user:user?user._id:'' },
+            {state:'approved'}
+        ];
+        if (req.query._forumId) {
+            condition.forum = req.query._forumId;
+        }
+        app.model.forumMessage.getAll(condition, (error, list) => res.send({ error, list }));
+    });
+
     app.post('/api/forum/message', app.permission.check('user:login'), (req, res) => {
         let { forum, content, state } = req.body;
         app.model.forum.get(forum, (error, item) => {

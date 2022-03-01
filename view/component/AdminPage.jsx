@@ -113,6 +113,24 @@ export function renderTable({ style = {},isFilterDropdown=false, className = '',
     }
 }
 
+export class TableHeadCell extends React.Component { // type = number | date | link | image | checkbox | buttons | text (default)
+    state = {filterData:{},sortData:{}}
+    render() {
+        // const filter = 
+        let { content = '', className = '', style = {}, display = true, rowSpan = 1,filter=null,nowrap='false' } = this.props;
+        const filterDisplay = filter && filter.length?(
+            <div className="dropdown" style={{display:'inline-block'}}>
+                <button className="btn btn-link dropdown-toggle" style={{padding:'0',paddingLeft:'10px'}} type="button" id="dropdownMenu2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                </button>
+                <div className="dropdown-menu" aria-labelledby="dropdownMenu2" style={{zIndex:100}}>
+                    {filter.map((item,index)=><button key={index} className="dropdown-item" type="button">{item.text}</button>)}
+                </div>
+            </div>
+        ) :null;
+        return display?<th className={className} style={{ ...style }} nowrap={nowrap} rowSpan={rowSpan}>{content} {filterDisplay}</th>:null;
+    }
+}
+
 // Form components ----------------------------------------------------------------------------------------------------
 export class FormTabs extends React.Component {
     state = { tabIndex: 0 };

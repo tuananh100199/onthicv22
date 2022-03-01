@@ -14,7 +14,7 @@ class SectionNews extends React.Component {
                     items:1,
                     loop:true,
                     margin:10,
-                    // autoplay: true,
+                    autoplay: true,
                     autoplayTimeout:3000,
                     autoplayHoverPause: true,
                     
