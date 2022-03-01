@@ -15,7 +15,7 @@ class SectionStaffGroup extends React.Component {
                     items:1,
                     loop:!single,
                     margin:10,
-                    // autoplay: !single,
+                    autoplay: !single,
                     autoplayTimeout:3000,
                     autoplayHoverPause: true,
                     

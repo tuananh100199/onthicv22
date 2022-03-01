@@ -285,6 +285,7 @@
     transform: translateX(-100px);
     transition: 1s all ease;
     opacity: 0;
+    min-height: 350px;
 }
 .warp_gioi_thieu_HP .text-gioi-thieu .description {
     position: relative;
