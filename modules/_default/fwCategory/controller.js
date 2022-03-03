@@ -62,6 +62,14 @@ module.exports = app => {
             console.log('Hook: uploadCategoryImage => car');
             const _id = fields.userData[0].substring('carCategoryImage:'.length);
             app.uploadImage('carCategory', app.model.category.get, _id, files.CategoryImage[0].path, done);
+        } else if (fields.userData && fields.userData[0].startsWith('teacherCertificationCategoryImage:') && files.CategoryImage && files.CategoryImage.length > 0) {
+            console.log('Hook: uploadCategoryImage => certification');
+            const _id = fields.userData[0].substring('teacherCertificationCategoryImage:'.length);
+            app.uploadImage('carCategory', app.model.category.get, _id, files.CategoryImage[0].path, done);
+        } else if (fields.userData && fields.userData[0].startsWith('contractCategoryImage:') && files.CategoryImage && files.CategoryImage.length > 0) {
+            console.log('Hook: uploadCategoryImage => contract');
+            const _id = fields.userData[0].substring('contractCategoryImage:'.length);
+            app.uploadImage('contractCategory', app.model.category.get, _id, files.CategoryImage[0].path, done);
         }
     };
 
