@@ -7,7 +7,7 @@ import { getTeacher } from './redux';
 //import page
 import AdminInfoPage from './pages/adminInfoPage';
 import AdminCertificationPage from './pages/adminCertificationPage';
-
+import AdminProfilePage from './pages/adminProfilePage';
 
 class TeacherEditPage extends AdminPage {
     state = { teacher: null };
@@ -28,6 +28,7 @@ class TeacherEditPage extends AdminPage {
         const tabs = [];
         tabs.push({key:tabs.length, title: 'Thông tin chung', component: teacher ? <AdminInfoPage permission={permission} teacherData={teacher} history={this.props.history} /> : null });
         tabs.push({key:tabs.length, title: 'Trình độ & văn bằng', component: teacher ? <AdminCertificationPage permission={permission} teacherData={teacher} history={this.props.history} /> : null });
+        tabs.push({key:tabs.length, title: 'Hồ sơ', component: teacher ? <AdminProfilePage permission={permission} teacherData={teacher} history={this.props.history} /> : null });
         return this.renderPage({
             icon: 'fa fa-users',
             title: 'Thông tin giáo viên: ' + (this.props.teacher && this.props.teacher.item ? `${this.props.teacher.item.lastname} ${this.props.teacher.item.firstname}` : '...'),

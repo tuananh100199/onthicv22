@@ -5,6 +5,8 @@ const TeacherGetAll = 'TeacherGetAll';
 const TeacherGetPage = 'TeacherGetPage';
 const TeacherGetItem = 'TeacherGetItem';
 const TeacherCertificationGetAll = 'TeacherCertificationGetAll';
+const TeacherProfileGetAll = 'TeacherProfileGetAll';
+
 export default function teacherReducer(state = {}, data) {
     switch (data.type) {
         case TeacherGetAll:
@@ -15,6 +17,8 @@ export default function teacherReducer(state = {}, data) {
             return Object.assign({}, state, { item: data.item });
         case TeacherCertificationGetAll:
             return Object.assign({}, state, { listCertification: data.list });
+        case TeacherProfileGetAll:
+            return Object.assign({}, state, { listProfile: data.list });
         default:
             return state;
     }
@@ -183,6 +187,73 @@ export function deleteTeacherCertification(_id,done) {
                 done && done();
             }
         }, error => console.error(error) || T.notify('Xóa thông tin chứng chỉ bị lỗi!', 'danger'));
+    };
+}
+
+// TeacherProfile ---------------------------------------------------------------------------------------------------------------
+
+export function getTeacherProfileAll(condition, done) {
+    return dispatch => {
+        const url = '/api/teacher-profile/all';
+        if (typeof condition == 'function') {
+            done = condition;
+            condition = {};
+        }
+        T.get(url, { condition }, data => {
+            if (data.error) {
+                T.notify('Lấy danh sách hồ sơ của giáo viên bị lỗi!', 'danger');
+                console.error('GET: ' + url + '. ' + data.error);
+            } else {
+                done && done(data.list);
+                dispatch({ type: TeacherProfileGetAll, list: data.list });
+            }
+        }, error => console.error(error) || T.notify('Lấy hồ sơ giáo viên bị lỗi!', 'danger'));
+    };
+}
+
+export function createTeacherProfile(data, done) {
+    return () => {
+        const url = '/api/teacher-profile';
+        T.post(url, { data }, data => {
+            if (data.error) {
+                T.notify('Tạo hồ sơ bị lỗi!', 'danger');
+                console.error('POST: ' + url + '. ' + data.error);
+            } else {
+                T.notify('Tạo hồ sơ thanh công!', 'success');
+                done && done();
+            }
+        }, error => console.error(error) || T.notify('Tạo hồ sơ bị lỗi!', 'danger'));
+    };
+}
+
+export function updateTeacherProfile(_id, changes, done) {
+    return () => {
+        const url = '/api/teacher-profile';
+        T.put(url, { _id, changes }, data => {
+            if (data.error) {
+                T.notify('Cập nhật thông tin hồ sơ bị lỗi!', 'danger');
+                console.error('PUT: ' + url + '. ' + data.error);
+                done && done(data.error);
+            } else {
+                T.notify('Cập nhật thông tin hồ sơ thành công!', 'success');
+                done && done();
+            }
+        }, error => console.error(error) || T.notify('Cập nhật thông tin hồ sơ bị lỗi!', 'danger'));
+    };
+}
+
+export function deleteTeacherProfile(_id,done) {
+    return () => {
+        const url = '/api/teacher-profile';
+        T.delete(url, { _id }, data => {
+            if (data.error) {
+                T.notify('Xóa thông tin hồ sơ bị lỗi!', 'danger');
+                console.error('DELETE: ' + url + '. ' + data.error);
+            } else {
+                T.alert('Xóa thông tin hồ sơ thành công!', 'error', false, 800);
+                done && done();
+            }
+        }, error => console.error(error) || T.notify('Xóa thông tin hồ sơ bị lỗi!', 'danger'));
     };
 }
 

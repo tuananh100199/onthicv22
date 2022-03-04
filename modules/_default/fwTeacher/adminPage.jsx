@@ -28,7 +28,7 @@ class StaffInfoModal extends AdminModal {
 
     onSubmit = () => {
         const data = {
-            maGiaoVien:this.itemMaGiaoVien.value(),
+            maGiaoVien:this.itemMaGiaoVien.value().toUpperCase(),
             firstname: this.itemFirstname.value(),
             lastname: this.itemLastname.value(),
             birthday: this.itemBirthday.value(),

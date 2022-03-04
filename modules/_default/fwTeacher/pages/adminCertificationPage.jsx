@@ -151,7 +151,6 @@ class TeacherInfoPage extends AdminPage {
                             this.itemNoiCapGplx.value(giayPhepLaiXe.noiCap||'');
                             this.itemNgayTrungTuyen.value(giayPhepLaiXe.ngayTrungTuyen||'');
                             this.itemStateGplx.value(giayPhepLaiXe.state||'dangKiemTra');
-
                             // chứng chỉ thực hành
                             this.itemTrinhDoChungChiThucHanh.value(chungChiThucHanh.category||'');
                             this.itemNgayCapChungChiThucHanh.value(chungChiThucHanh.ngayCap||'');
@@ -219,7 +218,7 @@ class TeacherInfoPage extends AdminPage {
 
     saveChungChiThucHanh = ()=>{
         const data = {
-            category: this.itemHangChungChiThucHanh.value(),
+            category: this.itemTrinhDoChungChiThucHanh.value(),
             ngayCap: this.itemNgayCapChungChiThucHanh.value(),
             noiCap: this.itemNoiCapChungChiThucHanh.value(),
             state:this.itemStateChungChiThucHanh.value(),
@@ -335,7 +334,7 @@ class TeacherInfoPage extends AdminPage {
                     </div>
 
                     <div className="tile-footer" style={{textAlign:'right'}}>
-                    <button className='btn btn-primary' type='button' onClick={this.saveGplx}>Lưu</button>
+                    <button className='btn btn-primary' type='button' onClick={this.saveChungChiThucHanh}>Lưu</button>
                     </div>
                 </div>
 

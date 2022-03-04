@@ -60,7 +60,6 @@ class TeacherInfoPage extends AdminPage {
     }
 
     onUploadSuccess = ({ error, image }) => {
-        console.log(error,image);
         if (error) {
             T.notify('Upload hình ảnh thất bại!', 'danger');
         } else {

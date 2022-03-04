@@ -61,3 +61,4 @@
 	8091 - Danh mục chứng chỉ (/user/teacher-certification/category)
 	8092 - Danh mục hợp đồng (/user/contract/category)
 	8093 - Danh mục giấy phép lái xe (/user/gplx/category)
+	8094 - Danh mục hồ sơ (/user/profile/category)

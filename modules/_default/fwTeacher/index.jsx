@@ -10,6 +10,10 @@ export default {
     },
     routes: [
         {
+            path: '/user/profile/category',
+            component: Loadable({ loading: Loading, loader: () => import('./adminProfileCategoryPage') }),
+        },
+        {
             path: '/user/gplx/category',
             component: Loadable({ loading: Loading, loader: () => import('./adminGplxCategoryPage') }),
         },
@@ -23,7 +27,7 @@ export default {
         },
         {
             path: '/user/teacher',
-            component: Loadable({ loading: Loading,func:console.log('into index fwTeacher'), loader: () => import('./adminPage') }),
+            component: Loadable({ loading: Loading, loader: () => import('./adminPage') }),
         },
         {
             path: '/user/teacher/:_id',

@@ -69,7 +69,9 @@ module.exports = (app) => {
             startDate:Date,
             nghiViec:{type:Boolean,default:false},
             endDate:Date,
-        }
+        },
+
+
     });
 
     const model = app.db.model('Teacher', schema);
