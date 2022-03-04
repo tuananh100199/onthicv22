@@ -1,7 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { getTeacher, updateTeacher } from '../redux';
-import { AdminPage, FormTextBox, FormRichTextBox, FormSelect,FormDatePicker, FormImageBox, CirclePageButton } from 'view/component/AdminPage';
+import { AdminPage, FormTextBox, FormRichTextBox, FormSelect,FormDatePicker, FormImageBox, CirclePageButton,FormCheckbox } from 'view/component/AdminPage';
 import { ajaxSelectDivision } from 'modules/mdDaoTao/fwDivision/redux';
 import { getCategoryAll } from 'modules/_default/fwCategory/redux';
 
@@ -14,10 +14,9 @@ class TeacherInfoPage extends AdminPage {
                 // danh mục hợp đồng
                 this.props.getCategoryAll('contract', null, (items) =>{
                     this.setState({ contracts: (items || []).map(item => ({ id: item._id, text: item.title })) },()=>{
-                        if (this.props.teacher) {
-                            const { _id,image, firstname, lastname, birthday,email,phoneNumber, sex, division, identityCard,identityDate,identityIssuedBy,maGiaoVien,startDate,residence,regularResidence,contract,contractExpireDate, } = this.props.teacher || 
-                                {_id:null,image:'',firstname:'',lastname:'',birthday:'',email:'',phoneNumber:'',user:null,sex:null,division:null,identityCard:'',identityDate:'',identityIssuedBy:'',department:'',
-                            maGiaoVien:'',trinhDoChuyenMon:'',trinhDoVanHoa:'',gcnNumber:'',bangCapKhac:''};
+                        if (this.props.teacherData) {
+                            const { _id,image, firstname, lastname, birthday,email,phoneNumber, sex, division, identityCard,identityDate,identityIssuedBy,maGiaoVien,residence,regularResidence,contract,maSoThue,baoHiemXaHoi,thoiGianLamViec } = this.props.teacherData || 
+                                {_id:null,image:'',firstname:'',lastname:'',birthday:'',email:'',phoneNumber:'',user:null,sex:null,division:null,identityCard:'',identityDate:'',identityIssuedBy:'',maGiaoVien:'',maSoThue:''};
                                 this.itemFirstname.value(firstname || '');
                                 this.itemLastname.value(lastname || '');
                                 this.itemBirthday.value(birthday);
@@ -30,14 +29,22 @@ class TeacherInfoPage extends AdminPage {
                                 this.itemIdentityCard.value(identityCard || '');
                                 this.itemIdentityDate.value(identityDate||'');
                                 this.itemIdentityIssuedBy.value(identityIssuedBy||'');
-                                this.itemContract.value(contract);
-                                this.itemStartDate.value(startDate);
-                                this.itemContractExpireDate.value(contractExpireDate);
+                                this.itemContract.value(contract && contract.category ? contract.category:null);
+                                this.itemContractStartDate.value(contract && contract.startDate?contract.startDate:'');
+                                this.itemContractExpireDate.value(contract && contract.expireDate?contract.expireDate:'');
                                 
+                                this.itemMaSoThue.value(maSoThue);
+                                this.itemSoBhxh.value(baoHiemXaHoi?baoHiemXaHoi.number:'');
+                                this.itemNoiDongBhxh.value(baoHiemXaHoi?baoHiemXaHoi.noiDong:'');
+                                // thời gian làm việc
+                                this.itemStartDate.value(thoiGianLamViec?thoiGianLamViec.startDate:'');
+                                this.itemNghiViec.value(thoiGianLamViec?thoiGianLamViec.nghiViec:false);
+                                this.itemEndDate.value(thoiGianLamViec?thoiGianLamViec.endDate:'');
+                                //địa chỉ
                                 this.itemResidence.value(residence);
                                 this.itemRegularResidence.value(regularResidence);
                                 this.imageBox.setData(`teacher:${_id || 'new'}`);
-                                this.setState({ _id,image });
+                                this.setState({ _id,image,nghiViec:thoiGianLamViec?thoiGianLamViec.nghiViec:false });
                                 
                             this.itemLastname.focus();
                         } else {
@@ -74,11 +81,27 @@ class TeacherInfoPage extends AdminPage {
             identityCard: this.itemIdentityCard.value(),
             identityCardDate:this.itemIdentityDate.value(),
             identityIssuedBy:this.itemIdentityIssuedBy.value(),
-            contract:this.itemContract.value(),
-            startDate:this.itemStartDate.value(),
-            contractExpireDate:this.itemContractExpireDate.value(),
+            contract:{
+                startDate:this.itemContractStartDate.value(),
+                contractExpireDate:this.itemContractExpireDate.value(),
+            },
+            maSoThue:this.itemMaSoThue.value(),
+            baoHiemXaHoi:{
+                number:this.itemSoBhxh.value(),
+                noiDong:this.itemNoiDongBhxh.value(),
+            },
+            thoiGianLamViec:{
+                startDate:this.itemStartDate.value(),
+                nghiViec:this.itemNghiViec.value(),
+                endDate:this.itemEndDate.value(),
+            }
             // image:this.state.image
         };
+
+        if(this.itemContract.value()){
+            data.contract.category=this.itemContract.value();
+        }
+
         if (data.lastname == '') {
             T.notify('Họ không được trống!', 'danger');
             this.itemLastname.focus();
@@ -120,15 +143,22 @@ class TeacherInfoPage extends AdminPage {
                         </div>
                         <FormImageBox ref={e => this.imageBox = e} className='col-md-3' label='Hình đại diện' uploadType='teacherImage' image={this.state.image} readOnly={readOnly}
                                 onSuccess={this.onUploadSuccess} />
+                        <FormTextBox className='col-md-3' ref={e => this.itemMaGiaoVien = e} label='Mã giáo viên'readOnly={readOnly} required/>
                         <FormTextBox className='col-md-3' ref={e => this.itemIdentityCard = e} label='CMND/CCCD' readOnly={readOnly} required />
                         <FormDatePicker className='col-md-3' ref={e => this.itemIdentityDate = e} type='date-mask' label='Ngày cấp CMND/CCCD' readOnly={readOnly} />
                         <FormTextBox className='col-md-3' ref={e => this.itemIdentityIssuedBy = e} label='Nơi cấp CMND/CCCD'readOnly={readOnly}/>
-                        <FormTextBox className='col-md-3' ref={e => this.itemMaGiaoVien = e} label='Mã giáo viên'readOnly={readOnly} required/>
                         <FormSelect className='col-md-3' ref={e => this.itemDivision = e} label='Cơ sở đào tạo' data={ajaxSelectDivision} readOnly={readOnly} required />
                         <FormSelect className='col-md-3' ref={e => this.itemContract = e} label='Loại hợp đồng' readOnly={readOnly} data = {this.state.contracts}/>
-                        <FormDatePicker className='col-md-3' ref={e => this.itemStartDate = e} label='Ngày bắt đầu làm'readOnly={readOnly} type='date-mask'/>
+                        <FormDatePicker className='col-md-3' ref={e => this.itemContractStartDate = e} label='Ngày bắt đầu hợp đồng'readOnly={readOnly} type='date-mask'/>
                         <FormDatePicker className='col-md-3' ref={e => this.itemContractExpireDate = e} label='Ngày kết thúc hợp đồng'readOnly={readOnly} type='date-mask'/>
-                        
+                        <FormTextBox className='col-md-3' ref={e => this.itemMaSoThue = e} label='Mã số thuế'readOnly={readOnly}/>
+                        <FormTextBox className='col-md-3' ref={e => this.itemSoBhxh = e} label='Số BHXH'readOnly={readOnly}/>
+                        <FormTextBox className='col-md-6' ref={e => this.itemNoiDongBhxh = e} label='Nơi đóng BHXH'readOnly={readOnly}/>
+                        <FormDatePicker className='col-md-5' ref={e => this.itemStartDate = e} label='Ngày bắt đầu làm'readOnly={readOnly} type='date-mask'/>
+                        <FormCheckbox className='col-md-2' ref={e => this.itemNghiViec = e} label='Nghỉ việc' readOnly={this.props.readOnly} onChange = {value=>this.setState({nghiViec:value})}/>
+                        <div className="col-md-5" style={{display:this.state.nghiViec?'block':'none'}}>
+                            <FormDatePicker ref={e => this.itemEndDate = e} label='Ngày nghỉ việc'readOnly={readOnly} type='date-mask'/>
+                        </div>
                         <FormRichTextBox ref={e => this.itemResidence = e} className='col-md-6' label='Chỗ ở hiện tại' readOnly={readOnly} rows='2' />
                         <FormRichTextBox ref={e => this.itemRegularResidence = e} className='col-md-6' label='Địa chỉ thường trú' readOnly={readOnly} rows='2' />
 

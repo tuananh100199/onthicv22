@@ -88,8 +88,8 @@ class StaffInfoModal extends AdminModal {
                 <FormSelect className='col-md-4' ref={e => this.itemSex = e} label='Giới tính' data={[{ id: 'female', text: 'Nữ' }, { id: 'male', text: 'Nam' }]} readOnly={readOnly} />
                 <FormDatePicker className='col-md-4' ref={e => this.itemBirthday = e} label='Ngày sinh' readOnly={readOnly} type='date-mask' required />
                 <FormSelect className='col-md-4' ref={e => this.itemDivision = e} label='Cơ sở đào tạo' data={ajaxSelectDivision} readOnly={readOnly} required />
-                <FormTextBox className='col-md-4' ref={e => this.itemIdentityCard = e} label='CMND/CCCD' readOnly={readOnly} required />
-                <FormDatePicker className='col-md-4' ref={e => this.itemIdentityDate = e} label='Ngày cấp' readOnly={readOnly} required />
+                <FormTextBox className='col-md-4' ref={e => this.itemIdentityCard = e} label='CMND/CCCD' readOnly={readOnly}  />
+                <FormDatePicker className='col-md-4' ref={e => this.itemIdentityDate = e} label='Ngày cấp' readOnly={readOnly}  />
                 <FormTextBox className='col-md-4' ref={e => this.itemIdentityCardIssuedBy = e} label='Nơi cấp' readOnly={readOnly} required />
                 <FormRichTextBox className='col-md-6' ref={e => this.itemRegularResidence = e} label='Địa chỉ thường trú' readOnly={readOnly} rows='2'/>
                 <FormRichTextBox className='col-md-6' ref={e => this.itemResidence = e} label='Chỗ ở hiện tại' readOnly={readOnly} rows='2'/>

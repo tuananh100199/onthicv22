@@ -26,7 +26,7 @@ class TeacherEditPage extends AdminPage {
         const permission = this.getUserPermission('teacher', ['read', 'write', 'delete']);
         const teacher = this.state.teacher;
         const tabs = [];
-        tabs.push({key:tabs.length, title: 'Thông tin chung', component: teacher ? <AdminInfoPage permission={permission} teacher={teacher} history={this.props.history} /> : null });
+        tabs.push({key:tabs.length, title: 'Thông tin chung', component: teacher ? <AdminInfoPage permission={permission} teacherData={teacher} history={this.props.history} /> : null });
         tabs.push({key:tabs.length, title: 'Trình độ & văn bằng', component: teacher ? <AdminCertificationPage permission={permission} teacherData={teacher} history={this.props.history} /> : null });
         return this.renderPage({
             icon: 'fa fa-users',

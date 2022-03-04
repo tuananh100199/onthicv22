@@ -35,16 +35,17 @@ module.exports = (app) => {
 
         //Giấy phép lái xe
         giayPhepLaiXe:{
-            type:{ type: app.db.Schema.ObjectId, ref: 'Category' },
-            number:String,
+            category: { type: [{ type: app.db.Schema.Types.ObjectId, ref: 'Category' }], default: [] },
+            soGplx:String,
             ngayCap:Date,
             noiCap:String,
             ngayTrungTuyen:Date,
-            isVerifyOnline:{type:Boolean,default:false}
+            isVerifyOnline:{type:Boolean,default:false},
+            state: { type: String, enum: ['dangKiemTra', 'hopLe', 'KhongHopLe'], default: 'dangKiemTra' },
         },
 
         chungChiThucHanh:{
-            type:{ type: app.db.Schema.ObjectId, ref: 'Category' },
+            category: { type: [{ type: app.db.Schema.Types.ObjectId, ref: 'Category' }], default: [] },
             ngayCap:Date,
             noiCap:String,
         },
@@ -54,9 +55,21 @@ module.exports = (app) => {
 
 
         // contract
-        contract: { type: app.db.Schema.ObjectId, ref: 'Category' },  // có thể là phải tạo category contractType
-        contractExpireDate:Date,
-        startDate:Date,
+        contract:{
+            category:{ type: app.db.Schema.ObjectId, ref: 'Category' },
+            startDate:Date,
+            expireDate:Date,
+        },
+        maSoThue:String,
+        baoHiemXaHoi:{
+            number:String,
+            noiDong:String,
+        },
+        thoiGianLamViec:{
+            startDate:Date,
+            nghiViec:{type:Boolean,default:false},
+            endDate:Date,
+        }
     });
 
     const model = app.db.model('Teacher', schema);
@@ -98,9 +111,9 @@ module.exports = (app) => {
 
         update: (_id, changes, done) => {
             if(changes && changes.maGiaoVien && changes.maGiaoVien!=''){
-                model.findOne({msnv:changes.msnv},(error,info)=>{
+                model.findOne({maGiaoVien:changes.maGiaoVien},(error,info)=>{
                     if(error) done(error);
-                    else if(info && info._id !=_id){// MSNV của nv khác
+                    else if(info && info._id !=_id){// Mã giáo viên đã tồn tại
                         done('mã giáo viên đã được sử dụng!');
                     }else{
                         model.findOneAndUpdate({ _id }, changes, { new: true }).populate('user', 'email phoneNumber').populate('division', 'id title').exec(done);

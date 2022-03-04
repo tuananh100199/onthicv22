@@ -38,7 +38,10 @@ module.exports = app => {
     app.createFolder(app.path.join(app.publicPath, '/img/category'),
         app.path.join(app.publicPath, '/img/newsCategory'), app.path.join(app.publicPath, '/img/forumCategory'),
         app.path.join(app.publicPath, '/img/driveQuestionCategory'), app.path.join(app.publicPath, '/img/signCategory'),
-        app.path.join(app.publicPath, '/img/carCategory')
+        app.path.join(app.publicPath, '/img/carCategory'),
+        app.path.join(app.publicPath, '/img/teacherCertificationCategory'),
+        app.path.join(app.publicPath, '/img/contractCategory'),
+        app.path.join(app.publicPath, '/img/gplxCategory'),
     );
 
     const uploadCategoryImage = (fields, files, done) => {
@@ -65,11 +68,15 @@ module.exports = app => {
         } else if (fields.userData && fields.userData[0].startsWith('teacherCertificationCategoryImage:') && files.CategoryImage && files.CategoryImage.length > 0) {
             console.log('Hook: uploadCategoryImage => certification');
             const _id = fields.userData[0].substring('teacherCertificationCategoryImage:'.length);
-            app.uploadImage('carCategory', app.model.category.get, _id, files.CategoryImage[0].path, done);
+            app.uploadImage('teacherCertificationCategory', app.model.category.get, _id, files.CategoryImage[0].path, done);
         } else if (fields.userData && fields.userData[0].startsWith('contractCategoryImage:') && files.CategoryImage && files.CategoryImage.length > 0) {
             console.log('Hook: uploadCategoryImage => contract');
             const _id = fields.userData[0].substring('contractCategoryImage:'.length);
             app.uploadImage('contractCategory', app.model.category.get, _id, files.CategoryImage[0].path, done);
+        } else if (fields.userData && fields.userData[0].startsWith('gplxCategoryImage:') && files.CategoryImage && files.CategoryImage.length > 0) {
+            console.log('Hook: uploadCategoryImage => contract');
+            const _id = fields.userData[0].substring('gplxCategoryImage:'.length);
+            app.uploadImage('gplxCategory', app.model.category.get, _id, files.CategoryImage[0].path, done);
         }
     };
 

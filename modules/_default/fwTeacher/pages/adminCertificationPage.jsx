@@ -120,7 +120,7 @@ class TeacherInfoPage extends AdminPage {
         T.ready('/user/teacher', () => {
             const route = T.routeMatcher('/user/teacher/:_id'), params = route.parse(window.location.pathname);
             if(params && params._id){
-                // danh mục hợp đồng
+                // chứng chỉ
                 this.props.getCategoryAll('teacher-certification', null, (items) =>{
                     this.setState({ certifications: (items || []).map(item => ({ id: item._id, text: item.title })) },()=>{
                         if (this.props.teacherData) {
@@ -134,6 +134,29 @@ class TeacherInfoPage extends AdminPage {
                                 this.itemStateChuyenMon.value(trinhDoChuyenMon && trinhDoChuyenMon.state?trinhDoChuyenMon.state:this.state.stateChuyenMon);
                                 // this.itemLyDoChuyenMon.value(trinhDoChuyenMon && trinhDoChuyenMon.lyDo?trinhDoChuyenMon.lyDo:'');
                                 this.setState({ _id,_teacherId:params._id,stateChuyenMon:trinhDoChuyenMon.state });
+                        } else {
+                            this.props.history.push('/user/teacher');
+                        }
+                    });
+                });
+                // giấy phép lái và chứng chỉ thực hành.
+                this.props.getCategoryAll('gplx', null, (items) =>{
+                    this.setState({ licences: (items || []).map(item => ({ id: item._id, text: item.title })) },()=>{
+                        if (this.props.teacherData) {
+                            const {giayPhepLaiXe={},chungChiThucHanh={}} = this.props.teacherData;
+                            // giấy phép lái xe
+                            this.itemHangGplx.value(giayPhepLaiXe.category||'');
+                            this.itemSoGplx.value(giayPhepLaiXe.soGplx||'');
+                            this.itemNgayCapGplx.value(giayPhepLaiXe.ngayCap||'');
+                            this.itemNoiCapGplx.value(giayPhepLaiXe.noiCap||'');
+                            this.itemNgayTrungTuyen.value(giayPhepLaiXe.ngayTrungTuyen||'');
+                            this.itemStateGplx.value(giayPhepLaiXe.state||'dangKiemTra');
+
+                            // chứng chỉ thực hành
+                            this.itemTrinhDoChungChiThucHanh.value(chungChiThucHanh.category||'');
+                            this.itemNgayCapChungChiThucHanh.value(chungChiThucHanh.ngayCap||'');
+                            this.itemNoiCapChungChiThucHanh.value(chungChiThucHanh.noiCap||'');
+                            this.itemStateChungChiThucHanh.value(chungChiThucHanh.state||'dangKiemTra');
                         } else {
                             this.props.history.push('/user/teacher');
                         }
@@ -154,25 +177,6 @@ class TeacherInfoPage extends AdminPage {
         this.props.getTeacherCertificationAll({teacher:_teacherId?_teacherId:this.state._teacherId});
     }
 
-    saveChuyenMon = () => {
-        const data = {
-            trinhDo: this.itemTrinhDo.value(),
-            chuyenNganh: this.itemChuyenNganh.value(),
-            ngayCap: this.itemNgayCap.value(),
-            noiCap: this.itemNoiCap.value(),
-            congVanDen: this.itemCongVanDen.value(),
-            congVanDi: this.itemCongVanDi.value(),
-            state:this.itemStateChuyenMon.value(),
-            // lyDo:this.itemStateChuyenMon.value()=='khongHopLe'?this.itemLyDoChuyenMon.value():'',
-        };
-        if(data.state=='khongHopLe' && data.lyDo==''){
-            T.notify('Lý do không được trống!', 'danger');
-            this.itemLyDoChuyenMon.focus();
-        }else{
-            this.props.updateTeacher(this.state._id, {trinhDoChuyenMon:data});
-        }
-    }
-
     edit = (e, item) => e.preventDefault() || this.modal.show(item);
     deleteChungChi = (e, item) => e.preventDefault() || T.confirm('Chứng chỉ giáo viên', 'Bạn có chắc bạn muốn xoá chứng chỉ này không?', 'warning', true, isConfirm =>
         isConfirm && this.props.deleteTeacherCertification(item._id, ()=>this.onSearch({})));
@@ -184,7 +188,44 @@ class TeacherInfoPage extends AdminPage {
         //     this.inVaildModal.show(data=>this.props.updateTeacherCertification(item._id, { state,...data },()=>this.onSearch({})));
         // }
         this.props.updateTeacherCertification(item._id, { state },()=>this.onSearch({}));
-    } 
+    }
+
+    // save data
+    
+    saveChuyenMon = () => {
+        const data = {
+            trinhDo: this.itemTrinhDo.value(),
+            chuyenNganh: this.itemChuyenNganh.value(),
+            ngayCap: this.itemNgayCap.value(),
+            noiCap: this.itemNoiCap.value(),
+            congVanDen: this.itemCongVanDen.value(),
+            congVanDi: this.itemCongVanDi.value(),
+            state:this.itemStateChuyenMon.value(),
+        };
+        this.props.updateTeacher(this.state._id, {trinhDoChuyenMon:data});
+    }
+
+    saveGplx = ()=>{
+        const data = {
+            category: this.itemHangGplx.value(),
+            soGplx: this.itemSoGplx.value(),
+            ngayCap: this.itemNgayCapGplx.value(),
+            noiCap: this.itemNoiCapGplx.value(),
+            ngayTrungTuyen: this.itemNgayTrungTuyen.value(),
+            state:this.itemStateGplx.value(),
+        };
+        this.props.updateTeacher(this.state._id, {giayPhepLaiXe:data});
+    }
+
+    saveChungChiThucHanh = ()=>{
+        const data = {
+            category: this.itemHangChungChiThucHanh.value(),
+            ngayCap: this.itemNgayCapChungChiThucHanh.value(),
+            noiCap: this.itemNoiCapChungChiThucHanh.value(),
+            state:this.itemStateChungChiThucHanh.value(),
+        };
+        this.props.updateTeacher(this.state._id, {chungChiThucHanh:data});
+    }
 
     render() {
         const permission = this.props.permission;
@@ -263,10 +304,39 @@ class TeacherInfoPage extends AdminPage {
 
                 <div className='tile'>
                     <div className="tile-title">Giấy phép lái xe</div>
+
+                    <div className="tile-body">
+                        <div className='row'>
+                            <FormSelect className='col-md-4' ref={e => this.itemHangGplx = e} label='Hạng GPLX' data={this.state.licences} multiple={true} readOnly={readOnly} />
+                            <FormTextBox className='col-md-4' ref={e => this.itemSoGplx = e} label='Số GPLX' readOnly={readOnly} />
+                            <FormDatePicker className='col-md-4' ref={e => this.itemNgayCapGplx = e} label='Ngày cấp' readOnly={readOnly} type='date-mask' />
+                            <FormTextBox className='col-md-4' ref={e => this.itemNoiCapGplx = e} label='Nơi cấp' readOnly={readOnly}  />
+                            <FormDatePicker className='col-md-4' ref={e => this.itemNgayTrungTuyen = e} label='Ngày trúng tuyển' readOnly={readOnly} type='date-mask' />
+                            <FormSelect className='col-md-4' ref={e => this.itemStateGplx = e} label='Trạng thái' data={states} readOnly={readOnly} />
+                        
+                        </div>
+                    </div>
+
+                    <div className="tile-footer" style={{textAlign:'right'}}>
+                    <button className='btn btn-primary' type='button' onClick={this.saveGplx}>Lưu</button>
+                    </div>
                 </div>
 
                 <div className='tile'>
                     <div className="tile-title">Chứng chỉ thực hành</div>
+                    <div className="tile-body">
+                        <div className='row'>
+                            <FormSelect className='col-md-6' ref={e => this.itemTrinhDoChungChiThucHanh = e} label='Trình độ' data={this.state.licences} multiple={true} readOnly={readOnly} />
+                            <FormDatePicker className='col-md-6' ref={e => this.itemNgayCapChungChiThucHanh = e} label='Ngày cấp' readOnly={readOnly} type='date-mask' />
+                            <FormTextBox className='col-md-6' ref={e => this.itemNoiCapChungChiThucHanh = e} label='Nơi cấp' readOnly={readOnly}  />
+                            <FormSelect className='col-md-6' ref={e => this.itemStateChungChiThucHanh= e} label='Trạng thái' data={states} readOnly={readOnly} />
+                        
+                        </div>
+                    </div>
+
+                    <div className="tile-footer" style={{textAlign:'right'}}>
+                    <button className='btn btn-primary' type='button' onClick={this.saveGplx}>Lưu</button>
+                    </div>
                 </div>
 
                 <CertificationModal ref={e => this.modal = e} readOnly={!permission.write} certifications={this.state.certifications}

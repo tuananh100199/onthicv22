@@ -10,6 +10,10 @@ export default {
     },
     routes: [
         {
+            path: '/user/gplx/category',
+            component: Loadable({ loading: Loading, loader: () => import('./adminGplxCategoryPage') }),
+        },
+        {
             path: '/user/contract/category',
             component: Loadable({ loading: Loading, loader: () => import('./adminContractCategoryPage') }),
         },
