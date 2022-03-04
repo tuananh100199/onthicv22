@@ -61,9 +61,9 @@ class EditCoursePage extends AdminPage {
                     <PageIcon visible={!item.isDefault && (isLecturer && !isCourseAdmin)} to={`/user/course/${item._id}/lecturer/calendar`} icon='fa-calendar' iconBackgroundColor='#3e24aa' text='Thời khoá biểu' />
                     <PageIcon visible={!item.isDefault && (isLecturer && !isCourseAdmin)} to={`/user/course/${item._id}/lecturer/register-calendar`} icon='fa-calendar-plus-o' iconBackgroundColor='#8d74aa' text='Đăng ký lịch nghỉ' />
                     <PageIcon visible={!item.isDefault && (isLecturer && !isCourseAdmin)} to={`/user/course/${item._id}/lecturer/student-register-calendar`} icon='fa fa-list-alt' iconBackgroundColor='#4e25a2' text='Danh sách lịch học học viên đăng ký' />
-                    <PageIcon visible={!item.isDefault && (isCourseAdmin||permissionTimeTable.read)} to={`/user/course/${item._id}/calendar`} icon='fa-calendar' iconBackgroundColor='#64b5f6' text='Thời khoá biểu toàn khoá' />
-                    <PageIcon visible={!item.isDefault && (isCourseAdmin||permissionTimeTable.read)} to={`/user/course/${item._id}/register-calendar`} icon='fa-calendar-plus-o' iconBackgroundColor='#8d74aa' text='Lịch nghỉ giáo viên' />
-                    <PageIcon visible={!item.isDefault && (isCourseAdmin||permissionTimeTable.read)} to={`/user/course/${item._id}/student-register-calendar`} icon='fa fa-list-alt' iconBackgroundColor='#4e25a2' text='Danh sách lịch học học viên đăng ký' />
+                    <PageIcon visible={!item.isDefault && (isCourseAdmin||permissionTimeTable.read) && !isLecturer} to={`/user/course/${item._id}/calendar`} icon='fa-calendar' iconBackgroundColor='#64b5f6' text='Thời khoá biểu toàn khoá' />
+                    <PageIcon visible={!item.isDefault && (isCourseAdmin||permissionTimeTable.read) && !isLecturer} to={`/user/course/${item._id}/register-calendar`} icon='fa-calendar-plus-o' iconBackgroundColor='#8d74aa' text='Lịch nghỉ giáo viên' />
+                    <PageIcon visible={!item.isDefault && (isCourseAdmin||permissionTimeTable.read) && !isLecturer} to={`/user/course/${item._id}/student-register-calendar`} icon='fa fa-list-alt' iconBackgroundColor='#4e25a2' text='Danh sách lịch học học viên đăng ký' />
                     {/* <PageIcon visible={permission.delete} to={`/user/course/${item._id}/photo`} icon='fa-camera' iconBackgroundColor='#900' text='Theo dõi' /> */}
                 </div>
             ),
