@@ -73,9 +73,11 @@ class SectionAdvisoryForm extends React.Component {
         if (this.lastname) this.lastname.value = lastname;
         if (this.email) this.email.value = email;
         if (this.phoneNumber) this.phoneNumber.value = phoneNumber || '';
-
+        const autoActive = this.props.autoActive||false;
         return (
-            <div className='advisory'>
+            // <div className='advisory'>
+            <div className={`advisory ${autoActive?'active':''}`}>
+            
                 {/* <div className='intro_col'> */}
                     <div className='advisory_form_container'>
                         <div className='intro_form_title'>Đăng ký tư vấn</div>
