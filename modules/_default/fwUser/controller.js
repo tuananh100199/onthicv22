@@ -6,16 +6,16 @@ module.exports = app => {
         },
     };
 
-    const menuLecturer = {
-        parentMenu: app.parentMenu.enrollment,
-        menus: {
-            8050: { title: 'Quản lý giáo viên', link: '/user/manage-lecturer', icon: 'fa-bars', backgroundColor: '#00b0ff' }
-        }
-    };
+    // const menuLecturer = {
+    //     parentMenu: app.parentMenu.enrollment,
+    //     menus: {
+    //         8050: { title: 'Quản lý giáo viên', link: '/user/manage-lecturer', icon: 'fa-bars', backgroundColor: '#00b0ff' }
+    //     }
+    // };
 
     app.permission.add(
         { name: 'user:read', menu }, { name: 'user:write' }, { name: 'user:delete' },
-        { name: 'manageLecturer:read', menu: menuLecturer }, { name: 'manageLecturer:write' }, { name: 'manageLecturer:delete' },
+        { name: 'manageLecturer:read' }, { name: 'manageLecturer:write' }, { name: 'manageLecturer:delete' },
     );
 
     ['/registered(.htm(l)?)?', '/active-user/:userId', '/forgot-password/:userId/:userToken'].forEach((route) => app.get(route, app.templates.home));

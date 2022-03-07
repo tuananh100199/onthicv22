@@ -72,7 +72,7 @@ class AdminTeacherRatePage extends AdminPage {
                         getPage={this.props.getRatePageByAdmin} />
                 </div>
             ),
-            backRoute: '/user/manage-lecturer',
+            backRoute: '/user/teacher',
         });
     }
 }
