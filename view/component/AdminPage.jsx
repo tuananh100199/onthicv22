@@ -6,6 +6,7 @@ import Editor from 'view/component/CkEditor4';
 import Datetime from 'react-datetime';
 import InputMask from 'react-input-mask';
 import NumberFormat from 'react-number-format';
+import Dropdown from 'view/component/Dropdown';
 import 'react-datetime/css/react-datetime.css';
 
 // Table components ---------------------------------------------------------------------------------------------------
@@ -113,21 +114,20 @@ export function renderTable({ style = {},isFilterDropdown=false, className = '',
     }
 }
 
-export class TableHeadCell extends React.Component { // type = number | date | link | image | checkbox | buttons | text (default)
+export class TableHeadCell extends React.Component {
     state = {filterData:{},sortData:{}}
     render() {
-        // const filter = 
-        let { content = '', className = '', style = {}, display = true, rowSpan = 1,filter=null,nowrap='false' } = this.props;
-        const filterDisplay = filter && filter.length?(
-            <div className="dropdown" style={{display:'inline-block'}}>
-                <button className="btn btn-link dropdown-toggle" style={{padding:'0',paddingLeft:'10px'}} type="button" id="dropdownMenu2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                </button>
-                <div className="dropdown-menu" aria-labelledby="dropdownMenu2" style={{zIndex:100}}>
-                    {filter.map((item,index)=><button key={index} className="dropdown-item" type="button">{item.text}</button>)}
-                </div>
+        // const filter = [{id:...,text:...}]
+        let { content = '', className = '', style = {}, display = true, rowSpan = 1,filter=null,onChange=null,nowrap='false',allowClear=false } = this.props;
+        const filterDisplay = filter && filter.length?(<>
+            <Dropdown items={filter} onSelected={e => this.setState({isSeletedValue:true},()=>onChange(e ?e.id: null)) } allowClear={allowClear} />
+            
+        </>) :null;
+        return display?<th className={className} style={{ ...style }} nowrap={nowrap} rowSpan={rowSpan}>
+            <div className='d-flex align-items-center'>
+                <span className='mr-2'>{content}</span> {filterDisplay}
             </div>
-        ) :null;
-        return display?<th className={className} style={{ ...style }} nowrap={nowrap} rowSpan={rowSpan}>{content} {filterDisplay}</th>:null;
+            </th>:null;
     }
 }
 
