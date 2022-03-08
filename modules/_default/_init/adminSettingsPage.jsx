@@ -5,7 +5,7 @@ import QRCode from 'react-qr-code';
 import { AdminPage, FormTextBox, FormImageBox,FormCheckbox } from 'view/component/AdminPage';
 
 class SettingsPage extends AdminPage {
-    state = {};
+    state = {showQr:false};
 
     componentDidMount() {
         T.ready(() => {
@@ -68,6 +68,24 @@ class SettingsPage extends AdminPage {
         });
     }
 
+    regenerateQr = (e) => e.preventDefault() || T.confirm('Đổi QR Code', 'Bạn có chắc muốn đổi QR Code không?', true, isConfirm =>
+        isConfirm && this.props.saveSystemState({smsAPIToken:''},data=>{
+            this.setState({smsAPIToken:data.smsAPIToken});
+        }));
+
+    handleShowQr = ()=>{
+        const showQr = this.state.showQr;
+        if(showQr){
+            $('#qrCodeCollapse').collapse('hide');
+        }else{
+            //show
+            $('#qrCodeCollapse').collapse('show');
+
+        }
+
+        this.setState({showQr:!showQr});
+    }
+
     render() {
         const permission = this.getUserPermission('system', ['settings']);
         const readOnly = !permission.settings;
@@ -99,10 +117,24 @@ class SettingsPage extends AdminPage {
                         </div>
 
                         <div className='tile'>
-                            <h3 className='tile-title'>SMS</h3>
+                            <div className='tile-title'>
+                                <div className="d-flex justify-content-between align-items-center">
+                                    <h3>SMS</h3>
+                                    <button className='btn btn-link' type='button' onClick={this.handleShowQr}>
+                                        {this.state.showQr?'Hide':'Show'}
+                                    </button>
+                                </div>
+                            
+                            </div>
                             <div className='tile-body'>
-                            <p>API Token QR Code</p>
-                            {this.state.smsAPIToken ? <QRCode value={this.state.smsAPIToken} size={200}/>: null}
+                                <div className="collapse" id="qrCodeCollapse">
+                                    <p>API Token QR Code</p>
+                                    <div className="d-flex align-items-center">
+                                    {this.state.smsAPIToken ? <QRCode value={this.state.smsAPIToken} size={200}/>: null}
+                                    {this.state.smsAPIToken ? <i className="fa fa-refresh text-primary ml-4" aria-hidden="true" onClick={this.regenerateQr} style={{cursor:'pointer',fontSize:48}}></i>: null}
+                                    
+                                    </div>
+                                </div>
                             </div>
                         </div>
 
