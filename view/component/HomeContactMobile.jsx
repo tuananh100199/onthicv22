@@ -3,7 +3,6 @@ import { connect } from 'react-redux';
 import { getAllDivisionByUser } from 'modules/mdDaoTao/fwDivision/redux';
 import 'modules/_default/fwHome/style.css';
 import CandidateModal from 'modules/mdDaoTao/fwCandidate/homeCandidateModal';
-
 class HomeContactMobile extends React.Component {
     componentDidMount() {
         this.props.getAllDivisionByUser();
@@ -12,7 +11,8 @@ class HomeContactMobile extends React.Component {
     showCandidateModal = (e) => e.preventDefault() || this.candidateModal.show();
 
     render() {
-        const {mobile} = this.props.system||{};
+        const {mobile,activeZalo,zaloId} = this.props.system||{};
+        const isActiveZalo = activeZalo && activeZalo!='0';
         return (
             <>
             <div className='home-contact'>
@@ -23,11 +23,13 @@ class HomeContactMobile extends React.Component {
                     <a href='#' className='home-contact-button' onClick = {this.showCandidateModal}>
                     <i className="fa fa-comments-o" aria-hidden="true"></i><span>Đăng ký tư vấn</span>
                     </a>
-
-                    <a href='#' className='home-contact-button' onClick = {e=> e.preventDefault() || console.log('connect zalo')}>
-                        <i className="fa fa-comment zalo-icon" aria-hidden="true"></i>
-                        <span>Zalo</span>
-                    </a>
+                    {isActiveZalo?
+                        <a href={`https://zalo.me/${zaloId}`} rel="noreferrer" target="_blank" className='home-contact-button'>
+                            <i className="fa fa-comment zalo-icon" aria-hidden="true"></i>
+                            <span>Zalo</span>
+                        </a>
+                    :null}
+                    
                     <div>
                     </div>
                 </div>                        
