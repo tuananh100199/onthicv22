@@ -32,9 +32,10 @@ export default class Dropdown extends React.Component {
     getSelectedItem = () => this.state.selectedItem ? this.state.selectedItem : {};
 
     render() {
-        let { className = '', style = {}, menuStyle = {}, textStyle = {}, items = [], selectedItem = null,allowClear=false } = this.props;
+        let { className = '', style = {}, menuStyle = {}, textStyle = {}, items = [], selectedItem = null,allowClear=false, menuClassName='' } = this.props;
         if (items == null) items = [];
         className += ' dropdown-toggle';
+        menuClassName='dropdown-menu '+menuClassName;
         if (this.state.selectedItem) selectedItem = this.state.selectedItem;
         if (selectedItem == null) selectedItem = { value: '', text: '' };
 
@@ -44,7 +45,7 @@ export default class Dropdown extends React.Component {
                     {typeof selectedItem == 'string' && selectedItem != '' ? selectedItem : (selectedItem.text || this.props.text || this.props.emptyText || '')}
                 </a>
                 {allowClear && this.state.isSeleted?<i className='fa fa-times ml-1 text-danger' onClick = {this.clear} style={{cursor:'pointer'}} aria-hidden="true"></i>:null}
-                <div className='dropdown-menu' style={{ maxHeight: '85vh', overflowY: 'auto', ...menuStyle }}>
+                <div className={menuClassName} style={{ maxHeight: '85vh', overflowY: 'auto', ...menuStyle }}>
                     {items.map((item, index) =>
                         <a key={index} className='dropdown-item' href='#' onClick={e => e.preventDefault() || this.select(item)}>
                             {item.text ? item.text : item}

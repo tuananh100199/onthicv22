@@ -120,7 +120,7 @@ export class TableHeadCell extends React.Component {
         // const filter = [{id:...,text:...}]
         let { content = '', className = '', style = {}, display = true, rowSpan = 1,filter=null,onChange=null,nowrap='false',allowClear=false } = this.props;
         const filterDisplay = filter && filter.length?(<>
-            <Dropdown items={filter} onSelected={e => this.setState({isSeletedValue:true},()=>onChange(e ?e.id: null)) } allowClear={allowClear} />
+            <Dropdown items={filter} onSelected={e => this.setState({isSeletedValue:true},()=>onChange(e ?e.id: null)) } allowClear={allowClear} menuClassName='dropdown-menu-right' />
             
         </>) :null;
         return display?<th className={className} style={{ ...style }} nowrap={nowrap} rowSpan={rowSpan}>
