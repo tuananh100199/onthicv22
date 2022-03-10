@@ -1,11 +1,12 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { getTeacherPage,createTeacher,updateTeacher,deleteTeacher } from './redux';
-import { AdminPage, AdminModal,FormDatePicker,FormSelect, FormTextBox, TableCell, renderTable, FormRichTextBox } from 'view/component/AdminPage';
+import { AdminPage, AdminModal,FormDatePicker,FormSelect, FormTextBox, TableCell, renderTable, FormRichTextBox, FormCheckbox } from 'view/component/AdminPage';
 import Pagination from 'view/component/Pagination';
 import { ajaxSelectDivision,getDivisionAll } from 'modules/mdDaoTao/fwDivision/redux';
 import { Link } from 'react-router-dom';
 import { getCategoryAll } from 'modules/_default/fwCategory/redux';
+import { ajaxSelectCourseType } from 'modules/mdDaoTao/fwCourseType/redux';
 class StaffInfoModal extends AdminModal {
     state = {};
     componentDidMount() {
@@ -13,8 +14,8 @@ class StaffInfoModal extends AdminModal {
     }
 
     onShow = (item) => {
-        const { _id, maGiaoVien, firstname, lastname,sex, birthday,  identityCard, division,chungChiSuPham} = item || 
-        {_id:null,firstname:'',lastname:'',birthday:'',sex:null,division:null,identityCard:'',chungChiSuPham};
+        const { _id, maGiaoVien, firstname, lastname,sex, birthday,  identityCard, division,chungChiSuPham,dayLyThuyet,courseTypes} = item || 
+        {_id:null,firstname:'',lastname:'',birthday:'',sex:null,division:null,identityCard:'',chungChiSuPham,dayLyThuyet:false,courseTypes:[]};
 
         this.itemMaGiaoVien.value(maGiaoVien||'');
         this.itemFirstname.value(firstname || '');
@@ -23,6 +24,9 @@ class StaffInfoModal extends AdminModal {
         this.itemIdentityCard.value(identityCard || '');
         this.itemSex.value(sex ? sex : 'male');
         this.itemDivision.value(division ? { id: division._id, text: division.title } : null);
+        this.itemDayLyThuyet.value(dayLyThuyet);
+        this.itemDayThucHanh.value(!dayLyThuyet);
+        this.itemCourseTypes.value(courseTypes);
         this.setState({ _id });
     }
 
@@ -41,6 +45,8 @@ class StaffInfoModal extends AdminModal {
             identityDate:this.itemIdentityDate.value(),
             regularResidence:this.itemRegularResidence.value(),
             residence:this.itemResidence.value(),
+            dayLyThuyet:this.itemDayLyThuyet.value()?1:0,
+            courseTypes:this.itemCourseTypes.value(),
         };
         if (data.maGiaoVien == '') {
             T.notify('Mã giáo viên không được trống!', 'danger');
@@ -71,6 +77,8 @@ class StaffInfoModal extends AdminModal {
         }
     }
 
+    handleChange = value=>this.itemDayLyThuyet.value(value)||this.itemDayThucHanh.value(!value);
+
     // eslint-disable-next-line no-unused-vars
 
     render = () => {
@@ -91,6 +99,10 @@ class StaffInfoModal extends AdminModal {
                 <FormTextBox className='col-md-4' ref={e => this.itemIdentityCard = e} label='CMND/CCCD' readOnly={readOnly}  />
                 <FormDatePicker className='col-md-4' ref={e => this.itemIdentityDate = e} label='Ngày cấp' readOnly={readOnly}  />
                 <FormTextBox className='col-md-4' ref={e => this.itemIdentityCardIssuedBy = e} label='Nơi cấp' readOnly={readOnly} required />
+                <FormCheckbox className='col-md-3' ref={e => this.itemDayLyThuyet = e} isSwitch={true} label='Dạy lý thuyết' readOnly={readOnly} onChange={active => this.handleChange(active)} />
+                <FormCheckbox className='col-md-3' ref={e => this.itemDayThucHanh = e} isSwitch={true} label='Dạy thực hành' readOnly={readOnly} onChange={active => this.handleChange(!active)} />
+                <FormSelect className='col-md-6' ref={e => this.itemCourseTypes = e} label='Danh sách loại khóa học' data={ajaxSelectCourseType} multiple={true} readOnly={readOnly} />
+                
                 <FormRichTextBox className='col-md-6' ref={e => this.itemRegularResidence = e} label='Địa chỉ thường trú' readOnly={readOnly} rows='2'/>
                 <FormRichTextBox className='col-md-6' ref={e => this.itemResidence = e} label='Chỗ ở hiện tại' readOnly={readOnly} rows='2'/>
             </div >
@@ -129,7 +141,10 @@ class AdminTeacherPage extends AdminPage {
     
     delete = (e, item) => e.preventDefault() || T.confirm('Xóa thông tin giáo viên', 'Bạn có chắc bạn muốn xóa thông tin giáo viên này?', true, isConfirm =>
         isConfirm && this.props.deleteTeacher(item._id));
-
+    
+    renderListCourse = courses=>(<>
+        {courses.map((course,index)=><p style={{marginBottom:0}} key={index}>{course.name}</p>)}
+    </>)
     render() {
         const permission = this.getUserPermission('teacher');
         const { pageNumber, pageSize, pageTotal, totalItem,list } = this.props.teacher && this.props.teacher.page ?
@@ -145,24 +160,32 @@ class AdminTeacherPage extends AdminPage {
                     <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Thông tin liên lạc</th>
                     <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Ngày sinh</th>
                     <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Cơ sở đào tạo</th>
+                    <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Loại giáo viên</th>
+                    <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Loại khóa học</th> 
+                    <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Khóa học đang dạy</th> 
                     <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Thao tác</th>
                 </tr>),
-            renderRow: (item, index) => (
-                <tr key={index}>
-                    <TableCell type='number' content={(pageNumber - 1) * pageSize+ index + 1} />
-                    <TableCell  content={item.maGiaoVien} />
-                    <TableCell type='link' content={<>{`${item.lastname} ${item.firstname}`} <br /> {item.identityCard}</>} url={'/user/teacher/' + item._id} />
-                    <TableCell  content={<>{item.email}<br/> {item.phoneNumber}</>} />
-                    <TableCell  content={item.birthday ? T.dateToText(item.birthday, 'dd/mm/yyyy') : ''} />
-                    <TableCell  style={{whiteSpace:'nowrap'}} content={item.division? item.division.title:''} />
-                    <TableCell type='buttons' content={item} permission={permission} onEdit={'/user/teacher/' + item._id} onDelete={this.delete}>
-                    <Link className='btn btn-warning' to={`/user/manage-lecturer/${item.user._id}/rating`}>
-                    <i className="fa fa-star" aria-hidden="true"></i>
-
-                        </Link>
-
-                    </TableCell>
-                </tr>),
+            renderRow: (item, index) =>{
+                return (
+                    <tr key={index}>
+                        <TableCell type='number' content={(pageNumber - 1) * pageSize+ index + 1} />
+                        <TableCell  content={item.maGiaoVien} />
+                        <TableCell type='link' content={<>{`${item.lastname} ${item.firstname}`} <br /> {item.identityCard}</>} url={'/user/teacher/' + item._id} />
+                        <TableCell  content={<>{item.email}<br/> {item.phoneNumber}</>} />
+                        <TableCell  content={item.birthday ? T.dateToText(item.birthday, 'dd/mm/yyyy') : ''} />
+                        <TableCell  style={{whiteSpace:'nowrap'}} content={item.division? item.division.title:''} />
+                        <TableCell  content={item.dayLyThuyet?'GV lý thuyết':'GV thực hành'} />
+                        <TableCell  content={item.courseTypes && item.courseTypes.length ? item.courseTypes.reduce((result,item)=> result+(result!=''?(', '+item.title):item.title),''):'chưa có'} />
+                        {/* <TableCell  content={item.courses && item.courses.length ? item.courses.reduce((result,item)=> result+(result!=''?('\n'+item.name):item.name),''):'chưa có'} /> */}
+                        <TableCell  content={item.courses && item.courses.length ? this.renderListCourse(item.courses):'chưa có'} />
+                        
+                        <TableCell type='buttons' content={item} permission={permission} onEdit={'/user/teacher/' + item._id} onDelete={this.delete}>
+                            <Link className='btn btn-warning' to={`/user/manage-lecturer/${item.user._id}/rating`}>
+                                <i className="fa fa-star" aria-hidden="true"></i>
+                            </Link>
+                        </TableCell>
+                    </tr>);
+            } ,
         });
 
         return this.renderPage({

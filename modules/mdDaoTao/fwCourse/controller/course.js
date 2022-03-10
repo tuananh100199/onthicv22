@@ -349,21 +349,21 @@ module.exports = (app) => {
 
     //Teacher API
     app.put('/api/course/teacher-group/teacher', app.permission.check('course:write'), (req, res) => {
-        const { _courseId, _teacherId, type } = req.body;
+        const { _courseId,_teacherUserId, type } = req.body;
         new Promise((resolve, reject) => {
             if (type == 'add') {
-                app.model.course.addTeacherGroup(_courseId, _teacherId, error => error ? reject(error) :
+                app.model.course.addTeacherGroup(_courseId, _teacherUserId, error => error ? reject(error) :
                     app.model.course.get(_courseId, (error, course) => {
                         if (error || !course) reject(error);
                         else {
                             const courseType = course.courseType;
-                            app.model.car.get({ user: _teacherId, courseType: courseType._id }, (error, item) => {
+                            app.model.car.get({ user: _teacherUserId, courseType: courseType._id }, (error, item) => {
                                 if (error) {
                                     reject(error);
                                 } else if (!item || item.status == 'daThanhLy') {
                                     resolve();
                                 } else {
-                                    app.model.car.addCourseHistory({ _id: item._id }, { course: course._id, user: _teacherId }, error => {
+                                    app.model.car.addCourseHistory({ _id: item._id }, { course: course._id, user: _teacherUserId }, error => {
                                         if (error) reject(error);
                                         else app.model.car.update({ _id: item._id }, { currentCourseClose: course.close }, error => error ? reject(error) : resolve());
                                     });
@@ -373,8 +373,8 @@ module.exports = (app) => {
                     })
                 );
             } else if (type == 'remove') {
-                app.model.course.removeTeacherGroup(_courseId, _teacherId, error => error ? reject(error) :
-                    app.model.car.get({ user: _teacherId }, (error, item) => {
+                app.model.course.removeTeacherGroup(_courseId, _teacherUserId, error => error ? reject(error) :
+                    app.model.car.get({ user: _teacherUserId }, (error, item) => {
                         if (error) {
                             reject(error);
                         } else if (!item || item.status == 'daThanhLy') {
@@ -390,11 +390,27 @@ module.exports = (app) => {
             } else {
                 reject('Dữ liệu không hợp lệ!');
             }
-        }).then(() => getCourseData(_courseId, req.session.user, (error, item) => {
-            error = error || (item ? null : 'Lỗi khi cập nhật khóa học!');
-            item = item || null;
-            res.send({ error, item });
-        })).catch(error => console.error(error) || res.send({ error }));
+        }).then(() => new Promise((resolve,reject)=>{
+            getCourseData(_courseId, req.session.user, (error, item) => {
+                error = error || (item ? null : 'Lỗi khi cập nhật khóa học!');
+                item = item || null;
+                error?reject(error):resolve(item);
+            });
+        })).then((item) => {
+            // thêm khóa học cho giáo viên.
+            app.model.teacher.get({user:_teacherUserId},(error,teacher)=>{
+                if(error) res.send({error});
+                else if(!teacher) res.send({item});
+                else{
+                    if(type=='add'){
+                        app.model.teacher.addCourse(teacher._id,_courseId,(error)=>res.send({error,item}));
+                    }else{
+                        app.model.teacher.deleteCourse(teacher._id,_courseId,(error)=>res.send({error,item}));
+                    }
+                }
+            });
+            
+        }).catch(error => console.error(error) || res.send({ error }));
     });
 
     app.put('/api/course/teacher-group/student', app.permission.check('course:write'), (req, res) => {

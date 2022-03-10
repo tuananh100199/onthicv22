@@ -234,10 +234,10 @@ export function autoAssignStudent(_courseId, done) {
 }
 
 // Course teacherGroups -----------------------------------------------------------------------------------------------
-export function updateCourseTeacherGroup(_courseId, _teacherId, type, done) {
+export function updateCourseTeacherGroup(_courseId,_teacherUserId, type, done) {
     return dispatch => {
         const url = '/api/course/teacher-group/teacher';
-        T.put(url, { _courseId, _teacherId, type }, data => {
+        T.put(url, { _courseId,_teacherUserId, type }, data => {
             if (data.error) {
                 T.notify('Gán giáo viên bị lỗi!', 'danger');
                 console.error('PUT: ' + url + '.', data.error);

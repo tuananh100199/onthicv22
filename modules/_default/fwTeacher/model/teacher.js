@@ -2,7 +2,10 @@ module.exports = (app) => {
     const schema = app.db.Schema({
         user: { type: app.db.Schema.ObjectId, ref: 'User' },            //user
         division: { type: app.db.Schema.ObjectId, ref: 'Division' },    // Cơ sở đào tạo
-        
+
+        dayLyThuyet:{type:Boolean,default:false},// loại giáo viên. True là giáo viên dạy lý thuyết, false là giáo viên dạy thực hành
+        courseTypes: { type: [{ type: app.db.Schema.Types.ObjectId, ref: 'CourseType' }], default: [] },// danh sách loại khóa học có thể dạy
+        courses: { type: [{ type: app.db.Schema.Types.ObjectId, ref: 'Course' }], default: [] },// danh sách các khóa học đang dạy
         // Thông tin chung
         maGiaoVien:String,
         firstname: String,
@@ -92,7 +95,9 @@ module.exports = (app) => {
         },
 
         get: (condition, done) =>(typeof condition == 'object' ? model.findOne(condition) : model.findById(condition))
-            .populate('user', '-password').populate('division', ' _id title isOutside').populate('chungChiSuPham','_id title').exec(done),
+            .populate('user', '-password').populate('division', ' _id title isOutside')
+            .populate('chungChiSuPham','_id title').populate('courseTypes','_id title').populate('courses','_id name')
+            .exec(done),
 
         getPage: (pageNumber, pageSize, condition, done) => model.countDocuments(condition, (error, totalItem) => {
             if (error) {
@@ -104,6 +109,7 @@ module.exports = (app) => {
 
                 model.find(condition).sort({department:1,lastname: 1 }).skip(skipNumber).limit(result.pageSize)
                 .populate('user', '-password').populate('division', '_id title').populate('chungChiSuPham','_id title')
+                .populate('courseTypes','_id title').populate('courses','_id name')
                 .exec((error, items) => {
                     result.list = error ? [] : items;
                     done(error, result);
@@ -136,5 +142,12 @@ module.exports = (app) => {
                 item.remove(done);
             }
         }),
+
+        addCourse: (_id, course, done) => {
+            model.findOneAndUpdate({_id}, { $push: { courses: course } }, { new: true }).populate('courses').exec(done);
+        },
+        deleteCourse: (_id, course, done) => {
+            model.findOneAndUpdate({_id}, { $pull: { courses: course } }, { new: true }).populate('courses').exec(done);
+        },
     };
 };

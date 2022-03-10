@@ -27,23 +27,32 @@ module.exports = (app) => {
             pageSize = parseInt(req.params.pageSize),
             condition=req.query.condition||{},
             pageCondition = { };
-            if (condition.searchText) {
-                const value = { $regex: `.*${condition.searchText}.*`, $options: 'i' };
-                pageCondition['$or'] = [
-                    { firstname: value },
-                    { lastname: value },
-                    { identityCard: value },
-                    { maGiaoVien: value },
-                ];
-            }
-            // filter theo cơ sở
-            if (req.session.user.division && req.session.user.division.isOutside){
-                pageCondition.division = req.session.user.division._id;
-            } 
+        if (condition.searchText) {
+            const value = { $regex: `.*${condition.searchText}.*`, $options: 'i' };
+            pageCondition['$or'] = [
+                { firstname: value },
+                { lastname: value },
+                { identityCard: value },
+                { maGiaoVien: value },
+            ];
+        }
+        // filter theo cơ sở
+        if (req.session.user.division && req.session.user.division.isOutside){
+            pageCondition.division = req.session.user.division._id;
+        }
 
-            app.model.teacher.getPage(pageNumber, pageSize, pageCondition, (error, page) => {
-                res.send({ error, page});
-            });
+        // filter courseTypes
+        if(condition.courseType){
+            pageCondition.courseTypes={$in:[condition.courseType]};
+        }
+        // filter lọc nghỉ việc
+        // if(condition.nghiViec){
+        //   pageCondition.thoiGianLamViec={['nghiViec']:condition.nghiViec=='1'?true:false};
+        // } 
+
+        app.model.teacher.getPage(pageNumber, pageSize, pageCondition, (error, page) => {
+            res.send({ error, page});
+        });
     });
 
     app.get('/api/teacher', app.permission.check('teacher:write'), (req, res) => {
@@ -109,6 +118,7 @@ module.exports = (app) => {
 
     app.put('/api/teacher', app.permission.check('teacher:write'), (req, res) => {
         let { _id, changes } = req.body;
+        if(changes.courseTypes && changes.courseTypes==' ') Object.assign(changes,{courseTypes:[]});
         app.model.teacher.update(_id, changes, (error, item) => res.send({ error, item }));
     });
 
