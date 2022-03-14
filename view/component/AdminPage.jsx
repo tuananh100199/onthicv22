@@ -114,13 +114,65 @@ export function renderTable({ style = {},isFilterDropdown=false, className = '',
     }
 }
 
+export class TableHead extends React.Component {
+    state = {filterData:{}}
+
+    onFilterChange = filter =>this.setState(prevState=>({filterData:{...prevState.filterData,...filter}}),()=>this.props.done && this.props.done({...this.state.filterData}))
+
+    onRemoveFilter = name=>{
+        this.setState(prevState=>{
+            let filterData = prevState.filterData;
+            delete filterData[name];
+            return {filterData};
+        },()=>this.props.done && this.props.done({...this.state.filterData}));
+    }
+
+    childrenWithProps = ()=>React.Children.map(this.props.children, child => {
+        // Checking isValidElement is the safe way and avoids a typescript
+        // error too.
+        if (React.isValidElement(child)) {
+        // map props for children.
+            return React.cloneElement(child, { onFilterChange:this.onFilterChange,onRemoveFilter:this.onRemoveFilter });
+        }
+        return child;
+      });
+    render() {
+        return <tr>
+            {this.childrenWithProps()}
+        </tr>;
+    }
+}
+
+// export class TableHeadCell extends React.Component {
+//     state = {filterData:{},sortData:{}}
+//     componentDidMount=()=>{
+//         console.log('is has onFilterChange: ',this.props.onFilterChange);
+//     }
+//     render() {
+//         // const filter = [{id:...,text:...}]
+//         let { content = '', className = '', style = {}, display = true, rowSpan = 1,filter=null,onChange=null,nowrap='false',allowClear=false } = this.props;
+//         const filterDisplay = filter && filter.length?(<>
+//             <Dropdown items={filter} onSelected={e => this.setState({isSeletedValue:true},()=>onChange(e ?e.id: null)) } allowClear={allowClear} menuClassName='dropdown-menu-right' />
+            
+//         </>) :null;
+//         return display?<th className={className} style={{ ...style }} nowrap={nowrap} rowSpan={rowSpan}>
+//             <div className='d-flex align-items-center'>
+//                 <span className='mr-2'>{content}</span> {filterDisplay}
+//             </div>
+//             </th>:null;
+//     }
+// }
+
 export class TableHeadCell extends React.Component {
-    state = {filterData:{},sortData:{}}
+    state = {}
+
     render() {
         // const filter = [{id:...,text:...}]
-        let { content = '', className = '', style = {}, display = true, rowSpan = 1,filter=null,onChange=null,nowrap='false',allowClear=false } = this.props;
+        let { content = '', className = '', style = {}, display = true, rowSpan = 1,filter=null,nowrap='false',allowClear=true,name='' } = this.props;
         const filterDisplay = filter && filter.length?(<>
-            <Dropdown items={filter} onSelected={e => this.setState({isSeletedValue:true},()=>onChange(e ?e.id: null)) } allowClear={allowClear} menuClassName='dropdown-menu-right' />
+            <Dropdown items={filter} 
+            onSelected={e => this.setState({isSeletedValue:true},()=>e && e.id ? this.props.onFilterChange({[name]:e.id}):this.props.onRemoveFilter(name) )}
+             allowClear={allowClear} menuClassName='dropdown-menu-right' />
             
         </>) :null;
         return display?<th className={className} style={{ ...style }} nowrap={nowrap} rowSpan={rowSpan}>
