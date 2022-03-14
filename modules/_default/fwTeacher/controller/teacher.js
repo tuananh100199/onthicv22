@@ -45,6 +45,14 @@ module.exports = (app) => {
         if(condition.courseType){
             pageCondition.courseTypes={$in:[condition.courseType]};
         }
+
+        if(condition.course){
+            if(condition.course=='null'){
+                pageCondition.courses= [];
+            }else{
+                pageCondition.courses={$in:[condition.course]};
+            }
+        }
         // filter lọc nghỉ việc
         // if(condition.nghiViec){
         //   pageCondition.thoiGianLamViec={['nghiViec']:condition.nghiViec=='1'?true:false};
