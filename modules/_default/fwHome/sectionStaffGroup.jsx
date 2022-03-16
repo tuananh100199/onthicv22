@@ -15,10 +15,10 @@ class SectionStaffGroup extends React.Component {
                     items:1,
                     loop:!single,
                     margin:10,
-                    dots:true,
-                    nav:true,
+                    dots:!single,
+                    nav:!single,
                     navText: ['<i class="fa fa-chevron-left" aria-hidden="true"></i>','<i class="fa fa-chevron-right" aria-hidden="true"></i>'],
-                    autoplay: false,
+                    autoplay: !single,
                     autoplayTimeout:3000,
                     autoplayHoverPause: true,
                     slideTransition:'0.5s linear'
@@ -187,7 +187,7 @@ class SectionStaffGroup extends React.Component {
                                         <blockquote>
                                             <p>&ldquo;{staff.description}&rdquo;</p>
                                         </blockquote>
-                                        <div style={{textAlign:'center'}}>
+                                        <div className='button-wrap'>
                                             <a href='#' className="link_watch_more text-white">XEM THÊM</a>
                                         </div> 
                                     </div>
