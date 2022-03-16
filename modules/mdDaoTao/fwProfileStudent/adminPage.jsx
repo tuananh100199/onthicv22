@@ -58,7 +58,7 @@ class ProfileStudentPage extends AdminPage {
         const { pageNumber, pageSize, pageTotal, totalItem, list } = this.props.profileStudent && this.props.profileStudent.page ?
             this.props.profileStudent.page : { pageNumber: 1, pageSize: 50, pageTotal: 1, totalItem: 0 };
         const table = renderTable({
-            getDataSource: () => list, stickyHead: true,isFilterDropdown:true,
+            getDataSource: () => list, stickyHead: true,autoDisplay:true,
         renderHead: () => (
             <TableHead done = {this.handleChangeFilter}>
                 <th style={{ width: 'auto', textAlign: 'center' }}>#</th>

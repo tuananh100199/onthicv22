@@ -81,7 +81,7 @@ export class TableCell extends React.Component { // type = number | date | link 
     }
 }
 
-export function renderTable({ style = {},isFilterDropdown=false, className = '', getDataSource = () => null, loadingText = 'Đang tải...', emptyTable = 'Chưa có dữ liệu!', stickyHead = false,
+export function renderTable({ style = {},autoDisplay=false, className = '', getDataSource = () => null, loadingText = 'Đang tải...', emptyTable = 'Chưa có dữ liệu!', stickyHead = false,
     renderHead = () => null, renderRow = () => null, header = 'thead-dark' }) {
     const list = getDataSource();
     if (list == null) {
@@ -94,7 +94,7 @@ export function renderTable({ style = {},isFilterDropdown=false, className = '',
                 </div>
                 <h3 className='l-text'>{loadingText}</h3>
             </div>);
-    } else if (list.length || isFilterDropdown) {
+    } else if (list.length || autoDisplay) {
         const table = (
             <table className={'table table-hover table-bordered table-responsive ' + className} style={{ margin: 0, ...style }}>
                 <thead className={header}>{renderHead()}</thead>
