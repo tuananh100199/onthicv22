@@ -155,11 +155,10 @@ class StaffGroupEditPage extends AdminPage {
 
                 <div className='tile'>
                     <h3 className='tile-title'>Danh sách nhân viên</h3>
-                    <div>Tối đa 4 người</div>
                     <div className='tile-body'>
                         {table}
                         {permission.write &&
-                            <div style={{ display: list && list.length == 4 && 'none', textAlign: 'right' }}>
+                            <div style={{ textAlign: 'right' }}>
                                 <button className='btn btn-success' type='button' onClick={this.create}>
                                     <i className='fa fa-fw fa-lg fa-plus' /> Thêm
                                 </button>

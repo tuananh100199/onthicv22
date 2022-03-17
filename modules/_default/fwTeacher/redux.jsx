@@ -69,7 +69,6 @@ export function getTeacher(_id, done) {
         } else {
             dispatch({ type: TeacherGetItem, item: data.item });
             done && done(data.item);
-        
         }
     });
 }
@@ -263,3 +262,20 @@ export function ajaxGetTeacher(_id, done) {
     const url = '/api/teacher';
     T.get(url, { _id }, done, error => console.error(error) || T.notify('Lấy thông tin giáo viên bị lỗi!', 'danger'));
 }
+
+export const ajaxSelectTeacherByCourseType = (courseType,nghiViec) => T.createAjaxAdapter(
+    '/api/teacher/page/1/20?',
+    params => { 
+        let condition = {searchText: params.term, courseType };
+        if(nghiViec!=undefined && nghiViec!=null){
+            condition.nghiViec=nghiViec;
+        }
+        return { condition};
+    },
+    response =>{
+        const result = response && response.page && response.page.list ?
+        response.page.list.map(item => ({ id: `${item._id}:${item.user._id}`, text: `${item.lastname} ${item.firstname} ${item.maGiaoVien ? '(' + item.maGiaoVien + ')' : ''}` })) : [];
+        // userId for addTeacher
+        return result;
+    } 
+);

@@ -15,9 +15,13 @@ class SectionStaffGroup extends React.Component {
                     items:1,
                     loop:!single,
                     margin:10,
+                    dots:!single,
+                    nav:!single,
+                    navText: ['<i class="fa fa-chevron-left" aria-hidden="true"></i>','<i class="fa fa-chevron-right" aria-hidden="true"></i>'],
                     autoplay: !single,
                     autoplayTimeout:3000,
                     autoplayHoverPause: true,
+                    slideTransition:'0.5s linear'
                     
                 });
             });
@@ -151,41 +155,47 @@ class SectionStaffGroup extends React.Component {
 
         <div className='section_staff'>
             <div className="container-fluid mobile pt-4">
-                <h3 className='text-title text-white'>{this.state.title}</h3>
+                <h2 className='text-title text-white'>{this.state.title}</h2>
             </div>
             
 
-            <div className="owl-carousel news_carousel carousel_equal_height" id='staffCarousel'>
+            <div className="owl-carousel news_carousel carousel_equal_height carousel_nav carousel_dots" id='staffCarousel'>
             { this.state.items && this.state.items.map((staff, index) => (
                     <div className='container_staff'
                         key={index}>
+                            
+                            
                             <div className='wrapper_staff'>
+                                <div>
+                                    <div className="staff_img">
+                                    <img src={staff.image} alt='Image' className='img-fluid' />
+                                    </div>
+                                </div>
+
                                 <div className="staff_info">
                                     <div className='staff_group_title pc'>
-                                        <h3 className='text-title text-white'>{this.state.title}</h3>
+                                    {/* <p className='text-title text-white text-title-right'>{this.state.title}</p> */}
+                                    <p className='text-white'>{this.state.title}</p>
                                     </div>
                                     <div style={{width:'100%'}}>
-                                        <div className='staff_name' style={{ whiteSpace: 'nowrap' }}><h4>{staff.user.lastname + ' ' + staff.user.firstname}</h4></div>
-                                        <div className='staff_title' style={{ whiteSpace: 'nowrap' }}><h5>{staff.title}</h5></div>
-                                        <div className='strike2'/>
+                                        <div className='staff_title' style={{ whiteSpace: 'nowrap' }}><h3>{staff.title}</h3></div>
+                                        <div className='staff_name' style={{ whiteSpace: 'nowrap' }}><h3 className='text-white'>{staff.user.lastname + ' ' + staff.user.firstname}</h3></div>
+                                        {/* <div className='strike2'/> */}
                                     </div>
                                     
                                     <div className='text'>
                                         <blockquote>
                                             <p>&ldquo;{staff.description}&rdquo;</p>
                                         </blockquote>
+                                        <div className='button-wrap'>
+                                            <a href='#' className="link_watch_more text-white">XEM THÊM</a>
+                                        </div> 
                                     </div>
 
-                                    <div style={{width:'100%'}}>
-                                        <a href='#' className="link_watch_more text-white">Xem thêm</a>
-                                    </div> 
+                                    
                                 </div>
 
-                                <div>
-                                    <div className="staff_img">
-                                    <img src={staff.image} alt='Image' className='img-fluid' />
-                                    </div>
-                                </div>    
+                                    
                                 
                         </div>
                 </div>))}

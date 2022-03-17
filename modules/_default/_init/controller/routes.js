@@ -48,7 +48,7 @@ module.exports = (app) => {
 
     // API ------------------------------------------------------------------------------------------------------------------------------------------
     app.put('/api/system', app.permission.check('system:settings'), (req, res) => {
-        let { emailPassword, email, address, mobile, fax, facebook, youtube, twitter, instagram } = req.body;
+        let { emailPassword, email, address, mobile, fax, facebook, youtube, twitter, instagram,activeZalo,zaloId,smsAPIToken } = req.body;
         if (emailPassword) {
             app.model.setting.set({ emailPassword }, error => {
                 if (error) {
@@ -60,7 +60,6 @@ module.exports = (app) => {
         } else {
             const changes = [];
             email = email ? email.trim() : '';
-
             if (email) changes.push('email', email.trim());
             if (address || address == '') changes.push('address', address.trim() || '');
             if (mobile || mobile == '') changes.push('mobile', mobile.trim() || '');
@@ -69,6 +68,10 @@ module.exports = (app) => {
             if (youtube || youtube == '') changes.push('youtube', youtube.trim() || '');
             if (twitter || twitter == '') changes.push('twitter', twitter.trim() || '');
             if (instagram || instagram == '') changes.push('instagram', instagram.trim() || '');
+            if (instagram || instagram == '') changes.push('instagram', instagram.trim() || '');
+            if (activeZalo || activeZalo == '') changes.push('activeZalo', activeZalo.trim() || '0');
+            if (zaloId || zaloId == '') changes.push('zaloId', zaloId.trim() || '');
+            if(smsAPIToken||smsAPIToken=='') changes.push('smsAPIToken',app.getToken(32));
             app.state.set(...changes, error => {
                 error && console.log('Error when save system state!', error);
                 app.state.get((error, data) => {

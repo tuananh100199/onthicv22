@@ -1,11 +1,11 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { getCourse, updateStudentInfoInCourse, updateCourseTeacherGroup, updateCourseTeacherGroupStudent, updateAutoCourseTeacherGroupStudent, exportTeacherAndStudentToExcel } from '../redux';
-import { ajaxSelectUserType } from 'modules/_default/fwUser/redux';
 import { updateStudent } from 'modules/mdDaoTao/fwStudent/redux';
 import { Link } from 'react-router-dom';
 import { AdminPage, AdminModal, CirclePageButton, FormSelect, FormTextBox, FormCheckbox } from 'view/component/AdminPage';
 import AdminStudentModal from '../adminStudentModal';
+import {ajaxSelectTeacherByCourseType} from 'modules/_default/fwTeacher/redux';
 class AssignModal extends AdminModal {
     state = {};
     componentDidMount() {
@@ -110,10 +110,18 @@ class AdminTeacherPage extends AdminPage {
 
     addTeacher = e => {
         e.preventDefault();
+        // const { _id, teacherGroups = [] } = this.props.course.item,
+        //     _teacherId = this.selectTeacher.value();
+        // if (_teacherId && teacherGroups.find(({ teacher }) => teacher && (teacher._id == _teacherId)) == null) {
+        //     this.props.updateCourseTeacherGroup(_id, _teacherId, 'add', () => this.selectTeacher.value(null));
+        // } else {
+        //     T.notify('Bạn chọn trùng giáo viên', 'danger');
+        // }
+
         const { _id, teacherGroups = [] } = this.props.course.item,
-            _teacherId = this.selectTeacher.value();
-        if (_teacherId && teacherGroups.find(({ teacher }) => teacher && (teacher._id == _teacherId)) == null) {
-            this.props.updateCourseTeacherGroup(_id, _teacherId, 'add', () => this.selectTeacher.value(null));
+            _teacherUserId = this.selectTeacher.value().split(':')[1];
+        if (_teacherUserId && teacherGroups.find(({ teacher }) => teacher && (teacher._id == _teacherUserId)) == null) {
+            this.props.updateCourseTeacherGroup(_id, _teacherUserId, 'add', () => this.selectTeacher.value(null));
         } else {
             T.notify('Bạn chọn trùng giáo viên', 'danger');
         }
@@ -226,8 +234,7 @@ class AdminTeacherPage extends AdminPage {
             currentUser = this.props.system ? this.props.system.user : null,
             permissionTeacherWrite = permission.write || (currentUser && currentUser.isCourseAdmin);
         const isOutsideCourseAdmin = currentUser && currentUser.isCourseAdmin && currentUser.division && currentUser.division.isOutside ? true : false;
-
-        let { _id: _courseId, students, teacherGroups } = this.props.course && this.props.course.item ? this.props.course.item : {};
+        let { _id: _courseId, students, teacherGroups,courseType } = this.props.course && this.props.course.item ? this.props.course.item : {};
         let { searchStudentText, outsideStudentVisible, sortType, assignedButtonVisible } = this.state,
             studentList = [], assignedStudents = [];
         outsideStudentVisible = outsideStudentVisible || isOutsideCourseAdmin;
@@ -330,7 +337,8 @@ class AdminTeacherPage extends AdminPage {
                             <div style={{ borderWidth: 1, borderStyle: 'solid', borderColor: '#ddd', borderRadius: 5, padding: 12 }}>
                                 <label>Tìm kiếm giáo viên</label>
                                 <div style={{ display: permissionTeacherWrite ? 'flex' : 'none' }}>
-                                    <FormSelect ref={e => this.selectTeacher = e} data={ajaxSelectUserType(['isLecturer'])} style={{ width: '100%' }} />
+                                    {/* <FormSelect ref={e => this.selectTeacher = e} data={ajaxSelectUserType(['isLecturer'])} style={{ width: '100%' }} /> */}
+                                    <FormSelect ref={e => this.selectTeacher = e} data={ajaxSelectTeacherByCourseType(courseType?courseType._id:'',0)} style={{ width: '100%' }} />
                                     <div style={{ width: 'auto', paddingLeft: 8 }}>
                                         <button className='btn btn-success' type='button' onClick={this.addTeacher}><i className='fa fa-fw fa-lg fa-plus' /></button>
                                     </div>

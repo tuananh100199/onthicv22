@@ -1,14 +1,18 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { getProfileStudentPage,updateProfileStudent } from './redux';
-import { AdminPage, renderTable, TableCell,FormSelect,FormCheckbox } from 'view/component/AdminPage';
+import { AdminPage, renderTable, TableCell,FormSelect,FormCheckbox,TableHeadCell } from 'view/component/AdminPage';
 import Pagination from 'view/component/Pagination';
 import {  getCourseTypeAll } from 'modules/mdDaoTao/fwCourseType/redux';
-
 const filterConditionData = [
     {id:'all',text:'Tất cả'},
     {id:'done',text:'Hoàn tất'},
     {id:'notDone',text:'Chưa hoàn tất'},
+];
+
+const filterCondition = [
+    {id:'1',text:'Hoàn tất'},
+    {id:'0',text:'Chưa hoàn tất'},
 ];
 class ProfileStudentPage extends AdminPage {
     state = {defaultFilterValue:'all',filterCondition:{},searchText:'',isExpandFilter:true};
@@ -67,6 +71,16 @@ class ProfileStudentPage extends AdminPage {
         });
     }
 
+    handleSelected = (key,value)=>{
+        const filterCondition = {...this.state.filterCondition,[key]:value};
+        if(value==null || value==undefined){
+            delete filterCondition[key];
+        }
+        this.onSearch({filterCondition},()=>{
+            this.setState({filterCondition});
+        });
+    }
+
     onChangeCourseType = (courseType) => {
         this.setState({ courseTypeId: courseType });
         this.course.value({ id: 0, text: 'Tất cả khóa học' });
@@ -79,18 +93,23 @@ class ProfileStudentPage extends AdminPage {
             this.props.profileStudent.page : { pageNumber: 1, pageSize: 50, pageTotal: 1, totalItem: 0 };
         // const teacherGroup = item && item.teacherGroups ? item.teacherGroups.find(group => group.teacher && group.teacher._id == currentUser._id) : null;
         const table = renderTable({
-            getDataSource: () => list, stickyHead: true,
+            getDataSource: () => list, stickyHead: true,isFilterDropdown:true,
             renderHead: () => (
                 <tr>
                     <th style={{ width: 'auto', textAlign: 'center' }}>#</th>
                     <th style={{ width: '100%' }}>Học viên</th>
                     <th style={{ width: 'auto' }} nowrap='true'>Thông tin liên lạc</th>
-                    <th style={{ width: 'auto' }} nowrap='true'>Đơn</th>
-                    {/* <TableHeadCell content='Đơn' style={{width:'auto'}} nowrap='true' filter = {filterConditionData}/> */}
-                    <th style={{ width: 'auto' }} nowrap='true'>Hình</th>
+                    {/* <th style={{ width: 'auto' }} nowrap='true'>Đơn</th> */}
+                    {/* <th style={{ width: 'auto' }} nowrap='true'>Hình</th>
                     <th style={{ width: 'auto' }} nowrap='true'>CMND/CCCD</th>
                     <th style={{ width: 'auto' }} nowrap='true'>Giấy khám sức khỏe</th>
-                    <th style={{ width: 'auto' }} nowrap='true'>Bằng lái A1</th>
+                    <th style={{ width: 'auto' }} nowrap='true'>Bằng lái A1</th> */}
+                    <TableHeadCell content='Đơn' style={{width:'auto'}} nowrap='true' filter = {filterCondition} allowClear={true} onChange = {value=>this.handleSelected('isDon',value)}/>
+                    <TableHeadCell content='Hình' style={{width:'auto'}} nowrap='true' filter = {filterCondition} allowClear={true} onChange = {value=>this.handleSelected('isHinh',value)}/>
+                    <TableHeadCell content='CMND/CCCD' style={{width:'auto'}} nowrap='true' filter = {filterCondition} allowClear={true} onChange = {value=>this.handleSelected('isIdentityCard',value)}/>
+                    <TableHeadCell content='Giấy khám sức khỏe' style={{width:'auto'}} nowrap='true' filter = {filterCondition} allowClear={true} onChange = {value=>this.handleSelected('isGiayKhamSucKhoe',value)}/>
+                    <TableHeadCell content='Bằng lái A1' style={{width:'auto'}} nowrap='true' filter = {filterCondition} allowClear={true} onChange = {value=>this.handleSelected('isBangLaiA1',value)}/>
+
                     <th style={{ width: 'auto' }} nowrap='true'>Hoàn tất</th>
                 </tr>),
             renderRow: (item, index) => (

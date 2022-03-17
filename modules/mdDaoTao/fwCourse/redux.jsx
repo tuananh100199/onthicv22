@@ -234,10 +234,10 @@ export function autoAssignStudent(_courseId, done) {
 }
 
 // Course teacherGroups -----------------------------------------------------------------------------------------------
-export function updateCourseTeacherGroup(_courseId, _teacherId, type, done) {
+export function updateCourseTeacherGroup(_courseId,_teacherUserId, type, done) {
     return dispatch => {
         const url = '/api/course/teacher-group/teacher';
-        T.put(url, { _courseId, _teacherId, type }, data => {
+        T.put(url, { _courseId,_teacherUserId, type }, data => {
             if (data.error) {
                 T.notify('Gán giáo viên bị lỗi!', 'danger');
                 console.error('PUT: ' + url + '.', data.error);
@@ -486,4 +486,19 @@ export const ajaxSelectCourseByCourseType = (courseType) => ({
     },
     fetchOne: (_id, done) => fetchCourse(_id, ({ item }) => done && done({ id: item._id, text: item.name + (item.courseType ? ` (${item.courseType.title})` : '') }))
 });
+
+export const ajaxSelectCourseTeacher= {
+    ajax: false,
+    url: '/api/course/page/1/20?isDefault=false',
+    data: {},
+    processResults: response =>{
+        const results = [{id:'all',text:'tất cả khóa học'},{id:'null',text:'Chưa có khóa học'}];
+        response && response.page && response.page.list && response.page.list.forEach(course=>{
+            results.push({ id: course._id, text: course.name + (course.courseType ? ` (${course.courseType.title})` : '') });
+        });
+        // return { results: response && response.page && response.page.list ? response.page.list.map(course => ({ id: course._id, text: course.name + (course.courseType ? ` (${course.courseType.title})` : '') })) : [] };    
+        return {results};
+    }, 
+    fetchOne: (_id, done) => fetchCourse(_id, ({ item }) => done && done({ id: item._id, text: item.name + (item.courseType ? ` (${item.courseType.title})` : '') }))
+};
 

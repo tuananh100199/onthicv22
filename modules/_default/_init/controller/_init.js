@@ -187,6 +187,8 @@ module.exports = (app) => {
             mobile: '(08) 2214 6555',
             address: '',
             smsAPIToken: app.getToken(32),
+            activeZalo:false,
+            zaloId:''
         },
 
         init: () => app.redis.keys(`${app.appName}:state:*`, (_, keys) => {
