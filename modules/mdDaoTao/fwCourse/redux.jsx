@@ -487,3 +487,18 @@ export const ajaxSelectCourseByCourseType = (courseType) => ({
     fetchOne: (_id, done) => fetchCourse(_id, ({ item }) => done && done({ id: item._id, text: item.name + (item.courseType ? ` (${item.courseType.title})` : '') }))
 });
 
+export const ajaxSelectCourseTeacher= {
+    ajax: false,
+    url: '/api/course/page/1/20?isDefault=false',
+    data: {},
+    processResults: response =>{
+        const results = [{id:'all',text:'tất cả khóa học'},{id:'null',text:'Chưa có khóa học'}];
+        response && response.page && response.page.list && response.page.list.forEach(course=>{
+            results.push({ id: course._id, text: course.name + (course.courseType ? ` (${course.courseType.title})` : '') });
+        });
+        // return { results: response && response.page && response.page.list ? response.page.list.map(course => ({ id: course._id, text: course.name + (course.courseType ? ` (${course.courseType.title})` : '') })) : [] };    
+        return {results};
+    }, 
+    fetchOne: (_id, done) => fetchCourse(_id, ({ item }) => done && done({ id: item._id, text: item.name + (item.courseType ? ` (${item.courseType.title})` : '') }))
+};
+
