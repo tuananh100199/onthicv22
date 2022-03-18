@@ -6,7 +6,7 @@ import Editor from 'view/component/CkEditor4';
 import Datetime from 'react-datetime';
 import InputMask from 'react-input-mask';
 import NumberFormat from 'react-number-format';
-import Dropdown from 'view/component/Dropdown';
+import {DropdownSelect,DropdownSelectMulti,DropdownSearch} from 'view/component/DropdownFilter';
 import 'react-datetime/css/react-datetime.css';
 
 // Table components ---------------------------------------------------------------------------------------------------
@@ -142,39 +142,46 @@ export class TableHead extends React.Component {
         </tr>;
     }
 }
-
-// export class TableHeadCell extends React.Component {
-//     state = {filterData:{},sortData:{}}
-//     componentDidMount=()=>{
-//         console.log('is has onFilterChange: ',this.props.onFilterChange);
-//     }
-//     render() {
-//         // const filter = [{id:...,text:...}]
-//         let { content = '', className = '', style = {}, display = true, rowSpan = 1,filter=null,onChange=null,nowrap='false',allowClear=false } = this.props;
-//         const filterDisplay = filter && filter.length?(<>
-//             <Dropdown items={filter} onSelected={e => this.setState({isSeletedValue:true},()=>onChange(e ?e.id: null)) } allowClear={allowClear} menuClassName='dropdown-menu-right' />
-            
-//         </>) :null;
-//         return display?<th className={className} style={{ ...style }} nowrap={nowrap} rowSpan={rowSpan}>
-//             <div className='d-flex align-items-center'>
-//                 <span className='mr-2'>{content}</span> {filterDisplay}
-//             </div>
-//             </th>:null;
-//     }
-// }
-
 export class TableHeadCell extends React.Component {
     state = {}
 
     render() {
-        // const filter = [{id:...,text:...}]
-        let { content = '', className = '', style = {}, display = true, rowSpan = 1,filter=null,nowrap='false',allowClear=true,name='' } = this.props;
-        const filterDisplay = filter && filter.length?(<>
-            <Dropdown items={filter} 
-            onSelected={e => this.setState({isSeletedValue:true},()=>e && e.id ? this.props.onFilterChange({[name]:e.id}):this.props.onRemoveFilter(name) )}
-             allowClear={allowClear} menuClassName='dropdown-menu-right' />
+        // const filterData = [{id:...,text:...}]
+        let { content = '', className = '', style = {}, display = true, rowSpan = 1,filterData=null,nowrap='false',allowClear=true,name='',filterType='',multipleSelect=false } = this.props;
+        // const filterDisplay = filter && filter.length?(<>
+        //     <Dropdown items={filter} 
+        //     onSelected={e => this.setState({isSeletedValue:true},()=>e && e.id ? this.props.onFilterChange({[name]:e.id}):this.props.onRemoveFilter(name) )}
+        //      allowClear={allowClear} menuClassName='dropdown-menu-right' />
             
-        </>) :null;
+        // </>) :null;
+
+        let filterDisplay;
+        if(filterType=='select'){
+            // filterDisplay = filterData && filterData.length?(<>
+            //     <Dropdown items={filterData} 
+            //     onSelected={e => this.setState({isSeletedValue:true},()=>e && e.id ? this.props.onFilterChange({[name]:e.id}):this.props.onRemoveFilter(name) )}
+            //     allowClear={allowClear} menuClassName='dropdown-menu-right' />
+            // </>) :null;
+            if(!multipleSelect){// select đơn
+                filterDisplay = filterData && filterData.length?(<>
+                    <DropdownSelect items={filterData} allowClear={allowClear} menuClassName='dropdown-menu-right' 
+                    onSelected={value =>value ? this.props.onFilterChange({[name]:value}):this.props.onRemoveFilter(name)}
+                    />
+                </>) :null;
+            }else{// select multiple
+                filterDisplay = filterData && filterData.length?(<> 
+                    <DropdownSelectMulti items={filterData} allowClear={allowClear} menuClassName='dropdown-menu-right' 
+                    onSelected={value =>value ? this.props.onFilterChange({[name]:value}):this.props.onRemoveFilter(name)}
+                    />
+                </>) :null;
+            }
+            
+        }else if(filterType=='search'){
+            //TODO: Vỹ: Làm component này
+            filterDisplay = <DropdownSearch />;
+        } else{
+            filterDisplay=null;
+        }
         return display?<th className={className} style={{ ...style }} nowrap={nowrap} rowSpan={rowSpan}>
             <div className='d-flex align-items-center'>
                 <span className='mr-2'>{content}</span> {filterDisplay}
