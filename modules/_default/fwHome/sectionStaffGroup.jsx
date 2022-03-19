@@ -20,6 +20,7 @@ class SectionStaffGroup extends React.Component {
                     navText: ['<i class="fa fa-chevron-left" aria-hidden="true"></i>','<i class="fa fa-chevron-right" aria-hidden="true"></i>'],
                     autoplay: !single,
                     autoplayTimeout:3000,
+                    smartSpeed:600,
                     autoplayHoverPause: true,
                     slideTransition:'0.5s linear'
                     
@@ -188,7 +189,7 @@ class SectionStaffGroup extends React.Component {
                                             <p>&ldquo;{staff.description}&rdquo;</p>
                                         </blockquote>
                                         <div className='button-wrap'>
-                                            <a href='#' className="link_watch_more text-white">XEM THÊM</a>
+                                            <a href='#' className="link_watch_more text-white">Xem thêm</a>
                                         </div> 
                                     </div>
 

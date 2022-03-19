@@ -59,9 +59,11 @@ class SectionGioiThieuHiepPhat extends React.Component {
                         margin:10,
                         autoplay: true,
                         autoplayTimeout:3000,
+                        smartSpeed:600,
                         autoplayHoverPause: true,
-                        // nav:true,
-                        // navText:['<i class="fa fa-angle-left" aria-hidden="true"></i>','<i class="fa fa-angle-right" aria-hidden="true"></i>']
+                        dots:true,
+                        nav:true,
+                        navText:['<i class="fa fa-angle-left" aria-hidden="true"></i>','<i class="fa fa-angle-right" aria-hidden="true"></i>']
                         
                     });
                 });
@@ -168,7 +170,7 @@ class SectionGioiThieuHiepPhat extends React.Component {
                             </div>
                         </div>
                     </div>                        
-                <div className='owl-carousel intro_carousel carousel_equal_height carousel_nav' id='introCarousel'>
+                <div className='owl-carousel intro_carousel carousel_equal_height carousel_nav carousel_dots' id='introCarousel'>
                         {this.renderItem({text:abstract,image:image1,content:content1})}
                         {this.renderItem({text:abstract2,image:image2,content:content2})}
                         {this.renderItem({text:abstract3,image:image3,content:content3})}
