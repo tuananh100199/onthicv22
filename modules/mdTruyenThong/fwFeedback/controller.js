@@ -121,6 +121,11 @@ module.exports = (app) => {
         } else app.model.feedback.create(app.clone(req.body.newData, { user }), (error, item) => res.send({ error, item }));
     });
 
+    app.post('/api/feedback/lecturer', app.permission.check('user:login'), (req, res) => {//mobile
+        const user = req.session.user._id;
+        app.model.feedback.create(app.clone(req.body.newData, { user }), (error, item) => res.send({ error, item }));
+    });
+
     app.get('/api/feedback/student/page/:pageNumber/:pageSize', app.permission.check('user:login'), (req, res) => { //mobile
         const pageNumber = parseInt(req.params.pageNumber),
             pageSize = parseInt(req.params.pageSize),
@@ -155,6 +160,14 @@ module.exports = (app) => {
         } catch (error) {
             res.send({ error: error.message });
         }
+    });
+
+    app.get('/api/feedback/lecturer/page/:pageNumber/:pageSize', app.permission.check('user:login'), (req, res) => { //mobile
+        const pageNumber = parseInt(req.params.pageNumber),
+            pageSize = parseInt(req.params.pageSize),
+            condition = req.query.pageCondition || {};
+            condition.user = req.session.user._id;
+            app.model.feedback.getPage(pageNumber, pageSize, condition, (error, page) => res.send({ error, page }));
     });
 
     app.get('/api/feedback/student/:type', app.permission.check('user:login'), (req, res) => { //mobile

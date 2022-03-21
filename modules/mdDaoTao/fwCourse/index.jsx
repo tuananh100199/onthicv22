@@ -80,8 +80,16 @@ export default {
             component: Loadable({ loading: Loading, loader: () => import('./pages/adminFeedbackDetailPage') })
         },
         {
+            path: '/user/course/:_id/feedback-lecturer',
+            component: Loadable({ loading: Loading, loader: () => import('./pages/lecturerFeedbackPage') })
+        },
+        {
             path: '/user/course/:_id/your-students',
             component: Loadable({ loading: Loading, loader: () => import('./pages/lecturerStudentPage') })
+        },
+        {
+            path: '/user/course/:_id/your-students/:_studentId',
+            component: Loadable({ loading: Loading, loader: () => import('./pages/lecturerLearningProgressPage') })
         },
         {
             path: '/user/course/:_id/learning',

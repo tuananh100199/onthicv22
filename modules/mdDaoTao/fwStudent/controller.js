@@ -54,7 +54,7 @@ module.exports = (app) => {
             }
 
             if (condition.courseType) pageCondition.courseType = condition.courseType;
-            if (condition.daThiHetMon) pageCondition.diemThiHetMon = { $exists: true, $ne: [] };
+            if (condition.daThiHetMon) pageCondition.diemThucHanh = { $exists: true, $gte: 5 };
             if (condition.course) pageCondition.course = condition.course;
             if (condition.datSatHach) pageCondition.datSatHach = condition.datSatHach;
             if (condition.totNghiep) pageCondition.totNghiep = condition.totNghiep;
@@ -191,7 +191,10 @@ module.exports = (app) => {
 
             if (condition.courseType) pageCondition.courseType = condition.courseType;
             if (filter == 'HVChuaDatSatHach') pageCondition.datSatHach = false;
-            if (filter == 'HVChuaTotNghiep') pageCondition.totNghiep = false;
+            if (filter == 'HVChuaTotNghiep') {
+                pageCondition.diemThucHanh = { $exists: true, $gte: 5 };
+                pageCondition.totNghiep = false;
+            }
             if (condition.searchText) {
                 const value = { $regex: `.*${condition.searchText}.*`, $options: 'i' };
                 pageCondition.$or = [

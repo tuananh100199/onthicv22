@@ -52,7 +52,7 @@ class EditCoursePage extends AdminPage {
                     <PageIcon visible={isCourseAdmin || permission.write || permissionFeedback.read} to={`/user/course/${item._id}/feedback`} icon='fa-heartbeat' iconBackgroundColor='teal' text='Phản hồi' />
                     <PageIcon to={`/user/course/${item._id}/forum`} icon='fa-users' iconBackgroundColor='#9ced65' text='Forum' />
                     <PageIcon visible={!item.isDefault && (isLecturer || isCourseAdmin)} to={`/user/course/${item._id}/comment`} icon='fa-comment-o' iconBackgroundColor='#900' text={isCourseAdmin ? 'Bình luận chờ duyệt' : 'Bình luận của học viên'} />
-
+                    {isLecturer ? <PageIcon to={`/user/course/${item._id}/feedback-lecturer`} icon='fa-commenting-o' iconBackgroundColor='#dc3545' text='Phản hồi' /> : null}
                     <PageIconHeader text='Đào tạo' />
                     <PageIcon visible={ permission.delete } to={`/user/course/${item._id}/additional-profile`} icon='fa-folder' iconBackgroundColor='#1488db' text='Bổ sung hồ sơ học viên' />
                     <PageIcon visible={isLecturer} to={`/user/course/${item._id}/your-students`} icon='fa-graduation-cap' iconBackgroundColor='#18ffff' text='Học viên của bạn' />

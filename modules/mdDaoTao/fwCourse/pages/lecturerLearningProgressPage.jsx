@@ -1,21 +1,40 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { getCourseByStudent } from './redux';
+import { getStudent } from 'modules/mdDaoTao/fwStudent/redux';
+import { getCourse } from '../redux';
 import { Link } from 'react-router-dom';
 import { AdminPage, PageIcon } from 'view/component/AdminPage';
 
-class LecturerStudentPage extends AdminPage {
+class LecturerLearningProgressPage extends AdminPage {
     state = {};
     componentDidMount() {
-        const route = T.routeMatcher('/user/hoc-vien/khoa-hoc/:_id/tien-do-hoc-tap'),
-            _id = route.parse(window.location.pathname)._id;
+        const route = T.routeMatcher('/user/course/:_id/your-students/:_studentId'),
+            _id = route.parse(window.location.pathname)._id,
+            studentId = route.parse(window.location.pathname)._studentId;
         if (_id) {
+            const course = this.props.course ? this.props.course.item : null;
+                if (course) {
+                    T.ready('/user/course', () => {
+                        this.props.getStudent(studentId, data => {
+                            this.setState({ data });
+                        });
+                    });
+                } else {
+                    this.props.getCourse(_id, data => {
+                        if (data.error) {
+                            T.notify('Lấy khóa học bị lỗi!', 'danger');
+                            this.props.history.push('/user/course/' + _id);
+                        } else {
+                            T.ready('/user/course' + _id, () => {
+                                this.props.getStudent(studentId, data => {
+                                    this.setState({ data });
+                                });
+                            });
+                        }
+                    });
+                }
             this.setState({ courseId: _id });
-            T.ready('/user/hoc-vien/khoa-hoc/' + _id, () => {
-                this.props.getCourseByStudent(_id, data => {
-                    this.setState({ data });
-                });
-            });
+            
         } else {
             this.props.history.goBack();
         }
@@ -74,7 +93,7 @@ class LecturerStudentPage extends AdminPage {
     render() {
         const course = this.props.course;
         const subjects = course && course.item && course.item.subjects;
-        const student = course && course.student;
+        const student = this.state && this.state.data;
         const monLyThuyet = subjects ? subjects.filter(subject => subject.monThucHanh == false) : [];
         const subjectColumns = [];
         const giamGia = student && student.discount && student.discount.fee ? student.discount.fee : 0;
@@ -83,6 +102,7 @@ class LecturerStudentPage extends AdminPage {
         (monLyThuyet || []).forEach((subject, index) => {
             subjectColumns.push(<th key={index} style={{ width: 'auto', textAlign: 'center' }}  >{subject.title}</th>);
         });
+        const item = this.props.course && this.props.course.item ? this.props.course.item : {};
 
         const pageIcon = 
         student ? 
@@ -162,11 +182,11 @@ class LecturerStudentPage extends AdminPage {
         </>
          : null;
 
-        const userPageLink = '/user/hoc-vien/khoa-hoc/' + this.state.courseId;
+        const userPageLink = '/user/course/' + this.state.courseId+'/your-students';
         return this.renderPage({
             icon: 'fa fa-line-chart',
-            title: 'Tiến độ học tập: ',
-            breadcrumb: [<Link key={0} to={userPageLink}>Khóa học</Link>, 'Tiến độ học tập'],
+            title: 'Tiến độ học tập: ' + (student ? student.lastname + ' ' + student.firstname : ''),
+            breadcrumb: [<Link key={0} to='/user/course'>Khóa học</Link>, item._id ? <Link key={0} to={'/user/course/' + this.state.courseId}>{item.name}</Link> : '', <Link key={0} to={userPageLink}>Học viên của bạn</Link>, (student ? student.lastname + ' ' + student.firstname : '')],
             content: (
                 <div>
                     {pageIcon}
@@ -178,5 +198,5 @@ class LecturerStudentPage extends AdminPage {
 }
 
 const mapStateToProps = state => ({ system: state.system, course: state.trainning.course });
-const mapActionsToProps = { getCourseByStudent };
-export default connect(mapStateToProps, mapActionsToProps)(LecturerStudentPage);
+const mapActionsToProps = { getStudent, getCourse };
+export default connect(mapStateToProps, mapActionsToProps)(LecturerLearningProgressPage);
