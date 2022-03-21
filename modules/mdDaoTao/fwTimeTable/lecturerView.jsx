@@ -440,9 +440,9 @@ class LecturerView extends AdminPage {
                  <Pagination name='pageTimeTable' pageNumber={pageNumber} pageSize={pageSize} pageTotal={pageTotal} totalItem={totalItem} style={{ left: 320 }}
                         getPage={this.getPage} />
                 {/* {this.state.isCourseAdmin ? */}
-                    {permission.write&& <button type='button' className='btn btn-success btn-circle' style={{ position: 'fixed', right: '10px', bottom: '10px' }} onClick={this.edit}>
+                    {/* {permission.write&& <button type='button' className='btn btn-success btn-circle' style={{ position: 'fixed', right: '10px', bottom: '10px' }} onClick={this.edit}>
                         <i className='fa fa-lg fa-plus' />
-                    </button>}
+                    </button>} */}
                      {/* : null} */}
             </>
         );
