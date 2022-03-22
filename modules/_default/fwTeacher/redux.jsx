@@ -45,11 +45,15 @@ export function getTeacherAll(condition, done) {
 }
 
 T.initCookiePage('pageTeacher', true);
-export function getTeacherPage(pageNumber, pageSize, condition, done) {
-    const page = T.updatePage('pageTeacher', pageNumber, pageSize,condition);
+export function getTeacherPage(pageNumber, pageSize, condition,filter, done) {
+    if(typeof filter=='function'){
+        done=filter;
+        filter=undefined;
+    }
+    const page = T.updatePage('pageTeacher', pageNumber, pageSize,condition,filter);
     return dispatch => {
         const url = '/api/teacher/page/' + page.pageNumber + '/' + page.pageSize;
-        T.get(url, { condition }, data => {
+        T.get(url, { condition:page.pageCondition,filter:page.filter }, data => {
             if (data.error) {
                 T.notify('Lấy danh sách giáo viên bị lỗi!', 'danger');
                 console.error('GET: ' + url + '. ' + data.error);

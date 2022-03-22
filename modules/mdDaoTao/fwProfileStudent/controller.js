@@ -60,7 +60,7 @@ module.exports = app => {
         const pageNumber = parseInt(req.params.pageNumber),
             pageSize = parseInt(req.params.pageSize),
             condition = req.query.pageCondition || {},
-            pageCondition = {};
+            pageCondition = {},filter=req.query.filter;
             if(condition.course) pageCondition.course=condition.course;
             if(condition.courseType) pageCondition.courseType=condition.courseType;
         // handle searchText
@@ -75,10 +75,16 @@ module.exports = app => {
         }
 
         // handleFilter
-        if(condition.filterCondition){
-            let filterCondition = condition.filterCondition;
-            for(const key in filterCondition){
-                filterCondition[key]!='all' && Object.assign(pageCondition,{[key]:filterCondition[key]=='1'?true:false});
+        // if(condition.filterCondition){
+        //     let filterCondition = condition.filterCondition;
+        //     for(const key in filterCondition){
+        //         filterCondition[key]!='all' && Object.assign(pageCondition,{[key]:filterCondition[key]=='1'?true:false});
+        //     }
+
+        // }
+        if(filter){
+            for(const key in filter){
+                filter[key]!='all' && Object.assign(pageCondition,{[key]:filter[key]=='1'?true:false});
             }
 
         }

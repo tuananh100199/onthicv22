@@ -26,8 +26,7 @@ module.exports = (app) => {
         let pageNumber = parseInt(req.params.pageNumber),
             pageSize = parseInt(req.params.pageSize),
             condition=req.query.condition||{},
-            pageCondition = { };
-        console.log('condition: ',condition);
+            pageCondition = { },filter=req.query.filter||{};
         if (condition.searchText) {
             const value = { $regex: `.*${condition.searchText}.*`, $options: 'i' };
             pageCondition['$or'] = [
@@ -46,13 +45,13 @@ module.exports = (app) => {
         if(condition.courseType){
             pageCondition.courseTypes={$in:[condition.courseType]};
         }
-
-        if(condition.course && condition.course.length){
-            if(condition.course.find(item=>item=='null')){
-                const courses = condition.course.filter(course=>course!='null');
+        // filter course
+        if(filter.course && filter.course.length){
+            if(filter.course.find(item=>item=='null')){
+                const courses = filter.course.filter(course=>course!='null');
                 pageCondition.courses= {$in: [null,[],...courses]};
             }else{
-                pageCondition.courses={$in:condition.course};
+                pageCondition.courses={$in:filter.course};
             }
         }
         //filter lọc nghỉ việc

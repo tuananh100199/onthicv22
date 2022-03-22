@@ -13,7 +13,7 @@ class ProfileStudentPage extends AdminPage {
     state = {defaultFilterValue:'all',filterCondition:{},searchText:'',isExpandFilter:true};
     componentDidMount() {
         T.ready('/user/profile-student', () => {
-            T.showSearchBox(() => {this.setState({filterCondition:{}});});
+            T.showSearchBox();
             T.onSearch = (searchText) => this.onSearch({searchText},()=>this.setState({searchText}));
             
             this.props.getCourseTypeAll(data => {
@@ -25,13 +25,14 @@ class ProfileStudentPage extends AdminPage {
                     this.courseType.value(0);
                 });
             });
-            this.onSearch({});
+            // this.onSearch({});
+            this.props.getProfileStudentPage(1,null,{},{});
         });
     }
 
-    onSearch = ({pageNumber,pageSize,searchText=this.state.searchText,filterCondition=this.state.filterCondition,courseType = this.courseType.value()},done)=>{        
+    onSearch = ({pageNumber,pageSize,searchText=this.state.searchText,courseType = this.courseType.value()},done)=>{        
         // const courseType = this.state.courseTypeId;
-        const condition = courseType == '0' ? { searchText,filterCondition } : {filterCondition, searchText, courseType };
+        const condition = courseType == '0' ? { searchText } : {searchText, courseType };
         this.props.getProfileStudentPage(pageNumber, pageSize, condition, () => {
             done && done();
         });
@@ -60,7 +61,7 @@ class ProfileStudentPage extends AdminPage {
         const table = renderTable({
             getDataSource: () => list, stickyHead: true,autoDisplay:true,
         renderHead: () => (
-            <TableHead done = {this.handleChangeFilter}>
+            <TableHead getPage = {this.props.getProfileStudentPage}>
                 <th style={{ width: 'auto', textAlign: 'center' }}>#</th>
                 <th style={{ width: '100%' }}>Học viên</th>
                 <th style={{ width: 'auto' }} nowrap='true'>Thông tin liên lạc</th>

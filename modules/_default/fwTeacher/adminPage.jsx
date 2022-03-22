@@ -7,7 +7,7 @@ import { ajaxSelectDivision,getDivisionAll } from 'modules/mdDaoTao/fwDivision/r
 import { Link } from 'react-router-dom';
 import { getCategoryAll } from 'modules/_default/fwCategory/redux';
 import { ajaxSelectCourseType } from 'modules/mdDaoTao/fwCourseType/redux';
-import {ajaxSelectCourseTeacher,getCourseAll} from 'modules/mdDaoTao/fwCourse/redux';
+import {getCourseAll} from 'modules/mdDaoTao/fwCourse/redux';
 class TeacherModal extends AdminModal {
     state = {};
     componentDidMount() {
@@ -116,7 +116,7 @@ class AdminTeacherPage extends AdminPage {
     componentDidMount() {
         T.ready(() => {
             T.showSearchBox();
-            this.props.getTeacherPage(1);
+            this.props.getTeacherPage(1,null,{},{});
             this.props.getCategoryAll('teacher-certification', null, (items) =>{
                 this.setState({ chungChiSuPhams: (items || []).map(item => ({ id: item._id, text: item.title })) });
             });
@@ -127,7 +127,7 @@ class AdminTeacherPage extends AdminPage {
                 this.setState({courses});
             });
 
-            this.itemCourse.value({id:'all',text:'Tất cả khóa học'});
+            // this.itemCourse.value({id:'all',text:'Tất cả khóa học'});
             // this.props.
             T.onSearch = (searchText) =>{
                 this.props.getTeacherPage(1,undefined,{searchText},()=>{
@@ -137,11 +137,10 @@ class AdminTeacherPage extends AdminPage {
         });
     }
 
-    onSearch = ({ pageNumber, pageSize, searchText,filterCondition }, done) => {
+    onSearch = ({ pageNumber, pageSize, searchText }, done) => {
         if (searchText == undefined) searchText = this.state.searchText;
-        let condition = { searchText,...filterCondition };
+        let condition = { searchText };
         // if(course && course!='all') condition.course=course;
-        console.log('condition: ',condition);
         this.props.getTeacherPage(pageNumber,pageSize,condition,page=>{
             done && done(page);
             this.setState({searchText});
@@ -183,7 +182,7 @@ class AdminTeacherPage extends AdminPage {
                     // <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Khóa học đang dạy</th> 
                     // <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Thao tác</th>
                 // </tr>
-                <TableHead done={this.handleChangeFilter}>
+                <TableHead getPage={this.props.getTeacherPage}>
                     <th style={{ width: 'auto', textAlign: 'center' }}>#</th>
                     <th style={{ width: 'auto' }} nowrap='true'>Mã GV</th>
                     <th style={{ width: '100%' }}>Họ tên</th>
@@ -225,9 +224,9 @@ class AdminTeacherPage extends AdminPage {
             breadcrumb: ['Giáo viên'],
             content: <>
                 <div className='tile'>
-                    <div className='row'>
+                    {/* <div className='row'>
                         <FormSelect ref={e => this.itemCourse = e} className='col-md-4' label='Khóa học đang dạy' data={ajaxSelectCourseTeacher} onChange={() => this.onSearch({})} readOnly={!permission.write} />
-                    </div>    
+                    </div>     */}
                     {table}
                 </div>
                 <Pagination name='pageTeacher' pageNumber={pageNumber} pageSize={pageSize} pageTotal={pageTotal} totalItem={totalItem}

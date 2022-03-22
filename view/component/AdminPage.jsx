@@ -117,14 +117,14 @@ export function renderTable({ style = {},autoDisplay=false, className = '', getD
 export class TableHead extends React.Component {
     state = {filterData:{}}
 
-    onFilterChange = filter =>this.setState(prevState=>({filterData:{...prevState.filterData,...filter}}),()=>this.props.done && this.props.done({...this.state.filterData}))
+    onFilterChange = filter =>this.setState(prevState=>({filterData:{...prevState.filterData,...filter}}),()=>this.props.getPage && this.props.getPage(null,null,null,this.state.filterData))
 
     onRemoveFilter = name=>{
         this.setState(prevState=>{
             let filterData = prevState.filterData;
             delete filterData[name];
             return {filterData};
-        },()=>this.props.done && this.props.done({...this.state.filterData}));
+        },()=>this.props.getPage && this.props.getPage(null,null,null,this.state.filterData));
     }
 
     childrenWithProps = ()=>React.Children.map(this.props.children, child => {
