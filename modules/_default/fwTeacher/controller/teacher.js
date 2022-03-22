@@ -27,6 +27,7 @@ module.exports = (app) => {
             pageSize = parseInt(req.params.pageSize),
             condition=req.query.condition||{},
             pageCondition = { };
+        console.log('condition: ',condition);
         if (condition.searchText) {
             const value = { $regex: `.*${condition.searchText}.*`, $options: 'i' };
             pageCondition['$or'] = [
@@ -46,17 +47,18 @@ module.exports = (app) => {
             pageCondition.courseTypes={$in:[condition.courseType]};
         }
 
-        if(condition.course){
-            if(condition.course=='null'){
-                pageCondition.courses= [];
+        if(condition.course && condition.course.length){
+            if(condition.course.find(item=>item=='null')){
+                const courses = condition.course.filter(course=>course!='null');
+                pageCondition.courses= {$in: [null,[],...courses]};
             }else{
-                pageCondition.courses={$in:[condition.course]};
+                pageCondition.courses={$in:condition.course};
             }
         }
-        // filter lọc nghỉ việc
-        // if(condition.nghiViec){
-        //   pageCondition.thoiGianLamViec={['nghiViec']:condition.nghiViec=='1'?true:false};
-        // } 
+        //filter lọc nghỉ việc
+        if(condition.nghiViec){
+          pageCondition.thoiGianLamViec={['nghiViec']:condition.nghiViec=='1'?true:false};
+        } 
 
         app.model.teacher.getPage(pageNumber, pageSize, pageCondition, (error, page) => {
             res.send({ error, page});

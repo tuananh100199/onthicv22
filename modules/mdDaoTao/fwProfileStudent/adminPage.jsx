@@ -64,7 +64,7 @@ class ProfileStudentPage extends AdminPage {
                 <th style={{ width: 'auto', textAlign: 'center' }}>#</th>
                 <th style={{ width: '100%' }}>Học viên</th>
                 <th style={{ width: 'auto' }} nowrap='true'>Thông tin liên lạc</th>
-                <TableHeadCell name='isDon' content='Đơn' style={{width:'auto'}} nowrap='true' filterType='select' multipleSelect={true} filterData = {filterCondition}/>
+                <TableHeadCell name='isDon' content='Đơn' style={{width:'auto'}} nowrap='true' filterType='select' filterData = {filterCondition}/>
                 <TableHeadCell name='isHinh' content='Hình' style={{width:'auto'}} nowrap='true'filterType='select' filterData = {filterCondition}/>
                 <TableHeadCell name='isIdentityCard' content='CMND/CCCD' style={{width:'auto'}} filterType='select' nowrap='true' filterData = {filterCondition}/>
                 <TableHeadCell name='isGiayKhamSucKhoe' content='Giấy khám sức khỏe' style={{width:'auto'}} filterType='select' nowrap='true' filterData = {filterCondition}/>

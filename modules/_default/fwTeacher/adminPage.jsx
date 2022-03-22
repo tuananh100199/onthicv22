@@ -1,13 +1,13 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { getTeacherPage,createTeacher,updateTeacher,deleteTeacher } from './redux';
-import { AdminPage, AdminModal,FormDatePicker,FormSelect, FormTextBox, TableCell, renderTable, FormRichTextBox, FormCheckbox } from 'view/component/AdminPage';
+import { AdminPage, AdminModal,FormDatePicker,FormSelect, FormTextBox, TableCell, renderTable, FormRichTextBox, FormCheckbox, TableHead,TableHeadCell } from 'view/component/AdminPage';
 import Pagination from 'view/component/Pagination';
 import { ajaxSelectDivision,getDivisionAll } from 'modules/mdDaoTao/fwDivision/redux';
 import { Link } from 'react-router-dom';
 import { getCategoryAll } from 'modules/_default/fwCategory/redux';
 import { ajaxSelectCourseType } from 'modules/mdDaoTao/fwCourseType/redux';
-import {ajaxSelectCourseTeacher} from 'modules/mdDaoTao/fwCourse/redux';
+import {ajaxSelectCourseTeacher,getCourseAll} from 'modules/mdDaoTao/fwCourse/redux';
 class TeacherModal extends AdminModal {
     state = {};
     componentDidMount() {
@@ -121,6 +121,12 @@ class AdminTeacherPage extends AdminPage {
                 this.setState({ chungChiSuPhams: (items || []).map(item => ({ id: item._id, text: item.title })) });
             });
 
+            this.props.getCourseAll({isDefault:false},list=>{
+                let courses = [{id:'null',text:'Chưa gán'}];
+                list.forEach(course=>courses.push({id:course._id,text:course.name}));
+                this.setState({courses});
+            });
+
             this.itemCourse.value({id:'all',text:'Tất cả khóa học'});
             // this.props.
             T.onSearch = (searchText) =>{
@@ -131,14 +137,20 @@ class AdminTeacherPage extends AdminPage {
         });
     }
 
-    onSearch = ({ pageNumber, pageSize, searchText,course=this.itemCourse.value() }, done) => {
+    onSearch = ({ pageNumber, pageSize, searchText,filterCondition }, done) => {
         if (searchText == undefined) searchText = this.state.searchText;
-        let condition = { searchText };
-        if(course && course!='all') condition.course=course;
+        let condition = { searchText,...filterCondition };
+        // if(course && course!='all') condition.course=course;
         console.log('condition: ',condition);
         this.props.getTeacherPage(pageNumber,pageSize,condition,page=>{
             done && done(page);
             this.setState({searchText});
+        });
+    }
+
+    handleChangeFilter = filterCondition=>{
+        this.onSearch({filterCondition},()=>{
+            this.setState({filterCondition});
         });
     }
 
@@ -157,8 +169,21 @@ class AdminTeacherPage extends AdminPage {
         const table = renderTable({
             getDataSource: () => list,
             stickyHead:true,
+            autoDisplay:true,
             renderHead: () => (
-                <tr>
+                // <tr>
+                    // <th style={{ width: 'auto', textAlign: 'center' }}>#</th>
+                    // <th style={{ width: 'auto' }} nowrap='true'>Mã GV</th>
+                    // <th style={{ width: '100%' }}>Họ tên</th>
+                    // <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Thông tin liên lạc</th>
+                    // <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Ngày sinh</th>
+                    // <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Cơ sở đào tạo</th>
+                    // <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Loại giáo viên</th>
+                    // <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Loại khóa học</th> 
+                    // <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Khóa học đang dạy</th> 
+                    // <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Thao tác</th>
+                // </tr>
+                <TableHead done={this.handleChangeFilter}>
                     <th style={{ width: 'auto', textAlign: 'center' }}>#</th>
                     <th style={{ width: 'auto' }} nowrap='true'>Mã GV</th>
                     <th style={{ width: '100%' }}>Họ tên</th>
@@ -167,9 +192,10 @@ class AdminTeacherPage extends AdminPage {
                     <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Cơ sở đào tạo</th>
                     <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Loại giáo viên</th>
                     <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Loại khóa học</th> 
-                    <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Khóa học đang dạy</th> 
+                    <TableHeadCell style={{ width: 'auto', textAlign: 'center' }} content='Khóa học đang dạy' nowrap='true' name='course' filterType='select' multipleSelect={true} filterData = {this.state.courses}/> 
                     <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Thao tác</th>
-                </tr>),
+                </TableHead>
+                ),
             renderRow: (item, index) =>{
                 return (
                     <tr key={index}>
@@ -215,5 +241,5 @@ class AdminTeacherPage extends AdminPage {
 }
 
 const mapStateToProps = state => ({ system: state.system, teacher: state.enrollment.teacher });
-const mapActionsToProps = { getTeacherPage,createTeacher,updateTeacher,deleteTeacher,getDivisionAll,getCategoryAll };
+const mapActionsToProps = { getTeacherPage,createTeacher,updateTeacher,deleteTeacher,getDivisionAll,getCategoryAll,getCourseAll };
 export default connect(mapStateToProps, mapActionsToProps)(AdminTeacherPage);

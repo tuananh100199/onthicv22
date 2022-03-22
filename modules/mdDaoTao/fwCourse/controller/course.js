@@ -160,6 +160,25 @@ module.exports = (app) => {
         });
     });
 
+    app.get('/api/course/all',app.permission.check('course:read'),(req,res)=>{
+        const sessionUser = req.session.user,
+            condition = req.query.condition || {};
+        if (sessionUser.isLecturer && !sessionUser.isCourseAdmin) {
+            condition.teacherGroups = { $elemMatch: { teacher: sessionUser._id } };
+            condition.active = true;
+        }
+        if (sessionUser.isCourseAdmin && !sessionUser.isLecturer) {
+            condition.admins = sessionUser._id;
+            condition.active = true;
+        }
+        if(condition.isDefault){
+            condition.isDefault=condition.isDefault=='true'?true:{$ne:true};
+        }
+        app.model.course.getAll(condition, (error, list) => {
+            res.send({error,list});            
+        });
+    });
+
     app.get('/api/course', app.permission.check('user:login'), (req, res) => {
         getCourseData(req.query._id, req.session.user, (error, item) => res.send({ error, item }));
     });

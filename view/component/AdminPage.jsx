@@ -157,11 +157,6 @@ export class TableHeadCell extends React.Component {
 
         let filterDisplay;
         if(filterType=='select'){
-            // filterDisplay = filterData && filterData.length?(<>
-            //     <Dropdown items={filterData} 
-            //     onSelected={e => this.setState({isSeletedValue:true},()=>e && e.id ? this.props.onFilterChange({[name]:e.id}):this.props.onRemoveFilter(name) )}
-            //     allowClear={allowClear} menuClassName='dropdown-menu-right' />
-            // </>) :null;
             if(!multipleSelect){// select đơn
                 filterDisplay = filterData && filterData.length?(<>
                     <DropdownSelect items={filterData} allowClear={allowClear} menuClassName='dropdown-menu-right' 

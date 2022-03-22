@@ -57,7 +57,7 @@ export class DropdownSelect extends React.Component {
     }
 }
 export class DropdownSelectMulti extends React.Component {
-    state = { selectedItem: {},isFilted:false }
+    state = { selectedItem: [],isFilted:false }
 
     componentDidMount() {
         $(document).ready(() => {
@@ -72,16 +72,23 @@ export class DropdownSelectMulti extends React.Component {
     }
 
     select = (selectedItem) => {
-        console.log('select: ',selectedItem);
-        // this.setState({ selectedItem,isFilted:true }, () => {
-        //     // $(this.element).html(selectedItem.text ? selectedItem.text : selectedItem);
-        //     this.props.onSelected && this.props.onSelected(selectedItem);
-        // });
-        // this.setState(prevState=>({selectedItem:{...prevState.selectedItem,[selectedItem.id]:!prevState.selectedItem[selectedItem.id]}))
+        let selectedState = this.state.selectedItem;
+        const isSelected = selectedState.find(item=>item==selectedItem.id);
+        if(isSelected){
+            this.setState({selectedItem:selectedState.filter(item=>item!=selectedItem.id)});
+        }else{
+            this.setState({selectedItem:[...selectedState,selectedItem.id]});
+        }
+    }
+
+    filter = ()=>{
+        this.setState({isFilted:true},()=>{
+            this.props.onSelected && this.props.onSelected(this.state.selectedItem);
+        });
     }
 
     clear = ()=>{//Clear the selected data.
-        this.setState({selectedItem:'',isFilted:false},()=>{
+        this.setState({selectedItem:[],isFilted:false},()=>{
             // $(this.element).html('');
             this.props.onSelected && this.props.onSelected(undefined);
         });
@@ -104,21 +111,19 @@ export class DropdownSelectMulti extends React.Component {
                 {allowClear && this.state.isFilted?<i className='fa fa-times ml-1 text-danger' onClick = {this.clear} style={{cursor:'pointer'}} aria-hidden="true"></i>:null}
                 <div className={menuClassName} style={{ maxHeight: '60vh', overflowY: 'auto', ...menuStyle,minWidth:250 }}>
                     {items.map((item, index) =>
-                        <a key={index} className='dropdown-item d-flex' href='#' onClick={e => e.stopPropagation() || this.select(item)}>
+                        <a key={index} className='dropdown-item d-flex' href='#' onClick={e => e.preventDefault()|| e.stopPropagation() || this.select(item)}>
                             <div className={'animated-checkbox'}>
-                                <label>
-                                    <input type='checkbox' checked={item && item.id && this.state.selectedItem && this.state.selectedItem.id==item.id} />
+                                    <input type='checkbox' checked={item.id && this.state.selectedItem.find(id=>id==item.id)} onChange={e=>e.preventDefault()} />
                                     <span className={'label-text'}></span>
-                                </label>
                             </div>
                             <span style={{whiteSpace:'normal'}}>{item.text ? item.text : item}</span>
                         </a>)}
                     <div className="dropdown-divider"></div>
                     <div className="d-flex p-2">
-                        <button className='btn btn-danger' style={{ flex:'auto' }} type='button'>
+                        <button className='btn btn-danger' style={{ flex:'auto' }} type='button' onClick={this.clear}>
                             <i className='fa fa-times' /> Hủy
                         </button>
-                        <button className='btn btn-primary' style={{ flex:'auto',marginLeft:10 }} type='button'>
+                        <button className='btn btn-primary' style={{ flex:'auto',marginLeft:10 }} type='button' onClick = {this.filter}>
                             <i className='fa fa-filter' /> Lọc
                         </button>
                     </div>
