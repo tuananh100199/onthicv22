@@ -36,7 +36,7 @@ class SectionCacHangGPLX extends React.Component {
                     <div className='intro_col'>
                         {item ?
                             <div className='wrap_GPLX'>
-                                <div className='title_GPLX'>Các hạng giấy phép lái xe</div>
+                                <h4 className='title_GPLX'>Các hạng giấy phép lái xe</h4>
                                 <div className='row wrap_item_GPLX'>
                                     <div className='col-md-3 img_item'>
                                         <h3 className='title_img'>{item.title1}</h3>

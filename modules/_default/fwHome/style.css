@@ -602,8 +602,10 @@
 }
 
 .wrapper_staff .staff_info .staff_group_title  p{
-    font-size: 64px;
-    font-weight: 800;
+    font-size: 76px;
+    font-weight: 900;
+    font-family:'Roboto Slab','Montserrat', sans-serif;
+    text-transform: capitalize;
 }
 
 .pc .staff_info .staff_group_title h3::after{
@@ -644,9 +646,10 @@
 
 .wrapper_staff .staff_info .staff_title h3{
     color: var(--color-yellow-dark);
-    font-weight: 700;
+    font-weight: 900;
     display: inline-block;
     border-bottom: 3px solid var(--color-yellow-dark);
+    text-transform: uppercase;
 }
 
 
@@ -736,11 +739,11 @@
     }
 
     .wrapper_staff .staff_info .staff_group_title p{
-        font-size: 54px;
+        font-size: 62px;
     }
 
     .wrapper_staff .staff_info .text{
-        max-width: 340px;
+        max-width: 330px;
     }
 
     .wrapper_staff .staff_info .staff_group_title {
@@ -774,7 +777,7 @@
     }
 
     .wrapper_staff .staff_info .staff_group_title p{
-        font-size:40px;
+        font-size:48px;
         line-height:60px;
     }
 
@@ -1216,8 +1219,7 @@
     background: var(--color-primary); 
     line-height: 80px; 
     text-align: center; 
-    font-size: 24px; 
-    font-weight: 700; 
+    font-weight: 800; 
     color: #FFFFFF;
 }
 .section_hang_GPLX .intro_hang_GPLX .wrap_GPLX .wrap_item_GPLX{
@@ -1485,7 +1487,7 @@
 
 .footer_logo .footer_logo__title--small{
     display:inline-block;
-    font-size:21px;
+    font-size:19.5px;
     font-weight: 500;
     color:#000
 }
@@ -1494,6 +1496,7 @@
     color:var(--color-red);
     font-weight: 900;
     display: inline-block;
+    font-size: 48px !important;
 }
 
 .footer_logo img{
@@ -1779,9 +1782,6 @@
 }
 
 @media (max-width: 576px){
-    .footer_logo .footer_logo__title--small{
-        font-size: 18px;
-    }
 
     .app-button-wrap .app-button-item{
         margin-right: 12px;
@@ -1893,7 +1893,7 @@
 }
 
 .text-title{
-    font-weight: 700;
+    font-weight: 800;
     position: relative;
     text-transform: uppercase;
 }
@@ -1982,8 +1982,8 @@
 }
 
 .carousel_dots .owl-dots .owl-dot{
-    width: 20px;
-    height: 8px;
+    width: 18px;
+    height: 6px;
     border-radius: 3px;
     background-color: #ddd;
     margin-right: 8px;

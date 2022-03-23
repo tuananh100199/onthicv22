@@ -80,7 +80,7 @@ class SectionAdvisoryForm extends React.Component {
             
                 {/* <div className='intro_col'> */}
                     <div className='advisory_form_container'>
-                        <div className='intro_form_title'>Đăng ký tư vấn</div>
+                        <h4 className='intro_form_title'>Đăng ký tư vấn</h4>
                         <form action='#' className='intro_form' id='intro_form' onSubmit={this.onSubmit}>
                             <div className='d-flex flex-row align-items-start justify-content-between flex-wrap'>
                                 {/* {readOnly ?
