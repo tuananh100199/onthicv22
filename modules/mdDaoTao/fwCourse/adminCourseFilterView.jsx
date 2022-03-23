@@ -44,6 +44,7 @@ class CoursePageFilter extends AdminPage {
                     {!isDefault ? <th style={{ width: 'auto' }} nowrap='true'>Giáo viên</th> : null}
                     <th style={{ width: 'auto' }} nowrap='true'>Học viên</th>
                     {!readOnly && <th style={{ width: 'auto' }} nowrap='true'>Kích hoạt</th>}
+                    {!readOnly && <th style={{ width: 'auto' }} nowrap='true'>Đăng ký sát hạch</th>}
                     {!readOnly && <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Thao tác</th>}
                 </tr>),
             renderRow: (item, index) => (
@@ -55,6 +56,7 @@ class CoursePageFilter extends AdminPage {
                     {!isDefault ? <TableCell type='number' content={item.teacherGroups ? item.teacherGroups.length : 0} /> : null}
                     <TableCell type='number' content={item.numberOfStudent || 0} />
                     {!readOnly && <TableCell type='checkbox' content={item.active} permission={permission} onChanged={active => this.changeActive(item, active)} />}
+                    {!readOnly && <TableCell type='checkbox' content={this.props.satHachs.find(course=>course._id==item._id)} isSwitch={false} permission={permission} onChanged={(value)=>this.props.onSelectSatHach(item,value)} />}
                     {!readOnly && <TableCell type='buttons' content={item} permission={permission} onEdit={'/user/course/' + item._id} onDelete={this.delete} />}
                 </tr>),
         });
