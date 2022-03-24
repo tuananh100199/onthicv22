@@ -129,7 +129,7 @@ module.exports = (app) => {
                         }
                     });
                 }
-                app.model.menu.getAll({ active: true }, (error, menus) => {
+                app.model.menu.getAll({},(error, menus) => {
                     if (error == null && menus) {
                         data.menus = menus.slice();
                         data.menus.forEach((menu) => {
