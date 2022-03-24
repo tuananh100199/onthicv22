@@ -1273,6 +1273,64 @@
     animation-iteration-count: infinite;
 }
 
+.section_hang_GPLX .intro_hang_GPLX .gplx-wrap-item{
+    padding: 8px 8px 64px 8px;
+}
+
+
+
+.section_hang_GPLX .intro_hang_GPLX  .gplx-img{
+    cursor: pointer;
+    width:80%;
+    height: auto;
+    object-fit: cover;
+    transition: all .25s linear;
+    margin-bottom: 30px;
+}
+
+.section_hang_GPLX .intro_hang_GPLX  .gplx-img:hover{
+    transform: scale(1.1);
+}
+
+.section_hang_GPLX .intro_hang_GPLX  .gplx-arrow{
+    margin-bottom: 20px;
+}
+
+.section_hang_GPLX .intro_hang_GPLX  .gplx-arrow >div{
+    animation-name: arrowAnimation;
+    animation-duration: 2s;
+    animation-iteration-count: infinite;
+    width:20px;
+    height: 20px;
+    border-top:3px solid var(--color-primary);
+    border-left:3px solid var(--color-primary);
+    transform: rotate(45deg);
+    margin:-15px;
+}
+
+.section_hang_GPLX .intro_hang_GPLX  .gplx-arrow >div:nth-child(2){
+    animation-delay: .2s;
+}
+
+.section_hang_GPLX .intro_hang_GPLX  .gplx-arrow >div:nth-child(3){
+    animation-delay: .4s;
+}
+
+@keyframes arrowAnimation {
+    0%{
+        opacity: 0;
+        transform: rotate(45deg) translate(15px,15px);
+    }
+
+    50%{
+        opacity: 1;
+    }
+    100%{
+        opacity: 0;
+        transform: rotate(45deg) translate(-15px,-15px);
+    }
+}
+
 @keyframes carAnimation {
     0%   {opacity: 0;}
     50% {opacity: 1;}
@@ -1952,14 +2010,17 @@
     align-items: center;
     border-radius: 50%;
     background-color: opacity;
-    border:3px solid white;
+    /* border:3px solid white; */
+    border:3px solid currentColor;
+    color:inherit;
 }
 
 .carousel_nav .owl-nav .owl-prev i,
 .carousel_nav .owl-nav .owl-next i{
     font-size: 16px;
     font-weight: 700;
-    color: white;
+    /* color: white; */
+    color:inherit;
     position: absolute;
     top:50%;
     left:50%;
@@ -1985,8 +2046,12 @@
     width: 18px;
     height: 6px;
     border-radius: 3px;
-    background-color: #ddd;
+    /* background-color: #ddd; */
+    color:inherit;
+    background-color: currentColor;
     margin-right: 8px;
+    -webkit-filter: brightness(0.8);
+    filter: brightness(0.8);
 }
 
 .carousel_dots .owl-dots .owl-dot.active{

@@ -160,7 +160,7 @@ class SectionStaffGroup extends React.Component {
             </div>
             
 
-            <div className="owl-carousel news_carousel carousel_equal_height carousel_nav carousel_dots" id='staffCarousel'>
+            <div className="owl-carousel news_carousel carousel_equal_height carousel_nav carousel_dots text-white" id='staffCarousel'>
             { this.state.items && this.state.items.map((staff, index) => (
                     <div className='container_staff'
                         key={index}>

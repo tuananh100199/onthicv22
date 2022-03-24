@@ -16,7 +16,7 @@
     transform: translateY(0);
     opacity: 1;
 }
-.advisory .advisory_form_container {
+.advisory_form_container {
     width: 100%;
     padding-left: 33px;
     padding-right: 34px;
