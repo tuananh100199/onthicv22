@@ -46,7 +46,7 @@ class ImportPage extends AdminPage {
     }
 
     onChange = (e, text = undefined) => {
-        e && e.preventDefault();
+        console.log(e);
         if (text) {
             this.onChangeCourseType(text);
         }

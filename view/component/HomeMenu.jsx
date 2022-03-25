@@ -140,7 +140,7 @@ class HomeMenu extends React.Component {
                     let link = item.link ? item.link.toLowerCase().trim() : '/',
                         isExternalLink = link.startsWith('http://') || link.startsWith('https://');
                     link = item.link ? item.link : '#';
-                    return (item.submenus && item.submenus.length > 0) ? (
+                    return (item.active ? (item.submenus && item.submenus.length > 0) ? (
                         <li key={index} className={currentLink == item.link || item.submenus.some(item => item.link == currentLink) ? 'active' : ''}>
                             {isExternalLink ? <a href={link} target='_blank' rel='noreferrer'>{item.title} test 1</a> : 
                                 (item.link ?
@@ -165,7 +165,7 @@ class HomeMenu extends React.Component {
                         <li key={index} className={currentLink == link ? 'active' : ''}>
                             {isExternalLink ? <a href={link} target='_blank' rel='noreferrer'>{item.title} test2</a> :
                                 (link.startsWith('#') ? <a href={link} onClick={(e) => this.scroll(e,link)}>{item.title}</a> : <Link to={link} onClick={() => this.onMenuClick(link)}>{item.title}  </Link>)}
-                        </li>);
+                        </li>) : null);
                 }
             });
         }

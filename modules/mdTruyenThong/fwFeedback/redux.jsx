@@ -127,6 +127,22 @@ export function getFeedbackPageByStudent(pageNumber, pageSize, pageCondition, do
     };
 }
 
+export function getFeedbackPageByLecturer(pageNumber, pageSize, pageCondition, done) {
+    return dispatch => {
+        const url = `/api/feedback/lecturer/page/${pageNumber}/${pageSize}`;
+        T.get(url, { pageCondition }, data => {
+            if (data.error) {
+                T.notify('Lấy phản hồi bị lỗi!', 'danger');
+                console.error(`GET: ${url}. ${data.error}`);
+            } else {
+                if (pageCondition) data.page.pageCondition = pageCondition;
+                done && done(data.page);
+                dispatch({ type: FeedbackGetPage, page: data.page });
+            }
+        }, error => console.error(error) || T.notify('Lấy phản hồi bị lỗi!', 'danger'));
+    };
+}
+
 export function createFeedback(newData, done) {
     return dispatch => {
         const url = '/api/feedback/student';
@@ -137,6 +153,22 @@ export function createFeedback(newData, done) {
             } else {
                 const { type, _refId } = newData;
                 dispatch(getFeedbackPageByStudent(1, 50, { type, _refId }));
+                done && done(data);
+            }
+        }, error => console.error(error) || T.notify('Tạo phản hồi bị lỗi!', 'danger'));
+    };
+}
+
+export function createFeedbackByLecturer(newData, done) {
+    return dispatch => {
+        const url = '/api/feedback/lecturer';
+        T.post(url, { newData }, data => {
+            if (data.error) {
+                T.notify('Tạo phản hồi bị lỗi!', 'danger');
+                console.error('POST: ' + url + '.', data.error);
+            } else {
+                const { _refId } = newData;
+                dispatch(getFeedbackPageByLecturer(1, 50, { _refId }));
                 done && done(data);
             }
         }, error => console.error(error) || T.notify('Tạo phản hồi bị lỗi!', 'danger'));

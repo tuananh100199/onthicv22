@@ -37,14 +37,8 @@ class LecturerStudentPage extends AdminPage {
 
     render() {
         const item = this.props.course && this.props.course.item ? this.props.course.item : {},
-            students = this.props.course && this.props.course && this.props.course.students ? this.props.course.students : [],
-            subjects = this.props.course && this.props.course.subjects ? this.props.course.subjects.sort((a, b) => a.monThucHanh - b.monThucHanh) : [];
-        const monLyThuyet = subjects.filter(subject => subject.monThucHanh == false);
-        const subjectColumns = [];
-        (monLyThuyet || []).forEach((subject, index) => {
-            subjectColumns.push(<th key={index} style={{ width: 'auto', whiteSpace: 'pre', textAlign: 'center' }}  >{subject.title}</th>);
-        });
-        // const teacherGroup = item && item.teacherGroups ? item.teacherGroups.find(group => group.teacher && group.teacher._id == currentUser._id) : null;
+            students = this.props.course && this.props.course && this.props.course.students ? this.props.course.students : [];
+        const courseId = item._id;
         const table = renderTable({
             getDataSource: () => students, stickyHead: true,
             renderHead: () => (
@@ -53,21 +47,21 @@ class LecturerStudentPage extends AdminPage {
                     <th style={{ width: '100%' }}>Tên học viên</th>
                     <th style={{ width: 'auto' }} nowrap='true'>CMND/CCCD</th>
                     <th style={{ width: 'auto' }} nowrap='true'>Số điện thoại</th>
-                    {subjectColumns}
+                    {/* {subjectColumns}
                     <th style={{ width: 'auto' }} nowrap='true'>Thực hành</th>
                     <th style={{ width: 'auto' }} nowrap='true'>Thi tốt nghiệp</th>
-                    <th style={{ width: 'auto' }} nowrap='true'>Thi sát hạch</th>
+                    <th style={{ width: 'auto' }} nowrap='true'>Thi sát hạch</th> */}
                 </tr>),
             renderRow: (item, index) => (
                 <tr key={index}>
                     <TableCell type='number' content={index + 1} />
-                    <TableCell type='text' content={item.lastname + ' ' + item.firstname} />
+                    <TableCell type='link' content={item.lastname + ' ' + item.firstname} url={'/user/course/'+ courseId + '/your-students/' + item._id}/>
                     <TableCell type='text' content={item.identityCard} />
                     <TableCell type='text' content={item.user ? item.user.phoneNumber : ''} />
-                    {monLyThuyet && monLyThuyet.length && monLyThuyet.map((subject, i) => (<TableCell key={i} type='text' style={{ textAlign: 'center' }} content={this.checkMonLyThuyet(item, subject) ? 'Đạt' : 'X'} />))}
+                    {/* {monLyThuyet && monLyThuyet.length && monLyThuyet.map((subject, i) => (<TableCell key={i} type='text' style={{ textAlign: 'center' }} content={this.checkMonLyThuyet(item, subject) ? 'Đạt' : 'X'} />))}
                     <TableCell type='text' style={{ textAlign: 'center' }} content={(item.diemThucHanh && item.diemThucHanh >= 5) ? 'Đạt' : 'X'} />
                     <TableCell type='text' style={{ textAlign: 'center' }} content={item.totNghiep ? 'Đạt' : 'X'} />
-                    <TableCell type='text' style={{ textAlign: 'center' }} content={item.datSatHach ? 'Đạt' : 'X'} />
+                    <TableCell type='text' style={{ textAlign: 'center' }} content={item.datSatHach ? 'Đạt' : 'X'} /> */}
                 </tr>),
         });
 

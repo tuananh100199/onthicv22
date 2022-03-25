@@ -1,7 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
-import { getCourse, getLearningProgressPage, exportLearningProgressToExcel, exportFinalExam } from '../redux';
+import { getCourse, getLearningProgressPage, exportLearningProgressToExcel, exportFinalExam, exportPhuLuc3B } from '../redux';
 import { updateStudent } from 'modules/mdDaoTao/fwStudent/redux';
 import { AdminPage, AdminModal, CirclePageButton, TableCell, renderTable, FormTextBox, FormSelect, FormCheckbox } from 'view/component/AdminPage';
 import FileSaver from 'file-saver';
@@ -241,6 +241,12 @@ class AdminLearningProgressPage extends AdminPage {
         } else T.notify('Học viên chưa làm bài kiểm tra của môn học này!', 'danger');
     };
 
+    exportPhuLuc3B = () => {
+        this.props.exportPhuLuc3B(this.state.courseId, (data) => {
+            FileSaver.saveAs(new Blob([new Uint8Array(data.buf.data)]), 'Phu_Luc_3B.docx');
+        });
+    };
+
     converNameSubject = (subject) => {
         let title = subject.title;
         if(title.startsWith('Đạo đức') && title.length > 40){
@@ -383,6 +389,7 @@ class AdminLearningProgressPage extends AdminPage {
                         {item._id ? <CourseAdminModal ref={e => this.courseAdmiModal = e} updateStudent={this.props.updateStudent} getLearningProgressPage={this.props.getLearningProgressPage} monThiTotNghiep={monThiTotNghiep} subjects={subjects} course={item} filter={this.state.filter} /> : null}
                         {isCourseAdmin && <CirclePageButton type='export' onClick={() => exportLearningProgressToExcel(item._id, this.state.filter)} />}
                         {isCourseAdmin && <CirclePageButton type='custom' customClassName='btn-warning' customIcon='fa-pencil-square-o' style={{ right: '75px' }} onClick={() => this.showColModal.show()} />}
+                        {isCourseAdmin && <CirclePageButton type='custom' customClassName='btn-warning' customIcon='fa-users' style={{ right: '140px' }} onClick={() => this.exportPhuLuc3B()}  />}
                     </div>
                 </div>
             </>,
@@ -392,5 +399,5 @@ class AdminLearningProgressPage extends AdminPage {
 }
 
 const mapStateToProps = state => ({ system: state.system, course: state.trainning.course });
-const mapActionsToProps = { getCourse, getLearningProgressPage, updateStudent, exportFinalExam };
+const mapActionsToProps = { getCourse, getLearningProgressPage, updateStudent, exportFinalExam, exportPhuLuc3B };
 export default connect(mapStateToProps, mapActionsToProps)(AdminLearningProgressPage);
