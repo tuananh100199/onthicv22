@@ -48,6 +48,14 @@ export default {
             component: Loadable({ loading: Loading, loader: () => import('./pages/adminManagerPage') })
         },
         {
+            path: '/user/course/:_id/report',
+            component: Loadable({ loading: Loading, loader: () => import('./pages/adminReportPage') })
+        },
+        {
+            path: '/user/course/:_id/report/danh-sach-hoc-vien',
+            component: Loadable({ loading: Loading, loader: () => import('./report/adminReport3BPage') })
+        },
+        {
             path: '/user/course/:_id/student',
             component: Loadable({ loading: Loading, loader: () => import('./pages/adminStudentPage') })
         },
