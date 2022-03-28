@@ -31,10 +31,12 @@
     border: solid 2px #199d76 !important;
 }
 
-@media (max-width: 992px) {
+@media (max-width: 991px) {
     .row .section-wrap:first-child{
         padding-bottom: 0;
     }
+
+    
 }
 
 @media (max-width: 768px) {
@@ -45,9 +47,11 @@
         padding-bottom: 15px;
         padding-top: 80px;
     }
-}
 
-@media (max-width: 576px) {
+    .intro_form_title{
+        padding:0;
+    }
+
     .section-wrap{
         padding-top: 0px;
     }
@@ -60,10 +64,6 @@
         padding: 0;
         padding-top: 80px;
         box-shadow: none;
-    }
-
-    .intro_form_title{
-        padding:0;
     }
 
     .advisory .advisory_form_container .intro_form_title{
@@ -87,4 +87,8 @@
         bottom: 16px;
         left: 0;
     }
+}
+
+@media (max-width: 576px) {
+    
 }

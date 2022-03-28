@@ -29,7 +29,7 @@ class Footer extends React.Component {
             this.props.division.list.filter(division => !division.isOutside)
             : [];
         return (
-            <footer className='footer' style={{ position: 'absolute', bottom: 0, width: '100%' }}>
+            <footer className='footer' id='footer'>
                 <div className='footer_content'>    
                     <div className=''>
                         <div className='container-fluid'>

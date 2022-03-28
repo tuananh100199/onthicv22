@@ -13,6 +13,7 @@ import listVideo, { ajaxSelectListVideo, ajaxGetListVideo } from './redux/reduxL
 import loginForm, { ajaxSelectLoginForm, ajaxGetLoginForm } from './redux/reduxLoginForm';
 import gioiThieu, { ajaxSelectGioiThieu, ajaxGetGioiThieu } from './redux/reduxGioiThieuHiepPhat';
 import hangGPLX, { ajaxSelectHangGPLX, ajaxGetHangGPLX } from './redux/reduxHangGPLX';
+import introVideo, { ajaxSelectIntroVideo, ajaxGetIntroVideo } from './redux/reduxIntroVideo';
 
 import SectionListContent from './sectionListContent';
 import SectionContent from './sectionContent';
@@ -25,6 +26,7 @@ import SectionLoginForm from './SectionLoginForm';
 import SectionDenVoiHiepPhat from './sectionDenVoiHiepPhat';
 import SectionGioiThieuHiepPhat from './sectionGioiThieuHiepPhat';
 import SectionCacHangGPLX from './sectionCacHangGPLX';
+import SectionVideoGioiThieu from './sectionVideoGioiThieu';
 
 export default {
     init: () => {
@@ -103,10 +105,17 @@ export default {
             adapter: ajaxSelectHangGPLX,
             getItem: ajaxGetHangGPLX,
         };
+        T.component['video gioi thieu'] = {
+            render: (viewId) => <SectionVideoGioiThieu viewId={viewId} />,
+            text: 'Video giới thiệu',
+            backgroundColor: 'gray',
+            adapter: ajaxSelectIntroVideo,
+            getItem: ajaxGetIntroVideo,
+        };
     },
     redux: {
         parent: 'component',
-        reducers: { carousel, content, listContent, staffGroup, statistic, video, listVideo, gioiThieu, loginForm, hangGPLX },
+        reducers: { carousel, content, listContent, staffGroup, statistic, video, listVideo, gioiThieu, loginForm, hangGPLX,introVideo },
     },
     routes: [
         {
@@ -159,6 +168,6 @@ export default {
         },
     ],
     Section: {
-        SectionContent, SectionListContent, SectionCarousel, SectionStaffGroup, SectionStatistic, SectionVideo, SectionListVideo, SectionDenVoiHiepPhat, SectionGioiThieuHiepPhat
+        SectionContent, SectionListContent, SectionCarousel, SectionStaffGroup, SectionStatistic, SectionVideo, SectionListVideo, SectionDenVoiHiepPhat, SectionGioiThieuHiepPhat,SectionVideoGioiThieu
     }
 };

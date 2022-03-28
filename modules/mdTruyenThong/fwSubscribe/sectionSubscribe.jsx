@@ -9,12 +9,22 @@ class SectionSubscribe extends React.Component {
             const done = () => {
                 if (this.props && this.props.system && this.props.system.subscribe) {
                     $(window).trigger('resize');
-                    $(this.background).parallax();
+                    // $(this.background).parallax();
+                    
+
                 } else {
                     setTimeout(done, 100);
                 }
             };
             done();
+            setTimeout(()=>{
+                if (this.props && this.props.system && this.props.system.subscribe) {
+                    // $(window).trigger('resize');
+                    $(this.background).parallax();
+                }
+            },3000);
+
+            
         });
     }
 
@@ -42,7 +52,7 @@ class SectionSubscribe extends React.Component {
         let subscribe = this.props && this.props.system && this.props.system.subscribe ? this.props.system.subscribe : '/img/subscribe.jpg';
         return (
             <div className='newsletter'>
-                <div ref={e => this.background = e} className='parallax_background parallax-window' data-parallax='scroll' data-image-src={subscribe} data-speed='0.8'/>
+                <div ref={e => this.background = e} className='parallax_background parallax-window' data-parallax='scroll' data-image-src={subscribe}/>
                 <div className='container'>
                     <div className='row'>
                         <div className='col text-center'>
