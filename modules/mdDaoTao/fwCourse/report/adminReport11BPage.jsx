@@ -2,7 +2,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import {  getCourseTypeAll } from 'modules/mdDaoTao/fwCourseType/redux';
 import { getStudentPage, updateStudent } from 'modules/mdDaoTao/fwStudent/redux';
-import { exportPhuLuc3B, getCourse } from '../redux';
+import { exportPhuLuc11B, getCourse } from '../redux';
 import FileSaver from 'file-saver';
 import Pagination from 'view/component/Pagination';
 import { Link } from 'react-router-dom';
@@ -24,6 +24,7 @@ class StudentModal extends AdminModal {
         this.itemBirth.value(item.birthday || '');
         this.itemSoNamLaiXe.value(item.soNamLaiXe || 0);
         this.itemKMLaiXe.value(item.soKmLaiXe || 0);
+        this.itemSoChungChi.value(item.soChungChi || '');
         this.setState({student: item});
     }
 
@@ -40,6 +41,7 @@ class StudentModal extends AdminModal {
             birthday: this.itemBirth.value(),
             soNamLaiXe: this.itemSoNamLaiXe.value(),
             soKmLaiXe: this.itemKMLaiXe.value(),
+            soChungChi: this.itemSoChungChi.value(),
         };
         let index = listStudent.findIndex(student => student._id == current._id);
         if(listStudent[index]) listStudent[index] = changes;
@@ -49,6 +51,7 @@ class StudentModal extends AdminModal {
 
     render = () => this.renderModal({
         title: 'Chỉnh sửa học viên chưa đạt sát hạch',
+        size: 'large',
         body: (
             <div className='row'>
                 <FormTextBox ref={e => this.itemLastname = e} className='col-md-6' label='Họ' readOnly={false} />
@@ -60,15 +63,16 @@ class StudentModal extends AdminModal {
                 <FormCheckbox ref={e => this.itemGPLX = e} className='col-md-3' isSwitch={true} label='Đã có bằng lái xe' readOnly={false} />
                 <FormTextBox ref={e => this.itemSoNamLaiXe = e} type='number' className='col-md-6' label='Số năm lái xe' readOnly={false} />
                 <FormTextBox ref={e => this.itemKMLaiXe = e} type='number' className='col-md-6' label='Số km lái xe an toàn' readOnly={false} />
+                <FormTextBox ref={e => this.itemSoChungChi = e} className='col-md-6' label='Số chứng chỉ sơ cấp, chứng chỉ đào tạo' readOnly={false} />
             </div>),
     });
 }
 
-class AdminReport3BPage extends AdminPage {
+class AdminReport11BPage extends AdminPage {
     state = { searchText: '' };
     componentDidMount() {
         T.ready('/user/course', () => {
-            const params = T.routeMatcher('/user/course/:_id/report/danh-sach-hoc-vien').parse(window.location.pathname);
+            const params = T.routeMatcher('/user/course/:_id/report/danh-sach-du-thi-sat-hach').parse(window.location.pathname);
             if (params && params._id) {
                 const course = this.props.course ? this.props.course.item : null;
                 if (course) {
@@ -93,13 +97,13 @@ class AdminReport3BPage extends AdminPage {
         });
     }
 
-    exportPhuLuc3B = () => {
+    exportPhuLuc11B = () => {
         const list  = this.props.student && this.props.student.page && this.props.student.page.list;
         const listStudent = this.state.listStudent;
         let listId = listStudent.map(student => student._id);
         if(list && list.length){
-            this.props.exportPhuLuc3B(listId, (data) => {
-                FileSaver.saveAs(new Blob([new Uint8Array(data.buf.data)]), 'Phu_Luc_3B.docx');
+            this.props.exportPhuLuc11B(listId, (data) => {
+                FileSaver.saveAs(new Blob([new Uint8Array(data.buf.data)]), 'Phu_Luc_11B.docx');
             });
         } else{
             T.notify('Danh sách học viên trống!', 'danger');
@@ -136,6 +140,7 @@ class AdminReport3BPage extends AdminPage {
                     <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>GPLX</th>
                     <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Số năm lái xe</th>
                     <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Số km lái xe an toàn</th>
+                    <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Số chứng chỉ </th>
                     <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Thao tác</th>
 
                 </tr>),
@@ -144,18 +149,19 @@ class AdminReport3BPage extends AdminPage {
                     <TableCell type='number' content={index + 1} />
                     <TableCell content={<>{`${item.lastname} ${item.firstname}`}<br />{item.identityCard}</>} style={{ whiteSpace: 'nowrap' }} />
                     <TableCell content={item.birthday ? T.dateToText(item.birthday,'dd/mm/yyyy') : ''} style={{ whiteSpace: 'nowrap' }} />
-                    <TableCell content={item.residence} />
-                    <TableCell content={item.isGiayKhamSucKhoe ? 'X' : ''} />
-                    <TableCell content={item.isBangLaiA1 ? 'X' : ''} />
-                    <TableCell content={item.soNamLaiXe ? item.soNamLaiXe : ''} />
-                    <TableCell content={item.soKmLaiXe ? item.soKmLaiXe : ''} />
+                    <TableCell content={item.residence} style={{ whiteSpace: 'nowrap' }} />
+                    <TableCell content={item.isGiayKhamSucKhoe ? 'X' : ''} style={{ whiteSpace: 'nowrap' }} />
+                    <TableCell content={item.isBangLaiA1 ? 'X' : ''} style={{ whiteSpace: 'nowrap' }} />
+                    <TableCell content={item.soNamLaiXe ? item.soNamLaiXe : ''} style={{ whiteSpace: 'nowrap' }} />
+                    <TableCell content={item.soKmLaiXe ? item.soKmLaiXe : ''} style={{ whiteSpace: 'nowrap' }} />
+                    <TableCell content={item.soChungChi ? item.soChungChi : ''} style={{ whiteSpace: 'nowrap' }} />
                     <TableCell type='buttons' content={item} permission={permission} onEdit={this.edit} onDelete={this.delete} />
                 </tr>)
         });
         return this.renderPage({
             icon: 'fa fa-users', // select icon
-            title: 'Báo cáo lập danh sách học viên (Phụ lục 3B)',
-            breadcrumb: [<Link key={0} to='/user/course'>Khóa học</Link>,<Link key={1} to={'/user/course/' + this.state.courseId + '/report'}>Báo cáo</Link>,'Báo cáo lập danh sách học viên (Phụ lục 3B)'],
+            title: 'Báo cáo lập danh sách học viên (Phụ lục 11B)',
+            breadcrumb: [<Link key={0} to='/user/course'>Khóa học</Link>,<Link key={1} to={'/user/course/' + this.state.courseId + '/report'}>Báo cáo</Link>,'Báo cáo lập danh sách học viên (Phụ lục 11B)'],
             content: <>
                 <div className='tile'>
                     <div className='tile-body'>
@@ -163,7 +169,7 @@ class AdminReport3BPage extends AdminPage {
                     </div>
                 </div>
                 <StudentModal readOnly={false} updateState={this.updateState} listStudent={this.state.listStudent} courseId={this.state.courseId} ref={e => this.modal = e} update={this.props.updateStudent} />
-                <CirclePageButton type='export' onClick={() => this.exportPhuLuc3B()} />
+                <CirclePageButton type='export' onClick={() => this.exportPhuLuc11B()} />
                 <Pagination name='pageCourse' pageNumber={pageNumber} pageSize={pageSize} pageTotal={pageTotal} totalItem={totalItem} pageCondition={pageCondition} style={{ left: 320 }}
                     getPage={(pageNumber, pageSize) => this.props.getStudentPage(pageNumber, pageSize, { courseId: this.state.courseId, totNghiep: 'true', datSatHach: 'false' })} />
             </>,
@@ -173,5 +179,5 @@ class AdminReport3BPage extends AdminPage {
 }
 
 const mapStateToProps = state => ({ system: state.system, student: state.trainning.student});
-const mapActionsToProps = { getStudentPage, updateStudent, getCourseTypeAll, exportPhuLuc3B, getCourse };
-export default connect(mapStateToProps, mapActionsToProps)(AdminReport3BPage);
+const mapActionsToProps = { getStudentPage, updateStudent, getCourseTypeAll, exportPhuLuc11B, getCourse };
+export default connect(mapStateToProps, mapActionsToProps)(AdminReport11BPage);

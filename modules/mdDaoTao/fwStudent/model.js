@@ -142,6 +142,10 @@ module.exports = (app) => {
         isGiayKhamSucKhoe:{ type: Boolean, default: false },
         isBangLaiA1:{ type: Boolean, default: false },
 
+        soNamLaiXe: Number,
+        soKMLaiXe: Number,
+        soChungChi: String,
+
         createdDate: { type: Date, default: Date.now },                                             // Ngày tạo
         modifiedDate: { type: Date, default: Date.now },                                            // Ngày cập nhật cuối cùng
     });

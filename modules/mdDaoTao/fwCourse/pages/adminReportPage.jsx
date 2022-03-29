@@ -60,7 +60,7 @@ class EditCoursePage extends AdminPage {
 
                     <PageIconHeader text='Báo cáo sát hạch' />
                     <PageIcon visible={isCourseAdmin} to={`/user/course/${item._id}/report/sat-hach-lai-xe`} icon='fa-star' iconBackgroundColor='orange' text='Báo cáo đề nghị tổ chức sát hạch lái xe (PL11A)' />
-                    <PageIcon visible={isCourseAdmin} to={`/user/course/${item._id}/report/danh-sach-du-thi-sat-hach`} icon='fa-heartbeat' iconBackgroundColor='teal' text='Danh sách học viên dự thi sát hạch (PL11B)' />
+                    <PageIcon visible={isCourseAdmin} to={`/user/course/${item._id}/report/danh-sach-du-thi-sat-hach`} icon='fa-file-word-o' iconBackgroundColor='teal' text='Danh sách học viên dự thi sát hạch (PL11B)' />
                     <PageIcon visible={isCourseAdmin} to={`/user/course/${item._id}/report/danh-sach-du-thi-sat-hach-lai`} icon='fa-users' iconBackgroundColor='#9ced65' text='Danh sách thí sinh được phép dự sát hạch lại để cấp GPLX (SH01)' />
                     <PageIcon visible={isCourseAdmin} to={`/user/course/${item._id}/report/danh-sach-du-thi-sat-hach-gplx-hang`} icon='fa-comment-o' iconBackgroundColor='#900' text={'Danh sách thí sinh dự thi sát hạch để cấp GPLX các hạng (PL12B)'}/>
                     <PageIcon visible={isCourseAdmin} to={`/user/course/${item._id}/report/danh-sach-du-thi-sat-hach-gplx`} icon='fa-file-text' iconBackgroundColor='#DAA520' text={'Danh sách thí sinh dự thi sát hạch để cấp GPLX (PL12C)'} />

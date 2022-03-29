@@ -44,6 +44,14 @@ export default {
             component: Loadable({ loading: Loading, loader: () => import('./pages/adminGraduationSubjectPage') })
         },
         {
+            path: '/user/course/:_id/final-exam-setting',
+            component: Loadable({ loading: Loading, loader: () => import('./pages/adminFinalExamSettingPage')})
+        },
+        {
+            path: '/user/course/:courseId/final-exam-setting/:_id',
+            component: Loadable({ loading: Loading, loader: () => import('./pages/adminFinalExamPage')})
+        },
+        {
             path: '/user/course/:_id/manager',
             component: Loadable({ loading: Loading, loader: () => import('./pages/adminManagerPage') })
         },
@@ -54,6 +62,14 @@ export default {
         {
             path: '/user/course/:_id/report/danh-sach-hoc-vien',
             component: Loadable({ loading: Loading, loader: () => import('./report/adminReport3BPage') })
+        },
+        {
+            path: '/user/course/:_id/report/danh-sach-du-thi-sat-hach',
+            component: Loadable({ loading: Loading, loader: () => import('./report/adminReport11BPage') })
+        },
+        {
+            path: '/user/course/:_id/class',
+            component: Loadable({ loading: Loading, loader: () => import('./pages/adminClassPage') })
         },
         {
             path: '/user/course/:_id/student',

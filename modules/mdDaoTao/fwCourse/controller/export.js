@@ -442,9 +442,9 @@ module.exports = (app) => {
         });
     });
 
-    app.get('/api/course/student-3b/export/:_courseId', app.permission.check('user:login'), (req, res) => {
-        const {_courseId} = req.params;
-        app.model.student.getAll({course: _courseId}, (error, listStudents) => {
+    app.get('/api/course/student-3b/export', app.permission.check('course:export'), (req, res) => {
+        const { listId } = req.query;
+        app.model.student.getAll({ _id : { $in: listId }}, (error, listStudents) => {
             if(error || !listStudents.length) res.send({ error: 'Xuất file báo cáo bị lỗi'});
             else{
                 let students = [];
@@ -460,9 +460,9 @@ module.exports = (app) => {
                         });
                     }else{
                         const student = listStudents[index];
-                        const { birthday, identityCard, lastname, firstname, isGiayKhamSucKhoe, isBangLaiA1, residence } = student;                        
+                        const { birthday, identityCard, lastname, firstname, isGiayKhamSucKhoe, isBangLaiA1, residence, soNamLaiXe, soKMLaiXe } = student;                        
                             students.push({
-                                idx:index+1,birth:new Date(birthday).getFullYear().toString(), identityCard, lastname, firstname, giaySuckhoe: isGiayKhamSucKhoe ? 'Có' : 'Không', GPLX: isBangLaiA1 ? 'Có' : 'Không', address: residence
+                                idx:index+1,birth:new Date(birthday).getFullYear().toString(), identityCard, lastname, firstname, giaySuckhoe: isGiayKhamSucKhoe ? 'Có' : 'Không', GPLX: isBangLaiA1 ? 'Có' : 'Không', address: residence, soNamLaiXe: soNamLaiXe ? soNamLaiXe : '', soKMLaiXe: soKMLaiXe ? soKMLaiXe : ''
                             });
                         handleExport(index+1);
                     }
@@ -472,9 +472,9 @@ module.exports = (app) => {
         });
     });
 
-    app.get('/api/course/student-11b/export/:_courseId', app.permission.check('user:login'), (req, res) => {
-        const {_courseId} = req.params;
-        app.model.student.getAll({course: _courseId, totNghiep: true}, (error, listStudents) => {
+    app.get('/api/course/student-11b/export', app.permission.check('user:login'), (req, res) => {
+        const {listId} = req.query;
+        app.model.student.getAll({ _id : { $in: listId }}, (error, listStudents) => {
             if(error || !listStudents.length) res.send({ error: 'Xuất file báo cáo bị lỗi'});
             else{
                 let students = [];
@@ -490,9 +490,9 @@ module.exports = (app) => {
                         });
                     }else{
                         const student = listStudents[index];
-                        const { birthday, identityCard, lastname, firstname, isGiayKhamSucKhoe, isBangLaiA1, residence } = student;                        
+                        const { birthday, identityCard, lastname, firstname, isGiayKhamSucKhoe, isBangLaiA1, residence, soNamLaiXe, soKMLaiXe, soChungChi } = student;                        
                             students.push({
-                                idx:index+1,birth:new Date(birthday).getFullYear().toString(), identityCard, lastname, firstname, isGiayKhamSucKhoe: isGiayKhamSucKhoe ? 'Có' : 'Không', isBangLaiA1: isBangLaiA1 ? 'Có' : 'Không', residence
+                                idx:index+1,birth:new Date(birthday).getFullYear().toString(), identityCard, lastname, firstname, isGiayKhamSucKhoe: isGiayKhamSucKhoe ? 'Có' : 'Không', isBangLaiA1: isBangLaiA1 ? 'Có' : 'Không', residence, soNamLaiXe: soNamLaiXe ? soNamLaiXe : '', soKMLaiXe: soKMLaiXe ? soKMLaiXe : '', soChungChi: soChungChi ? soChungChi : ''
                             });
                         handleExport(index+1);
                     }

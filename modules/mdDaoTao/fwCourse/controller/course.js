@@ -24,6 +24,8 @@ module.exports = (app) => {
     app.get('/user/course/:_id/info', app.permission.check('course:read'), app.templates.admin);
     app.get('/user/course/:_id/subject', app.permission.check('course:read'), app.templates.admin);
     app.get('/user/course/:_id/graduation-subject', app.permission.check('course:read'), app.templates.admin);
+    app.get('/user/course/:_id/final-exam-setting', app.permission.check('course:read'), app.templates.admin);
+    app.get('/user/course/:courseId/final-exam-setting/:_id', app.permission.check('course:read'), app.templates.admin);
     app.get('/user/course/:_id/manager', app.permission.check('course:read'), app.templates.admin);
     app.get('/user/course/:_id/student', app.permission.check('course:read'), app.templates.admin);
     app.get('/user/course/:_id/teacher', app.permission.check('course:read'), app.templates.admin);
@@ -49,8 +51,12 @@ module.exports = (app) => {
     app.get('/user/course/:_id/import-final-score', app.permission.check('course:import'), app.templates.admin);
     app.get('/user/course/:_courseId/photo/:_id', app.permission.check('user:login'), app.templates.admin);
     app.get('/user/course/:_courseId/additional-profile', app.permission.check('course:read'), app.templates.admin);
+    
     app.get('/user/course/:_id/report', app.permission.check('course:report'), app.templates.admin);
     app.get('/user/course/:_id/report/danh-sach-hoc-vien', app.permission.check('course:report'), app.templates.admin);
+    app.get('/user/course/:_id/report/danh-sach-du-thi-sat-hach', app.permission.check('course:report'), app.templates.admin);
+    
+    app.get('/user/course/:_id/class', app.permission.check('course:read'), app.templates.admin);
     
     app.get('/user/hoc-vien/khoa-hoc/:_id', app.permission.check('user:login'), app.templates.admin);
     app.get('/user/hoc-vien/khoa-hoc/thong-tin/:_id', app.permission.check('user:login'), app.templates.admin);

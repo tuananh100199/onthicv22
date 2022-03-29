@@ -12,6 +12,7 @@ module.exports = app => {
             category: { type: app.db.Schema.ObjectId, ref: 'Category' },
             amount: Number,
         }],
+        finalQuestions: [],
     });
     const model = app.db.model('Subject', schema);
 

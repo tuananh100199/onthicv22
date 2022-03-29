@@ -4,8 +4,8 @@ import { exportExamStudent, getStudentPage, updateStudent } from './redux';
 import { createNotification } from 'modules/_default/fwNotification/redux';
 import { ajaxSelectCourseType, getCourseTypeAll } from 'modules/mdDaoTao/fwCourseType/redux';
 import { getNotificationTemplateAll, getNotificationTemplate } from 'modules/mdTruyenThong/fwNotificationTemplate/redux';
-import { ajaxSelectCourseByCourseType, exportPhuLuc11B } from 'modules/mdDaoTao/fwCourse/redux';
-import FileSaver from 'file-saver';
+import { ajaxSelectCourseByCourseType } from 'modules/mdDaoTao/fwCourse/redux';
+// import FileSaver from 'file-saver';
 import { AdminPage, FormRichTextBox, FormSelect, FormDatePicker, FormTextBox, FormEditor, renderTable, TableCell, AdminModal, CirclePageButton } from 'view/component/AdminPage';
 import Pagination from 'view/component/Pagination';
 
@@ -223,16 +223,16 @@ class FailStudentPage extends AdminPage {
         });
     }
 
-    exportPhuLuc11B = (courseId) => {
-        const list  = this.props.student && this.props.student.page && this.props.student.page.list;
-        if(list && list.length){
-            this.props.exportPhuLuc11B(courseId, (data) => {
-                FileSaver.saveAs(new Blob([new Uint8Array(data.buf.data)]), 'Phu_Luc_11B.docx');
-            });
-        } else{
-            T.notify('Danh sách học viên trống!', 'danger');
-        }
-    };
+    // exportPhuLuc11B = (courseId) => {
+    //     const list  = this.props.student && this.props.student.page && this.props.student.page.list;
+    //     if(list && list.length){
+    //         this.props.exportPhuLuc11B(courseId, (data) => {
+    //             FileSaver.saveAs(new Blob([new Uint8Array(data.buf.data)]), 'Phu_Luc_11B.docx');
+    //         });
+    //     } else{
+    //         T.notify('Danh sách học viên trống!', 'danger');
+    //     }
+    // };
 
     edit = (e, item) => e.preventDefault() || this.modal.show(item);
 
@@ -303,7 +303,7 @@ class FailStudentPage extends AdminPage {
                 <CirclePageButton type='custom' customIcon='fa-cloud-upload' style={{ right: 70 }} customClassName='btn-primary' onClick={() => this.props.history.push('/user/student/import-fail-pass')} />
                 <CirclePageButton type='export' onClick={() => exportExamStudent(this.state.courseId, 'HVChuaDatSatHach')} />
                 {this.course && (this.course.value() != '0') ? <CirclePageButton type='custom' customClassName='btn-warning' customIcon='fa-paper-plane' style={{ right: '130px' }} onClick={(e) => this.sendNotificationCourse(e, this.course.value())} /> : null}
-                {this.course && (this.course.value() != '0') ? <CirclePageButton type='custom' customClassName='btn-info' customIcon='fa-users' style={{ right: '190px' }} onClick={() => this.exportPhuLuc11B(this.course.value())} /> : null}
+                {/* {this.course && (this.course.value() != '0') ? <CirclePageButton type='custom' customClassName='btn-info' customIcon='fa-users' style={{ right: '190px' }} onClick={() => this.exportPhuLuc11B(this.course.value())} /> : null} */}
                 <StudentModal readOnly={!permission.write} ref={e => this.modal = e} update={this.props.updateStudent} />
                 <NotificationModal readOnly={!permission.write} ref={e => this.notiModal = e} create={this.props.createNotification} data={this.state.data} />
                 <Pagination pageCondition={pageCondition} pageNumber={pageNumber} pageSize={pageSize} pageTotal={pageTotal} totalItem={totalItem} getPage={(pageNumber, pageSize) => this.onSearch({ pageNumber, pageSize })} />
@@ -313,5 +313,5 @@ class FailStudentPage extends AdminPage {
 }
 
 const mapStateToProps = state => ({ system: state.system, student: state.trainning.student, notificationTemplate: state.communication.notificationTemplate });
-const mapActionsToProps = { getStudentPage, updateStudent, createNotification, getCourseTypeAll, getNotificationTemplateAll, getNotificationTemplate, exportPhuLuc11B };
+const mapActionsToProps = { getStudentPage, updateStudent, createNotification, getCourseTypeAll, getNotificationTemplateAll, getNotificationTemplate };
 export default connect(mapStateToProps, mapActionsToProps)(FailStudentPage);

@@ -152,6 +152,20 @@ export function submitFeedback(subjectId, courseId, answers, done) {
     };
 }
 
+export function getRandomSubjectTest(subjectId, done) {
+    return () => {
+        const url = '/api/subject/random';
+        T.get(url, { subjectId }, data => {
+            if (data.error) {
+                T.notify('Lấy bộ đề thi ngẫu nhiên bị lỗi!', 'danger');
+                console.error('GET: ' + url + '. ' + data.error);
+            } else {
+                done && done(data.driverTest);
+            }
+        }, error => console.error(error) || T.notify('Lấy bộ đề thi ngẫu nhiên bị lỗi!', 'danger'));
+    };
+}
+
 export function createRandomSubjectTest(subjectId,courseId, done) {
     return () => {
         const url = '/api/subject/random';

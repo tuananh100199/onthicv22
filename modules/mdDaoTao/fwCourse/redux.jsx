@@ -466,10 +466,10 @@ export function exportFinalExam(_subjectId, _studentId, done) {
     };
 }
 
-export function exportPhuLuc3B(_courseId, done) {
+export function exportPhuLuc3B(listId, done) {
     return () => {
-        const url = `/api/course/student-3b/export/${_courseId}`;
-        T.get(url, data => {
+        const url = '/api/course/student-3b/export';
+        T.get(url, { listId }, data => {
             if (data.error) {
                 T.notify('Xuất file word bị lỗi!', 'danger');
                 console.error(`GET: ${url}.`, data.error);
@@ -481,10 +481,10 @@ export function exportPhuLuc3B(_courseId, done) {
     };
 }
 
-export function exportPhuLuc11B(_courseId, done) {
+export function exportPhuLuc11B(listId, done) {
     return () => {
-        const url = `/api/course/student-11b/export/${_courseId}`;
-        T.get(url, data => {
+        const url = '/api/course/student-11b/export';
+        T.get(url, { listId }, data => {
             if (data.error) {
                 T.notify('Xuất file word bị lỗi!', 'danger');
                 console.error(`GET: ${url}.`, data.error);
