@@ -68,6 +68,18 @@ export default {
             component: Loadable({ loading: Loading, loader: () => import('./report/adminReport11BPage') })
         },
         {
+            path: '/user/course/:_id/report/danh-sach-du-thi-sat-hach-gplx-hang',
+            component: Loadable({ loading: Loading, loader: () => import('./report/adminReport12BPage') })
+        },
+        {
+            path: '/user/course/:_id/report/danh-sach-du-thi-sat-hach-gplx',
+            component: Loadable({ loading: Loading, loader: () => import('./report/adminReport12CPage') })
+        },
+        {
+            path: '/user/course/:_id/report/danh-sach-du-thi-sat-hach-lai-gplx',
+            component: Loadable({ loading: Loading, loader: () => import('./report/adminReport13Page') })
+        },
+        {
             path: '/user/course/:_id/class',
             component: Loadable({ loading: Loading, loader: () => import('./pages/adminClassPage') })
         },

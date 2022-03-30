@@ -55,6 +55,9 @@ module.exports = (app) => {
     app.get('/user/course/:_id/report', app.permission.check('course:report'), app.templates.admin);
     app.get('/user/course/:_id/report/danh-sach-hoc-vien', app.permission.check('course:report'), app.templates.admin);
     app.get('/user/course/:_id/report/danh-sach-du-thi-sat-hach', app.permission.check('course:report'), app.templates.admin);
+    app.get('/user/course/:_id/report/danh-sach-du-thi-sat-hach-gplx-hang', app.permission.check('course:report'), app.templates.admin);
+    app.get('/user/course/:_id/report/danh-sach-du-thi-sat-hach-gplx', app.permission.check('course:report'), app.templates.admin);
+    app.get('/user/course/:_id/report/danh-sach-du-thi-sat-hach-lai-gplx', app.permission.check('course:report'), app.templates.admin);
     
     app.get('/user/course/:_id/class', app.permission.check('course:read'), app.templates.admin);
     

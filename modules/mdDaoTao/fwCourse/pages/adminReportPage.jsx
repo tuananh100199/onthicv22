@@ -48,24 +48,24 @@ class EditCoursePage extends AdminPage {
                 
                     <PageIconHeader text='Báo cáo tốt nghiệp' />
                     <PageIcon visible={isCourseAdmin} to={`/user/course/${item._id}/report/bien-ban-du-thi-tot-nghiep`} icon='fa-file-word-o' iconBackgroundColor='orange' text='Biên bản xét dự thi tốt nghiệp (TN01)' />
-                    <PageIcon visible={isCourseAdmin} to={`/user/course/${item._id}/report/danh-sach-du-thi-tot-nghiep`} icon='fa-heartbeat' iconBackgroundColor='teal' text='Danh sách học viên xét dự thi tốt nghiệp (TN02)' />
-                    <PageIcon visible={isCourseAdmin} to={`/user/course/${item._id}/report/hoi-dong-thi-tot-nghiep`} icon='fa-users' iconBackgroundColor='#9ced65' text='Quyết định thành lập hội đồng thi tốt nghiệp (TN03)' />
-                    <PageIcon visible={isCourseAdmin} to={`/user/course/${item._id}/report/hop-hoi-dong-thi-tot-nghiep`} icon='fa-comment-o' iconBackgroundColor='#900' text={'Biên bản họp hội đồng thi tốt nghiệp (TN04)'}/>
-                    <PageIcon visible={isCourseAdmin} to={`/user/course/${item._id}/report/ban-coi-cham-thi`} icon='fa-file-text' iconBackgroundColor='#DAA520' text={'Ban coi chấm thi (TN05)'} />
-                    <PageIcon visible={isCourseAdmin} to={`/user/course/${item._id}/report/danh-sach-hoc-vien-thi-tot-nghiep`} icon='fa-star' iconBackgroundColor='orange' text='Danh sách học viên dự thi tốt nghiệp (TN06)' />
-                    <PageIcon visible={isCourseAdmin} to={`/user/course/${item._id}/report/cong-nhan-tot-nghiep`} icon='fa-heartbeat' iconBackgroundColor='teal' text='Quyết định công nhận tốt nghiệp (TN07)' />
-                    <PageIcon visible={isCourseAdmin} to={`/user/course/${item._id}/report/xet-ket-qua-tot-nghiep`} icon='fa-users' iconBackgroundColor='#9ced65' text='Biên bản họp xét kết quả tốt nghiệp (TN08)' />
-                    <PageIcon visible={isCourseAdmin} to={`/user/course/${item._id}/report/danh-sach-hoc-vien-tot-nghiep`} icon='fa-comment-o' iconBackgroundColor='#900' text={'Danh sách học viên tốt nghiệp (TN09)'}/>
-                    <PageIcon visible={isCourseAdmin} to={`/user/course/${item._id}/report/bang-diem-thi-tot-nghiep`} icon='fa-file-text' iconBackgroundColor='#DAA520' text={'Bảng điểm thi tốt nghiệp (TN10)'} />
+                    <PageIcon visible={isCourseAdmin} to={`/user/course/${item._id}/report/danh-sach-du-thi-tot-nghiep`} icon='fa-file-excel-o' iconBackgroundColor='teal' text='Danh sách học viên xét dự thi tốt nghiệp (TN02)' />
+                    <PageIcon visible={isCourseAdmin} to={`/user/course/${item._id}/report/hoi-dong-thi-tot-nghiep`} icon='fa-file-word-o' iconBackgroundColor='#9ced65' text='Quyết định thành lập hội đồng thi tốt nghiệp (TN03)' />
+                    <PageIcon visible={isCourseAdmin} to={`/user/course/${item._id}/report/hop-hoi-dong-thi-tot-nghiep`} icon='fa-file-word-o' iconBackgroundColor='#900' text={'Biên bản họp hội đồng thi tốt nghiệp (TN04)'}/>
+                    <PageIcon visible={isCourseAdmin} to={`/user/course/${item._id}/report/ban-coi-cham-thi`} icon='fa-file-word-o' iconBackgroundColor='#DAA520' text={'Ban coi chấm thi (TN05)'} />
+                    <PageIcon visible={isCourseAdmin} to={`/user/course/${item._id}/report/danh-sach-hoc-vien-thi-tot-nghiep`} icon='fa-file-word-o' iconBackgroundColor='orange' text='Danh sách học viên dự thi tốt nghiệp (TN06)' />
+                    <PageIcon visible={isCourseAdmin} to={`/user/course/${item._id}/report/cong-nhan-tot-nghiep`} icon='fa-file-word-o' iconBackgroundColor='teal' text='Quyết định công nhận tốt nghiệp (TN07)' />
+                    <PageIcon visible={isCourseAdmin} to={`/user/course/${item._id}/report/xet-ket-qua-tot-nghiep`} icon='fa-file-word-o' iconBackgroundColor='#9ced65' text='Biên bản họp xét kết quả tốt nghiệp (TN08)' />
+                    <PageIcon visible={isCourseAdmin} to={`/user/course/${item._id}/report/danh-sach-hoc-vien-tot-nghiep`} icon='fa-file-word-o' iconBackgroundColor='#900' text={'Danh sách học viên tốt nghiệp (TN09)'}/>
+                    <PageIcon visible={isCourseAdmin} to={`/user/course/${item._id}/report/bang-diem-thi-tot-nghiep`} icon='fa-file-excel-o' iconBackgroundColor='#DAA520' text={'Bảng điểm thi tốt nghiệp (TN10)'} />
 
                     <PageIconHeader text='Báo cáo sát hạch' />
-                    <PageIcon visible={isCourseAdmin} to={`/user/course/${item._id}/report/sat-hach-lai-xe`} icon='fa-star' iconBackgroundColor='orange' text='Báo cáo đề nghị tổ chức sát hạch lái xe (PL11A)' />
+                    <PageIcon visible={isCourseAdmin} to={`/user/course/${item._id}/report/sat-hach-lai-xe`} icon='fa-file-word-o' iconBackgroundColor='orange' text='Báo cáo đề nghị tổ chức sát hạch lái xe (PL11A)' />
                     <PageIcon visible={isCourseAdmin} to={`/user/course/${item._id}/report/danh-sach-du-thi-sat-hach`} icon='fa-file-word-o' iconBackgroundColor='teal' text='Danh sách học viên dự thi sát hạch (PL11B)' />
-                    <PageIcon visible={isCourseAdmin} to={`/user/course/${item._id}/report/danh-sach-du-thi-sat-hach-lai`} icon='fa-users' iconBackgroundColor='#9ced65' text='Danh sách thí sinh được phép dự sát hạch lại để cấp GPLX (SH01)' />
-                    <PageIcon visible={isCourseAdmin} to={`/user/course/${item._id}/report/danh-sach-du-thi-sat-hach-gplx-hang`} icon='fa-comment-o' iconBackgroundColor='#900' text={'Danh sách thí sinh dự thi sát hạch để cấp GPLX các hạng (PL12B)'}/>
-                    <PageIcon visible={isCourseAdmin} to={`/user/course/${item._id}/report/danh-sach-du-thi-sat-hach-gplx`} icon='fa-file-text' iconBackgroundColor='#DAA520' text={'Danh sách thí sinh dự thi sát hạch để cấp GPLX (PL12C)'} />
-                    <PageIcon visible={isCourseAdmin} to={`/user/course/${item._id}/report/danh-sach-du-thi-sat-hach-lai-gplx`} icon='fa-star' iconBackgroundColor='orange' text='Danh sách thí sinh dự thi sát hạch lại để cấp lại GPLX (PL13)' />
-                    <PageIcon visible={isCourseAdmin} to={`/user/course/${item._id}/report/bang-diem-thi-sat-hach`} icon='fa-heartbeat' iconBackgroundColor='teal' text='Bảng điểm thi sát hạch (SH02)' />
+                    <PageIcon visible={isCourseAdmin} to={`/user/course/${item._id}/report/danh-sach-du-thi-sat-hach-lai`} icon='fa-file-word-o' iconBackgroundColor='#9ced65' text='Danh sách thí sinh được phép dự sát hạch lại để cấp GPLX (SH01)' />
+                    <PageIcon visible={isCourseAdmin} to={`/user/course/${item._id}/report/danh-sach-du-thi-sat-hach-gplx-hang`} icon='fa-file-word-o' iconBackgroundColor='#900' text={'Danh sách thí sinh dự thi sát hạch để cấp GPLX các hạng (PL12B)'}/>
+                    <PageIcon visible={isCourseAdmin} to={`/user/course/${item._id}/report/danh-sach-du-thi-sat-hach-gplx`} icon='fa-file-word-o' iconBackgroundColor='#DAA520' text={'Danh sách thí sinh dự thi sát hạch để cấp GPLX (PL12C)'} />
+                    <PageIcon visible={isCourseAdmin} to={`/user/course/${item._id}/report/danh-sach-du-thi-sat-hach-lai-gplx`} icon='fa-file-word-o' iconBackgroundColor='orange' text='Danh sách thí sinh dự thi sát hạch lại để cấp lại GPLX (PL13)' />
+                    <PageIcon visible={isCourseAdmin} to={`/user/course/${item._id}/report/bang-diem-thi-sat-hach`} icon='fa-file-excel-o' iconBackgroundColor='teal' text='Bảng điểm thi sát hạch (SH02)' />
 
                 </div>
             ),

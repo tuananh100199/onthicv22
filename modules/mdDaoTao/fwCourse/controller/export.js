@@ -1,5 +1,10 @@
 module.exports = (app) => {
-
+    function convert(str,type) {
+        let date = new Date(str),
+            mnth = ('0' + (date.getMonth() + 1)).slice(-2),
+            day = ('0' + date.getDate()).slice(-2);
+        return type=='name' ? [day, mnth, date.getFullYear()].join('-') : [day, mnth, date.getFullYear()].join('/');
+    }
     app.get('/api/course/export/:_courseId', app.permission.check('course:export'), (req, res) => {
         app.model.course.get(req.params._courseId, (error, course) => {
             if (error) {
@@ -502,63 +507,79 @@ module.exports = (app) => {
         });
     });
 
-    app.get('/api/course/student-graduation/export/:_courseId', app.permission.check('course:export'), (req, res) => {
-        const sessionUser = req.session.user,
-            division = sessionUser.division,
-            courseId = req.params._courseId;
-        function convert(str,type) {
-                let date = new Date(str),
-                    mnth = ('0' + (date.getMonth() + 1)).slice(-2),
-                    day = ('0' + date.getDate()).slice(-2);
-                return type=='name' ? [day, mnth, date.getFullYear()].join('-') : [day, mnth, date.getFullYear()].join('/');
-        }
-        if (sessionUser && sessionUser.isCourseAdmin && division && division.isOutside) {
-            res.send({ error: 'Bạn không có quyền xuất file excel này!' });
-        } else {
-            app.model.course.get(courseId, (error, course) => {
-                if (error) {
-                    res.send({ error: 'Hệ thống bị lỗi!' });
-                } else {
-                    app.model.student.getAll({course: course._id, diemThucHanh: { $exists: true, $gte: 5 }}, (error, list) => {
-                        if(error || !list.length){
-                            res.send({error: 'Lỗi khi lấy học viên'});
-                        } else {
-                            const workbook = app.excel.create(), worksheet = workbook.addWorksheet(convert(new Date(),'name'));
-                        const cells = [
-                            { cell: 'A1', value: 'STT', bold: true, border: '1234' },
-                            { cell: 'B1', value: 'Họ', bold: true, border: '1234' },
-                            { cell: 'C1', value: 'Tên', bold: true, border: '1234' },
-                            { cell: 'D1', value: 'Ngày sinh', bold: true, border: '1234' },
-                            { cell: 'E1', value: 'Số CMND/HC', bold: true, border: '1234' },
-                            { cell: 'F1', value: 'Địa chỉ thường trú', bold: true, border: '1234' },
-                            { cell: 'G1', value: 'Ghi chú', bold: true, border: '1234' },
-                        ];
-                        worksheet.columns = [
-                            { header: 'STT', key: '_id', width: 10 },
-                            { header: 'Họ', key: 'lastname', width: 15 },
-                            { header: 'Tên', key: 'firstname', width: 15 },
-                            { header: 'Ngày sinh', key: 'birth', width: 15 },
-                            { header: 'Số CMND/HC', key: 'identityCard', width: 15 },
-                            { header: 'Địa chỉ thường trú', key: 'residence', width: 40 },
-                            { header: 'Ghi chú', key: 'note', width: 15 },
-                        ];
-                        list.forEach((student, index) => {
-                            worksheet.addRow({
-                                _id: index + 1,
-                                lastname: student.lastname,
-                                firstname: student.firstname,
-                                identityCard: student.identityCard,
-                                birth: student.birthday ? convert(student.birthday) : '',
-                                residence: student.residence ,
-                                note: '',
-                            });
+    app.get('/api/course/student-12b/export', app.permission.check('user:login'), (req, res) => {
+        const {listId} = req.query;
+        app.model.student.getAll({ _id : { $in: listId }}, (error, listStudents) => {
+            if(error || !listStudents.length) res.send({ error: 'Xuất file báo cáo bị lỗi'});
+            else{
+                let students = [];
+                listStudents.sort((a, b) => {
+                    if(a.firstname < b.firstname) { return -1; }
+                    if(a.firstname > b.firstname) { return 1; }
+                    return 0;
+                });
+                const handleExport = (index=0)=>{
+                    if(index>=listStudents.length){
+                        const data = {
+                            courseType: listStudents[0].courseType.title,
+                            course: listStudents[0].course.name,
+                            students
+                        };
+                        app.docx.generateFile('/document/Phu_Luc_12B.docx', data, (error, buf) => {
+                            res.send({ error: error, buf: buf });
                         });
-                        app.excel.write(worksheet, cells);
-                        app.excel.attachment(workbook, res, 'DS HV DU THI TOT NGHIEP.xlsx');
+                    }else{
+                        const student = listStudents[index];
+                        const { birthday, identityCard, lastname, firstname, isGiayKhamSucKhoe, residence, soNamLaiXe, soKMLaiXe, soChungChi, courseType } = student;                        
+                            students.push({
+                                idx:index+1,birth: birthday ? convert(birthday) : '', identityCard, lastname, firstname, isGiayKhamSucKhoe: isGiayKhamSucKhoe ? 'Có' : 'Không', residence, soNamLaiXe: soNamLaiXe ? soNamLaiXe : '', soKMLaiXe: soKMLaiXe ? soKMLaiXe : '', soChungChi: soChungChi ? soChungChi : '', courseType: courseType.title
+                            });
+                        handleExport(index+1);
+                    }
+                };
+                handleExport();
+            }
+        });
+    });
+
+    app.get('/api/course/student-12c/export', app.permission.check('user:login'), (req, res) => {
+        const {listId, type} = req.query;
+        app.model.student.getAll({ _id : { $in: listId }}, (error, listStudents) => {
+            if(error || !listStudents.length) res.send({ error: 'Xuất file báo cáo bị lỗi'});
+            else{
+                let students = [];
+                listStudents.sort((a, b) => {
+                    if(a.firstname < b.firstname) { return -1; }
+                    if(a.firstname > b.firstname) { return 1; }
+                    return 0;
+                });
+                const handleExport = (index=0)=>{
+                    if(index>=listStudents.length){
+                        const data = {
+                            courseType: listStudents[0].courseType.title,
+                            course: listStudents[0].course.name,
+                            students
+                        };
+                        if(type == '12c'){
+                            app.docx.generateFile('/document/Phu_Luc_12C.docx', data, (error, buf) => {
+                                res.send({ error: error, buf: buf });
+                            });
+                        } else {
+                            app.docx.generateFile('/document/Phu_Luc_13.docx', data, (error, buf) => {
+                                res.send({ error: error, buf: buf });
+                            });
                         }
-                    });
-                }
-            });
-        }
+                    }else{
+                        const student = listStudents[index];
+                        const { birthday, identityCard, lastname, firstname, lyDoSatHach, residence, noiDungSatHach, soGPLX, coQuan, courseType, ngayHetHanGPLX } = student;                        
+                            students.push({
+                                idx:index+1,birth: birthday ? convert(birthday) : '', ngayHetHanGPLX: ngayHetHanGPLX ? convert(ngayHetHanGPLX) : '', identityCard, lastname, firstname, lyDoSatHach: lyDoSatHach ? lyDoSatHach : '', residence, noiDungSatHach: noiDungSatHach ? noiDungSatHach : '', soGPLX: soGPLX ? soGPLX : '', coQuan: coQuan ? coQuan : '', courseType: courseType.title
+                            });
+                        handleExport(index+1);
+                    }
+                };
+                handleExport();
+            }
+        });
     });
 };

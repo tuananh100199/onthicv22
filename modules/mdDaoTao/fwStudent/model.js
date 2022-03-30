@@ -145,6 +145,11 @@ module.exports = (app) => {
         soNamLaiXe: Number,
         soKMLaiXe: Number,
         soChungChi: String,
+        soGPLX: String,
+        coQuan: String,                                                                             // Các trường báo cáo cuối khoá
+        ngayHetHanGPLX: Date,
+        lyDoSatHach: String,
+        noiDungSatHach: String,
 
         createdDate: { type: Date, default: Date.now },                                             // Ngày tạo
         modifiedDate: { type: Date, default: Date.now },                                            // Ngày cập nhật cuối cùng

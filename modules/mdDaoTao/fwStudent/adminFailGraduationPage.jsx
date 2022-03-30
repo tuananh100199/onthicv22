@@ -4,7 +4,7 @@ import { exportExamStudent, getStudentPage, updateStudent } from './redux';
 import { createNotification } from 'modules/_default/fwNotification/redux';
 import { getNotificationTemplateAll, getNotificationTemplate } from 'modules/mdTruyenThong/fwNotificationTemplate/redux';
 import { getCourseTypeAll, ajaxSelectCourseType } from 'modules/mdDaoTao/fwCourseType/redux';
-import { ajaxSelectCourseByCourseType, exportListStudentGraduation } from 'modules/mdDaoTao/fwCourse/redux';
+import { ajaxSelectCourseByCourseType } from 'modules/mdDaoTao/fwCourse/redux';
 import { AdminPage, FormRichTextBox, FormTextBox, FormSelect, renderTable, TableCell, AdminModal, CirclePageButton, FormEditor } from 'view/component/AdminPage';
 import Pagination from 'view/component/Pagination';
 
@@ -279,10 +279,7 @@ class FailGraduationPage extends AdminPage {
                 </div>
                 {this.state.courseTypeId ? <CirclePageButton type='export' onClick={() => exportExamStudent(this.state.courseTypeId, 'HVChuaTotNghiep')} /> : null}
                 {this.course && (this.course.value() != '0') ? <CirclePageButton type='custom' customClassName='btn-warning' customIcon='fa-paper-plane' style={{ right: '70px' }} onClick={(e) => this.sendNotificationCourse(e, this.course.value())} /> : null}
-                {this.course && (this.course.value() != '0') ? <CirclePageButton type='custom' customClassName='btn-info' customIcon='fa-users' style={{ right: '130px' }} onClick={() => exportListStudentGraduation(this.course.value())} /> : null}
-                {/* <Tooltip  placement='top' overlay={'Báo cáo'}>
                     
-                </Tooltip> */}
                 <StudentModal readOnly={!permission.write} ref={e => this.modal = e} update={this.props.updateStudent} />
                 <NotificationModal readOnly={!permission.write} ref={e => this.notiModal = e} create={this.props.createNotification} data={this.state.data} />
                 <Pagination pageCondition={pageCondition} pageNumber={pageNumber} pageSize={pageSize} pageTotal={pageTotal} totalItem={totalItem} getPage={(pageNumber, pageSize) => this.onSearch({ pageNumber, pageSize })} />

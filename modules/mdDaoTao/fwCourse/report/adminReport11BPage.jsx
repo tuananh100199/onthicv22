@@ -23,7 +23,7 @@ class StudentModal extends AdminModal {
         this.itemGPLX.value(item.isBangLaiA1 || false);
         this.itemBirth.value(item.birthday || '');
         this.itemSoNamLaiXe.value(item.soNamLaiXe || 0);
-        this.itemKMLaiXe.value(item.soKmLaiXe || 0);
+        this.itemKMLaiXe.value(item.soKMLaiXe || 0);
         this.itemSoChungChi.value(item.soChungChi || '');
         this.setState({student: item});
     }
@@ -40,7 +40,7 @@ class StudentModal extends AdminModal {
             isBangLaiA1: this.itemGPLX.value(),
             birthday: this.itemBirth.value(),
             soNamLaiXe: this.itemSoNamLaiXe.value(),
-            soKmLaiXe: this.itemKMLaiXe.value(),
+            soKMLaiXe: this.itemKMLaiXe.value(),
             soChungChi: this.itemSoChungChi.value(),
         };
         let index = listStudent.findIndex(student => student._id == current._id);
@@ -50,7 +50,7 @@ class StudentModal extends AdminModal {
     }
 
     render = () => this.renderModal({
-        title: 'Chỉnh sửa học viên chưa đạt sát hạch',
+        title: 'Chỉnh sửa học viên',
         size: 'large',
         body: (
             <div className='row'>
@@ -153,7 +153,7 @@ class AdminReport11BPage extends AdminPage {
                     <TableCell content={item.isGiayKhamSucKhoe ? 'X' : ''} style={{ whiteSpace: 'nowrap' }} />
                     <TableCell content={item.isBangLaiA1 ? 'X' : ''} style={{ whiteSpace: 'nowrap' }} />
                     <TableCell content={item.soNamLaiXe ? item.soNamLaiXe : ''} style={{ whiteSpace: 'nowrap' }} />
-                    <TableCell content={item.soKmLaiXe ? item.soKmLaiXe : ''} style={{ whiteSpace: 'nowrap' }} />
+                    <TableCell content={item.soKMLaiXe ? item.soKMLaiXe : ''} style={{ whiteSpace: 'nowrap' }} />
                     <TableCell content={item.soChungChi ? item.soChungChi : ''} style={{ whiteSpace: 'nowrap' }} />
                     <TableCell type='buttons' content={item} permission={permission} onEdit={this.edit} onDelete={this.delete} />
                 </tr>)

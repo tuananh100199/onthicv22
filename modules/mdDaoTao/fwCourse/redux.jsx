@@ -496,8 +496,34 @@ export function exportPhuLuc11B(listId, done) {
     };
 }
 
-export function exportListStudentGraduation(_courseId) {
-    T.download(T.url(`/api/course/student-graduation/export/${_courseId}`));
+export function exportPhuLuc12B(listId, done) {
+    return () => {
+        const url = '/api/course/student-12b/export';
+        T.get(url, { listId }, data => {
+            if (data.error) {
+                T.notify('Xuất file word bị lỗi!', 'danger');
+                console.error(`GET: ${url}.`, data.error);
+            } else {
+                if (done) done(data);
+                T.notify('Xuất file word thành công!', 'success');
+            }
+        }, error => console.error(error) || T.notify('Xuất file word bị lỗi!', 'danger'));
+    };
+}
+
+export function exportPhuLuc12C( listId, type, done) {
+    return () => {
+        const url = '/api/course/student-12c/export';
+        T.get(url, { listId, type }, data => {
+            if (data.error) {
+                T.notify('Xuất file word bị lỗi!', 'danger');
+                console.error(`GET: ${url}.`, data.error);
+            } else {
+                if (done) done(data);
+                T.notify('Xuất file word thành công!', 'success');
+            }
+        }, error => console.error(error) || T.notify('Xuất file word bị lỗi!', 'danger'));
+    };
 }
 
 // Ajax Selections ----------------------------------------------------------------------------------------------------
