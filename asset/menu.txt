@@ -62,3 +62,5 @@
 	8092 - Danh mục hợp đồng (/user/contract/category)
 	8093 - Danh mục giấy phép lái xe (/user/gplx/category)
 	8094 - Danh mục hồ sơ (/user/profile/category)
+	8095 - Danh mục loại giáo viên (/user/teacher-type/category)
+	8099 - Lớp tập huấn (/user/training-class)

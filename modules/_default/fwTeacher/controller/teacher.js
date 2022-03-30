@@ -7,6 +7,7 @@ module.exports = (app) => {
             8092: { title: 'Danh mục hợp đồng', link: '/user/contract/category', icon: 'fa-bars', backgroundColor: '#00b0ff' },
             8093: { title: 'Danh mục giấy phép lái xe', link: '/user/gplx/category', icon: 'fa-bars', backgroundColor: '#00b0ff' },
             8094: { title: 'Danh mục hồ sơ', link: '/user/profile/category', icon: 'fa-bars', backgroundColor: '#00b0ff' },
+            8095: { title: 'Danh mục loại giáo viên', link: '/user/teacher-type/category', icon: 'fa-bars', backgroundColor: '#00b0ff' },
         
         }
     };
@@ -14,6 +15,7 @@ module.exports = (app) => {
     app.permission.add(
         { name: 'teacher:read', menu }, { name: 'teacher:write' }, { name: 'teacher:delete' },
     );
+    app.get('/user/teacher-type/category', app.permission.check('category:read'), app.templates.admin);
     app.get('/user/profile/category', app.permission.check('category:read'), app.templates.admin);
     app.get('/user/teacher-certification/category', app.permission.check('category:read'), app.templates.admin);
     app.get('/user/contract/category', app.permission.check('category:read'), app.templates.admin);

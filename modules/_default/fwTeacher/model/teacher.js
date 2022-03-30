@@ -3,7 +3,7 @@ module.exports = (app) => {
         user: { type: app.db.Schema.ObjectId, ref: 'User' },            //user
         division: { type: app.db.Schema.ObjectId, ref: 'Division' },    // Cơ sở đào tạo
 
-        dayLyThuyet:{type:Boolean,default:false},// loại giáo viên. True là giáo viên dạy lý thuyết, false là giáo viên dạy thực hành
+        dayLyThuyet:{type:Boolean,default:false},// loại giảng dạy. True là giáo viên dạy lý thuyết, false là giáo viên dạy thực hành
         courseTypes: { type: [{ type: app.db.Schema.Types.ObjectId, ref: 'CourseType' }], default: [] },// danh sách loại khóa học có thể dạy
         courses: { type: [{ type: app.db.Schema.Types.ObjectId, ref: 'Course' }], default: [] },// danh sách các khóa học đang dạy
         // Thông tin chung
@@ -22,8 +22,7 @@ module.exports = (app) => {
         identityCard: String,                                           // Số CMND, CCCD
         identityIssuedBy: String,                                       // Nơi cấp CMND, CCCD
         identityDate: Date,                                             // Ngày cấp CMND, CCCD
-
-
+        teacherType: { type: app.db.Schema.ObjectId, ref: 'Category' },
     // Trình độ và bằng cấp.        
         trinhDoChuyenMon:{
             trinhDo:String,
@@ -96,7 +95,7 @@ module.exports = (app) => {
 
         get: (condition, done) =>(typeof condition == 'object' ? model.findOne(condition) : model.findById(condition))
             .populate('user', '-password').populate('division', ' _id title isOutside')
-            .populate('chungChiSuPham','_id title').populate('courseTypes','_id title').populate('courses','_id name')
+            .populate('chungChiSuPham','_id title').populate('courseTypes','_id title').populate('courses','_id name').populate('teacherType','_id title')
             .exec(done),
 
         getPage: (pageNumber, pageSize, condition, done) => model.countDocuments(condition, (error, totalItem) => {
@@ -109,7 +108,7 @@ module.exports = (app) => {
 
                 model.find(condition).sort({department:1,lastname: 1 }).skip(skipNumber).limit(result.pageSize)
                 .populate('user', '-password').populate('division', '_id title').populate('chungChiSuPham','_id title')
-                .populate('courseTypes','_id title').populate('courses','_id name')
+                .populate('courseTypes','_id title').populate('courses','_id name').populate('teacherType','_id title')
                 .exec((error, items) => {
                     result.list = error ? [] : items;
                     done(error, result);
