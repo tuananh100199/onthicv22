@@ -34,6 +34,7 @@ import fwRegisterCalendar from 'modules/mdDaoTao/fwRegisterCalendar/index';
 import fwSign from 'modules/mdDaoTao/fwSign/index';
 import fwSms from 'modules/mdDaoTao/fwSms/index';
 import fwStudent from 'modules/mdDaoTao/fwStudent/index';
+import fwStudyProgram from 'modules/mdDaoTao/fwStudyProgram/index';
 import fwSubject from 'modules/mdDaoTao/fwSubject/index';
 import fwTimeTable from 'modules/mdDaoTao/fwTimeTable/index';
 import fwContact from 'modules/mdTruyenThong/fwContact/index';
@@ -43,4 +44,4 @@ import fwNews from 'modules/mdTruyenThong/fwNews/index';
 import fwNotificationTemplate from 'modules/mdTruyenThong/fwNotificationTemplate/index';
 import fwSubscribe from 'modules/mdTruyenThong/fwSubscribe/index';
 
-export const modules = [_init, fwBank, fwCategory, fwCluster, fwComment, fwCourseFee, fwCoursePayment, fwDepartment, fwDiscount, fwEmail, fwFeeType, fwHome, fwMenu, fwNotification, fwRate, fwRole, fwStaff, fwUser, fwCandidate, fwCar, fwCertificate, fwChangeLecturer, fwChat, fwCourse, fwCourseType, fwDivision, fwDriveQuestion, fwDriveTest, fwLesson, fwPayment, fwProfileStudent, fwRegisterCalendar, fwSign, fwSms, fwStudent, fwSubject, fwTimeTable, fwContact, fwFeedback, fwForum, fwNews, fwNotificationTemplate, fwSubscribe];
+export const modules = [_init, fwBank, fwCategory, fwCluster, fwComment, fwCourseFee, fwCoursePayment, fwDepartment, fwDiscount, fwEmail, fwFeeType, fwHome, fwMenu, fwNotification, fwRate, fwRole, fwStaff, fwUser, fwCandidate, fwCar, fwCertificate, fwChangeLecturer, fwChat, fwCourse, fwCourseType, fwDivision, fwDriveQuestion, fwDriveTest, fwLesson, fwPayment, fwProfileStudent, fwRegisterCalendar, fwSign, fwSms, fwStudent, fwStudyProgram, fwSubject, fwTimeTable, fwContact, fwFeedback, fwForum, fwNews, fwNotificationTemplate, fwSubscribe];

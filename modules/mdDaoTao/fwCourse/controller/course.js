@@ -22,6 +22,7 @@ module.exports = (app) => {
     app.get('/user/course', app.permission.check('course:read'), app.templates.admin);
     app.get('/user/course/:_id', app.permission.check('course:read'), app.templates.admin);
     app.get('/user/course/:_id/info', app.permission.check('course:read'), app.templates.admin);
+    app.get('/user/course/:_id/study-program', app.permission.check('course:read'), app.templates.admin);
     app.get('/user/course/:_id/subject', app.permission.check('course:read'), app.templates.admin);
     app.get('/user/course/:_id/graduation-subject', app.permission.check('course:read'), app.templates.admin);
     app.get('/user/course/:_id/final-exam-setting', app.permission.check('course:read'), app.templates.admin);

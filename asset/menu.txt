@@ -33,6 +33,7 @@
 	4006 - Bộ đề thi (/user/drive-test)
 	4007 - Thay đổi giáo viên (/user/change-lecturer)
 	4015 - Loại khóa học (/user/course-type)
+	4016 - Chương trình học (/user/study-program)
 	4020 - Môn học (/user/dao-tao/mon-hoc)
 	4030 - Bài học (/user/dao-tao/bai-hoc)
 	4035 - Quản lý xe (/user/car)
