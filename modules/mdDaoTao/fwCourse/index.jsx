@@ -36,10 +36,6 @@ export default {
             component: Loadable({ loading: Loading, loader: () => import('./pages/courseInfoPage') })
         },
         {
-            path: '/user/course/:_id/study-program',
-            component: Loadable({ loading: Loading, loader: () => import('./pages/adminStudyProgramPage') })
-        },
-        {
             path: '/user/course/:_id/subject',
             component: Loadable({ loading: Loading, loader: () => import('./pages/adminSubjectPage') })
         },

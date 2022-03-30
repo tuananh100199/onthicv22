@@ -18,14 +18,10 @@ export default function studyProgramReducer(state = {}, data) {
 }
 
 // Actions ------------------------------------------------------------------------------------------------------------
-export function getStudyProgramAll(searchText, done) {
+export function getStudyProgramAll(condition, done) {
     return dispatch => {
         const url = '/api/study-program/all';
-        if (typeof searchText == 'function') {
-            done = searchText;
-            searchText = '';
-        }
-        T.get(url, { searchText }, data => {
+        T.get(url, { condition }, data => {
             if (data.error) {
                 T.notify('Lấy tất cả chương trình học bị lỗi!', 'danger');
                 console.error('GET: ' + url + '. ' + data.error);
@@ -75,6 +71,25 @@ export function updateStudyProgram(_id, changes, done) {
             } else {
                 dispatch({ type: StudyProgramGet, item: data.item });
                 dispatch(getStudyProgramAll());
+                T.notify('Cập nhật chương trình học thành công!', 'success');
+                done && done();
+            }
+        }, error => console.error(error) || T.notify('Cập nhật chương trình học bị lỗi!', 'danger'));
+    };
+}
+
+export function updateStudyProgramActive(studyProgram, done) {
+    return dispatch => {
+        const url = '/api/study-program/default';
+        T.put(url, { studyProgram }, data => {
+            if (data.error) {
+                T.notify('Cập nhật thông tin chương trình học bị lỗi!', 'danger');
+                console.error('PUT: ' + url + '.', data.error);
+                done && done(data.error);
+            } else {
+                dispatch({ type: StudyProgramGet, item: data.item });
+                dispatch(getStudyProgramAll());
+                T.notify('Cập nhật chương trình học thành công!', 'success');
                 done && done();
             }
         }, error => console.error(error) || T.notify('Cập nhật chương trình học bị lỗi!', 'danger'));

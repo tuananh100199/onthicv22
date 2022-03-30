@@ -12,12 +12,7 @@ module.exports = app => {
 
     // APIs -----------------------------------------------------------------------------------------------------------
     app.get('/api/study-program/all', (req, res) => {
-        const condition = {},
-            searchText = req.query.searchText;
-        if (searchText) {
-            condition.title = new RegExp(searchText, 'i');
-        }
-        app.model.studyProgram.getAll(condition, (error, list) => res.send({ error, list }));
+        app.model.studyProgram.getAll(req.query.condition, (error, list) => res.send({ error, list }));
     });
 
     app.get('/api/study-program', app.permission.check('studyProgram:read'), (req, res) =>
@@ -29,6 +24,17 @@ module.exports = app => {
 
     app.put('/api/study-program', app.permission.check('studyProgram:write'), (req, res) => {
         app.model.studyProgram.update(req.body._id, req.body.changes, (error, item) => res.send({ error, item }));
+    });
+
+    app.put('/api/study-program/default', app.permission.check('studyProgram:write'), (req, res) => {
+        const { studyProgram } = req.body;
+        app.model.studyProgram.update({courseType: studyProgram.courseType._id}, { active: false }, (error) => {
+            if (error) res.send({ error });
+            else app.model.studyProgram.update(studyProgram._id, { active: true }, (error, item) => {
+                res.send({ error, item });
+            });
+        });
+
     });
 
     app.delete('/api/study-program', app.permission.check('studyProgram:write'), (req, res) => {

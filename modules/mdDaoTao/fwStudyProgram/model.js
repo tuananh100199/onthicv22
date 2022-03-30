@@ -8,6 +8,7 @@ module.exports = app => {
         monHoc: String,
         active: { type: Boolean, default: false },
         courseType: { type: app.db.Schema.ObjectId, ref: 'CourseType' },
+        time: String,
     });
     const model = app.db.model('StudyProgram', schema);
 
@@ -15,15 +16,23 @@ module.exports = app => {
         create: (data, done) => model.create(data, done),
 
         getAll: (condition, done) => done ?
-            model.find(condition).sort({ title: 1 }).exec(done) :
-            model.find({}).sort({ title: 1 }).exec(condition),
+            model.find(condition).populate('courseType').sort({ courseType: 1 }).exec(done) :
+            model.find({}).populate('courseType').sort({ courseType: 1 }).exec(condition),
 
         get: (condition, done) => typeof condition == 'string' ?
-            model.findById(condition).exec(done) :
-            model.findOne(condition).exec(done),
+            model.findById(condition).populate('courseType').exec(done) :
+            model.findOne(condition).populate('courseType').exec(done),
 
         // changes = { $set, $unset, $push, $pull }
-        update: (_id, changes, done) => model.findOneAndUpdate({ _id }, changes, { new: true }, done),
+        update: (condition, changes, $unset, done) => {
+            if (!done) {
+                done = $unset;
+                $unset = {};
+            }
+            typeof condition == 'string' ?
+                model.findOneAndUpdate({ _id: condition }, { $set: changes, $unset }, { new: true }, done) :
+                model.updateMany(condition, { $set: changes, $unset }, { new: true }, done);
+        },
 
         delete: (_id, done) => model.findById(_id, (error, item) => {
             if (error) {

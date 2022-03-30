@@ -43,6 +43,8 @@ module.exports = app => {
             student: [{ type: app.db.Schema.Types.ObjectId, ref: 'Student' }],
         }],
 
+        studyProgram: { type: app.db.Schema.ObjectId, ref: 'StudyProgram' },
+
         lock: { type: Boolean, default: false },                            // Cho phép thay đổi thông tin toàn khoá học => TODO: readOnly
         close: { type: Boolean, default: false },                           // Khóa học đã đóng
     });
