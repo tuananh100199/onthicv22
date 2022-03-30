@@ -65,12 +65,12 @@ class SectionVideo extends React.Component {
                 {/* <div className="overlay" style={{background:'transparent',opacity:0}}></div>
                 {this.state.video?<iframe allow='loop;autoplay;allowfullscreen;mute' className="embed-responsive-item"id="ytplayer" type="text/html" style={{width:'100vw',height:'100vh'}} 
                 src={this.state.video} frameborder="0" allowfullscreen={true}></iframe>:null} */}
-            <div className="intro-video" style={{height:this.state.videoHeight,overflowY:'hidden'}}>
-                <video muted autoPlay loop style={{height:'100vh'}} poster = {image}>
+            <div className="intro-video" style={{height:'100vh',overflowY:'hidden'}}>
+                <video muted autoPlay loop style={{height:this.state.videoHeight}} poster = {image}>
                 {link?<source src={link} type='video/mp4'/>:null}
                 </video>
                             
-                <a className="arrow" href='#' onClick={(e)=>this.scrollFullHeight(e)}>
+                <a className="arrow" href='#' style={{top:this.state.videoHeight-60}} onClick={(e)=>this.scrollFullHeight(e)}>
                     <div></div>
                     <div></div>
                     <div></div>
@@ -78,7 +78,7 @@ class SectionVideo extends React.Component {
 
             </div>
             
-            <div id="shadowBoxVideo" style={{width:'100%',minHeight:'100vh',backgroundColor:this.state.color||'transparent'}}></div>
+            {/* <div id="shadowBoxVideo" style={{width:'100%',minHeight:'100vh',backgroundColor:this.state.color||'transparent'}}></div> */}
             </section>
         );
     }

@@ -1570,9 +1570,13 @@ section {
 *********************************/
 
 .contact {
-    background: #FFFFFF;
-    padding-top: 51px;
+    background: #eee;
     padding-bottom: 90px;
+}
+@media (max-width: 576px) {
+    .contact{
+        padding-top: 80px;
+    }
 }
 
 .contact_form_container {
@@ -1748,6 +1752,10 @@ section {
 
 .contact_info {
     margin-top: 50px;
+}
+
+.contact_info span{
+    background-color: transparent !important;
 }
 
 .contact_info ul li:not(:last-child) {

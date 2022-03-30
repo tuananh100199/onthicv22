@@ -19,11 +19,11 @@ class Footer extends React.Component {
         </li>;
 
     render() {
-        let { facebook, youtube, twitter, instagram, footer } = this.props.system ? this.props.system : { footer: '/img/footer.jpg'};
-        facebook = facebook ? <li><a href={facebook} target='_blank' rel='noreferrer'><i className='fa fa-facebook' aria-hidden='true' /></a></li> : '';
-        youtube = youtube ? <li><a href={youtube} target='_blank' rel='noreferrer'><i className='fa fa-youtube' aria-hidden='true' /></a></li> : '';
-        twitter = twitter ? <li><a href={twitter} target='_blank' rel='noreferrer'><i className='fa fa-twitter' aria-hidden='true' /></a></li> : '';
-        instagram = instagram ? <li><a href={instagram} target='_blank' rel='noreferrer'><i className='fa fa-instagram' aria-hidden='true' /></a></li> : '';
+        let { footer } = this.props.system ? this.props.system : { footer: '/img/footer.jpg'};
+        // facebook = facebook ? <li><a href={facebook} target='_blank' rel='noreferrer'><i className='fa fa-facebook' aria-hidden='true' /></a></li> : '';
+        // youtube = youtube ? <li><a href={youtube} target='_blank' rel='noreferrer'><i className='fa fa-youtube' aria-hidden='true' /></a></li> : '';
+        // twitter = twitter ? <li><a href={twitter} target='_blank' rel='noreferrer'><i className='fa fa-twitter' aria-hidden='true' /></a></li> : '';
+        // instagram = instagram ? <li><a href={instagram} target='_blank' rel='noreferrer'><i className='fa fa-instagram' aria-hidden='true' /></a></li> : '';
         const {email,mobile} = this.props.system||{};
         const divisionsInside = this.props.division && this.props.division.list ?
             this.props.division.list.filter(division => !division.isOutside)
@@ -189,14 +189,14 @@ class Footer extends React.Component {
                                     <div className='copyright' style={{width: '100%', textAlign: 'center'}}>
                                         Copyright &copy; {new Date().getFullYear()}. Bản quyền thuộc về <a href='#' onClick={e => e.preventDefault()}>Trung tâm dạy nghề lái xe Hiệp Phát.</a>
                                     </div>
-                                    <nav className='footer_nav ml-md-auto'>
+                                    {/* <nav className='footer_nav ml-md-auto'>
                                         <ul className='d-flex flex-row align-items-center justify-content-start'>
                                             {twitter}
                                             {facebook}
                                             {youtube}
                                             {instagram}
                                         </ul>
-                                    </nav>
+                                    </nav> */}
                                 </div>
                             </div>
                         </div>

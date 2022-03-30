@@ -15,7 +15,7 @@ class HomeContactMobile extends React.Component {
         const isActiveZalo = activeZalo && activeZalo!='0';
         return (
             <>
-            <div className='home-contact'>
+            <div className='home-contact-mobile'>
                 <div className='d-flex justify-content-center align-items-center'>
                     <a className='home-contact-button' href={'tel:' + mobile}> 
                         <i className="fa fa-phone" aria-hidden="true"></i><span>Điện thoại: {T.mobileDisplay(mobile)}</span>                    

@@ -223,7 +223,7 @@
 /* GIỚI THIỆU HIỆP PHÁT */
 .section-intro-hp {
     background-color: var(--color-primary);
-    padding-top: 120px;
+    padding-top: 70px;
     padding-bottom: 180px;
     /* min-height: 100vh; */
 }
@@ -1510,7 +1510,7 @@
 
 
 .footer_about {
-    padding: 12px 0;
+    padding: 24px 0;
 }
 
 .footer_logo{
@@ -1524,6 +1524,7 @@
 .footer_image{
     width: calc(100% + 15px);
     height: 100%;
+    max-height: 500px;
     object-fit: cover;
 }
 
@@ -1551,7 +1552,8 @@
     display:inline-block;
     font-size:19.5px;
     font-weight: 500;
-    color:#000
+    color:#000;
+    line-height:19.5px;
 }
 
 .footer_logo .footer_logo__title{
@@ -1567,7 +1569,7 @@
 }
 
 .footer_about_text {
-    padding: 12px 0;
+    padding: 24px 0;
 }
 
 .footer_about_contact{
@@ -2082,13 +2084,14 @@
 }
 
 /* ----------------------------Home Contact--------------------------- */
-.home-contact{
+.home-contact-mobile{
     position: fixed;
     bottom: -1px;
     z-index: 3;
     max-height: 48px;
     box-shadow: 0px 0px 10px whitesmoke;
     display: none;
+    width: 100%;
 }
 
 .home-contact-button{
@@ -2126,7 +2129,7 @@
 }
 
 @media (max-width: 991px) {
-    .home-contact{
+    .home-contact-mobile{
         display: block;
     }
 }
