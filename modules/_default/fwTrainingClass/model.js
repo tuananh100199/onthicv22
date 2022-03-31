@@ -12,7 +12,7 @@ module.exports = (app) => {
     app.model.trainingClass = {
         create: (data, done) => model.create(data, done),
 
-        getAll: (condition, done) => model.find(condition).sort({ fee: -1 }).exec(done),
+        getAll: (condition, done) => model.find(condition).sort({ name: -1 }).exec(done),
 
         get: (condition, done) => (typeof condition == 'object' ? model.findOne(condition) : model.findById(condition)).exec(done),
 
@@ -25,7 +25,7 @@ module.exports = (app) => {
                 const skipNumber = (result.pageNumber > 0 ? result.pageNumber - 1 : 0) * result.pageSize;
 
                 model.find(condition).sort({ name: 1 }).skip(skipNumber).limit(result.pageSize)
-                    .populate('teacher','_id firstname lastname')
+                    .populate('teacher','_id firstname lastname').populate('hangTapHuan','_id title')
                     .exec((error, items) => {
                         result.list = error ? [] : items;
                         done(error, result);

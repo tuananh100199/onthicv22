@@ -6,7 +6,7 @@ import { getTrainingClass } from './redux';
 
 //import page
 import AdminInfoPage from './pages/adminInfoPage';
-// import AdminListTeacherPage from './pages/adminListTeacherPage';
+import AdminListTeacherPage from './pages/adminListTeacherPage';
 
 class TrainingClassEditPage extends AdminPage {
     state = { trainingClass: null };
@@ -24,11 +24,10 @@ class TrainingClassEditPage extends AdminPage {
 
     render() {
         const permission = this.getUserPermission('trainingClass', ['read', 'write', 'delete']);
-        console.log('training class: ',this.state.trainingClass);
         const trainingClass = this.state.trainingClass;
         const tabs = [];
         tabs.push({key:tabs.length, title: 'Thông tin chung', component: trainingClass ? <AdminInfoPage permission={permission} trainingClass={trainingClass} history={this.props.history} /> : null });
-        // tabs.push({key:tabs.length, title: 'Danh sách đề cử', component: trainingClass ? <AdminListTeacherPage permission={permission} trainingClass={trainingClass} history={this.props.history} /> : null });
+        tabs.push({key:tabs.length, title: 'Danh sách giáo viên tập huấn', component: trainingClass ? <AdminListTeacherPage permission={permission} trainingClass={trainingClass} history={this.props.history} /> : null });
         return this.renderPage({
             icon: 'fa fa-users',
             title: 'Lớp tập huấn: ' + (this.props.trainingClass && this.props.trainingClass.item ?this.props.trainingClass.item.name : '...'),

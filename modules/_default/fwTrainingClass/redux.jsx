@@ -56,7 +56,8 @@ export function createTrainingClass(data, done) {
             } else {
                 T.notify('Thêm lớp tập huấn thành công!', 'success');
                 dispatch(getTrainingClassPage());
-                done && done(data);
+                console.log('data in redux: ',data.item);
+                done && done(data.item);
             }
         }, error => console.error(error) || T.notify('Tạo lớp tập huấn bị lỗi!', 'danger'));
     };
@@ -74,7 +75,7 @@ export function updateTrainingClass(_id, changes, done) {
                 dispatch({ type: TrainingClassGetItem, item: data.item });
                 dispatch(getTrainingClassPage());
                 T.notify('Cập nhật lớp tập huấn thành công!', 'success');
-                done && done();
+                done && done(data.item);
             }
         }, error => console.error(error) || T.notify('Cập nhật lớp tập huấn bị lỗi!', 'danger'));
     };

@@ -122,6 +122,23 @@ export function deleteTeacher(_id) {
     };
 }
 
+export function updateTeacherTrainingClass(_id, trainingClass,type, done) {
+    return dispatch => {
+        const url = '/api/teacher/training-class';
+        T.put(url, { _id, trainingClass,type }, data => {
+            if (data.error) {
+                T.notify('Cập nhật thông tin bị lỗi!', 'danger');
+                console.error('PUT: ' + url + '. ' + data.error);
+                done && done(data.error);
+            } else {
+                T.notify('Cập nhật thông tin thành công!', 'success');
+                dispatch({ type: TeacherGetItem, item: data.item });
+                done && done();
+            }
+        }, error => console.error(error) || T.notify('Cập nhật thông tin bị lỗi!', 'danger'));
+    };
+}
+
 // TeacherCertification ---------------------------------------------------------------------------------------------------------------
 
 export function getTeacherCertificationAll(condition, done) {
@@ -256,6 +273,7 @@ export function deleteTeacherProfile(_id,done) {
     };
 }
 
+
 // AJAX ---------------------------------------------------------------------------------------------------------------
 
 export function ajaxGetTeacher(_id, done) {
@@ -278,4 +296,10 @@ export const ajaxSelectTeacherByCourseType = (courseType,nghiViec) => T.createAj
         // userId for addTeacher
         return result;
     } 
+);
+
+export const ajaxSelectTeacher = (condition) => T.createAjaxAdapter(
+    '/api/teacher/page/1/20?',
+    params => ({condition:{...condition,searchText:params.term}}),
+    response => response && response.page && response.page.list ? response.page.list.map(item => ({ id: item._id, text: `${item.lastname} ${item.firstname} ${item.maGiaoVien ? '(' + item.maGiaoVien + ')' : ''}` })) : []
 );

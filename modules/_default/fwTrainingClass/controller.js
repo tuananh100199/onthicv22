@@ -17,9 +17,28 @@ module.exports = (app) => {
     // APIs ------------------------------------------------------------------------------------------------------------
     app.get('/api/training-class/page/:pageNumber/:pageSize', app.permission.check('trainingClass:read'), (req, res) => {
         const pageNumber = parseInt(req.params.pageNumber),
-            pageSize = parseInt(req.params.pageSize);
-        app.model.trainingClass.getPage(pageNumber, pageSize, {}, (error, page) => {
-            res.send({ page, error: error ? 'Danh sách gói học phí không sẵn sàng!' : null });
+            pageSize = parseInt(req.params.pageSize),
+            condition=req.query.condition||{};
+        app.model.trainingClass.getPage(pageNumber, pageSize, condition, (error, page) => {
+            if(error)res.send({error});
+            else{
+                const getListTeacher = (index=0)=>{
+                    if(index>=page.list.length){
+                        res.send({page});
+                    }else{
+                        let trainingClass = page.list[index]._doc;
+                        app.model.teacher.count({trainingClass:trainingClass._id},(error,numOfTeacher)=>{
+                            if(error)res.send({error});
+                            else{
+                                Object.assign(trainingClass,{numOfTeacher});
+                                page.list[index]=trainingClass;
+                                getListTeacher(index+1);
+                            }
+                        });                        
+                    }
+                };
+                getListTeacher();
+            }
         });
     });
 
@@ -39,7 +58,30 @@ module.exports = (app) => {
 
     app.delete('/api/training-class', app.permission.check('trainingClass:delete'), (req, res) => {
         const { _id } = req.body;
-        app.model.trainingClass.delete(_id, (error) => res.send({ error }));
+        console.log([_id]);
+        app.model.teacher.getAll({trainingClass:{$in:[_id]}},(error,teachers)=>{
+            if(error)res.send({error});
+            else{
+                if(teachers.length==0){
+                    app.model.trainingClass.delete(_id, (error) => res.send({ error }));
+                }else{
+                    // remove training class from all teacher
+                    const removeTeacherTrainingClass = (index=0)=>{
+                        if(index>=teachers.length){
+                            app.model.trainingClass.delete(_id, (error) => res.send({ error }));
+                        }else{
+                            const teacher=teachers[index];
+                            app.model.teacher.deleteTrainingClass(teacher._id,_id,(error)=>{
+                                if(error)res.send({error});
+                                else removeTeacherTrainingClass(index+1);
+                            });
+                        }
+                    };
+
+                    removeTeacherTrainingClass();
+                }
+            }
+        });
     });
 
 };

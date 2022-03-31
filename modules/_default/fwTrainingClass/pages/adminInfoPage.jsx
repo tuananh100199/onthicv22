@@ -76,9 +76,9 @@ class TrainingClassInfoPage extends AdminPage {
                 <div className='tile'>
                     <div className='row'>
                         <FormTextBox className='col-md-6' ref={e => this.itemName = e} label='Tên lớp tập huấn' readOnly={readOnly} required />
-                        <FormSelect className='col-md-6' ref={e => this.itemHangTapHuan = e} label='Hạng đăng ký tập huấn' data={this.state.gplx} readOnly={readOnly} />
-                        <FormDatePicker className='col-md-6' ref={e => this.itemStartDate = e} label='Ngày khai giảng' readOnly={readOnly} type='date-mask' required />
-                        <FormDatePicker className='col-md-6' ref={e => this.itemEndDate = e} label='Ngày bế giảng' readOnly={readOnly} type='date-mask' required />
+                        <FormSelect className='col-md-6' ref={e => this.itemHangTapHuan = e} label='Hạng đăng ký tập huấn' data={this.state.gplx} readOnly={readOnly} required/>
+                        <FormDatePicker className='col-md-6' ref={e => this.itemStartDate = e} label='Ngày khai giảng' readOnly={readOnly} type='date-mask'  />
+                        <FormDatePicker className='col-md-6' ref={e => this.itemEndDate = e} label='Ngày bế giảng' readOnly={readOnly} type='date-mask' />
                         <FormRichTextBox className='col-12' ref={e => this.itemDiaChi = e} label='Địa chỉ tập huấn' readOnly={readOnly} rows='2'/>
                     </div >
                 </div>

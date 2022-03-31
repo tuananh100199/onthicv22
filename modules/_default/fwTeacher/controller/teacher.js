@@ -55,11 +55,20 @@ module.exports = (app) => {
                 pageCondition.courses={$in:[condition.course]};
             }
         }
+
+        // lớp tập huấn
+        if(condition.trainingClass){
+            pageCondition.trainingClass={$in:[condition.trainingClass]};
+        }
+
+        // lớp tập huấn
+        if(condition.notTrainingClass){
+            pageCondition.trainingClass={$nin:[condition.notTrainingClass]};
+        }
         // filter lọc nghỉ việc
         // if(condition.nghiViec){
         //   pageCondition.thoiGianLamViec={['nghiViec']:condition.nghiViec=='1'?true:false};
         // } 
-
         app.model.teacher.getPage(pageNumber, pageSize, pageCondition, (error, page) => {
             res.send({ error, page});
         });
@@ -134,6 +143,18 @@ module.exports = (app) => {
 
     app.delete('/api/teacher', app.permission.check('teacher:write'), (req, res) => {
         app.model.teacher.delete(req.body._id, error => res.send({ error }));
+    });
+    
+    //api trainingClass --------------------------------------------------------------------------------
+
+    app.put('/api/teacher/training-class', app.permission.check('teacher:write'), (req, res) => {
+        let { _id, trainingClass,type } = req.body;
+        console.log('training: ',trainingClass,type);
+        if(type=='add'){
+            app.model.teacher.addTrainingClass(_id, trainingClass, (error, item) => res.send({ error, item }));
+        }else{
+            app.model.teacher.deleteTrainingClass(_id, trainingClass, (error, item) => res.send({ error, item }));
+        }
     });
 
     // Hook upload images staff ---------------------------------------------------------------------------------------------

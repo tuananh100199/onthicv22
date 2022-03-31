@@ -73,6 +73,9 @@ module.exports = (app) => {
             endDate:Date,
         },
 
+        trainingClass: { type: [{ type: app.db.Schema.Types.ObjectId, ref: 'TrainingClass' }], default: [] },// danh sách lớp tập huấn tham gia.
+
+
 
     });
 
@@ -92,6 +95,10 @@ module.exports = (app) => {
                 model.create(data, done);
             }
         },
+
+        getAll: (condition, done) => typeof condition == 'function' ?
+        model.find({}).exec(condition) :
+        model.find(condition).exec(done),
 
         get: (condition, done) =>(typeof condition == 'object' ? model.findOne(condition) : model.findById(condition))
             .populate('user', '-password').populate('division', ' _id title isOutside')
@@ -142,11 +149,21 @@ module.exports = (app) => {
             }
         }),
 
+        count: (condition, done) => done ? model.countDocuments(condition, done) : model.countDocuments({}, condition),
+
         addCourse: (_id, course, done) => {
             model.findOneAndUpdate({_id}, { $push: { courses: course } }, { new: true }).populate('courses').exec(done);
         },
         deleteCourse: (_id, course, done) => {
             model.findOneAndUpdate({_id}, { $pull: { courses: course } }, { new: true }).populate('courses').exec(done);
+        },
+
+        addTrainingClass: (_id, trainingClass, done) => {
+            model.findOneAndUpdate({_id}, { $push: { trainingClass:trainingClass } }, { new: true }).populate('trainingClass').exec(done);
+        },
+        
+        deleteTrainingClass: (_id, trainingClass, done) => {
+            model.findOneAndUpdate({_id}, { $pull: { trainingClass:trainingClass } }, { new: true }).populate('trainingClass').exec(done);
         },
     };
 };
