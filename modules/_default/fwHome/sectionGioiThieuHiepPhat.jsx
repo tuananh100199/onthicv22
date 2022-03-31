@@ -100,20 +100,23 @@ class SectionGioiThieuHiepPhat extends React.Component {
                                 <div className='col-lg-5 col-md-12 text-gioi-thieu'>
                                     <div className='title_gioi_thieu'>
                                         Giới thiệu
-                                        <h4>{title}</h4>
                                     </div>
                                     <div>
-                                        <div className={`description ${!this.state.focusImage || this.state.focusImage=='image1'?'active_intro_desciption':'' }`} ref={e => this.abstract1 = e}>
-                                            {abstract}
+                                    
+                                        <div style={{ position: 'absolute', top: 0, left: 0 }} className={`description ${!this.state.focusImage || this.state.focusImage=='image1'?'active_intro_desciption':'' }`} ref={e => this.abstract1 = e}>
+                                        <h4>{content1?content1.title:''}</h4>
+                                            {abstract}                                                
                                                 <br />
                                                 <Link className='link_watch_more text-logo font-weight-italic' to={`/content/${content1?content1._id:''}`}> Xem thêm</Link>
                                         </div>
                                         <div style={{ position: 'absolute', top: 0, left: 0 }} className={`description ${ this.state.focusImage=='image2'?'active_intro_desciption':'' }`} ref={e => this.abstract2 = e}>
+                                        <h4>{content2?content2.title:''}</h4>
                                             {abstract2}
                                             <br />
                                             <Link className='link_watch_more text-logo font-weight-italic' to={`/content/${content2?content2._id:''}`}> Xem thêm</Link>
                                         </div>
                                         <div style={{ position: 'absolute', top: 0, left: 0 }} className={`description ${ this.state.focusImage=='image3'?'active_intro_desciption':'' }`} ref={e => this.abstract3 = e}>
+                                        <h4>{content3?content3.title:''}</h4>
                                             {abstract3}
                                             <br />
                                             <Link className='link_watch_more text-logo font-weight-italic' to={`/content/${content3?content3._id:''}`}> Xem thêm</Link>

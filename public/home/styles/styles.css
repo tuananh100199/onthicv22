@@ -73,6 +73,12 @@ ul {
     margin-bottom: 0px;
 }
 
+.content_editor ul{
+    list-style: unset;
+    margin-left: 40px;
+    margin-bottom: 1rem;
+}
+
 p {
     font-family: 'Montserrat', sans-serif;
     font-size: 14px;
@@ -88,7 +94,7 @@ p a {
     display: inline;
     position: relative;
     color: inherit;
-    border-bottom: solid 1px #ffa07f;
+    /* border-bottom: solid 1px #ffa07f; */
     -webkit-transition: all 200ms ease;
     -moz-transition: all 200ms ease;
     -ms-transition: all 200ms ease;
@@ -1572,11 +1578,6 @@ section {
 .contact {
     background: #eee;
     padding-bottom: 90px;
-}
-@media (max-width: 576px) {
-    .contact{
-        padding-top: 80px;
-    }
 }
 
 .contact_form_container {

@@ -320,21 +320,21 @@
     font-size: 20px;
     display: grid;
     /* background-color: white; */
-    height: 75px;
+    /* height: 75px; */
     width: 315px;
     color: goldenrod;
     padding-top: 5px;
 }   
 
-.section-intro-hp .title_gioi_thieu h4 {
+.section-intro-hp .text-gioi-thieu h4 {
     font-weight: 800;
     color: var(--color-logo);
+    margin-bottom: 30px;
 }
 .warp_gioi_thieu_HP .description {
-    margin-top: 20px;
     font-size: 17px;
     color: white;
-    padding: 8px;
+    /* padding: 8px; */
     text-align: justify;
 }
 .warp_gioi_thieu_HP .description span{
@@ -1277,7 +1277,7 @@
 }
 
 .section_hang_GPLX .intro_hang_GPLX .gplx-wrap-item{
-    padding: 8px 8px 64px 8px;
+    padding: 8px 8px 48px 8px;
     background-color: var(--color-white);
 }
 
