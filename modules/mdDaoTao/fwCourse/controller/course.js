@@ -31,6 +31,7 @@ module.exports = (app) => {
     app.get('/user/course/:_id/student', app.permission.check('course:read'), app.templates.admin);
     app.get('/user/course/:_id/teacher', app.permission.check('course:read'), app.templates.admin);
     app.get('/user/course/:_id/rate-teacher', app.permission.check('course:read'), app.templates.admin);
+    app.get('/user/course/:_courseId/rate-teacher/:_id', app.permission.check('course:read'), app.templates.admin);
     app.get('/user/course/:_id/feedback', app.permission.check('course:write'), app.templates.admin);
     app.get('/user/course/:_id/feedback/:_feedbackId', app.permission.check('course:write'), app.templates.admin);
     app.get('/user/course/:_id/feedback-lecturer', app.permission.check('course:read'), app.templates.admin);

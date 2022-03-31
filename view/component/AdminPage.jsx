@@ -11,7 +11,7 @@ import 'react-datetime/css/react-datetime.css';
 // Table components ---------------------------------------------------------------------------------------------------
 export class TableCell extends React.Component { // type = number | date | link | image | checkbox | buttons | text (default)
     render() {
-        let { type = 'text', content = '', permission = {}, className = '', style = {}, contentStyle = {}, alt = '', display = true, rowSpan = 1, dateFormat, isSwitch = true } = this.props;
+        let { type = 'text', content = '', permission = {}, className = '', style = {}, contentStyle = {}, alt = '', display = true, rowSpan = 1, dateFormat, isSwitch = true, height = null } = this.props;
         if (style == null) style = {};
 
         if (display != true) {
@@ -32,7 +32,7 @@ export class TableCell extends React.Component { // type = number | date | link 
             }
         } else if (type == 'image') {
             return content ?
-                <td style={{ textAlign: 'center', ...style }} className={className} rowSpan={rowSpan}><img src={content} alt={alt} style={{ height: '32px' }} /></td> :
+                <td style={{ textAlign: 'center', ...style }} className={className} rowSpan={rowSpan}><img src={content} alt={alt} style={{ height: height ? height : '32px' }} /></td> :
                 <td style={{ textAlign: 'center', ...style }} className={className} rowSpan={rowSpan}>{alt}</td>;
         } else if (type == 'checkbox') {
             return isSwitch ? (
