@@ -326,7 +326,8 @@
     padding-top: 5px;
 }   
 
-.section-intro-hp .text-gioi-thieu h4 {
+.section-intro-hp .text-gioi-thieu h4,
+.section-intro-hp .title_gioi_thieu h4 {
     font-weight: 800;
     color: var(--color-logo);
     margin-bottom: 30px;

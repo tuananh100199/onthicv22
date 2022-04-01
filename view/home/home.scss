@@ -786,6 +786,7 @@ $breakpoint-xs: 'only screen and (max-width:767px)';
     // border: solid 2px transparent;
     cursor: pointer;
     transition: all .3s linear;
+    outline: none !important;
 }
 
 .intro_button:hover {
