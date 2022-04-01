@@ -10,6 +10,10 @@ export default {
     },
     routes: [
         {
+            path: '/user/teacher-type/category',
+            component: Loadable({ loading: Loading, loader: () => import('./adminTeacherTypeCategoryPage') }),
+        },
+        {
             path: '/user/profile/category',
             component: Loadable({ loading: Loading, loader: () => import('./adminProfileCategoryPage') }),
         },

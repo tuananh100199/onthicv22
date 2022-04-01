@@ -15,7 +15,6 @@ import HomeMenu from 'view/component/HomeMenu';
 import HomeFooter from 'view/component/HomeFooter';
 import LoginModal from 'view/component/LoginModal';
 import HomeContactMobile from 'view/component/HomeContactMobile';
-
 // Load modules -------------------------------------------------------------------------------------------------------------------------------------
 import { getSystemState, register, login, forgotPassword, logout } from 'modules/_default/_init/redux';
 import { modules } from './modules.jsx';
@@ -44,7 +43,6 @@ class App extends React.Component {
             handlePaddingFooter();
             setTimeout(handlePaddingFooter, 250);
             $(window).on('resize', handlePaddingFooter);
-
             let menuList = [...this.props.system.menus];
             while (menuList.length) {
                 const currentMenu = menuList.pop();
@@ -81,12 +79,13 @@ class App extends React.Component {
                 {this.state.isMatch ?
                     <React.Fragment>
                         <HomeMenu showLoginModal={this.showLoginModal} />
-                        <Switch>
-                            {this.state.routes}
-                            <Route path='**' component={Loadable({ loading: Loading, loader: () => import('view/component/MessagePage') })} />
-                        </Switch>
-                        <div id='paddingFooterSection' style={{ marginTop: '15px' }} />
-                        <HomeFooter />
+                            <Switch>
+                                {this.state.routes}
+                                <Route path='**' component={Loadable({ loading: Loading, loader: () => import('view/component/MessagePage') })} />
+                            </Switch>
+                            <HomeFooter />
+                        {/* </div> */}
+                        
                         <HomeContactMobile />
                         <LoginModal ref={e => this.loginModal = e} register={this.props.register} login={this.props.login} forgotPassword={this.props.forgotPassword}
                             pushHistory={url => this.props.history.push(url)} />

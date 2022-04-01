@@ -20,6 +20,7 @@ class SectionStaffGroup extends React.Component {
                     navText: ['<i class="fa fa-chevron-left" aria-hidden="true"></i>','<i class="fa fa-chevron-right" aria-hidden="true"></i>'],
                     autoplay: !single,
                     autoplayTimeout:3000,
+                    smartSpeed:600,
                     autoplayHoverPause: true,
                     slideTransition:'0.5s linear'
                     
@@ -159,28 +160,24 @@ class SectionStaffGroup extends React.Component {
             </div>
             
 
-            <div className="owl-carousel news_carousel carousel_equal_height carousel_nav carousel_dots" id='staffCarousel'>
+            <div className="owl-carousel news_carousel carousel_equal_height carousel_nav carousel_dots text-white" id='staffCarousel'>
             { this.state.items && this.state.items.map((staff, index) => (
                     <div className='container_staff'
                         key={index}>
                             
                             
                             <div className='wrapper_staff'>
-                                <div>
-                                    <div className="staff_img">
-                                    <img src={staff.image} alt='Image' className='img-fluid' />
-                                    </div>
+                                <div className="staff_img">
+                                <img src={staff.image} alt='Image' className='img-fluid' />
                                 </div>
 
                                 <div className="staff_info">
                                     <div className='staff_group_title pc'>
-                                    {/* <p className='text-title text-white text-title-right'>{this.state.title}</p> */}
                                     <p className='text-white'>{this.state.title}</p>
                                     </div>
                                     <div style={{width:'100%'}}>
                                         <div className='staff_title' style={{ whiteSpace: 'nowrap' }}><h3>{staff.title}</h3></div>
                                         <div className='staff_name' style={{ whiteSpace: 'nowrap' }}><h3 className='text-white'>{staff.user.lastname + ' ' + staff.user.firstname}</h3></div>
-                                        {/* <div className='strike2'/> */}
                                     </div>
                                     
                                     <div className='text'>
@@ -188,22 +185,15 @@ class SectionStaffGroup extends React.Component {
                                             <p>&ldquo;{staff.description}&rdquo;</p>
                                         </blockquote>
                                         <div className='button-wrap'>
-                                            <a href='#' className="link_watch_more text-white">XEM THÊM</a>
+                                            <a href='#' className="link_watch_more text-white">Xem thêm</a>
                                         </div> 
                                     </div>
-
-                                    
                                 </div>
-
-                                    
-                                
                         </div>
                 </div>))}
             </div>
 
         </div>
-        
-
         </>;
     }
 }

@@ -1,7 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { getNewsByUser } from './redux';
-import NewsFeed from 'view/component/NewsFeed';
+// import NewsFeed from 'view/component/NewsFeed';
 
 class NewsDetail extends React.Component {
     state = {};
@@ -65,9 +65,10 @@ class NewsDetail extends React.Component {
                     </div>
                 </div>
                 <div className='contact'>
-                    <div className='container-fluid'>
+                    <div className='container'>
                         <div className='row'>
-                            <div className='col-xl-8 col-lg-6 col-12'>
+                            {/* <div className='col-xl-8 col-lg-6 col-12'> */}
+                            <div className='col-12'>
                                 <div className='contact_content'>
                                     <div className='contact_content_title ftco-animate'>{item.title}</div>
                                     <div className='section_subtitle ftco-animate' style={{ lineHeight: 1.4 }}>{item.abstract}</div>
@@ -76,9 +77,9 @@ class NewsDetail extends React.Component {
                                     </div>
                                 </div>
                             </div>
-                            <div className='col-xl-4 col-lg-6 col-12'>
+                            {/* <div className='col-xl-4 col-lg-6 col-12'>
                                 <NewsFeed />
-                            </div>
+                            </div> */}
                         </div>
                     </div>
                 </div>

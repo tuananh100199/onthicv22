@@ -58,6 +58,16 @@ class TeacherInfoPage extends AdminPage {
                         }
                     });
                 });
+
+                this.props.getCategoryAll('teacherType',null,items=>{
+                    this.setState({teacherTypes: (items || []).map(item => ({ id: item._id, text: item.title }))},()=>{
+                        if(this.props.teacherData){
+                            console.log('teacherData: ',this.props.teacherData);
+                            const {teacherType={}} = this.props.teacherData;
+                            this.itemTeacherType.value(teacherType._id||'');
+                        }
+                    });
+                });
                 
             }else{
                 this.props.history.push('/user/teacher');   
@@ -104,6 +114,7 @@ class TeacherInfoPage extends AdminPage {
             },
             dayLyThuyet:this.itemDayLyThuyet.value() ? 1 :0,
             courseTypes:this.itemCourseTypes.value().length?this.itemCourseTypes.value():' ',
+            teacherType:this.itemTeacherType.value(),
             // image:this.state.image
         };
         console.log(data);
@@ -166,17 +177,17 @@ class TeacherInfoPage extends AdminPage {
                         <FormTextBox className='col-md-3' ref={e => this.itemMaSoThue = e} label='Mã số thuế'readOnly={readOnly}/>
                         <FormTextBox className='col-md-3' ref={e => this.itemSoBhxh = e} label='Số BHXH'readOnly={readOnly}/>
                         <FormTextBox className='col-md-6' ref={e => this.itemNoiDongBhxh = e} label='Nơi đóng BHXH'readOnly={readOnly}/>
-                        <FormDatePicker className='col-md-5' ref={e => this.itemStartDate = e} label='Ngày bắt đầu làm'readOnly={readOnly} type='date-mask'/>
-                        <FormCheckbox className='col-md-2' ref={e => this.itemNghiViec = e} label='Nghỉ việc' readOnly={this.props.readOnly} onChange = {value=>this.setState({nghiViec:value})}/>
+                        
+                        <FormSelect className='col-md-3' ref={e => this.itemTeacherType = e} label='Loại giáo viên' data={this.state.teacherTypes} readOnly={readOnly} required />
+                        <FormDatePicker className='col-md-3' ref={e => this.itemStartDate = e} label='Ngày bắt đầu làm'readOnly={readOnly} type='date-mask'/>
+                        <FormCheckbox className='col-md-3' ref={e => this.itemNghiViec = e} label='Nghỉ việc' readOnly={this.props.readOnly} onChange = {value=>this.setState({nghiViec:value})}/>
                         
                         
-                        <div className="col-md-5" style={{display:this.state.nghiViec?'block':'none'}}>
+                        <div className="col-md-3" style={{display:this.state.nghiViec?'block':'none'}}>
                             <FormDatePicker ref={e => this.itemEndDate = e} label='Ngày nghỉ việc'readOnly={readOnly} type='date-mask'/>
                         </div>
                         <FormRichTextBox ref={e => this.itemResidence = e} className='col-md-6' label='Chỗ ở hiện tại' readOnly={readOnly} rows='2' />
                         <FormRichTextBox ref={e => this.itemRegularResidence = e} className='col-md-6' label='Địa chỉ thường trú' readOnly={readOnly} rows='2' />
-
-                        
                     </div >
                 </div>
 

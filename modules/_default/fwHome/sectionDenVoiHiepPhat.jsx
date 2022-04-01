@@ -2,8 +2,10 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { login } from 'modules/_default/_init/redux';
 import './style.css';
+import T from 'view/js/common';
 
 class SectionDenVoiHiepPhat extends React.Component {
+    state={currentHeight:0};
     // componentDidMount() {
     //     $(document).ready(() => {
     //         function denVoiHP() {
@@ -24,6 +26,14 @@ class SectionDenVoiHiepPhat extends React.Component {
     //         window.addEventListener('scroll', denVoiHP);
     //     });
     // }
+    componentDidMount=()=>{
+        const resizeObserver = new ResizeObserver(() =>{
+            T.ftcoAnimate();
+        });
+          
+          // start observing a DOM node
+          resizeObserver.observe(document.body);
+    }
 
     render() {
         return (
@@ -34,7 +44,7 @@ class SectionDenVoiHiepPhat extends React.Component {
                             <h3 className='text-title text-main'>ĐẾN VỚI HIỆP PHÁT</h3> 
                             {/* <div className='strike1'/> */}
                         </div>
-                        <div className='wrap_den_voi_HP'>
+                        <div className='wrap_den_voi_HP ftco-animate'>
                             <div className='row'>
                             <div className='col-lg-4 col-sm-6 col-xs-12'>
                                     <div className='wrap_item'>

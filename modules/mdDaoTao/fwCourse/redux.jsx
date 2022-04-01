@@ -202,6 +202,21 @@ export function exportSubject() {
     T.download(T.url('/api/course/export/subject'));
 }
 
+export function exportSatHachs(satHachs,type, done) {
+    return () => {
+        const url = '/api/course/sat-hach/export';
+        T.get(url,{satHachs,type}, data => {
+            if (data.error) {
+                T.notify('Xuất file word bị lỗi!', 'danger');
+                console.error(`GET: ${url}.`, data.error);
+            } else {
+                if (done) done(data);
+                T.notify('Xuất file word thành công!', 'success');
+            }
+        }, error => console.error(error) || T.notify('Xuất file word bị lỗi!', 'danger'));
+    };
+}
+
 // Course students ----------------------------------------------------------------------------------------------------
 export function updateCourseStudents(_courseId, _studentIds, type, done) {
     return dispatch => {
