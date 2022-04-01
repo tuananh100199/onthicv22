@@ -84,4 +84,20 @@ module.exports = (app) => {
         });
     });
 
+    app.get('/api/training-class/export', app.permission.check('trainingClass:read'), (req, res) => {
+        // const {_id} = req.query;
+        const targetPromise = app.excel.readFile('/download/DS_TAP_HUAN.xlsx');
+        const sourcePromise = app.excel.readFile('/download/DS_TAP_HUAN.xlsx');
+        
+        Promise.all([targetPromise,sourcePromise]).then(([targetWorkbook,sourceWorkbook])=>{
+            console.log(targetWorkbook);
+            app.excel.attachment(sourceWorkbook, res, 'DS_TAP_HUAN.xlsx');
+        })
+        .catch(error=>console.log(error)||res.send({error}));
+        
+        // targetWorkbook.xlsx.writeFile('target.xlsx');
+        // app.excel.write(worksheet, cells);
+        // app.excel.attachment(workbook, res, 'DS_TAP_HUAN.xlsx');
+    });
+
 };
