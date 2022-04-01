@@ -64,6 +64,18 @@ export default {
             component: Loadable({ loading: Loading, loader: () => import('./report/adminReport3BPage') })
         },
         {
+            path: '/user/course/:_id/report/ke-hoach-dao-tao',
+            component: Loadable({ loading: Loading, loader: () => import('./report/adminReport4Page') })
+        },
+        {
+            path: '/user/course/:_id/report/tien-do-dao-tao',
+            component: Loadable({ loading: Loading, loader: () => import('./report/adminReport5Page') })
+        },
+        {
+            path: '/user/course/:_id/report/theo-doi-thuc-hanh',
+            component: Loadable({ loading: Loading, loader: () => import('./report/adminReport6Page') })
+        },
+        {
             path: '/user/course/:_id/report/danh-sach-du-thi-sat-hach',
             component: Loadable({ loading: Loading, loader: () => import('./report/adminReport11BPage') })
         },
@@ -78,6 +90,30 @@ export default {
         {
             path: '/user/course/:_id/report/danh-sach-du-thi-sat-hach-lai-gplx',
             component: Loadable({ loading: Loading, loader: () => import('./report/adminReport13Page') })
+        },
+        {
+            path: '/user/course/:_id/report/bien-ban-du-thi-tot-nghiep',
+            component: Loadable({ loading: Loading, loader: () => import('./report/adminReportTN01Page') })
+        },
+        {
+            path: '/user/course/:_id/report/hoi-dong-thi-tot-nghiep',
+            component: Loadable({ loading: Loading, loader: () => import('./report/adminReportTN03Page') })
+        },
+        {
+            path: '/user/course/:_id/report/hoi-dong-thi-tot-nghiep',
+            component: Loadable({ loading: Loading, loader: () => import('./report/adminReportTN03Page') })
+        },
+        {
+            path: '/user/course/:_id/report/hop-hoi-dong-thi-tot-nghiep',
+            component: Loadable({ loading: Loading, loader: () => import('./report/adminReportTN04Page') })
+        },
+        {
+            path: '/user/course/:_id/report/ban-coi-cham-thi',
+            component: Loadable({ loading: Loading, loader: () => import('./report/adminReportTN05Page') })
+        },
+        {
+            path: '/user/course/:_id/report/xet-ket-qua-tot-nghiep',
+            component: Loadable({ loading: Loading, loader: () => import('./report/adminReportTN08Page') })
         },
         {
             path: '/user/course/:_id/class',

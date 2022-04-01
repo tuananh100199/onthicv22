@@ -1,8 +1,9 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { getCourse } from '../redux';
+import { getCourse, exportTN07 } from '../redux';
 import { Link } from 'react-router-dom';
 import { AdminPage, PageIconHeader, PageIcon } from 'view/component/AdminPage';
+import FileSaver from 'file-saver';
 
 const backRoute = '/user/course';
 class EditCoursePage extends AdminPage {
@@ -22,6 +23,17 @@ class EditCoursePage extends AdminPage {
             }
         });
     }
+
+    exportTN07 = () => {
+        const course = this.props.course && this.props.course.item ? this.props.course.item : {};
+        if(course._id){
+            this.props.exportTN07(course._id, (data) => {
+                FileSaver.saveAs(new Blob([new Uint8Array(data.buf.data)]), 'QĐ Cong Nhan Tot Nghiep.docx');
+            });
+        } else{
+            T.notify('Danh sách học viên trống!', 'danger');
+        }
+    };
 
     render() {
         const currentUser = this.props.system ? this.props.system.user : null,
@@ -52,8 +64,8 @@ class EditCoursePage extends AdminPage {
                     <PageIcon visible={isCourseAdmin} to={`/user/course/${item._id}/report/hoi-dong-thi-tot-nghiep`} icon='fa-file-word-o' iconBackgroundColor='#9ced65' text='Quyết định thành lập hội đồng thi tốt nghiệp (TN03)' />
                     <PageIcon visible={isCourseAdmin} to={`/user/course/${item._id}/report/hop-hoi-dong-thi-tot-nghiep`} icon='fa-file-word-o' iconBackgroundColor='#900' text={'Biên bản họp hội đồng thi tốt nghiệp (TN04)'}/>
                     <PageIcon visible={isCourseAdmin} to={`/user/course/${item._id}/report/ban-coi-cham-thi`} icon='fa-file-word-o' iconBackgroundColor='#DAA520' text={'Ban coi chấm thi (TN05)'} />
-                    <PageIcon visible={isCourseAdmin} to={`/user/course/${item._id}/report/danh-sach-hoc-vien-thi-tot-nghiep`} icon='fa-file-word-o' iconBackgroundColor='orange' text='Danh sách học viên dự thi tốt nghiệp (TN06)' />
-                    <PageIcon visible={isCourseAdmin} to={`/user/course/${item._id}/report/cong-nhan-tot-nghiep`} icon='fa-file-word-o' iconBackgroundColor='teal' text='Quyết định công nhận tốt nghiệp (TN07)' />
+                    <PageIcon visible={isCourseAdmin} to={`/user/course/${item._id}/report/danh-sach-hoc-vien-thi-tot-nghiep`} icon='fa-file-excel-o' iconBackgroundColor='orange' text='Danh sách học viên dự thi tốt nghiệp (TN06)' />
+                    <PageIcon visible={isCourseAdmin} to={'#'} icon='fa-file-word-o' iconBackgroundColor='teal' text='Quyết định công nhận tốt nghiệp (TN07)' onClick={() => this.exportTN07()} />
                     <PageIcon visible={isCourseAdmin} to={`/user/course/${item._id}/report/xet-ket-qua-tot-nghiep`} icon='fa-file-word-o' iconBackgroundColor='#9ced65' text='Biên bản họp xét kết quả tốt nghiệp (TN08)' />
                     <PageIcon visible={isCourseAdmin} to={`/user/course/${item._id}/report/danh-sach-hoc-vien-tot-nghiep`} icon='fa-file-word-o' iconBackgroundColor='#900' text={'Danh sách học viên tốt nghiệp (TN09)'}/>
                     <PageIcon visible={isCourseAdmin} to={`/user/course/${item._id}/report/bang-diem-thi-tot-nghiep`} icon='fa-file-excel-o' iconBackgroundColor='#DAA520' text={'Bảng điểm thi tốt nghiệp (TN10)'} />
@@ -75,5 +87,5 @@ class EditCoursePage extends AdminPage {
 }
 
 const mapStateToProps = state => ({ system: state.system, course: state.trainning.course });
-const mapActionsToProps = { getCourse };
+const mapActionsToProps = { getCourse, exportTN07 };
 export default connect(mapStateToProps, mapActionsToProps)(EditCoursePage);

@@ -477,6 +477,136 @@ module.exports = (app) => {
         });
     });
 
+    app.get('/api/course/student-4/export', app.permission.check('course:export'), (req, res) => {
+        const { courseId } = req.query;
+        app.model.course.get({ _id : courseId}, (error, course) => {
+            if(error || !course) res.send({ error: 'Xuất file báo cáo bị lỗi'});
+            else{
+                const listSubjects = course.subjects;
+                let subjects = [];
+                const handleExport = (index=0)=>{
+                    if(index>=listSubjects.length){
+                        const data = {
+                            courseType: course.courseType.title,
+                            course: course.name,
+                            subjects
+                        };
+                        app.docx.generateFile('/document/Phu_Luc_4.docx', data, (error, buf) => {
+                            res.send({ error: error, buf: buf });
+                        });
+                    }else{
+                        const subject = listSubjects[index];
+                        const { title, totalTime } = subject;                        
+                            subjects.push({
+                                idx:index+1, title, totalTime
+                            });
+                        handleExport(index+1);
+                    }
+                };
+                handleExport();
+            }
+        });
+    });
+
+    app.get('/api/course/student-5/export', app.permission.check('course:export'), (req, res) => {
+        const { courseId } = req.query;
+        app.model.course.get({ _id : courseId}, (error, course) => {
+            if(error || !course) res.send({ error: 'Xuất file báo cáo bị lỗi'});
+            else{
+                const list = course.teacherGroups;
+                let groups = [];
+                const handleExport = (index=0)=>{
+                    if(index>=list.length){
+                        const data = {
+                            courseType: course.courseType.title,
+                            course: course.name,
+                            groups
+                        };
+                        app.docx.generateFile('/document/Phu_Luc_5.docx', data, (error, buf) => {
+                            res.send({ error: error, buf: buf });
+                        });
+                    }else{
+                        const group = list[index];
+                        const { student, teacher } = group;                        
+                            groups.push({
+                                idx:index+1, class: course.name + '-' + (index+1), teacher: teacher.lastname + ' ' + teacher.firstname, numOfStudent: student.length
+                            });
+                        handleExport(index+1);
+                    }
+                };
+                handleExport();
+            }
+        });
+    });
+
+    app.get('/api/course/student-6/export', app.permission.check('course:export'), (req, res) => {
+        const { courseId, teacherId } = req.query;
+        app.model.course.get({ _id : courseId}, (error, course) => {
+            if(error || !course) res.send({ error: 'Xuất file báo cáo bị lỗi'});
+            else{
+                const i = course.teacherGroups.findIndex(group => group.teacher._id == teacherId);
+                if(i != -1){
+                    const list = course.teacherGroups[i].student;
+                    let students = [];
+                    const handleExport = (index=0)=>{
+                        if(index>=list.length){
+                            const data = {
+                                courseType: course.courseType.title,
+                                course: course.name,
+                                teacher: course.teacherGroups[i].teacher.lastname + ' '  + course.teacherGroups[i].teacher.firstname,
+                                students
+                            };
+                            app.docx.generateFile('/document/Phu_Luc_6.docx', data, (error, buf) => {
+                                res.send({ error: error, buf: buf });
+                            });
+                        }else{
+                            const student = list[index];
+                            const { lastname, firstname, birthday, residence } = student;                        
+                                students.push({
+                                    idx:index+1,birth: birthday ? convert(birthday) : '', lastname, firstname, residence
+                                });
+                            handleExport(index+1);
+                        }
+                    };
+                    handleExport();
+                } else res.send({ error: 'Không tìm thấy lớp!'});
+                
+            }
+        });
+    });
+
+    app.get('/api/course/report-tn07/export', app.permission.check('course:export'), (req, res) => {
+        const { courseId } = req.query;
+        app.model.course.get({ _id : courseId}, (error, course) => {
+            if(error || !course) res.send({ error: 'Xuất file báo cáo bị lỗi'});
+            else{
+                const data = {
+                    courseType: course.courseType.title,
+                    course: course.name,
+                };
+                app.docx.generateFile('/document/QĐ Cong Nhan Tot Nghiep.docx', data, (error, buf) => {
+                    res.send({ error: error, buf: buf });
+                });       
+            }
+        });
+    });
+
+    app.get('/api/course/report-tn07/export', app.permission.check('course:export'), (req, res) => {
+        const { bienBan } = req.query;
+        app.model.course.get({ _id : bienBan.courseId}, (error, course) => {
+            if(error || !course) res.send({ error: 'Xuất file báo cáo bị lỗi'});
+            else{
+                const data = {
+                    courseType: course.courseType.title,
+                    course: course.name,
+                };
+                app.docx.generateFile('/document/BB Hop Xet Ket Qua Tot Nghiep.docx', data, (error, buf) => {
+                    res.send({ error: error, buf: buf });
+                });       
+            }
+        });
+    });
+
     app.get('/api/course/student-11b/export', app.permission.check('user:login'), (req, res) => {
         const {listId} = req.query;
         app.model.student.getAll({ _id : { $in: listId }}, (error, listStudents) => {
