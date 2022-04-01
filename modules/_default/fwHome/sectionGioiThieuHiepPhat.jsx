@@ -4,7 +4,7 @@ import { getGioiThieu } from './redux/reduxGioiThieuHiepPhat';
 import './style.css';
 import { Link } from 'react-router-dom';
 class SectionGioiThieuHiepPhat extends React.Component {
-    state = {};
+    state = {focusImage:null,default:'image1'};
     componentDidMount() {
         $(document).ready(() => {
             function introText() {
@@ -59,9 +59,11 @@ class SectionGioiThieuHiepPhat extends React.Component {
                         margin:10,
                         autoplay: true,
                         autoplayTimeout:3000,
+                        smartSpeed:600,
                         autoplayHoverPause: true,
-                        // nav:true,
-                        // navText:['<i class="fa fa-angle-left" aria-hidden="true"></i>','<i class="fa fa-angle-right" aria-hidden="true"></i>']
+                        dots:true,
+                        nav:true,
+                        navText:['<i class="fa fa-angle-left" aria-hidden="true"></i>','<i class="fa fa-angle-right" aria-hidden="true"></i>']
                         
                     });
                 });
@@ -98,23 +100,26 @@ class SectionGioiThieuHiepPhat extends React.Component {
                                 <div className='col-lg-5 col-md-12 text-gioi-thieu'>
                                     <div className='title_gioi_thieu'>
                                         Giới thiệu
-                                        <h4>{title}</h4>
                                     </div>
                                     <div>
-                                        <div className='description active_intro_desciption' ref={e => this.abstract1 = e}>
-                                            {abstract}
+                                    
+                                        <div style={{ position: 'absolute', top: 0, left: 0 }} className={`description ${!this.state.focusImage || this.state.focusImage=='image1'?'active_intro_desciption':'' }`} ref={e => this.abstract1 = e}>
+                                        <h4>{content1?content1.title:''}</h4>
+                                            {abstract}                                                
                                                 <br />
                                                 <Link className='link_watch_more text-logo font-weight-italic' to={`/content/${content1?content1._id:''}`}> Xem thêm</Link>
                                         </div>
-                                        <div style={{ position: 'absolute', top: 0, left: 0 }} className='description' ref={e => this.abstract2 = e}>
+                                        <div style={{ position: 'absolute', top: 0, left: 0 }} className={`description ${ this.state.focusImage=='image2'?'active_intro_desciption':'' }`} ref={e => this.abstract2 = e}>
+                                        <h4>{content2?content2.title:''}</h4>
                                             {abstract2}
                                             <br />
-                                            <Link className='link_watch_more text-logo font-weight-italic' to={`/content/${content1?content1._id:''}`}> Xem thêm</Link>
+                                            <Link className='link_watch_more text-logo font-weight-italic' to={`/content/${content2?content2._id:''}`}> Xem thêm</Link>
                                         </div>
-                                        <div style={{ position: 'absolute', top: 0, left: 0 }} className='description' ref={e => this.abstract3 = e}>
+                                        <div style={{ position: 'absolute', top: 0, left: 0 }} className={`description ${ this.state.focusImage=='image3'?'active_intro_desciption':'' }`} ref={e => this.abstract3 = e}>
+                                        <h4>{content3?content3.title:''}</h4>
                                             {abstract3}
                                             <br />
-                                            <Link className='link_watch_more text-logo font-weight-italic' to={`/content/${content1?content1._id:''}`}> Xem thêm</Link>
+                                            <Link className='link_watch_more text-logo font-weight-italic' to={`/content/${content3?content3._id:''}`}> Xem thêm</Link>
                                         </div>
                                     </div>
 
@@ -129,29 +134,44 @@ class SectionGioiThieuHiepPhat extends React.Component {
                                 </div>
                                 <div className='col-lg-7 col-md-12 img-gioi-thieu'>
 
-                                    <img src={image1} ref={e => this.img1 = e} className='img-intro1' alt='image 1' onMouseEnter={() => {
-                                        this.img1.classList.add('img-intro-zindex');
-                                        this.abstract1.classList.add('active_intro_desciption');
-                                    }} onMouseLeave={() => this.img1.classList.remove('img-intro-zindex')}
+                                    <img src={image1} ref={e => this.img1 = e} className={`img-intro1 ${this.state.focusImage=='image1'?'img-intro-zindex':''}`} alt='image 1' onMouseEnter={() => {
+                                        if(!this.state.focusImage){
+                                            this.img1.classList.add('img-intro-zindex');
+                                            this.abstract1.classList.add('active_intro_desciption');
+                                        }
+                                    }} onMouseLeave={() =>{
+                                        if(!this.state.focusImage){
+                                            this.img1.classList.remove('img-intro-zindex');
+                                        }
+                                    } } onClick={()=>this.setState({focusImage:'image1'})}
                                     ></img>
-                                    <img src={image2} ref={e => this.img2 = e} className='img-intro2' alt='image 2' onMouseLeave={() => {
-                                        this.abstract1.classList.add('active_intro_desciption');
-                                        this.abstract2.classList.remove('active_intro_desciption');
-                                        this.img2.classList.remove('img-intro-zindex');
+                                    <img src={image2} ref={e => this.img2 = e} className={`img-intro2 ${this.state.focusImage=='image2'?'img-intro-zindex':''}`} alt='image 2' onMouseLeave={() => {
+                                        if(!this.state.focusImage){
+                                            this.abstract1.classList.add('active_intro_desciption');
+                                            this.abstract2.classList.remove('active_intro_desciption');
+                                            this.img2.classList.remove('img-intro-zindex');
+                                        }
+                                        
                                     }} onMouseEnter={() => {
-                                        this.abstract2.classList.add('active_intro_desciption');
-                                        this.img2.classList.add('img-intro-zindex');
-                                        this.abstract1.classList.remove('active_intro_desciption');
-                                    }}></img>
-                                    <img src={image3} ref={e => this.img3 = e} className='img-intro3' alt='image 3' onMouseLeave={() => {
-                                        this.abstract1.classList.add('active_intro_desciption');
-                                        this.abstract3.classList.remove('active_intro_desciption');
-                                        this.img3.classList.remove('img-intro-zindex');
+                                        if(!this.state.focusImage){
+                                            this.abstract2.classList.add('active_intro_desciption');
+                                            this.img2.classList.add('img-intro-zindex');
+                                            this.abstract1.classList.remove('active_intro_desciption');
+                                        }
+                                    }} onClick={()=>this.setState({focusImage:'image2'})}></img>
+                                    <img src={image3} ref={e => this.img3 = e} alt='image 3' className={`img-intro3 ${this.state.focusImage=='image3'?'img-intro-zindex':''}`} onMouseLeave={() => {
+                                        if(!this.state.focusImage){
+                                            this.abstract1.classList.add('active_intro_desciption');
+                                            this.abstract3.classList.remove('active_intro_desciption');
+                                            this.img3.classList.remove('img-intro-zindex');
+                                        }
                                     }} onMouseEnter={() => {
-                                        this.abstract3.classList.add('active_intro_desciption');
-                                        this.img3.classList.add('img-intro-zindex');
-                                        this.abstract1.classList.remove('active_intro_desciption');
-                                    }}></img>
+                                        if(!this.state.focusImage){
+                                            this.abstract3.classList.add('active_intro_desciption');
+                                            this.img3.classList.add('img-intro-zindex');
+                                            this.abstract1.classList.remove('active_intro_desciption');
+                                        }
+                                    }} onClick={()=>this.setState({focusImage:'image3'})}></img>
                                 </div>
                             </div>
                         </div>
@@ -168,7 +188,7 @@ class SectionGioiThieuHiepPhat extends React.Component {
                             </div>
                         </div>
                     </div>                        
-                <div className='owl-carousel intro_carousel carousel_equal_height carousel_nav' id='introCarousel'>
+                <div className='owl-carousel intro_carousel carousel_equal_height carousel_nav carousel_dots' id='introCarousel'>
                         {this.renderItem({text:abstract,image:image1,content:content1})}
                         {this.renderItem({text:abstract2,image:image2,content:content2})}
                         {this.renderItem({text:abstract3,image:image3,content:content3})}

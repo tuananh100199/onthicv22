@@ -271,7 +271,7 @@ class HomeMenu extends React.Component {
                     </ul>
                 </div>
             </div>
-            <CandidateModal ref={e => this.candidateModal = e} />
+            <CandidateModal ref={e => this.candidateModal = e} autoActive={true}/>
         </>;
     }
 }

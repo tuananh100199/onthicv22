@@ -18,7 +18,7 @@ export default class LoginModal extends React.Component {
 
         if (data.username !== '' && data.password !== '') {
             this.props.login(data, result => {
-                this.errorMessage.innerHTML = result.error;
+                this.errorMessage.innerHTML = result.error?result.error:'';
                 if (result.user) {
                     T.notify('Đăng nhập thành công!', 'success');
                     $(this.modal.current).modal('hide');

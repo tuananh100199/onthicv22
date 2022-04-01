@@ -2,15 +2,15 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { saveSystemState } from './redux';
 import QRCode from 'react-qr-code';
-import { AdminPage, FormTextBox, FormImageBox } from 'view/component/AdminPage';
+import { AdminPage, FormTextBox, FormImageBox,FormCheckbox } from 'view/component/AdminPage';
 
 class SettingsPage extends AdminPage {
-    state = {};
+    state = {showQr:false};
 
     componentDidMount() {
         T.ready(() => {
-            let { address, email, mobile, fax, facebook, youtube, twitter, instagram, logo, footer, contact, subscribe, smsAPIToken} = this.props.system ?
-                this.props.system : { address: '', email: '', mobile: '', fax: '', facebook: '', youtube: '', twitter: '', instagram: '', logo: '/img/logo.jpg', footer: '/img/footer.jpg', contact: '/img/contact.jpg', subscribe: '/img/subscribe.jpg', smsAPIToken:'' };
+            let { address, email, mobile, fax, facebook, youtube, twitter, instagram, logo, footer, contact, subscribe, smsAPIToken,activeZalo,zaloId} = this.props.system ?
+                this.props.system : { address: '', email: '', mobile: '', fax: '', facebook: '', youtube: '', twitter: '', instagram: '', logo: '/img/logo.jpg', footer: '/img/footer.jpg', contact: '/img/contact.jpg', subscribe: '/img/subscribe.jpg', smsAPIToken:'',activeZalo:false,zaloId:'' };
             this.systemAddress.value(address);
             this.systemEmail.value(email);
             this.systemMobile.value(mobile);
@@ -23,6 +23,8 @@ class SettingsPage extends AdminPage {
             this.systemContact.setData('contact', contact);
             this.systemSubscribe.setData('subscribe', subscribe);
             this.systemFooter.setData('footer', footer);
+            this.systemActiveZalo.value(activeZalo &&  activeZalo!='0');
+            this.systemZaloId.value(zaloId);
             this.setState({ logo, footer, contact, subscribe, smsAPIToken });
         });
     }
@@ -59,6 +61,31 @@ class SettingsPage extends AdminPage {
         }
     }
 
+    saveZalo = ()=>{
+        this.props.saveSystemState({
+            activeZalo: this.systemActiveZalo.value()?1:0,
+            zaloId: this.systemZaloId.value(),
+        });
+    }
+
+    regenerateQr = (e) => e.preventDefault() || T.confirm('Đổi QR Code', 'Bạn có chắc muốn đổi QR Code không?', true, isConfirm =>
+        isConfirm && this.props.saveSystemState({smsAPIToken:''},data=>{
+            this.setState({smsAPIToken:data.smsAPIToken});
+        }));
+
+    handleShowQr = ()=>{
+        const showQr = this.state.showQr;
+        if(showQr){
+            $('#qrCodeCollapse').collapse('hide');
+        }else{
+            //show
+            $('#qrCodeCollapse').collapse('show');
+
+        }
+
+        this.setState({showQr:!showQr});
+    }
+
     render() {
         const permission = this.getUserPermission('system', ['settings']);
         const readOnly = !permission.settings;
@@ -90,11 +117,40 @@ class SettingsPage extends AdminPage {
                         </div>
 
                         <div className='tile'>
-                            <h3 className='tile-title'>SMS</h3>
-                            <div className='tile-body'>
-                            <p>API Token QR Code</p>
-                            {this.state.smsAPIToken ? <QRCode value={this.state.smsAPIToken} size={200}/>: null}
+                            <div className='tile-title'>
+                                <div className="d-flex justify-content-between align-items-center">
+                                    <h3>SMS</h3>
+                                    <button className='btn btn-link' type='button' onClick={this.handleShowQr}>
+                                        {this.state.showQr?'Hide':'Show'}
+                                    </button>
+                                </div>
+                            
                             </div>
+                            <div className='tile-body'>
+                                <div className="collapse" id="qrCodeCollapse">
+                                    <p>API Token QR Code</p>
+                                    <div className="d-flex align-items-center">
+                                    {this.state.smsAPIToken ? <QRCode value={this.state.smsAPIToken} size={200}/>: null}
+                                    {this.state.smsAPIToken ? <i className="fa fa-refresh text-primary ml-4" aria-hidden="true" onClick={this.regenerateQr} style={{cursor:'pointer',fontSize:48}}></i>: null}
+                                    
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className='tile'>
+                            <h3 className='tile-title'>Zalo</h3>
+                            <div className='tile-body'>
+                            <FormCheckbox ref={e => this.systemActiveZalo = e} isSwitch={true} label='Kích hoạt' readOnly={this.props.readOnly} />
+                            <FormTextBox ref={e=>this.systemZaloId=e} label='Zalo id' readOnly={this.props.readOnly}/>
+                            </div>
+
+                            {readOnly ? null :
+                                <div className='tile-footer' style={{ textAlign: 'right' }}>
+                                    <button className='btn btn-primary' type='button' onClick={this.saveZalo}>
+                                        <i className='fa fa-fw fa-lg fa-save' /> Lưu
+                                    </button>
+                                </div>}
                         </div>
                     </div>
 

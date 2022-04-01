@@ -447,6 +447,49 @@ module.exports = (app) => {
         });
     });
 
+    
+    app.get('/api/course/sat-hach/export', app.permission.check('course:export'), (req, res) => {
+        const {satHachs,type} = req.query;
+        let courses = [];
+        const dateFormat = require('dateformat');
+        const handleExport = (index=0)=>{
+            if(index>=satHachs.length){
+                const data = {
+                    courses
+                };
+                const template = {
+                    dangKy:'/document/BAO_CAO_DANG_KY_SAT_HACH_LAI_XE.docx',
+                    deNghi:'/document/BAO_CAO_DE_NGHI_SAT_HACH_LAI_XE.docx'
+                };
+                app.docx.generateFile(template[type], data, (error, buf) => {
+                    res.send({ error: error, buf: buf });
+                });
+            }else{
+                const _courseId = satHachs[index];
+                app.model.course.get({_id:_courseId}, (error, course) => {
+                    if(error || !course){
+                        res.send({error:'Lấy thông tin khóa học bị lỗi'});
+                    }else{
+                        const {name,courseType ,thoiGianKhaiGiang} = course;     
+                        app.model.student.count({ course: _courseId }, (error, numberOfStudents) => {
+                            if(error) res.send({error});
+                            else{
+                                courses.push({
+                                    idx:index+1,name,courseType:courseType.title,numberOfStudents,thoiGianKhaiGiang:dateFormat(thoiGianKhaiGiang,'dd/mm/yyyy'),
+                                });
+                                handleExport(index+1);
+                            }
+                        });                 
+                        
+
+                    }
+                });
+            }
+        };
+
+        handleExport();
+    });
+
     app.get('/api/course/student-3b/export', app.permission.check('course:export'), (req, res) => {
         const { listId } = req.query;
         app.model.student.getAll({ _id : { $in: listId }}, (error, listStudents) => {
