@@ -84,13 +84,18 @@ module.exports = (app) => {
         });
     });
 
-    app.get('/api/training-class/export', app.permission.check('trainingClass:read'), (req, res) => {
-        // const {_id} = req.query;
-        const targetPromise = app.excel.readFile('/download/DS_TAP_HUAN.xlsx');
-        const sourcePromise = app.excel.readFile('/download/DS_TAP_HUAN.xlsx');
-        
-        Promise.all([targetPromise,sourcePromise]).then(([targetWorkbook,sourceWorkbook])=>{
-            console.log(targetWorkbook);
+    app.get('/api/training-class/export/:_id', app.permission.check('trainingClass:read'), (req, res) => {
+        const _id = req.params._id;
+        const sourcePromise = app.excel.readFile(app.publicPath+'/download/DS_TAP_HUAN.xlsx');//Đang hard,sẽ fix lại sau
+        const getTeachers = new Promise((resolve,reject)=>{
+            app.model.teacher.getAll({trainingClass:{$in:[_id]}},(error,teachers)=>{
+                error?reject(error):resolve(teachers);
+            });
+        });
+        Promise.all([sourcePromise,getTeachers]).then(([sourceWorkbook,teachers])=>{
+            console.log(teachers);
+            //TODO:Vỹ- Lọc ra dữ liệu theo file a hải gửi
+            // Để vào ô từ dòng số 8
             app.excel.attachment(sourceWorkbook, res, 'DS_TAP_HUAN.xlsx');
         })
         .catch(error=>console.log(error)||res.send({error}));

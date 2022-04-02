@@ -96,19 +96,23 @@ export function deleteTrainingClass(_id) {
     };
 }
 
-export function exportReport(_id, done) {
-    return () => {
-        const url = '/api/training-class/export';
-        T.get(url,{_id}, data => {
-            if (data.error) {
-                T.notify('Xuất file bị lỗi!', 'danger');
-                console.error(`GET: ${url}.`, data.error);
-            } else {
-                if (done) done(data);
-                T.notify('Xuất file thành công!', 'success');
-            }
-        }, error => console.error(error) || T.notify('Xuất file bị lỗi!', 'danger'));
-    };
+// export function exportReport(_id, done) {
+//     return () => {
+//         const url = '/api/training-class/export';
+//         T.get(url,{_id}, data => {
+//             if (data.error) {
+//                 T.notify('Xuất file bị lỗi!', 'danger');
+//                 console.error(`GET: ${url}.`, data.error);
+//             } else {
+//                 if (done) done(data);
+//                 T.notify('Xuất file thành công!', 'success');
+//             }
+//         }, error => console.error(error) || T.notify('Xuất file bị lỗi!', 'danger'));
+//     };
+// }
+
+export function exportReport(_id) {
+    T.download(T.url(`/api/training-class/export/${_id}`));
 }
 
 export function ajaxGetTrainingClass(_id, done) {
