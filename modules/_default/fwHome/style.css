@@ -237,8 +237,12 @@
     -webkit-box-flex:1;
     -ms-flex-positive:1;
     flex-grow:1;
-    padding:16px 0;
+    padding:0 0 16px 0;
     color:var(--color-white);
+}
+
+.section-intro-hp .mobile .intro_carousel_content h4{
+    color:var(--color-logo);
 }
 
 .section-intro-hp .mobile .intro_carousel_content p{
@@ -1502,7 +1506,7 @@
 }
 
 .footer_content {
-    background-color: var(--color-white);
+    background-color: #eee;
 }
 
 .footer_content .mobile {

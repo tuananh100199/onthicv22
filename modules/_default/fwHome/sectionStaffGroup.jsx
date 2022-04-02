@@ -161,11 +161,10 @@ class SectionStaffGroup extends React.Component {
             
 
             <div className="owl-carousel news_carousel carousel_equal_height carousel_nav carousel_dots text-white" id='staffCarousel'>
-            { this.state.items && this.state.items.map((staff, index) => (
+            { this.state.items && this.state.items.map((staff, index) =>{
+                return (
                     <div className='container_staff'
-                        key={index}>
-                            
-                            
+                        key={index}>     
                             <div className='wrapper_staff'>
                                 <div className="staff_img">
                                 <img src={staff.image} alt='Image' className='img-fluid' />
@@ -182,15 +181,17 @@ class SectionStaffGroup extends React.Component {
                                     
                                     <div className='text'>
                                         <blockquote>
-                                            <p>&ldquo;{staff.description}&rdquo;</p>
+                                            <p>{staff.description && (staff.description.split('\n')||[]).map((subItem)=><>{subItem}<br/></>)}</p>
                                         </blockquote>
                                         <div className='button-wrap'>
-                                            <a href='#' className="link_watch_more text-white">Xem thêm</a>
+                                            <a href={staff.content?`/content/${staff.content._id}`:'#'} className="link_watch_more text-white">Xem thêm</a>
                                         </div> 
                                     </div>
                                 </div>
                         </div>
-                </div>))}
+                </div>);
+                } 
+            )}
             </div>
 
         </div>

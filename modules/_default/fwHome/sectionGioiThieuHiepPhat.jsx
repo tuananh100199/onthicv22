@@ -76,6 +76,7 @@ class SectionGioiThieuHiepPhat extends React.Component {
             <div className="d-flex flex-column" style={{height:'100%'}}>
                 <div className="container-fluid" style={{flexGrow:1}}>
                     <div className='intro_carousel_content d-flex flex-column justify-content-between'>
+                        <h4 className='mb-4'>{content?content.title:''}</h4>
                         <p>{text}</p>
                         <div className="mt-2">
                             <Link className='link_watch_more text-logo font-weight-italic' to={`/content/${content?content._id:''}`}> Xem thêm</Link>
@@ -90,7 +91,7 @@ class SectionGioiThieuHiepPhat extends React.Component {
         );
     }
     render() {
-        const { image1, image2, image3, abstract, abstract2, abstract3, title,content1,content2,content3 } = this.state;
+        const { image1, image2, image3, abstract, abstract2, abstract3,content1,content2,content3 } = this.state;
         return (
             <div className='section-intro-hp' style={{}}>
                 <div className="pc">
@@ -181,11 +182,9 @@ class SectionGioiThieuHiepPhat extends React.Component {
 
                 <div className="mobile">
                     <div className="container-fluid">
-                        <div className='pt-4 pb-4'>
-                            <div className='title_gioi_thieu'>
-                                Giới thiệu
-                                <h4>{title}</h4>
-                            </div>
+                        <div className='title_gioi_thieu'>
+                            Giới thiệu
+                            {/* <h4>{title}</h4> */}
                         </div>
                     </div>                        
                 <div className='owl-carousel intro_carousel carousel_equal_height carousel_nav carousel_dots' id='introCarousel'>
