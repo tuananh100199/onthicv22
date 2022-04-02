@@ -4,7 +4,7 @@ import { getStaffGroup, deleteStaffImage, updateStaffGroup, createStaff, updateS
 import { ajaxSelectUserType } from 'modules/_default/fwUser/redux';
 import { Link } from 'react-router-dom';
 import { AdminPage, FormSelect, AdminModal, FormTextBox, FormRichTextBox, FormCheckbox, FormImageBox, TableCell, renderTable } from 'view/component/AdminPage';
-
+import {ajaxSelectContent} from './redux/reduxContent';
 class StaffModal extends AdminModal {
     state = {};
     componentDidMount() {
@@ -12,13 +12,13 @@ class StaffModal extends AdminModal {
     }
 
     onShow = (item) => {
-        const { _id, image, active, title, description, user, staffGroupId } = item || { _id: null, active: true };
+        const { _id, image, active, title, description, user, staffGroupId,content } = item || { _id: null, active: true };
         this.itemTitle.value(title || '');
         this.itemDescription.value(description || '');
         this.itemUser.value(user ? { id: user._id, text: `${user.lastname} ${user.firstname} (${user.email})` } : null);
         this.itemActive.value(active);
         this.imageBox.setData(`staff:${_id || 'new'}`);
-
+        this.itemContent.value(content?{id:content._id,text:content.title}:null);
         this.setState({ _id, staffGroupId, user, image });
     }
 
@@ -42,7 +42,8 @@ class StaffModal extends AdminModal {
             description: this.itemDescription.value().trim(),
             staffGroupId: this.state.staffGroupId,
             active: this.itemActive.value(),
-            image: this.state.image
+            image: this.state.image,
+            content:this.itemContent.value(),
         };
 
         if (!changes.user) {
@@ -61,6 +62,7 @@ class StaffModal extends AdminModal {
                 <FormSelect ref={e => this.itemUser = e} label='Tên nhân viên' data={ajaxSelectUserType(['isCourseAdmin', 'isLecturer', 'isStaff'], 'or')} readOnly={this.props.readOnly} />
                 <FormRichTextBox ref={e => this.itemDescription = e} label='Mô tả' readOnly={this.props.readOnly} />
                 <FormTextBox ref={e => this.itemTitle = e} label='Chức danh' readOnly={this.props.readOnly} />
+                <FormSelect ref={e => this.itemContent = e} data={ajaxSelectContent} label='Bài viết chi tiết' readOnly={this.props.readOnly} />
             </div>
             <div className='col-md-4'>
                 <FormImageBox ref={e => this.imageBox = e} label='Hình ảnh nền (Tỉ lệ 3:4)' uploadType='StaffImage' image={this.state.image} readOnly={this.props.readOnly}

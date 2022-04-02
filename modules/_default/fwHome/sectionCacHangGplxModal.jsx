@@ -12,7 +12,7 @@ export default class GplxModal extends React.Component {
     render() {
         let gplx = this.state.gplx;
         return (
-            <div ref={e => this.modal = e} className='modal fade bd-example-modal-lg' tabIndex='-1' role='dialog' aria-hidden='true'style={{width:'100vw',zIndex:1200}} >
+            <div ref={e => this.modal = e} className='gplx_modal modal fade bd-example-modal-lg' tabIndex='-1' role='dialog' aria-hidden='true'style={{width:'100vw',zIndex:1200}} >
                 <div className='modal-dialog modal-lg modal-dialog-centered'>
                     <div className='modal-content' style={{border:'none'}}>
                     <div className='advisory_form_container' style={{backgroundColor:'#199D76'}}>

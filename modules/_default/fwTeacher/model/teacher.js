@@ -97,8 +97,12 @@ module.exports = (app) => {
         },
 
         getAll: (condition, done) => typeof condition == 'function' ?
-        model.find({}).exec(condition) :
-        model.find(condition).exec(done),
+        model.find({}).populate('user', '-password').populate('division', ' _id title isOutside')
+        .populate('chungChiSuPham','_id title').populate('courseTypes','_id title').populate('courses','_id name').populate('teacherType','_id title')
+        .exec(condition) :
+        model.find(condition).populate('user', '-password').populate('division', ' _id title isOutside')
+        .populate('chungChiSuPham','_id title').populate('courseTypes','_id title').populate('courses','_id name').populate('teacherType','_id title')
+        .exec(done),
 
         get: (condition, done) =>(typeof condition == 'object' ? model.findOne(condition) : model.findById(condition))
             .populate('user', '-password').populate('division', ' _id title isOutside')

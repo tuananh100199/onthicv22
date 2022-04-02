@@ -6,7 +6,8 @@ module.exports = app => {
         active: { type: Boolean, default: false },
         description: String,
         title: String, // Chức danh
-        image: String
+        image: String,
+        content: { type: app.db.Schema.ObjectId, ref: 'Content' },
     });
     const model = app.db.model('Staff', schema);
 
@@ -16,9 +17,9 @@ module.exports = app => {
             model.create(data, done);
         }),
 
-        getAll: (condition, done) => done ? model.find(condition).populate('user', '-password').sort({ priority: -1 }).exec(done) : model.find({}).populate('user', '-password').sort({ priority: -1 }).exec(condition),
+        getAll: (condition, done) => done ? model.find(condition).populate('user', '-password').populate('content', '_id, title').sort({ priority: -1 }).exec(done) : model.find({}).populate('user', '-password').populate('content', '_id, title').sort({ priority: -1 }).exec(condition),
 
-        get: (condition, done) => typeof condition == 'string' ? model.findById(condition, done).populate('user', '-password') : model.findOne(condition, done).populate('user', '-password'),
+        get: (condition, done) => typeof condition == 'string' ? model.findById(condition, done).populate('user', '-password').populate('content', '_id, title') : model.findOne(condition, done).populate('user', '-password').populate('content', '_id, title'),
 
         update: (_id, changes, done) => model.findOneAndUpdate({ _id }, { $set: changes }, { new: true }, done).populate('user', '-password'),
 

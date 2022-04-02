@@ -57,7 +57,6 @@ class HomeMenu extends React.Component {
                 setHeader();
                 // this.activeMenu();
             } );
-
             done();
         });
     }
@@ -106,6 +105,9 @@ class HomeMenu extends React.Component {
         if (hash !== '') {
             // Prevent default anchor click behavior
             event.preventDefault();
+            if(!$(hash).length){
+                window.location=`/${hash}`;
+            }
             const height = this.getMenuHeight();
             // Using jQuery's animate() method to add smooth page scroll
             // The optional number (800) specifies the number of milliseconds it takes to scroll to the specified area
@@ -116,6 +118,8 @@ class HomeMenu extends React.Component {
             // Add hash (#) to URL when done scrolling (default click behavior)
             // window.location.hash = hash;
             });
+            
+            
         } // End if
     }
 
