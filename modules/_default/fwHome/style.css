@@ -1374,6 +1374,10 @@
     .section_hang_GPLX .intro_hang_GPLX .wrap_GPLX .wrap_item_GPLX .img_item .wrap_img img{
         animation-name: none;
     }
+    .gplx_modal .modal-content{
+        max-height: 80vh;
+        overflow-y: auto;
+    }
 }
 
 @media (max-width: 767px) {
@@ -1438,6 +1442,18 @@
 
     .section_hang_GPLX .intro_hang_GPLX .wrap_GPLX .wrap_item_GPLX .img_item .wrap_img:hover img{
         transform: scale(1);
+    }
+
+    .gplx_modal .modal-content{
+        max-height: 60vh;
+    }
+
+    .gplx_modal .intro_form_title{
+        padding:0 16px;
+    }
+
+    .gplx_modal .intro_form_title::after{
+        display: none;
     }
 }
 
