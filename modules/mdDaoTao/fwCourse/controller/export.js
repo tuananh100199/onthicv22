@@ -582,7 +582,7 @@ module.exports = (app) => {
         });
     });
 
-    app.get('/api/course/student-6/export', app.permission.check('course:export'), (req, res) => {
+    app.get('/api/course/report-6/export', app.permission.check('course:export'), (req, res) => {
         const { courseId, teacherId } = req.query;
         app.model.course.get({ _id : courseId}, (error, course) => {
             if(error || !course) res.send({ error: 'Xuất file báo cáo bị lỗi'});
@@ -604,9 +604,9 @@ module.exports = (app) => {
                             });
                         }else{
                             const student = list[index];
-                            const { lastname, firstname, birthday, residence } = student;                        
+                            const { lastname, firstname, birthday, residence, soKMThucHanh, diemCuoiKhoa } = student;                        
                                 students.push({
-                                    idx:index+1,birth: birthday ? convert(birthday) : '', lastname, firstname, residence
+                                    idx:index+1,birth: birthday ? convert(birthday) : '', lastname, firstname, residence, soKMThucHanh: soKMThucHanh ? soKMThucHanh : '', diemCuoiKhoa: diemCuoiKhoa ? diemCuoiKhoa : ''
                                 });
                             handleExport(index+1);
                         }
@@ -618,34 +618,222 @@ module.exports = (app) => {
         });
     });
 
-    app.get('/api/course/report-tn07/export', app.permission.check('course:export'), (req, res) => {
+    app.get('/api/course/report-tn01/export', app.permission.check('course:report'), (req, res) => {
+        const { courseId, bienBan } = req.query;
+        app.model.course.get({ _id : courseId}, (error, course) => {
+            if(error || !course) res.send({ error: 'Xuất file báo cáo bị lỗi'});
+            else{
+                let hoiDongTotNghiep = [];
+                const list = course.hoiDongTotNghiep;
+                const handleExport = (index=0)=>{
+                    if(index>=list.length){
+                        const data = {
+                            courseType: course.courseType.title,
+                            course: course.name,
+                            hoiDongTotNghiep,
+                            numberOfRegister: bienBan.numberOfRegister,
+                            numberOfStudent: bienBan.numberOfStudent
+                        };
+                        app.docx.generateFile('/document/TN01.docx', data, (error, buf) => {
+                            res.send({ error: error, buf: buf });
+                        });
+                    }else{
+                        const thanhVien = list[index];
+                        const { name, chucVu, nhiemVu, gender } = thanhVien;                        
+                            hoiDongTotNghiep.push({
+                                idx:index+1, name, chucVu, nhiemVu, gender: (gender == 'female' ? 'Bà' : 'Ông')
+                            });
+                        handleExport(index+1);
+                    }
+                };
+                handleExport();     
+            }
+        });
+    });
+
+    app.get('/api/course/report-tn03/export', app.permission.check('course:report'), (req, res) => {
         const { courseId } = req.query;
+        app.model.course.get({ _id : courseId}, (error, course) => {
+            if(error || !course) res.send({ error: 'Xuất file báo cáo bị lỗi'});
+            else{
+                let hoiDongTotNghiep = [];
+                const list = course.hoiDongTotNghiep;
+                const handleExport = (index=0)=>{
+                    if(index>=list.length){
+                        const data = {
+                            courseType: course.courseType.title,
+                            course: course.name,
+                            hoiDongTotNghiep,
+                        };
+                        app.docx.generateFile('/document/TN03.docx', data, (error, buf) => {
+                            res.send({ error: error, buf: buf });
+                        });
+                    }else{
+                        const thanhVien = list[index];
+                        const { name, chucVu, nhiemVu, gender } = thanhVien;                        
+                            hoiDongTotNghiep.push({
+                                idx:index+1, name, chucVu, nhiemVu, gender: (gender == 'female' ? 'Bà' : 'Ông')
+                            });
+                        handleExport(index+1);
+                    }
+                };
+                handleExport();     
+            }
+        });
+    });
+
+    app.get('/api/course/report-tn04/export', app.permission.check('course:report'), (req, res) => {
+        const { courseId, bienBan } = req.query;
+        app.model.course.get({ _id : courseId}, (error, course) => {
+            if(error || !course) res.send({ error: 'Xuất file báo cáo bị lỗi'});
+            else{
+                let hoiDongChamThi = [];
+                let giaoVienLyThuyet = [];
+                let giaoVienThucHanh = [];
+                const list = course.hoiDongChamThi;
+                const handleExport = (index=0)=>{
+                    if(index>=list.length){
+                        const data = {
+                            courseType: course.courseType.title,
+                            course: course.name,
+                            totalStudent: bienBan.totalStudent,
+                            hoiDongChamThi,
+                            giaoVienLyThuyet,
+                            giaoVienThucHanh,
+                        };
+                        app.docx.generateFile('/document/TN04.docx', data, (error, buf) => {
+                            res.send({ error: error, buf: buf });
+                        });
+                    } else {
+                        const thanhVien = list[index];
+                        const { name, chucVu, nhiemVu, gender } = thanhVien;                        
+                            hoiDongChamThi.push({
+                                idx:index+1, name, chucVu, nhiemVu, gender: (gender == 'female' ? 'Bà' : 'Ông')
+                            });
+                            if(thanhVien.chamLyThuyet){
+                                giaoVienLyThuyet.push({
+                                    idx:index+1, name: 'Giáo viên ' + name, nhiemVu 
+                                });
+                            }
+                            if(thanhVien.chamThucHanh){
+                                giaoVienThucHanh.push({
+                                    idx:index+1, name: 'Giáo viên ' + name, nhiemVu
+                                });
+                            }
+                            
+                        handleExport(index+1);
+                    }
+                };
+                handleExport();     
+            }
+        });
+    });
+
+    app.get('/api/course/report-tn05/export', app.permission.check('course:report'), (req, res) => {
+        const { courseId } = req.query;
+        app.model.course.get({ _id : courseId}, (error, course) => {
+            if(error || !course) res.send({ error: 'Xuất file báo cáo bị lỗi'});
+            else{
+                let hoiDongChamThi = [];
+                let count = 0;
+                const list = course.hoiDongChamThi;
+                const handleExport = (index=0)=>{
+                    if(index>=list.length){
+                        const data = {
+                            courseType: course.courseType.title,
+                            course: course.name,
+                            hoiDongChamThi,
+                            count
+                        };
+                        app.docx.generateFile('/document/TN05.docx', data, (error, buf) => {
+                            res.send({ error: error, buf: buf });
+                        });
+                    } else {
+                        const thanhVien = list[index];
+                        const { name, chucVu, nhiemVu } = thanhVien;                        
+                        if(thanhVien.chamLyThuyet || thanhVien.chamThucHanh){
+                            ++count;
+                            hoiDongChamThi.push({
+                                idx:count, name: name, nhiemVu, chucVu 
+                            });
+                            
+                        } else if(thanhVien.isTruongBanChamThi){
+                            ++count;
+                            hoiDongChamThi.push({
+                                idx:count, name: name, chucVu, nhiemVu: 'Trưởng ban' 
+                            });
+                        } 
+                        if(thanhVien.isThuKyChamThi){
+                            ++count;
+                            hoiDongChamThi.push({
+                                idx:count, name: name, chucVu, nhiemVu: 'Thư ký' 
+                            });
+                            
+                        }
+                        handleExport(index+1);
+                    }
+                };
+                handleExport();     
+            }
+        });
+    });
+
+    app.get('/api/course/report-tn07/export', app.permission.check('course:export'), (req, res) => {
+        const { courseId, soLuongHocVien } = req.query;
         app.model.course.get({ _id : courseId}, (error, course) => {
             if(error || !course) res.send({ error: 'Xuất file báo cáo bị lỗi'});
             else{
                 const data = {
                     courseType: course.courseType.title,
                     course: course.name,
+                    soLuongHocVien
                 };
-                app.docx.generateFile('/document/QĐ Cong Nhan Tot Nghiep.docx', data, (error, buf) => {
+                app.docx.generateFile('/document/TN07.docx', data, (error, buf) => {
                     res.send({ error: error, buf: buf });
                 });       
             }
         });
     });
 
-    app.get('/api/course/report-tn07/export', app.permission.check('course:export'), (req, res) => {
-        const { bienBan } = req.query;
-        app.model.course.get({ _id : bienBan.courseId}, (error, course) => {
+    app.get('/api/course/report-tn08/export', app.permission.check('course:report'), (req, res) => {
+        const { courseId, bienBan } = req.query;
+        const { hocVienKhoa, vangThi, thiLai, tongHocVien, datYeuCau, duTieuChuan} = bienBan;
+        app.model.course.get({ _id : courseId}, (error, course) => {
             if(error || !course) res.send({ error: 'Xuất file báo cáo bị lỗi'});
             else{
-                const data = {
-                    courseType: course.courseType.title,
-                    course: course.name,
+                let hoiDongKiemTraKetThucKhoa = [];
+                let nameThuKy = '', genderThuKy='', chucVuThuKy='',nhiemVuThuKy='';
+                const list = course.hoiDongKiemTraKetThucKhoa;
+                const handleExport = (index=0)=>{
+                    if(index>=list.length){
+                        const data = {
+                            courseType: course.courseType.title,
+                            course: course.name,
+                            hoiDongKiemTraKetThucKhoa,
+                            hocVienKhoa, vangThi, thiLai, tongHocVien, datYeuCau, duTieuChuan,
+                            nameThuKy,genderThuKy,chucVuThuKy,nhiemVuThuKy
+
+                        };
+                        app.docx.generateFile('/document/TN08.docx', data, (error, buf) => {
+                            res.send({ error: error, buf: buf });
+                        });
+                    } else {
+                        const thanhVien = list[index];
+                        const { name, chucVu, nhiemVu, gender } = thanhVien;                        
+                        if(thanhVien.thuKyBaoCao){
+                            nameThuKy = name;
+                            genderThuKy = (gender == 'female' ? 'Bà' : 'Ông');
+                            chucVuThuKy = chucVu;
+                            nhiemVuThuKy = nhiemVu;
+                            
+                        } 
+                        hoiDongKiemTraKetThucKhoa.push({
+                            idx:index+1, name, chucVu, nhiemVu, gender: (gender == 'female' ? 'Bà' : 'Ông')
+                        });
+                        handleExport(index+1);
+                    }
                 };
-                app.docx.generateFile('/document/BB Hop Xet Ket Qua Tot Nghiep.docx', data, (error, buf) => {
-                    res.send({ error: error, buf: buf });
-                });       
+                handleExport();     
             }
         });
     });

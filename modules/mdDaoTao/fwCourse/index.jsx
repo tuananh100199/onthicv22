@@ -60,6 +60,10 @@ export default {
             component: Loadable({ loading: Loading, loader: () => import('./pages/adminReportPage') })
         },
         {
+            path: '/user/course/:_id/report/dang-ky-sat-hach',
+            component: Loadable({ loading: Loading, loader: () => import('./report/adminReport3APage') })
+        },
+        {
             path: '/user/course/:_id/report/danh-sach-hoc-vien',
             component: Loadable({ loading: Loading, loader: () => import('./report/adminReport3BPage') })
         },
@@ -74,6 +78,14 @@ export default {
         {
             path: '/user/course/:_id/report/theo-doi-thuc-hanh',
             component: Loadable({ loading: Loading, loader: () => import('./report/adminReport6Page') })
+        },
+        {
+            path: '/user/course/:_id/report/xe-tap-lai',
+            component: Loadable({ loading: Loading, loader: () => import('./report/adminReport8Page') })
+        },
+        {
+            path: '/user/course/:_id/report/sat-hach-lai-xe',
+            component: Loadable({ loading: Loading, loader: () => import('./report/adminReport11APage') })
         },
         {
             path: '/user/course/:_id/report/danh-sach-du-thi-sat-hach',
@@ -96,8 +108,8 @@ export default {
             component: Loadable({ loading: Loading, loader: () => import('./report/adminReportTN01Page') })
         },
         {
-            path: '/user/course/:_id/report/hoi-dong-thi-tot-nghiep',
-            component: Loadable({ loading: Loading, loader: () => import('./report/adminReportTN03Page') })
+            path: '/user/course/:_id/report/danh-sach-du-thi-tot-nghiep',
+            component: Loadable({ loading: Loading, loader: () => import('./report/adminReportTN02Page') })
         },
         {
             path: '/user/course/:_id/report/hoi-dong-thi-tot-nghiep',
@@ -112,8 +124,32 @@ export default {
             component: Loadable({ loading: Loading, loader: () => import('./report/adminReportTN05Page') })
         },
         {
+            path: '/user/course/:_id/report/danh-sach-hoc-vien-thi-tot-nghiep',
+            component: Loadable({ loading: Loading, loader: () => import('./report/adminReportTN06Page') })
+        },
+        {
             path: '/user/course/:_id/report/xet-ket-qua-tot-nghiep',
             component: Loadable({ loading: Loading, loader: () => import('./report/adminReportTN08Page') })
+        },
+        {
+            path: '/user/course/:_id/report/danh-sach-hoc-vien-tot-nghiep',
+            component: Loadable({ loading: Loading, loader: () => import('./report/adminReportTN09Page') })
+        },
+        {
+            path: '/user/course/:_id/report/bang-diem-thi-tot-nghiep',
+            component: Loadable({ loading: Loading, loader: () => import('./report/adminReportTN10Page') })
+        },
+        {
+            path: '/user/course/:_id/report/thi-het-mon',
+            component: Loadable({ loading: Loading, loader: () => import('./report/adminReportDT03Page') })
+        },
+        {
+            path: '/user/course/:_id/report/danh-sach-du-thi-sat-hach-lai',
+            component: Loadable({ loading: Loading, loader: () => import('./report/adminReportSH01Page') })
+        },
+        {
+            path: '/user/course/:_id/report/bang-diem-thi-sat-hach',
+            component: Loadable({ loading: Loading, loader: () => import('./report/adminReportSH02Page') })
         },
         {
             path: '/user/course/:_id/class',

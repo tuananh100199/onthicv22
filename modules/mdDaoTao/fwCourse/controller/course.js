@@ -55,19 +55,29 @@ module.exports = (app) => {
     app.get('/user/course/:_courseId/additional-profile', app.permission.check('course:read'), app.templates.admin);
     
     app.get('/user/course/:_id/report', app.permission.check('course:report'), app.templates.admin);
+    app.get('/user/course/:_id/report/dang-ky-sat-hach', app.permission.check('course:report'), app.templates.admin);
+    app.get('/user/course/:_id/report/xe-tap-lai', app.permission.check('course:report'), app.templates.admin);
     app.get('/user/course/:_id/report/danh-sach-hoc-vien', app.permission.check('course:report'), app.templates.admin);
     app.get('/user/course/:_id/report/danh-sach-du-thi-sat-hach', app.permission.check('course:report'), app.templates.admin);
     app.get('/user/course/:_id/report/danh-sach-du-thi-sat-hach-gplx-hang', app.permission.check('course:report'), app.templates.admin);
     app.get('/user/course/:_id/report/danh-sach-du-thi-sat-hach-gplx', app.permission.check('course:report'), app.templates.admin);
     app.get('/user/course/:_id/report/danh-sach-du-thi-sat-hach-lai-gplx', app.permission.check('course:report'), app.templates.admin);
     app.get('/user/course/:_id/report/ke-hoach-dao-tao', app.permission.check('course:report'), app.templates.admin);
+    app.get('/user/course/:_id/report/sat-hach-lai-xe', app.permission.check('course:report'), app.templates.admin);
     app.get('/user/course/:_id/report/tien-do-dao-tao', app.permission.check('course:report'), app.templates.admin);
+    app.get('/user/course/:_id/report/danh-sach-du-thi-tot-nghiep', app.permission.check('course:report'), app.templates.admin);
     app.get('/user/course/:_id/report/theo-doi-thuc-hanh', app.permission.check('course:report'), app.templates.admin);
     app.get('/user/course/:_id/report/bien-ban-du-thi-tot-nghiep', app.permission.check('course:report'), app.templates.admin);
     app.get('/user/course/:_id/report/hoi-dong-thi-tot-nghiep', app.permission.check('course:report'), app.templates.admin);
     app.get('/user/course/:_id/report/ban-coi-cham-thi', app.permission.check('course:report'), app.templates.admin);
     app.get('/user/course/:_id/report/hop-hoi-dong-thi-tot-nghiep', app.permission.check('course:report'), app.templates.admin);
     app.get('/user/course/:_id/report/xet-ket-qua-tot-nghiep', app.permission.check('course:report'), app.templates.admin);
+    app.get('/user/course/:_id/report/danh-sach-hoc-vien-thi-tot-nghiep', app.permission.check('course:report'), app.templates.admin);
+    app.get('/user/course/:_id/report/danh-sach-hoc-vien-tot-nghiep', app.permission.check('course:report'), app.templates.admin);
+    app.get('/user/course/:_id/report/bang-diem-thi-tot-nghiep', app.permission.check('course:report'), app.templates.admin);
+    app.get('/user/course/:_id/report/danh-sach-du-thi-sat-hach-lai', app.permission.check('course:report'), app.templates.admin);
+    app.get('/user/course/:_id/report/bang-diem-thi-sat-hach', app.permission.check('course:report'), app.templates.admin);
+    app.get('/user/course/:_id/report/thi-het-mon', app.permission.check('course:report'), app.templates.admin);
     
     app.get('/user/course/:_id/class', app.permission.check('course:read'), app.templates.admin);
     

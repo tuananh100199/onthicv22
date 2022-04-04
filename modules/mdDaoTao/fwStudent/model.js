@@ -150,6 +150,8 @@ module.exports = (app) => {
         ngayHetHanGPLX: Date,
         lyDoSatHach: String,
         noiDungSatHach: String,
+        soKMThucHanh: Number,
+        diemCuoiKhoa: Number,
 
         createdDate: { type: Date, default: Date.now },                                             // Ngày tạo
         modifiedDate: { type: Date, default: Date.now },                                            // Ngày cập nhật cuối cùng
