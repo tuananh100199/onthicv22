@@ -1,55 +1,12 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import {  getCourseTypeAll } from 'modules/mdDaoTao/fwCourseType/redux';
-import { getStudentPage, updateStudent } from 'modules/mdDaoTao/fwStudent/redux';
-import { exportDT03, getCourse } from '../redux';
+import { updateStudent } from 'modules/mdDaoTao/fwStudent/redux';
+import { exportDT03, getLearningProgressPage, getCourse } from '../redux';
 import FileSaver from 'file-saver';
 import Pagination from 'view/component/Pagination';
 import { Link } from 'react-router-dom';
-import { AdminPage, FormTextBox , FormDatePicker, renderTable, TableCell, AdminModal, CirclePageButton } from 'view/component/AdminPage';
-
-class StudentModal extends AdminModal {
-    state = {};
-    componentDidMount() {
-        T.ready(() => this.onShown(() => this.itemLastname.focus()));
-    }
-
-    onShow = (item) => {
-        this.itemLastname.value(item.lastname || '');
-        this.itemFirstname.value(item.firstname || '');
-        this.itemIdentityCard.value(item.identityCard || '');
-        this.itemResidence.value(item.residence || '');
-        this.itemBirth.value(item.birthday || '');
-        this.setState({student: item});
-    }
-
-    onSubmit = () => {
-        const current = this.state.student;
-        const listStudent = this.props.listStudent;
-        const changes = {
-            lastname: this.itemLastname.value(),
-            firstname: this.itemFirstname.value(),
-            identityCard: this.itemIdentityCard.value(),
-            residence: this.itemResidence.value(),
-        };
-        let index = listStudent.findIndex(student => student._id == current._id);
-        if(listStudent[index]) listStudent[index] = changes;
-        this.props.updateState({listStudent: listStudent});
-        this.props.update(current._id, changes, () => this.hide());       
-    }
-
-    render = () => this.renderModal({
-        title: 'Chỉnh sửa học viên',
-        body: (
-            <div className='row'>
-                <FormTextBox ref={e => this.itemLastname = e} className='col-md-6' label='Họ' readOnly={false} />
-                <FormTextBox ref={e => this.itemFirstname = e} className='col-md-6' label='Tên' readOnly={false} />
-                <FormDatePicker className='col-md-6' ref={e => this.itemBirth = e} label='Ngày tháng năm sinh (dd/mm/yyyy)' readOnly={false} type='date-mask' />
-                <FormTextBox ref={e => this.itemIdentityCard = e} className='col-md-6' label='Số CMND/CCCD' readOnly={false} />
-                <FormTextBox ref={e => this.itemResidence = e} className='col-md-6' label='Nơi cư trú' readOnly={false} />
-            </div>),
-    });
-}
+import { AdminPage, renderTable, TableCell, CirclePageButton } from 'view/component/AdminPage';
 
 class AdminReportDT03Page extends AdminPage {
     state = { searchText: '' };
@@ -59,18 +16,15 @@ class AdminReportDT03Page extends AdminPage {
             if (params && params._id) {
                 const course = this.props.course ? this.props.course.item : null;
                 if (course) {
-                    this.props.getStudentPage(undefined, undefined, { courseId: course._id, totNghiep: 'true', datSatHach: 'false' }, (data) => {
-                        this.setState({listStudent: data.list, courseId: params._id});
-                    });
+                    this.props.getLearningProgressPage(undefined, undefined, { courseId: course._id}, item => this.setState({ listStudent: item.students}));
+                    // this.setState({listStudent: })
                 } else {
                     this.props.getCourse(params._id, data => {
                         if (data.error) {
                             T.notify('Lấy khóa học bị lỗi!', 'danger');
                             this.props.history.push('/user/course/' + params._id);
                         } else {
-                            this.props.getStudentPage(undefined, undefined, { courseId: params._id, totNghiep: 'true', datSatHach: 'false' }, (data) => {
-                                this.setState({listStudent: data.list, courseId: params._id});
-                            });
+                            this.props.getLearningProgressPage(undefined, undefined, { courseId: params._id }, item => this.setState({ listStudent: item.students}));
                         }
                     });
                 }
@@ -93,36 +47,62 @@ class AdminReportDT03Page extends AdminPage {
         }
     };
 
-    edit = (e, item) => e.preventDefault() || this.modal.show(item);
+    xepLoai = (diemTB) => {
+        if(diemTB < 5) return 'Yếu';
+        else if(diemTB < 7 ) return 'Trung bình';
+        else if(diemTB < 8) return 'Khá';
+        else return 'Giỏi';   
+    }
+
+    getPage = (pageNumber, pageSize) => {
+        this.props.getLearningProgressPage(pageNumber, pageSize, { courseId: this.state.courseId });
+    }
 
     delete = (e, item) => {
+        const listStudent = this.state.listStudent;
         e.preventDefault();
         T.confirm('Xoá học viên', 'Bạn có chắc muốn xoá học viên ' + item.lastname + ' ' + item.firstname, true, isConfirm =>
-            isConfirm && this.setState({listStudent: this.state.listStudent.filter((student) => student._id != item._id)}));
+            isConfirm && this.setState({listStudent: listStudent.filter((student) => student._id != item._id)}));
     };
 
-    updateState = (newState) => {
-        this.setState(newState);
+    converNameSubject = (subject) => {
+        let title = subject.title;
+        if(title.startsWith('Đạo đức') && title.length > 40){
+            const titleItem = title.split('và');
+            if(titleItem[1]) titleItem[1] = '\nvà ' + titleItem[1];
+            title = titleItem.join('');
+        } else if(title.startsWith('Hướng dẫn') && title.length > 40){
+            const titleItem = title.split('cho');
+            if(titleItem[1]) titleItem[1] = '\ncho ' + titleItem[1];
+            title = titleItem.join('');
+        }
+        return title;
     }
 
     render() {
-        const permission = this.getUserPermission('student', ['read', 'write', 'delete']);
-        let { pageNumber, pageSize, pageTotal, pageCondition, totalItem } = this.props.student && this.props.student.page ?
+        const permission = this.getUserPermission('course',['report']);
+        if(permission.report){
+            permission.write = true;
+            permission.delete = true;
+        }
+        let { pageNumber, pageSize, pageTotal, totalItem } = this.props.student && this.props.student.page ?
             this.props.student.page : { pageNumber: 1, pageSize: 50, pageTotal: 1, pageCondition: {}, totalItem: 0, list: [] };
-        const list = this.state.listStudent;
+        const students = this.state.listStudent ? this.state.listStudent : [];
+        const course = this.props.course && this.props.course.item,
+        subjects =course && course.subjects && course.subjects.filter(subject => !subject.monThucHanh);
+        const subjectColumns = [];
+        (subjects || []).forEach((subject, index) => {
+            subjectColumns.push(<th key={index} style={{ width: 'auto', whiteSpace:'pre', textAlign:'center', color: subject.monThucHanh ? 'aqua' : 'coral' }}  >{this.converNameSubject(subject)}</th>);
+        });
         const backRoute = `/user/course/${this.state.courseId}/report`;
         const table = renderTable({
-            getDataSource: () => list, stickyHead: true,
+            getDataSource: () => students, stickyHead: true,
             renderHead: () => (
                 <tr>
                     <th style={{ width: 'auto', textAlign: 'center' }}>#</th>
                     <th style={{ width: '100%' }}>Họ và tên</th>
                     <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Năm sinh</th>
-                    <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Đạo đức</th>
-                    <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Cấu tạo & sửa chữa</th>
-                    <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Kỹ thuật lái xe</th>
-                    <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Nghiệp vụ vận tải</th>
-                    <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Pháp luật GTĐB</th>
+                    {subjectColumns}
                     <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Điểm TB</th>
                     <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Xếp loại</th>
                     <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Thao tác</th>
@@ -133,15 +113,12 @@ class AdminReportDT03Page extends AdminPage {
                     <TableCell type='number' content={index + 1} />
                     <TableCell content={<>{`${item.lastname} ${item.firstname}`}</>} style={{ whiteSpace: 'nowrap' }} />
                     <TableCell content={item.birthday ? T.dateToText(item.birthday,'dd/mm/yyyy') : ''} style={{ whiteSpace: 'nowrap' }} />
-                    <TableCell content={6} />
-                    <TableCell content={7} />
-                    <TableCell content={8} />
-                    <TableCell content={6} />
-                    <TableCell content={5} />
-                    <TableCell content={7} />
-                    <TableCell content={'6.5'} />
-                    <TableCell content={'Trung bình'} />
-                    <TableCell type='buttons' content={item} permission={permission} onEdit={this.edit} onDelete={this.delete} />
+                    {subjects && subjects.length ? subjects.map((subject, i) => (
+                            <TableCell key={i} type='text' style={{ textAlign: 'center', whiteSpace: 'nowrap' }} content={item.tienDoThiHetMon && item.tienDoThiHetMon[subject._id] && item.tienDoThiHetMon[subject._id].score ? item.tienDoThiHetMon[subject._id].score : ''} />
+                        )) : null}
+                    <TableCell content={item.diemLyThuyet} />
+                    <TableCell content={this.xepLoai(item.diemLyThuyet)} />
+                    <TableCell type='buttons' content={item} permission={permission} onDelete={this.delete} />
                 </tr>)
         });
         return this.renderPage({
@@ -154,16 +131,14 @@ class AdminReportDT03Page extends AdminPage {
                         {table}
                     </div>
                 </div>
-                <StudentModal readOnly={false} updateState={this.updateState} listStudent={this.state.listStudent} courseId={this.state.courseId} ref={e => this.modal = e} update={this.props.updateStudent} />
                 <CirclePageButton type='export' onClick={() => this.exportDT03()} />
-                <Pagination name='pageCourse' pageNumber={pageNumber} pageSize={pageSize} pageTotal={pageTotal} totalItem={totalItem} pageCondition={pageCondition} style={{ left: 320 }}
-                    getPage={(pageNumber, pageSize) => this.props.getStudentPage(pageNumber, pageSize, { courseId: this.state.courseId, totNghiep: 'true', datSatHach: 'false' })} />
+                <Pagination name='adminLearningProgress' pageNumber={pageNumber} pageSize={pageSize} pageTotal={pageTotal} totalItem={totalItem} getPage={this.getPage} style={{ marginLeft: 45 }} />
             </>,
             backRoute
         });
     }
 }
 
-const mapStateToProps = state => ({ system: state.system, student: state.trainning.student});
-const mapActionsToProps = { getStudentPage, updateStudent, getCourseTypeAll, exportDT03, getCourse };
+const mapStateToProps = state => ({ system: state.system, student: state.trainning.student, course:state.trainning.course});
+const mapActionsToProps = { getCourse, updateStudent, getCourseTypeAll, exportDT03, getLearningProgressPage };
 export default connect(mapStateToProps, mapActionsToProps)(AdminReportDT03Page);
