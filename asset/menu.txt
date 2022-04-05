@@ -52,6 +52,7 @@
 	7006 - Số lần thanh toán (/user/course-payment)
 	7007 - Kích hoạt khóa học (/user/student/active-course)
 8000. Tuyển sinh (undefined)
+	8001 - Chỉ tiêu tuyển sinh (/user/enroll-target)
 	8010 - Đăng ký tư vấn (/user/candidate)
 	8020 - Ứng viên (/user/pre-student)
 	8030 - Bổ sung hồ sơ học viên (/user/profile-student)
