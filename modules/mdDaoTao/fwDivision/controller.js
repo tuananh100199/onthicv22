@@ -35,6 +35,11 @@ module.exports = app => {
         app.model.division.delete(req.body._id, error => res.send({ error }));
     });
 
+    app.put('/api/division/swap', app.permission.check('division:write'), (req, res) => {
+        const isMoveUp = req.body.isMoveUp.toString() == 'true';
+        app.model.division.swapPriority(req.body._id, isMoveUp, error => res.send({ error }));
+    });
+
     // Home -----------------------------------------------------------------------------------------------------------
     app.get('/home/division/all', (req, res) => {
         app.model.division.getAll((error, list) => res.send({ error, list }));

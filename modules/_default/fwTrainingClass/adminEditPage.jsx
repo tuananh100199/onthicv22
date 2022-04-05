@@ -16,7 +16,6 @@ class TrainingClassEditPage extends AdminPage {
         if (!params._id) this.props.history.push('/user/training-class');
         else {
             this.props.getTrainingClass(params._id, trainingClass => {
-                console.log({trainingClass});
                 this.setState({ trainingClass });
             });
         }

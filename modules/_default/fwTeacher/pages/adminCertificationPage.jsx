@@ -4,7 +4,7 @@ import { getTeacher, updateTeacher,getTeacherCertificationAll,createTeacherCerti
 import { AdminPage, FormTextBox, FormSelect,FormDatePicker, AdminModal, renderTable,TableCell,FormRichTextBox } from 'view/component/AdminPage';
 import { getCategoryAll } from 'modules/_default/fwCategory/redux';
 import Dropdown from 'view/component/Dropdown';
-
+import {ajaxSelectTeacherDiploma} from 'modules/_default/fwTeacherDiploma/redux';
 const stateMapper = {
     dangKiemTra: { text: 'Đang kiểm tra', style: { color: 'black' } },
     hopLe: { text: 'Hợp lệ', style: { color: '#1488DB' } },
@@ -19,7 +19,7 @@ class CertificationModal extends AdminModal {
         const { _id, category,trinhDo,ngayCap,noiCap,congVanDi,congVanDen,state} = item || 
         {_id:null,trinhDo:'',ngayCap:'',noiCap:'',congVanDi:'',congVanDen:''};
         this.itemTrinhDo.value(trinhDo || '');
-        this.itemLoaiChungChi.value(category? category._id : null);
+        this.itemLoaiChungChi.value(category? {id:category._id,text:category.title} : null);
         this.itemNgayCap.value(ngayCap||'');
         this.itemNoiCap.value(noiCap || '');
         this.itemCongVanDen.value(congVanDen||'');
@@ -62,7 +62,7 @@ class CertificationModal extends AdminModal {
             size: 'large',
             body: 
             <div className='row'>
-                <FormSelect className='col-md-6' ref={e => this.itemLoaiChungChi = e} label='Loại chứng chỉ' data={this.props.certifications} readOnly={readOnly} required />
+                <FormSelect className='col-md-6' ref={e => this.itemLoaiChungChi = e} label='Loại chứng chỉ' data={ajaxSelectTeacherDiploma} readOnly={readOnly} required />
                 <FormTextBox className='col-md-6' ref={e => this.itemTrinhDo = e} label='Trình độ' readOnly={readOnly} />
                 <FormDatePicker className='col-md-6' ref={e => this.itemNgayCap = e} label='Ngày cấp' readOnly={readOnly} type='date-mask' />
                 <FormTextBox className='col-md-6' ref={e => this.itemNoiCap = e} label='Nơi cấp' readOnly={readOnly} />

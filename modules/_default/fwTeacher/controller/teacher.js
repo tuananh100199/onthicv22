@@ -3,7 +3,7 @@ module.exports = (app) => {
         parentMenu: app.parentMenu.enrollment,
         menus: {
             8090: { title: 'Quản lý giáo viên', link: '/user/teacher', icon: 'fa-bars', backgroundColor: '#00b0ff' },
-            8091: { title: 'Danh mục chứng chỉ', link: '/user/teacher-certification/category', icon: 'fa-bars', backgroundColor: '#00b0ff' },
+            // 8091: { title: 'Danh mục chứng chỉ', link: '/user/teacher-certification/category', icon: 'fa-bars', backgroundColor: '#00b0ff' },
             8092: { title: 'Danh mục hợp đồng', link: '/user/contract/category', icon: 'fa-bars', backgroundColor: '#00b0ff' },
             8093: { title: 'Danh mục giấy phép lái xe', link: '/user/gplx/category', icon: 'fa-bars', backgroundColor: '#00b0ff' },
             8094: { title: 'Danh mục hồ sơ', link: '/user/profile/category', icon: 'fa-bars', backgroundColor: '#00b0ff' },
@@ -149,7 +149,6 @@ module.exports = (app) => {
 
     app.put('/api/teacher/training-class', app.permission.check('teacher:write'), (req, res) => {
         let { _id, trainingClass,type } = req.body;
-        console.log('training: ',trainingClass,type);
         if(type=='add'){
             app.model.teacher.addTrainingClass(_id, trainingClass, (error, item) => res.send({ error, item }));
         }else{

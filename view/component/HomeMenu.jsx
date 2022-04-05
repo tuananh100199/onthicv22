@@ -17,11 +17,16 @@ class HomeMenu extends React.Component {
         $(document).ready(() => {
             let header = $('.header');
             function setHeader() {
-                if ($(window).scrollTop() > 91) {
-                    header.addClass('scrolled');
-                } else {
-                    header.removeClass('scrolled');
+                let introVideo = $('#introVideo');
+                console.log('introVideo height: ',introVideo.height());
+                if(introVideo.height()<=0){
+                    if ($(window).scrollTop() > 91) {
+                        header.addClass('scrolled');
+                    } else {
+                        header.removeClass('scrolled');
+                    }
                 }
+                
             }
 
             function initMenu() {
@@ -54,7 +59,15 @@ class HomeMenu extends React.Component {
             });
 
             $(document).on('scroll', () =>{
-                setHeader();
+                // setHeader();
+                let introVideo = $('#introVideo');
+                if(!introVideo.length||introVideo.height()<=0){
+                    if ($(window).scrollTop() > 91) {
+                        header.addClass('scrolled');
+                    } else {
+                        header.removeClass('scrolled');
+                    }
+                }
                 // this.activeMenu();
             } );
             done();

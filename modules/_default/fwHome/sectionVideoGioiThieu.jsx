@@ -19,24 +19,38 @@ class SectionVideo extends React.Component {
             let main = $('#main');
             let footer = $('#footer');
             let shadowBox = $('#shadowBoxVideo');
+            let introVideo = $('#introVideo');
+
             shadowBox.css('height',`${main.height()+footer.height()}px`);
             this.setState({videoHeight:window.innerHeight, deviceWidth:window.innerWidth});
             let currentHeight = window.scrollY;
-                if(currentHeight>=window.innerHeight){
-                    main.css('position','relative');
-                    shadowBox.css('display','none');
-                }
+            
+            if(currentHeight>=window.innerHeight){
+                main.css('position','relative');
+                shadowBox.css('display','none');
+            }
+
+            main.css('position','fixed');
             $(window).on('scroll', () =>{
                 let main = $('#main');
                 let shadowBox = $('#shadowBoxVideo');
                 let Y = window.scrollY;
                 if(Y>=window.innerHeight){
-                    main.css('position','relative');
-                    shadowBox.css('display','none');
-                }else{
-                    main.css('position','fixed');
-                    shadowBox.css('display','block');
+                    if(!this.state.doneScroll){
+                        main.css('position','relative');
+                        shadowBox.css('display','none');
+                        introVideo.css('height',0);
+                        introVideo.css('min-height','unset');
+                        const body = $('html, body');
+                        body.stop().animate({scrollTop:0}, 1, 'swing');
+                        this.setState({doneScroll:true});
+                    }
+                    
                 }
+                // else{
+                //     main.css('position','fixed');
+                //     shadowBox.css('display','block');
+                // }
                 
             });
             window.addEventListener('resize',()=>{
@@ -61,7 +75,7 @@ class SectionVideo extends React.Component {
     render() {
         const {link,image} = this.state;
     return (
-            <section id='introVideo' className='section-video-intro d-flex flex-column justify-content-center align-items-center'>
+            <section id='introVideo' style={{display:'flex'}} className='section-video-intro flex-column justify-content-center align-items-center'>
                 {/* <div className="overlay" style={{background:'transparent',opacity:0}}></div>
                 {this.state.video?<iframe allow='loop;autoplay;allowfullscreen;mute' className="embed-responsive-item"id="ytplayer" type="text/html" style={{width:'100vw',height:'100vh'}} 
                 src={this.state.video} frameborder="0" allowfullscreen={true}></iframe>:null} */}

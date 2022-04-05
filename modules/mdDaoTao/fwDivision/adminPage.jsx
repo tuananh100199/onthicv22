@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { getDivisionAll, createDivision, deleteDivision, updateDivision } from './redux';
+import { getDivisionAll, createDivision, deleteDivision, updateDivision,swapDivision } from './redux';
 import { AdminPage, AdminModal, FormTextBox, TableCell, renderTable } from 'view/component/AdminPage';
 
 class DivisionModal extends AdminModal {
@@ -42,6 +42,8 @@ class DivisionPage extends AdminPage {
 
     delete = (e, item) => e.preventDefault() || T.confirm('Xóa cơ sở', 'Bạn có chắc bạn muốn xóa cơ sở này?', true, isConfirm => isConfirm &&
         this.props.deleteDivision(item._id));
+    
+    swap = (e, item, isMoveUp) => e.preventDefault() || this.props.swapDivision(item._id, isMoveUp);
 
     render() {
         const permission = this.getUserPermission('division');
@@ -61,7 +63,7 @@ class DivisionPage extends AdminPage {
                     <TableCell type='link' content={item.title} url={'/user/division/' + item._id} />
                     <TableCell type='checkbox' content={item.isOutside} permission={permission} onChanged={isOutside => this.props.updateDivision(item._id, { isOutside }, () => T.notify('Cập nhật cơ sở thành công!', 'success'))} />
                     <TableCell type='image' style={{ width: '20%' }} content={item.image} />
-                    <TableCell type='buttons' content={item} permission={permission} onEdit={'/user/division/' + item._id} onDelete={this.delete} />
+                    <TableCell type='buttons' content={item} permission={permission} onSwap = {this.swap} onEdit={'/user/division/' + item._id} onDelete={this.delete} />
                 </tr>),
         });
 
@@ -79,5 +81,5 @@ class DivisionPage extends AdminPage {
 }
 
 const mapStateToProps = state => ({ system: state.system, division: state.trainning.division });
-const mapActionsToProps = { getDivisionAll, createDivision, deleteDivision, updateDivision };
+const mapActionsToProps = { getDivisionAll, createDivision, deleteDivision, updateDivision, swapDivision };
 export default connect(mapStateToProps, mapActionsToProps)(DivisionPage);
