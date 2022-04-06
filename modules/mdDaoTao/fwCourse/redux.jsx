@@ -465,6 +465,12 @@ export function exportTeacherAndStudentToExcel(_courseId) {
 export function exportLearningProgressToExcel(_courseId, filter) {
     T.download(T.url(`/api/course/learning-progress/export/${_courseId}/${filter}`));
 }
+export function exportDT03(courseId) {
+    T.download(T.url(`/api/course/report-dt03/export/${courseId}`));
+}
+export function exportTN(listId, type) {
+    T.download(T.url(`/api/course/report-tn/export/${listId}/${type}`));
+}
 
 export function exportFinalExam(_subjectId, _studentId, done) {
     return () => {
@@ -513,7 +519,7 @@ export function exportPhuLuc3B(listId, done) {
 
 export function exportPhuLuc4(courseId, done) {
     return () => {
-        const url = '/api/course/student-4/export';
+        const url = '/api/course/report-4/export';
         T.get(url, { courseId }, data => {
             if (data.error) {
                 T.notify('Xuất file word bị lỗi!', 'danger');
@@ -691,20 +697,20 @@ export function exportTN05(courseId, done) {
     };
 }
 
-export function exportTN06(bienBan, done) {
-    return () => {
-        const url = '/api/course/student-tn06/export';
-        T.get(url, { bienBan }, data => {
-            if (data.error) {
-                T.notify('Xuất file word bị lỗi!', 'danger');
-                console.error(`GET: ${url}.`, data.error);
-            } else {
-                if (done) done(data);
-                T.notify('Xuất file word thành công!', 'success');
-            }
-        }, error => console.error(error) || T.notify('Xuất file word bị lỗi!', 'danger'));
-    };
-}
+// export function exportTN06(bienBan, done) {
+//     return () => {
+//         const url = '/api/course/student-tn06/export';
+//         T.get(url, { bienBan }, data => {
+//             if (data.error) {
+//                 T.notify('Xuất file word bị lỗi!', 'danger');
+//                 console.error(`GET: ${url}.`, data.error);
+//             } else {
+//                 if (done) done(data);
+//                 T.notify('Xuất file word thành công!', 'success');
+//             }
+//         }, error => console.error(error) || T.notify('Xuất file word bị lỗi!', 'danger'));
+//     };
+// }
 
 export function exportTN07(courseId, soLuongHocVien, done) {
     return () => {
@@ -797,21 +803,6 @@ export function exportSH01(bienBan, done) {
 }
 
 export function exportSH02(bienBan, done) {
-    return () => {
-        const url = '/api/course/report-tn09/export';
-        T.get(url, { bienBan }, data => {
-            if (data.error) {
-                T.notify('Xuất file word bị lỗi!', 'danger');
-                console.error(`GET: ${url}.`, data.error);
-            } else {
-                if (done) done(data);
-                T.notify('Xuất file word thành công!', 'success');
-            }
-        }, error => console.error(error) || T.notify('Xuất file word bị lỗi!', 'danger'));
-    };
-}
-
-export function exportDT03(bienBan, done) {
     return () => {
         const url = '/api/course/report-tn09/export';
         T.get(url, { bienBan }, data => {

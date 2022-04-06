@@ -13,6 +13,13 @@ module.exports = app => {
             amount: Number,
         }],
         finalQuestions: [],
+
+        gioHocLyThuyetLT: Number,
+        gioHocLyThuyetTH: Number,
+        gioHocTrongHinh: Number,
+        gioHocTrenDuong: Number,
+        cuoiKhoa: Number,
+
     });
     const model = app.db.model('Subject', schema);
 

@@ -107,7 +107,7 @@ class EditCoursePage extends AdminPage {
                     <SoLuongHocVienModal readOnly={false} courseId={item._id} ref={e => this.modal = e} exportTN07={this.props.exportTN07} />
                 </div>
             ),
-            backRoute,
+            backRoute: backRoute + '/' + item._id,
         });
     }
 }

@@ -3,7 +3,6 @@ import { connect } from 'react-redux';
 import {  getCourseTypeAll } from 'modules/mdDaoTao/fwCourseType/redux';
 import { updateStudent } from 'modules/mdDaoTao/fwStudent/redux';
 import { exportDT03, getLearningProgressPage, getCourse } from '../redux';
-import FileSaver from 'file-saver';
 import Pagination from 'view/component/Pagination';
 import { Link } from 'react-router-dom';
 import { AdminPage, renderTable, TableCell, CirclePageButton } from 'view/component/AdminPage';
@@ -35,16 +34,8 @@ class AdminReportDT03Page extends AdminPage {
     }
 
     exportDT03 = () => {
-        const list  = this.props.student && this.props.student.page && this.props.student.page.list;
-        const listStudent = this.state.listStudent;
-        let listId = listStudent.map(student => student._id);
-        if(list && list.length){
-            this.props.exportDT03(listId, (data) => {
-                FileSaver.saveAs(new Blob([new Uint8Array(data.buf.data)]), 'Phu_Luc_DT03.docx');
-            });
-        } else{
-            T.notify('Danh sách học viên trống!', 'danger');
-        }
+        const course = this.props.course && this.props.course.item;
+        this.props.exportDT03(course._id);
     };
 
     xepLoai = (diemTB) => {
@@ -57,13 +48,6 @@ class AdminReportDT03Page extends AdminPage {
     getPage = (pageNumber, pageSize) => {
         this.props.getLearningProgressPage(pageNumber, pageSize, { courseId: this.state.courseId });
     }
-
-    delete = (e, item) => {
-        const listStudent = this.state.listStudent;
-        e.preventDefault();
-        T.confirm('Xoá học viên', 'Bạn có chắc muốn xoá học viên ' + item.lastname + ' ' + item.firstname, true, isConfirm =>
-            isConfirm && this.setState({listStudent: listStudent.filter((student) => student._id != item._id)}));
-    };
 
     converNameSubject = (subject) => {
         let title = subject.title;
@@ -94,7 +78,7 @@ class AdminReportDT03Page extends AdminPage {
         (subjects || []).forEach((subject, index) => {
             subjectColumns.push(<th key={index} style={{ width: 'auto', whiteSpace:'pre', textAlign:'center', color: subject.monThucHanh ? 'aqua' : 'coral' }}  >{this.converNameSubject(subject)}</th>);
         });
-        const backRoute = `/user/course/${this.state.courseId}/report`;
+        const backRoute = `/user/course/${course._id}/report`;
         const table = renderTable({
             getDataSource: () => students, stickyHead: true,
             renderHead: () => (

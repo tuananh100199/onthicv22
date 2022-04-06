@@ -2,8 +2,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import {  getCourseTypeAll } from 'modules/mdDaoTao/fwCourseType/redux';
 import { getStudentPage, updateStudent } from 'modules/mdDaoTao/fwStudent/redux';
-import { exportTN09, getCourse } from '../redux';
-import FileSaver from 'file-saver';
+import { exportTN, getCourse } from '../redux';
 import Pagination from 'view/component/Pagination';
 import { Link } from 'react-router-dom';
 import { AdminPage, FormTextBox , FormDatePicker, renderTable, TableCell, AdminModal, CirclePageButton } from 'view/component/AdminPage';
@@ -59,7 +58,7 @@ class AdminReportTN09Page extends AdminPage {
             if (params && params._id) {
                 const course = this.props.course ? this.props.course.item : null;
                 if (course) {
-                    this.props.getStudentPage(undefined, undefined, { courseId: course._id, totNghiep: 'true', datSatHach: 'false' }, (data) => {
+                    this.props.getStudentPage(undefined, undefined, { courseId: course._id, totNghiep: 'true' }, (data) => {
                         this.setState({listStudent: data.list, courseId: params._id});
                     });
                 } else {
@@ -68,7 +67,7 @@ class AdminReportTN09Page extends AdminPage {
                             T.notify('Lấy khóa học bị lỗi!', 'danger');
                             this.props.history.push('/user/course/' + params._id);
                         } else {
-                            this.props.getStudentPage(undefined, undefined, { courseId: params._id, totNghiep: 'true', datSatHach: 'false' }, (data) => {
+                            this.props.getStudentPage(undefined, undefined, { courseId: params._id, totNghiep: 'true' }, (data) => {
                                 this.setState({listStudent: data.list, courseId: params._id});
                             });
                         }
@@ -81,13 +80,10 @@ class AdminReportTN09Page extends AdminPage {
     }
 
     exportTN09 = () => {
-        const list  = this.props.student && this.props.student.page && this.props.student.page.list;
         const listStudent = this.state.listStudent;
         let listId = listStudent.map(student => student._id);
-        if(list && list.length){
-            this.props.exportTN09(listId, (data) => {
-                FileSaver.saveAs(new Blob([new Uint8Array(data.buf.data)]), 'Phu_Luc_TN09.docx');
-            });
+        if(listId && listId.length){
+            this.props.exportTN(listId, 'tn09');
         } else{
             T.notify('Danh sách học viên trống!', 'danger');
         }
@@ -106,7 +102,11 @@ class AdminReportTN09Page extends AdminPage {
     }
 
     render() {
-        const permission = this.getUserPermission('student', ['read', 'write', 'delete']);
+        const permission = this.getUserPermission('course',['report']);
+        if(permission.report){
+            permission.write = true;
+            permission.delete = true;
+        }
         let { pageNumber, pageSize, pageTotal, pageCondition, totalItem } = this.props.student && this.props.student.page ?
             this.props.student.page : { pageNumber: 1, pageSize: 50, pageTotal: 1, pageCondition: {}, totalItem: 0, list: [] };
         const list = this.state.listStudent;
@@ -154,5 +154,5 @@ class AdminReportTN09Page extends AdminPage {
 }
 
 const mapStateToProps = state => ({ system: state.system, student: state.trainning.student});
-const mapActionsToProps = { getStudentPage, updateStudent, getCourseTypeAll, exportTN09, getCourse };
+const mapActionsToProps = { getStudentPage, updateStudent, getCourseTypeAll, exportTN, getCourse };
 export default connect(mapStateToProps, mapActionsToProps)(AdminReportTN09Page);

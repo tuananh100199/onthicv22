@@ -302,7 +302,7 @@ module.exports = (app) => {
 
     // Hook permissionHooks  ------------------------------------------------------------------------------------------
     app.permissionHooks.add('courseAdmin', 'subject', (user) => new Promise(resolve => {
-        app.permissionHooks.pushUserPermission(user, 'subject:read');
+        app.permissionHooks.pushUserPermission(user, 'subject:read', 'subject:write');
         resolve();
     }));
     app.permissionHooks.add('lecturer', 'subject', (user) => new Promise(resolve => {

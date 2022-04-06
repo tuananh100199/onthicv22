@@ -1,55 +1,53 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import {  getCourseTypeAll } from 'modules/mdDaoTao/fwCourseType/redux';
-import { getStudentPage, updateStudent } from 'modules/mdDaoTao/fwStudent/redux';
+import {  updateSubject } from 'modules/mdDaoTao/fwSubject/redux';
 import { exportPhuLuc4, getCourse } from '../redux';
 import FileSaver from 'file-saver';
-import Pagination from 'view/component/Pagination';
 import { Link } from 'react-router-dom';
 import { AdminPage, FormTextBox, renderTable, TableCell, AdminModal, CirclePageButton } from 'view/component/AdminPage';
 
 class SubjectModal extends AdminModal {
     state = {};
     componentDidMount() {
-        T.ready(() => this.onShown(() => this.itemLastname.focus()));
+        T.ready(() => this.onShown(() => this.itemTitle.focus()));
     }
 
     onShow = (item) => {
         this.itemTitle.value(item.title || '');
         this.itemTotalTime.value(item.totalTime || '');
-        this.itemLyThuyet.value(item.gioHocLyThuyet || '');
+        this.itemLyThuyetLT.value(item.gioHocLyThuyetLT || '');
+        this.itemLyThuyetTH.value(item.gioHocLyThuyetTH || '');
         this.itemTrongHinh.value(item.gioHocTrongHinh || '');
         this.itemTrenDuong.value(item.gioHocTrenDuong || '');
         this.itemCuoiKhoa.value(item.cuoiKhoa || '');
+        this.setState({subject: item});
     }
 
     onSubmit = () => {
-        const current = this.state.student;
-        const listStudent = this.props.listStudent;
+        const current = this.state.subject;
         const changes = {
-            lastname: this.itemLastname.value(),
-            firstname: this.itemFirstname.value(),
-            identityCard: this.itemIdentityCard.value(),
-            residence: this.itemResidence.value(),
-            isGiayKhamSucKhoe: this.itemGiaySucKhoe.value(),
-            isBangLaiA1: this.itemGPLX.value(),
-            birthday: this.itemBirth.value(),
-            soNamLaiXe: this.itemSoNamLaiXe.value(),
-            soKMLaiXe: this.itemKMLaiXe.value(),
+            totalTime: this.itemTotalTime.value(),
+            gioHocLyThuyetLT: this.itemLyThuyetLT.value(),
+            gioHocLyThuyetTH: this.itemLyThuyetTH.value(),
+            gioHocTrongHinh: this.itemTrongHinh.value(),
+            gioHocTrenDuong: this.itemTrenDuong.value(),
+            cuoiKhoa: this.itemCuoiKhoa.value(),
         };
-        let index = listStudent.findIndex(student => student._id == current._id);
-        if(listStudent[index]) listStudent[index] = changes;
-        this.props.updateState({listStudent: listStudent});
-        this.props.update(current._id, changes, () => this.hide());       
+        this.props.update(current._id, changes, () => {
+            this.hide();
+        });       
     }
 
     render = () => this.renderModal({
         title: 'Chỉnh sửa môn học',
+        size: 'large',
         body: (
             <div className='row'>
-                <FormTextBox ref={e => this.itemTitle = e} className='col-md-6' label='Môn học' readOnly={false} />
+                <FormTextBox ref={e => this.itemTitle = e} className='col-md-12' label='Môn học' readOnly={true} />
                 <FormTextBox ref={e => this.itemTotalTime = e} className='col-md-6' label='Tổng thời gian học' readOnly={false} />
-                <FormTextBox ref={e => this.itemLyThuyet = e} className='col-md-6' label='Lý thuyết(giờ)' readOnly={false} />
+                <FormTextBox ref={e => this.itemLyThuyetLT = e} className='col-md-6' label='Lý thuyết LT(giờ)' readOnly={false} />
+                <FormTextBox ref={e => this.itemLyThuyetTH = e} className='col-md-6' label='Lý thuyết TH(giờ)' readOnly={false} />
                 <FormTextBox ref={e => this.itemTrongHinh = e} className='col-md-6' label='TH Trong Hình(giờ)' readOnly={false} />
                 <FormTextBox ref={e => this.itemTrenDuong = e} type='number' className='col-md-6' label='TH Trên Đường(giờ)' readOnly={false} />
                 <FormTextBox ref={e => this.itemCuoiKhoa = e} type='number' className='col-md-6' label='Kiểm tra cuối khoá(giờ)' readOnly={false} />
@@ -95,21 +93,13 @@ class AdminReport4Page extends AdminPage {
 
     edit = (e, item) => e.preventDefault() || this.modal.show(item);
 
-    delete = (e, item) => {
-        e.preventDefault();
-        T.confirm('Xoá học viên', 'Bạn có chắc muốn xoá học viên ' + item.lastname + ' ' + item.firstname, true, isConfirm =>
-            isConfirm && this.setState({listStudent: this.state.listStudent.filter((student) => student._id != item._id)}));
-    };
-
-    updateState = (newState) => {
-        this.setState(newState);
-    }
-
     render() {
-        const permission = this.getUserPermission('student', ['read', 'write', 'delete']);
-        let { pageNumber, pageSize, pageTotal, pageCondition, totalItem } = this.props.student && this.props.student.page ?
-            this.props.student.page : { pageNumber: 1, pageSize: 50, pageTotal: 1, pageCondition: {}, totalItem: 0, list: [] };
-        const course = this.props.course && this.props.course.item ? this.props.course.item : { admins: [] };
+        const permission = this.getUserPermission('course',['report']);
+        if(permission.report){
+            permission.write = true;
+            permission.delete = true;
+        }
+        const course = this.props.course && this.props.course.item ? this.props.course.item : { subjects:[] };
         const list = course && course.subjects;
         const backRoute = `/user/course/${this.state.courseId}/report`;
         const table = renderTable({
@@ -119,7 +109,8 @@ class AdminReport4Page extends AdminPage {
                     <th style={{ width: 'auto', textAlign: 'center' }}>#</th>
                     <th style={{ width: '100%' }}>Môn học</th>
                     <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Tổng số giờ</th>
-                    <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Lý thuyết</th>
+                    <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Lý thuyết (LT)</th>
+                    <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Lý thuyết (TH)</th>
                     <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>TH trong hình</th>
                     <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>TH trên đường</th>
                     <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Kiểm tra cuối khoá</th>
@@ -130,11 +121,12 @@ class AdminReport4Page extends AdminPage {
                     <TableCell type='number' content={index + 1} />
                     <TableCell content={item.title} style={{ whiteSpace: 'nowrap' }} />
                     <TableCell content={item.totalTime} style={{ whiteSpace: 'nowrap' }} />
-                    <TableCell content={''} style={{ whiteSpace: 'nowrap' }} />
-                    <TableCell content={''} style={{ whiteSpace: 'nowrap' }} />
-                    <TableCell content={''} style={{ whiteSpace: 'nowrap' }} />
-                    <TableCell content={''} style={{ whiteSpace: 'nowrap' }} />
-                    <TableCell type='buttons' content={item} permission={permission} onEdit={this.edit} onDelete={this.delete} />
+                    <TableCell content={item.gioHocLyThuyetLT} style={{ whiteSpace: 'nowrap' }} />
+                    <TableCell content={item.gioHocLyThuyetTH} style={{ whiteSpace: 'nowrap' }} />
+                    <TableCell content={item.gioHocTrongHinh} style={{ whiteSpace: 'nowrap' }} />
+                    <TableCell content={item.gioHocTrenDuong} style={{ whiteSpace: 'nowrap' }} />
+                    <TableCell content={item.cuoiKhoa} style={{ whiteSpace: 'nowrap' }} />
+                    <TableCell type='buttons' content={item} permission={permission} onEdit={this.edit} />
                 </tr>)
         });
         return this.renderPage({
@@ -147,10 +139,8 @@ class AdminReport4Page extends AdminPage {
                         {table}
                     </div>
                 </div>
-                <SubjectModal readOnly={false} updateState={this.updateState} listStudent={this.state.listStudent} courseId={this.state.courseId} ref={e => this.modal = e} update={this.props.updateStudent} />
+                <SubjectModal readOnly={false} getCourse={this.props.getCourse} listStudent={this.state.listStudent} courseId={this.state.courseId} ref={e => this.modal = e} update={this.props.updateSubject} />
                 <CirclePageButton type='export' onClick={() => this.exportPhuLuc4()} />
-                <Pagination name='pageCourse' pageNumber={pageNumber} pageSize={pageSize} pageTotal={pageTotal} totalItem={totalItem} pageCondition={pageCondition} style={{ left: 320 }}
-                    getPage={(pageNumber, pageSize) => this.props.getStudentPage(pageNumber, pageSize, { courseId: this.state.courseId, totNghiep: 'true', datSatHach: 'false' })} />
             </>,
             backRoute
         });
@@ -158,5 +148,5 @@ class AdminReport4Page extends AdminPage {
 }
 
 const mapStateToProps = state => ({ system: state.system, course: state.trainning.course});
-const mapActionsToProps = { getStudentPage, updateStudent, getCourseTypeAll, exportPhuLuc4, getCourse };
+const mapActionsToProps = { getCourseTypeAll, exportPhuLuc4, getCourse, updateSubject };
 export default connect(mapStateToProps, mapActionsToProps)(AdminReport4Page);

@@ -2,8 +2,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import {  getCourseTypeAll } from 'modules/mdDaoTao/fwCourseType/redux';
 import { getStudentPage, updateStudent } from 'modules/mdDaoTao/fwStudent/redux';
-import { exportTN06, getCourse } from '../redux';
-import FileSaver from 'file-saver';
+import { exportTN, getCourse } from '../redux';
 import Pagination from 'view/component/Pagination';
 import { Link } from 'react-router-dom';
 import { AdminPage, FormTextBox , FormDatePicker, renderTable, TableCell, AdminModal, CirclePageButton } from 'view/component/AdminPage';
@@ -85,9 +84,7 @@ class AdminReportTN06Page extends AdminPage {
         const listStudent = this.state.listStudent;
         let listId = listStudent.map(student => student._id);
         if(list && list.length){
-            this.props.exportTN06(listId, (data) => {
-                FileSaver.saveAs(new Blob([new Uint8Array(data.buf.data)]), 'Phu_Luc_TN06.docx');
-            });
+            this.props.exportTN(listId.toString(),'tn06');
         } else{
             T.notify('Danh sách học viên trống!', 'danger');
         }
@@ -154,5 +151,5 @@ class AdminReportTN06Page extends AdminPage {
 }
 
 const mapStateToProps = state => ({ system: state.system, student: state.trainning.student});
-const mapActionsToProps = { getStudentPage, updateStudent, getCourseTypeAll, exportTN06, getCourse };
+const mapActionsToProps = { getStudentPage, updateStudent, getCourseTypeAll, exportTN, getCourse };
 export default connect(mapStateToProps, mapActionsToProps)(AdminReportTN06Page);
