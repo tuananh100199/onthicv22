@@ -2,7 +2,7 @@ module.exports = app => {
     const menu = {
         parentMenu: app.parentMenu.enrollment,
         menus: {
-            8031: { title: 'Loại hồ sơ', link: '/user/profile-type', icon: 'fa-envelope-o', backgroundColor: '#00897b' },
+            8021: { title: 'Loại hồ sơ', link: '/user/profile-type', icon: 'fa-envelope-o', backgroundColor: '#00897b' },
         },
     };
     app.permission.add({ name: 'profileType:read', menu }, { name: 'profileType:write' }, { name: 'profileType:delete' },);
