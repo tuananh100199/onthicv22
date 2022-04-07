@@ -56,6 +56,8 @@
 	8010 - Đăng ký tư vấn (/user/candidate)
 	8020 - Ứng viên (/user/pre-student)
 	8030 - Bổ sung hồ sơ học viên (/user/profile-student)
+	8031 - Loại hồ sơ (/user/profile-type)
+	8035 - Loại giấy tờ học viên (/user/profile-student-type)
 	8040 - Phát chứng chỉ, giấy phép (/user/license)
 	8060 - Theo dõi công nợ (/user/student/debt-enroll)
 	8090 - Quản lý giáo viên (/user/teacher)
