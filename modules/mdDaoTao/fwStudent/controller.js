@@ -845,7 +845,7 @@ module.exports = (app) => {
                         fee: lichSu.fee,
                         feeText: feeText.charAt(0).toUpperCase() + feeText.slice(1) + ' Việt Nam Đồng',
                         reason: 'Nộp học phí chính thức',
-                        division: division.title
+                        division:division? division.title :''
                     };     
                     app.docx.generateFile('/document/Phieu_Thu.docx', data, (error, buf) => {
                         res.send({ error: error, buf: buf });
