@@ -1,10 +1,10 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { getCourse } from '../redux';
-import { getRatePage } from 'modules/_default/fwRate/redux';
+import { getRatePage, getRateByCourse } from 'modules/_default/fwRate/redux';
 import { Link } from 'react-router-dom';
-import Pagination from 'view/component/Pagination';
 import { AdminPage, TableCell, renderTable } from 'view/component/AdminPage';
+import StarRatings from 'react-star-ratings';
 
 class AdminTeacherRatePage extends AdminPage {
     state = {};
@@ -14,14 +14,16 @@ class AdminTeacherRatePage extends AdminPage {
             if (params && params._id) {
                 const course = this.props.course ? this.props.course.item : null;
                 if (course) {
-                    this.getCourseRate(course._id);
+                    // this.getCourseRate(course._id);
+                    this.props.getRateByCourse(course._id);
                 } else {
                     this.props.getCourse(params._id, data => {
                         if (data.error) {
                             T.notify('Lấy khóa học bị lỗi!', 'danger');
                             this.props.history.push('/user/course/' + params._id);
                         } else {
-                            this.getCourseRate(params._id);
+                            // this.getCourseRate(params._id);
+                            this.props.getRateByCourse(params._id);
                         }
                     });
                 }
@@ -31,51 +33,81 @@ class AdminTeacherRatePage extends AdminPage {
         });
     }
 
-    getCourseRate = (_courseId) => {
-        const condition = { type: 'teacher', _courseId };
-        this.props.getRatePage(1, 50, condition, data => {
-            if (data.error) {
-                T.notify('Lấy đánh giá bị lỗi!', 'danger');
-                this.props.history.push('/user/course/' + _courseId);
-            }
-        });
+    // getCourseRate = (_courseId) => {
+    //     const condition = { type: 'teacher', _courseId };
+    //     this.props.getRatePage(1, 50, condition, data => {
+    //         if (data.error) {
+    //             T.notify('Lấy đánh giá bị lỗi!', 'danger');
+    //             this.props.history.push('/user/course/' + _courseId);
+    //         }
+    //     });
+    // }
+
+    star = (score, count) => {
+        return (
+            score ?
+            <div className='d-flex align-items-center justify-content-center'>
+                <span className='text-primary' style={{ fontSize:'40px', paddingRight: '15px', color:'#ffca08'}}>{Number(score/count).toFixed(1)+'   '}</span>
+                <div>
+                    <StarRatings
+                        rating={score/count}
+                        starRatedColor={(score/count) >=4  ? '#28a745' : ((score/count) < 3 ? '#dc3545' : '#ffca08')}
+                        numberOfStars={5}
+                        name='rating'
+                        starDimension='20px'
+                    />
+                    <p><i className='fa fa-user-o' aria-hidden='true'></i>{'  ' + count}</p>
+                </div>
+                 
+            </div>  : ''
+        );
     }
 
     render() {
         // const permission = this.getUserPermission('course');
-        const item = this.props.course && this.props.course.item ? this.props.course.item : { admins: [] };
-        let { pageNumber, pageSize, pageTotal, pageCondition, totalItem, list } = this.props.rate && this.props.rate.page ?
-            this.props.rate.page : { pageNumber: 1, pageSize: 50, pageTotal: 1, pageCondition: {}, totalItem: 0, list: [] };
+        const course = this.props.course && this.props.course.item ? this.props.course.item : { admins: [] };
+        let listRate  = this.props.rate && this.props.rate.list ?
+            this.props.rate.list : [];
+        const list = {};
+        const count = {};
+        const listTeacher = [];
+        if(course.teacherGroups && course.teacherGroups.length){
+            for(let i = 0; i < course.teacherGroups.length; i++){
+                listTeacher.push(course.teacherGroups[i].teacher);
+                listRate.forEach(rate => {
+                    if(rate._refId == (course.teacherGroups[i].teacher && course.teacherGroups[i].teacher._id)){
+                        list[rate._refId] = list[rate._refId] ?  (list[rate._refId] + rate.value) : (rate.value);
+                        count[rate._refId] = count[rate._refId] ? (count[rate._refId] + 1) : 1;
+                    }
+                });
+            }
+        }
         const table = renderTable({
-            getDataSource: () => list, stickyHead: true,
+            getDataSource: () => listTeacher, stickyHead: true,
             renderHead: () => (
                 <tr>
                     <th style={{ width: 'auto' }}>#</th>
-                    <th style={{ width: 'auto' }} nowrap='true'>Học viên đánh giá</th>
-                    <th style={{ width: 'auto' }} nowrap='true'>Giáo viên được đánh giá</th>
-                    <th style={{ width: 'auto' }} nowrap='true'>Số sao</th>
-                    <th style={{ width: '100%' }}>Nội dung đánh giá</th>
+                    <th style={{ width: '20%', textAlign: 'center' }} nowrap='true'>Giáo viên</th>
+                    <th style={{ width: '20%', textAlign: 'center' }} nowrap='true'>Hình ảnh giáo viên</th>
+                    <th style={{ width: '60%', textAlign: 'center' }} nowrap='true'>Điểm đánh giá</th>
                 </tr>),
             renderRow: (item, index) => (
                 <tr key={index}>
                     <TableCell type='number' content={index + 1} />
-                    <TableCell type='text' content={`${item.user && item.user.lastname} ${item.user && item.user.firstname}`} />
-                    <TableCell type='text' content={`${item._refId && item._refId.lastname} ${item._refId && item._refId.firstname}`} />
-                    <TableCell type='number' content={item.value} />
-                    <TableCell type='text' content={item.note || ''} />
+                    <TableCell type='link' content={`${item.lastname} ${item.firstname}`} url={`/user/course/${course._id}/rate-teacher/${item._id}`} />
+                    <TableCell type='image' height='50px' content={item.image ? item.image : '/img/avatar-default.png'} />
+                    <TableCell type='text' style={{ textAlign: 'center' }} content={this.star(list[item._id], count[item._id])} />
                 </tr>),
         });
 
-        const backRoute = `/user/course/${item._id}`;
+        const backRoute = `/user/course/${course._id}`;
         return this.renderPage({
             icon: 'fa fa-star',
-            title: 'Đánh giá Giáo viên: ' + item.name,
-            breadcrumb: [<Link key={0} to='/user/course'>Khóa học</Link>, item._id ? <Link key={0} to={backRoute}>{item.name}</Link> : '', 'Đánh giá Giáo viên'],
+            title: 'Đánh giá Giáo viên: ' + course.name,
+            breadcrumb: [<Link key={0} to='/user/course'>Khóa học</Link>, course._id ? <Link key={0} to={backRoute}>{course.name}</Link> : '', 'Đánh giá Giáo viên'],
             content: (
                 <div className='tile'>
                     <div className='tile-body'>{table}</div>
-                    <Pagination pageCondition={pageCondition} pageNumber={pageNumber} pageSize={pageSize} pageTotal={pageTotal} totalItem={totalItem} style={{ left: 320 }}
-                        getPage={this.props.getRatePage} />
                 </div>
             ),
             backRoute,
@@ -84,5 +116,5 @@ class AdminTeacherRatePage extends AdminPage {
 }
 
 const mapStateToProps = state => ({ system: state.system, course: state.trainning.course, rate: state.framework.rate });
-const mapActionsToProps = { getCourse, getRatePage };
+const mapActionsToProps = { getCourse, getRatePage, getRateByCourse };
 export default connect(mapStateToProps, mapActionsToProps)(AdminTeacherRatePage);

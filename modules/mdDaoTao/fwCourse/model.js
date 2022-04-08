@@ -43,6 +43,34 @@ module.exports = app => {
             student: [{ type: app.db.Schema.Types.ObjectId, ref: 'Student' }],
         }],
 
+        studyProgram: { type: app.db.Schema.ObjectId, ref: 'StudyProgram' },
+
+        hoiDongTotNghiep:[{
+            name: String,
+            chucVu: String,
+            nhiemVu: String,
+            gender: { type: String, enum: ['male', 'female'], default: 'male' },
+        }],
+
+        hoiDongChamThi:[{
+            name: String,
+            chucVu: String,
+            nhiemVu: String,
+            gender: { type: String, enum: ['male', 'female'], default: 'male' },
+            chamLyThuyet:{type: Boolean, default: false},
+            chamThucHanh: {type: Boolean, default: false},
+            isTruongBanChamThi: {type: Boolean, default: false},
+            isThuKyChamThi: {type: Boolean, default: false},
+        }],
+
+        hoiDongKiemTraKetThucKhoa:[{
+            name: String,
+            chucVu: String,
+            nhiemVu: String,
+            gender: { type: String, enum: ['male', 'female'], default: 'male' },
+            thuKyBaoCao:{type: Boolean, default: false},
+        }],
+
         lock: { type: Boolean, default: false },                            // Cho phép thay đổi thông tin toàn khoá học => TODO: readOnly
         close: { type: Boolean, default: false },                           // Khóa học đã đóng
     });

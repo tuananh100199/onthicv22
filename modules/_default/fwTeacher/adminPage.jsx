@@ -135,7 +135,6 @@ class AdminTeacherPage extends AdminPage {
         if (searchText == undefined) searchText = this.state.searchText;
         let condition = { searchText };
         if(course && course!='all') condition.course=course;
-        console.log('condition: ',condition);
         this.props.getTeacherPage(pageNumber,pageSize,condition,page=>{
             done && done(page);
             this.setState({searchText});

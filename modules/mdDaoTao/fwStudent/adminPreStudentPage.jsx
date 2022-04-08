@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { getPreStudentPage, createPreStudent, updatePreStudent, deletePreStudent } from './redux';
+import { getPreStudentPage, createPreStudent, updatePreStudent, deletePreStudent,exportPreStudent } from './redux';
 import { ajaxSelectCourseType } from 'modules/mdDaoTao/fwCourseType/redux';
 import { ajaxSelectLecturer } from 'modules/_default/fwUser/redux';
 import Pagination from 'view/component/Pagination';
@@ -231,7 +231,7 @@ class PreStudentPage extends AdminPage {
     create = (e) => e.preventDefault() || this.modal.show();
 
     render() {
-        const permission = this.getUserPermission('pre-student', ['read', 'write', 'delete', 'import']),
+        const permission = this.getUserPermission('pre-student', ['read', 'write', 'delete', 'import', 'export']),
             permissionUser = this.getUserPermission('user', ['read']);
         let { pageNumber, pageSize, pageTotal, pageCondition, totalItem, list } = this.props.student && this.props.student.prePage ?
             this.props.student.prePage : { pageNumber: 1, pageSize: 50, pageTotal: 1, pageCondition: {}, totalItem: 0, list: [] };
@@ -270,6 +270,7 @@ class PreStudentPage extends AdminPage {
                 <PreStudenModal readOnly={!permission.write} ref={e => this.modal = e} create={this.props.createPreStudent} update={this.props.updatePreStudent} 
                 defaultCourseFees={this.state.defaultCourseFees} defaultDiscount={this.state.defaultDiscount} defaultCoursePayment={this.state.defaultCoursePayment} />
                 {permission.import ? <CirclePageButton type='import' style={{ right: '70px' }} onClick={() => this.props.history.push('/user/pre-student/import')} /> : null}
+                {permission.export ? <CirclePageButton type='export' style={{ right: '130px' }} onClick={(e) => e.preventDefault()||this.props.exportPreStudent()} /> : null}
             </>,
             onCreate: permission.write ? this.edit : null,
         });
@@ -277,5 +278,5 @@ class PreStudentPage extends AdminPage {
 }
 
 const mapStateToProps = state => ({ system: state.system, student: state.trainning.student });
-const mapActionsToProps = { getPreStudentPage, deletePreStudent, createPreStudent, updatePreStudent,getCourseFeeAll,getCoursePaymentAll,getDiscountAll };
+const mapActionsToProps = { getPreStudentPage, deletePreStudent, createPreStudent, updatePreStudent,getCourseFeeAll,getCoursePaymentAll,getDiscountAll,exportPreStudent };
 export default connect(mapStateToProps, mapActionsToProps)(PreStudentPage);

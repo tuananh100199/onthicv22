@@ -1,8 +1,80 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { getDebtStudentPage, updateStudent } from './redux';
-import { AdminPage, renderTable, TableCell } from 'view/component/AdminPage';
+import { getDebtStudentPage, exportPhieuThu } from './redux';
+import FileSaver from 'file-saver';
+import { AdminPage,FormTextBox, FormCheckbox, renderTable, TableCell, AdminModal } from 'view/component/AdminPage';
 import Pagination from 'view/component/Pagination';
+import { getText } from 'number-to-text-vietnamese';
+
+class InPhieuThuModal extends AdminModal {
+    state = { billId: null };
+    componentDidMount() {
+        T.ready(() => this.onShown(() => this.itemName.focus()));
+    }
+
+    onShow = (item) => {
+        const { lastname, firstname, lichSuDongTien } = item || { lastname: '', firstname: '', lichSuDongTien: []};
+        this.itemName.value(lastname + ' ' + firstname);
+        this.setState({lichSuDongTien, userId: item._id});
+    }
+
+    change = (value, index) => {
+        const { lichSuDongTien } = this.state;
+        const feeText = value ? (lichSuDongTien[index] && lichSuDongTien[index].fee ? getText(lichSuDongTien[index].fee) : '') : '';
+        for(let i = 0; i < lichSuDongTien.length; i++){
+            if(i != index) this[i].value(false);
+        }
+        this.setState({ billId: value ? (lichSuDongTien[index] && lichSuDongTien[index]._id) : null, feeText });
+    }
+
+    exportPhieuThu = () => {
+        const { billId, userId, feeText } = this.state;
+        if(billId && userId){
+            this.props.exportPhieuThu(userId, billId, feeText, (data) => {
+                FileSaver.saveAs(new Blob([new Uint8Array(data.buf.data)]), 'PHIẾU THU.docx');
+            });
+        } else{
+            T.notify('Chưa có đủ thông tin!', 'danger');
+        }
+    };
+
+    render = () => {
+        const { lichSuDongTien, billId } = this.state;
+        const table = renderTable({
+            getDataSource: () => lichSuDongTien, stickyHead: true,
+            renderHead: () => (
+                <tr>
+                    <th style={{ width: 'auto', textAlign: 'center' }}>#</th>
+                    <th style={{ width: '100%' }}>Tên</th>
+                    <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Số tiền thanh toán</th>
+                    <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Thời gian đóng</th>
+                    <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Chọn hoá đơn</th>
+                </tr>),
+            renderRow: (item, index) => (
+                <tr key={index}>
+                    <TableCell type='number' content={index + 1} />
+                    <TableCell type='text' content={'Thanh toán học phí lần ' + (index + 1)} />
+                    <TableCell type='number' content={item.fee ? T.numberDisplay(item.fee) + ' đồng' : ''} />
+                    <TableCell type='number' content={item.date ? T.dateToText(item.date, 'dd/mm/yyyy') : ''} />
+                    <TableCell type='link' onClick={() => { }} style={{ textAlign: 'center' }} content={<FormCheckbox ref={e => this[index] = e} onChange={value => this.change(value, index)} />} />
+                </tr>)
+        });
+        return this.renderModal({
+            title: 'Chọn học phí cần in phiếu thu',
+            size: 'large',
+            body: (
+                <div>
+                   <FormTextBox ref={e => this.itemName = e} type='text' label='Tên học viên' readOnly={true} />
+                    {table}
+                </div>),
+            buttons:
+            <a className={'btn btn-success' + (billId ? ' visible' : ' invisible')} href='#' onClick={() => this.exportPhieuThu()} style={{ color: 'white' }}>
+                <i className='fa fa-lg fa-print' /> In
+            </a>
+        });
+    }
+}
+
 class DebtTrackingPage extends AdminPage {
     state = { isSearching: false, searchText: '' };
     componentDidMount() {
@@ -30,7 +102,7 @@ class DebtTrackingPage extends AdminPage {
                 else if (type == 'isOnline') text = text + 'Lần ' + i + ': ' + (item.isOnlinePayment ? 'Thanh toán online' : 'Thanh toán trực tiếp') + '\n';
                 else if (type == 'sum') text = parseInt(text + item.fee);
             });
-            return <>{type == 'sum' ? T.numberDisplay(text) : <p>{text}</p>}</>;
+            return type == 'sum' ? <>{ T.numberDisplay(text)}</> : <pre>{text}</pre>;
         } else return text;
     }
 
@@ -79,7 +151,7 @@ class DebtTrackingPage extends AdminPage {
                     <TableCell type='number' content={item.discount ? item.discount.fee : ''} />
                     <TableCell type='number' content={item.courseFee ? item.courseFee.fee - (item.discount ? item.discount.fee : 0) : ''} />
                     <TableCell type='number' content={item.coursePayment ? item.coursePayment.numOfPayments : ''} />
-                    <TableCell type='text' content={item.lichSuDongTien ? this.renderLichSuDongTien(item.lichSuDongTien, 'fee') : ''} />
+                    <TableCell type='text' style={{textAlign: 'center'}} content={item.lichSuDongTien ? this.renderLichSuDongTien(item.lichSuDongTien, 'fee') : ''} />
                     <TableCell type='number' content={item.lichSuDongTien ? this.renderLichSuDongTien(item.lichSuDongTien, 'isOnline') : ''} />
                     <TableCell type='number' content={''} />
                     <TableCell type='number' content={item.lichSuDongTien ? this.renderLichSuDongTien(item.lichSuDongTien, 'sum') : ''} />
@@ -87,7 +159,7 @@ class DebtTrackingPage extends AdminPage {
                     <TableCell type='number' content={item.ngayHetHanNopHocPhi ? T.dateToText(item.ngayHetHanNopHocPhi, 'dd/mm/yyyy') : ''} />
                     {permission.write && 
                     <TableCell type='buttons' content={item} permission={true} onEdit={this.edit}>
-                        <a className='btn btn-warning' href='#' onClick={(e) => this.sendNotification(e, item)}>
+                        <a className='btn btn-warning' href='#' onClick={() => this.modal.show(item)}>
                             <i className='fa fa-lg fa-print' />
                         </a>
                         <a className='btn btn-success' href={'/user/student/payment/' + item._id}>
@@ -106,6 +178,7 @@ class DebtTrackingPage extends AdminPage {
                         {table}
                     </div>
                 </div>
+                <InPhieuThuModal readOnly={false} ref={e => this.modal = e} exportPhieuThu={this.props.exportPhieuThu} />
                 <Pagination pageCondition={pageCondition} pageNumber={pageNumber} pageSize={pageSize} pageTotal={pageTotal} totalItem={totalItem} getPage={(pageNumber, pageSize) => this.onSearch({ pageNumber, pageSize })} />
             </>,
         });
@@ -113,5 +186,5 @@ class DebtTrackingPage extends AdminPage {
 }
 
 const mapStateToProps = state => ({ system: state.system, student: state.trainning.student });
-const mapActionsToProps = { getDebtStudentPage, updateStudent };
+const mapActionsToProps = { getDebtStudentPage, exportPhieuThu };
 export default connect(mapStateToProps, mapActionsToProps)(DebtTrackingPage);

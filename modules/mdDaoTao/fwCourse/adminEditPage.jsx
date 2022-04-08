@@ -39,7 +39,8 @@ class EditCoursePage extends AdminPage {
                     <PageIconHeader text='Thông tin chung' />
                     <PageIcon visible={isLecturer || isCourseAdmin || permission.write} to={`/user/course/${item._id}/info`} icon='fa-info' iconBackgroundColor='#17a2b8' text='Thông tin khóa học' />
                     <PageIcon visible={permission.delete} to={`/user/course/${item._id}/subject`} icon='fa-briefcase' iconBackgroundColor='#1488db' text='Môn học' />
-                    <PageIcon visible={permission.delete} to={`/user/course/${item._id}/graduation-subject`} icon='fa-clone' iconBackgroundColor='#dc143c' text='Môn thi tốt nghiệp' />
+                    <PageIcon visible={permission.delete} to={`/user/course/${item._id}/graduation-subject`} icon='fa-clone' iconBackgroundColor='#F0E68C' text='Môn thi tốt nghiệp' />
+                    <PageIcon visible={!item.isDefault && (isCourseAdmin)} to={`/user/course/${item._id}/final-exam-setting`} icon='fa-sliders' iconBackgroundColor='#dc143c' text='Thiết lập thi hết môn' />
                     {item.chatActive && (isLecturer || isCourseAdmin || permission.write) && <PageIcon to={`/user/chat/${item._id}`} icon='fa-comments-o' iconBackgroundColor='#9ccc65' text='Chat' />}
 
                     {!item.isDefault && (isCourseAdmin || permission.write) ? <PageIconHeader text='Nhân sự' /> : null}
@@ -52,6 +53,8 @@ class EditCoursePage extends AdminPage {
                     <PageIcon visible={isCourseAdmin || permission.write || permissionFeedback.read} to={`/user/course/${item._id}/feedback`} icon='fa-heartbeat' iconBackgroundColor='teal' text='Phản hồi' />
                     <PageIcon to={`/user/course/${item._id}/forum`} icon='fa-users' iconBackgroundColor='#9ced65' text='Forum' />
                     <PageIcon visible={!item.isDefault && (isLecturer || isCourseAdmin)} to={`/user/course/${item._id}/comment`} icon='fa-comment-o' iconBackgroundColor='#900' text={isCourseAdmin ? 'Bình luận chờ duyệt' : 'Bình luận của học viên'} />
+                    <PageIcon visible={!item.isDefault && isCourseAdmin} to={`/user/course/${item._id}/report`} icon='fa-file-text' iconBackgroundColor='#DAA520' text={'Báo cáo'} />
+                    <PageIcon visible={!item.isDefault && isCourseAdmin} to={`/user/course/${item._id}/class`} icon='fa-table' iconBackgroundColor='#9400D3' text={'Phân lớp'} />
                     {isLecturer ? <PageIcon to={`/user/course/${item._id}/feedback-lecturer`} icon='fa-commenting-o' iconBackgroundColor='#dc3545' text='Phản hồi' /> : null}
                     <PageIconHeader text='Đào tạo' />
                     <PageIcon visible={ permission.delete } to={`/user/course/${item._id}/additional-profile`} icon='fa-folder' iconBackgroundColor='#1488db' text='Bổ sung hồ sơ học viên' />

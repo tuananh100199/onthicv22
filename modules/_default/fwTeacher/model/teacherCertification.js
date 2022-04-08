@@ -1,6 +1,6 @@
 module.exports = app => {
     const schema = app.db.Schema({
-        category:{ type: app.db.Schema.ObjectId, ref: 'Category' },
+        category:{ type: app.db.Schema.ObjectId, ref: 'TeacherDiploma' },
         trinhDo:String,
         ngayCap:Date,
         noiCap:String,
@@ -16,7 +16,8 @@ module.exports = app => {
         create: (data, done) => model.create(data, done),
 
         getAll: (condition, done) => {
-            done ? model.find(condition).populate('category','_id title').exec(done) : model.find({}).populate('category','_id title').exec(condition);
+            done ? model.find(condition).populate('category','_id title isSuPham').exec(done) 
+            : model.find({}).populate('category','_id title isSuPham').exec(condition);
         },
 
         get: (condition, done) => {
@@ -25,7 +26,7 @@ module.exports = app => {
                 condition = {};
             }
             if (typeof condition == 'string') condition = { _id: condition };
-            model.findOne(condition).exec(done);
+            model.findOne(condition).populate('category','_id title isSuPham').exec(done);
         },
 
         // changes = { $set, $unset, $push, $pull }
