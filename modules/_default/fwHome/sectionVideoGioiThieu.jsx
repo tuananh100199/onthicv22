@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { homeGetIntroVideo } from './redux/reduxIntroVideo';
 
 class SectionVideo extends React.Component {
-    state = {link:'',image:'',videoHeight:0,deviceWidth:0};
+    state = {link:'',image:'',videoHeight:0,deviceWidth:0,isShowMenu:false};
 
     componentDidMount() {
         
@@ -19,7 +19,7 @@ class SectionVideo extends React.Component {
             let main = $('#main');
             let footer = $('#footer');
             let shadowBox = $('#shadowBoxVideo');
-            let introVideo = $('#introVideo');
+            // let introVideo = $('#introVideo');
 
             shadowBox.css('height',`${main.height()+footer.height()}px`);
             this.setState({videoHeight:window.innerHeight, deviceWidth:window.innerWidth});
@@ -36,21 +36,28 @@ class SectionVideo extends React.Component {
                 let shadowBox = $('#shadowBoxVideo');
                 let Y = window.scrollY;
                 if(Y>=window.innerHeight){
-                    if(!this.state.doneScroll){
-                        main.css('position','relative');
+                    // if(!this.state.doneScroll){
+                    //     main.css('position','relative');
+                    //     shadowBox.css('display','none');
+                    //     // introVideo.css('height',0);
+                    //     // introVideo.css('display','none');
+                    //     introVideo.css('min-height','unset');
+                    //     const body = $('html, body');
+                    //     // body.stop().animate({scrollTop:0}, 1, 'swing');
+                    //     this.setState({doneScroll:true});
+                    // }
+                    main.css('position','relative');
                         shadowBox.css('display','none');
-                        introVideo.css('height',0);
-                        introVideo.css('min-height','unset');
-                        const body = $('html, body');
-                        body.stop().animate({scrollTop:0}, 1, 'swing');
-                        this.setState({doneScroll:true});
-                    }
+                        // introVideo.css('height',0);
+                        // introVideo.css('display','none');
+                        // introVideo.css('min-height','unset');
+                        // const body = $('html, body');
                     
                 }
-                // else{
-                //     main.css('position','fixed');
-                //     shadowBox.css('display','block');
-                // }
+                else{
+                    main.css('position','fixed');
+                    shadowBox.css('display','block');
+                }
                 
             });
             window.addEventListener('resize',()=>{
@@ -89,8 +96,33 @@ class SectionVideo extends React.Component {
                     <div></div>
                     <div></div>
                 </a>
-
+                
             </div>
+            {/* <div className='intro-menu'>
+                <ul className={`${this.state.isShowMenu?'intro-menu-move':''}`}>
+                    <li>
+                        <a href="#"><i class="fa fa-user" aria-hidden="true"></i>
+                        Đăng nhập</a>
+                    </li>
+                    <li>
+                        <a href='#'><i class='fa fa-paper-plane' aria-hidden='true'></i> 
+                        Đăng ký tư vấn</a>
+                    </li>
+                    <li>
+                        <a href='#'> <i className='fa fa-phone' aria-hidden='true'></i> 
+                        Điện thoại</a>
+                    </li>
+                    <li>
+                        <a href='#dangKyNhanTin'><i class='fa fa-comments' aria-hidden='true'></i> 
+                        Liên hệ</a>
+                    </li>
+                </ul>
+                <div className='d-flex justify-content-end'>
+                    <a href='#' className='intro-menu-bar' onClick={()=>this.setState({isShowMenu:!this.state.isShowMenu})}>
+                        <i className={this.state.isShowMenu?'fa fa-times':'fa fa-bars'} aria-hidden="true"></i>
+                    </a>
+                </div>
+            </div> */}
             
             {/* <div id="shadowBoxVideo" style={{width:'100%',minHeight:'100vh',backgroundColor:this.state.color||'transparent'}}></div> */}
             </section>

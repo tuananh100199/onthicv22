@@ -16,9 +16,10 @@ class HomeMenu extends React.Component {
         };
         $(document).ready(() => {
             let header = $('.header');
+            header.addClass('scrolled');
+            header.addClass('header_video');
             function setHeader() {
                 let introVideo = $('#introVideo');
-                console.log('introVideo height: ',introVideo.height());
                 if(introVideo.height()<=0){
                     if ($(window).scrollTop() > 91) {
                         header.addClass('scrolled');
@@ -26,7 +27,6 @@ class HomeMenu extends React.Component {
                         header.removeClass('scrolled');
                     }
                 }
-                
             }
 
             function initMenu() {
@@ -51,7 +51,7 @@ class HomeMenu extends React.Component {
                 });
             }
 
-            setHeader();
+            // setHeader();
             initMenu();
             $(window).on('resize', () => {
                 setHeader();
@@ -67,6 +67,18 @@ class HomeMenu extends React.Component {
                     } else {
                         header.removeClass('scrolled');
                     }
+                }
+                let height=0;
+                if(introVideo.length){
+                    height=window.innerHeight;
+                }
+
+                if ($(window).scrollTop() >height- 91) {
+                    // header.addClass('scrolled');
+                    header.removeClass('header_video');
+                } else {
+                    header.addClass('header_video');
+                    // header.removeClass('scrolled');
                 }
                 // this.activeMenu();
             } );
@@ -122,11 +134,14 @@ class HomeMenu extends React.Component {
                 window.location=`/${hash}`;
             }
             const height = this.getMenuHeight();
+            const introVideo = $('#introVideo');
+            let Y = window.scrollY;
+            const scrollMore = introVideo.length && introVideo.height()-Y>0?introVideo.height()-Y:0;
             // Using jQuery's animate() method to add smooth page scroll
             // The optional number (800) specifies the number of milliseconds it takes to scroll to the specified area
             this.setState({link:hash});
             $('html, body').animate({
-            scrollTop: $(hash).offset().top - height
+            scrollTop: $(hash).offset().top - height + scrollMore,
             }, 800, ()=>{
             // Add hash (#) to URL when done scrolling (default click behavior)
             // window.location.hash = hash;
