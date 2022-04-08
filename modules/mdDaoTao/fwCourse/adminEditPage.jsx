@@ -41,7 +41,6 @@ class EditCoursePage extends AdminPage {
                     <PageIcon visible={permission.delete} to={`/user/course/${item._id}/subject`} icon='fa-briefcase' iconBackgroundColor='#1488db' text='Môn học' />
                     <PageIcon visible={permission.delete} to={`/user/course/${item._id}/graduation-subject`} icon='fa-clone' iconBackgroundColor='#F0E68C' text='Môn thi tốt nghiệp' />
                     <PageIcon visible={!item.isDefault && (isCourseAdmin)} to={`/user/course/${item._id}/final-exam-setting`} icon='fa-sliders' iconBackgroundColor='#dc143c' text='Thiết lập thi hết môn' />
-                    <PageIcon visible={!item.isDefault && (isCourseAdmin)} to={`/user/course/${item._id}/study-program`} icon='fa-tasks' iconBackgroundColor='#4B0082' text='Chương trình học' />
                     {item.chatActive && (isLecturer || isCourseAdmin || permission.write) && <PageIcon to={`/user/chat/${item._id}`} icon='fa-comments-o' iconBackgroundColor='#9ccc65' text='Chat' />}
 
                     {!item.isDefault && (isCourseAdmin || permission.write) ? <PageIconHeader text='Nhân sự' /> : null}

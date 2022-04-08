@@ -102,7 +102,7 @@ class DebtTrackingPage extends AdminPage {
                 else if (type == 'isOnline') text = text + 'Lần ' + i + ': ' + (item.isOnlinePayment ? 'Thanh toán online' : 'Thanh toán trực tiếp') + '\n';
                 else if (type == 'sum') text = parseInt(text + item.fee);
             });
-            return <>{type == 'sum' ? T.numberDisplay(text) : <p>{text}</p>}</>;
+            return type == 'sum' ? <>{ T.numberDisplay(text)}</> : <pre>{text}</pre>;
         } else return text;
     }
 
@@ -151,7 +151,7 @@ class DebtTrackingPage extends AdminPage {
                     <TableCell type='number' content={item.discount ? item.discount.fee : ''} />
                     <TableCell type='number' content={item.courseFee ? item.courseFee.fee - (item.discount ? item.discount.fee : 0) : ''} />
                     <TableCell type='number' content={item.coursePayment ? item.coursePayment.numOfPayments : ''} />
-                    <TableCell type='text' content={item.lichSuDongTien ? this.renderLichSuDongTien(item.lichSuDongTien, 'fee') : ''} />
+                    <TableCell type='text' style={{textAlign: 'center'}} content={item.lichSuDongTien ? this.renderLichSuDongTien(item.lichSuDongTien, 'fee') : ''} />
                     <TableCell type='number' content={item.lichSuDongTien ? this.renderLichSuDongTien(item.lichSuDongTien, 'isOnline') : ''} />
                     <TableCell type='number' content={''} />
                     <TableCell type='number' content={item.lichSuDongTien ? this.renderLichSuDongTien(item.lichSuDongTien, 'sum') : ''} />
