@@ -141,7 +141,7 @@ module.exports = (app) => {
     };
 
     // APIs ------------------------------------------------------------------------------------------------------------
-    app.get('/api/course/page/:pageNumber/:pageSize', app.permission.check('course:read'), (req, res) => {
+    app.get('/api/course/page/:pageNumber/:pageSize', (req, res) => {
         const pageNumber = parseInt(req.params.pageNumber),
             pageSize = parseInt(req.params.pageSize),
             sessionUser = req.session.user,

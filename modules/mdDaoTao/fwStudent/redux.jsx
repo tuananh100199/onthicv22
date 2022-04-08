@@ -352,6 +352,21 @@ export function importFailPassStudent(student, type, done) {
     };
 }
 
+export function exportPhieuThu(userId, billId, feeText, done) {
+    return () => {
+        const url = '/api/student/phieu-thu/export';
+        T.get(url, { userId, billId, feeText }, data => {
+            if (data.error) {
+                T.notify('Xuất file word bị lỗi!', 'danger');
+                console.error(`GET: ${url}.`, data.error);
+            } else {
+                if (done) done(data);
+                T.notify('Xuất file word thành công!', 'success');
+            }
+        }, error => console.error(error) || T.notify('Xuất file word bị lỗi!', 'danger'));
+    };
+}
+
 export function downloadFailPassStudentFile() {
     T.download(T.url('/api/student/download-fail-pass'));
 }

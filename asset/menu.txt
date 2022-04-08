@@ -52,6 +52,7 @@
 	7005 - Theo dõi công nợ (/user/student/debt)
 	7006 - Số lần thanh toán (/user/course-payment)
 	7007 - Kích hoạt khóa học (/user/student/active-course)
+	7008 - Quản lý doanh thu (/user/revenue)
 8000. Tuyển sinh (undefined)
 	8010 - Đăng ký tư vấn (/user/candidate)
 	8020 - Ứng viên (/user/pre-student)

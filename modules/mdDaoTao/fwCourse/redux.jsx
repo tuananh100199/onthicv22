@@ -843,12 +843,13 @@ export const ajaxSelectCourse = {
     fetchOne: (_id, done) => fetchCourse(_id, ({ item }) => done && done({ id: item._id, text: item.name + (item.courseType ? ` (${item.courseType.title})` : '') }))
 };
 
-export const ajaxSelectCourseByCourseType = (courseType) => ({
+export const ajaxSelectCourseByCourseType = (courseType, isDefault) => ({
     ajax: false,
     url: '/api/course/page/1/20' + (courseType ? `?courseType=${courseType}` : ''),
     data: {},
     processResults: response => {
         const results = [{ id: 0, text: 'Tất cả khóa học' }];
+        if(isDefault) results.push({ id: 1, text: 'Khoá mặc định' });
         response && response.page && response.page.list && response.page.list.forEach(course => results.push({ id: course._id, text: course.name + (course.courseType ? ` (${course.courseType.title})` : '') }));
         return ({ results });
     },
