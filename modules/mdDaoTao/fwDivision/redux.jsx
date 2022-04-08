@@ -81,6 +81,21 @@ export function updateDivision(_id, changes, done) {
     };
 }
 
+export function swapDivision(_id, isMoveUp,done) {
+    return dispatch => {
+        const url = '/api/division/swap';
+        T.put(url, { _id, isMoveUp }, data => {
+            if (data.error) {
+                T.notify('Thay đổi thứ tự cơ sở đào tạo bị lỗi!', 'danger');
+                console.error('PUT: ' + url + '.', data.error);
+            } else {
+                dispatch(getDivisionAll());
+                done && done();
+            }
+        }, error => console.error(error) || T.notify('Thay đổi thứ tự cơ sở đào tạo bị lỗi!', 'danger'));
+    };
+}
+
 export function deleteDivision(_id) {
     return dispatch => {
         const url = '/api/division';

@@ -16,8 +16,8 @@ class TeacherInfoPage extends AdminPage {
                 this.props.getCategoryAll('contract', null, (items) =>{
                     this.setState({ contracts: (items || []).map(item => ({ id: item._id, text: item.title })) },()=>{
                         if (this.props.teacherData) {
-                            const { _id,image, firstname, lastname, birthday,email,phoneNumber, sex, division, identityCard,identityDate,identityIssuedBy,maGiaoVien,residence,regularResidence,contract,maSoThue,baoHiemXaHoi,thoiGianLamViec,dayLyThuyet,courseTypes } = this.props.teacherData || 
-                                {_id:null,image:'',firstname:'',lastname:'',birthday:'',email:'',phoneNumber:'',user:null,sex:null,division:null,identityCard:'',identityDate:'',identityIssuedBy:'',maGiaoVien:'',maSoThue:'',dayLyThuyet:false,courseTypes:[]};
+                            const { _id,image, firstname, lastname, birthday,email,phoneNumber, sex, division, identityCard,identityDate,identityIssuedBy,maGiaoVien,residence,regularResidence,contract,maSoThue,baoHiemXaHoi,thoiGianLamViec,dayLyThuyet,courseTypes,trinhDoVanHoa } = this.props.teacherData || 
+                                {_id:null,image:'',firstname:'',lastname:'',birthday:'',email:'',phoneNumber:'',user:null,sex:null,division:null,identityCard:'',identityDate:'',identityIssuedBy:'',maGiaoVien:'',maSoThue:'',dayLyThuyet:false,courseTypes:[],trinhDoVanHoa:''};
                                 this.itemFirstname.value(firstname || '');
                                 this.itemLastname.value(lastname || '');
                                 this.itemBirthday.value(birthday);
@@ -50,6 +50,8 @@ class TeacherInfoPage extends AdminPage {
                                 this.itemResidence.value(residence);
                                 this.itemRegularResidence.value(regularResidence);
                                 this.imageBox.setData(`teacher:${_id || 'new'}`);
+                                //trình độ văn hóa
+                                this.itemTrinhDoVanHoa.value(trinhDoVanHoa);
                                 this.setState({ _id,image,nghiViec:thoiGianLamViec?thoiGianLamViec.nghiViec:false });
                                 
                             this.itemLastname.focus();
@@ -62,7 +64,6 @@ class TeacherInfoPage extends AdminPage {
                 this.props.getCategoryAll('teacherType',null,items=>{
                     this.setState({teacherTypes: (items || []).map(item => ({ id: item._id, text: item.title }))},()=>{
                         if(this.props.teacherData){
-                            console.log('teacherData: ',this.props.teacherData);
                             const {teacherType={}} = this.props.teacherData;
                             this.itemTeacherType.value(teacherType._id||'');
                         }
@@ -115,9 +116,9 @@ class TeacherInfoPage extends AdminPage {
             dayLyThuyet:this.itemDayLyThuyet.value() ? 1 :0,
             courseTypes:this.itemCourseTypes.value().length?this.itemCourseTypes.value():' ',
             teacherType:this.itemTeacherType.value(),
+            trinhDoVanHoa:this.itemTrinhDoVanHoa.value()
             // image:this.state.image
         };
-        console.log(data);
         if(this.itemContract.value()){
             data.contract.category=this.itemContract.value();
         }
@@ -140,6 +141,9 @@ class TeacherInfoPage extends AdminPage {
         } else if (!data.division) {
             T.notify('Cơ sở đào tạo không được trống!', 'danger');
             this.itemDivision.focus();
+        }else if (!data.teacherType) {
+            T.notify('Loại giáo viên không được trống!', 'danger');
+            this.itemTeacherType.focus();
         }else {
             this.props.updateTeacher(this.state._id, data);
         }
@@ -169,7 +173,8 @@ class TeacherInfoPage extends AdminPage {
                         <FormTextBox className='col-md-3' ref={e => this.itemIdentityIssuedBy = e} label='Nơi cấp CMND/CCCD'readOnly={readOnly}/>
                         <FormCheckbox className='col-md-3' ref={e => this.itemDayLyThuyet = e} isSwitch={true} label='Dạy lý thuyết' readOnly={readOnly} onChange={active => this.handleChange(active)} />
                         <FormCheckbox className='col-md-3' ref={e => this.itemDayThucHanh = e} isSwitch={true} label='Dạy thực hành' readOnly={readOnly} onChange={active => this.handleChange(!active)} />
-                        <FormSelect className='col-md-6' ref={e => this.itemCourseTypes = e} label='Danh sách loại khóa học' data={ajaxSelectCourseType} multiple={true} readOnly={readOnly} />
+                        <FormSelect className='col-md-3' ref={e => this.itemCourseTypes = e} label='Danh sách loại khóa học' data={ajaxSelectCourseType} multiple={true} readOnly={readOnly} />
+                        <FormTextBox className='col-md-3' ref={e => this.itemTrinhDoVanHoa = e} label='Trình độ văn hóa'readOnly={readOnly}/>
                         <FormSelect className='col-md-3' ref={e => this.itemDivision = e} label='Cơ sở đào tạo' data={ajaxSelectDivision} readOnly={readOnly} required />
                         <FormSelect className='col-md-3' ref={e => this.itemContract = e} label='Loại hợp đồng' readOnly={readOnly} data = {this.state.contracts}/>
                         <FormDatePicker className='col-md-3' ref={e => this.itemContractStartDate = e} label='Ngày bắt đầu hợp đồng'readOnly={readOnly} type='date-mask'/>

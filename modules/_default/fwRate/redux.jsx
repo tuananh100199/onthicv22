@@ -2,6 +2,7 @@ import T from 'view/js/common';
 
 const RateGetItem = 'RateGetItem';
 const RateGetPage = 'RateGetPage';
+const RateGetAll = 'RateGetAll';
 
 export default function rateReducer(state = {}, data) {
     switch (data.type) {
@@ -9,6 +10,8 @@ export default function rateReducer(state = {}, data) {
             return Object.assign({}, state, { item: data.item });
         case RateGetPage:
             return Object.assign({}, state, { page: data.page });
+        case RateGetAll:
+            return Object.assign({}, state, { list: data.list });
         default:
             return state;
     }
@@ -57,6 +60,21 @@ export function getRateByUser(type, _refId, done) {
             } else {
                 dispatch({ type: RateGetItem, item: data.item });
                 done && done(data.item);
+            }
+        }, error => console.error(error) || T.notify('Lấy đánh giá bị lỗi!', 'danger'));
+    };
+}
+
+export function getRateByCourse(courseId, done) {
+    return dispatch => {
+        const url = '/api/rate/course';
+        T.get(url, { courseId }, data => {
+            if (data.error) {
+                T.notify('Lấy đánh giá bị lỗi!', 'danger');
+                console.error('GET: ' + url + '.', data.error);
+            } else {
+                dispatch({ type: RateGetAll, list: data.list });
+                done && done(data.list);
             }
         }, error => console.error(error) || T.notify('Lấy đánh giá bị lỗi!', 'danger'));
     };

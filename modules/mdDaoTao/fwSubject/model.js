@@ -12,6 +12,14 @@ module.exports = app => {
             category: { type: app.db.Schema.ObjectId, ref: 'Category' },
             amount: Number,
         }],
+        finalQuestions: [],
+
+        gioHocLyThuyetLT: Number,
+        gioHocLyThuyetTH: Number,
+        gioHocTrongHinh: Number,
+        gioHocTrenDuong: Number,
+        cuoiKhoa: Number,
+
     });
     const model = app.db.model('Subject', schema);
 
