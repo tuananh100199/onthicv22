@@ -16,7 +16,7 @@ module.exports = app => {
 
     app.model.division = {
         create: (data, done) => model.find({}).sort({ priority: -1 }).limit(1).exec((error, items) => {
-            data.priority = error || items == null || items.length === 0 ? 1 : items[0].priority + 1;
+            data.priority = error || items == null || items.length === 0 ? 1 : (items[0].priority||0) + 1;
             model.create(data, done);
         }),
 
@@ -45,16 +45,21 @@ module.exports = app => {
         swapPriority: (_id, isMoveUp, done) => model.findOne({ _id }, (error, item1) => {
             if (error || item1 === null) {
                 done('Invalid category Id!');
-            } else {
+            } else {      
                 model.find({
-                    priority: isMoveUp ? { $gt: item1.priority } : { $lt: item1.priority }
+                    priority: isMoveUp ? { $gt: (item1.priority?item1.priority:-1000) } : { $lt: (item1.priority?item1.priority:1000) }
                 }).sort({ priority: isMoveUp ? 1 : -1 }).limit(1).exec((error, list) => {
                     if (error) {
                         done(error);
                     } else if (list == null || list.length === 0) {
-                        done(null);
+                        if(!item1.priority){
+                            item1.priority=1;
+                            item1.save(error=>done(error));
+                        }else{
+                            done(null);
+                        }
                     } else {
-                        let item2 = list[0], priority = item1.priority;
+                        let item2 = list[0], priority = item1.priority?item1.priority:(isMoveUp?item2.priority-1:item2.priority+1);
                         item1.priority = item2.priority;
                         item2.priority = priority;
                         item1.save(error1 => item2.save(error2 => done(error1 ? error1 : error2)));
