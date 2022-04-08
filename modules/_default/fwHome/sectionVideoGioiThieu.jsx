@@ -19,6 +19,9 @@ class SectionVideo extends React.Component {
             let main = $('#main');
             let footer = $('#footer');
             let shadowBox = $('#shadowBoxVideo');
+            let header = $('.header');
+            header.addClass('scrolled');
+            header.addClass('header_video');
             // let introVideo = $('#introVideo');
 
             shadowBox.css('height',`${main.height()+footer.height()}px`);
