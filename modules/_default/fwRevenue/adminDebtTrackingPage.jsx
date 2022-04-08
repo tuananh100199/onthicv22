@@ -42,7 +42,7 @@ class DebtTrackingPage extends AdminPage {
                 else if (type == 'isOnline') text = text + 'Lần ' + i + ': ' + (item.isOnlinePayment ? 'Thanh toán online' : 'Thanh toán trực tiếp') + '\n';
                 else if (type == 'sum') text = parseInt(text + item.fee);
             });
-            return <>{type == 'sum' ? T.numberDisplay(text) : <p>{text}</p>}</>;
+            return type == 'sum' ? <>{ T.numberDisplay(text)}</> : <pre>{text}</pre>;
         } else return text;
     }
 
