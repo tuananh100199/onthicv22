@@ -3,6 +3,8 @@ import { connect } from 'react-redux';
 import { updateTrainingClass,getTrainingClass } from '../redux';
 import { AdminPage, FormSelect, AdminModal, renderTable,TableCell,CirclePageButton } from 'view/component/AdminPage';
 import {ajaxSelectTeacher,getTeacherPage,updateTeacher,updateTeacherTrainingClass} from 'modules/_default/fwTeacher/redux';
+import {exportReport} from '../redux';
+
 import Pagination from 'view/component/Pagination';
 
 class EditModal extends AdminModal {
@@ -56,6 +58,10 @@ class ListTeacherPage extends AdminPage {
         isConfirm && this.props.updateTeacherTrainingClass(item._id,this.state._id,'remove',()=>this.props.getTeacherPage(1,null,{trainingClass:this.state._id})));
 
     // save data
+    exportFinal = (e)=>{
+        e.preventDefault();
+        this.props.exportReport(this.state._id);
+    }
 
     render() {
         const permission = this.props.permission;
@@ -88,6 +94,7 @@ class ListTeacherPage extends AdminPage {
                     {tableProfile}
                 </div>
                 {permission.write ? <CirclePageButton type='create' onClick={this.edit} /> : null}
+                <CirclePageButton type='custom' customClassName='btn-warning' customIcon='fa-print' style={{ right: '75px' }} onClick={e=>this.exportFinal(e)}/>
                 
                 <Pagination name='pageTeacher' pageNumber={pageNumber} pageSize={pageSize} pageTotal={pageTotal} totalItem={totalItem}
                     getPage={this.props.getTeacherPage} style={{ left: 320 }}/>
@@ -99,5 +106,5 @@ class ListTeacherPage extends AdminPage {
 }
 
 const mapStateToProps = state => ({ system: state.system,teacher: state.enrollment.teacher });
-const mapActionsToProps = {updateTrainingClass,getTrainingClass,getTeacherPage,updateTeacher,updateTeacherTrainingClass};
+const mapActionsToProps = {updateTrainingClass,getTrainingClass,getTeacherPage,updateTeacher,updateTeacherTrainingClass, exportReport};
 export default connect(mapStateToProps, mapActionsToProps)(ListTeacherPage);
