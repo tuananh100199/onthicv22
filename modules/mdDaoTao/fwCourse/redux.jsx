@@ -465,6 +465,12 @@ export function exportTeacherAndStudentToExcel(_courseId) {
 export function exportLearningProgressToExcel(_courseId, filter) {
     T.download(T.url(`/api/course/learning-progress/export/${_courseId}/${filter}`));
 }
+export function exportDT03(courseId) {
+    T.download(T.url(`/api/course/report-dt03/export/${courseId}`));
+}
+export function exportTN(listId, type) {
+    T.download(T.url(`/api/course/report-tn/export/${listId}/${type}`));
+}
 
 export function exportFinalExam(_subjectId, _studentId, done) {
     return () => {
@@ -481,10 +487,10 @@ export function exportFinalExam(_subjectId, _studentId, done) {
     };
 }
 
-export function exportPhuLuc3B(_courseId, done) {
+export function exportPhuLuc3A(bienBan, done) {
     return () => {
-        const url = `/api/course/student-3b/export/${_courseId}`;
-        T.get(url, data => {
+        const url = '/api/course/student-3a/export';
+        T.get(url, { bienBan }, data => {
             if (data.error) {
                 T.notify('Xuất file word bị lỗi!', 'danger');
                 console.error(`GET: ${url}.`, data.error);
@@ -496,10 +502,10 @@ export function exportPhuLuc3B(_courseId, done) {
     };
 }
 
-export function exportPhuLuc11B(_courseId, done) {
+export function exportPhuLuc3B(listId, done) {
     return () => {
-        const url = `/api/course/student-11b/export/${_courseId}`;
-        T.get(url, data => {
+        const url = '/api/course/student-3b/export';
+        T.get(url, { listId }, data => {
             if (data.error) {
                 T.notify('Xuất file word bị lỗi!', 'danger');
                 console.error(`GET: ${url}.`, data.error);
@@ -511,9 +517,322 @@ export function exportPhuLuc11B(_courseId, done) {
     };
 }
 
-export function exportListStudentGraduation(_courseId) {
-    T.download(T.url(`/api/course/student-graduation/export/${_courseId}`));
+export function exportPhuLuc4(courseId, done) {
+    return () => {
+        const url = '/api/course/report-4/export';
+        T.get(url, { courseId }, data => {
+            if (data.error) {
+                T.notify('Xuất file word bị lỗi!', 'danger');
+                console.error(`GET: ${url}.`, data.error);
+            } else {
+                if (done) done(data);
+                T.notify('Xuất file word thành công!', 'success');
+            }
+        }, error => console.error(error) || T.notify('Xuất file word bị lỗi!', 'danger'));
+    };
 }
+
+export function exportPhuLuc5(courseId, done) {
+    return () => {
+        const url = '/api/course/student-5/export';
+        T.get(url, { courseId }, data => {
+            if (data.error) {
+                T.notify('Xuất file word bị lỗi!', 'danger');
+                console.error(`GET: ${url}.`, data.error);
+            } else {
+                if (done) done(data);
+                T.notify('Xuất file word thành công!', 'success');
+            }
+        }, error => console.error(error) || T.notify('Xuất file word bị lỗi!', 'danger'));
+    };
+}
+
+export function exportPhuLuc6(courseId,teacherId, done) {
+    return () => {
+        const url = '/api/course/report-6/export';
+        T.get(url, { courseId, teacherId }, data => {
+            if (data.error) {
+                T.notify('Xuất file word bị lỗi!', 'danger');
+                console.error(`GET: ${url}.`, data.error);
+            } else {
+                if (done) done(data);
+                T.notify('Xuất file word thành công!', 'success');
+            }
+        }, error => console.error(error) || T.notify('Xuất file word bị lỗi!', 'danger'));
+    };
+}
+
+export function exportPhuLuc11A(listId, done) {
+    return () => {
+        const url = '/api/course/student-11a/export';
+        T.get(url, { listId }, data => {
+            if (data.error) {
+                T.notify('Xuất file word bị lỗi!', 'danger');
+                console.error(`GET: ${url}.`, data.error);
+            } else {
+                if (done) done(data);
+                T.notify('Xuất file word thành công!', 'success');
+            }
+        }, error => console.error(error) || T.notify('Xuất file word bị lỗi!', 'danger'));
+    };
+}
+
+export function exportPhuLuc11B(listId, done) {
+    return () => {
+        const url = '/api/course/student-11b/export';
+        T.get(url, { listId }, data => {
+            if (data.error) {
+                T.notify('Xuất file word bị lỗi!', 'danger');
+                console.error(`GET: ${url}.`, data.error);
+            } else {
+                if (done) done(data);
+                T.notify('Xuất file word thành công!', 'success');
+            }
+        }, error => console.error(error) || T.notify('Xuất file word bị lỗi!', 'danger'));
+    };
+}
+
+export function exportPhuLuc12B(listId, done) {
+    return () => {
+        const url = '/api/course/student-12b/export';
+        T.get(url, { listId }, data => {
+            if (data.error) {
+                T.notify('Xuất file word bị lỗi!', 'danger');
+                console.error(`GET: ${url}.`, data.error);
+            } else {
+                if (done) done(data);
+                T.notify('Xuất file word thành công!', 'success');
+            }
+        }, error => console.error(error) || T.notify('Xuất file word bị lỗi!', 'danger'));
+    };
+}
+
+export function exportPhuLuc12C( listId, type, done) {
+    return () => {
+        const url = '/api/course/student-12c/export';
+        T.get(url, { listId, type }, data => {
+            if (data.error) {
+                T.notify('Xuất file word bị lỗi!', 'danger');
+                console.error(`GET: ${url}.`, data.error);
+            } else {
+                if (done) done(data);
+                T.notify('Xuất file word thành công!', 'success');
+            }
+        }, error => console.error(error) || T.notify('Xuất file word bị lỗi!', 'danger'));
+    };
+}
+
+export function exportTN01(courseId, bienBan, done) {
+    return () => {
+        const url = '/api/course/report-tn01/export';
+        T.get(url, { courseId, bienBan }, data => {
+            if (data.error) {
+                T.notify('Xuất file word bị lỗi!', 'danger');
+                console.error(`GET: ${url}.`, data.error);
+            } else {
+                if (done) done(data);
+                T.notify('Xuất file word thành công!', 'success');
+            }
+        }, error => console.error(error) || T.notify('Xuất file word bị lỗi!', 'danger'));
+    };
+}
+
+export function exportTN02(bienBan, done) {
+    return () => {
+        const url = '/api/course/student-tn02/export';
+        T.get(url, { bienBan }, data => {
+            if (data.error) {
+                T.notify('Xuất file word bị lỗi!', 'danger');
+                console.error(`GET: ${url}.`, data.error);
+            } else {
+                if (done) done(data);
+                T.notify('Xuất file word thành công!', 'success');
+            }
+        }, error => console.error(error) || T.notify('Xuất file word bị lỗi!', 'danger'));
+    };
+}
+
+export function exportTN03(courseId, done) {
+    return () => {
+        const url = '/api/course/report-tn03/export';
+        T.get(url, { courseId }, data => {
+            if (data.error) {
+                T.notify('Xuất file word bị lỗi!', 'danger');
+                console.error(`GET: ${url}.`, data.error);
+            } else {
+                if (done) done(data);
+                T.notify('Xuất file word thành công!', 'success');
+            }
+        }, error => console.error(error) || T.notify('Xuất file word bị lỗi!', 'danger'));
+    };
+}
+
+export function exportTN04(courseId, bienBan, done) {
+    return () => {
+        const url = '/api/course/report-tn04/export';
+        T.get(url, { courseId, bienBan }, data => {
+            if (data.error) {
+                T.notify('Xuất file word bị lỗi!', 'danger');
+                console.error(`GET: ${url}.`, data.error);
+            } else {
+                if (done) done(data);
+                T.notify('Xuất file word thành công!', 'success');
+            }
+        }, error => console.error(error) || T.notify('Xuất file word bị lỗi!', 'danger'));
+    };
+}
+
+export function exportTN05(courseId, done) {
+    return () => {
+        const url = '/api/course/report-tn05/export';
+        T.get(url, { courseId }, data => {
+            if (data.error) {
+                T.notify('Xuất file word bị lỗi!', 'danger');
+                console.error(`GET: ${url}.`, data.error);
+            } else {
+                if (done) done(data);
+                T.notify('Xuất file word thành công!', 'success');
+            }
+        }, error => console.error(error) || T.notify('Xuất file word bị lỗi!', 'danger'));
+    };
+}
+
+// export function exportTN06(bienBan, done) {
+//     return () => {
+//         const url = '/api/course/student-tn06/export';
+//         T.get(url, { bienBan }, data => {
+//             if (data.error) {
+//                 T.notify('Xuất file word bị lỗi!', 'danger');
+//                 console.error(`GET: ${url}.`, data.error);
+//             } else {
+//                 if (done) done(data);
+//                 T.notify('Xuất file word thành công!', 'success');
+//             }
+//         }, error => console.error(error) || T.notify('Xuất file word bị lỗi!', 'danger'));
+//     };
+// }
+
+export function exportTN07(courseId, soLuongHocVien, done) {
+    return () => {
+        const url = '/api/course/report-tn07/export';
+        T.get(url, { courseId, soLuongHocVien }, data => {
+            if (data.error) {
+                T.notify('Xuất file word bị lỗi!', 'danger');
+                console.error(`GET: ${url}.`, data.error);
+            } else {
+                if (done) done(data);
+                T.notify('Xuất file word thành công!', 'success');
+            }
+        }, error => console.error(error) || T.notify('Xuất file word bị lỗi!', 'danger'));
+    };
+}
+
+export function exportTN08(courseId, bienBan, done) {
+    return () => {
+        const url = '/api/course/report-tn08/export';
+        T.get(url, { courseId, bienBan }, data => {
+            if (data.error) {
+                T.notify('Xuất file word bị lỗi!', 'danger');
+                console.error(`GET: ${url}.`, data.error);
+            } else {
+                if (done) done(data);
+                T.notify('Xuất file word thành công!', 'success');
+            }
+        }, error => console.error(error) || T.notify('Xuất file word bị lỗi!', 'danger'));
+    };
+}
+
+export function exportTN09(bienBan, done) {
+    return () => {
+        const url = '/api/course/report-tn09/export';
+        T.get(url, { bienBan }, data => {
+            if (data.error) {
+                T.notify('Xuất file word bị lỗi!', 'danger');
+                console.error(`GET: ${url}.`, data.error);
+            } else {
+                if (done) done(data);
+                T.notify('Xuất file word thành công!', 'success');
+            }
+        }, error => console.error(error) || T.notify('Xuất file word bị lỗi!', 'danger'));
+    };
+}
+
+export function exportTN10(bienBan, done) {
+    return () => {
+        const url = '/api/course/report-tn09/export';
+        T.get(url, { bienBan }, data => {
+            if (data.error) {
+                T.notify('Xuất file word bị lỗi!', 'danger');
+                console.error(`GET: ${url}.`, data.error);
+            } else {
+                if (done) done(data);
+                T.notify('Xuất file word thành công!', 'success');
+            }
+        }, error => console.error(error) || T.notify('Xuất file word bị lỗi!', 'danger'));
+    };
+}
+
+// export function exportDanhSachTotNghiep(listId, done) {
+//     return () => {
+//         const url = '/api/course/report-list-tot-nghiep/export';
+//         T.get(url, { listId }, data => {
+//             if (data.error) {
+//                 T.notify('Xuất file word bị lỗi!', 'danger');
+//                 console.error(`GET: ${url}.`, data.error);
+//             } else {
+//                 if (done) done(data);
+//                 T.notify('Xuất file word thành công!', 'success');
+//             }
+//         }, error => console.error(error) || T.notify('Xuất file word bị lỗi!', 'danger'));
+//     };
+// }
+
+export function exportSH01(bienBan, done) {
+    return () => {
+        const url = '/api/course/report-tn09/export';
+        T.get(url, { bienBan }, data => {
+            if (data.error) {
+                T.notify('Xuất file word bị lỗi!', 'danger');
+                console.error(`GET: ${url}.`, data.error);
+            } else {
+                if (done) done(data);
+                T.notify('Xuất file word thành công!', 'success');
+            }
+        }, error => console.error(error) || T.notify('Xuất file word bị lỗi!', 'danger'));
+    };
+}
+
+export function exportSH02(bienBan, done) {
+    return () => {
+        const url = '/api/course/report-tn09/export';
+        T.get(url, { bienBan }, data => {
+            if (data.error) {
+                T.notify('Xuất file word bị lỗi!', 'danger');
+                console.error(`GET: ${url}.`, data.error);
+            } else {
+                if (done) done(data);
+                T.notify('Xuất file word thành công!', 'success');
+            }
+        }, error => console.error(error) || T.notify('Xuất file word bị lỗi!', 'danger'));
+    };
+}
+
+export function export8(bienBan, done) {
+    return () => {
+        const url = '/api/course/report-tn09/export';
+        T.get(url, { bienBan }, data => {
+            if (data.error) {
+                T.notify('Xuất file word bị lỗi!', 'danger');
+                console.error(`GET: ${url}.`, data.error);
+            } else {
+                if (done) done(data);
+                T.notify('Xuất file word thành công!', 'success');
+            }
+        }, error => console.error(error) || T.notify('Xuất file word bị lỗi!', 'danger'));
+    };
+}
+
+
 
 // Ajax Selections ----------------------------------------------------------------------------------------------------
 export const ajaxSelectCourse = {
@@ -524,12 +843,13 @@ export const ajaxSelectCourse = {
     fetchOne: (_id, done) => fetchCourse(_id, ({ item }) => done && done({ id: item._id, text: item.name + (item.courseType ? ` (${item.courseType.title})` : '') }))
 };
 
-export const ajaxSelectCourseByCourseType = (courseType) => ({
+export const ajaxSelectCourseByCourseType = (courseType, isDefault) => ({
     ajax: false,
     url: '/api/course/page/1/20' + (courseType ? `?courseType=${courseType}` : ''),
     data: {},
     processResults: response => {
         const results = [{ id: 0, text: 'Tất cả khóa học' }];
+        if(isDefault) results.push({ id: 1, text: 'Khoá mặc định' });
         response && response.page && response.page.list && response.page.list.forEach(course => results.push({ id: course._id, text: course.name + (course.courseType ? ` (${course.courseType.title})` : '') }));
         return ({ results });
     },
@@ -550,4 +870,5 @@ export const ajaxSelectCourseTeacher= {
     }, 
     fetchOne: (_id, done) => fetchCourse(_id, ({ item }) => done && done({ id: item._id, text: item.name + (item.courseType ? ` (${item.courseType.title})` : '') }))
 };
+
 

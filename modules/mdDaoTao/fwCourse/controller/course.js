@@ -14,18 +14,24 @@ module.exports = (app) => {
         { name: 'course:delete' },
         { name: 'course:lock' },
         { name: 'course:audit' },
-        { name: 'course:export' }, { name: 'course:import' },
+        { name: 'course:export' },
+        { name: 'course:import' },
+        { name: 'course:report' },
     );
 
     app.get('/user/course', app.permission.check('course:read'), app.templates.admin);
     app.get('/user/course/:_id', app.permission.check('course:read'), app.templates.admin);
     app.get('/user/course/:_id/info', app.permission.check('course:read'), app.templates.admin);
+    app.get('/user/course/:_id/study-program', app.permission.check('course:read'), app.templates.admin);
     app.get('/user/course/:_id/subject', app.permission.check('course:read'), app.templates.admin);
     app.get('/user/course/:_id/graduation-subject', app.permission.check('course:read'), app.templates.admin);
+    app.get('/user/course/:_id/final-exam-setting', app.permission.check('course:read'), app.templates.admin);
+    app.get('/user/course/:courseId/final-exam-setting/:_id', app.permission.check('course:read'), app.templates.admin);
     app.get('/user/course/:_id/manager', app.permission.check('course:read'), app.templates.admin);
     app.get('/user/course/:_id/student', app.permission.check('course:read'), app.templates.admin);
     app.get('/user/course/:_id/teacher', app.permission.check('course:read'), app.templates.admin);
     app.get('/user/course/:_id/rate-teacher', app.permission.check('course:read'), app.templates.admin);
+    app.get('/user/course/:_courseId/rate-teacher/:_id', app.permission.check('course:read'), app.templates.admin);
     app.get('/user/course/:_id/feedback', app.permission.check('course:write'), app.templates.admin);
     app.get('/user/course/:_id/feedback/:_feedbackId', app.permission.check('course:write'), app.templates.admin);
     app.get('/user/course/:_id/feedback-lecturer', app.permission.check('course:read'), app.templates.admin);
@@ -47,7 +53,34 @@ module.exports = (app) => {
     app.get('/user/course/:_id/import-final-score', app.permission.check('course:import'), app.templates.admin);
     app.get('/user/course/:_courseId/photo/:_id', app.permission.check('user:login'), app.templates.admin);
     app.get('/user/course/:_courseId/additional-profile', app.permission.check('course:read'), app.templates.admin);
-
+    
+    app.get('/user/course/:_id/report', app.permission.check('course:report'), app.templates.admin);
+    app.get('/user/course/:_id/report/dang-ky-sat-hach', app.permission.check('course:report'), app.templates.admin);
+    app.get('/user/course/:_id/report/xe-tap-lai', app.permission.check('course:report'), app.templates.admin);
+    app.get('/user/course/:_id/report/danh-sach-hoc-vien', app.permission.check('course:report'), app.templates.admin);
+    app.get('/user/course/:_id/report/danh-sach-du-thi-sat-hach', app.permission.check('course:report'), app.templates.admin);
+    app.get('/user/course/:_id/report/danh-sach-du-thi-sat-hach-gplx-hang', app.permission.check('course:report'), app.templates.admin);
+    app.get('/user/course/:_id/report/danh-sach-du-thi-sat-hach-gplx', app.permission.check('course:report'), app.templates.admin);
+    app.get('/user/course/:_id/report/danh-sach-du-thi-sat-hach-lai-gplx', app.permission.check('course:report'), app.templates.admin);
+    app.get('/user/course/:_id/report/ke-hoach-dao-tao', app.permission.check('course:report'), app.templates.admin);
+    app.get('/user/course/:_id/report/sat-hach-lai-xe', app.permission.check('course:report'), app.templates.admin);
+    app.get('/user/course/:_id/report/tien-do-dao-tao', app.permission.check('course:report'), app.templates.admin);
+    app.get('/user/course/:_id/report/danh-sach-du-thi-tot-nghiep', app.permission.check('course:report'), app.templates.admin);
+    app.get('/user/course/:_id/report/theo-doi-thuc-hanh', app.permission.check('course:report'), app.templates.admin);
+    app.get('/user/course/:_id/report/bien-ban-du-thi-tot-nghiep', app.permission.check('course:report'), app.templates.admin);
+    app.get('/user/course/:_id/report/hoi-dong-thi-tot-nghiep', app.permission.check('course:report'), app.templates.admin);
+    app.get('/user/course/:_id/report/ban-coi-cham-thi', app.permission.check('course:report'), app.templates.admin);
+    app.get('/user/course/:_id/report/hop-hoi-dong-thi-tot-nghiep', app.permission.check('course:report'), app.templates.admin);
+    app.get('/user/course/:_id/report/xet-ket-qua-tot-nghiep', app.permission.check('course:report'), app.templates.admin);
+    app.get('/user/course/:_id/report/danh-sach-hoc-vien-thi-tot-nghiep', app.permission.check('course:report'), app.templates.admin);
+    app.get('/user/course/:_id/report/danh-sach-hoc-vien-tot-nghiep', app.permission.check('course:report'), app.templates.admin);
+    app.get('/user/course/:_id/report/bang-diem-thi-tot-nghiep', app.permission.check('course:report'), app.templates.admin);
+    app.get('/user/course/:_id/report/danh-sach-du-thi-sat-hach-lai', app.permission.check('course:report'), app.templates.admin);
+    app.get('/user/course/:_id/report/bang-diem-thi-sat-hach', app.permission.check('course:report'), app.templates.admin);
+    app.get('/user/course/:_id/report/thi-het-mon', app.permission.check('course:report'), app.templates.admin);
+    
+    app.get('/user/course/:_id/class', app.permission.check('course:read'), app.templates.admin);
+    
     app.get('/user/hoc-vien/khoa-hoc/:_id', app.permission.check('user:login'), app.templates.admin);
     app.get('/user/hoc-vien/khoa-hoc/thong-tin/:_id', app.permission.check('user:login'), app.templates.admin);
     app.get('/user/hoc-vien/khoa-hoc/:_id/phan-hoi', app.permission.check('user:login'), app.templates.admin);
@@ -108,7 +141,7 @@ module.exports = (app) => {
     };
 
     // APIs ------------------------------------------------------------------------------------------------------------
-    app.get('/api/course/page/:pageNumber/:pageSize', app.permission.check('course:read'), (req, res) => {
+    app.get('/api/course/page/:pageNumber/:pageSize', (req, res) => {
         const pageNumber = parseInt(req.params.pageNumber),
             pageSize = parseInt(req.params.pageSize),
             sessionUser = req.session.user,
@@ -683,7 +716,7 @@ module.exports = (app) => {
     app.permissionHooks.add('courseAdmin', 'course', (user) => new Promise(resolve => {
         app.permissionHooks.pushUserPermission(user, 'course:read', 'course:write', 'course:audit');
         // Quản lý khóa học nội bộ thì được import danh sách học viên bằng file Excel
-        if (user.division && !user.division.isOutside) app.permissionHooks.pushUserPermission(user, 'course:export', 'course:import');
+        if (user.division && !user.division.isOutside) app.permissionHooks.pushUserPermission(user, 'course:export', 'course:import', 'course:report');
         resolve();
     }));
 
