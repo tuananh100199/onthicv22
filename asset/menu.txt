@@ -37,6 +37,8 @@
 	4020 - Môn học (/user/dao-tao/mon-hoc)
 	4030 - Bài học (/user/dao-tao/bai-hoc)
 	4035 - Quản lý xe (/user/car)
+	4040 - Quản lý thiết bị giảng dạy (/user/device)
+	4041 - Quản lý cơ sở vật chất (/user/facility)
 	4045 - Khóa học (/user/course)
 	4055 - Học viên chưa tốt nghiệp (/user/student/fail-graduation)
 	4060 - Học viên chưa đạt sát hạch (/user/student/fail-exam)

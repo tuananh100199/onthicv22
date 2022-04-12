@@ -151,7 +151,7 @@ class DebtTrackingPage extends AdminPage {
                     <TableCell type='number' content={item.discount ? item.discount.fee : ''} />
                     <TableCell type='number' content={item.courseFee ? item.courseFee.fee - (item.discount ? item.discount.fee : 0) : ''} />
                     <TableCell type='number' content={item.coursePayment ? item.coursePayment.numOfPayments : ''} />
-                    <TableCell type='text' style={{textAlign: 'center'}} content={item.lichSuDongTien ? this.renderLichSuDongTien(item.lichSuDongTien, 'fee') : ''} />
+                    <TableCell type='text'  content={item.lichSuDongTien ? this.renderLichSuDongTien(item.lichSuDongTien, 'fee') : ''} />
                     <TableCell type='number' content={item.lichSuDongTien ? this.renderLichSuDongTien(item.lichSuDongTien, 'isOnline') : ''} />
                     <TableCell type='number' content={''} />
                     <TableCell type='number' content={item.lichSuDongTien ? this.renderLichSuDongTien(item.lichSuDongTien, 'sum') : ''} />
