@@ -164,19 +164,19 @@ export class TableHeadCell extends React.Component {
     render() {
         // filterData = [{id:...,text:...}]
         // Buộc phải truyền name vào nếu muốn sử dụng filter và sort, còn nếu không dùng thì không truyền cx đc.
-        let { content, className = '', style = {}, display = true, rowSpan = 1,filterData=null,nowrap='false',allowClear=true,name='',filter='',sort=false } = this.props;
+        let { content, className = '', style = {},menuStyle={}, display = true, rowSpan = 1,filterData=null,nowrap='false',allowClear=true,name='',filter='',sort=false } = this.props;
 
         const {onFilterChange,onRemoveFilter,onSortChange, sortdata={}} = this.props;// function control filter,sort from TableHead
         let filterDisplay;
         if(filter=='select'){
             filterDisplay = filterData && filterData.length?(<> 
-                <DropdownSelectMulti items={filterData} allowClear={allowClear} 
+                <DropdownSelectMulti items={filterData} allowClear={allowClear} menuStyle={menuStyle}
                 onSelected={value =>value ? onFilterChange({[name]:value}):onRemoveFilter(name)}
                 />
             </>) :null;
         }else if(filter=='search'){
             //TODO: Vỹ: Làm component này
-            filterDisplay = <DropdownSearch onSelected={value =>value ? onFilterChange({[name]:value}):onRemoveFilter(name)}/>;
+            filterDisplay = <DropdownSearch menuStyle={menuStyle} onSelected={value =>value ? onFilterChange({[name]:value}):onRemoveFilter(name)}/>;
         } else{
             filterDisplay=null;
         }

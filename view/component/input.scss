@@ -24,14 +24,3 @@
 .custom-control-input:disabled.custom-control-input:checked~.custom-control-label.valid::before {
   background-color: #28a745;
 }
-
-.dropdown-filter .dropdown-menu{
-  transform: none !important;
-  top:100% !important;
-  left: unset !important;
-  right: -.75rem !important;
-}
-
-.dropdown-filter .dropdown-toggle::after{
-  display: none;
-}

@@ -84,9 +84,8 @@ module.exports = app => {
         // }
         if(filter){
             for(const key in filter){
-                filter[key]!='all' && Object.assign(pageCondition,{[key]:filter[key]=='1'?true:false});
+                filter[key]!='all' && Object.assign(pageCondition,{[key]:{$in:filter[key]}});
             }
-
         }
         if(pageCondition['$or'].length==0) delete delete pageCondition.$or;
         app.model.student.getPage(pageNumber, pageSize, pageCondition, (error, page) => {

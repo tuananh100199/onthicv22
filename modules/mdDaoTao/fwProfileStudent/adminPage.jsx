@@ -62,16 +62,16 @@ class ProfileStudentPage extends AdminPage {
             getDataSource: () => list, stickyHead: true,autoDisplay:true,
         renderHead: () => (
             <TableHead getPage = {this.props.getProfileStudentPage}>
-                <th style={{ width: 'auto', textAlign: 'center' }}>#</th>
-                <th style={{ width: '100%' }}>Học viên</th>
-                <th style={{ width: 'auto' }} nowrap='true'>Thông tin liên lạc</th>
-                <TableHeadCell name='isDon' content='Đơn' style={{width:'auto'}} nowrap='true' filterType='select' filterData = {filterCondition}/>
-                <TableHeadCell name='isHinh' content='Hình' style={{width:'auto'}} nowrap='true'filterType='select' filterData = {filterCondition}/>
-                <TableHeadCell name='isIdentityCard' content='CMND/CCCD' style={{width:'auto'}} filterType='select' nowrap='true' filterData = {filterCondition}/>
-                <TableHeadCell name='isGiayKhamSucKhoe' content='Giấy khám sức khỏe' style={{width:'auto'}} filterType='select' nowrap='true' filterData = {filterCondition}/>
-                <TableHeadCell name='isBangLaiA1' content='Bằng lái A1' style={{width:'auto'}} nowrap='true' filterType='select' filterData = {filterCondition}/>
+                <TableHeadCell style={{ width: 'auto', textAlign: 'center' }}>#</TableHeadCell>
+                <TableHeadCell style={{ width: '100%' }}>Học viên</TableHeadCell>
+                <TableHeadCell style={{ width: 'auto' }} nowrap='true'>Thông tin liên lạc</TableHeadCell>
+                <TableHeadCell name='isDon' content='Đơn' style={{width:'auto'}} nowrap='true' filter='select' filterData = {filterCondition}/>
+                <TableHeadCell name='isHinh' content='Hình' style={{width:'auto'}} nowrap='true'filter='select' filterData = {filterCondition}/>
+                <TableHeadCell name='isIdentityCard' content='CMND/CCCD' style={{width:'auto'}} filter='select' nowrap='true' filterData = {filterCondition}/>
+                <TableHeadCell name='isGiayKhamSucKhoe' content='Giấy khám sức khỏe' style={{width:'auto'}} filter='select' nowrap='true' filterData = {filterCondition}/>
+                <TableHeadCell name='isBangLaiA1' content='Bằng lái A1' style={{width:'auto'}} nowrap='true' filter='select' filterData = {filterCondition}/>
 
-                <th style={{ width: 'auto' }} nowrap='true'>Hoàn tất</th>
+                <TableHeadCell style={{ width: 'auto' }} nowrap='true'>Hoàn tất</TableHeadCell>
             </TableHead>),
             renderRow: (item, index) => (
                 <tr key={index}>

@@ -1,6 +1,6 @@
 import React from 'react';
 import { debounce } from 'lodash';
-import './input.scss';
+import './dropdownFilter.scss';
 export class DropdownSelect extends React.Component {
     state = { selectedItem: null,isFilted:false }
 
@@ -230,12 +230,12 @@ export class DropdownSearch extends React.Component {
     }
 
     render() {
-        let { className = '', style = {}, menuStyle = {}, textStyle = {},allowClear=false, menuClassName='' } = this.props;
+        let { className = '', menuStyle = {},allowClear=false, menuClassName='' } = this.props;
         className += ' dropdown-toggle';
         menuClassName='dropdown-menu '+menuClassName;
         return (
-            <div className='dropdown dropdown-filter' style={{ whiteSpace: 'nowrap', ...style }} ref={e=>this.dropDown=e}>
-                <a ref={e => this.element = e} className={className} style={{ textDecoration: 'none', ...textStyle,color:this.state.isFilted?'#1488db':'#fff' }} href='#' data-toggle='dropdown' aria-haspopup='true' aria-expanded='true'>
+            <div className='dropdown dropdown-filter' style={{ whiteSpace: 'nowrap' }} ref={e=>this.dropDown=e}>
+                <a ref={e => this.element = e} className={className} style={{ textDecoration: 'none',color:this.state.isFilted?'#1488db':'#fff' }} href='#' data-toggle='dropdown' aria-haspopup='true' aria-expanded='true'>
                     <i className="fa fa-filter" aria-hidden="true"></i>
                 </a>
                 {allowClear && this.state.isFilted?<i className='fa fa-times ml-1 text-danger' onClick = {this.clear} style={{cursor:'pointer'}} aria-hidden="true"></i>:null}

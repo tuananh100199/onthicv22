@@ -195,7 +195,7 @@ class AdminTeacherPage extends AdminPage {
                     <TableHeadCell style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Cơ sở đào tạo</TableHeadCell>
                     <TableHeadCell style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Loại giáo viên</TableHeadCell>
                     <TableHeadCell style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Loại khóa học</TableHeadCell> 
-                    <TableHeadCell name='course' style={{ width: 'auto', textAlign: 'center' }} content='Khóa học đang dạy' filter='select' filterData = {this.state.courses}/> 
+                    <TableHeadCell name='course' style={{ width: 'auto', textAlign: 'center' }} menuStyle={{width:200}} content='Khóa học đang dạy' filter='select' filterData = {this.state.courses}/> 
                     <TableHeadCell style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Thao tác</TableHeadCell>
                 </TableHead>
                 ),
