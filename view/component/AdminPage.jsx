@@ -169,11 +169,8 @@ export class TableHeadCell extends React.Component {
         const {onFilterChange,onRemoveFilter,onSortChange, sortdata={}} = this.props;// function control filter,sort from TableHead
         let filterDisplay;
         if(filter=='select'){
-            filterDisplay = filterData && filterData.length?(<> 
-                <DropdownSelectMulti items={filterData} allowClear={allowClear} menuStyle={menuStyle}
-                onSelected={value =>value ? onFilterChange({[name]:value}):onRemoveFilter(name)}
-                />
-            </>) :null;
+            filterDisplay = <DropdownSelectMulti items={filterData} allowClear={allowClear} menuStyle={menuStyle}
+                onSelected={value =>value ? onFilterChange({[name]:value}):onRemoveFilter(name)}/>;
         }else if(filter=='search'){
             //TODO: Vỹ: Làm component này
             filterDisplay = <DropdownSearch menuStyle={menuStyle} onSelected={value =>value ? onFilterChange({[name]:value}):onRemoveFilter(name)}/>;

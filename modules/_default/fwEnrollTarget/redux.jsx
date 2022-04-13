@@ -104,9 +104,9 @@ export function exportReport(year) {
     T.download(T.url(`/api/enroll-target/export/${year}`));
 }
 
-export const ajaxSelectDepartment = T.createAjaxAdapter(
+export const ajaxSelectEnrollTarget = T.createAjaxAdapter(
     '/api/enroll-target/page/1/20',
     params => ({searchText: params.term}),
     response => response && response.page && response.page.list ?
-        response.page.list.map(department => ({ id: department._id, text: department.title })) : [],
+        response.page.list.map(target => ({ id: target._id, text: `${target.year}-${target.trinhDo}` })) : [],
 );

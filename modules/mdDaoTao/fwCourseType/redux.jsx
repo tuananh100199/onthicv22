@@ -193,7 +193,7 @@ export function getCourseTypeByUser(_id, done) {
 export const ajaxSelectCourseType = {
     ajax: true,
     url: '/api/course-type/all',
-    data: {},
+    data: params => ({searchText: params.term}),
     processResults: response => ({
         results: response && response.list ? response.list.map(item => ({ id: item._id, text: item.title })) : []
     }),

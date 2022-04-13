@@ -309,6 +309,8 @@ export const ajaxSelectTeacherByCourseType = (courseType,nghiViec) => T.createAj
 
 export const ajaxSelectTeacher = (condition) => T.createAjaxAdapter(
     '/api/teacher/page/1/20?',
-    params => ({condition:{...condition,searchText:params.term}}),
+    params => {
+        return {condition:{...condition,searchText:params.term}};
+    },
     response => response && response.page && response.page.list ? response.page.list.map(item => ({ id: item._id, text: `${item.lastname} ${item.firstname} ${item.maGiaoVien ? '(' + item.maGiaoVien + ')' : ''}` })) : []
 );

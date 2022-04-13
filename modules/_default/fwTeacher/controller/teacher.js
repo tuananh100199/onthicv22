@@ -29,7 +29,7 @@ module.exports = (app) => {
             pageSize = parseInt(req.params.pageSize),
             condition=req.query.condition||{},
             pageCondition = { },filter=req.query.filter||{},sort=req.query.sort||null;            
-        if (condition.searchText) {
+            if (condition.searchText) {
             const value = { $regex: `.*${condition.searchText}.*`, $options: 'i' };
             pageCondition['$or'] = [
                 { firstname: value },
@@ -64,11 +64,15 @@ module.exports = (app) => {
             pageCondition.trainingClass={$nin:[condition.notTrainingClass]};
         }
         // --------------filter------------------------
+        filter && app.handleFilter(filter,['maGiaoVien','courseTypes'],defaultFilter=>{
+            // console.log('-----------------defaultCondition:----------------------');
+            pageCondition={...pageCondition,...defaultFilter};
+        }); 
         // mã giáo viên
-        if(filter.maGiaoVien){
-            const value = { $regex: `.*${filter.maGiaoVien}.*`, $options: 'i' };
-            pageCondition.maGiaoVien=value;
-        }
+        // if(filter.maGiaoVien){
+        //     const value = { $regex: `.*${filter.maGiaoVien}.*`, $options: 'i' };
+        //     pageCondition.maGiaoVien=value;
+        // }
 
         if(filter.firstname){// họ tên
             pageCondition['$expr']= {
@@ -81,12 +85,12 @@ module.exports = (app) => {
         }
 
         // course
-        if(filter.course && filter.course.length){
-            if(filter.course.find(item=>item=='null')){
-                const courses = filter.course.filter(course=>course!='null');
+        if(filter.courses && filter.courses.length){
+            if(filter.courses.find(item=>item=='null')){
+                const courses = filter.courses.filter(course=>course!='null');
                 pageCondition.courses= {$in: [null,[],...courses]};
             }else{
-                pageCondition.courses={$in:filter.course};
+                pageCondition.courses={$in:filter.courses};
             }
         }
         // filter lọc nghỉ việc

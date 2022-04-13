@@ -59,24 +59,18 @@ export class DropdownSelect extends React.Component {
 }
 export class DropdownSelectMulti extends React.Component {
     // had to handle 2 type of search: search local data in frontend and search ajax(or function)
-    state = { selectedItem: [],tempSelectedItem:[],isFilted:false,searchText:'',filtered_data:[] }
+    state = { selectedItem: [],tempSelectedItem:[],isFilted:false,filtered_data:[] }
     hasInit = false;
 
     componentDidMount() {
         $(document).ready(() => {
             this.props.item && this.setState({ selectedItem: [this.props.item] });
-            const {items=[]} = this.props;
-            if(Array.isArray(items)){// data pass in select is array, not ajax
-                this.search();
-            }else{
-                // handling ajax
-            }
-
+            
+            this.search();
             $(this.dropDown).on('show.bs.dropdown', ()=> {
                 // focus on searchBox
                 setTimeout(()=> { $(this.searchBox).focus(); }, 100);
             });
-
             $(this.dropDown).on('hide.bs.dropdown', ()=> {
                 // set selected item to temp, prevent select item but not filter.
                 this.setState(prev=>({tempSelectedItem:prev.selectedItem}));
@@ -88,6 +82,16 @@ export class DropdownSelectMulti extends React.Component {
     //         this.setState({ selectedItem: this.props.item });
     //     }
     // }
+
+    getAjaxData = (settings)=>{
+        $.ajax({...settings,
+            dataType:'json',
+            success:(data)=>{
+                const {results} = settings.processResults(data);
+                this.setState({filtered_data:results});
+            }
+        });
+    }
 
     select = (selectedItem) => {
         let tempSelectedState = this.state.tempSelectedItem;
@@ -115,20 +119,32 @@ export class DropdownSelectMulti extends React.Component {
     }
 
     search = ()=>{
-        // e.preventDefault();
         const searchText = this.searchBox.value.toLowerCase().trim();
-        const items = this.props.items||[];
-        if(Array.isArray(items)){
-            //sort in array
-            const filtered_data = items.filter(item=>{
-                let text = item.text.toLowerCase();
-                return text.indexOf(searchText) > -1; 
-            });
-            this.setState({filtered_data});
-        }else{
-            // search with ajax
-            console.log('search with ajax');
-        }
+        const done=()=>{
+            const items = this.props.items;
+            if(!items){
+                setTimeout(done,100);
+            }else{
+                if(Array.isArray(items)){
+                    //sort in array
+                    const filtered_data = items.filter(item=>{
+                        let text = item.text.toLowerCase();
+                        return text.indexOf(searchText) > -1; 
+                    });
+                    this.setState({filtered_data});
+                }else{
+                    // search with ajax
+                    let getData = typeof items.data=='function'?()=>items.data:null;
+                    let data =getData? getData():null; 
+                    const value =data? data({term:searchText}):{...items.data,searchText};
+                    this.getAjaxData(
+                    {   ...items,
+                        data:value
+                    });
+                }
+            }
+        };
+        done();
     }
 
     debouncedSearch = debounce(() => {

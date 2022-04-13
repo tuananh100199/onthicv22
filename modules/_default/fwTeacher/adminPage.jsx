@@ -170,32 +170,16 @@ class AdminTeacherPage extends AdminPage {
             stickyHead:true,
             autoDisplay:true,
             renderHead: () => (
-                // <tr>
-                    // <th style={{ width: 'auto', textAlign: 'center' }}>#</th>
-                    // <th style={{ width: 'auto' }} nowrap='true'>Mã GV</th>
-                    // <th style={{ width: '100%' }}>Họ tên</th>
-                    // <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Thông tin liên lạc</th>
-                    // <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Ngày sinh</th>
-                    // <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Cơ sở đào tạo</th>
-                    // <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Loại giáo viên</th>
-                    // <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Loại khóa học</th> 
-                    // <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Khóa học đang dạy</th> 
-                    // <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Thao tác</th>
-                // </tr>
                 <TableHead getPage={this.props.getTeacherPage}>
                     <TableHeadCell style={{ width: 'auto', textAlign: 'center' }}>#</TableHeadCell>
-                    <TableHeadCell name='maGiaoVien' sort={true} style={{ width: 'auto', textAlign: 'center' }}
-                     content='Mã giáo viên' nowrap='true'  filter='search'/> 
-                    <TableHeadCell sort={true} style={{ width: '100%' }}
-                     content='Họ tên' nowrap='true' name='firstname' filter='search'/>
-                    {/* <th style={{ width: '100%' }}>Họ tên</th> */}
+                    <TableHeadCell name='maGiaoVien' sort={true} style={{ width: 'auto', textAlign: 'center' }} content='Mã giáo viên' nowrap='true'  filter='search'/> 
+                    <TableHeadCell sort={true} style={{ width: '100%' }} content='Họ tên' nowrap='true' name='firstname' filter='search'/>
                     <TableHeadCell style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Thông tin liên lạc</TableHeadCell>
                     <TableHeadCell name='birthday' sort={true} style={{ width: 'auto', textAlign: 'center' }} content='Ngày sinh' nowrap='true'/> 
-                    {/* <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Ngày sinh</th> */}
                     <TableHeadCell style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Cơ sở đào tạo</TableHeadCell>
                     <TableHeadCell style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Loại giáo viên</TableHeadCell>
-                    <TableHeadCell style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Loại khóa học</TableHeadCell> 
-                    <TableHeadCell name='course' style={{ width: 'auto', textAlign: 'center' }} menuStyle={{width:200}} content='Khóa học đang dạy' filter='select' filterData = {this.state.courses}/> 
+                    <TableHeadCell name='courseTypes' filter='select' filterData = {ajaxSelectCourseType} style={{ width: 'auto', textAlign: 'center' }} nowrap='true' content='Loại khóa học' /> 
+                    <TableHeadCell name='courses' style={{ width: 'auto', textAlign: 'center' }} menuStyle={{width:200}} filter='select' filterData = {this.state.courses}>Khóa học đang dạy</TableHeadCell>
                     <TableHeadCell style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Thao tác</TableHeadCell>
                 </TableHead>
                 ),
@@ -210,9 +194,7 @@ class AdminTeacherPage extends AdminPage {
                         <TableCell  style={{whiteSpace:'nowrap'}} content={item.division? item.division.title:''} />
                         <TableCell  content={item.dayLyThuyet?'GV lý thuyết':'GV thực hành'} />
                         <TableCell  content={item.courseTypes && item.courseTypes.length ? item.courseTypes.reduce((result,item)=> result+(result!=''?(', '+item.title):item.title),''):'chưa có'} />
-                        {/* <TableCell  content={item.courses && item.courses.length ? item.courses.reduce((result,item)=> result+(result!=''?('\n'+item.name):item.name),''):'chưa có'} /> */}
                         <TableCell  content={item.courses && item.courses.length ? this.renderListCourse(item.courses):'chưa có'} />
-                        
                         <TableCell type='buttons' content={item} permission={permission} onEdit={'/user/teacher/' + item._id} onDelete={this.delete}>
                             <Link className='btn btn-warning' to={`/user/manage-lecturer/${item.user._id}/rating`}>
                                 <i className="fa fa-star" aria-hidden="true"></i>
