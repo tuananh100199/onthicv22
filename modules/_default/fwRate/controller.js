@@ -75,6 +75,18 @@ module.exports = (app) => {
         app.model.rate.get(condition, (error, item) => res.send({ error, item }));
     });
 
+    app.get('/api/rate/course', app.permission.check('rate:read'), (req, res) => { //mobile
+        const courseId = req.query.courseId;
+        app.model.course.get({_id: courseId}, (error,item) => {
+            if(error || !item)
+                res.send({error});
+            else{
+                const listTeacherId = item.teacherGroups && item.teacherGroups.length && item.teacherGroups.map(group => group.teacher._id);
+                app.model.rate.getAll({_refId: {$in: listTeacherId}}, (error, list) => res.send({ error, list }));
+            }
+        });
+    });
+
     app.get('/api/rate/student', app.permission.check('rate:read'), (req, res) => {
         const sessionUser = req.session.user,
             listRefId = req.query.listRefId;

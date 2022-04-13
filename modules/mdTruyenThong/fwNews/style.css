@@ -82,7 +82,7 @@
 .news .news_content .news_content_title a{
     color: var(--color-primary);
     text-transform: uppercase;
-    font-weight: 700;
+    font-weight: 800;
 }
 
 /* 

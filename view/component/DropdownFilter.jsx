@@ -1,5 +1,6 @@
 import React from 'react';
-
+import { debounce } from 'lodash';
+import './input.scss';
 export class DropdownSelect extends React.Component {
     state = { selectedItem: null,isFilted:false }
 
@@ -57,73 +58,125 @@ export class DropdownSelect extends React.Component {
     }
 }
 export class DropdownSelectMulti extends React.Component {
-    state = { selectedItem: [],isFilted:false }
+    // had to handle 2 type of search: search local data in frontend and search ajax(or function)
+    state = { selectedItem: [],tempSelectedItem:[],isFilted:false,searchText:'',filtered_data:[] }
+    hasInit = false;
 
     componentDidMount() {
         $(document).ready(() => {
             this.props.item && this.setState({ selectedItem: [this.props.item] });
+            const {items=[]} = this.props;
+            if(Array.isArray(items)){// data pass in select is array, not ajax
+                this.search();
+            }else{
+                // handling ajax
+            }
+
+            $(this.dropDown).on('show.bs.dropdown', ()=> {
+                // focus on searchBox
+                setTimeout(()=> { $(this.searchBox).focus(); }, 100);
+            });
+
+            $(this.dropDown).on('hide.bs.dropdown', ()=> {
+                // set selected item to temp, prevent select item but not filter.
+                this.setState(prev=>({tempSelectedItem:prev.selectedItem}));
+            });
         });
     }
-
-    componentDidUpdate(prevProps) {
-        if (this.props.item && this.props.item !== prevProps.item) {
-            this.setState({ selectedItem: this.props.item });
-        }
-    }
+    // componentDidUpdate(prevProps) {
+    //     if (this.props.item && this.props.item !== prevProps.item) {
+    //         this.setState({ selectedItem: this.props.item });
+    //     }
+    // }
 
     select = (selectedItem) => {
-        let selectedState = this.state.selectedItem;
-        const isSelected = selectedState.find(item=>item==selectedItem.id);
+        let tempSelectedState = this.state.tempSelectedItem;
+        const isSelected = tempSelectedState.find(item=>item==selectedItem.id)!=undefined;
         if(isSelected){
-            this.setState({selectedItem:selectedState.filter(item=>item!=selectedItem.id)});
+            this.setState({ tempSelectedItem:tempSelectedState.filter(item=>item!=selectedItem.id)});
         }else{
-            this.setState({selectedItem:[...selectedState,selectedItem.id]});
+            this.setState({tempSelectedItem:[...tempSelectedState,selectedItem.id]});
         }
     }
 
     filter = ()=>{
-        this.setState({isFilted:true},()=>{
-            this.props.onSelected && this.props.onSelected(this.state.selectedItem);
+        this.setState(prev=>(
+            {isFilted:prev.tempSelectedItem.length>0?true:false,
+                selectedItem:[...prev.tempSelectedItem],
+            }
+            ),()=>{
+            this.props.onSelected && this.props.onSelected(this.state.selectedItem.length?this.state.selectedItem:undefined);
         });
     }
 
     clear = ()=>{//Clear the selected data.
-        this.setState({selectedItem:[],isFilted:false},()=>{
-            // $(this.element).html('');
-            this.props.onSelected && this.props.onSelected(undefined);
-        });
+        this.state.isFilted && this.props.onSelected && this.props.onSelected(undefined);
+        this.setState({selectedItem:[],tempSelectedItem:[],isFilted:false});
     }
+
+    search = ()=>{
+        // e.preventDefault();
+        const searchText = this.searchBox.value.toLowerCase().trim();
+        const items = this.props.items||[];
+        if(Array.isArray(items)){
+            //sort in array
+            const filtered_data = items.filter(item=>{
+                let text = item.text.toLowerCase();
+                return text.indexOf(searchText) > -1; 
+            });
+            this.setState({filtered_data});
+        }else{
+            // search with ajax
+            console.log('search with ajax');
+        }
+    }
+
+    debouncedSearch = debounce(() => {
+        // do something
+        this.search();
+    }, 300);
 
     getSelectedItem = () => this.state.selectedItem ? this.state.selectedItem : {};
 
     render() {
-        let { className = '', style = {}, menuStyle = {}, textStyle = {}, items = [], selectedItem = null,allowClear=false, menuClassName='' } = this.props;
-        if (items == null) items = [];
+        let { className = '', style = {}, menuStyle = {}, textStyle = {}, selectedItem = null, menuClassName='' } = this.props;
+        // if (items == null) items = [];
+        const {filtered_data=[]}=this.state;
         className += ' dropdown-toggle';
         menuClassName='dropdown-menu '+menuClassName;
         if (this.state.selectedItem) selectedItem = this.state.selectedItem;
         if (selectedItem == null) selectedItem = { value: '', text: '' };
         return (
-            <div className='dropdown dropdown-filter' style={{ whiteSpace: 'nowrap', ...style }}>
-                <a ref={e => this.element = e} className={className} style={{ textDecoration: 'none', ...textStyle,color:this.state.isFilted?'#1488db':'#fff' }} href='#' data-toggle='dropdown' aria-haspopup='true' aria-expanded='true'>
+            <div className='dropdown dropdown-filter d-flex align-items-center' ref={e=>this.dropDown=e} style={{ whiteSpace: 'nowrap', ...style }}>
+                <a ref={e => this.element = e} className={className} style={{textDecoration: 'none', ...textStyle,color:this.state.isFilted?'#1488db':'#fff' }} href='#' data-toggle='dropdown' aria-haspopup='true' aria-expanded='true'>
                     {/* {typeof selectedItem == 'string' && selectedItem != '' ? selectedItem : (selectedItem.text || this.props.text || this.props.emptyText || '')} */}
+                    <i className="fa fa-filter" aria-hidden="true"></i>
                 </a>
-                {allowClear && this.state.isFilted?<i className='fa fa-times ml-1 text-danger' onClick = {this.clear} style={{cursor:'pointer'}} aria-hidden="true"></i>:null}
-                <div className={menuClassName} style={{ maxHeight: '60vh', overflowY: 'auto', ...menuStyle,minWidth:250 }}>
-                    {items.map((item, index) =>
-                        <a key={index} className='dropdown-item d-flex' href='#' onClick={e => e.preventDefault()|| e.stopPropagation() || this.select(item)}>
-                            <div className={'animated-checkbox'}>
-                                    <input type='checkbox' checked={item.id && this.state.selectedItem.find(id=>id==item.id)} onChange={e=>e.preventDefault()} />
-                                    <span className={'label-text'}></span>
-                            </div>
-                            <span style={{whiteSpace:'normal'}}>{item.text ? item.text : item}</span>
-                        </a>)}
+                {/* {allowClear && this.state.isFilted?<i className='fa fa-times ml-1 text-danger' onClick = {this.clear} style={{cursor:'pointer'}} aria-hidden="true"></i>:null} */}
+                <div className={menuClassName} style={{ ...menuStyle }}>
+                    {/* <div style = {{position:'relative'}}>
+                        <select ref={e => this.input = e} multiple={false} disabled={false} onClick= {e=>e.stopPropagation()} />
+                    </div> */}
+                    
+                    <input ref={e => this.searchBox = e} className='app-search__input' type='search' placeholder='Tìm kiếm' onChange = {this.debouncedSearch} />
                     <div className="dropdown-divider"></div>
-                    <div className="d-flex p-2">
-                        <button className='btn btn-danger' style={{ flex:'auto' }} type='button' onClick={this.clear}>
+                    <div style={{maxHeight: 270, overflowY: 'auto',minWidth:'100%'}}>
+                        {filtered_data.length?filtered_data.map((item, index) =>
+                            <a key={index} className='dropdown-item d-flex p-2 justify-content-between' href='#' onClick={e => e.preventDefault()|| e.stopPropagation() || this.select(item)}>
+                                <span style={{whiteSpace:'normal'}}>{item.text ? item.text : item}</span>
+                                <div className={'animated-checkbox'}>
+                                        <input type='checkbox' checked={item.id && (this.state.tempSelectedItem.find(id=>id==item.id)!=undefined)} onChange={e=>e.preventDefault()} />
+                                        <span className={'label-text'}></span>
+                                </div>
+                            </a>):<p className='p-2'>No results found</p>}
+                    </div>
+                    
+                    <div className="dropdown-divider"></div>
+                    <div className="d-flex">
+                        <button className='btn btn-link text-danger' style={{ flex:'auto' }} type='button' onClick={this.clear}>
                             <i className='fa fa-times' /> Hủy
                         </button>
-                        <button className='btn btn-primary' style={{ flex:'auto',marginLeft:10 }} type='button' onClick = {this.filter}>
+                        <button className='btn btn-link' style={{ flex:'auto',marginLeft:5 }} type='button' onClick = {this.filter}>
                             <i className='fa fa-filter' /> Lọc
                         </button>
                     </div>
@@ -134,67 +187,66 @@ export class DropdownSelectMulti extends React.Component {
 }
 
 export class DropdownSearch extends React.Component {
-    // TODO: Làm lại, chỉ mới copy ra thôi
-    state = { selectedItem: null,isFilted:false }
+    state = { searchText:'',isFilted:false }
 
     componentDidMount() {
         $(document).ready(() => {
-            this.props.item && this.setState({ selectedItem: this.props.item });
+            $(this.dropDown).on('show.bs.dropdown', ()=> {
+                // focus on input when open dropdown
+                setTimeout(()=> { $(this.searchBox).focus(); }, 100);
+            });
+            $(this.searchBox).on('keypress',(e)=> {
+                if(e.which == 13) {// press enter
+                    this.filter();
+                    $(this.element).dropdown('toggle');
+                }
+            });
+        
         });
     }
 
-    componentDidUpdate(prevProps) {
-        if (this.props.item && this.props.item !== prevProps.item) {
-            this.setState({ selectedItem: this.props.item });
+    filter = () => {
+        if(this.state.searchText!=''){
+            this.setState({ isFilted:true }, () => {
+                // $(this.element).html(selectedItem.text ? selectedItem.text : selectedItem);
+                this.props.onSelected && this.props.onSelected(this.state.searchText);
+            });
+        }else{
+            this.clear();
         }
+        
     }
 
-    select = (selectedItem) => {
-        this.setState({ selectedItem,isFilted:true }, () => {
-            // $(this.element).html(selectedItem.text ? selectedItem.text : selectedItem);
-            this.props.onSelected && this.props.onSelected(selectedItem);
-        });
-    }
-
-    clear = ()=>{//Clear the selected data.
-        this.setState({selectedItem:'',isFilted:false},()=>{
+    clear = ()=>{//Clear searchText
+        this.setState({searchText:'',isFilted:false},()=>{
+            this.searchBox.value='';
             // $(this.element).html('');
             this.props.onSelected && this.props.onSelected(undefined);
         });
     }
 
-    getSelectedItem = () => this.state.selectedItem ? this.state.selectedItem : {};
+    search = ()=>{
+        this.setState({searchText:this.searchBox.value.trim()});
+    }
 
     render() {
-        let { className = '', style = {}, menuStyle = {}, textStyle = {}, items = [], selectedItem = null,allowClear=false, menuClassName='' } = this.props;
-        if (items == null) items = [];
+        let { className = '', style = {}, menuStyle = {}, textStyle = {},allowClear=false, menuClassName='' } = this.props;
         className += ' dropdown-toggle';
         menuClassName='dropdown-menu '+menuClassName;
-        if (this.state.selectedItem) selectedItem = this.state.selectedItem;
-        if (selectedItem == null) selectedItem = { value: '', text: '' };
         return (
-            <div className='dropdown dropdown-filter' style={{ whiteSpace: 'nowrap', ...style }}>
+            <div className='dropdown dropdown-filter' style={{ whiteSpace: 'nowrap', ...style }} ref={e=>this.dropDown=e}>
                 <a ref={e => this.element = e} className={className} style={{ textDecoration: 'none', ...textStyle,color:this.state.isFilted?'#1488db':'#fff' }} href='#' data-toggle='dropdown' aria-haspopup='true' aria-expanded='true'>
-                    {/* {typeof selectedItem == 'string' && selectedItem != '' ? selectedItem : (selectedItem.text || this.props.text || this.props.emptyText || '')} */}
+                    <i className="fa fa-filter" aria-hidden="true"></i>
                 </a>
                 {allowClear && this.state.isFilted?<i className='fa fa-times ml-1 text-danger' onClick = {this.clear} style={{cursor:'pointer'}} aria-hidden="true"></i>:null}
-                <div className={menuClassName} style={{ maxHeight: '60vh', overflowY: 'auto', ...menuStyle,minWidth:250 }}>
-                    {items.map((item, index) =>
-                        <a key={index} className='dropdown-item d-flex' href='#' onClick={e => e.stopPropagation() || this.select(item)}>
-                            <div className={'animated-checkbox'}>
-                                <label>
-                                    <input type='checkbox' checked={item && item.id && this.state.selectedItem && this.state.selectedItem.id==item.id} />
-                                    <span className={'label-text'}></span>
-                                </label>
-                            </div>
-                            <span style={{whiteSpace:'normal'}}>{item.text ? item.text : item}</span>
-                        </a>)}
+                <div className={menuClassName} style={{ maxHeight: 270, overflowY: 'auto', ...menuStyle }}>
+                <input ref={e => this.searchBox = e} className='app-search__input' type='search' placeholder='Tìm kiếm' onChange = {this.search} />
                     <div className="dropdown-divider"></div>
-                    <div className="d-flex p-2">
-                        <button className='btn btn-danger' style={{ flex:'auto' }} type='button'>
+                    <div className="d-flex">
+                        <button className='btn btn-link text-danger' style={{ flex:'auto' }} type='button' onClick={this.clear}>
                             <i className='fa fa-times' /> Hủy
                         </button>
-                        <button className='btn btn-primary' style={{ flex:'auto',marginLeft:10 }} type='button'>
+                        <button className='btn btn-link' style={{ flex:'auto',marginLeft:5 }} type='button' onClick = {this.filter}>
                             <i className='fa fa-filter' /> Lọc
                         </button>
                     </div>

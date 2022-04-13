@@ -34,11 +34,11 @@ class ContentDetail extends React.Component {
         } else {
             return (
                 <div className='contact' style={{ marginTop: '50px' }}>
-                    <div className='container'>
+                    <div className='container' style={{paddingTop:20}}>
                         <div className='contact_content'>
                             <div className='contact_content_title ftco-animate'>{item.title}</div>
                             <div className='contact_info ftco-animate'>
-                                <p dangerouslySetInnerHTML={{ __html: item.content }} />
+                                <p className='content_editor' dangerouslySetInnerHTML={{ __html: item.content }} />
                             </div>
                         </div>
                     </div>

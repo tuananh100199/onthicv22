@@ -43,6 +43,7 @@ module.exports = app => {
         app.path.join(app.publicPath, '/img/contractCategory'),
         app.path.join(app.publicPath, '/img/gplxCategory'),
         app.path.join(app.publicPath, '/img/profileCategory'),
+        app.path.join(app.publicPath, '/img/teacherTypeCategory'),
     );
 
     const uploadCategoryImage = (fields, files, done) => {
@@ -82,6 +83,10 @@ module.exports = app => {
             console.log('Hook: uploadCategoryImage => profile');
             const _id = fields.userData[0].substring('profileCategoryImage:'.length);
             app.uploadImage('profileCategory', app.model.category.get, _id, files.CategoryImage[0].path, done);
+        } else if (fields.userData && fields.userData[0].startsWith('teacherTypeCategoryImage:') && files.CategoryImage && files.CategoryImage.length > 0) {
+            console.log('Hook: uploadCategoryImage => teacherType');
+            const _id = fields.userData[0].substring('teacherTypeCategoryImage:'.length);
+            app.uploadImage('teacherTypeCategory', app.model.category.get, _id, files.CategoryImage[0].path, done);
         }
     };
 

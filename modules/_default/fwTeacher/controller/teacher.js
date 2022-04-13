@@ -3,10 +3,11 @@ module.exports = (app) => {
         parentMenu: app.parentMenu.enrollment,
         menus: {
             8090: { title: 'Quản lý giáo viên', link: '/user/teacher', icon: 'fa-bars', backgroundColor: '#00b0ff' },
-            8091: { title: 'Danh mục chứng chỉ', link: '/user/teacher-certification/category', icon: 'fa-bars', backgroundColor: '#00b0ff' },
+            // 8091: { title: 'Danh mục chứng chỉ', link: '/user/teacher-certification/category', icon: 'fa-bars', backgroundColor: '#00b0ff' },
             8092: { title: 'Danh mục hợp đồng', link: '/user/contract/category', icon: 'fa-bars', backgroundColor: '#00b0ff' },
             8093: { title: 'Danh mục giấy phép lái xe', link: '/user/gplx/category', icon: 'fa-bars', backgroundColor: '#00b0ff' },
             8094: { title: 'Danh mục hồ sơ', link: '/user/profile/category', icon: 'fa-bars', backgroundColor: '#00b0ff' },
+            8095: { title: 'Danh mục loại giáo viên', link: '/user/teacher-type/category', icon: 'fa-bars', backgroundColor: '#00b0ff' },
         
         }
     };
@@ -14,6 +15,7 @@ module.exports = (app) => {
     app.permission.add(
         { name: 'teacher:read', menu }, { name: 'teacher:write' }, { name: 'teacher:delete' },
     );
+    app.get('/user/teacher-type/category', app.permission.check('category:read'), app.templates.admin);
     app.get('/user/profile/category', app.permission.check('category:read'), app.templates.admin);
     app.get('/user/teacher-certification/category', app.permission.check('category:read'), app.templates.admin);
     app.get('/user/contract/category', app.permission.check('category:read'), app.templates.admin);
@@ -26,7 +28,7 @@ module.exports = (app) => {
         let pageNumber = parseInt(req.params.pageNumber),
             pageSize = parseInt(req.params.pageSize),
             condition=req.query.condition||{},
-            pageCondition = { },filter=req.query.filter||{};
+            pageCondition = { },filter=req.query.filter||{},sort=req.query.sort||null;            
         if (condition.searchText) {
             const value = { $regex: `.*${condition.searchText}.*`, $options: 'i' };
             pageCondition['$or'] = [
@@ -36,16 +38,49 @@ module.exports = (app) => {
                 { maGiaoVien: value },
             ];
         }
-        // filter theo cơ sở
+        // theo cơ sở
         if (req.session.user.division && req.session.user.division.isOutside){
             pageCondition.division = req.session.user.division._id;
         }
 
-        // filter courseTypes
+        //courseTypes
         if(condition.courseType){
             pageCondition.courseTypes={$in:[condition.courseType]};
         }
-        // filter course
+        
+        //lọc nghỉ việc
+        if(condition.nghiViec){
+          pageCondition.thoiGianLamViec={['nghiViec']:condition.nghiViec=='1'?true:false};
+        } 
+
+
+        // lớp tập huấn
+        if(condition.trainingClass){
+            pageCondition.trainingClass={$in:[condition.trainingClass]};
+        }
+
+        // lớp tập huấn
+        if(condition.notTrainingClass){
+            pageCondition.trainingClass={$nin:[condition.notTrainingClass]};
+        }
+        // --------------filter------------------------
+        // mã giáo viên
+        if(filter.maGiaoVien){
+            const value = { $regex: `.*${filter.maGiaoVien}.*`, $options: 'i' };
+            pageCondition.maGiaoVien=value;
+        }
+
+        if(filter.firstname){// họ tên
+            pageCondition['$expr']= {
+                '$regexMatch': {
+                  'input': { '$concat': ['$lastname', ' ', '$firstname'] },
+                  'regex': `.*${filter.firstname}.*`,  //Your text search here
+                  'options': 'i'
+                }
+            };
+        }
+
+        // course
         if(filter.course && filter.course.length){
             if(filter.course.find(item=>item=='null')){
                 const courses = filter.course.filter(course=>course!='null');
@@ -54,12 +89,11 @@ module.exports = (app) => {
                 pageCondition.courses={$in:filter.course};
             }
         }
-        //filter lọc nghỉ việc
-        if(condition.nghiViec){
-          pageCondition.thoiGianLamViec={['nghiViec']:condition.nghiViec=='1'?true:false};
-        } 
-
-        app.model.teacher.getPage(pageNumber, pageSize, pageCondition, (error, page) => {
+        // filter lọc nghỉ việc
+        // if(condition.nghiViec){
+        //   pageCondition.thoiGianLamViec={['nghiViec']:condition.nghiViec=='1'?true:false};
+        // }
+        app.model.teacher.getPage(pageNumber, pageSize, pageCondition, sort , (error, page) => {
             res.send({ error, page});
         });
     });
@@ -133,6 +167,17 @@ module.exports = (app) => {
 
     app.delete('/api/teacher', app.permission.check('teacher:write'), (req, res) => {
         app.model.teacher.delete(req.body._id, error => res.send({ error }));
+    });
+    
+    //api trainingClass --------------------------------------------------------------------------------
+
+    app.put('/api/teacher/training-class', app.permission.check('teacher:write'), (req, res) => {
+        let { _id, trainingClass,type } = req.body;
+        if(type=='add'){
+            app.model.teacher.addTrainingClass(_id, trainingClass, (error, item) => res.send({ error, item }));
+        }else{
+            app.model.teacher.deleteTrainingClass(_id, trainingClass, (error, item) => res.send({ error, item }));
+        }
     });
 
     // Hook upload images staff ---------------------------------------------------------------------------------------------

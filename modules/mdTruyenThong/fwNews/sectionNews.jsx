@@ -15,9 +15,12 @@ class SectionNews extends React.Component {
                     loop:true,
                     margin:10,
                     autoplay: true,
+                    smartSpeed:600,
                     autoplayTimeout:3000,
                     autoplayHoverPause: true,
-                    
+                    dots:true,
+                    nav:true,
+                    navText: ['<i class="fa fa-chevron-left" aria-hidden="true"></i>','<i class="fa fa-chevron-right" aria-hidden="true"></i>'],
                 });
             });
 
@@ -182,7 +185,7 @@ class SectionNews extends React.Component {
                         </div >
                     </div>
                     <div className='news_mobile'>
-                            <div className="owl-carousel news_carousel" id='newCarousel'>
+                            <div className="owl-carousel news_carousel carousel_nav carousel_dots" id='newCarousel'>
                                 {newsFeed.map((item, index) => (
                                         <div key={index} className='item team_col'>
                                             <div className='team_item d-flex flex-column'>

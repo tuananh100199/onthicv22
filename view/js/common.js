@@ -93,7 +93,9 @@ const T = {
     cookieKeyName: {
         pageNumber: 'N',
         pageSize: 'S',
-        pageCondition: 'C'
+        pageCondition: 'C',
+        filter:'F',
+        sort:'R',
     },
 
     initCookiePage: (cookieName, hasCondition = false) => {
@@ -102,22 +104,25 @@ const T = {
         if (initData[T.cookieKeyName.pageSize] == null) initData[T.cookieKeyName.pageSize] = 50;
         if (initData[T.cookieKeyName.pageCondition] == null) initData[T.cookieKeyName.pageCondition] = hasCondition ? {} : undefined;
         if (initData[T.cookieKeyName.filter] == null) initData[T.cookieKeyName.filter] = hasCondition ? {} : undefined;
+        if (initData[T.cookieKeyName.sort] == null) initData[T.cookieKeyName.sort] = hasCondition ? {} : undefined;
         T.cookie(cookieName, initData);
     },
 
-    updatePage: (cookieName, pageNumber, pageSize, pageCondition,filter) => {
+    updatePage: (cookieName, pageNumber, pageSize, pageCondition,filter,sort) => {
         const updateStatus = {},
             oldStatus = T.cookie(cookieName);
         updateStatus[T.cookieKeyName.pageNumber] = pageNumber ? pageNumber : oldStatus[T.cookieKeyName.pageNumber];
         updateStatus[T.cookieKeyName.pageSize] = pageSize ? pageSize : oldStatus[T.cookieKeyName.pageSize];
         updateStatus[T.cookieKeyName.pageCondition] = pageCondition ? pageCondition : oldStatus[T.cookieKeyName.pageCondition];
         updateStatus[T.cookieKeyName.filter] = filter ? filter : oldStatus[T.cookieKeyName.filter];
+        updateStatus[T.cookieKeyName.sort] = sort ? sort : oldStatus[T.cookieKeyName.sort];
         T.cookie(cookieName, updateStatus);
         return {
             pageNumber: updateStatus[T.cookieKeyName.pageNumber],
             pageSize: updateStatus[T.cookieKeyName.pageSize],
             pageCondition: updateStatus[T.cookieKeyName.pageCondition],
             filter: updateStatus[T.cookieKeyName.filter],
+            sort: updateStatus[T.cookieKeyName.sort],
         };
     },
 

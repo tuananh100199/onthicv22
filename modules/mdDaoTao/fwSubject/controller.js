@@ -117,6 +117,34 @@ module.exports = (app) => {
     });
 
     //Random Đề thi hết môn ----------------------------------------------------------------------------------------------
+    app.get('/api/subject/random', app.permission.check('subject:read'), (req, res) => {
+        const { subjectId } = req.query;
+        app.model.subject.get(subjectId, (error, item) => {
+            if (error || item == null) {
+                res.send({ error: 'Lấy môn học bị lỗi!' });
+            } else {
+                if (item.questionTypes) {
+                    app.model.driveQuestion.getAll((error, list) => {
+                        if (error || list.length == 0) {
+                            res.send({ error: 'Lấy câu hỏi thi bị lỗi!' });
+                        } else {
+                            let listQuestion = [];
+                            for(let i = 0; i < item.questionTypes.length; i++){
+                                list.forEach(question => {
+                                    if(question.categories && item.questionTypes[i] && item.questionTypes[i].category && (question.categories.findIndex(category => category == item.questionTypes[i].category.toString()) != -1) && (listQuestion.findIndex(item => item._id == question._id) == -1))
+                                        listQuestion.push(question);
+                                });
+                            }
+                            res.send({ driverTest: listQuestion });
+                        }
+                    });
+                } else {
+                    res.send({ error: 'Lấy loại câu hỏi thi bị lỗi!' });
+                }
+            }
+        });
+    });
+
     app.post('/api/subject/random', (req, res) => {
         const {subjectId, courseId} = req.body;
         app.model.student.get({ user: req.session.user._id, course: courseId }, (error, student) => {
@@ -159,28 +187,46 @@ module.exports = (app) => {
                             res.send({ error: 'Lấy môn học bị lỗi!' });
                         } else {
                             if (item.questionTypes) {
-                                app.model.driveQuestion.getAll((error, list) => {
-                                    if (error || list.length == 0) {
-                                        res.send({ error: 'Lấy câu hỏi thi bị lỗi!' });
-                                    } else {
-                                        const questionMapper = {};
-                                        list.forEach(question => {
-                                            questionMapper[question.categories[0]] ?
-                                                questionMapper[question.categories[0]].push(question) :
-                                                (questionMapper[question.categories[0]] = [question]);
-                                        });
-            
-                                        const randomQuestions = [];
-                                        item.questionTypes.forEach(type => {
-                                            randomQuestions.push(app.getRandom(questionMapper[type.category], type.amount));
-                                        });
-                                        const driveTest = {
-                                            questions: randomQuestions.filter(item => item != null).flat(),
-                                            totalTime: item.totalTime
-                                        };
-                                        res.send({ driveTest, subject: item });
-                                    }
-                                });
+                                if(item.finalQuestions && item.finalQuestions.length){
+                                    const questionIds = item.finalQuestions;
+                                    app.model.driveQuestion.getAll({_id: {$in: questionIds}},(error, list) => {
+                                        if (error || list.length == 0) {
+                                            res.send({ error: 'Lấy câu hỏi thi bị lỗi!' });
+                                        } else {
+                                            const randomQuestions = [];
+                                            randomQuestions.push(app.getRandom(list, 10));
+                                            const driveTest = {
+                                                questions: randomQuestions.filter(item => item != null).flat(),
+                                                totalTime: item.totalTime
+                                            };
+                                            res.send({ driveTest, subject: item });
+                                        }
+                                    });
+                                } else {
+                                    app.model.driveQuestion.getAll((error, list) => {
+                                        if (error || list.length == 0) {
+                                            res.send({ error: 'Lấy câu hỏi thi bị lỗi!' });
+                                        } else {
+                                            const questionMapper = {};
+                                            list.forEach(question => {
+                                                questionMapper[question.categories[0]] ?
+                                                    questionMapper[question.categories[0]].push(question) :
+                                                    (questionMapper[question.categories[0]] = [question]);
+                                            });
+                
+                                            const randomQuestions = [];
+                                            item.questionTypes.forEach(type => {
+                                                randomQuestions.push(app.getRandom(questionMapper[type.category], type.amount));
+                                            });
+                                            const driveTest = {
+                                                questions: randomQuestions.filter(item => item != null).flat(),
+                                                totalTime: item.totalTime
+                                            };
+                                            res.send({ driveTest, subject: item });
+                                        }
+                                    });
+                                }
+                                
                             } else {
                                 res.send({ error: 'Lấy loại câu hỏi thi bị lỗi!' });
                             }
@@ -256,7 +302,7 @@ module.exports = (app) => {
 
     // Hook permissionHooks  ------------------------------------------------------------------------------------------
     app.permissionHooks.add('courseAdmin', 'subject', (user) => new Promise(resolve => {
-        app.permissionHooks.pushUserPermission(user, 'subject:read');
+        app.permissionHooks.pushUserPermission(user, 'subject:read', 'subject:write');
         resolve();
     }));
     app.permissionHooks.add('lecturer', 'subject', (user) => new Promise(resolve => {

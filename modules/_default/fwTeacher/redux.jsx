@@ -45,15 +45,20 @@ export function getTeacherAll(condition, done) {
 }
 
 T.initCookiePage('pageTeacher', true);
-export function getTeacherPage(pageNumber, pageSize, condition,filter, done) {
-    if(typeof filter=='function'){
+export function getTeacherPage(pageNumber, pageSize, condition,filter,sort, done) {
+    if(typeof sort=='function'){
+        done=sort;
+        sort=undefined;
+    }
+    else if(typeof filter=='function'){
         done=filter;
         filter=undefined;
     }
-    const page = T.updatePage('pageTeacher', pageNumber, pageSize,condition,filter);
+    
+    const page = T.updatePage('pageTeacher', pageNumber, pageSize,condition,filter,sort);
     return dispatch => {
         const url = '/api/teacher/page/' + page.pageNumber + '/' + page.pageSize;
-        T.get(url, { condition:page.pageCondition,filter:page.filter }, data => {
+        T.get(url, { condition:page.pageCondition,filter:page.filter,sort:page.sort }, data => {
             if (data.error) {
                 T.notify('Lấy danh sách giáo viên bị lỗi!', 'danger');
                 console.error('GET: ' + url + '. ' + data.error);
@@ -123,6 +128,23 @@ export function deleteTeacher(_id) {
                 dispatch(getTeacherPage());
             }
         }, error => console.error(error) || T.notify('Xóa thông tin giáo viên bị lỗi!', 'danger'));
+    };
+}
+
+export function updateTeacherTrainingClass(_id, trainingClass,type, done) {
+    return dispatch => {
+        const url = '/api/teacher/training-class';
+        T.put(url, { _id, trainingClass,type }, data => {
+            if (data.error) {
+                T.notify('Cập nhật thông tin bị lỗi!', 'danger');
+                console.error('PUT: ' + url + '. ' + data.error);
+                done && done(data.error);
+            } else {
+                T.notify('Cập nhật thông tin thành công!', 'success');
+                dispatch({ type: TeacherGetItem, item: data.item });
+                done && done();
+            }
+        }, error => console.error(error) || T.notify('Cập nhật thông tin bị lỗi!', 'danger'));
     };
 }
 
@@ -260,6 +282,7 @@ export function deleteTeacherProfile(_id,done) {
     };
 }
 
+
 // AJAX ---------------------------------------------------------------------------------------------------------------
 
 export function ajaxGetTeacher(_id, done) {
@@ -282,4 +305,10 @@ export const ajaxSelectTeacherByCourseType = (courseType,nghiViec) => T.createAj
         // userId for addTeacher
         return result;
     } 
+);
+
+export const ajaxSelectTeacher = (condition) => T.createAjaxAdapter(
+    '/api/teacher/page/1/20?',
+    params => ({condition:{...condition,searchText:params.term}}),
+    response => response && response.page && response.page.list ? response.page.list.map(item => ({ id: item._id, text: `${item.lastname} ${item.firstname} ${item.maGiaoVien ? '(' + item.maGiaoVien + ')' : ''}` })) : []
 );

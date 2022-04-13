@@ -6,13 +6,13 @@ import Editor from 'view/component/CkEditor4';
 import Datetime from 'react-datetime';
 import InputMask from 'react-input-mask';
 import NumberFormat from 'react-number-format';
-import {DropdownSelect,DropdownSelectMulti,DropdownSearch} from 'view/component/DropdownFilter';
+import {DropdownSelectMulti,DropdownSearch} from 'view/component/DropdownFilter';
 import 'react-datetime/css/react-datetime.css';
 
 // Table components ---------------------------------------------------------------------------------------------------
 export class TableCell extends React.Component { // type = number | date | link | image | checkbox | buttons | text (default)
     render() {
-        let { type = 'text', content = '', permission = {}, className = '', style = {}, contentStyle = {}, alt = '', display = true, rowSpan = 1, dateFormat, isSwitch = true } = this.props;
+        let { type = 'text', content = '', permission = {}, className = '', style = {}, contentStyle = {}, alt = '', display = true, rowSpan = 1, dateFormat, isSwitch = true, height = null } = this.props;
         if (style == null) style = {};
 
         if (display != true) {
@@ -33,7 +33,7 @@ export class TableCell extends React.Component { // type = number | date | link 
             }
         } else if (type == 'image') {
             return content ?
-                <td style={{ textAlign: 'center', ...style }} className={className} rowSpan={rowSpan}><img src={content} alt={alt} style={{ height: '32px' }} /></td> :
+                <td style={{ textAlign: 'center', ...style }} className={className} rowSpan={rowSpan}><img src={content} alt={alt} style={{ height: height ? height : '32px' }} /></td> :
                 <td style={{ textAlign: 'center', ...style }} className={className} rowSpan={rowSpan}>{alt}</td>;
         } else if (type == 'checkbox') {
             return isSwitch ? (
@@ -115,71 +115,79 @@ export function renderTable({ style = {},autoDisplay=false, className = '', getD
 }
 
 export class TableHead extends React.Component {
-    state = {filterData:{}}
-
-    onFilterChange = filter =>this.setState(prevState=>({filterData:{...prevState.filterData,...filter}}),()=>this.props.getPage && this.props.getPage(null,null,null,this.state.filterData))
+    state = {filterData:{},sortData:{}}
+    // sort :{nameColumn:value}, value:1,-1
+    onFilterChange = filter =>this.setState(prevState=>({filterData:{...prevState.filterData,...filter}}),()=>this.props.getPage && this.props.getPage(undefined,undefined,undefined,this.state.filterData))
 
     onRemoveFilter = name=>{
         this.setState(prevState=>{
             let filterData = prevState.filterData;
             delete filterData[name];
             return {filterData};
-        },()=>this.props.getPage && this.props.getPage(null,null,null,this.state.filterData));
+        },()=>this.props.getPage && this.props.getPage(undefined,undefined,undefined,this.state.filterData));
     }
 
-    childrenWithProps = ()=>React.Children.map(this.props.children, child => {
+    onSortChange = name =>{
+        let sortData={};
+        if(!this.state.sortData[name]){
+            sortData={[name]:1};
+        }else if(this.state.sortData[name]==1){
+            sortData={[name]:-1};
+        }
+        this.setState({sortData},()=> this.props.getPage && this.props.getPage(undefined,undefined,undefined,undefined,sortData));
+    }
+
+    childrenWithProps = ()=>{
+        return React.Children.map(this.props.children, child => {
         // Checking isValidElement is the safe way and avoids a typescript
         // error too.
         if (React.isValidElement(child)) {
-        // map props for children.
-            return React.cloneElement(child, { onFilterChange:this.onFilterChange,onRemoveFilter:this.onRemoveFilter });
+            if(child.type == TableHeadCell){
+                // map props for children.
+                return React.cloneElement(child, { onFilterChange:this.onFilterChange,onRemoveFilter:this.onRemoveFilter,onSortChange:this.onSortChange,sortdata:this.state.sortData });
+            }else{
+                return child;
+            }
         }
         return child;
-      });
+        });
+    };
+
     render() {
-        return <tr>
-            {this.childrenWithProps()}
-        </tr>;
+        return <tr>{this.childrenWithProps()}</tr>
+        ;
     }
 }
 export class TableHeadCell extends React.Component {
     state = {}
 
     render() {
-        // const filterData = [{id:...,text:...}]
-        let { content = '', className = '', style = {}, display = true, rowSpan = 1,filterData=null,nowrap='false',allowClear=true,name='',filterType='',multipleSelect=false } = this.props;
-        // const filterDisplay = filter && filter.length?(<>
-        //     <Dropdown items={filter} 
-        //     onSelected={e => this.setState({isSeletedValue:true},()=>e && e.id ? this.props.onFilterChange({[name]:e.id}):this.props.onRemoveFilter(name) )}
-        //      allowClear={allowClear} menuClassName='dropdown-menu-right' />
-            
-        // </>) :null;
+        // filterData = [{id:...,text:...}]
+        // Buộc phải truyền name vào nếu muốn sử dụng filter và sort, còn nếu không dùng thì không truyền cx đc.
+        let { content, className = '', style = {}, display = true, rowSpan = 1,filterData=null,nowrap='false',allowClear=true,name='',filter='',sort=false } = this.props;
 
+        const {onFilterChange,onRemoveFilter,onSortChange, sortdata={}} = this.props;// function control filter,sort from TableHead
         let filterDisplay;
-        if(filterType=='select'){
-            if(!multipleSelect){// select đơn
-                filterDisplay = filterData && filterData.length?(<>
-                    <DropdownSelect items={filterData} allowClear={allowClear} menuClassName='dropdown-menu-right' 
-                    onSelected={value =>value ? this.props.onFilterChange({[name]:value}):this.props.onRemoveFilter(name)}
-                    />
-                </>) :null;
-            }else{// select multiple
-                filterDisplay = filterData && filterData.length?(<> 
-                    <DropdownSelectMulti items={filterData} allowClear={allowClear} menuClassName='dropdown-menu-right' 
-                    onSelected={value =>value ? this.props.onFilterChange({[name]:value}):this.props.onRemoveFilter(name)}
-                    />
-                </>) :null;
-            }
-            
-        }else if(filterType=='search'){
+        if(filter=='select'){
+            filterDisplay = filterData && filterData.length?(<> 
+                <DropdownSelectMulti items={filterData} allowClear={allowClear} 
+                onSelected={value =>value ? onFilterChange({[name]:value}):onRemoveFilter(name)}
+                />
+            </>) :null;
+        }else if(filter=='search'){
             //TODO: Vỹ: Làm component này
-            filterDisplay = <DropdownSearch />;
+            filterDisplay = <DropdownSearch onSelected={value =>value ? onFilterChange({[name]:value}):onRemoveFilter(name)}/>;
         } else{
             filterDisplay=null;
         }
         return display?<th className={className} style={{ ...style }} nowrap={nowrap} rowSpan={rowSpan}>
-            <div className='d-flex align-items-center'>
-                <span className='mr-2'>{content}</span> {filterDisplay}
+            <div className='d-flex justify-content-between'>
+            {/* {sort?<a >{sortData[name]?(sortData[name]==1?'up':'down'):'none'}</a>:null}  */}
+            {sort?<a href='#' className='d-flex align-items-center' onClick={(e)=>e.preventDefault()||onSortChange(name)}>
+                <i style={{color:sortdata[name]?'#1488db':'#fff'}} 
+            className={`mr-2 fa ${sortdata[name]?(sortdata[name]==1?'fa-sort-alpha-asc':'fa-sort-alpha-desc'):'fa-sort'}`} aria-hidden="true"></i>
+            </a> :null}
+            <div className='mr-2'>{content||this.props.children}</div> {filterDisplay}
             </div>
             </th>:null;
     }

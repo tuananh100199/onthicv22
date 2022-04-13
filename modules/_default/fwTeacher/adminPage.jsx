@@ -116,13 +116,13 @@ class AdminTeacherPage extends AdminPage {
     componentDidMount() {
         T.ready(() => {
             T.showSearchBox();
-            this.props.getTeacherPage(1,null,{},{});
+            this.props.getTeacherPage(1,null,{},{},{});
             this.props.getCategoryAll('teacher-certification', null, (items) =>{
                 this.setState({ chungChiSuPhams: (items || []).map(item => ({ id: item._id, text: item.title })) });
             });
 
             this.props.getCourseAll({isDefault:false},list=>{
-                let courses = [{id:'null',text:'Chưa gán'}];
+                let courses = [{id:'null',text:'Chưa có'}];
                 list.forEach(course=>courses.push({id:course._id,text:course.name}));
                 this.setState({courses});
             });
@@ -183,16 +183,20 @@ class AdminTeacherPage extends AdminPage {
                     // <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Thao tác</th>
                 // </tr>
                 <TableHead getPage={this.props.getTeacherPage}>
-                    <th style={{ width: 'auto', textAlign: 'center' }}>#</th>
-                    <th style={{ width: 'auto' }} nowrap='true'>Mã GV</th>
-                    <th style={{ width: '100%' }}>Họ tên</th>
-                    <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Thông tin liên lạc</th>
-                    <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Ngày sinh</th>
-                    <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Cơ sở đào tạo</th>
-                    <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Loại giáo viên</th>
-                    <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Loại khóa học</th> 
-                    <TableHeadCell style={{ width: 'auto', textAlign: 'center' }} content='Khóa học đang dạy' nowrap='true' name='course' filterType='select' multipleSelect={true} filterData = {this.state.courses}/> 
-                    <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Thao tác</th>
+                    <TableHeadCell style={{ width: 'auto', textAlign: 'center' }}>#</TableHeadCell>
+                    <TableHeadCell name='maGiaoVien' sort={true} style={{ width: 'auto', textAlign: 'center' }}
+                     content='Mã giáo viên' nowrap='true'  filter='search'/> 
+                    <TableHeadCell sort={true} style={{ width: '100%' }}
+                     content='Họ tên' nowrap='true' name='firstname' filter='search'/>
+                    {/* <th style={{ width: '100%' }}>Họ tên</th> */}
+                    <TableHeadCell style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Thông tin liên lạc</TableHeadCell>
+                    <TableHeadCell name='birthday' sort={true} style={{ width: 'auto', textAlign: 'center' }} content='Ngày sinh' nowrap='true'/> 
+                    {/* <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Ngày sinh</th> */}
+                    <TableHeadCell style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Cơ sở đào tạo</TableHeadCell>
+                    <TableHeadCell style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Loại giáo viên</TableHeadCell>
+                    <TableHeadCell style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Loại khóa học</TableHeadCell> 
+                    <TableHeadCell name='course' style={{ width: 'auto', textAlign: 'center' }} content='Khóa học đang dạy' filter='select' filterData = {this.state.courses}/> 
+                    <TableHeadCell style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Thao tác</TableHeadCell>
                 </TableHead>
                 ),
             renderRow: (item, index) =>{

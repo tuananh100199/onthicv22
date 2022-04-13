@@ -3,7 +3,7 @@ module.exports = (app) => {
         user: { type: app.db.Schema.ObjectId, ref: 'User' },            //user
         division: { type: app.db.Schema.ObjectId, ref: 'Division' },    // Cơ sở đào tạo
 
-        dayLyThuyet:{type:Boolean,default:false},// loại giáo viên. True là giáo viên dạy lý thuyết, false là giáo viên dạy thực hành
+        dayLyThuyet:{type:Boolean,default:false},// loại giảng dạy. True là giáo viên dạy lý thuyết, false là giáo viên dạy thực hành
         courseTypes: { type: [{ type: app.db.Schema.Types.ObjectId, ref: 'CourseType' }], default: [] },// danh sách loại khóa học có thể dạy
         courses: { type: [{ type: app.db.Schema.Types.ObjectId, ref: 'Course' }], default: [] },// danh sách các khóa học đang dạy
         // Thông tin chung
@@ -22,8 +22,8 @@ module.exports = (app) => {
         identityCard: String,                                           // Số CMND, CCCD
         identityIssuedBy: String,                                       // Nơi cấp CMND, CCCD
         identityDate: Date,                                             // Ngày cấp CMND, CCCD
-
-
+        teacherType: { type: app.db.Schema.ObjectId, ref: 'Category' },
+        trinhDoVanHoa:String,
     // Trình độ và bằng cấp.        
         trinhDoChuyenMon:{
             trinhDo:String,
@@ -74,6 +74,9 @@ module.exports = (app) => {
             endDate:Date,
         },
 
+        trainingClass: { type: [{ type: app.db.Schema.Types.ObjectId, ref: 'TrainingClass' }], default: [] },// danh sách lớp tập huấn tham gia.
+
+
 
     });
 
@@ -94,21 +97,34 @@ module.exports = (app) => {
             }
         },
 
+        getAll: (condition, done) => typeof condition == 'function' ?
+        model.find({}).populate('user', '-password').populate('division', ' _id title isOutside')
+        .populate('contract.category').populate('chungChiSuPham','_id title').populate('giayPhepLaiXe.category','_id title')
+        .populate('courseTypes','_id title').populate('courses','_id name').populate('teacherType','_id title')
+        .exec(condition) :
+        model.find(condition).populate('user', '-password').populate('division', ' _id title isOutside').populate('contract.category','_id title')
+        .populate('chungChiSuPham','_id title').populate('courseTypes','_id title').populate('courses','_id name').populate('teacherType','_id title')
+        .populate('giayPhepLaiXe.category','_id title').exec(done),
+
         get: (condition, done) =>(typeof condition == 'object' ? model.findOne(condition) : model.findById(condition))
             .populate('user', '-password').populate('division', ' _id title isOutside')
-            .populate('chungChiSuPham','_id title').populate('courseTypes','_id title').populate('courses','_id name')
+            .populate('chungChiSuPham','_id title').populate('courseTypes','_id title').populate('courses','_id name').populate('teacherType','_id title')
             .exec(done),
 
-        getPage: (pageNumber, pageSize, condition, done) => model.countDocuments(condition, (error, totalItem) => {
+        getPage: (pageNumber, pageSize, condition,sort, done) => model.countDocuments(condition, (error, totalItem) => {
             if (error) {
                 done(error);
             } else {
+                if(typeof sort =='function'){
+                    done=sort;
+                    sort=null;
+                }
                 let result = { totalItem, pageSize, pageTotal: Math.ceil(totalItem / pageSize) };
                 result.pageNumber = pageNumber === -1 ? result.pageTotal : Math.min(pageNumber, result.pageTotal);
                 const skipNumber = (result.pageNumber > 0 ? result.pageNumber - 1 : 0) * result.pageSize;
-                model.find(condition).sort({department:1,lastname: 1 }).skip(skipNumber).limit(result.pageSize)
+                model.find(condition).sort(sort ? sort:{ firstname: 1 }).skip(skipNumber).limit(result.pageSize)
                 .populate('user', '-password').populate('division', '_id title').populate('chungChiSuPham','_id title')
-                .populate('courseTypes','_id title').populate('courses','_id name')
+                .populate('courseTypes','_id title').populate('courses','_id name').populate('teacherType','_id title')
                 .exec((error, items) => {
                     result.list = error ? [] : items;
                     done(error, result);
@@ -142,11 +158,21 @@ module.exports = (app) => {
             }
         }),
 
+        count: (condition, done) => done ? model.countDocuments(condition, done) : model.countDocuments({}, condition),
+
         addCourse: (_id, course, done) => {
             model.findOneAndUpdate({_id}, { $push: { courses: course } }, { new: true }).populate('courses').exec(done);
         },
         deleteCourse: (_id, course, done) => {
             model.findOneAndUpdate({_id}, { $pull: { courses: course } }, { new: true }).populate('courses').exec(done);
+        },
+
+        addTrainingClass: (_id, trainingClass, done) => {
+            model.findOneAndUpdate({_id}, { $push: { trainingClass:trainingClass } }, { new: true }).populate('trainingClass').exec(done);
+        },
+        
+        deleteTrainingClass: (_id, trainingClass, done) => {
+            model.findOneAndUpdate({_id}, { $pull: { trainingClass:trainingClass } }, { new: true }).populate('trainingClass').exec(done);
         },
     };
 };

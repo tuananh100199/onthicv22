@@ -3,7 +3,6 @@ import { connect } from 'react-redux';
 import { getCourseByStudent } from './redux';
 import { Link } from 'react-router-dom';
 import { AdminPage, PageIcon } from 'view/component/AdminPage';
-import ConnectElements from 'react-connect-elements';
 
 class LecturerStudentPage extends AdminPage {
     state = {};
@@ -149,7 +148,7 @@ class LecturerStudentPage extends AdminPage {
                 } iconBackgroundColor='#1488db' text={'Nhận GPLX'} />
             </div>
         </div>
-        <div className='test1'>a</div>
+        {/* <div className='test1'>a</div>
         <div className='test2'>b</div>
         <ConnectElements
                 selector='.line'
@@ -159,7 +158,7 @@ class LecturerStudentPage extends AdminPage {
                 ]}
                 color={'red'}
                 overlay={999999}
-            />
+            /> */}
         </>
          : null;
 

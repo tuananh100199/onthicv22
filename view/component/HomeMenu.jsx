@@ -16,11 +16,16 @@ class HomeMenu extends React.Component {
         };
         $(document).ready(() => {
             let header = $('.header');
+            // header.addClass('scrolled');
+            // header.addClass('header_video');
             function setHeader() {
-                if ($(window).scrollTop() > 91) {
-                    header.addClass('scrolled');
-                } else {
-                    header.removeClass('scrolled');
+                let introVideo = $('#introVideo');
+                if(introVideo.height()<=0){
+                    if ($(window).scrollTop() > 91) {
+                        header.addClass('scrolled');
+                    } else {
+                        header.removeClass('scrolled');
+                    }
                 }
             }
 
@@ -46,7 +51,7 @@ class HomeMenu extends React.Component {
                 });
             }
 
-            setHeader();
+            // setHeader();
             initMenu();
             $(window).on('resize', () => {
                 setHeader();
@@ -54,10 +59,29 @@ class HomeMenu extends React.Component {
             });
 
             $(document).on('scroll', () =>{
-                setHeader();
+                // setHeader();
+                let introVideo = $('#introVideo');
+                if(!introVideo.length||introVideo.height()<=0){
+                    if ($(window).scrollTop() > 91) {
+                        header.addClass('scrolled');
+                    } else {
+                        header.removeClass('scrolled');
+                    }
+                }
+                let height=0;
+                if(introVideo.length){
+                    height=window.innerHeight;
+                }
+
+                if ($(window).scrollTop() >height- 91) {
+                    // header.addClass('scrolled');
+                    header.removeClass('header_video');
+                } else {
+                    header.addClass('header_video');
+                    // header.removeClass('scrolled');
+                }
                 // this.activeMenu();
             } );
-
             done();
         });
     }
@@ -106,16 +130,24 @@ class HomeMenu extends React.Component {
         if (hash !== '') {
             // Prevent default anchor click behavior
             event.preventDefault();
+            if(!$(hash).length){
+                window.location=`/${hash}`;
+            }
             const height = this.getMenuHeight();
+            const introVideo = $('#introVideo');
+            let Y = window.scrollY;
+            const scrollMore = introVideo.length && introVideo.height()-Y>0?introVideo.height()-Y:0;
             // Using jQuery's animate() method to add smooth page scroll
             // The optional number (800) specifies the number of milliseconds it takes to scroll to the specified area
             this.setState({link:hash});
             $('html, body').animate({
-            scrollTop: $(hash).offset().top - height
+            scrollTop: $(hash).offset().top - height + scrollMore,
             }, 800, ()=>{
             // Add hash (#) to URL when done scrolling (default click behavior)
             // window.location.hash = hash;
             });
+            
+            
         } // End if
     }
 
@@ -140,7 +172,7 @@ class HomeMenu extends React.Component {
                     let link = item.link ? item.link.toLowerCase().trim() : '/',
                         isExternalLink = link.startsWith('http://') || link.startsWith('https://');
                     link = item.link ? item.link : '#';
-                    return (item.submenus && item.submenus.length > 0) ? (
+                    return (item.active ? (item.submenus && item.submenus.length > 0) ? (
                         <li key={index} className={currentLink == item.link || item.submenus.some(item => item.link == currentLink) ? 'active' : ''}>
                             {isExternalLink ? <a href={link} target='_blank' rel='noreferrer'>{item.title} test 1</a> : 
                                 (item.link ?
@@ -165,7 +197,7 @@ class HomeMenu extends React.Component {
                         <li key={index} className={currentLink == link ? 'active' : ''}>
                             {isExternalLink ? <a href={link} target='_blank' rel='noreferrer'>{item.title} test2</a> :
                                 (link.startsWith('#') ? <a href={link} onClick={(e) => this.scroll(e,link)}>{item.title}</a> : <Link to={link} onClick={() => this.onMenuClick(link)}>{item.title}  </Link>)}
-                        </li>);
+                        </li>) : null);
                 }
             });
         }
@@ -246,7 +278,9 @@ class HomeMenu extends React.Component {
                         {/* <div className='hamburger'><i className='fa fa-bars' aria-hidden='true' /></div> */}
                     </div>
 
-                    <div className="search-button"><i className="fa fa-search" aria-hidden="true"></i></div>
+                    <div className="search-button">
+                        <i className="fa fa-search" aria-hidden="true" style={{opacity:0}}></i>
+                    </div>
                 </div>
             </header>
             <div className='menu_overlay trans_400' />

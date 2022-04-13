@@ -3,18 +3,40 @@ import { connect } from 'react-redux';
 import { createSubscribe } from './redux';
 
 class SectionSubscribe extends React.Component {
-    state = {};
+    state = {scrolled:false};
     componentDidMount() {
         $(document).ready(() => {
             const done = () => {
                 if (this.props && this.props.system && this.props.system.subscribe) {
                     $(window).trigger('resize');
                     $(this.background).parallax();
+                    
+
                 } else {
                     setTimeout(done, 100);
                 }
             };
             done();
+            // setTimeout(()=>{
+            //     if (this.props && this.props.system && this.props.system.subscribe) {
+            //         // $(window).trigger('resize');
+            //         $(this.background).parallax();
+            //     }
+            // },3000);
+            window.addEventListener('scroll',()=>{
+                const Y = window.scrollY;
+                const subscribe = $('#subscribe');
+                if(subscribe.offset().top-Y<=window.innerHeight){
+                    if(!this.state.scrolled){
+                        done();
+                        this.setState({scrolled:true});
+                    }
+                }
+            });
+            window.addEventListener('resize',()=>{
+                this.setState({scrolled:false});
+
+            });
         });
     }
 
@@ -41,8 +63,8 @@ class SectionSubscribe extends React.Component {
     render() {
         let subscribe = this.props && this.props.system && this.props.system.subscribe ? this.props.system.subscribe : '/img/subscribe.jpg';
         return (
-            <div className='newsletter'>
-                <div ref={e => this.background = e} className='parallax_background parallax-window' data-parallax='scroll' data-image-src={subscribe} data-speed='0.8'/>
+            <div className='newsletter' id='subscribe'>
+                <div ref={e => this.background = e} className='parallax_background parallax-window' data-parallax='scroll' data-image-src={subscribe}/>
                 <div className='container'>
                     <div className='row'>
                         <div className='col text-center'>

@@ -25,7 +25,7 @@ module.exports = app => {
                 result.pageNumber = pageNumber === -1 ? result.pageTotal : Math.min(pageNumber, result.pageTotal);
                 const skipNumber = (result.pageNumber > 0 ? result.pageNumber - 1 : 0) * result.pageSize;
                 model.find(condition).sort({ title: 1 }).skip(skipNumber).limit(result.pageSize)
-                .populate('content1').populate('content2','_id title').populate('content3','_id title')
+                .populate('content1','_id title abstract image').populate('content2','_id title abstract image').populate('content3','_id title abstract image')
                 .exec((error, list) => {
                     result.list = list;
                     done(error, result);
@@ -35,7 +35,7 @@ module.exports = app => {
 
         getAll: (done) => model.find({}, '-content').sort({ _id: -1 }).exec(done),
 
-        get: (condition, done) => typeof condition == 'string' ? model.findById(condition).populate('content1','_id title').populate('content2','_id title').populate('content3','_id title').exec(done) 
+        get: (condition, done) => typeof condition == 'string' ? model.findById(condition).populate('content1','_id title abstract image').populate('content2','_id title abstract image').populate('content3','_id title abstract image').exec(done) 
         : model.findOne(condition, done).populate('content1').populate('content2','_id title').populate('content3','_id title').exec(done),
 
         update: (_id, changes, done) => model.findOneAndUpdate({ _id }, { $set: changes }, { new: true }, done),
