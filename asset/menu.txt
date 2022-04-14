@@ -61,6 +61,7 @@
 	8025 - Loại giấy tờ học viên (/user/profile-student-type)
 	8030 - Bổ sung hồ sơ học viên (/user/profile-student)
 	8040 - Phát chứng chỉ, giấy phép (/user/license)
+	8050 - Đánh giá giáo viên (/user/rating-teacher)
 	8060 - Theo dõi công nợ (/user/student/debt-enroll)
 	8090 - Quản lý giáo viên (/user/teacher)
 	8091 - Danh mục chứng chỉ (/user/teacher-diploma)
