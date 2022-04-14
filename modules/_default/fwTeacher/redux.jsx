@@ -45,11 +45,20 @@ export function getTeacherAll(condition, done) {
 }
 
 T.initCookiePage('pageTeacher', true);
-export function getTeacherPage(pageNumber, pageSize, condition, done) {
-    const page = T.updatePage('pageTeacher', pageNumber, pageSize,condition);
+export function getTeacherPage(pageNumber, pageSize, condition,filter,sort, done) {
+    if(typeof sort=='function'){
+        done=sort;
+        sort=undefined;
+    }
+    else if(typeof filter=='function'){
+        done=filter;
+        filter=undefined;
+    }
+    
+    const page = T.updatePage('pageTeacher', pageNumber, pageSize,condition,filter,sort);
     return dispatch => {
         const url = '/api/teacher/page/' + page.pageNumber + '/' + page.pageSize;
-        T.get(url, { condition }, data => {
+        T.get(url, { condition:page.pageCondition,filter:page.filter,sort:page.sort }, data => {
             if (data.error) {
                 T.notify('Lấy danh sách giáo viên bị lỗi!', 'danger');
                 console.error('GET: ' + url + '. ' + data.error);
@@ -300,6 +309,8 @@ export const ajaxSelectTeacherByCourseType = (courseType,nghiViec) => T.createAj
 
 export const ajaxSelectTeacher = (condition) => T.createAjaxAdapter(
     '/api/teacher/page/1/20?',
-    params => ({condition:{...condition,searchText:params.term}}),
+    params => {
+        return {condition:{...condition,searchText:params.term}};
+    },
     response => response && response.page && response.page.list ? response.page.list.map(item => ({ id: item._id, text: `${item.lastname} ${item.firstname} ${item.maGiaoVien ? '(' + item.maGiaoVien + ')' : ''}` })) : []
 );

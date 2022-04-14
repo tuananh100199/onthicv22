@@ -26,7 +26,9 @@ module.exports = (app) => {
     });
 
     app.get('/api/course-type/all', (req, res) => {//mobile
-        app.model.courseType.getAll((error, list) => res.send({ error, list }));
+        let searchText = req.query.searchText||'',pageCondition={};
+        pageCondition.title = new RegExp(searchText, 'i');
+        app.model.courseType.getAll(pageCondition,(error, list) => res.send({ error, list }));
     });
 
     app.get('/api/course-type', (req, res) => {

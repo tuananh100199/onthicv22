@@ -6,7 +6,7 @@ import Editor from 'view/component/CkEditor4';
 import Datetime from 'react-datetime';
 import InputMask from 'react-input-mask';
 import NumberFormat from 'react-number-format';
-import Dropdown from 'view/component/Dropdown';
+import {DropdownSelectMulti,DropdownSearch} from 'view/component/DropdownFilter';
 import 'react-datetime/css/react-datetime.css';
 
 // Table components ---------------------------------------------------------------------------------------------------
@@ -81,7 +81,7 @@ export class TableCell extends React.Component { // type = number | date | link 
     }
 }
 
-export function renderTable({ style = {},isFilterDropdown=false, className = '', getDataSource = () => null, loadingText = 'Đang tải...', emptyTable = 'Chưa có dữ liệu!', stickyHead = false,
+export function renderTable({ style = {},autoDisplay=false, className = '', getDataSource = () => null, loadingText = 'Đang tải...', emptyTable = 'Chưa có dữ liệu!', stickyHead = false,
     renderHead = () => null, renderRow = () => null, header = 'thead-dark' }) {
     const list = getDataSource();
     if (list == null) {
@@ -94,7 +94,7 @@ export function renderTable({ style = {},isFilterDropdown=false, className = '',
                 </div>
                 <h3 className='l-text'>{loadingText}</h3>
             </div>);
-    } else if (list.length || isFilterDropdown) {
+    } else if (list.length || autoDisplay) {
         const table = (
             <table className={'table table-hover table-bordered table-responsive ' + className} style={{ margin: 0, ...style }}>
                 <thead className={header}>{renderHead()}</thead>
@@ -114,18 +114,77 @@ export function renderTable({ style = {},isFilterDropdown=false, className = '',
     }
 }
 
-export class TableHeadCell extends React.Component {
+export class TableHead extends React.Component {
     state = {filterData:{},sortData:{}}
+    // sort :{nameColumn:value}, value:1,-1
+    onFilterChange = filter =>this.setState(prevState=>({filterData:{...prevState.filterData,...filter}}),()=>this.props.getPage && this.props.getPage(undefined,undefined,undefined,this.state.filterData))
+
+    onRemoveFilter = name=>{
+        this.setState(prevState=>{
+            let filterData = prevState.filterData;
+            delete filterData[name];
+            return {filterData};
+        },()=>this.props.getPage && this.props.getPage(undefined,undefined,undefined,this.state.filterData));
+    }
+
+    onSortChange = name =>{
+        let sortData={};
+        if(!this.state.sortData[name]){
+            sortData={[name]:1};
+        }else if(this.state.sortData[name]==1){
+            sortData={[name]:-1};
+        }
+        this.setState({sortData},()=> this.props.getPage && this.props.getPage(undefined,undefined,undefined,undefined,sortData));
+    }
+
+    childrenWithProps = ()=>{
+        return React.Children.map(this.props.children, child => {
+        // Checking isValidElement is the safe way and avoids a typescript
+        // error too.
+        if (React.isValidElement(child)) {
+            if(child.type == TableHeadCell){
+                // map props for children.
+                return React.cloneElement(child, { onFilterChange:this.onFilterChange,onRemoveFilter:this.onRemoveFilter,onSortChange:this.onSortChange,sortdata:this.state.sortData });
+            }else{
+                return child;
+            }
+        }
+        return child;
+        });
+    };
+
     render() {
-        // const filter = [{id:...,text:...}]
-        let { content = '', className = '', style = {}, display = true, rowSpan = 1,filter=null,onChange=null,nowrap='false',allowClear=false } = this.props;
-        const filterDisplay = filter && filter.length?(<>
-            <Dropdown items={filter} onSelected={e => this.setState({isSeletedValue:true},()=>onChange(e ?e.id: null)) } allowClear={allowClear} menuClassName='dropdown-menu-right' />
-            
-        </>) :null;
+        return <tr>{this.childrenWithProps()}</tr>
+        ;
+    }
+}
+export class TableHeadCell extends React.Component {
+    state = {}
+
+    render() {
+        // filterData = [{id:...,text:...}]
+        // Buộc phải truyền name vào nếu muốn sử dụng filter và sort, còn nếu không dùng thì không truyền cx đc.
+        let { content, className = '', style = {},menuStyle={}, display = true, rowSpan = 1,filterData=null,nowrap='false',allowClear=true,name='',filter='',sort=false } = this.props;
+
+        const {onFilterChange,onRemoveFilter,onSortChange, sortdata={}} = this.props;// function control filter,sort from TableHead
+        let filterDisplay;
+        if(filter=='select'){
+            filterDisplay = <DropdownSelectMulti items={filterData} allowClear={allowClear} menuStyle={menuStyle}
+                onSelected={value =>value ? onFilterChange({[name]:value}):onRemoveFilter(name)}/>;
+        }else if(filter=='search'){
+            //TODO: Vỹ: Làm component này
+            filterDisplay = <DropdownSearch menuStyle={menuStyle} onSelected={value =>value ? onFilterChange({[name]:value}):onRemoveFilter(name)}/>;
+        } else{
+            filterDisplay=null;
+        }
         return display?<th className={className} style={{ ...style }} nowrap={nowrap} rowSpan={rowSpan}>
-            <div className='d-flex align-items-center'>
-                <span className='mr-2'>{content}</span> {filterDisplay}
+            <div className='d-flex justify-content-between'>
+            {/* {sort?<a >{sortData[name]?(sortData[name]==1?'up':'down'):'none'}</a>:null}  */}
+            {sort?<a href='#' className='d-flex align-items-center' onClick={(e)=>e.preventDefault()||onSortChange(name)}>
+                <i style={{color:sortdata[name]?'#1488db':'#fff'}} 
+            className={`mr-2 fa ${sortdata[name]?(sortdata[name]==1?'fa-sort-alpha-asc':'fa-sort-alpha-desc'):'fa-sort'}`} aria-hidden="true"></i>
+            </a> :null}
+            <div className='mr-2'>{content||this.props.children}</div> {filterDisplay}
             </div>
             </th>:null;
     }

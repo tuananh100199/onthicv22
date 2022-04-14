@@ -371,6 +371,10 @@ export function downloadFailPassStudentFile() {
     T.download(T.url('/api/student/download-fail-pass'));
 }
 
+export function exportPreStudent() {
+    T.download(T.url('/api/pre-student/export'));
+}
+
 // User API -----------------------------------------------------------------------------------------------------------
 export function getStudentByUser(condition, done) {
     return () => {

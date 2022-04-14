@@ -23,6 +23,7 @@ module.exports = (app) => {
         identityIssuedBy: String,                                       // Nơi cấp CMND, CCCD
         identityDate: Date,                                             // Ngày cấp CMND, CCCD
         teacherType: { type: app.db.Schema.ObjectId, ref: 'Category' },
+        trinhDoVanHoa:String,
     // Trình độ và bằng cấp.        
         trinhDoChuyenMon:{
             trinhDo:String,
@@ -98,26 +99,30 @@ module.exports = (app) => {
 
         getAll: (condition, done) => typeof condition == 'function' ?
         model.find({}).populate('user', '-password').populate('division', ' _id title isOutside')
-        .populate('chungChiSuPham','_id title').populate('courseTypes','_id title').populate('courses','_id name').populate('teacherType','_id title')
+        .populate('contract.category').populate('chungChiSuPham','_id title').populate('giayPhepLaiXe.category','_id title')
+        .populate('courseTypes','_id title').populate('courses','_id name').populate('teacherType','_id title')
         .exec(condition) :
-        model.find(condition).populate('user', '-password').populate('division', ' _id title isOutside')
+        model.find(condition).populate('user', '-password').populate('division', ' _id title isOutside').populate('contract.category','_id title')
         .populate('chungChiSuPham','_id title').populate('courseTypes','_id title').populate('courses','_id name').populate('teacherType','_id title')
-        .exec(done),
+        .populate('giayPhepLaiXe.category','_id title').exec(done),
 
         get: (condition, done) =>(typeof condition == 'object' ? model.findOne(condition) : model.findById(condition))
             .populate('user', '-password').populate('division', ' _id title isOutside')
             .populate('chungChiSuPham','_id title').populate('courseTypes','_id title').populate('courses','_id name').populate('teacherType','_id title')
             .exec(done),
 
-        getPage: (pageNumber, pageSize, condition, done) => model.countDocuments(condition, (error, totalItem) => {
+        getPage: (pageNumber, pageSize, condition,sort, done) => model.countDocuments(condition, (error, totalItem) => {
             if (error) {
                 done(error);
             } else {
+                if(typeof sort =='function'){
+                    done=sort;
+                    sort=null;
+                }
                 let result = { totalItem, pageSize, pageTotal: Math.ceil(totalItem / pageSize) };
                 result.pageNumber = pageNumber === -1 ? result.pageTotal : Math.min(pageNumber, result.pageTotal);
                 const skipNumber = (result.pageNumber > 0 ? result.pageNumber - 1 : 0) * result.pageSize;
-
-                model.find(condition).sort({department:1,lastname: 1 }).skip(skipNumber).limit(result.pageSize)
+                model.find(condition).sort(sort ? sort:{ firstname: 1 }).skip(skipNumber).limit(result.pageSize)
                 .populate('user', '-password').populate('division', '_id title').populate('chungChiSuPham','_id title')
                 .populate('courseTypes','_id title').populate('courses','_id name').populate('teacherType','_id title')
                 .exec((error, items) => {

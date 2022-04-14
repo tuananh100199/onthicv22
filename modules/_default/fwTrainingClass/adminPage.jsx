@@ -49,7 +49,6 @@ class TrainingClassPage extends AdminPage {
         T.ready();
         this.props.getTrainingClassPage();
         this.props.getCategoryAll('gplx', null, (items) =>{
-            console.log('gplx: ',items);
             this.setState({ gplx: (items || []).map(item => ({ id: item._id, text: item.title })) });
         });
     }

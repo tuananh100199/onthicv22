@@ -28,7 +28,7 @@ module.exports = (app) => {
 
     app.permission.add(
         { name: 'student:read' }, { name: 'student:write' }, { name: 'student:delete', menu }, { name: 'student:import' }, { name: 'student: fail', menu: menuFailStudent },//TODO: Thầy TÙNG
-        { name: 'pre-student:read', menu }, { name: 'pre-student:write' }, { name: 'pre-student:delete' }, { name: 'pre-student:import' },
+        { name: 'pre-student:read', menu }, { name: 'pre-student:write' }, { name: 'pre-student:delete' }, { name: 'pre-student:import' }, { name: 'pre-student:export' },
         { name: 'debt:read', menu: menuDebt }, { name: 'debt:write' }, { name: 'debt:delete' },
         { name: 'activeCourse:read', menu: menuActiveCourse }, { name: 'activeCourse:write' }, { name: 'activeCourse:delete' },
     );
@@ -735,6 +735,101 @@ module.exports = (app) => {
         });
     });
 
+    app.get('/api/pre-student/export', app.permission.check('pre-student:export'), (req, res) => {
+        new Promise((resolve,reject)=>{
+            app.model.course.getAll({isDefault:true},(error,defaultCourses)=>error?reject(error):resolve(defaultCourses));
+        }).then(defaultCourses=> new Promise((resolve,reject)=>{// get student
+            const defaultIds = defaultCourses.map(item=>item._id.toString());
+            app.model.student.getAll({course:{['$in']:defaultIds}},(error,students)=>error?reject(error):resolve(students));
+        })).then(list=> {// print report
+            const workbook = app.excel.create(), worksheet = workbook.addWorksheet('Ứng viên');
+            const cells = [
+                { cell: 'A1', value: 'STT', bold: true, border: '1234' },
+                { cell: 'B1', value: 'họ', bold: true, border: '1234' },
+                { cell: 'C1', value: 'tên', bold: true, border: '1234' },
+                { cell: 'D1', value: 'email', bold: true, border: '1234' },
+                { cell: 'E1', value: 'Số điện thoại', bold: true, border: '1234' },
+                { cell: 'F1', value: 'Giới tính', bold: true, border: '1234' },
+                { cell: 'G1', value: 'Ngày sinh', bold: true, border: '1234' },
+                { cell: 'H1', value: 'Quốc tịch', bold: true, border: '1234' },
+                { cell: 'I1', value: 'Nơi cư trú', bold: true, border: '1234' },
+                { cell: 'J1', value: 'Nơi đăng ký hộ khẩu thường trú', bold: true, border: '1234' },
+                { cell: 'K1', value: 'Số CMND,CCCD', bold: true, border: '1234' },
+                { cell: 'L1', value: 'Nơi cấp CMND,CCCD', bold: true, border: '1234' },
+                { cell: 'M1', value: 'Ngày cấp CMND,CCCD', bold: true, border: '1234' },
+                { cell: 'N1', value: 'Bản sao CMND,CCCD', bold: true, border: '1234' },
+                { cell: 'O1', value: 'Số GPLX 2 bánh', bold: true, border: '1234' },
+                { cell: 'P1', value: 'Ngày trúng tuyển GPLX 2 bánh', bold: true, border: '1234' },
+                { cell: 'Q1', value: 'Nơi cấp GPLX 2 bánh', bold: true, border: '1234' },
+                { cell: 'R1', value: 'Bản sao bằng lái A1', bold: true, border: '1234' },
+                { cell: 'S1', value: 'Giấy khám sức khỏe', bold: true, border: '1234' },
+                { cell: 'T1', value: 'Ngày khám sức khỏe', bold: true, border: '1234' },
+                { cell: 'U1', value: 'Hình thẻ 3x4', bold: true, border: '1234' },
+                { cell: 'V1', value: 'Hình chụp trực tiếp', bold: true, border: '1234' },
+                { cell: 'W1', value: 'Số CMND,CCCD của cố vấn học tập', bold: true, border: '1234' },
+                { cell: 'X1', value: 'Tên cố vấn học tập', bold: true, border: '1234' },
+                { cell: 'Y1', value: 'Đơn', bold: true, border: '1234' },
+            ];
+            worksheet.columns = [
+                { key: 'idx', header: 'STT', width: 10  },
+                { key: 'lastname', header: 'họ', width: 20  },
+                { key: 'firstname', header: 'tên', width: 10  },
+                { key: 'email', header: 'email', width: 15  },
+                { key: 'phoneNumber', header: 'Số điện thoại', width: 15 },
+                { key: 'sex', header: 'Giới tính', width: 10 },
+                { key: 'birthday', header: 'Ngày sinh', width: 15 },
+                { key: 'nationality', header: 'Quốc tịch', width: 15 },
+                { key: 'residence', header: 'Nơi cư trú', width: 25 },
+                { key: 'regularResidence', header: 'Nơi đăng ký hộ khẩu thường trú', width: 25  },
+                { key: 'identityCard', header: 'Số CMND,CCCD', width: 15 },
+                { key: 'identityIssuedBy', header: 'Nơi cấp CMND,CCCD', width: 25  },
+                { key: 'identityDate', header: 'Ngày cấp CMND,CCCD', width: 15  },
+                { key: 'isIdentityCard', header: 'Bản sao CMND,CCCD', width: 20  },
+                { key: 'giayPhepLaiXe2BanhSo', header: 'Số GPLX 2 bánh', width: 20  },
+                { key: 'giayPhepLaiXe2BanhNgay', header: 'Ngày trúng tuyển GPLX 2 bánh', width: 25  },
+                { key: 'giayPhepLaiXe2BanhNoiCap', header: 'Nơi cấp GPLX 2 bánh', width: 20  },
+                { key: 'isBangLaiA1', header: 'Bản sao bằng lái A1', width: 20  },
+                { key: 'giayKhamSucKhoe', header: 'Giấy khám sức khỏe', width: 20  },
+                { key: 'giayKhamSucKhoeNgayKham', header: 'Ngày khám sức khỏe', width: 20 },
+                { key: 'hinhThe3x4', header: 'Hình thẻ 3x4', width: 20 },
+                { key: 'hinhChupTrucTiep', header: 'Hình chụp trực tiếp', width: 20 },
+                { key: 'lecturerIdentityCard', header: 'Số CMND,CCCD của cố vấn học tập', width: 20 },
+                { key: 'lecturerName', header: 'Tên cố vấn học tập', width: 20 },
+                { key: 'isDon', header: 'Đơn', width: 10 },
+            ];
+            list.forEach((student, index) => {
+                worksheet.addRow({
+                    idx: index + 1,
+                    lastname:student.lastname,
+                    firstname:student.firstname,
+                    email:student.user?student.user.email:'',
+                    phoneNumber: student.user?student.user.phoneNumber:'',
+                    sex: student.sex,
+                    birthday: student.birthday,
+                    nationality: student.nationality,
+                    residence: student.residence,
+                    regularResidence: student.regularResidence,
+                    identityCard: student.identityCard,
+                    identityIssuedBy: student.identityIssuedBy,
+                    identityDate: student.identityDate,
+                    isIdentityCard: student.isIdentityCard?'x':'',
+                    giayPhepLaiXe2BanhSo: student.giayPhepLaiXe2BanhSo,
+                    giayPhepLaiXe2BanhNgay: student.giayPhepLaiXe2BanhNgay,
+                    giayPhepLaiXe2BanhNoiCap: student.giayPhepLaiXe2BanhNoiCap,
+                    isBangLaiA1: student.isBangLaiA1?'x':'',
+                    giayKhamSucKhoe: student.giayKhamSucKhoe?'x':'',
+                    giayKhamSucKhoeNgayKham: student.giayKhamSucKhoeNgayKham,
+                    hinhThe3x4: student.hinhThe3x4?'x':'',
+                    hinhChupTrucTiep: student.hinhChupTrucTiep?'x':'',
+                    lecturerIdentityCard: student.lecturerIdentityCard,
+                    lecturerName: student.lecturerName,
+                    isDon: student.isDon?'x':'',
+                });
+            });
+            app.excel.write(worksheet, cells);
+            app.excel.attachment(workbook, res, 'DANH_SACH_UNG_VIEN.xlsx');
+        }).catch(error=>console.log(error)||res.send({error}));
+    });
     app.get('/api/student/phieu-thu/export', app.permission.check('user:login'), (req, res) => {
         const {userId, billId, feeText} = req.query;
         app.model.student.get({ _id : userId}, (error, student) => {
@@ -750,7 +845,7 @@ module.exports = (app) => {
                         fee: lichSu.fee,
                         feeText: feeText.charAt(0).toUpperCase() + feeText.slice(1) + ' Việt Nam Đồng',
                         reason: 'Nộp học phí chính thức',
-                        division: division.title
+                        division:division? division.title :''
                     };     
                     app.docx.generateFile('/document/Phieu_Thu.docx', data, (error, buf) => {
                         res.send({ error: error, buf: buf });
@@ -820,31 +915,6 @@ module.exports = (app) => {
                                 return values.length >= 10 ? new Date(values.slice(6, 10), values.slice(3, 5) - 1, values.slice(0, 2)) : null;
                             };
                             const email = values[4] && values[4] != undefined ? values[4] : '';
-                            // data.push({
-                            //     id: index - 1,
-                            //     lastname: values[2],
-                            //     firstname: values[3],
-                            //     email: email.text || email,
-                            //     phoneNumber: values[5],
-                            //     sex: values[6] && values[6].toLowerCase().trim() == 'nam' ? 'male' : 'female',
-                            //     birthday: stringToDate(values[7]),
-                            //     nationality: values[8],
-                            //     residence: values[9],
-                            //     regularResidence: values[10],
-                            //     identityCard: values[11],
-                            //     identityIssuedBy: values[12],
-                            //     identityDate: stringToDate(values[13]),
-                            //     giayPhepLaiXe2BanhSo: values[14],
-                            //     giayPhepLaiXe2BanhNgay: stringToDate(values[15]),
-                            //     giayPhepLaiXe2BanhNoiCap: values[16],
-                            //     giayKhamSucKhoe: values[17] && values[17].toLowerCase().trim() == 'x' ? true : false,
-                            //     giayKhamSucKhoeNgayKham: values[17] && values[17].toLowerCase().trim() == 'x' ? stringToDate(values[18]) : null,
-                            //     hinhThe3x4: values[19] && values[19].toLowerCase().trim() == 'x' ? true : false,
-                            //     hinhChupTrucTiep: values[20] && values[20].toLowerCase().trim() == 'x' ? true : false,
-                            //     lecturerIdentityCard: values[21],
-                            //     lecturerName: values[22],
-                            //     hocPhiPhaiDong: values[23],
-                            // });
                             data.push({
                                 id: index - 1,
                                 lastname: values[2],

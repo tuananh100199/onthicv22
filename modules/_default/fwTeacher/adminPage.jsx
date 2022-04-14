@@ -1,13 +1,13 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { getTeacherPage,createTeacher,updateTeacher,deleteTeacher } from './redux';
-import { AdminPage, AdminModal,FormDatePicker,FormSelect, FormTextBox, TableCell, renderTable, FormRichTextBox, FormCheckbox } from 'view/component/AdminPage';
+import { AdminPage, AdminModal,FormDatePicker,FormSelect, FormTextBox, TableCell, renderTable, FormRichTextBox, FormCheckbox, TableHead,TableHeadCell } from 'view/component/AdminPage';
 import Pagination from 'view/component/Pagination';
 import { ajaxSelectDivision,getDivisionAll } from 'modules/mdDaoTao/fwDivision/redux';
 import { Link } from 'react-router-dom';
 import { getCategoryAll } from 'modules/_default/fwCategory/redux';
 import { ajaxSelectCourseType } from 'modules/mdDaoTao/fwCourseType/redux';
-import {ajaxSelectCourseTeacher} from 'modules/mdDaoTao/fwCourse/redux';
+import {getCourseAll} from 'modules/mdDaoTao/fwCourse/redux';
 class TeacherModal extends AdminModal {
     state = {};
     componentDidMount() {
@@ -116,12 +116,18 @@ class AdminTeacherPage extends AdminPage {
     componentDidMount() {
         T.ready(() => {
             T.showSearchBox();
-            this.props.getTeacherPage(1);
+            this.props.getTeacherPage(1,null,{},{},{});
             this.props.getCategoryAll('teacher-certification', null, (items) =>{
                 this.setState({ chungChiSuPhams: (items || []).map(item => ({ id: item._id, text: item.title })) });
             });
 
-            this.itemCourse.value({id:'all',text:'Tất cả khóa học'});
+            this.props.getCourseAll({isDefault:false},list=>{
+                let courses = [{id:'null',text:'Chưa có'}];
+                list.forEach(course=>courses.push({id:course._id,text:course.name}));
+                this.setState({courses});
+            });
+
+            // this.itemCourse.value({id:'all',text:'Tất cả khóa học'});
             // this.props.
             T.onSearch = (searchText) =>{
                 this.props.getTeacherPage(1,undefined,{searchText},()=>{
@@ -131,14 +137,19 @@ class AdminTeacherPage extends AdminPage {
         });
     }
 
-    onSearch = ({ pageNumber, pageSize, searchText,course=this.itemCourse.value() }, done) => {
+    onSearch = ({ pageNumber, pageSize, searchText }, done) => {
         if (searchText == undefined) searchText = this.state.searchText;
         let condition = { searchText };
-        if(course && course!='all') condition.course=course;
-        console.log('condition: ',condition);
+        // if(course && course!='all') condition.course=course;
         this.props.getTeacherPage(pageNumber,pageSize,condition,page=>{
             done && done(page);
             this.setState({searchText});
+        });
+    }
+
+    handleChangeFilter = filterCondition=>{
+        this.onSearch({filterCondition},()=>{
+            this.setState({filterCondition});
         });
     }
 
@@ -157,19 +168,21 @@ class AdminTeacherPage extends AdminPage {
         const table = renderTable({
             getDataSource: () => list,
             stickyHead:true,
+            autoDisplay:true,
             renderHead: () => (
-                <tr>
-                    <th style={{ width: 'auto', textAlign: 'center' }}>#</th>
-                    <th style={{ width: 'auto' }} nowrap='true'>Mã GV</th>
-                    <th style={{ width: '100%' }}>Họ tên</th>
-                    <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Thông tin liên lạc</th>
-                    <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Ngày sinh</th>
-                    <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Cơ sở đào tạo</th>
-                    <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Loại giáo viên</th>
-                    <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Loại khóa học</th> 
-                    <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Khóa học đang dạy</th> 
-                    <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Thao tác</th>
-                </tr>),
+                <TableHead getPage={this.props.getTeacherPage}>
+                    <TableHeadCell style={{ width: 'auto', textAlign: 'center' }}>#</TableHeadCell>
+                    <TableHeadCell name='maGiaoVien' sort={true} style={{ width: 'auto', textAlign: 'center' }} content='Mã giáo viên' nowrap='true'  filter='search'/> 
+                    <TableHeadCell sort={true} style={{ width: '100%' }} content='Họ tên' nowrap='true' name='firstname' filter='search'/>
+                    <TableHeadCell style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Thông tin liên lạc</TableHeadCell>
+                    <TableHeadCell name='birthday' sort={true} style={{ width: 'auto', textAlign: 'center' }} content='Ngày sinh' nowrap='true'/> 
+                    <TableHeadCell style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Cơ sở đào tạo</TableHeadCell>
+                    <TableHeadCell style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Loại giáo viên</TableHeadCell>
+                    <TableHeadCell name='courseTypes' filter='select' filterData = {ajaxSelectCourseType} style={{ width: 'auto', textAlign: 'center' }} nowrap='true' content='Loại khóa học' /> 
+                    <TableHeadCell name='courses' style={{ width: 'auto', textAlign: 'center' }} menuStyle={{width:200}} filter='select' filterData = {this.state.courses}>Khóa học đang dạy</TableHeadCell>
+                    <TableHeadCell style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Thao tác</TableHeadCell>
+                </TableHead>
+                ),
             renderRow: (item, index) =>{
                 return (
                     <tr key={index}>
@@ -181,9 +194,7 @@ class AdminTeacherPage extends AdminPage {
                         <TableCell  style={{whiteSpace:'nowrap'}} content={item.division? item.division.title:''} />
                         <TableCell  content={item.dayLyThuyet?'GV lý thuyết':'GV thực hành'} />
                         <TableCell  content={item.courseTypes && item.courseTypes.length ? item.courseTypes.reduce((result,item)=> result+(result!=''?(', '+item.title):item.title),''):'chưa có'} />
-                        {/* <TableCell  content={item.courses && item.courses.length ? item.courses.reduce((result,item)=> result+(result!=''?('\n'+item.name):item.name),''):'chưa có'} /> */}
                         <TableCell  content={item.courses && item.courses.length ? this.renderListCourse(item.courses):'chưa có'} />
-                        
                         <TableCell type='buttons' content={item} permission={permission} onEdit={'/user/teacher/' + item._id} onDelete={this.delete}>
                             <Link className='btn btn-warning' to={`/user/manage-lecturer/${item.user._id}/rating`}>
                                 <i className="fa fa-star" aria-hidden="true"></i>
@@ -199,9 +210,9 @@ class AdminTeacherPage extends AdminPage {
             breadcrumb: ['Giáo viên'],
             content: <>
                 <div className='tile'>
-                    <div className='row'>
+                    {/* <div className='row'>
                         <FormSelect ref={e => this.itemCourse = e} className='col-md-4' label='Khóa học đang dạy' data={ajaxSelectCourseTeacher} onChange={() => this.onSearch({})} readOnly={!permission.write} />
-                    </div>    
+                    </div>     */}
                     {table}
                 </div>
                 <Pagination name='pageTeacher' pageNumber={pageNumber} pageSize={pageSize} pageTotal={pageTotal} totalItem={totalItem}
@@ -215,5 +226,5 @@ class AdminTeacherPage extends AdminPage {
 }
 
 const mapStateToProps = state => ({ system: state.system, teacher: state.enrollment.teacher });
-const mapActionsToProps = { getTeacherPage,createTeacher,updateTeacher,deleteTeacher,getDivisionAll,getCategoryAll };
+const mapActionsToProps = { getTeacherPage,createTeacher,updateTeacher,deleteTeacher,getDivisionAll,getCategoryAll,getCourseAll };
 export default connect(mapStateToProps, mapActionsToProps)(AdminTeacherPage);

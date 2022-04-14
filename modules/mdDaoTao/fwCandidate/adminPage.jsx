@@ -196,24 +196,24 @@ class CandidateModal extends AdminModal {
         title: 'Đăng ký tư vấn',
         size: 'large',
         body: <div className='row'>
-            <FormTextBox className='col-md-6' ref={e => this.itemLastname = e} label='Họ' required/>
-            <FormTextBox className='col-md-6' ref={e => this.itemFirstname = e} label='Tên' required/>
-            <FormTextBox className='col-md-6' ref={e => this.itemEmail = e} type='email' label='Email' />
-            <FormTextBox className='col-md-6' ref={e => this.itemPhoneNumber = e} type='phone' label='Số điện thoại' required/>
-            <FormSelect className='col-md-6' ref={e => this.courseType = e} label='Loại khóa học' data={ajaxSelectCourseType} onChange = {this.onChangeCourseType} required/>
-            <FormSelect className='col-md-6' ref={e => this.states = e} label='Trạng thái' data={this.props.states} />
-            <FormSelect className='col-md-6' ref={e => this.division = e} label='Cơ sở đào tạo' data={ajaxSelectDivision} required/>
-            <FormTextBox className='col-md-6' ref={e => this.itemIdentityCard = e} label='CMND/CCCD' required/>
-            <FormDatePicker className='col-md-6' ref={e => this.itemBirthday = e} label='Ngày sinh' type='date-mask' required/>
-            <FormTextBox className='col-md-6' ref={e => this.itemPlanCourse = e} label='Khóa dự kiến' required/>
-            <FormCheckbox className='col-md-2' ref={e => this.itemIsDon = e} label='Đơn' readOnly={this.props.readOnly} />
-            <FormCheckbox className='col-md-2' ref={e => this.itemIsHinh = e} label='Hình' readOnly={this.props.readOnly} />
-            <FormCheckbox className='col-md-2' ref={e => this.itemIsGiayKhamSucKhoe = e} label='GKSK' readOnly={this.props.readOnly} />
+            <FormTextBox className='col-md-4' ref={e => this.itemLastname = e} label='Họ' required/>
+            <FormTextBox className='col-md-4' ref={e => this.itemFirstname = e} label='Tên' required/>
+            <FormTextBox className='col-md-4' ref={e => this.itemEmail = e} type='email' label='Email' />
+            <FormTextBox className='col-md-4' ref={e => this.itemPhoneNumber = e} type='phone' label='Số điện thoại' required/>
+            <FormSelect className='col-md-4' ref={e => this.courseType = e} label='Loại khóa học' data={ajaxSelectCourseType} onChange = {this.onChangeCourseType} required/>
+            <FormSelect className='col-md-4' ref={e => this.states = e} label='Trạng thái' data={this.props.states} />
+            <FormSelect className='col-md-4' ref={e => this.division = e} label='Cơ sở đào tạo' data={ajaxSelectDivision} required/>
+            <FormTextBox className='col-md-4' ref={e => this.itemIdentityCard = e} label='CMND/CCCD' required/>
+            <FormDatePicker className='col-md-4' ref={e => this.itemBirthday = e} label='Ngày sinh' type='date-mask' required/>
+            <FormTextBox className='col-md-4' ref={e => this.itemPlanCourse = e} label='Khóa dự kiến' required/>
+            <FormCheckbox className='col-md-3' ref={e => this.itemIsDon = e} label='Đơn' readOnly={this.props.readOnly} />
+            <FormCheckbox className='col-md-3' ref={e => this.itemIsHinh = e} label='Hình' readOnly={this.props.readOnly} />
+            <FormCheckbox className='col-md-3' ref={e => this.itemIsGiayKhamSucKhoe = e} label='GKSK' readOnly={this.props.readOnly} />
             <FormCheckbox className='col-md-3' ref={e => this.itemIsIdentityCard = e} label='CMND/CCCD' readOnly={this.props.readOnly} />
             <FormCheckbox className='col-md-3' ref={e => this.itemIsBangLaiA1 = e} label='Bằng lái A1' readOnly={this.props.readOnly} />
-            <FormSelect className='col-md-6' ref={e => this.itemCourseFee = e} label='Gói học phí' data={ajaxSelectCourseFeeByCourseType(this.state.courseId)} required/>
-            <FormSelect className='col-md-6' ref={e => this.itemDiscount = e} label='Giảm giá' data={ajaxSelectDiscount} />
-            <FormSelect className='col-md-6' ref={e => this.itemCoursePayment = e} label='Số lần thanh toán' data={ajaxSelectCoursePayment} required/>
+            <FormSelect className='col-md-4' ref={e => this.itemCourseFee = e} label='Gói học phí' data={ajaxSelectCourseFeeByCourseType(this.state.courseId)} required/>
+            <FormSelect className='col-md-4' ref={e => this.itemDiscount = e} label='Giảm giá' data={ajaxSelectDiscount} />
+            <FormSelect className='col-md-4' ref={e => this.itemCoursePayment = e} label='Số lần thanh toán' data={ajaxSelectCoursePayment} required/>
 
         </div>,
         buttons: this.props.permission.write ?

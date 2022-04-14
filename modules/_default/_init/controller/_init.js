@@ -165,6 +165,21 @@ module.exports = (app) => {
         );
     };
 
+    // handleFilterConditionDefault (default handle) ---------------------------------------------------------------------------
+    app.handleFilter = (filter,fields,done) => {
+        let condition = {};
+        fields.forEach(name=>{
+            if(filter[name]){
+                if(Array.isArray(filter[name])){
+                    condition[name]={$in:filter[name]};
+                }else{
+                    condition[name] = { $regex: `.*${filter[name]}.*`, $options: 'i' };
+                }
+            }
+        });
+        done && done(condition);
+    };
+
     // System state ---------------------------------------------------------------------------------------------------------------------------------
     app.state = {
         prefixKey: `${app.appName}:state:`,
