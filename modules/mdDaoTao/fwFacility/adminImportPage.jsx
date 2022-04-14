@@ -1,23 +1,22 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { getCategoryAll } from 'modules/_default/fwCategory/redux';
-import { importDevice } from './redux';
+import { importFacility } from './redux';
 import { ajaxSelectDivision } from 'modules/mdDaoTao/fwDivision/redux';
 // import { importPreStudent } from '../redux';
 import { Link } from 'react-router-dom';
 import { AdminPage, AdminModal, FormFileBox, FormTextBox, FormSelect, TableCell, renderTable } from 'view/component/AdminPage';
 
-class DeviceModal extends AdminModal {
+class FacilityModal extends AdminModal {
     state = {};
     componentDidMount() {
         $(document).ready(() => this.onShown(() => this.itemName.focus()));
     }
 
     onShow = (item) => {
-        console.log(item);
-        const { id, name, quantity  } = item || { id: null, type: {}, name:'' };
+        const { id, name, maxStudent  } = item || { id: null, type: {}, name:'' };
         this.itemName.value(name);
-        this.itemQuantity.value(quantity);
+        this.itemQuantity.value(maxStudent);
         this.setState({ id });
     }
 
@@ -26,7 +25,7 @@ class DeviceModal extends AdminModal {
             id: this.state.id,
             name: this.itemName.value(),
             status: 'dangSuDung',
-            quantity: this.itemQuantity.value(),
+            maxStudent: this.itemQuantity.value(),
         };
         if (data.name == '') {
             T.notify('Tên không được trống!', 'danger');
@@ -56,14 +55,14 @@ class ImportPage extends AdminPage {
     fileBox = React.createRef();
     state = { isFileBoxHide: false };
     componentDidMount() {
-        T.ready('/user/device');
-        this.props.getCategoryAll('device', null, (items) =>
+        T.ready('/user/facility');
+        this.props.getCategoryAll('facility', null, (items) =>
             this.setState({ type: (items || []).map(item => ({ id: item._id, text: item.title })) }));
     }
 
     onUploadSuccess = (data) => {
-        const deviceData = data.data;
-        this.setState({ data: deviceData, isFileBoxHide: true });
+        const facilityData = data.data;
+        this.setState({ data: facilityData, isFileBoxHide: true });
         this.itemDivision.value(null);
         this.itemType.value(null);
     }
@@ -71,6 +70,7 @@ class ImportPage extends AdminPage {
     showEditModal = (e, item) => e.preventDefault() || this.modal.show(item);
 
     edit = (changes) => {
+        console.log(changes);
         this.setState(prevState => ({
             data: prevState.data.map(data => data.id === changes.id ? changes : data)
         }));
@@ -90,11 +90,11 @@ class ImportPage extends AdminPage {
             T.notify('Chưa chọn loại thiết bị!', 'danger');
             this.itemType.focus();
         } else {
-            this.props.importDevice(this.state.data, this.itemDivision.value(), this.itemType.value(), data => {
+            this.props.importFacility(this.state.data, this.itemDivision.value(), this.itemType.value(), data => {
                 if (data.error) {
                     T.notify('Import thiết bị bị lỗi!', 'danger');
                 } else {
-                    this.props.history.push('/user/device');
+                    this.props.history.push('/user/facility');
                 }
             });
         }
@@ -105,7 +105,7 @@ class ImportPage extends AdminPage {
     }
 
     render() {
-        const permission = this.getUserPermission('device', ['read', 'write', 'delete', 'import']),
+        const permission = this.getUserPermission('facility', ['read', 'write', 'delete', 'import']),
             readOnly = !permission.write;
         const table = renderTable({
             getDataSource: () => this.state.data && this.state.data.length > 0 ? this.state.data : [],
@@ -120,7 +120,7 @@ class ImportPage extends AdminPage {
                 <tr key={index}>
                     <TableCell type='number' content={index + 1} />
                     <TableCell type='link' style={{ whiteSpace: 'nowrap' }} content={item.name} onClick={e => this.edit(e, item)} />
-                    <TableCell type='number' style={{ whiteSpace: 'nowrap', textAlign:'center' }} content={item.quantity} />
+                    <TableCell type='number' style={{ whiteSpace: 'nowrap', textAlign:'center' }} content={item.maxStudent} />
                     <TableCell type='buttons' content={item} permission={permission} onEdit={this.showEditModal} onDelete={this.delete} />
                 </tr >),
         });
@@ -128,11 +128,11 @@ class ImportPage extends AdminPage {
         const filebox = !this.state.isFileBoxHide && (
             <div className='tile'>
                 <h3 className='tile-title'>Import danh sách thiết bị</h3>
-                <FormFileBox ref={e => this.fileBox = e} uploadType='DeviceFile'
+                <FormFileBox ref={e => this.fileBox = e} uploadType='FacilityFile'
                     onSuccess={this.onUploadSuccess} readOnly={readOnly} />
                 <div className='tile-footer' style={{ textAlign: 'right' }}>
                     <button className='btn btn-primary' type='button'>
-                        <a href='/download/device.xlsx' style={{ textDecoration: 'none', color: 'white' }}><i className='fa-fw fa-lg fa fa-download' /> Tải xuống file mẫu</a>
+                        <a href='/download/facility.xlsx' style={{ textDecoration: 'none', color: 'white' }}><i className='fa-fw fa-lg fa fa-download' /> Tải xuống file mẫu</a>
                     </button>
                 </div>
             </div >
@@ -157,21 +157,21 @@ class ImportPage extends AdminPage {
                         </button>
                     </div>
                 </div>
-                <DeviceModal readOnly={!permission.write} ref={e => this.modal = e} edit={this.edit} />
+                <FacilityModal readOnly={!permission.write} ref={e => this.modal = e} edit={this.edit} />
             </div>
         );
         return this.renderPage({
             icon: 'fa fa-car',
             title: 'Nhập danh sách thiết bị bằng Excel',
-            breadcrumb: [<Link key={0} to='/user/device'>Quản lý thiết bị</Link>, 'Nhập danh sách xe bằng Excel'],
+            breadcrumb: [<Link key={0} to='/user/facility'>Quản lý thiết bị</Link>, 'Nhập danh sách xe bằng Excel'],
             content: <>
                 {filebox}
                 {this.state.data && this.state.data.length ? list : null}
             </>,
-            backRoute: '/user/device/manager',
+            backRoute: '/user/facility/manager',
         });
     }
 }
 const mapStateToProps = state => ({ system: state.system });
-const mapActionsToProps = { getCategoryAll, importDevice };
+const mapActionsToProps = { getCategoryAll, importFacility };
 export default connect(mapStateToProps, mapActionsToProps)(ImportPage);

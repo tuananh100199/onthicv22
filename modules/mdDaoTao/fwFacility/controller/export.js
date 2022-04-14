@@ -45,4 +45,72 @@ app.get('/api/facility/info/export/:filterKey/:type', app.permission.check('faci
     }
 });
 
+app.post('/api/facility/import', app.permission.check('facility:write'), (req, res) => {
+    let facilities = req.body.facilities;
+    let err = null;
+    if (facilities && facilities.length) {
+        const handleCreateFacility = (index = 0) => {
+            if (index == facilities.length) {
+                res.send({ error: err });
+            } else {
+                const facility = facilities[index];
+                facility.division = req.body.division;
+                facility.type = req.body.type;
+                app.model.facility.get({ name: facility.name }, (error, item) => {
+                    if (error) {
+                        err = error;
+                        handleCreateFacility(index + 1);
+                    } else if (!item) {
+                        facility.status = 'dangSuDung';
+                        app.model.facility.create(facility, (error) => {
+                            if (error) {
+                                err = error;
+                            }
+                            handleCreateFacility(index + 1);
+                        });
+                    } else {
+                        app.model.facility.update({ _id: item._id }, facility, () => {
+                            handleCreateFacility(index + 1);
+                        });
+                    }
+                });
+            }
+        };
+        handleCreateFacility();
+    } else {
+        res.send({ error: 'Danh sách thiết bị trống!' });
+    }
+});
+
+// Hook upload car excel---------------------------------------------------------------------------------------
+app.uploadHooks.add('uploadFacilityFile', (req, fields, files, params, done) => {
+    console.log(files & files.FacilityFile && files.FacilityFile.length);
+    if (files.FacilityFile && files.FacilityFile.length > 0) {
+        console.log('Hook: uploadFacilityFile => your facility file upload');
+        const srcPath = files.FacilityFile[0].path;
+        app.excel.readFile(srcPath, workbook => {
+            app.deleteFile(srcPath);
+            if (workbook) {
+                const worksheet = workbook.getWorksheet(1), data = [], totalRow = worksheet.lastRow.number;
+                const handleUpload = (index = 2) => {
+                    const values = worksheet.getRow(index).values;
+                    if (values.length == 0 || index == totalRow + 1) {
+                        done({ data });
+                    } else {
+                        data.push({
+                            id: index - 1,
+                            name: values[2],
+                            maxStudent: values[3],
+                        });
+                        handleUpload(index + 1);
+                    }
+                };
+                handleUpload();
+            } else {
+                done({ error: 'Error' });
+            }
+        });
+    }
+});
+
 };

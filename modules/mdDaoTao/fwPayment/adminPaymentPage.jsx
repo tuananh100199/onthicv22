@@ -1,8 +1,8 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { getPaymentPage } from './redux';
+import { getPaymentPage, exportBankBaoCao } from './redux';
 import Pagination from 'view/component/Pagination';
-import { AdminPage, AdminModal, TableCell, renderTable } from 'view/component/AdminPage';
+import { AdminPage, AdminModal, TableCell, renderTable, FormDatePicker, CirclePageButton } from 'view/component/AdminPage';
 
 class SmsModal extends AdminModal {
     onShow = ({sender, body, timeReceived}) => {
@@ -28,16 +28,23 @@ class PaymentPage extends AdminPage {
 
     componentDidMount() {
         T.ready('/user/payment');
-        // T.ready(() => T.showSearchBox());
         this.props.getPaymentPage(1, 50, undefined);
-        // T.onSearch = (searchText) => this.props.getPrePaymentPage(undefined, undefined, searchText ? { searchText } : null, () => {
-        //     this.setState({ searchText, isSearching: searchText != '' });
-        // });
+    }
+
+    handleFilterByDate = () => {
+        const dateStart = this.dateStartDate ? this.dateStartDate.value() : '';
+        const dateEnd = this.dateEndDate ? this.dateEndDate.value() : '';
+        if (dateStart > dateEnd) {
+            T.notify('Ngày bắt đầu phải nhỏ hơn ngày kết thúc !', 'danger');
+        } else {
+            this.props.getPaymentPage(1, 50, {dateStart, dateEnd}, data => {
+                this.setState({ isSearching: false, dateStart: dateStart, dateEnd: dateEnd, data});
+            });
+        }
     }
 
     render() {
-        // const permission = this.getUserPermission('-payment', ['read', 'write', 'delete', 'import']),
-        //     permissionUser = this.getUserPermission('user', ['read']);
+        const {dateStart, dateEnd} = this.state;
         let { pageNumber, pageSize, pageTotal, pageCondition, totalItem, list } = this.props.payment && this.props.payment.page ?
             this.props.payment.page : { pageNumber: 1, pageSize: 50, pageTotal: 1, pageCondition: {}, totalItem: 0, list: [] };
         const table = renderTable({
@@ -86,10 +93,29 @@ class PaymentPage extends AdminPage {
             title: 'Thu công nợ',
             breadcrumb: ['Thu công nợ'],
             content: <>
-                <div className='tile'>{table}</div>
+                <div className='tile'>
+                    <div className='row'>
+                        <div className='col-md-6'>
+                            <h3 className='tile-title'>Thống kê doanh thu theo ngày</h3>
+                            <div className='tile-body row'>
+                                <FormDatePicker ref={e => this.dateStartDate = e} label='Thời gian bắt đầu (dd/mm/yyyy)' className='col-md-5' type='date-mask' />
+                                <FormDatePicker ref={e => this.dateEndDate = e} label='Thời gian kết thúc (dd/mm/yyyy)' className='col-md-5' type='date-mask' />
+                                <div className='m-auto col-md-2'>
+                                    <button className='btn btn-success' style={{ marginTop: '11px' }} type='button' onClick={this.handleFilterByDate}>
+                                        <i className='fa fa-filter' /> Lọc
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                        
+                    {table}
+                </div>
                 <SmsModal ref={e => this.modal = e}/>
                 <Pagination name='adminPayment' pageCondition={pageCondition} pageNumber={pageNumber} pageSize={pageSize} pageTotal={pageTotal} totalItem={totalItem}
                     getPage={this.props.getPaymentPage} />
+                <CirclePageButton type='export' onClick={() => exportBankBaoCao(dateStart, dateEnd)} />
             </>
         });
     }

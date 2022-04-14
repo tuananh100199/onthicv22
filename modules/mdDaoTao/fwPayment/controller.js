@@ -1,6 +1,6 @@
 module.exports = app => {
     app.permission.add(
-        { name: 'payment:read', menu: { parentMenu: app.parentMenu.trainning, menus: {5000: { title: 'Thu công nợ', link: '/user/payment' }} } },
+        { name: 'payment:read', menu: { parentMenu: app.parentMenu.accountant, menus: {7001: { title: 'Thu công nợ', link: '/user/payment' }} } },
         { name: 'payment:write' },
         { name: 'payment:delete' },
     );
@@ -414,9 +414,56 @@ module.exports = app => {
             pageSize = parseInt(req.params.pageSize),
             condition = req.query.pageCondition || {};
         try {
-            app.model.payment.getPage(pageNumber, pageSize, condition, (error, page) => res.send({ error, page }));
+            if(condition.dateStart) {
+                const { dateStart, dateEnd } = condition;
+                app.model.payment.getPage(pageNumber, pageSize, { timeReceived: {$gte: dateStart, $lt: dateEnd}}, (error, page) => res.send({ error, page }));
+            } else app.model.payment.getPage(pageNumber, pageSize, condition, (error, page) => res.send({ error, page }));
         } catch (error) {
             res.send({ error });
         }
+    });
+    
+    app.get('/api/payment/export/:dateStart/:dateEnd', app.permission.check('payment:write'), (req, res) => {
+        const { dateStart, dateEnd } = req.params;
+        const sourcePromise =  app.excel.readFile(app.publicPath + '/document/TN09.xlsx');
+        const getPayment = new Promise((resolve,reject)=>{ 
+            app.model.payment.getPage(undefined, undefined, { timeReceived: {$gte: dateStart, $lt: dateEnd}}, (error, page) =>{
+                error?reject(error):resolve(page);
+            });
+        });
+        Promise.all([sourcePromise,getPayment]).then(([sourceWorkbook, page])=>{
+            let worksheet = sourceWorkbook.getWorksheet(1);
+            const list = page && page.list ? page.list : [];
+            for(let i = 0;i<list.length;i++){
+                const payment = list[i];
+                let item = [];
+                item.push(i+1);
+                item.push('BC');
+                item.push(payment.timeReceived);
+                item.push(payment.code);
+                item.push(payment.lastname + ' ' + payment.firstname);
+                item.push(payment.content);
+                item.push(payment.debitAccount);
+                item.push(payment.creditAccount);
+                item.push(payment.moneyAmount);
+                item.push(payment.debitObject);
+                item.push(payment.creditObject);
+                item.push('');
+                const maxCol = 12;
+                const row = 1;
+                const insertRow =worksheet.insertRow(row+i,item);
+                let j=1;
+                while(j<=maxCol){
+                    insertRow.getCell(j).border = {
+                        top: {style:'thin'},
+                        left: {style:'thin'},
+                        bottom: {style:'thin'},
+                        right: {style:'thin'}
+                      };
+                    j+=1;
+                }
+            }
+            app.excel.attachment(sourceWorkbook, res,'BAO CAO THU CONG NO.xlsx');
+        });
     });
 };

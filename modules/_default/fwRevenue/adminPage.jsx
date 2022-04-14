@@ -4,7 +4,7 @@ import { getRevenuePage } from './redux';
 import { Link } from 'react-router-dom';
 import { AdminPage,FormSelect, TableCell, renderTable } from 'view/component/AdminPage';
 import { ajaxSelectCourseByCourseType } from 'modules/mdDaoTao/fwCourse/redux';
-import { ajaxSelectCourseType, getCourseTypeAll } from 'modules/mdDaoTao/fwCourseType/redux';
+import { getCourseTypeAll } from 'modules/mdDaoTao/fwCourseType/redux';
 import Pagination from 'view/component/Pagination';
 
 const backRoute = '/user/revenue';
@@ -14,18 +14,17 @@ class RevenuePage extends AdminPage {
     componentDidMount() {
         T.ready('/user/revenue', () => {
             this.props.getCourseTypeAll(data => {
-                const courseTypes = data.map(item => ({ id: item._id, text: item.title }));
-                this.courseType.value(courseTypes[0]);
+                const courseTypes = [{id: 0, text:'Tất cả hạng đào tạo'}];
+                data.forEach(item => courseTypes.push({ id: item._id, text: item.title }));
+                this.setState({courseTypes}, () => this.courseType.value(0));
             });
-            this.props.getRevenuePage( 1 , 20 , {}, data => {
-                console.log(data);
-            });
+            this.props.getRevenuePage( 1 , 20 , {});
         });
     }
 
     onSearch = ({ pageNumber, pageSize, course = this.course.value() }, done) => {
         const courseTypeId = this.state.courseTypeId;
-        const condition = course == '0' ? {courseTypeId} : { course, courseTypeId };
+        const condition = course == '0' ? (courseTypeId == 0 ? {} :  {courseTypeId}) : { course, courseTypeId };
         this.props.getRevenuePage(pageNumber, pageSize, condition, () => {
             done && done();
         });
@@ -40,6 +39,7 @@ class RevenuePage extends AdminPage {
     render() {
         let { pageNumber, pageSize, pageTotal, pageCondition, totalItem, list } = this.props.revenue && this.props.revenue.page ?
             this.props.revenue.page : { pageNumber: 1, pageSize: 50, pageTotal: 1, pageCondition: {}, totalItem: 0, list: [] };
+        const courseTypes = this.state.courseTypes;
         const table = renderTable({
             getDataSource: () => list, stickyHead: true,
             renderHead: () => (
@@ -74,7 +74,7 @@ class RevenuePage extends AdminPage {
                     <div className='col-auto'>
                         <label className='col-form-label'>Loại khóa học: </label>
                     </div>
-                    <FormSelect ref={e => this.courseType = e} data={ajaxSelectCourseType} placeholder='Loại khóa học'
+                    <FormSelect ref={e => this.courseType = e} data={courseTypes} placeholder='Loại khóa học'
                         onChange={data => this.onChangeCourseType(data.id)} style={{ margin: 0, width: '200px' }} />
                     <div className='col-auto'>
                         <label className='col-form-label'>Khóa học: </label>

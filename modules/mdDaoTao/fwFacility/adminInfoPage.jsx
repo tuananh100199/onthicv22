@@ -55,7 +55,7 @@ class FacilityModal extends AdminModal {
     render = () => {
         const readOnly = this.props.readOnly;
         return this.renderModal({
-            title: 'Quản lý xe',
+            title: 'Quản lý cơ sở vật chất',
             size: 'large',
             body:
                 <div className='row'>
@@ -110,7 +110,7 @@ class FacilityPage extends AdminPage {
         isConfirm && this.props.deleteFacility(item));
 
     render() {
-        const permission = this.getUserPermission('facility', ['read', 'write', 'delete', 'export']);
+        const permission = this.getUserPermission('facility', ['read', 'write', 'delete', 'export', 'import']);
         const createType = this.state.types && this.state.types.filter(item => item.id != 0);
         const header = <>
             <label style={{ lineHeight: '40px', marginBottom: 0 }}>Loại cơ sở:</label>&nbsp;&nbsp;
@@ -156,7 +156,8 @@ class FacilityPage extends AdminPage {
                 <Pagination name='adminFacility' style={{ marginLeft: 60 }} pageCondition={pageCondition} pageNumber={pageNumber} pageSize={pageSize} pageTotal={pageTotal} totalItem={totalItem}
                     getPage={this.props.getFacilityPage} />
                 <FacilityModal readOnly={!permission.write} ref={e => this.modal = e} type={createType} create={this.props.createFacility} update={this.props.updateFacility} />
-                {permission.export ? <CirclePageButton type='export' style={{ right: '75px', backgroundColor: 'brown', borderColor: 'brown' }} onClick={() => exportInfoFacility(this.state.filterKey, this.state.type && this.state.type.id)} /> : null}
+                {permission.import ? <CirclePageButton type='import' style={{ right: '70px', backgroundColor: 'brown', borderColor: 'brown' }} onClick={() => this.props.history.push('/user/facility/manager/import')} /> : null}
+                {permission.export ? <CirclePageButton type='export' style={{ right: '130px', backgroundColor: 'brown', borderColor: 'brown' }} onClick={() => exportInfoFacility(this.state.filterKey, this.state.type && this.state.type.id)} /> : null}
             </>,
             backRoute: '/user/facility',
             onCreate: permission.write ? this.edit : null,

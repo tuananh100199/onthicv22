@@ -1,6 +1,6 @@
 module.exports = app => {
     app.permission.add(
-        { name: 'sms:read', menu: { parentMenu: app.parentMenu.trainning, menus: {5100: { title: 'SMS Banking', link: '/user/sms' }} } },
+        { name: 'sms:read', menu: { parentMenu: app.parentMenu.accountant, menus: {7009: { title: 'SMS Banking', link: '/user/sms' }} } },
         { name: 'sms:write' },
         { name: 'sms:delete' },
     );

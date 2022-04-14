@@ -31,3 +31,7 @@ export function getPaymentPage(pageNumber, pageSize, pageCondition, done) {
         }, error => console.error(error) || T.notify('Lấy danh sách thu công nợ bị lỗi!', 'danger'));
     };
 }
+
+export function exportBankBaoCao(dataStart, dateEnd) {
+    T.download(T.url(`/api/payment/export/${dataStart}/${dateEnd}`));
+}

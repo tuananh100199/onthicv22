@@ -10,6 +10,7 @@ module.exports = app => {
     app.get('/user/facility', app.permission.check('facility:read'), app.templates.admin);
     app.get('/user/facility/manager', app.permission.check('facility:read'), app.templates.admin);
     app.get('/user/facility/category', app.permission.check('facility:read'), app.templates.admin);
+    app.get('/user/facility/manager/import', app.permission.check('facility:read'), app.templates.admin);
 
     // APIs -----------------------------------------------------------------------------------------------------------------------------------------
     app.get('/api/facility/page/:pageNumber/:pageSize', app.permission.check('facility:read'), (req, res) => {

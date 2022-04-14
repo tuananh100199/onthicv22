@@ -88,7 +88,7 @@ export function createFacility(data, done) {
                 T.notify('Tạo thiết bị bị lỗi!', 'danger');
                 console.error('POST: ' + url + '.', data.error);
             } else {
-                T.notify('Cập nhật thông tin thiết bị thành công!', 'success');
+                T.notify('Tạo cơ sở vật chất thành công!', 'success');
                 dispatch(getFacilityPage(undefined,undefined,{status: 'dangSuDung'}));
                 done && done(data);
             }
@@ -125,6 +125,22 @@ export function deleteFacility(item) {
                 dispatch(getFacilityPage(undefined,undefined,{status: 'dangSuDung'}));
             }
         }, error => console.error(error) || T.notify('Xóa thông tin thiết bị bị lỗi!', 'danger'));
+    };
+}
+
+export function importFacility(facilities, division, type, done) {
+    return dispatch => {
+        const url = '/api/facility/import';
+        T.post(url, { facilities, division, type }, data => {
+            if (data.error) {
+                T.notify('Tạo cơ sở vật chất bị lỗi!', 'danger');
+                console.error(`POST: ${url}. ${data.error}`);
+            } else {
+                T.notify('Tạo cơ sở vật chất thành công!', 'success');
+                dispatch(getFacilityPage(undefined,undefined,{status: 'dangSuDung'}));
+                done && done(data);
+            }
+        }, error => console.error(error) || T.notify('Tạo cơ sở vật chất bị lỗi!', 'danger'));
     };
 }
 

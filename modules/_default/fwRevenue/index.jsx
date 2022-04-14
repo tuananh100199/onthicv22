@@ -21,5 +21,9 @@ export default {
             path: '/user/revenue/debt',
             component: Loadable({ loading: Loading, loader: () => import('./adminDebtTrackingPage') }),
         },
+        {
+            path: '/user/revenue/tracking',
+            component: Loadable({ loading: Loading, loader: () => import('./adminRevenueTrackingPage') }),
+        },
     ],
 };

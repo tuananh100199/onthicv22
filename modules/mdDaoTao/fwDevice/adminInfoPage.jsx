@@ -126,8 +126,9 @@ class DevicePage extends AdminPage {
                 <tr>
                     <th style={{ width: 'auto', textAlign: 'center' }}>#</th>
                     <th style={{ width: '100%' }} nowrap='true'>Tên thiết bị</th>
-                    <th style={{ width: '100%' }} nowrap='true'>Loại thiết bị</th>
-                    <th style={{ width: '100%' }} nowrap='true'>Số lượng</th>
+                    <th style={{ width: 'auto' }} nowrap='true'>Loại thiết bị</th>
+                    <th style={{ width: 'auto' }} nowrap='true'>Trạng thái</th>
+                    <th style={{ width: 'auto' }} nowrap='true'>Số lượng</th>
                     <th style={{ width: 'auto' }} nowrap='true'>Cơ sở</th>
                     <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Thao tác</th>
                 </tr>),
@@ -136,6 +137,7 @@ class DevicePage extends AdminPage {
                     <TableCell type='number' content={(pageNumber - 1) * pageSize + index + 1} />
                     <TableCell type='link' style={{ whiteSpace: 'nowrap' }} content={item.name} onClick={e => this.edit(e, item)} />
                     <TableCell type='text' style={{ whiteSpace: 'nowrap' }} content={item.type ? item.type.title : ''} />
+                    <TableCell type='number' style={{ whiteSpace: 'nowrap', textAlign:'center' }} content={item.status && item.status == 'dangSuaChua' ? 'Đang sửa chữa' : 'Đang sử dụng'} />
                     <TableCell type='number' style={{ whiteSpace: 'nowrap', textAlign:'center' }} content={item.quantity} />
                     <TableCell type='text' style={{ whiteSpace: 'nowrap' }} content={item.division ? item.division.title : ''} />
                     <TableCell type='buttons' content={item} permission={permission} onEdit={this.edit} onDelete={this.delete}  />

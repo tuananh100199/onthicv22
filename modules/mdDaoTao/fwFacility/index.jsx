@@ -18,6 +18,10 @@ export default {
             component: Loadable({ loading: Loading, loader: () => import('./adminInfoPage') })
         },
         {
+            path: '/user/facility/manager/import',
+            component: Loadable({ loading: Loading, loader: () => import('./adminImportPage') })
+        },
+        {
             path: '/user/facility/category',
             component: Loadable({ loading: Loading, loader: () => import('./adminCategoryPage') })
         },
