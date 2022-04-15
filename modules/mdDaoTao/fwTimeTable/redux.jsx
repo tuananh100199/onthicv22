@@ -34,16 +34,23 @@ export default function timeTableReducer(state = {}, data) {
 
 // Actions ------------------------------------------------------------------------------------------------------------
 T.initCookiePage('adminTimeTable');
-export function getTimeTablePage(pageNumber, pageSize, pageCondition, done) {
-    const page = T.updatePage('adminTimeTable', pageNumber, pageSize);
+export function getTimeTablePage(pageNumber, pageSize, pageCondition,filter,sort, done) {
+    if(typeof sort=='function'){
+        done=sort;
+        sort=undefined;
+    }else if(typeof filter=='function'){
+        done = filter;
+        filter=undefined;
+    }
+    const page = T.updatePage('adminTimeTable', pageNumber, pageSize,pageCondition,filter,sort);
     return dispatch => {
         const url = `/api/time-table/page/${page.pageNumber}/${page.pageSize}`;
-        T.get(url, { pageCondition }, data => {
+        T.get(url, { pageCondition:page.pageCondition,filter:page.filter,sort:page.sort }, data => {
             if (data.error) {
                 T.notify('Lấy thời khóa biểu bị lỗi!', 'danger');
                 console.error(`GET: ${url}. ${data.error}`);
             } else {
-                if (pageCondition) data.page.pageCondition = pageCondition;
+                if (pageCondition) data.page.pageCondition = page.pageCondition;
                 done && done(data.page);
                 dispatch({ type: TimeTableGetPage, page: data.page });
             }

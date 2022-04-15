@@ -177,14 +177,15 @@ export class TableHeadCell extends React.Component {
         } else{
             filterDisplay=null;
         }
-        return display?<th className={className} style={{ ...style }} nowrap={nowrap} rowSpan={rowSpan}>
-            <div className='d-flex justify-content-between'>
+        return display?<th className={`${className} ${sort?'pl-4':''} ${filterDisplay?'pr-4':''}` } style={{ ...style }} nowrap={nowrap} rowSpan={rowSpan}>
             {/* {sort?<a >{sortData[name]?(sortData[name]==1?'up':'down'):'none'}</a>:null}  */}
-            {sort?<a href='#' className='d-flex align-items-center' onClick={(e)=>e.preventDefault()||onSortChange(name)}>
+            {sort?<a className='table-head-sort' href='#' onClick={(e)=>e.preventDefault()||onSortChange(name)}>
                 <i style={{color:sortdata[name]?'#1488db':'#fff'}} 
             className={`mr-2 fa ${sortdata[name]?(sortdata[name]==1?'fa-sort-alpha-asc':'fa-sort-alpha-desc'):'fa-sort'}`} aria-hidden="true"></i>
             </a> :null}
-            <div className='mr-2'>{content||this.props.children}</div> {filterDisplay}
+            {content||this.props.children} 
+            <div className="table-head-filter">
+            {filterDisplay}
             </div>
             </th>:null;
     }

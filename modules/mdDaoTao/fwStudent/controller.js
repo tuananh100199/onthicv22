@@ -44,7 +44,7 @@ module.exports = (app) => {
     app.get('/user/student/debt-enroll', app.permission.check('debt:read'), app.templates.admin);
     app.get('/user/revenue', app.permission.check('debt:read'), app.templates.admin);
     // Student APIs ---------------------------------------------------------------------------------------------------
-    app.get('/api/student/page/:pageNumber/:pageSize', app.permission.check('student:read'), (req, res) => {
+    app.get('/api/student/page/:pageNumber/:pageSize', (req, res) => {
         let pageNumber = parseInt(req.params.pageNumber),
             pageSize = parseInt(req.params.pageSize),
             condition = req.query.pageCondition || {},

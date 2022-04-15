@@ -412,3 +412,10 @@ export const ajaxSelectStudentOfLecturer = (courseId, lecturerId) => ({
     processResults: response => ({ results: response && response.list ? response.list.map(student => ({ id: student._id, text: `${student.lastname} ${student.firstname}` })) : [] }),
     fetchOne: (_id, done) => (getStudent(_id, student => done && done({ id: student._id, text: `${student.lastname} ${student.firstname}` })))()
 });
+
+export const ajaxSelectStudent = T.createAjaxAdapter(
+    '/api/student/page/1/20',
+    params => ({ pageCondition: { searchText: params.term } }),
+    response => response && response.page && response.page.list ?
+        response.page.list.map(student => ({ id: student._id, text: `${student.lastname} ${student.firstname}` + (student.identityCard ? ` (${student.identityCard})` : '') })) : [],
+);

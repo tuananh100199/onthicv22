@@ -2,20 +2,20 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { getTimeTablePage, createTimeTable, updateTimeTable, deleteTimeTable, getTimeTableDateNumber } from './redux';
 import { ajaxSelectCourse } from 'modules/mdDaoTao/fwCourse/redux';
-import { ajaxSelectStudentByCourse, getStudent } from 'modules/mdDaoTao/fwStudent/redux';
+import { ajaxSelectStudentByCourse, getStudent,ajaxSelectStudent } from 'modules/mdDaoTao/fwStudent/redux';
 import Pagination from 'view/component/Pagination';
-import { AdminPage, AdminModal, TableCell, renderTable, FormSelect, FormTextBox, FormCheckbox, FormRichTextBox, FormDatePicker } from 'view/component/AdminPage';
+import { AdminPage, AdminModal, TableCell, renderTable, FormSelect, FormTextBox, FormCheckbox, FormRichTextBox, FormDatePicker,TableHead,TableHeadCell } from 'view/component/AdminPage';
 
 class TimeTableModal extends AdminModal {
     state = {};
     onShow = (item) => {
-        const { _id, student, dateNumber, date, startHour, numOfHours, truant, licensePlates, content, note } = item || { date: new Date(), startHour: 8, numOfHours: 2, truant: false, licensePlates: '', content: '', note: '' },
+        const { _id, student, dateNumber, date, startHour, numOfHours, truant, licensePlates, content, note } = item || { date: new Date(), startHour: null, numOfHours: 1, truant: false, licensePlates: '', content: '', note: '' },
             endHour = startHour + numOfHours;
         this.itemStudent.value(student ? student._id : null);
         this.itemCourse.value(student && student.course ? student.course._id : null);
         this.itemDate.value(date);
-        this.itemStartHour.value(startHour);
-        this.itemNumOfHours.value(numOfHours);
+        this.itemStartHour.value(startHour||null);
+        this.itemNumOfHours.value(numOfHours||null);
         this.itemLicensePlates.value(licensePlates);
         this.itemTruant.value(truant);
         this.itemContent.value(content);
@@ -110,7 +110,7 @@ class TimeTableModal extends AdminModal {
     }
 
     render = () => {
-        const { loading, courseType, date, dateNumber, endHour, student } = this.state;
+        const { loading, courseType, student } = this.state;
         return this.renderModal({
             title: 'Buổi học thực hành',
             size: 'large',
@@ -125,15 +125,15 @@ class TimeTableModal extends AdminModal {
                     <p className='col-lg-5'>Số điện thoại: <b>{student && student.user && student.user.phoneNumber ? student.user.phoneNumber : 'Không có thông tin'}</b></p>
 
                     <FormDatePicker className='col-12 col-md-4' ref={e => this.itemDate = e} label='Ngày học' onChange={this.onSelectDate} readOnly={this.props.readOnly} />
-                    <FormTextBox className='col-6 col-md-4' ref={e => this.itemStartHour = e} label='Giờ bắt đầu' type='number' min='0' max='23' onChange={this.onChangeHour} readOnly={this.props.readOnly} />
-                    <FormTextBox className='col-6 col-md-4' ref={e => this.itemNumOfHours = e} label='Số giờ học' type='number' min='1' max='23' onChange={this.onChangeHour} readOnly={this.props.readOnly} />
-                    <p className='col-12' style={{ visibility: date ? 'visible' : 'hidden' }}>
+                    <FormTextBox className='col-6 col-md-4' ref={e => this.itemStartHour = e} label='Giờ bắt đầu' type='number' min='0' max='23' readOnly={this.props.readOnly} />
+                    <FormTextBox className='col-6 col-md-4' ref={e => this.itemNumOfHours = e} label='Số giờ học' type='number' min='1' max='23' readOnly={this.props.readOnly} />
+                    {/* <p className='col-12' style={{ visibility: date ? 'visible' : 'hidden' }}>
                         {date == null ? '' : <>
                             Học <span className='text-success'>{new Date(date).getDayText()} {new Date(date).getDateText()}</span>
                             {endHour ? <> từ <span className='text-success'> {this.itemStartHour.value()}h - {endHour}h</span></> : ''}. </>}
                         {dateNumber == null ? '' :
                             (dateNumber == -1 ? <span className='text-danger'>Trùng thời khóa biểu!</span> : <>Buổi học thứ: <span className='text-primary'>{dateNumber}</span>.</>)}
-                    </p>
+                    </p> */}
 
                     <FormTextBox ref={e => this.itemLicensePlates = e} label='Xe học' className='col-md-4' style={{ textTransform: 'uppercase' }} readOnly={this.props.readOnly} />
                     <FormCheckbox ref={e => this.itemTruant = e} label='Học viên vắng học' className='col-md-8' readOnly={this.props.readOnly} />
@@ -149,8 +149,9 @@ class TimeTableModal extends AdminModal {
 class TimeTablePage extends AdminPage {
     state = { searchText: '', isSearching: false };
     componentDidMount() {
-        this.props.getTimeTablePage(1, 50, undefined);
-        T.ready();
+        T.ready(()=>{
+            this.props.getTimeTablePage(1, 50, {},{},{});
+        });
         // T.ready(() => T.showSearchBox());
         // T.onSearch = (searchText) => this.props.getTimeTablePage(undefined, undefined, searchText ? { searchText: searchText } : null, () => {
         //     this.setState({ searchText, isSearching: searchText != '' });
@@ -163,30 +164,32 @@ class TimeTablePage extends AdminPage {
 
     render() {
         const today = T.dateToText(new Date().toISOString(), 'dd/mm/yyyy');
-        const permission = this.getUserPermission('timeTable', ['read', 'write', 'delete']);
+        const permission = this.getUserPermission('timeTable');
         let { pageNumber, pageSize, pageTotal, pageCondition, totalItem, list } = this.props.timeTable && this.props.timeTable.page ?
             this.props.timeTable.page : { pageNumber: 1, pageSize: 50, pageTotal: 1, pageCondition: {}, totalItem: 0, list: [] };
         const table = renderTable({
             getDataSource: () => list,
+            autoDisplay:true,stickyHead:true,
             renderHead: () => (
-                <tr>
-                    <th style={{ width: 'auto', textAlign: 'center' }}>#</th>
-                    <th style={{ width: '70%' }} nowrap='true'>Học viên</th>
-                    <th style={{ width: 'auto' }} nowrap='true'>Số điện thoại</th>
-                    <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Khóa học</th>
-                    <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Buổi học</th>
-                    <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Ngày học</th>
-                    <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Giờ học</th>
-                    <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Số giờ học</th>
-                    <th style={{ width: '30%', textAlign: 'center' }} nowrap='true'>Xe học</th>
-                    <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Thao tác</th>
-                </tr>),
+                <TableHead getPage = {this.props.getTimeTablePage}>
+                    <TableHeadCell style={{ width: 'auto', textAlign: 'center' }}>#</TableHeadCell>
+                    <TableHeadCell name='student' filter='select' filterData={ajaxSelectStudent} style={{ width: '70%',minWidth:200 }} menuStyle={{width:200}} nowrap='true'>Học viên</TableHeadCell>
+                    <TableHeadCell style={{ width: 'auto' }} nowrap='true'>CMND/CCCD</TableHeadCell>
+                    <TableHeadCell style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Khóa học</TableHeadCell>
+                    <TableHeadCell style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Buổi học</TableHeadCell>
+                    <TableHeadCell name='date' sort={true} style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Ngày học</TableHeadCell>
+                    <TableHeadCell style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Giờ học</TableHeadCell>
+                    <TableHeadCell style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Số giờ học</TableHeadCell>
+                    <TableHeadCell style={{ width: '30%', textAlign: 'center' }} nowrap='true'>Xe học</TableHeadCell>
+                    <TableHeadCell style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Thao tác</TableHeadCell>
+                </TableHead>
+                ),
             renderRow: (item, index) => (
                 <tr key={index} style={{ backgroundColor: T.dateToText(item.date, 'dd/mm/yyyy') == today ? '#D9EDF7' : '' }} >
                     <TableCell type='number' content={(pageNumber - 1) * pageSize + index + 1} />
-                    <TableCell type='link' content={<>{item.student ? item.student.lastname + ' ' + item.student.firstname : ''}<br />{item.student ? item.student.identityCard : ''}</>} style={{ whiteSpace: 'nowrap' }} onClick={e => this.edit(e, item)} />
-                    <TableCell type='text' content={item.student && item.student.user && item.student.user.phoneNumber ? T.mobileDisplay(item.student.user.phoneNumber) : ''} style={{ whiteSpace: 'nowrap' }} />
-                    <TableCell type='text' content={<><span>{item.student && item.student.course ? item.student.course.name : ''}</span><br />{item.student && item.student.courseType ? item.student.courseType.title : ''}</>} style={{ whiteSpace: 'nowrap' }} />
+                    <TableCell type='link' content={<>{item.student ? item.student.lastname + ' ' + item.student.firstname : ''}</>} style={{ whiteSpace: 'nowrap' }} onClick={e => this.edit(e, item)} />
+                    <TableCell type='text' content={item.student ? item.student.identityCard : ''} style={{ whiteSpace: 'nowrap' }} />
+                    <TableCell type='text' content={<><span>{item.student && item.student.course ? item.student.course.name : ''}</span></>} style={{ whiteSpace: 'nowrap' }} />
                     <TableCell type='number' style={{ textAlign: 'center' }} content={item.dateNumber} />
                     <TableCell type='text' content={item.date ? T.dateToText(item.date, 'dd/mm/yyyy') : ''} />
                     <TableCell type='number' style={{ textAlign: 'center' }} content={item.numOfHours ? `${item.startHour}-${item.startHour + item.numOfHours}` : `${item.startHour}`} />
@@ -197,7 +200,7 @@ class TimeTablePage extends AdminPage {
         });
         return this.renderPage({
             icon: 'fa fa-calendar',
-            title: 'Thời khóa biểu',
+            title: 'Thời khóa biểu học viên',
             breadcrumb: ['Thời khóa biểu'],
             content: <>
                 <div className='tile'>{table}</div>

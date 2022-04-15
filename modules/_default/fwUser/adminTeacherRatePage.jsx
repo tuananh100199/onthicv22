@@ -51,8 +51,8 @@ class AdminTeacherRatePage extends AdminPage {
                 <TableHead getPage={this.props.getTeacherRatePage}>
                     <TableHeadCell style={{ width: 'auto' }}>#</TableHeadCell>
                     <TableHeadCell style={{ width: '20%' }} name='fullName' sort={true} filter='search'>Giáo viên</TableHeadCell>
-                    <TableHeadCell style={{ width: '20%' }}>Hình ảnh giáo viên</TableHeadCell>
-                    <TableHeadCell name='ratingScore' sort={true} filter='select' filterData={ratingValue} style={{ width: '60%',textAlign: 'center' }}>Điểm đánh giá</TableHeadCell>
+                    <TableHeadCell style={{ width: '20%',textAlign:'center' }}>Hình ảnh giáo viên</TableHeadCell>
+                    <TableHeadCell style={{ width: '60%',textAlign:'center' }} name='ratingScore' sort={true} filter='select' filterData={ratingValue}>Điểm đánh giá</TableHeadCell>
                 </TableHead>
                 ),
             renderRow: (item, index) => (

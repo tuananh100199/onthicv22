@@ -87,6 +87,7 @@ export class DropdownSelectMulti extends React.Component {
         $.ajax({...settings,
             dataType:'json',
             success:(data)=>{
+                console.log('data: ',data);
                 const {results} = settings.processResults(data);
                 this.setState({filtered_data:results});
             }
@@ -163,7 +164,7 @@ export class DropdownSelectMulti extends React.Component {
         if (this.state.selectedItem) selectedItem = this.state.selectedItem;
         if (selectedItem == null) selectedItem = { value: '', text: '' };
         return (
-            <div className='dropdown dropdown-filter d-flex align-items-center' ref={e=>this.dropDown=e} style={{ whiteSpace: 'nowrap', ...style }}>
+            <span className='dropdown dropdown-filter' ref={e=>this.dropDown=e} style={{ whiteSpace: 'nowrap', ...style }}>
                 <a ref={e => this.element = e} className={className} style={{textDecoration: 'none', ...textStyle,color:this.state.isFilted?'#1488db':'#fff' }} href='#' data-toggle='dropdown' aria-haspopup='true' aria-expanded='true'>
                     {/* {typeof selectedItem == 'string' && selectedItem != '' ? selectedItem : (selectedItem.text || this.props.text || this.props.emptyText || '')} */}
                     <i className="fa fa-filter" aria-hidden="true"></i>
@@ -197,7 +198,7 @@ export class DropdownSelectMulti extends React.Component {
                         </button>
                     </div>
                 </div>
-            </div>
+            </span>
         );
     }
 }

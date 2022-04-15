@@ -1,8 +1,22 @@
+.table-head-sort{
+  position: absolute;
+  top:50%;
+  left: .5rem;
+  transform: translateY(-50%);
+}
+
+.table-head-filter{
+  position: absolute;
+  top:50%;
+  right: .5rem;
+  transform: translateY(-50%);
+}
+
 .dropdown-filter .dropdown-menu{
     transform: none !important;
     top:100% !important;
     left: unset !important;
-    right: -.75rem !important;
+    right: 0 !important;
   }
   
   .dropdown-filter .dropdown-toggle::after{
