@@ -47,7 +47,8 @@ class PaymentPage extends AdminPage {
         const {dateStart, dateEnd} = this.state;
         let { pageNumber, pageSize, pageTotal, pageCondition, totalItem, list } = this.props.payment && this.props.payment.page ?
             this.props.payment.page : { pageNumber: 1, pageSize: 50, pageTotal: 1, pageCondition: {}, totalItem: 0, list: [] };
-        const table = renderTable({
+        console.log(list);
+            const table = renderTable({
             getDataSource: () => list,
             renderHead: () => (
                 <tr> 
@@ -62,7 +63,7 @@ class PaymentPage extends AdminPage {
                     <th style={{ width: 'auto' }} nowrap='true'>Số tiền(VNĐ)</th>
                     <th style={{ width: 'auto' }}  nowrap='true'>Đối tượng nợ</th>
                     <th style={{ width: 'auto' }}  nowrap='true'>Đối tượng có</th>
-                    <th style={{ width: 'auto' }}  nowrap='true'>SMS Banking</th>
+                    <th style={{ width: 'auto' }}  nowrap='true'>SMS Banking ( Nhân viên nhập dữ liệu )</th>
                 </tr>),
             renderRow: (item, index) => (
                 <tr key={index}>
@@ -77,7 +78,8 @@ class PaymentPage extends AdminPage {
                     <TableCell type='number' content={item.moneyAmount} />
                     <TableCell content={item.debitObject} />
                     <TableCell content={item.creditObject} />
-                    <TableCell type='buttons'style={{ textAlign: 'center' }}>
+                    {!item.userImport ? 
+                    <TableCell type={'buttons'} style={{ textAlign: 'center' }}>
                         {item.sms ?
                             <a className='btn btn-success' href='#' onClick={(e) => {
                                 e.preventDefault(); 
@@ -85,7 +87,10 @@ class PaymentPage extends AdminPage {
                             }}>
                                 <i className='fa fa-lg fa-comments-o' />
                             </a> : null}
-                    </TableCell>
+                    </TableCell> : 
+                    <TableCell style={{ whiteSpace: 'nowrap', textAlign:'center' }} content={`${item.userImport.lastname} ${item.userImport.firstname}`} />
+                    }
+                    
                 </tr >),
         });
         return this.renderPage({
@@ -116,6 +121,7 @@ class PaymentPage extends AdminPage {
                 <Pagination name='adminPayment' pageCondition={pageCondition} pageNumber={pageNumber} pageSize={pageSize} pageTotal={pageTotal} totalItem={totalItem}
                     getPage={this.props.getPaymentPage} />
                 <CirclePageButton type='export' onClick={() => exportBankBaoCao(dateStart, dateEnd)} />
+                <CirclePageButton type='import' style={{ right: '70px', backgroundColor: 'red', borderColor: 'red' }} onClick={() => this.props.history.push('/user/payment/import')} /> 
             </>
         });
     }

@@ -14,6 +14,7 @@ module.exports = app => {
         debitObject: String, //đối tượng nợ , should create new bank model ?
         courseTypeName: String, 
         courseType: { type: app.db.Schema.ObjectId, ref: 'CourseType' },
+        userImport: { type: app.db.Schema.Types.ObjectId, ref: 'User' },
         sms: { type: app.db.Schema.ObjectId, ref: 'Sms' },
     });
     const model = app.db.model('Payment', schema);
@@ -29,7 +30,7 @@ module.exports = app => {
                 result.pageNumber = pageNumber === -1 ? result.pageTotal : Math.min(pageNumber, result.pageTotal);
 
                 const skipNumber = (result.pageNumber > 0 ? result.pageNumber - 1 : 0) * result.pageSize;
-                model.find(condition).sort({ timeReceived: -1 }).skip(skipNumber).limit(result.pageSize).populate('sms', '-isHandled').exec((error, list) => {
+                model.find(condition).sort({ timeReceived: -1 }).skip(skipNumber).limit(result.pageSize).populate('sms', '-isHandled').populate('userImport').exec((error, list) => {
                         result.list = list;
                         done(error, result);
                     });

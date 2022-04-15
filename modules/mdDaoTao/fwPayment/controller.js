@@ -3,9 +3,11 @@ module.exports = app => {
         { name: 'payment:read', menu: { parentMenu: app.parentMenu.accountant, menus: {7001: { title: 'Thu công nợ', link: '/user/payment' }} } },
         { name: 'payment:write' },
         { name: 'payment:delete' },
+        { name: 'payment:import' },
     );
 
     app.get('/user/payment', app.permission.check('payment:read'), app.templates.admin);
+    app.get('/user/payment/import', app.permission.check('payment:write'), app.templates.admin);
 
     app.post('/api/payment', (req, res) => {
         app.redis.get(`${app.appName}:state:smsAPIToken`, (error, token) => { //get token to auth app
@@ -425,9 +427,12 @@ module.exports = app => {
     
     app.get('/api/payment/export/:dateStart/:dateEnd', app.permission.check('payment:write'), (req, res) => {
         const { dateStart, dateEnd } = req.params;
-        const sourcePromise =  app.excel.readFile(app.publicPath + '/document/TN09.xlsx');
+        let condition = {};
+        if(dateStart && dateStart != '' && dateStart != 'undefined')
+            condition = { timeReceived: {$gte: dateStart, $lt: dateEnd} };
+        const sourcePromise =  app.excel.readFile(app.publicPath + '/document/BAO CAO THU CONG NO.xlsx');
         const getPayment = new Promise((resolve,reject)=>{ 
-            app.model.payment.getPage(undefined, undefined, { timeReceived: {$gte: dateStart, $lt: dateEnd}}, (error, page) =>{
+            app.model.payment.getPage(undefined, undefined, condition, (error, page) =>{
                 error?reject(error):resolve(page);
             });
         });
@@ -450,7 +455,7 @@ module.exports = app => {
                 item.push(payment.creditObject);
                 item.push('');
                 const maxCol = 12;
-                const row = 1;
+                const row = 3;
                 const insertRow =worksheet.insertRow(row+i,item);
                 let j=1;
                 while(j<=maxCol){
@@ -465,5 +470,245 @@ module.exports = app => {
             }
             app.excel.attachment(sourceWorkbook, res,'BAO CAO THU CONG NO.xlsx');
         });
+    });
+
+    app.uploadHooks.add('uploadPaymentFile', (req, fields, files, params, done) => {
+        console.log(files.PaymentFile);
+        if (files.PaymentFile && files.PaymentFile.length > 0) {
+            console.log('Hook: uploadExcelFile => your payment file upload');
+            const srcPath = files.PaymentFile[0].path;
+            app.excel.readFile(srcPath, workbook => {
+                app.deleteFile(srcPath);
+                if (workbook) {
+                    const worksheet = workbook.getWorksheet(1), data = [], totalRow = worksheet.lastRow.number;
+                    const handleUpload = (index = 3) => {
+                        const values = worksheet.getRow(index).values;
+                        if (values.length == 0 || index == totalRow + 1) {
+                            done({ data });
+                        } else {
+                            const stringToDate = (values) => {
+                                values = values ? values.trim() : '';
+                                return values.length >= 10 ? new Date(values.slice(6, 10), values.slice(3, 5) - 1, values.slice(0, 2)) : null;
+                            };
+                            // const email = values[4] && values[4] != undefined ? values[4] : '';
+                            data.push({
+                                id: index - 1,
+                                type: values[2],
+                                timeReceived: stringToDate(values[3]),
+                                code: values[4],
+                                name: values[5],
+                                content: values[6],
+                                debitAccount: values[7],
+                                creditAccount: values[8],
+                                moneyAmount: values[9],
+                                debitObject: values[10],
+                                creditObject: values[11],
+                            });
+                            handleUpload(index + 1);
+                        }
+                    };
+                    handleUpload();
+                } else {
+                    done({ error: 'Error' });
+                }
+            });
+        }
+    });
+
+    app.post('/api/payment/import', app.permission.check('payment:import'), (req, res) => {
+        const sessionUser = req.session.user;
+        const { payments } = req.body;
+        let err = null;
+        if (payments && payments.length > 0) {
+            const handleImport = (index = 0) => {
+                if (index == payments.length) {
+                    res.send({ error: err });
+                } else {
+                    const { creditObject} = payments[index];
+                    const payment = payments[index];
+                    payment.userImport = sessionUser._id;
+                    app.model.student.get({identityCard: creditObject}, (error, item) => {
+                        if (error || !item) {
+                            err = error;
+                            handleImport(index + 1);
+                        } else {
+                            const { courseFee, discount, lichSuDongTien } = item;
+                            const hocPhiDaDong = lichSuDongTien && lichSuDongTien.length ? lichSuDongTien.map(item => item.fee).reduce((prev, next) => prev + next) : 0;
+                            const hocPhiConLai = courseFee && courseFee.fee && courseFee.fee - (hocPhiDaDong ? hocPhiDaDong : 0) - ((discount && discount.fee) ? discount.fee : 0);
+                            const hocPhi = courseFee && courseFee.fee && courseFee.fee - ((discount && discount.fee) ? discount.fee : 0);
+                            const data = {
+                                fee: payment.moneyAmount,
+                                isOnlinePayment: false,
+                            };
+                            const year = new Date().getFullYear();
+                            app.model.student.addPayment({ _id: item._id }, data, (error, item) => {
+                                payment.student = item._id;
+                                payment.firstname = item.firstname;
+                                payment.lastname = item.lastname;
+                                payment.courseType = item.courseType && item.courseType._id;
+                                if(error) {
+                                    err = error;
+                                    handleImport(index + 1);
+                                }
+                                else{
+                                    const revenue = {
+                                        payer: item._id,
+                                        receiver: null,
+                                        fee: payment.moneyAmount,
+                                        date: new Date(),
+                                        type: 'offline',
+                                        course: item.course && item.course._id,
+                                        courseType: item.courseType && item.courseType._id,
+                                    };
+                                    app.model.revenue.create(revenue, (error) => {
+                                        if(error) {
+                                            err = error;
+                                            handleImport(index + 1);
+                                        } 
+                                        else {
+                                            app.model.setting.get('revenue', result => {
+                                                if (result && Object.keys(result).length != 0) {
+                                                    let value = result.revenue && result.revenue.split(';');
+                                                    value = value.sort((a, b) => parseInt(a.slice(0, 3)) - parseInt(b.slice(0, 3)));
+                                                    const indexYear = value.findIndex(item => item.startsWith(year));
+                                                    if (indexYear != -1) {
+                                                        const newItem = value[indexYear].split(':');
+                                                        newItem[2] = parseInt(newItem[2]);
+                                                        newItem[2] = newItem[2] + parseInt(payment.moneyAmount);
+                                                        value[indexYear] = newItem.join(':');
+                                                        data.revenue = value.join(';');
+                                                    } else {
+                                                        const indexPreviousYear = value.findIndex(item => item.startsWith(year - 1));
+                                                        if (indexPreviousYear != -1) {
+                                                            const newItem = value[indexPreviousYear].split(':');
+                                                            newItem[2] = parseInt(newItem[2]);
+                                                            newItem[2] = newItem[2] + parseInt(payment.moneyAmount);
+                                                            data.revenue = result.revenue + year + ':revenue:' + newItem[2];
+                                                        } else {
+                                                            data.revenue = result.revenue + year + ':revenue:' + parseInt(payment.moneyAmount);
+                                                        }
+                                                    }
+                                                    app.model.setting.set(data, err => {
+                                                        if (err){
+                                                            err = error;
+                                                            handleImport(index + 1);
+                                                        } else {
+                                                            if(hocPhi && (hocPhiConLai-data.fee) <= (0)){
+                                                                app.model.student.update({_id: item._id}, {activeKhoaThucHanh: true}, (error) => {
+                                                                    if(error) {
+                                                                        err = error;
+                                                                        handleImport(index + 1);
+                                                                    } 
+                                                                    else {
+                                                                        app.model.payment.create(payment, (error, item) =>{
+                                                                            if(error || !item){
+                                                                                err = error;
+                                                                                handleImport(index + 1);
+                                                                            } else {
+                                                                                handleImport(index + 1);
+                                                                            }
+                                                                        });
+                                                                    }
+                                                                });
+                                                            } 
+                                                            else if(hocPhi && (hocPhiConLai-data.fee) <= (hocPhi/2)){
+                                                                app.model.student.update({_id: item._id}, {activeKhoaLyThuyet: true}, (error) => {
+                                                                    if(error) {
+                                                                        err = error;
+                                                                        handleImport(index + 1);
+                                                                    } 
+                                                                    else {
+                                                                        app.model.payment.create(payment, (error, item) =>{
+                                                                            if(error || !item){
+                                                                                err = error;
+                                                                                handleImport(index + 1);
+                                                                            } else {
+                                                                                handleImport(index + 1);
+                                                                            }
+                                                                        });
+                                                                    }
+                                                                });
+                                                            }  else {
+                                                                app.model.payment.create(payment, (error, item) =>{
+                                                                    if(error || !item){
+                                                                        err = error;
+                                                                        handleImport(index + 1);
+                                                                    } else {
+                                                                        handleImport(index + 1);
+                                                                    }
+                                                                    });
+                                                            }
+                                                        }
+                                                    });
+                                                } else {
+                                                    data.revenue = year + ':revenue:' + parseInt(payment.moneyAmount);
+                                                    app.model.setting.set(data, err => {
+                                                        if (err) if(error || !item){
+                                                            err = error;
+                                                            handleImport(index + 1);
+                                                        } else {
+                                                            if(hocPhi && (hocPhiConLai-data.fee) <= (0)){
+                                                                app.model.student.update({_id: item._id}, {activeKhoaThucHanh: true}, (error) => {
+                                                                    if(error) if(error || !item){
+                                                                        err = error;
+                                                                        handleImport(index + 1);
+                                                                    }
+                                                                    else {
+                                                                        app.model.payment.create(payment, (error, item) =>{
+                                                                            if(error || !item){
+                                                                                err = error;
+                                                                                handleImport(index + 1);
+                                                                            } else {
+                                                                                handleImport(index + 1);
+                                                                            }
+                                                                        });
+                                                                    }
+                                                                });
+                                                            } 
+                                                            else if(hocPhi && (hocPhiConLai-data.fee) <= (hocPhi/2)){
+                                                                app.model.student.update({_id: item._id}, {activeKhoaLyThuyet: true}, (error) => {
+                                                                    if(error) {
+                                                                        err = error;
+                                                                        handleImport(index + 1);
+                                                                    }
+                                                                    else {
+                                                                        app.model.payment.create(payment, (error, item) =>{
+                                                                            if(error || !item){
+                                                                                err = error;
+                                                                                handleImport(index + 1);
+                                                                            } else {
+                                                                                handleImport(index + 1);
+                                                                            }
+                                                                        });
+                                                                    }
+                                                                });
+                                                            }  else {
+                                                                app.model.payment.create(payment, (error, item) =>{
+                                                                    if(error || !item){
+                                                                        err = error;
+                                                                        handleImport(index + 1);
+                                                                    } else {
+                                                                        handleImport(index + 1);
+                                                                    }
+                                                                    });
+                                                            }
+                                                        }
+                                                    });
+                                                }
+                                
+                                            });              
+                                        }
+                                    });
+                                    
+                                }
+                            });
+                        }
+                    });
+                }
+            };
+            handleImport();
+            } else {
+                res.send({ error: 'Danh sách thu công nợ trống!' });
+            }
     });
 };

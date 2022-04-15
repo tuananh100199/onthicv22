@@ -68,11 +68,20 @@ export function getStudentPage(pageNumber, pageSize, pageCondition, done) {
     };
 }
 
-export function getDebtStudentPage(pageNumber, pageSize, pageCondition, done) {
-    const page = T.updatePage('adminStudent', pageNumber, pageSize);
+T.initCookiePage('pageDebtStudent', true);
+export function getDebtStudentPage(pageNumber, pageSize, pageCondition, filter, sort, done) {
+    if(typeof sort=='function'){
+        done=sort;
+        sort=undefined;
+    }
+    else if(typeof filter=='function'){
+        done=filter;
+        filter=undefined;
+    }
+    const page = T.updatePage('pageDebtStudent', pageNumber, pageSize,pageCondition,filter,sort);
     return dispatch => {
         const url = `/api/student/debt/page/${page.pageNumber}/${page.pageSize}`;
-        T.get(url, { pageCondition }, data => {
+        T.get(url, { pageCondition,filter:page.filter,sort:page.sort }, data => {
             if (data.error) {
                 T.notify('Lấy danh sách học viên bị lỗi!', 'danger');
                 console.error(`GET: ${url}. ${data.error}`);
@@ -83,6 +92,13 @@ export function getDebtStudentPage(pageNumber, pageSize, pageCondition, done) {
             }
         }, error => console.error(error) || T.notify('Lấy danh sách học viên bị lỗi!', 'danger'));
     };
+}
+
+export function exportDebtStudentPage() {
+    const page = T.updatePage('pageDebtStudent');
+    const url = `/api/student/debt/export/page/${page.pageNumber}/${page.pageSize}/${JSON.stringify(page.filter)}/${JSON.stringify(page.sort)}`;
+    T.download(T.url(url));
+    // T.download(T.get(url, { filter:page.filter,sort:page.sort }));
 }
 
 export function updateStudent(_id, changes, done) {
