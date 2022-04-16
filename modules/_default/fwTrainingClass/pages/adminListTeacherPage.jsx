@@ -94,7 +94,7 @@ class ListTeacherPage extends AdminPage {
                     {tableProfile}
                 </div>
                 {permission.write ? <CirclePageButton type='create' onClick={this.edit} /> : null}
-                <CirclePageButton type='custom' customClassName='btn-warning' customIcon='fa-print' style={{ right: '75px' }} onClick={e=>this.exportFinal(e)}/>
+                <CirclePageButton type='custom' customClassName='btn-success' customIcon='fa-cloud-download' style={{ right: '75px' }} onClick={e=>this.exportFinal(e)}/>
                 
                 <Pagination name='pageTeacher' pageNumber={pageNumber} pageSize={pageSize} pageTotal={pageTotal} totalItem={totalItem}
                     getPage={this.props.getTeacherPage} style={{ left: 320 }}/>

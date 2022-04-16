@@ -84,15 +84,15 @@ module.exports = (app) => {
     app.model.teacher = {
         create: (data, done) =>{
             // xử lý trường hợp có msnv
-            if(data && data.maGiaoVien){
-                model.findOne({maGiaoVien:data.maGiaoVien},(error,info)=>{
+            if(data && (data.maGiaoVien||data.identityCard)){
+                model.findOne({$or:[{maGiaoVien:data.maGiaoVien},{identityCard:data.identityCard}]},(error,info)=>{
                     if(error) done(error);
-                    else if(info) done('Mã giáo viên đã được sử dụng!');
+                    else if(info) done('Hồ sơ giáo viên đã được tạo!');
                     else{
                         model.create(data,done);
                     }
                 });
-            }else{//trường hợp không có msnv
+            }else{//trường hợp không có msnv và cmnd
                 model.create(data, done);
             }
         },
@@ -133,11 +133,11 @@ module.exports = (app) => {
         }),
 
         update: (_id, changes, done) => {
-            if(changes && changes.maGiaoVien && changes.maGiaoVien!=''){
-                model.findOne({maGiaoVien:changes.maGiaoVien},(error,info)=>{
+            if(changes && (changes.maGiaoVien || changes.identityCard)){
+                model.findOne({$or:[{maGiaoVien:changes.maGiaoVien},{identityCard:changes.identityCard}]},(error,info)=>{
                     if(error) done(error);
                     else if(info && info._id !=_id){// Mã giáo viên đã tồn tại
-                        done('mã giáo viên đã được sử dụng!');
+                        done('Hồ sơ giáo viên đã tồn tại!');
                     }else{
                         model.findOneAndUpdate({ _id }, changes, { new: true }).populate('user', 'email phoneNumber').populate('division', 'id title').exec(done);
                     }

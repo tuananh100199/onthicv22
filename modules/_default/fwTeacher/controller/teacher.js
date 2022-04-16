@@ -1,13 +1,13 @@
 module.exports = (app) => {
     const menu = {
-        parentMenu: app.parentMenu.enrollment,
+        parentMenu: app.parentMenu.teacher,
         menus: {
-            8090: { title: 'Quản lý giáo viên', link: '/user/teacher', icon: 'fa-bars', backgroundColor: '#00b0ff' },
+            9001: { title: 'Hồ sơ giáo viên', link: '/user/teacher', icon: 'fa-bars', backgroundColor: '#00b0ff' },
             // 8091: { title: 'Danh mục chứng chỉ', link: '/user/teacher-certification/category', icon: 'fa-bars', backgroundColor: '#00b0ff' },
-            8092: { title: 'Danh mục hợp đồng', link: '/user/contract/category', icon: 'fa-bars', backgroundColor: '#00b0ff' },
-            8093: { title: 'Danh mục giấy phép lái xe', link: '/user/gplx/category', icon: 'fa-bars', backgroundColor: '#00b0ff' },
-            8094: { title: 'Danh mục hồ sơ', link: '/user/profile/category', icon: 'fa-bars', backgroundColor: '#00b0ff' },
-            8095: { title: 'Danh mục loại giáo viên', link: '/user/teacher-type/category', icon: 'fa-bars', backgroundColor: '#00b0ff' },
+            9002: { title: 'Danh mục hợp đồng', link: '/user/contract/category', icon: 'fa-bars', backgroundColor: '#00b0ff' },
+            9003: { title: 'Danh mục giấy phép lái xe', link: '/user/gplx/category', icon: 'fa-bars', backgroundColor: '#00b0ff' },
+            9004: { title: 'Danh mục hồ sơ', link: '/user/profile/category', icon: 'fa-bars', backgroundColor: '#00b0ff' },
+            9005: { title: 'Danh mục loại giáo viên', link: '/user/teacher-type/category', icon: 'fa-bars', backgroundColor: '#00b0ff' },
         
         }
     };

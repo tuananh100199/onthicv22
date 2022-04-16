@@ -1,8 +1,8 @@
 module.exports = (app) => {
     const menu = {
-        parentMenu: app.parentMenu.enrollment,
+        parentMenu: app.parentMenu.teacher,
         menus: {
-            8099: { title: 'Lớp tập huấn', link: '/user/training-class', icon: 'fa-bars', backgroundColor: '#00b0ff' },
+            9010: { title: 'Lớp tập huấn', link: '/user/training-class', icon: 'fa-bars', backgroundColor: '#00b0ff' },
         },
     };
 
