@@ -58,7 +58,7 @@ module.exports = app => {
 
         getAll: (condition, done) => model.find(condition).populate('user', 'lastname firstname').sort({ priority: -1 }).exec(done),
 
-        getPage: (pageNumber, pageSize, condition, done) => model.countDocuments(condition, (error, totalItem) => {
+        getPage: (pageNumber, pageSize, condition, sort, done) => model.countDocuments(condition, (error, totalItem) => {
             if (error) {
                 done(error);
             } else {
@@ -66,7 +66,7 @@ module.exports = app => {
                 result.pageNumber = pageNumber === -1 ? result.pageTotal : Math.min(pageNumber, result.pageTotal);
 
                 const skipNumber = (result.pageNumber > 0 ? result.pageNumber - 1 : 0) * result.pageSize;
-                model.find(condition).sort({ licensePlates: 1 }).skip(skipNumber).limit(result.pageSize).populate('division', 'title').populate('user', 'firstname lastname').populate('courseType', 'title').populate('brand', 'title').exec((error, list) => {
+                model.find(condition).sort(sort ? sort:{ licensePlates: 1 }).skip(skipNumber).limit(result.pageSize).populate('division', 'title').populate('user', 'firstname lastname').populate('courseType', 'title').populate('brand', 'title').exec((error, list) => {
                     result.list = list;
                     done(error, result);
                 });
