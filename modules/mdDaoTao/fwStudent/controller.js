@@ -454,7 +454,7 @@ module.exports = (app) => {
     app.get('/api/pre-student/page/:pageNumber/:pageSize', app.permission.check('pre-student:read'), (req, res) => {
         let pageNumber = parseInt(req.params.pageNumber),
             pageSize = parseInt(req.params.pageSize),
-            condition = req.query.condition || {},
+            condition = req.query.condition || {},filter=req.query.filter||null,sort=req.query.sort||null,
             pageCondition = { course: null };
             app.model.course.getAll({isDefault:true},(error,defaultCourses)=>{
                 if(error)res.send('không có khóa học mặc định');
@@ -476,7 +476,26 @@ module.exports = (app) => {
                             { identityCard: value },
                         ];
                     }
-                    app.model.student.getPage(pageNumber, pageSize, pageCondition, req.query.sort, (error, page) => {
+                    if(filter){
+                        console.log({filter});
+                        app.handleFilter(filter,['courseType','division'],filterCondition=>{
+                            console.log({filterCondition});
+                            pageCondition={...pageCondition,...filterCondition};
+                        });
+                        if(filter.fullName){// họ tên
+                            pageCondition['$expr']= {
+                                '$regexMatch': {
+                                  'input': { '$concat': ['$lastname', ' ', '$firstname'] },
+                                  'regex': `.*${filter.fullName}.*`,  //Your text search here
+                                  'options': 'i'
+                                }
+                            };
+                        }
+                    }
+                    console.log('pageCOnditrion: ',pageCondition);
+                    if(sort && sort.fullName) sort={firstname:sort.fullName}; 
+
+                    app.model.student.getPage(pageNumber, pageSize, pageCondition, sort, (error, page) => {
                         res.send({ error, page });
                     });
                 }

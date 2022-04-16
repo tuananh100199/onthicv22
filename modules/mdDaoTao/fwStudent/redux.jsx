@@ -241,16 +241,23 @@ export function updateActiveCourse(_id, type, done) {
 
 // Pre-student Actions ------------------------------------------------------------------------------------------------
 T.initCookiePage('adminPreStudent');
-export function getPreStudentPage(pageNumber, pageSize, pageCondition, sort, done) {
-    const page = T.updatePage('adminPreStudent', pageNumber, pageSize);
+export function getPreStudentPage(pageNumber, pageSize, pageCondition,filter, sort, done) {
+    if(typeof sort=='function'){
+        done=sort;
+        sort=undefined;
+    }else if(typeof filter == 'function'){
+        done=filter;
+        filter=undefined;
+    }
+    const page = T.updatePage('adminPreStudent', pageNumber, pageSize,pageCondition,filter,sort);
     return dispatch => {
         const url = `/api/pre-student/page/${page.pageNumber}/${page.pageSize}`;
-        T.get(url, { condition: pageCondition, sort }, data => {
+        T.get(url, { condition: page.pageCondition,filter:page.filter, sort:page.sort }, data => {
             if (data.error) {
                 T.notify('Lấy danh sách học viên bị lỗi!', 'danger');
                 console.error(`GET: ${url}. ${data.error}`);
             } else {
-                if (pageCondition) data.page.pageCondition = pageCondition;
+                if (page.pageCondition) data.page.pageCondition = page.pageCondition;
                 done && done(data.page);
                 dispatch({ type: PreStudentGetPage, page: data.page });
             }
