@@ -7,6 +7,7 @@ module.exports = app => {
         ngayHetHanTapLai: { type: Date, default: Date.now },                // Ngày hết hạn tập lái xe để NV đưa xe đi đăng kiểm lại
         ngayDangKy: { type: Date, default: Date.now },
         ngayThanhLy: { type: Date },
+        ngayHetHanBaoHiem: { type: Date, default: Date.now }, 
         fuel: [{
             date: { type: Date, default: Date.now },
             fee: { type: Number, default: 0 },
@@ -23,6 +24,11 @@ module.exports = app => {
             fee: { type: Number, default: 0 },
             ngayHetHanDangKiem: { type: Date },
         }],
+        lichSuDongBaoHiem: [{
+            ngayDongBaoHiem: { type: Date },
+            fee: { type: Number, default: 0 },
+            ngayHetHanBaoHiem: { type: Date },
+        }],
         lichSuDangKy: [{
             progress: String,
             ngayDangKy: { type: Date },
@@ -30,7 +36,7 @@ module.exports = app => {
             ngayHetHanDangKy: { type: Date },
         }],
         status: { type: String, enum: ['dangSuDung', 'dangSuaChua', 'dangThanhLy', 'daThanhLy'], default: 'dangSuDung' },
-        currentCourseClose: { type: Boolean, default: false },
+        currentCourseClose: { type: Boolean, default: true },
         courseHistory: [{
             course: { type: app.db.Schema.ObjectId, ref: 'Course' },
             user: { type: app.db.Schema.ObjectId, ref: 'User' },
@@ -109,6 +115,9 @@ module.exports = app => {
         addLichSuDangKiem: (_id, data, done) => {
             model.findOneAndUpdate(_id, { $push: { lichSuDangKiem: data } }, { new: true }).exec(done);
         },
+        addLichSuDongBaoHiem: (_id, data, done) => {
+            model.findOneAndUpdate(_id, { $push: { lichSuDongBaoHiem: data } }, { new: true }).exec(done);
+        },
         addCalendarHistory: (condition, data, done = () => {}) => {
             model.findOneAndUpdate(condition, { $push: { calendarHistory: data } }, { new: true }).exec(done);
         },
@@ -136,6 +145,8 @@ module.exports = app => {
                 model.findOneAndUpdate({ _id }, { $pull: { repair: { _id: data._repairId } } }, { new: true }).exec(done);
             } else if (data._registrationId) {
                 model.findOneAndUpdate({ _id }, { $pull: { lichSuDangKiem: { _id: data._registrationId } } }, { new: true }).exec(done);
+            }  else if (data._insuranceId) {
+                model.findOneAndUpdate({ _id }, { $pull: { lichSuDongBaoHiem: { _id: data.insuranceId } } }, { new: true }).exec(done);
             } else if (data._practiceId) {
                 model.findOneAndUpdate({ _id }, { $pull: { lichSuDangKy: { _id: data._practiceId } } }, { new: true }).exec(done);
             } else model.findOneAndUpdate({ _id }, { $pull: { fuel: { _id: data._fuelId } } }, { new: true }).exec(done);

@@ -33,6 +33,7 @@ class EditCoursePage extends AdminPage {
                     <PageIconHeader text='Quản lý hồ sơ' />
                     <PageIcon visible={permission.write} to={'/user/car/practice'} icon='fa-road' iconBackgroundColor='#dc143c' text='Theo dõi giấy phép xe tập lái' />
                     <PageIcon visible={permission.write} to={'/user/car/registration'} icon='fa-file-text-o' iconBackgroundColor='#CC0' text='Đăng kiểm xe' />
+                    <PageIcon visible={permission.write} to={'/user/car/insurance'} icon='fa-user-md' iconBackgroundColor='#4e25a2' text='Bảo hiểm xe' />
                     <PageIcon visible={permission.write} to={'/user/car/repair'} icon='fa-wrench' iconBackgroundColor='#900' text='Theo dõi sửa chữa, bảo dưỡng' />
                     {/* <PageIcon visible={permission.write} to={'/user/car/course'} icon='fa-cubes' iconBackgroundColor='#D00' text='Xe đi khóa' /> */}
                     {/* <PageIcon visible={permission.write} to={'/user/car/lecturer/calendar'} icon='fa-calendar' iconBackgroundColor='#3e24aa' text='Lịch xe' /> */}

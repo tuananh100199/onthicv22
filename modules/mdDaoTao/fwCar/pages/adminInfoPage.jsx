@@ -5,7 +5,7 @@ import { getAllLecturer } from 'modules/_default/fwUser/redux';
 import { getCategoryAll } from 'modules/_default/fwCategory/redux';
 import { ajaxSelectCourseType } from 'modules/mdDaoTao/fwCourseType/redux';
 import Pagination from 'view/component/Pagination';
-import { AdminPage, CirclePageButton, FormDatePicker, AdminModal, FormTextBox, FormSelect, TableCell, renderTable, FormCheckbox } from 'view/component/AdminPage';
+import { AdminPage, CirclePageButton, FormDatePicker, AdminModal, FormTextBox, FormSelect, TableCell, renderTable, FormCheckbox, TableHeadCell,TableHead, } from 'view/component/AdminPage';
 import { ajaxSelectDivision } from 'modules/mdDaoTao/fwDivision/redux';
 import T from 'view/js/common';
 
@@ -15,9 +15,10 @@ const dataFilterType = [
     { id: 2, text: 'Xe đang sửa chữa', condition: { status: 'dangSuaChua' } },
     { id: 3, text: 'Xe chờ thanh lý', condition: { status: 'choThanhLy' } },
     { id: 4, text: 'Xe đã thanh lý', condition: { status: 'daThanhLy' } },
-    { id: 5, text: 'Xe đi khóa', condition: { currentCourseClose: true } },
-    { id: 6, text: 'Xe đã có giáo viên', condition: { user: { $exists: true } } },
-    { id: 7, text: 'Xe đang trống giáo viên', condition: { user: { $exists: false } } },
+    { id: 5, text: 'Xe đi khóa', condition: { currentCourseClose: false } },
+    { id: 6, text: 'Xe đang trống khoá', condition: { currentCourseClose: true } },
+    { id: 7, text: 'Xe đã có giáo viên', condition: { user: { $exists: true } } },
+    { id: 8, text: 'Xe đang trống giáo viên', condition: { user: { $exists: false } } },
 ];
 const dataRepairType = [{ id: 'dangSuDung', text: 'Xe đang sử dụng' }, { id: 'dangSuaChua', text: 'Xe đang sửa chữa' }, { id: 'dangThanhLy', text: 'Xe chờ thanh lý' }, { id: 'daThanhLy', text: 'Xe thanh lý' }];
 class CarModal extends AdminModal {
@@ -171,18 +172,20 @@ class CarPage extends AdminPage {
             this.props.car.page : { pageNumber: 1, pageSize: 50, pageTotal: 1, pageCondition: {}, totalItem: 0, list: [] };
         const table = renderTable({
             getDataSource: () => list && list.filter(item => item.course == null),
+            stickyHead:true,
+            autoDisplay:true,
             renderHead: () => (
-                <tr>
+                <TableHead getPage={this.props.getCarPage}>
                     <th style={{ width: 'auto', textAlign: 'center' }}>#</th>
                     <th style={{ width: 'auto' }} nowrap='true'>Xe</th>
                     <th style={{ width: 'auto' }} nowrap='true'>Quản lý phụ trách xe</th>
-                    <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Hạng đào tạo</th>
+                    <TableHeadCell name='courseType' filter='select' filterData = {ajaxSelectCourseType} style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Hạng đào tạo</TableHeadCell>
                     <th style={{ width: '100%' }} nowrap='true'>Cơ sở</th>
                     <th style={{ width: 'auto' }} nowrap='true'>Ngày hết hạn đăng kiểm</th>
                     <th style={{ width: 'auto' }} nowrap='true'>Ngày hết hạn tập lái</th>
                     {/* <th style={{ width: 'auto' }} nowrap='true'>Xe cá nhân</th> */}
                     <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Thao tác</th>
-                </tr>),
+                </TableHead>),
             renderRow: (item, index) => (
                 <tr key={index}>
                     <TableCell type='number' content={(pageNumber - 1) * pageSize + index + 1} />

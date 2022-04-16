@@ -1,8 +1,8 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { createCar, deleteCar, getCar, addCarCourse, deleteCarElement } from '../redux';
+import { createCar, deleteCar, getCar, addCarCourse, deleteCarElement, exportCourseCar } from '../redux';
 import { getAllLecturer } from 'modules/_default/fwUser/redux';
-import { AdminPage, AdminModal, FormDatePicker, FormTextBox, FormSelect } from 'view/component/AdminPage';
+import { AdminPage, AdminModal, FormDatePicker, FormTextBox, FormSelect, CirclePageButton } from 'view/component/AdminPage';
 import T from 'view/js/common';
 
 const adminPageLink = 'user/car/course';
@@ -118,6 +118,7 @@ class CarCourseEditPage extends AdminPage {
                         </ul> : 'Chưa có thông tin!'}
                 </div>
                 <CarCourseEditModal readOnly={!permission.fuel} ref={e => this.modal = e} update={this.props.addCarCourse} data={this.state.data} dataLecturer={this.state.listLecturer} />
+                <CirclePageButton type='export' onClick={() => exportCourseCar(car._id)} />
                 {/* <CirclePageButton type='export' onClick={() => exportFuelCar(this.state.data._id)} /> */}
             </>,
             backRoute: '/user/car/manager',

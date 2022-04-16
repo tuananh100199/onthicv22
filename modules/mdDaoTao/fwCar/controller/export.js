@@ -1,5 +1,11 @@
 // Export to Excel ----------------------------------------------------------------------------------------------------
 module.exports = (app) => {
+    function convert(str,type) {
+        let date = new Date(str),
+            mnth = ('0' + (date.getMonth() + 1)).slice(-2),
+            day = ('0' + date.getDate()).slice(-2);
+        return type=='name' ? [day, mnth, date.getFullYear()].join('-') : [day, mnth, date.getFullYear()].join('/');
+    }
 app.get('/api/car/info/export/:filterKey', app.permission.check('car:export'), (req, res) => {
     let { filterKey } = req.params,
         condition = {};
@@ -100,7 +106,7 @@ app.get('/api/car/expired/export/:fileType/:filterType', app.permission.check('c
                         licensePlates: car.licensePlates,
                         brand: car.brand && car.brand.title,
                     };
-                    obj[(filter == 0) ? 'ngayHetHanTapLai' : 'ngayHetHanDangKiem'] = (filter == 0) ? car.ngayHetHanTapLai : car.ngayHetHanDangKiem;
+                    obj[(filter == 0) ? 'ngayHetHanTapLai' : 'ngayHetHanDangKiem'] = (filter == 0) ? (car.ngayHetHanTapLai ? convert(car.ngayHetHanTapLai) : '') : (car.ngayHetHanDangKiem ? convert(car.ngayHetHanDangKiem) : '');
                     worksheet.addRow(obj);
                 });
                 app.excel.write(worksheet, cells);
@@ -135,7 +141,7 @@ app.get('/api/car/fuel/export/:_carId', app.permission.check('car:export'), (req
                 car && car.fuel.forEach((car, index) => {
                     worksheet.addRow({
                         _id: index + 1,
-                        date: car.date,
+                        date: car.date ? convert(car.date) : '',
                         fee: car.fee
                     });
                 });
@@ -174,7 +180,7 @@ app.get('/api/car/repair/export/:_carId', app.permission.check('car:export'), (r
                 car && car.repair.forEach((car, index) => {
                     worksheet.addRow({
                         _id: index + 1,
-                        date: car.dateStart,
+                        date: car.dateStart ? convert(car.dateStart) : '',
                         fee: car.fee,
                         content: car.content
                     });
@@ -215,9 +221,9 @@ app.get('/api/car/practice/export/:_carId', app.permission.check('car:export'), 
                 data.forEach((car, index) => {
                     worksheet.addRow({
                         _id: index + 1,
-                        ngayDangKy: car.ngayDangKy,
+                        ngayDangKy: car.ngayDangKy ? convert(car.ngayDangKy) : '',
                         fee: car.fee,
-                        ngayHetHanDangKy: car.ngayHetHanDangKy,
+                        ngayHetHanDangKy: car.ngayHetHanDangKy ? convert(car.ngayHetHanDangKy) : '',
                     });
                 });
                 app.excel.write(worksheet, cells);
@@ -256,13 +262,95 @@ app.get('/api/car/registration/export/:_carId', app.permission.check('car:export
                 data.forEach((car, index) => {
                     worksheet.addRow({
                         _id: index + 1,
-                        ngayDangKiem: car.ngayDangKiem,
+                        ngayDangKiem: car.ngayDangKiem ? convert(car.ngayDangKiem) : '',
                         fee: car.fee,
-                        ngayHetHanDangKiem: car.ngayHetHanDangKiem,
+                        ngayHetHanDangKiem: car.ngayHetHanDangKiem ? convert(car.ngayHetHanDangKiem) : '',
                     });
                 });
                 app.excel.write(worksheet, cells);
                 app.excel.attachment(workbook, res, 'Lịch sử đăng kiểm xe.xlsx');
+            }
+        });
+    }
+}
+);
+
+app.get('/api/car/insurance/export/:_carId', app.permission.check('car:export'), (req, res) => {
+    let { _carId } = req.params;
+    const sessionUser = req.session.user,
+        division = sessionUser.division;
+    if (sessionUser && sessionUser.isCourseAdmin && division && division.isOutside) {
+        res.send({ error: 'Bạn không có quyền xuất file excel này!' });
+    } else {
+        app.model.car.get(_carId, (error, car) => {
+            if (error || !car) {
+                res.send({ error: 'Hệ thống bị lỗi!' });
+            } else {
+                const data = car && car.lichSuDongBaoHiem && car.lichSuDongBaoHiem.sort((a, b) => new Date(b.ngayDongBaoHiem) - new Date(a.ngayDongBaoHiem));
+                const workbook = app.excel.create(), worksheet = workbook.addWorksheet(car.licensePlates);
+                const cells = [
+                    { cell: 'A1', value: 'STT', bold: true, border: '1234' },
+                    { cell: 'B1', value: 'Ngày đóng bảo hiểm', bold: true, border: '1234' },
+                    { cell: 'C1', value: 'Chi phí', bold: true, border: '1234' },
+                    { cell: 'D1', value: 'Ngày hết hạn đóng bảo hiểm tiếp theo', bold: true, border: '1234' },
+                ];
+                worksheet.columns = [
+                    { header: 'STT', key: '_id', width: 15 },
+                    { header: 'Ngày đóng bảo hiểm', key: 'ngayDongBaoHiem', width: 20 },
+                    { header: 'Chi phí', key: 'fee', width: 20 },
+                    { header: 'Ngày hết hạn bảo hiểm tiếp theo', key: 'ngayHetHanBaoHiem', width: 35 },
+                ];
+                data.forEach((car, index) => {
+                    worksheet.addRow({
+                        _id: index + 1,
+                        ngayDongBaoHiem: car.ngayDongBaoHiem ? convert(car.ngayDongBaoHiem) : '',
+                        fee: car.fee,
+                        ngayHetHanBaoHiem: car.ngayHetHanBaoHiem ? convert(car.ngayHetHanBaoHiem) : '',
+                    });
+                });
+                app.excel.write(worksheet, cells);
+                app.excel.attachment(workbook, res, 'Lịch sử đóng bảo hiểm xe.xlsx');
+            }
+        });
+    }
+}
+);
+
+app.get('/api/car/course/export/:_carId', app.permission.check('car:export'), (req, res) => {
+    let { _carId } = req.params;
+    const sessionUser = req.session.user,
+        division = sessionUser.division;
+    if (sessionUser && sessionUser.isCourseAdmin && division && division.isOutside) {
+        res.send({ error: 'Bạn không có quyền xuất file excel này!' });
+    } else {
+        app.model.car.get(_carId, (error, car) => {
+            if (error || !car) {
+                res.send({ error: 'Hệ thống bị lỗi!' });
+            } else {
+                const data = car && car.courseHistory ;
+                const workbook = app.excel.create(), worksheet = workbook.addWorksheet(car.licensePlates);
+                const cells = [
+                    { cell: 'A1', value: 'STT', bold: true, border: '1234' },
+                    { cell: 'B1', value: 'Khoá', bold: true, border: '1234' },
+                    { cell: 'C1', value: 'Giáo viên', bold: true, border: '1234' },
+                    { cell: 'D1', value: 'Ngày kết thúc', bold: true, border: '1234' },
+                ];
+                worksheet.columns = [
+                    { header: 'STT', key: '_id', width: 15 },
+                    { header: 'Khoá', key: 'courseName', width: 20 },
+                    { header: 'Giáo viên', key: 'teacher', width: 20 },
+                    { header: 'Ngày kết thúc', key: 'endDay', width: 35 },
+                ];
+                data.forEach((car, index) => {
+                    worksheet.addRow({
+                        _id: index + 1,
+                        courseName: car.course ? car.course.name : '',
+                        teacher: car.user ? (car.user.firstname + ' ' + car.user.lastname) : '',
+                        endDay: car && car.thoiGianKetThuc ? convert(car.thoiGianKetThuc) : '',
+                    });
+                });
+                app.excel.write(worksheet, cells);
+                app.excel.attachment(workbook, res, 'Lịch sử đi khoá của xe.xlsx');
             }
         });
     }

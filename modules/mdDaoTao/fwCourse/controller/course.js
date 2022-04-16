@@ -300,10 +300,34 @@ module.exports = (app) => {
 
                 delete changes.courseFee;
                 changes.courseFees = courseFees;
+                let err = null;
                 app.model.course.update(req.body._id, changes, () => getCourseData(req.body._id, req.session.user, (error, course) => {
-                    // const item = {};
-                    // course && Object.keys(changes).forEach(key => item[key] = course[key]);
-                    res.send({ error, item: course });
+                    if(changes.close){
+                        const listTeacher = [];
+                        course && course.teacherGroups && course.teacherGroups.forEach(teacherGroup => {
+                            if(teacherGroup && teacherGroup.teacher)
+                            listTeacher.push(teacherGroup.teacher._id);
+                        });
+                        const handleUpdateCar = (index = 0) => {
+                            if (index == listTeacher.length) {
+                                res.send({ error: err, item: course });
+                            } else {
+                                const teacher = listTeacher[index];
+                                app.model.car.get({user: teacher}, (error, car) => {
+                                    if(error || !car){
+                                        err = error;
+                                        handleUpdateCar(index + 1);
+                                    } else {
+                                        app.model.car.update({_id: car._id}, {currentCourseClose: changes.close}, (error) => {
+                                            err = error;
+                                            handleUpdateCar(index + 1);
+                                        });
+                                    }
+                                });
+                            }
+                        };
+                        handleUpdateCar();
+                    } else res.send({ error, item: course });
                 }));
             }
         });
