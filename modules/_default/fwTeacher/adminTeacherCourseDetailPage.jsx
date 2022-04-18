@@ -2,9 +2,8 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { getTeacher, updateTeacher } from './redux';
 import { Link } from 'react-router-dom';
-import { AdminPage, FormSelect,FormCheckbox } from 'view/component/AdminPage';
+import { AdminPage, FormSelect,FormCheckbox,renderTable,TableCell  } from 'view/component/AdminPage';
 import { ajaxSelectCourseType } from 'modules/mdDaoTao/fwCourseType/redux';
-
 class StaffEditPage extends AdminPage {
     state = {};
     componentDidMount() {
@@ -38,11 +37,42 @@ class StaffEditPage extends AdminPage {
     }
 
     handleChange = value=>this.itemDayLyThuyet.value(value)||this.itemDayThucHanh.value(!value);
-
+    renderType = type=>{
+        return type=='add'?<span className='text font-weight-bold text-primary'>Gán khóa</span>
+        :<span className='text font-weight-bold text-danger'>Hủy khóa</span>;
+    }
     render() {
         const permission = this.getUserPermission('teacher');
         const readOnly = !permission.write;
         const item = this.state.item ? this.state.item:null;
+        const list = item && item.courseHistory && item.courseHistory.length ? item.courseHistory:[];
+        console.log({item});
+        const tableCourseHistory = renderTable({
+            getDataSource: () => list,
+            stickyHead: false,
+            renderHead: () => (
+                <tr>
+                    <th style={{ width: 'auto', whiteSpace: 'nowrap' }}>#</th>
+                    <th style={{ width: 'auto', whiteSpace: 'nowrap', textAlign: 'center' }}>Khóa học</th>
+                    <th style={{ width: '30%', whiteSpace: 'nowrap', textAlign: 'center' }}>Người thực hiện</th>
+                    <th style={{ width: 'auto', whiteSpace: 'nowrap', textAlign: 'center' }}>Ngày </th>
+                    <th style={{ width: 'auto', whiteSpace: 'nowrap', textAlign: 'center' }}>Tác vụ</th>
+                    <th style={{ width: '70%', whiteSpace: 'nowrap' }}>Lý do</th>
+                </tr>),
+            renderRow: (item, index) => {
+                return(
+                    <tr key={index}>
+                        <TableCell type='number' content={index + 1} />
+                        <TableCell type='text' content={item.course ?item.course.name : '_'} />
+                        <TableCell type='text' style={{ whiteSpace: 'nowrap' }} content={item.user ? `${item.user.lastname} ${item.user.firstname}`:''} />
+                        <TableCell type='text' content={T.dateToText(item.date, 'dd/mm/yyyy')} />
+                        <TableCell type='text' content={this.renderType(item.type)} style={{ whiteSpace: 'nowrap' }}/>
+                        <TableCell content={item.description} style={{ whiteSpace: 'nowrap' }} />
+                    </tr>
+                );
+            }
+                
+        });
         return this.renderPage({
             icon: 'fa fa-user',
             title: 'Đi khóa giáo viên: ' + (item ? `${item.lastname} ${item.firstname}`:''),
@@ -65,12 +95,11 @@ class StaffEditPage extends AdminPage {
                 <div className='tile'>
                     <div className="tile-title">Lịch sử đi khóa</div>
                     <div className="tile-body">
-                        
+                        {tableCourseHistory}
                     </div>
                 </div>
             </>,
             backRoute: '/user/teacher-course',
-            onSave: permission.write ? this.save : null,
         });
     }
 }

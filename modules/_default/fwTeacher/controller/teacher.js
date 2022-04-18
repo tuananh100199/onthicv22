@@ -51,7 +51,7 @@ module.exports = (app) => {
         
         //lọc nghỉ việc
         if(condition.nghiViec){
-          pageCondition.thoiGianLamViec={['nghiViec']:condition.nghiViec=='1'?true:false};
+          pageCondition={...pageCondition,['thoiGianLamViec.nghiViec']:condition.nghiViec};
         } 
 
 
@@ -92,6 +92,16 @@ module.exports = (app) => {
                 pageCondition.courses= {$in: [null,[],...courses]};
             }else{
                 pageCondition.courses={$in:filter.courses};
+            }
+        }
+
+        // doneCourse
+        if(filter.doneCourses && filter.doneCourses.length){
+            if(filter.doneCourses.find(item=>item=='null')){
+                const courses = filter.doneCourses.filter(course=>course!='null');
+                pageCondition.doneCourses= {$in: [null,[],...courses]};
+            }else{
+                pageCondition.doneCourses={$in:filter.doneCourses};
             }
         }
         // filter lọc nghỉ việc

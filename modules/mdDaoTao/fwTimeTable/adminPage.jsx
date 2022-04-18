@@ -181,13 +181,13 @@ class TimeTablePage extends AdminPage {
                     <TableHeadCell style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Giờ học</TableHeadCell>
                     <TableHeadCell style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Số giờ học</TableHeadCell>
                     <TableHeadCell style={{ width: '30%', textAlign: 'center' }} nowrap='true'>Xe học</TableHeadCell>
-                    <TableHeadCell style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Thao tác</TableHeadCell>
+                    {/* <TableHeadCell style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Thao tác</TableHeadCell> */}
                 </TableHead>
                 ),
             renderRow: (item, index) => (
                 <tr key={index} style={{ backgroundColor: T.dateToText(item.date, 'dd/mm/yyyy') == today ? '#D9EDF7' : '' }} >
                     <TableCell type='number' content={(pageNumber - 1) * pageSize + index + 1} />
-                    <TableCell type='link' content={<>{item.student ? item.student.lastname + ' ' + item.student.firstname : ''}</>} style={{ whiteSpace: 'nowrap' }} onClick={e => this.edit(e, item)} />
+                    <TableCell type='text' content={<>{item.student ? item.student.lastname + ' ' + item.student.firstname : ''}</>} style={{ whiteSpace: 'nowrap' }} />
                     <TableCell type='text' content={item.student ? item.student.identityCard : ''} style={{ whiteSpace: 'nowrap' }} />
                     <TableCell type='text' content={<><span>{item.student && item.student.course ? item.student.course.name : ''}</span></>} style={{ whiteSpace: 'nowrap' }} />
                     <TableCell type='number' style={{ textAlign: 'center' }} content={item.dateNumber} />
@@ -195,7 +195,7 @@ class TimeTablePage extends AdminPage {
                     <TableCell type='number' style={{ textAlign: 'center' }} content={item.numOfHours ? `${item.startHour}-${item.startHour + item.numOfHours}` : `${item.startHour}`} />
                     <TableCell type='number' style={{ textAlign: 'center' }} content={item.numOfHours} />
                     <TableCell type='number' style={{ textAlign: 'center' }} content={item.licensePlates} />
-                    <TableCell type='buttons' content={item} permission={permission} onEdit={this.edit} onDelete={this.delete} />
+                    {/* <TableCell type='buttons' content={item} permission={permission} onEdit={this.edit} onDelete={this.delete} /> */}
                 </tr>),
         });
         return this.renderPage({
@@ -209,8 +209,8 @@ class TimeTablePage extends AdminPage {
                 <TimeTableModal ref={e => this.modal = e} readOnly={!permission.write}
                     getStudent={this.props.getStudent} create={this.props.createTimeTable} update={this.props.updateTimeTable} getDateNumber={this.props.getTimeTableDateNumber} />
             </>,
-            onCreate: permission.write ? this.edit : null,
-            onDelete: permission.delete ? this.delete : null,
+            // onCreate: permission.write ? this.edit : null,
+            // onDelete: permission.delete ? this.delete : null,
         });
     }
 }

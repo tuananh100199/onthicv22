@@ -6,6 +6,8 @@ module.exports = (app) => {
         dayLyThuyet:{type:Boolean,default:false},// loại giảng dạy. True là giáo viên dạy lý thuyết, false là giáo viên dạy thực hành
         courseTypes: { type: [{ type: app.db.Schema.Types.ObjectId, ref: 'CourseType' }], default: [] },// danh sách loại khóa học có thể dạy
         courses: { type: [{ type: app.db.Schema.Types.ObjectId, ref: 'Course' }], default: [] },// danh sách các khóa học đang dạy
+        doneCourses: { type: [{ type: app.db.Schema.Types.ObjectId, ref: 'Course' }], default: [] },// danh sách các khóa học đã dạy
+        
         // Thông tin chung
         maGiaoVien:String,
         firstname: String,
@@ -78,7 +80,7 @@ module.exports = (app) => {
             course: { type: app.db.Schema.ObjectId, ref: 'Course' },    // Khóa học
             date: { type: Date, default: Date.now },
             user: { type: app.db.Schema.ObjectId, ref: 'User' },    // Người thực hiện                                   // Người xác nhận tiền 
-            action: { type: String, enum: ['add', 'remove'], default: 'add' },
+            type: { type: String, enum: ['add', 'remove'], default: 'add' },
             description: String, // only for remove course
         }],
 
@@ -108,16 +110,16 @@ module.exports = (app) => {
         getAll: (condition, done) => typeof condition == 'function' ?
         model.find({}).populate('user', '-password').populate('division', ' _id title isOutside')
         .populate('contract.category').populate('chungChiSuPham','_id title').populate('giayPhepLaiXe.category','_id title')
-        .populate('courseTypes','_id title').populate('courses','_id name').populate('teacherType','_id title')
+        .populate('courseTypes','_id title').populate('courses','_id name').populate('teacherType','_id title').populate('doneCourses','_id name')
         .exec(condition) :
         model.find(condition).populate('user', '-password').populate('division', ' _id title isOutside').populate('contract.category','_id title')
         .populate('chungChiSuPham','_id title').populate('courseTypes','_id title').populate('courses','_id name').populate('teacherType','_id title')
-        .populate('giayPhepLaiXe.category','_id title').exec(done),
+        .populate('giayPhepLaiXe.category','_id title').populate('doneCourses','_id name').exec(done),
 
         get: (condition, done) =>(typeof condition == 'object' ? model.findOne(condition) : model.findById(condition))
-            .populate('user', '-password').populate('division', ' _id title isOutside')
+            .populate('user', '-password').populate('division', ' _id title isOutside').populate('doneCourses','_id name')
             .populate('chungChiSuPham','_id title').populate('courseTypes','_id title').populate('courses','_id name').populate('teacherType','_id title')
-            .exec(done),
+            .populate('courseHistory.user','_id firstname lastname').populate('courseHistory.course','_id name').exec(done),
 
         getPage: (pageNumber, pageSize, condition,sort, done) => model.countDocuments(condition, (error, totalItem) => {
             if (error) {
@@ -132,7 +134,7 @@ module.exports = (app) => {
                 const skipNumber = (result.pageNumber > 0 ? result.pageNumber - 1 : 0) * result.pageSize;
                 model.find(condition).sort(sort ? sort:{ firstname: 1 }).skip(skipNumber).limit(result.pageSize)
                 .populate('user', '-password').populate('division', '_id title').populate('chungChiSuPham','_id title')
-                .populate('courseTypes','_id title').populate('courses','_id name').populate('teacherType','_id title')
+                .populate('courseTypes','_id title').populate('courses','_id name').populate('teacherType','_id title').populate('doneCourses','_id name')
                 .exec((error, items) => {
                     result.list = error ? [] : items;
                     done(error, result);
@@ -172,7 +174,7 @@ module.exports = (app) => {
             model.findOneAndUpdate({_id}, { $push: { courses: course } }, { new: true }).populate('courses').exec(done);
         },
         addCourseHistory: (_id, data, done) => {
-            model.findOneAndUpdate(_id, { $push: { courseHistory: data } }, { new: true }).exec(done);
+            model.findOneAndUpdate({_id}, { $push: { courseHistory: data } }, { new: true }).exec(done);
         },
         deleteCourse: (_id, course, done) => {
             model.findOneAndUpdate({_id}, { $pull: { courses: course } }, { new: true }).populate('courses').exec(done);
@@ -184,6 +186,20 @@ module.exports = (app) => {
         
         deleteTrainingClass: (_id, trainingClass, done) => {
             model.findOneAndUpdate({_id}, { $pull: { trainingClass:trainingClass } }, { new: true }).populate('trainingClass').exec(done);
+        },
+
+        updateDoneCourse: (_courseId, done) => {// update khi khóa học kết thúc, lúc này courses=>doneCourses
+            model.updateMany({courses:{$in:[_courseId]}},
+                { $push:{['doneCourses']:_courseId},$pull:{['courses']:_courseId} },
+                // {firstname:'vy'},
+                { new: true }).populate('courses', '_id title').populate('doneCourses', '_id title').exec(done);
+        },
+        updateUnDoneCourse: (_courseId, done) => {// update khi admin mở lại khóa học, lúc này thì những khóa học thuộc doneCourses sẽ trở lại courses
+            console.log('update unDoneCourse,courseId = ',_courseId);
+            model.updateMany({doneCourses:{$in:[_courseId]}},
+                { $push:{['courses']:_courseId},$pull:{['doneCourses']:_courseId} },
+                // {firstname:'vy'},
+                { new: true }).populate('courses', '_id title').populate('doneCourses', '_id title').exec(done);
         },
     };
 };

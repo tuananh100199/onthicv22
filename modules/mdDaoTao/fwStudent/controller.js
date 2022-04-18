@@ -255,6 +255,7 @@ module.exports = (app) => {
                 const cartItem = student.cart ? student.cart.item : [],
                 transactionId = student.cart ? student.cart.transactionId : '';
                 const data = {item:  cartItem, transactionId};
+                console.log(cartItem);
                 app.model.student.addPaymentExtra({ _id: student._id }, data, (error) => {
                     if(error) res.send({error});
                     else{

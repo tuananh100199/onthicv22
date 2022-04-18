@@ -75,6 +75,7 @@ class AdminTeacherPage extends AdminPage {
                     <TableHeadCell style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Loại giáo viên</TableHeadCell>
                     <TableHeadCell name='courseTypes' filter='select' filterData = {ajaxSelectCourseType} style={{ width: 'auto', textAlign: 'center' }} nowrap='true' content='Loại khóa học' /> 
                     <TableHeadCell name='courses' style={{ width: 'auto', textAlign: 'center' }} menuStyle={{width:200}} filter='select' filterData = {this.state.courses}>Khóa học đang dạy</TableHeadCell>
+                    <TableHeadCell name='doneCourses' style={{ width: 'auto', textAlign: 'center' }} menuStyle={{width:200}} filter='select' filterData = {this.state.courses}>Khóa học đã dạy</TableHeadCell>
                     <TableHeadCell style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Thao tác</TableHeadCell>
                 </TableHead>
                 ),
@@ -88,6 +89,7 @@ class AdminTeacherPage extends AdminPage {
                         <TableCell  content={item.dayLyThuyet?'GV lý thuyết':'GV thực hành'} />
                         <TableCell  content={item.courseTypes && item.courseTypes.length ? item.courseTypes.reduce((result,item)=> result+(result!=''?(', '+item.title):item.title),''):'chưa có'} />
                         <TableCell  content={item.courses && item.courses.length ? this.renderListCourse(item.courses):'chưa có'} />
+                        <TableCell  content={item.doneCourses && item.doneCourses.length ? this.renderListCourse(item.doneCourses):'Chưa có'} />
                         <TableCell type='buttons' content={item} permission={permission} onEdit={'/user/teacher-course/' + item._id}>
                         </TableCell>
                     </tr>);
