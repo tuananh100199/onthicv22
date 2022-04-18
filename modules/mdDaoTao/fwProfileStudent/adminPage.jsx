@@ -90,8 +90,8 @@ class ProfileStudentPage extends AdminPage {
 
         return this.renderPage({
             icon: 'fa fa-folder',
-            title: 'Bổ sung hồ sơ',
-            breadcrumb: ['Bổ sung hồ sơ'],
+            title: 'Theo dõi hồ sơ học viên',
+            breadcrumb: ['Theo dõi hồ sơ học viên'],
             content: (
                 <div className='tile'>
                     <div className='tile-body'>

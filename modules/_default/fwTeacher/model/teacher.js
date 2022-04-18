@@ -74,6 +74,14 @@ module.exports = (app) => {
             endDate:Date,
         },
 
+        courseHistory: [{
+            course: { type: app.db.Schema.ObjectId, ref: 'Course' },    // Khóa học
+            date: { type: Date, default: Date.now },
+            user: { type: app.db.Schema.ObjectId, ref: 'User' },    // Người thực hiện                                   // Người xác nhận tiền 
+            action: { type: String, enum: ['add', 'remove'], default: 'add' },
+            description: String, // only for remove course
+        }],
+
         trainingClass: { type: [{ type: app.db.Schema.Types.ObjectId, ref: 'TrainingClass' }], default: [] },// danh sách lớp tập huấn tham gia.
 
 
@@ -162,6 +170,9 @@ module.exports = (app) => {
 
         addCourse: (_id, course, done) => {
             model.findOneAndUpdate({_id}, { $push: { courses: course } }, { new: true }).populate('courses').exec(done);
+        },
+        addCourseHistory: (_id, data, done) => {
+            model.findOneAndUpdate(_id, { $push: { courseHistory: data } }, { new: true }).exec(done);
         },
         deleteCourse: (_id, course, done) => {
             model.findOneAndUpdate({_id}, { $pull: { courses: course } }, { new: true }).populate('courses').exec(done);

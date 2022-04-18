@@ -8,7 +8,7 @@ module.exports = (app) => {
             9003: { title: 'Danh mục giấy phép lái xe', link: '/user/gplx/category', icon: 'fa-bars', backgroundColor: '#00b0ff' },
             9004: { title: 'Danh mục hồ sơ', link: '/user/profile/category', icon: 'fa-bars', backgroundColor: '#00b0ff' },
             9005: { title: 'Danh mục loại giáo viên', link: '/user/teacher-type/category', icon: 'fa-bars', backgroundColor: '#00b0ff' },
-        
+            9020: { title: 'Quản lý đi khóa', link: '/user/teacher-course', icon: 'fa-bars', backgroundColor: '#00b0ff' },
         }
     };
 
@@ -22,7 +22,8 @@ module.exports = (app) => {
     app.get('/user/gplx/category', app.permission.check('category:read'), app.templates.admin);
     app.get('/user/teacher', app.permission.check('teacher:read'), app.templates.admin);
     app.get('/user/teacher/:id', app.permission.check('teacher:write'), app.templates.admin);
-
+    app.get('/user/teacher-course', app.permission.check('teacher:read'), app.templates.admin);
+    app.get('/user/teacher-course/:id', app.permission.check('teacher:write'), app.templates.admin);
     //APIs -----------------------------------------------------------------------------------------------
     app.get('/api/teacher/page/:pageNumber/:pageSize', app.permission.check('teacher:read'), (req, res) => {
         let pageNumber = parseInt(req.params.pageNumber),

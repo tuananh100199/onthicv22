@@ -68,6 +68,24 @@ export function getStudentPage(pageNumber, pageSize, pageCondition, done) {
     };
 }
 
+T.initCookiePage('officialStudentPage');
+export function getOfficialStudentPage(pageNumber, pageSize, pageCondition,filter,sort, done) {
+    const page = T.updatePage('officialStudentPage', pageNumber, pageSize,pageCondition,filter,sort);
+    return dispatch => {
+        const url = `/api/student/official/page/${page.pageNumber}/${page.pageSize}`;
+        T.get(url, { pageCondition:page.pageCondition,filter:page.filter,sort:page.sort }, data => {
+            if (data.error) {
+                T.notify('Lấy danh sách học viên bị lỗi!', 'danger');
+                console.error(`GET: ${url}. ${data.error}`);
+            } else {
+                if (pageCondition) data.page.pageCondition = pageCondition;
+                done && done(data.page);
+                dispatch({ type: StudentGetPage, page: data.page });
+            }
+        }, error => console.error(error) || T.notify('Lấy danh sách học viên bị lỗi!', 'danger'));
+    };
+}
+
 export function getDebtStudentPage(pageNumber, pageSize, pageCondition, done) {
     const page = T.updatePage('adminStudent', pageNumber, pageSize);
     return dispatch => {
@@ -97,6 +115,23 @@ export function updateStudent(_id, changes, done) {
                 done && done(data.item);
                 dispatch({ type: StudentUpdate, item: data.item });
                 // dispatch(getStudentPage());
+            }
+            done && done(data.error);
+        }, error => console.error(error) || T.notify('Cập nhật thông tin học viên bị lỗi!', 'danger'));
+    };
+}
+
+export function updateOfficialStudent(_id, changes, done) {
+    return dispatch => {
+        const url = '/api/student';
+        T.put(url, { _id, changes }, data => {
+            if (data.error) {
+                T.notify('Cập nhật thông tin học viên bị lỗi!', 'danger');
+                console.error(`PUT: ${url}. ${data.error}`);
+            } else {
+                done && done(data.item);
+                dispatch({ type: StudentUpdate, item: data.item });
+                dispatch(getOfficialStudentPage());
             }
             done && done(data.error);
         }, error => console.error(error) || T.notify('Cập nhật thông tin học viên bị lỗi!', 'danger'));
@@ -166,6 +201,13 @@ export function getStudent(_id, done) {
             }
         }, error => console.error(error) || T.notify('Lấy thông tin học viên bị lỗi', 'danger'));
     };
+}
+
+export function exportOfficialStudent() {
+    const page = T.updatePage('officialStudentPage');
+    const {filter=null} = page;
+    const condition = filter && Object.keys(filter).length ? JSON.stringify(filter):'all';
+    T.download(T.url(`/api/student/official/export/${condition}`));
 }
 
 export function getStudentScore(courseId, done) {
