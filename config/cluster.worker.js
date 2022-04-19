@@ -36,7 +36,7 @@ module.exports = (cluster, isDebug) => {
     app.model = {};
 
     // Configure ------------------------------------------------------------------------------------------------------
-    require('./common')(app, app.appName);
+    require('./common')(app, appConfig);
     require('./view')(app, express);
     require('./database')(app, appConfig);
     require('./io')(app, server, appConfig);
