@@ -1,11 +1,11 @@
 module.exports = (app) => {
     app.readyHooks.add('schedule', {
-        ready: () => app.database.redis,
+        ready: () => app.database.redisDB,
         run: () => {
             // Thực hiện task lúc nửa đêm
             app.schedule('0 0 * * *', () => {
                 // Cập nhật biến đếm ngày hôm nay về 0
-                if (app.primaryWorker) app.database.redis.set(`${app.appName}:state:todayViews`, 0);
+                if (app.primaryWorker) app.database.redisDB.set(`${app.appName}:state:todayViews`, 0);
 
                 // Dọn rác /temp/:dateFolderName cách 1 ngày
                 if (app.primaryWorker) {

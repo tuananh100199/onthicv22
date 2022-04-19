@@ -8,7 +8,7 @@ module.exports = app => {
     app.get('/user/payment', app.permission.check('payment:read'), app.templates.admin);
 
     app.post('/api/payment', (req, res) => {
-        app.database.redis.get(`${app.appName}:state:smsAPIToken`, (error, token) => { //get token to auth app
+        app.database.redisDB.get(`${app.appName}:state:smsAPIToken`, (error, token) => { //get token to auth app
             if (error || !token) {
                 res.send({
                     error: 'Error when get token'
@@ -306,7 +306,7 @@ module.exports = app => {
     // app.post('/api/payment', app.permission.check(), (req, res) => { 
     //     const suffixKeys= ['smsAPIToken', 'moneyLine', 'moneyStr', 'contentLine', 'contentStr', 'banks']; //'moneyStartStr', 'moneyEndStr', 'contentStartStr', 'contentEndStr'
     //     const keys = suffixKeys.map(item => `${app.appName}:state:${item}`);
-    //     app.database.redis.mget(keys, (error, values) => {
+    //     app.database.redisDB.mget(keys, (error, values) => {
     //         if(error ||!values || values.length == 0){
     //             res.send({error:'Error when get token'});
     //         } else {

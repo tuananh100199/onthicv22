@@ -36,10 +36,10 @@ module.exports = (app, http, appConfig) => {
                 maxAge: 3600000 * 24 * 7// one week
             }
         };
-    if (appConfig && app.database.redis) {
+    if (appConfig && app.database.redisDB) {
         // console.log(` - #${process.pid}: The system used Redis session!`);
         const redisStore = require('connect-redis')(session);
-        sessionOptions.store = new redisStore({ client: app.database.redis, prefix: appConfig.name + '_sess:' });
+        sessionOptions.store = new redisStore({ client: app.database.redisDB, prefix: appConfig.name + '_sess:' });
     }
     const sessionMiddleware = session(sessionOptions);
     app.use(sessionMiddleware);

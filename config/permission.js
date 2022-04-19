@@ -113,7 +113,7 @@ module.exports = app => {
                     }
                 });
             } else if (req.headers.authorization) { // is token
-                app.database.redis.get(req.headers.authorization, (error, value) => {
+                app.database.redisDB.get(req.headers.authorization, (error, value) => {
                     if (error) {
                         res.send({ error: 'System has errors!' });
                     } else if (value) {
@@ -140,7 +140,7 @@ module.exports = app => {
                     }
                 });
             } else if (req.headers.authorization) { // is token
-                app.database.redis.get(req.headers.authorization, (error, value) => {
+                app.database.redisDB.get(req.headers.authorization, (error, value) => {
                     if (error) {
                         res.send({ error: 'System has errors!' });
                     } else if (value) {

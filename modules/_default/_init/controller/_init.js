@@ -206,10 +206,10 @@ module.exports = (app) => {
             zaloId: ''
         },
 
-        init: () => app.database.redis.keys(`${app.appName}:state:*`, (_, keys) => {
+        init: () => app.database.redisDB.keys(`${app.appName}:state:*`, (_, keys) => {
             keys && Object.keys(app.state.initState).forEach(key => {
                 const redisKey = `${app.appName}:state:${key}`;
-                if (keys.indexOf(redisKey) == -1) app.database.redis.set(redisKey, app.state.initState[key]);
+                if (keys.indexOf(redisKey) == -1) app.database.redisDB.set(redisKey, app.state.initState[key]);
             });
         }),
 
@@ -219,7 +219,7 @@ module.exports = (app) => {
             if (n >= 1 && typeof params[n - 1] == 'function') {
                 const done = params.pop(); // done(error, values)
                 const keys = n == 1 ? app.state.keys : params.map(key => `${app.appName}:state:${key}`); // get chỉ có done => đọc hết app.state
-                app.database.redis.mget(keys, (error, values) => {
+                app.database.redisDB.mget(keys, (error, values) => {
                     if (error || values == null) {
                         done(error || 'Error when get Redis value!');
                     } else if (n == 2) {
@@ -240,7 +240,7 @@ module.exports = (app) => {
             if (n >= 1 && typeof params[n - 1] == 'function') {
                 const done = (n % 2) ? params.pop() : null;
                 for (let i = 0; i < n - 1; i += 2) params[i] = app.state.prefixKey + params[i];
-                n == 1 ? done() : app.database.redis.mset(params, error => done && done(error));
+                n == 1 ? done() : app.database.redisDB.mset(params, error => done && done(error));
             } else {
                 console.log('Error when set app.state');
             }
@@ -250,7 +250,7 @@ module.exports = (app) => {
 
     // Hook readyHooks ------------------------------------------------------------------------------------------------------------------------------
     app.readyHooks.add('readyInit', {
-        ready: () => app.database.redis,
+        ready: () => app.database.redisDB,
         run: () => app.primaryWorker && app.state.init(),
     });
 };
