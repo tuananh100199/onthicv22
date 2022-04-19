@@ -57,23 +57,42 @@ module.exports = app => {
     app.get('/api/license/page/:pageNumber/:pageSize', app.permission.check('certificate:read'), (req, res) => {
         let pageNumber = parseInt(req.params.pageNumber),
             pageSize = parseInt(req.params.pageSize),
-            {searchText,isLicense}=req.query,
+            condition=req.query.condition||{},
+            filter=req.query.filter||null,
+            sort=req.query.sort||null,
             pageCondition = {};
         pageCondition.$or = [];
 
-        if (searchText){
-            const value = { $regex: `.*${searchText}.*`, $options: 'i' };
+        if (condition.searchText){
+            const value = { $regex: `.*${condition.searchText}.*`, $options: 'i' };
             pageCondition.$or.push(
                 { identityCard: value },
                 { firstname: value },
                 { lastname: value },
             );
         }
-        if(isLicense) pageCondition.isLicense=true;
-
+        if(condition.isLicense) pageCondition.isLicense=true;
         pageCondition.datSatHach=true;
+        if(filter){
+            app.handleFilter(filter,['isCertification','isLicense','course'],filterCondition=>{
+                pageCondition={...pageCondition,...filterCondition};
+            });
+
+            if(filter.capPhat && filter.capPhat.length<2){// đk đã cấp phát chứng chỉ và chỉ có 1 đk
+                // nếu như chọn cả 2 đk là cấp phát và chưa cấp phát thì ko gán câu nghi vấn.
+                filter.capPhat.forEach(item=>{
+                    if(item=='1'){
+                        pageCondition.hasCertification=true;
+                        pageCondition.hasLicense=true;
+                    }else{
+                        pageCondition.$or.push({hasCertification:false},{hasLicense:false});
+                    }
+                });
+            }
+        } 
+        
         if (pageCondition.$or.length == 0) delete pageCondition.$or;
-        app.model.student.getPage(pageNumber, pageSize, pageCondition, (error, page) => res.send({ error, page }));
+        app.model.student.getPage(pageNumber, pageSize, pageCondition,sort, (error, page) => res.send({ error, page }));
     });
 
     app.get('/api/certificate/license/export', app.permission.check('user:login'), (req, res) => {

@@ -2,8 +2,13 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { getLicensePage, updateCertificate,exportFinalLicense } from './redux';
 import Pagination from 'view/component/Pagination';
-import { AdminPage, AdminModal, FormTextBox, TableCell, renderTable, FormCheckbox,CirclePageButton } from 'view/component/AdminPage';
+import { AdminPage, AdminModal, FormTextBox, TableCell, renderTable, FormCheckbox,CirclePageButton,TableHead,TableHeadCell } from 'view/component/AdminPage';
 import FileSaver from 'file-saver';
+import {getCourseAll} from 'modules/mdDaoTao/fwCourse/redux';
+const isCertificateData = [
+    {id:'1',text:'Đã cấp'},
+    {id:'0',text:'Chưa cấp'},
+];
 
 class ExportModal extends AdminModal {
     state = { copied: false,listStudent:[] };
@@ -120,13 +125,18 @@ class LicensePage extends AdminPage {
         T.ready('/user/license', () => {
             T.showSearchBox();
             T.onSearch = (searchText) => this.onSearch({ searchText });
-            this.props.getLicensePage(1, 50, {});
+            this.props.getLicensePage(1, 50, {},{},{});
+            this.props.getCourseAll({isDefault:false},list=>{
+                let course = list.map(course=>({id:course._id,text:course.name}));
+                console.log({course});
+                this.setState({course});
+            });
         });
     }
 
     onSearch = ({ pageNumber, pageSize, searchText }, done) => {
         if (searchText == undefined) searchText = this.state.searchText;
-        this.setState({ isSearching: true }, () => this.props.getLicensePage(pageNumber, pageSize, searchText, (page) => {
+        this.setState({ isSearching: true }, () => this.props.getLicensePage(pageNumber, pageSize, {searchText},null,null, (page) => {
             this.setState({ searchText, isSearching: false });
             done && done(page);
         }));
@@ -191,21 +201,21 @@ class LicensePage extends AdminPage {
         let { pageNumber, pageSize, pageTotal, totalItem, list } = this.props.certificate && this.props.certificate.licensePage ?
             this.props.certificate.licensePage : { pageNumber: 1, pageSize: 50, pageTotal: 1, totalItem: 0, list: null };
             const table = renderTable({
-            getDataSource: () => list, stickyHead: true,
+            getDataSource: () => list, stickyHead: true,autoDisplay:true,
             renderHead: () => (
-                <tr>
-                    <th style={{ width: 'auto' }}>#</th>
-                    <th style={{ width: '100%' }} nowrap='true'>Học viên</th>
-                    <th style={{ width: 'auto' }} nowrap='true'>CMND/CCCD</th>
-                    <th style={{ width: 'auto' }} nowrap='true'>Loại khóa học</th>
-                    <th style={{ width: 'auto' }} nowrap='true'>Khóa học</th>
-                    <th style={{ width: 'auto' }} nowrap='true'>Kỳ sát hạch</th>
-                    <th style={{ width: 'auto' }} nowrap='true'>Đã có CCSC</th>
-                    <th style={{ width: 'auto' }} nowrap='true'>Đã có GPLX</th>
-                    <th style={{ width: 'auto' }} nowrap='true'>Cấp phát</th>
-                    <th style={{ width: 'auto' }} nowrap='true'>In biên bản</th>
-                    <th style={{ width: 'auto' }} nowrap='true'>Thao tác</th>
-                </tr>),
+                <TableHead getPage = {this.props.getLicensePage}>
+                    <TableHeadCell style={{ width: 'auto' }}>#</TableHeadCell>
+                    <TableHeadCell style={{ width: '100%' }} nowrap='true'>Học viên</TableHeadCell>
+                    <TableHeadCell style={{ width: 'auto' }} nowrap='true'>CMND/CCCD</TableHeadCell>
+                    <TableHeadCell style={{ width: 'auto' }} nowrap='true'>Loại khóa học</TableHeadCell>
+                    <TableHeadCell  name='course' filter='select' filterData={this.state.course} style={{ width: 'auto' }} menuStyle={{width:200}} nowrap='true'>Khóa học</TableHeadCell>
+                    <TableHeadCell style={{ width: 'auto' }} nowrap='true'>Kỳ sát hạch</TableHeadCell>
+                    <TableHeadCell name='isCertification' filter='select' filterData={isCertificateData} style={{ width: 'auto' }} nowrap='true'>Đã có CCSC</TableHeadCell>
+                    <TableHeadCell name='isLicense' filter='select' filterData={isCertificateData} style={{ width: 'auto' }} nowrap='true'>Đã có GPLX</TableHeadCell>
+                    <TableHeadCell name='capPhat' filter='select' filterData={isCertificateData} style={{ width: 'auto' }} nowrap='true'>Cấp phát</TableHeadCell>
+                    <TableHeadCell style={{ width: 'auto' }} nowrap='true'>In biên bản</TableHeadCell>
+                    <TableHeadCell style={{ width: 'auto' }} nowrap='true'>Thao tác</TableHeadCell>
+                </TableHead>),
             renderRow: (item, index) => (
                 <tr key={index}>
                     <TableCell type='number' content={index + 1} />
@@ -216,7 +226,7 @@ class LicensePage extends AdminPage {
                     <TableCell type='text' content={item.kySatHach} style={{whiteSpace:'nowrap'}} />
                     <TableCell type='checkbox' content={item.isCertification} permission={permission} onChanged = {value=>this.updateIsLicense(item._id,item.hasLicense,{isCertification:value})}/>
                     <TableCell type='checkbox' content={item.isLicense} permission={permission} onChanged = {value=>this.updateIsLicense(item._id,item.hasLicense,{isLicense:value})}/>
-                    {item.isLicense && item.isCertification ? <TableCell type='checkbox' content={item.hasLicense} permission={permission} onChanged = {value=>this.update(item._id,{hasLicense:value})}/>:<TableCell type='text' content=''/>}
+                    {item.isLicense && item.isCertification ? <TableCell type='checkbox' content={item.hasLicense} permission={permission} onChanged = {value=>this.update(item._id,{hasLicense:value,hasCertification:value})}/>:<TableCell type='text' content=''/>}
                     {item.isLicense && item.isCertification ? <TableCell type='checkbox' isSwitch={false} content={this.state.listStudent.find(studentId=>studentId._id==item._id)} permission={permission} onChanged = {value=>this.changeExportItem(value,item)}/>: <TableCell type='text' content=''/>}
                     <TableCell type='buttons' content={item} permission={permission} onEdit={this.edit}>
                     </TableCell>
@@ -248,5 +258,5 @@ class LicensePage extends AdminPage {
 }
 
 const mapStateToProps = state => ({ system: state.system, certificate: state.trainning.certificate });
-const mapActionsToProps = { getLicensePage, updateCertificate,exportFinalLicense };
+const mapActionsToProps = { getLicensePage, updateCertificate,exportFinalLicense,getCourseAll };
 export default connect(mapStateToProps, mapActionsToProps)(LicensePage);

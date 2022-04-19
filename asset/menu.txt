@@ -39,6 +39,7 @@
 	4035 - Quản lý xe (/user/car)
 	4045 - Khóa học (/user/course)
 	4055 - Học viên chưa tốt nghiệp (/user/student/fail-graduation)
+	4057 - Danh mục kỳ sát hạch (/user/license-test)
 	4060 - Học viên chưa đạt sát hạch (/user/student/fail-exam)
 	5000 - Thu công nợ (/user/payment)
 	5100 - SMS Banking (/user/sms)
