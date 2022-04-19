@@ -8,7 +8,7 @@ module.exports = app => {
         description: String,
         categories: [{ type: app.database.mongoDB.Schema.ObjectId, ref: 'Category' }],
     });
-    const model = app.db.model('Sign', schema);
+    const model = app.database.mongoDB.model('Sign', schema);
 
     app.model.sign = {
         create: (data, done) => {

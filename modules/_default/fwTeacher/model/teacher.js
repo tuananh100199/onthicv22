@@ -90,7 +90,7 @@ module.exports = (app) => {
 
     });
 
-    const model = app.db.model('Teacher', schema);
+    const model = app.database.mongoDB.model('Teacher', schema);
     app.model.teacher = {
         create: (data, done) => {
             // xử lý trường hợp có msnv

@@ -11,7 +11,7 @@ module.exports = app => {
         state: { type: String, enum: ['approved', 'waiting', 'reject'], default: 'waiting' },
     });
 
-    const model = app.db.model('Comment', schema);
+    const model = app.database.mongoDB.model('Comment', schema);
     const populates = { path: 'author', select: '_id lastname firstname image' };
 
     app.model.comment = {

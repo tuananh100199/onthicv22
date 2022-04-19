@@ -6,7 +6,7 @@ module.exports = app => {
         papers: { type: [{ type: app.database.mongoDB.Schema.Types.ObjectId, ref: 'ProfileStudentType' }], default: [] }
 
     });
-    const model = app.db.model('ProfileType', schema);
+    const model = app.database.mongoDB.model('ProfileType', schema);
 
     app.model.profileType = {
         create: (data, done) => model.create(data, done),

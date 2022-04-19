@@ -4,7 +4,7 @@ module.exports = app => {
         height: { type: Number, default: 255 },
         items: [{ type: app.database.mongoDB.Schema.ObjectId, ref: 'Video' }],
     });
-    const model = app.db.model('ListVideo', schema);
+    const model = app.database.mongoDB.model('ListVideo', schema);
 
     app.model.listVideo = {
         create: (data, done) => model.create(data, done),

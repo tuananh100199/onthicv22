@@ -4,7 +4,7 @@ module.exports = app => {
         active: { type: Boolean, default: false },
         numberOfStaff: { type: Number, default: 0 },
     });
-    const model = app.db.model('StaffGroup', schema);
+    const model = app.database.mongoDB.model('StaffGroup', schema);
 
     app.model.staffGroup = {
 

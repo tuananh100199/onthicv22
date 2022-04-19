@@ -9,7 +9,7 @@ module.exports = app => {
         courseType: { type: app.database.mongoDB.Schema.ObjectId, ref: 'CourseType' },
     });
 
-    const model = app.db.model('Revenue', schema);
+    const model = app.database.mongoDB.model('Revenue', schema);
 
     app.model.revenue = {
         create: (data, done) => model.create(data, done),

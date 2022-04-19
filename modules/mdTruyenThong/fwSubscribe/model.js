@@ -4,7 +4,7 @@ module.exports = app => {
         read: { type: Boolean, default: false },
         createdDate: { type: Date, default: Date.now },
     });
-    const model = app.db.model('Subscribe', schema);
+    const model = app.database.mongoDB.model('Subscribe', schema);
 
     app.model.subscribe = {
         create: (data, done) => model.create(data, done),

@@ -8,7 +8,7 @@ module.exports = app => {
         read: { type: Boolean, default: false },
         createdDate: { type: Date, default: Date.now },
     });
-    const model = app.db.model('Contact', schema);
+    const model = app.database.mongoDB.model('Contact', schema);
 
     app.model.contact = {
         create: (data, done) => model.create(data, done),

@@ -37,7 +37,7 @@ module.exports = (app) => {
         return app.crypt.compareSync(password, this.password);
     };
 
-    const model = app.db.model('User', schema);
+    const model = app.database.mongoDB.model('User', schema);
     app.model.user = {
         hashPassword: (password) =>
             app.crypt.hashSync(password, app.crypt.genSaltSync(8), null),

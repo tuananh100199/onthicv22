@@ -3,7 +3,7 @@ module.exports = app => {
         title: String,
         active: { type: Boolean, default: false },                     // Cơ sở đào tạo ngoài
     });
-    const model = app.db.model('Department', schema);
+    const model = app.database.mongoDB.model('Department', schema);
 
     app.model.department = {
         create: (data, done) => model.create(data, done),

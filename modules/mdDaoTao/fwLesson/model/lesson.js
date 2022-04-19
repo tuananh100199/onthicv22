@@ -9,7 +9,7 @@ module.exports = app => {
         questions: { type: [{ type: app.database.mongoDB.Schema.Types.ObjectId, ref: 'Question' }], default: [] },
         numQuestion: { type: Number, default: 5 },
     });
-    const model = app.db.model('Lesson', schema);
+    const model = app.database.mongoDB.model('Lesson', schema);
 
     app.model.lesson = {
         create: (data, done) => model.create(data, done),

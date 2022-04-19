@@ -5,7 +5,7 @@ module.exports = app => {
         timeOff: { type: String, enum: ['morning', 'noon', 'allDay'], default: 'allDay' }, // Buổi nghỉ
         state: { type: String, enum: ['approved', 'waiting', 'reject', 'cancel'], default: 'waiting' },
     });
-    const model = app.db.model('RegisterCalendar', schema);
+    const model = app.database.mongoDB.model('RegisterCalendar', schema);
 
     app.model.registerCalendar = {
 

@@ -13,7 +13,7 @@ module.exports = app => {
         abstract3: String,
         image3: String,
     });
-    const model = app.db.model('HangGPLX', schema);
+    const model = app.database.mongoDB.model('HangGPLX', schema);
 
     app.model.hangGPLX = {
         create: (data, done) => model.create(data, done),

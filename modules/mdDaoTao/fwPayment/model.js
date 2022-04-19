@@ -16,7 +16,7 @@ module.exports = app => {
         courseType: { type: app.database.mongoDB.Schema.ObjectId, ref: 'CourseType' },
         sms: { type: app.database.mongoDB.Schema.ObjectId, ref: 'Sms' },
     });
-    const model = app.db.model('Payment', schema);
+    const model = app.database.mongoDB.model('Payment', schema);
 
     app.model.payment = {
         create: (data, done) => model.create(data, done),

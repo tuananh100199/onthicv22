@@ -13,7 +13,7 @@ module.exports = app => {
         content: String,                                                                // Nội dung học
         note: String,                                                                   // Ghi chú
     });
-    const model = app.db.model('TimeTable', schema);
+    const model = app.database.mongoDB.model('TimeTable', schema);
 
     const populateStudent = {
         path: 'student',

@@ -12,7 +12,7 @@ module.exports = app => {
         detailDescription: String,
         priority: Number,
     });
-    const model = app.db.model('Division', schema);
+    const model = app.database.mongoDB.model('Division', schema);
 
     app.model.division = {
         create: (data, done) => model.find({}).sort({ priority: -1 }).limit(1).exec((error, items) => {

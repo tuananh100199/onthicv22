@@ -21,7 +21,7 @@ module.exports = app => {
         cuoiKhoa: Number,
 
     });
-    const model = app.db.model('Subject', schema);
+    const model = app.database.mongoDB.model('Subject', schema);
 
     app.model.subject = {
         create: (data, done) => model.create(data, done),

@@ -45,7 +45,7 @@ module.exports = app => {
         isPersonalCar: { type: Boolean, default: false },                   // Xe cá nhân hay xe của trung tâm
         division: { type: app.database.mongoDB.Schema.ObjectId, ref: 'Division' },        // Xe thuộc cơ sở nào
     });
-    const model = app.db.model('Car', schema);
+    const model = app.database.mongoDB.model('Car', schema);
 
     app.model.car = {
         create: (data, done) => model.create(data, done),

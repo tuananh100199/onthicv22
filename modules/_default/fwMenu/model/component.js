@@ -8,7 +8,7 @@ module.exports = app => {
         componentIds: [{ type: app.database.mongoDB.Schema.Types.ObjectId, ref: 'Component' }],
         href: String,
     });
-    const model = app.db.model('Component', schema);
+    const model = app.database.mongoDB.model('Component', schema);
 
     app.model.component = {
         create: (data, done) => model.find({}).sort({ priority: -1 }).limit(1).exec((error, items) => {

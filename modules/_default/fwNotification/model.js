@@ -10,7 +10,7 @@ module.exports = app => {
         createdDate: { type: Date, default: Date.now },
         sentDate: { type: Date, default: null },
     });
-    const model = app.db.model('Notification', schema);
+    const model = app.database.mongoDB.model('Notification', schema);
 
     app.model.notification = {
         create: (data, done) => model.create(data, done),

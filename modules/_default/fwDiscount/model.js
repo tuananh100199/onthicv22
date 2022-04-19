@@ -6,7 +6,7 @@ module.exports = (app) => {
         isDefault: { type: Boolean, default: false },
     });
 
-    const model = app.db.model('Discount', schema);
+    const model = app.database.mongoDB.model('Discount', schema);
     app.model.discount = {
         create: (data, done) => model.create(data, done),
 

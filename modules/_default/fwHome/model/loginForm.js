@@ -5,7 +5,7 @@ module.exports = app => {
         content: String,
         imageBackground: String
     });
-    const model = app.db.model('LoginForm', schema);
+    const model = app.database.mongoDB.model('LoginForm', schema);
 
     app.model.loginForm = {
         create: (data, done) => model.create(data, done),

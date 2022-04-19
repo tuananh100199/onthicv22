@@ -9,7 +9,7 @@ module.exports = app => {
         importance: { type: Boolean, default: false },                              // true => câu liệt
         categories: [{ type: app.database.mongoDB.Schema.ObjectId, ref: 'Category' }],            // Phân loại câu hỏi, xử lý giống news
     });
-    const model = app.db.model('DriveQuestion', schema);
+    const model = app.database.mongoDB.model('DriveQuestion', schema);
 
     app.model.driveQuestion = {
         create: (data, done) => {

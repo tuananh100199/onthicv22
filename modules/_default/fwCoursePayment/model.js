@@ -6,7 +6,7 @@ module.exports = (app) => {
         default: { type: Boolean, default: false }
     });
 
-    const model = app.db.model('CoursePayment', schema);
+    const model = app.database.mongoDB.model('CoursePayment', schema);
     app.model.coursePayment = {
         create: (data, done) => model.create(data, done),
 

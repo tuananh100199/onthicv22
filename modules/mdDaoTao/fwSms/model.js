@@ -5,7 +5,7 @@ module.exports = app => {
         body: String,
         isHandled: { type: Boolean, default: false },
     });
-    const model = app.db.model('Sms', schema);
+    const model = app.database.mongoDB.model('Sms', schema);
 
     app.model.sms = {
         create: (data, done) => model.create(data, done),

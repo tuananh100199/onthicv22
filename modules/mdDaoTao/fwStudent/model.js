@@ -158,7 +158,7 @@ module.exports = (app) => {
     });
 
     // Không được phép viết hàm getAll cho model student
-    const model = app.db.model('Student', schema);
+    const model = app.database.mongoDB.model('Student', schema);
     app.model.student = {
         create: (data, done) => model.create(data, done),
 

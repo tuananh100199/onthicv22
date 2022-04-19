@@ -4,7 +4,7 @@ module.exports = app => {
         active: { type: Boolean, default: false },
         isSuPham: { type: Boolean, default: false },
     });
-    const model = app.db.model('TeacherDiploma', schema);
+    const model = app.database.mongoDB.model('TeacherDiploma', schema);
 
     app.model.teacherDiploma = {
         create: (data, done) => model.create(data, done),

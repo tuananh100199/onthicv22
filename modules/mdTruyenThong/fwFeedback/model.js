@@ -14,7 +14,7 @@ module.exports = app => {
             adminUser: { type: app.database.mongoDB.Schema.ObjectId, ref: 'User' },
         }],
     });
-    const model = app.db.model('Feedback', schema);
+    const model = app.database.mongoDB.model('Feedback', schema);
 
     app.model.feedback = {
         create: (data, done) => model.create(data, done),

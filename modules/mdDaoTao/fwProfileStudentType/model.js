@@ -4,7 +4,7 @@ module.exports = app => {
         active: { type: Boolean, default: false },
         required: { type: Boolean, default: true },
     });
-    const model = app.db.model('ProfileStudentType', schema);
+    const model = app.database.mongoDB.model('ProfileStudentType', schema);
 
     app.model.profileStudentType = {
         create: (data, done) => model.create(data, done),

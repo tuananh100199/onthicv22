@@ -9,7 +9,7 @@ module.exports = app => {
         image: String,
         content: { type: app.database.mongoDB.Schema.ObjectId, ref: 'Content' },
     });
-    const model = app.db.model('Staff', schema);
+    const model = app.database.mongoDB.model('Staff', schema);
 
     app.model.staff = {
         create: (data, done) => model.find({}).sort({ priority: -1 }).limit(1).exec((error, items) => {

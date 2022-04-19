@@ -7,7 +7,7 @@ module.exports = app => {
         chiTieuXacDinh: String,
         active: { type: Boolean, default: false },
     });
-    const model = app.db.model('EnrollTarget', schema);
+    const model = app.database.mongoDB.model('EnrollTarget', schema);
 
     app.model.enrollTarget = {
         create: (data, done) => model.create(data, done),

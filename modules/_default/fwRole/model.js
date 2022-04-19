@@ -7,7 +7,7 @@ module.exports = (app) => {
         description: String,
     });
 
-    const model = app.db.model('Role', schema);
+    const model = app.database.mongoDB.model('Role', schema);
     app.model.role = {
         create: (data, done) => model.findOne({ name: data.name }, (error, role) => {
             if (error) {

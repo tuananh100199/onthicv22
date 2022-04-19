@@ -10,7 +10,7 @@ module.exports = app => {
         modifiedDate: { type: Date, default: Date.now },
         active: { type: Boolean, default: false }, // bật/tắt forum
     });
-    const model = app.db.model('Forum', schema);
+    const model = app.database.mongoDB.model('Forum', schema);
 
     app.model.forum = {
         create: (data, done) => model.create(data, done),

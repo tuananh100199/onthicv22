@@ -6,7 +6,7 @@ module.exports = app => {
         sender: { type: app.database.mongoDB.Schema.ObjectId, ref: 'User' },
         read: { type: Boolean, default: false },
     });
-    const model = app.db.model('Chat', schema);
+    const model = app.database.mongoDB.model('Chat', schema);
 
     const populates = [
         { path: 'sender', select: 'firstname lastname image isLecturer isCourseAdmin' },

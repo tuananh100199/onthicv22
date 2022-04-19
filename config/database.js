@@ -8,9 +8,8 @@ module.exports = (app, appConfig) => {
     // Connect MongoDB ----------------------------------------------------------------------------
     const mongoConnectionString = `mongodb://${appConfig.mongoDB.host}:${appConfig.mongoDB.port}/${appConfig.mongoDB.dbName}`;
     const mongoose = require('mongoose');
-    app.database.mongoDB = { Schema: mongoose.Schema };
-    app.db = require('mongoose');
-    app.db.connect(mongoConnectionString, { useNewUrlParser: true, useUnifiedTopology: true });
-    app.db.connection.on('error', console.error.bind(console, ` - #${process.pid}: The MongoDB connection failed!`));
-    app.db.connection.once('open', () => console.log(` - #${process.pid}: The MongoDB connection succeeded.`));
+    mongoose.connect(mongoConnectionString, { useNewUrlParser: true, useUnifiedTopology: true });
+    mongoose.connection.on('error', console.error.bind(console, ` - #${process.pid}: The MongoDB connection failed!`));
+    mongoose.connection.once('open', () => console.log(` - #${process.pid}: The MongoDB connection succeeded.`));
+    app.database.mongoDB = { Schema: mongoose.Schema, model: mongoose.model };
 };

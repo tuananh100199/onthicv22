@@ -6,7 +6,7 @@ module.exports = app => {
         answers: { type: String, default: '' },
         trueAnswer: Number,
     });
-    const model = app.db.model('Question', schema);
+    const model = app.database.mongoDB.model('Question', schema);
 
     app.model.question = {
         create: (data, done) => model.create(data, done),

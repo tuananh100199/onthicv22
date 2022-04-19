@@ -4,7 +4,7 @@ module.exports = app => {
         height: Number,
         single: { type: Boolean, default: true },
     });
-    const model = app.db.model('Carousel', schema);
+    const model = app.database.mongoDB.model('Carousel', schema);
 
     app.model.carousel = {
         create: (data, done) => model.create(data, done),

@@ -9,7 +9,7 @@ module.exports = app => {
         link: String,
         active: { type: Boolean, default: false },
     });
-    const model = app.db.model('CarouselItem', schema);
+    const model = app.database.mongoDB.model('CarouselItem', schema);
 
     app.model.carouselItem = {
         create: (data, done) => model.find({}).sort({ priority: -1 }).limit(1).exec((error, items) => {

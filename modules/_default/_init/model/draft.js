@@ -9,7 +9,7 @@ module.exports = app => {
         isInternal: { type: Boolean, default: false },
         documentJson: String, // JSON.stringify
     });
-    const model = app.db.model('Draft', schema);
+    const model = app.database.mongoDB.model('Draft', schema);
     app.model.draft = {
         create: (data, done) => model.create(data, (error, item) => {
             if (error) {

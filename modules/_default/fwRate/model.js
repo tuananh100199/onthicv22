@@ -7,7 +7,7 @@ module.exports = app => {
         note: String,
         type: String,
     });
-    const model = app.db.model('Rate', schema);
+    const model = app.database.mongoDB.model('Rate', schema);
 
     app.model.rate = {
         create: (data, done) => model.create(data, done),

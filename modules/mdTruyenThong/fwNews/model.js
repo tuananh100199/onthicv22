@@ -13,7 +13,7 @@ module.exports = app => {
         stopPost: Date,
         view: { type: Number, default: 0 },
     });
-    const model = app.db.model('News', schema);
+    const model = app.database.mongoDB.model('News', schema);
 
     app.model.news = {
         create: (data, done) => model.find({}).sort({ priority: -1 }).limit(1).exec((error, items) => {

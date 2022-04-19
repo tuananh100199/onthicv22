@@ -74,7 +74,7 @@ module.exports = app => {
         lock: { type: Boolean, default: false },                            // Cho phép thay đổi thông tin toàn khoá học => TODO: readOnly
         close: { type: Boolean, default: false },                           // Khóa học đã đóng
     });
-    const model = app.db.model('Course', schema);
+    const model = app.database.mongoDB.model('Course', schema);
 
     app.model.course = {
         create: (data, done) => app.model.courseType.get(data.courseType, (_, item) =>

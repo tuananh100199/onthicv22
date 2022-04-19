@@ -12,7 +12,7 @@ module.exports = (app) => {
         // numOfHour: Number                                                   // Số giờ tăng thêm (mặc định là 1 với gói hàng ngày)
     });
 
-    const model = app.db.model('CourseFee', schema);
+    const model = app.database.mongoDB.model('CourseFee', schema);
     app.model.courseFee = {
         create: (data, done) => model.create(data, done),
 

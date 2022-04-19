@@ -10,7 +10,7 @@ module.exports = app => {
         lyDo: String,
         teacher: { type: app.database.mongoDB.Schema.ObjectId, ref: 'Teacher' },
     });
-    const model = app.db.model('TeacherCertification', schema);
+    const model = app.database.mongoDB.model('TeacherCertification', schema);
 
     app.model.teacherCertification = {
         create: (data, done) => model.create(data, done),

@@ -7,7 +7,7 @@ module.exports = app => {
         questions: { type: [{ type: app.database.mongoDB.Schema.Types.ObjectId, ref: 'DriveQuestion' }], default: [] },
         description: String,
     });
-    const model = app.db.model('DriveTest', schema);
+    const model = app.database.mongoDB.model('DriveTest', schema);
 
     app.model.driveTest = {
         create: (data, done) => {

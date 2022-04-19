@@ -8,7 +8,7 @@ module.exports = (app) => {
         hangTapHuan: { type: app.database.mongoDB.Schema.Types.ObjectId, ref: 'Category' },//Hạng GPLX,gplx category
     });
 
-    const model = app.db.model('TrainingClass', schema);
+    const model = app.database.mongoDB.model('TrainingClass', schema);
     app.model.trainingClass = {
         create: (data, done) => model.create(data, done),
 

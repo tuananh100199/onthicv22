@@ -5,7 +5,7 @@ module.exports = app => {
         image: String,
         active: { type: Boolean, default: true },
     });
-    const model = app.db.model('LessonVideo', schema);
+    const model = app.database.mongoDB.model('LessonVideo', schema);
 
     app.model.lessonVideo = {
         create: (data, done) => model.create(data, done),

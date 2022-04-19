@@ -12,7 +12,7 @@ module.exports = app => {
         content2: { type: app.database.mongoDB.Schema.ObjectId, ref: 'Content' },
         content3: { type: app.database.mongoDB.Schema.ObjectId, ref: 'Content' },
     });
-    const model = app.db.model('GioiThieu', schema);
+    const model = app.database.mongoDB.model('GioiThieu', schema);
 
     app.model.gioiThieu = {
         create: (data, done) => model.create(data, done),

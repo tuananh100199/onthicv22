@@ -9,7 +9,7 @@ module.exports = app => {
         soLuong: String,
         teacher: { type: app.database.mongoDB.Schema.ObjectId, ref: 'Teacher' },
     });
-    const model = app.db.model('TeacherProfile', schema);
+    const model = app.database.mongoDB.model('TeacherProfile', schema);
 
     app.model.teacherProfile = {
         create: (data, done) => model.create(data, done),

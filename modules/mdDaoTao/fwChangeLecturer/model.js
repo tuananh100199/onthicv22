@@ -8,7 +8,7 @@ module.exports = app => {
         startDate: { type: Date, default: Date.now },
         state: { type: String, enum: ['approved', 'waiting', 'reject'], default: 'waiting' },
     });
-    const model = app.db.model('ChangeLecturer', schema);
+    const model = app.database.mongoDB.model('ChangeLecturer', schema);
 
     app.model.changeLecturer = {
         create: (data, done) => model.create(data, done),

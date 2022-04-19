@@ -7,7 +7,7 @@ module.exports = app => {
         createdDate: { type: Date, default: Date.now },
         modifiedDate: { type: Date, default: Date.now },
     });
-    const model = app.db.model('ForumMessage', schema);
+    const model = app.database.mongoDB.model('ForumMessage', schema);
 
     app.model.forumMessage = {
         create: (data, done) => model.create(data, done),

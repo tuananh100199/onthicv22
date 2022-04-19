@@ -25,7 +25,7 @@ module.exports = app => {
         isGiayKhamSucKhoe: { type: Boolean, default: false },
         isBangLaiA1: { type: Boolean, default: false },
     });
-    const model = app.db.model('Candidate', schema);
+    const model = app.database.mongoDB.model('Candidate', schema);
 
     app.model.candidate = {
         create: (data, done) => model.create(data, done),

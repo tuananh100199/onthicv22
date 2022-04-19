@@ -6,7 +6,7 @@ module.exports = (app) => {
         isExtra: { type: Boolean, default: false },
     });
 
-    const model = app.db.model('FeeType', schema);
+    const model = app.database.mongoDB.model('FeeType', schema);
     app.model.feeType = {
         create: (data, done) => model.create(data, done),
 

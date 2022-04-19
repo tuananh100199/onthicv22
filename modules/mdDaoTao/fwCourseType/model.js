@@ -30,7 +30,7 @@ module.exports = app => {
         soLuongCauHoiThi: { type: Number, default: 0 },                            // Số lượng câu hỏi trong một đề thi
         soLuongCauDat: { type: Number, default: 0 },                               // Số lượng câu để thi đậu
     });
-    const model = app.db.model('CourseType', schema);
+    const model = app.database.mongoDB.model('CourseType', schema);
 
     app.model.courseType = {
         create: (data, done) => model.create({ ...data, title: data.title || 'Loại khóa học mới' }, (error, item) => {

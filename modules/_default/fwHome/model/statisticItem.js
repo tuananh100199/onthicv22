@@ -7,7 +7,7 @@ module.exports = app => {
         number: Number,
         active: { type: Boolean, default: false },
     });
-    const model = app.db.model('StatisticItem', schema);
+    const model = app.database.mongoDB.model('StatisticItem', schema);
 
     app.model.statisticItem = {
         create: (data, done) => model.find({}).sort({ priority: -1 }).limit(1).exec((error, items) => {

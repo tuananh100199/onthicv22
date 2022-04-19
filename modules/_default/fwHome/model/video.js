@@ -5,7 +5,7 @@ module.exports = app => {
         image: String,
         content: String,
     });
-    const model = app.db.model('Video', schema);
+    const model = app.database.mongoDB.model('Video', schema);
 
     app.model.video = {
         create: (data, done) => model.create(data, done),
