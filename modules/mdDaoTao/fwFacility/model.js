@@ -1,12 +1,12 @@
 module.exports = app => {
-    const schema = app.db.Schema({
+    const schema = app.database.mongoDB.Schema({
         name: String,
         status: { type: String, enum: ['dangSuDung', 'dangSuaChua',], default: 'dangSuDung' },
-        type: { type: app.db.Schema.ObjectId, ref: 'Category' },
+        type: { type: app.database.mongoDB.Schema.ObjectId, ref: 'Category' },
         maxStudent: Number,
-        division: { type: app.db.Schema.ObjectId, ref: 'Division' },        // Thiết bị thuộc cơ sở nào
+        division: { type: app.database.mongoDB.Schema.ObjectId, ref: 'Division' },        // Thiết bị thuộc cơ sở nào
     });
-    const model = app.db.model('Facility', schema);
+    const model = app.database.mongoDB.model('Facility', schema);
 
     app.model.facility = {
         create: (data, done) => model.create(data, done),
