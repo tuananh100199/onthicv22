@@ -195,6 +195,25 @@ module.exports = (app) => {
         });
     });
 
+    app.get('/api/course/all',app.permission.check('course:read'),(req,res)=>{
+        const sessionUser = req.session.user,
+            condition = req.query.condition || {};
+        if (sessionUser.isLecturer && !sessionUser.isCourseAdmin) {
+            condition.teacherGroups = { $elemMatch: { teacher: sessionUser._id } };
+            condition.active = true;
+        }
+        if (sessionUser.isCourseAdmin && !sessionUser.isLecturer) {
+            condition.admins = sessionUser._id;
+            condition.active = true;
+        }
+        if(condition.isDefault){
+            condition.isDefault=condition.isDefault=='true'?true:{$ne:true};
+        }
+        app.model.course.getAll(condition, (error, list) => {
+            res.send({error,list});            
+        });
+    });
+
     app.get('/api/course', app.permission.check('user:login'), (req, res) => {
         getCourseData(req.query._id, req.session.user, (error, item) => res.send({ error, item }));
     });
@@ -284,7 +303,19 @@ module.exports = (app) => {
                 app.model.course.update(req.body._id, changes, () => getCourseData(req.body._id, req.session.user, (error, course) => {
                     // const item = {};
                     // course && Object.keys(changes).forEach(key => item[key] = course[key]);
-                    res.send({ error, item: course });
+                    if(error) res.send({error});
+                    else if(course && course.close && !item.close){// course được update trạng thái close từ false =>true
+                        app.model.teacher.updateDoneCourse(course._id,error=>{
+                            res.send({error,item:course});
+                        });
+                    }else if(course && !course.close && item.close){
+                        console.log('update undone course');
+                        app.model.teacher.updateUnDoneCourse(course._id,error=>{
+                            res.send({error,item:course});
+                        });
+                    }else{
+                        res.send({ item: course });
+                    }
                 }));
             }
         });
@@ -387,7 +418,9 @@ module.exports = (app) => {
 
     //Teacher API
     app.put('/api/course/teacher-group/teacher', app.permission.check('course:write'), (req, res) => {
-        const { _courseId,_teacherUserId, type } = req.body;
+        const { _courseId,_teacherUserId, type, description='' } = req.body;
+        console.log({_courseId,_teacherUserId,type,description});
+        const user = req.session.user;
         new Promise((resolve, reject) => {
             if (type == 'add') {
                 app.model.course.addTeacherGroup(_courseId, _teacherUserId, error => error ? reject(error) :
@@ -441,9 +474,33 @@ module.exports = (app) => {
                 else if(!teacher) res.send({item});
                 else{
                     if(type=='add'){
-                        app.model.teacher.addCourse(teacher._id,_courseId,(error)=>res.send({error,item}));
+                        app.model.teacher.addCourse(teacher._id,_courseId,(error)=>{
+                            if(error) res.send({error});
+                            else{
+                                const courseHistory = {
+                                    user:user._id,
+                                    course:_courseId,
+                                    type:'add',
+                                    description,
+                                };
+                                app.model.teacher.addCourseHistory(teacher._id,courseHistory,error=>res.send({error,item}));
+                                // res.send({error,item})        
+                            }
+                        });
                     }else{
-                        app.model.teacher.deleteCourse(teacher._id,_courseId,(error)=>res.send({error,item}));
+                        app.model.teacher.deleteCourse(teacher._id,_courseId,(error)=>{
+                            if(error) res.send({error});
+                            else{
+                                const courseHistory = {
+                                    user:user._id,
+                                    course:_courseId,
+                                    type:'remove',
+                                    description,
+                                };
+                                app.model.teacher.addCourseHistory(teacher._id,courseHistory,error=>res.send({error,item}));
+                                // res.send({error,item})        
+                            }
+                        });
                     }
                 }
             });

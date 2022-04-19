@@ -222,7 +222,7 @@ module.exports = (app) => {
                             const _ids = list.map(item => item._id);
                             delete condition.searchText;
                             if (sort && sort.division == 0) delete sort.division;
-                            model.find({ _id: { $in: _ids }, ...condition }).sort(sort).skip(skipNumber).limit(result.pageSize)
+                            model.find({ _id: { $in: _ids }, ...condition }).sort(sort||{firstname:1}).skip(skipNumber).limit(result.pageSize)
                                 .populate('user', '-password').populate('division', '_id title isOutside').populate('planLecturer', '_id lastname firstname').populate('courseType').populate('course').populate({
                                     path: 'course', populate: { path: 'subjects', select: '-detailDescription' }
                                 }).populate('courseFee').populate('_id name')
@@ -235,7 +235,7 @@ module.exports = (app) => {
                 } else {
                     delete condition.searchText;
                     if (sort && sort.division == 0) delete sort.division;
-                    model.find(condition).sort(sort).skip(skipNumber).limit(result.pageSize)
+                    model.find(condition).sort(sort||{firstname:1}).skip(skipNumber).limit(result.pageSize)
                         .populate('user', '-password').populate('division', '_id title isOutside').populate('planLecturer', '_id lastname firstname').populate('courseType').populate('course').populate({
                             path: 'course', populate: { path: 'subjects', select: '-detailDescription' }
                         }).populate('courseFee').populate('discount').populate('coursePayment')

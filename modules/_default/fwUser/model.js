@@ -28,6 +28,9 @@ module.exports = (app) => {
 
         notificationRead: [{ type: app.db.Schema.ObjectId, ref: 'Notification' }],                  // Người dùng đã đọc các notification này
         notificationUnread: [{ type: app.db.Schema.ObjectId, ref: 'Notification' }],                // Người dùng chưa đọc các notification này
+        //rating teacher
+        ratingScore:Number,
+        ratingAmount:Number,
     });
 
     schema.methods.equalPassword = function (password) {

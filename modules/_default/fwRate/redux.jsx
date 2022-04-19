@@ -18,15 +18,25 @@ export default function rateReducer(state = {}, data) {
 }
 
 // Actions ------------------------------------------------------------------------------------------------------------
-export function getRatePageByAdmin(pageNumber, pageSize, condition, done) {
+T.initCookiePage('rateAdminPage', true);
+export function getRatePageByAdmin(pageNumber, pageSize, pageCondition, filter, sort, done) {
+    if(typeof sort=='function'){
+        done = sort;
+        sort = undefined;
+    }else if(typeof filter == 'function'){
+        done = filter;
+        filter={};
+    }
+    console.log({pageCondition,filter,sort});
+    const page = T.updatePage('rateAdminPage', pageNumber, pageSize, pageCondition, filter, sort);
     return dispatch => {
         const url = `/api/rate/admin/page/${pageNumber}/${pageSize}`;
-        T.get(url, { condition }, data => {
+        T.get(url, { condition:page.pageCondition,filter:page.filter,sort:page.sort }, data => {
             if (data.error) {
                 T.notify('Lấy đánh giá bị lỗi!', 'danger');
                 console.error(`GET: ${url}. ${data.error}`);
             } else {
-                if (condition) data.page.pageCondition = condition;
+                if (pageCondition) data.page.pageCondition = page.pageCondition;
                 done && done(data.page);
                 dispatch({ type: RateGetPage, page: data.page });
             }

@@ -15,11 +15,15 @@ export default function profileStudentReducer(state = {}, data) {
 
 // Actions ----------------------------------------------------------------------------------------------------
 T.initCookiePage('pageProfileStudent');
-export function getProfileStudentPage(pageNumber, pageSize, pageCondition, done) {
-    const page = T.updatePage('pageProfileStudent', pageNumber, pageSize);
+export function getProfileStudentPage(pageNumber, pageSize, pageCondition,filter, done) {
+    if(typeof filter=='function'){
+        done=filter;
+        filter=undefined;
+    }
+    const page = T.updatePage('pageProfileStudent', pageNumber, pageSize,pageCondition,filter);
     return dispatch => {
         const url = `/api/profile-student/page/${page.pageNumber}/${page.pageSize}`;
-        T.get(url, { pageCondition }, data => {
+        T.get(url, { pageCondition:page.pageCondition,filter:page.filter }, data => {
             if (data.error) {
                 T.notify('Lấy danh sách hồ sơ học viên bị lỗi!', 'danger');
                 console.error(`GET: ${url}. ${data.error}`);

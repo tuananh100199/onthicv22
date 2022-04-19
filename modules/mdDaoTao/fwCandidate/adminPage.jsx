@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { getCandidatePage, getCandidate, updateCandidate, deleteCandidate, exportCandidateToExcel } from './redux';
+import { getCandidatePage, getCandidate, updateCandidate, deleteCandidate } from './redux';
 import Pagination from 'view/component/Pagination';
 import { getCourseTypeAll, ajaxSelectCourseType, ajaxGetCourseType } from 'modules/mdDaoTao/fwCourseType/redux';
 import { AdminPage, AdminModal, FormTextBox, TableCell, renderTable, FormSelect, FormDatePicker,FormCheckbox } from 'view/component/AdminPage';
@@ -327,7 +327,7 @@ class CandidatePage extends AdminPage {
                 <CandidateModal ref={e => this.candidateModal = e} update={this.props.updateCandidate} states={states} upStudent={this.upStudent} permission={permission}
                  defaultCourseFees={this.state.defaultCourseFees} defaultDiscount={this.state.defaultDiscount} defaultCoursePayment={this.state.defaultCoursePayment} />
             </>,
-            onExport: permission.export ? exportCandidateToExcel : null,
+            // onExport: permission.export ? exportCandidateToExcel : null,
         });
     }
 }

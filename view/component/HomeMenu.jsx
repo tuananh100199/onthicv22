@@ -16,8 +16,8 @@ class HomeMenu extends React.Component {
         };
         $(document).ready(() => {
             let header = $('.header');
-            header.addClass('scrolled');
-            header.addClass('header_video');
+            // header.addClass('scrolled');
+            // header.addClass('header_video');
             function setHeader() {
                 let introVideo = $('#introVideo');
                 if(introVideo.height()<=0){
@@ -278,7 +278,9 @@ class HomeMenu extends React.Component {
                         {/* <div className='hamburger'><i className='fa fa-bars' aria-hidden='true' /></div> */}
                     </div>
 
-                    <div className="search-button"><i className="fa fa-search" aria-hidden="true"></i></div>
+                    <div className="search-button">
+                        <i className="fa fa-search" aria-hidden="true" style={{opacity:0}}></i>
+                    </div>
                 </div>
             </header>
             <div className='menu_overlay trans_400' />

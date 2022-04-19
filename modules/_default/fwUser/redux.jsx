@@ -99,6 +99,24 @@ export function getUserPage(pageNumber, pageSize, pageCondition, done) {
     };
 }
 
+T.initCookiePage('teacherRate', true);
+export function getTeacherRatePage(pageNumber, pageSize, pageCondition, filter, sort, done) {
+    const page = T.updatePage('teacherRate', pageNumber, pageSize, pageCondition, filter, sort);
+    return dispatch => {
+        const url = `/api/user/page/${page.pageNumber}/${page.pageSize}`;
+        T.get(url, { condition: page.pageCondition,filter:page.filter,sort:page.sort }, data => {
+            if (data.error) {
+                T.notify('Lấy danh sách người dùng bị lỗi!', 'danger');
+                console.error('GET: ' + url + '. ' + data.error);
+            } else {
+                if (pageCondition) data.page.pageCondition = pageCondition;
+                done && done(data.page);
+                dispatch({ type: UserGetPage, page: data.page });
+            }
+        }, error => console.error(error) || T.notify('Lấy danh sách giáo viên bị lỗi!', 'danger'));
+    };
+}
+
 export function getUser(_id, done) {
     return () => ajaxGetUser(_id, data => {
         done && done(data);
@@ -221,10 +239,10 @@ export const ajaxSelectUserType = (userType, queryType) => T.createAjaxAdapter(
         response.page.list.map(user => ({ id: user._id, text: `${user.lastname} ${user.firstname} ${user.identityCard ? '(' + user.identityCard + ')' : ''}` })) : [],
 );
 
-export const ajaxSelectTeacher = (userType) => T.createAjaxAdapter(
-    '/api/user/teacher/page/1/20?',
+export const ajaxSelectTeacher =  T.createAjaxAdapter(
+    '/api/user/page/1/20?',
     // params => ({ condition: params.term ? { searchText: params.term } : { userType } }),
-    params => ({ condition: { searchText: params.term, userType } }),
+    params => ({ condition: { searchText: params.term, isLecturer:true } }),
     response => response && response.page && response.page.list ?
         response.page.list.map(user => ({ id: user._id, text: `${user.lastname} ${user.firstname} ${user.identityCard ? '(' + user.identityCard + ')' : ''}` })) : [],
 );

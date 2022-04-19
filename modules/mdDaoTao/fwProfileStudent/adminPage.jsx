@@ -1,14 +1,9 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { getProfileStudentPage,updateProfileStudent } from './redux';
-import { AdminPage, renderTable, TableCell,FormSelect,FormCheckbox,TableHeadCell } from 'view/component/AdminPage';
+import { AdminPage, renderTable, TableCell,FormSelect,TableHeadCell,TableHead } from 'view/component/AdminPage';
 import Pagination from 'view/component/Pagination';
 import {  getCourseTypeAll } from 'modules/mdDaoTao/fwCourseType/redux';
-const filterConditionData = [
-    {id:'all',text:'Tất cả'},
-    {id:'done',text:'Hoàn tất'},
-    {id:'notDone',text:'Chưa hoàn tất'},
-];
 
 const filterCondition = [
     {id:'1',text:'Hoàn tất'},
@@ -18,15 +13,9 @@ class ProfileStudentPage extends AdminPage {
     state = {defaultFilterValue:'all',filterCondition:{},searchText:'',isExpandFilter:true};
     componentDidMount() {
         T.ready('/user/profile-student', () => {
-            T.showSearchBox(() => {this.setState({filterCondition:{}});});
+            T.showSearchBox();
             T.onSearch = (searchText) => this.onSearch({searchText},()=>this.setState({searchText}));
-            this.itemHoanTat.value(this.state.defaultFilterValue);
-            // this.props.getCourseTypeAll(data => {
-            //     const courseTypes = data.length && data.map(item => ({ id: item._id, text: item.title }));
-            //     this.courseType.value(courseTypes.length ? courseTypes[0] : null);
-            //     this.onSearch({});
-            // });
-
+            
             this.props.getCourseTypeAll(data => {
                 const courseTypes = [{id:0,text:'Tất cả'}];
                 data.length && data.forEach(item => {
@@ -36,13 +25,14 @@ class ProfileStudentPage extends AdminPage {
                     this.courseType.value(0);
                 });
             });
-            this.onSearch({});
+            // this.onSearch({});
+            this.props.getProfileStudentPage(1,null,{},{});
         });
     }
 
-    onSearch = ({pageNumber,pageSize,searchText=this.state.searchText,filterCondition=this.state.filterCondition,courseType = this.courseType.value()},done)=>{        
+    onSearch = ({pageNumber,pageSize,searchText=this.state.searchText,courseType = this.courseType.value()},done)=>{        
         // const courseType = this.state.courseTypeId;
-        const condition = courseType == '0' ? { searchText,filterCondition } : {filterCondition, searchText, courseType };
+        const condition = courseType == '0' ? { searchText } : {searchText, courseType };
         this.props.getProfileStudentPage(pageNumber, pageSize, condition, () => {
             done && done();
         });
@@ -54,31 +44,8 @@ class ProfileStudentPage extends AdminPage {
         });
     };
 
-    onChangeFilter = value=> value=='notDone'?this.setState({isExpandFilter:false}):this.setState({isExpandFilter:true});
-
-    handleFilter = ()=>{
-        let filterCondition={};
-        filterCondition.profileType = this.itemHoanTat.value();
-        if(filterCondition.profileType=='notDone'){
-            filterCondition.isDon = this.itemIsDon.value();
-            filterCondition.isHinh = this.itemIsHinh.value();
-            filterCondition.isIdentityCard = this.itemIsIdentityCard.value();
-            filterCondition.isGiayKhamSucKhoe = this.itemIsGiayKhamSucKhoe.value();
-            filterCondition.isBangLaiA1 = this.itemIsBangLaiA1.value();
-        }
-        this.onSearch({filterCondition},()=>{
-            this.setState({filterCondition});
-        });
-    }
-
-    handleSelected = (key,value)=>{
-        const filterCondition = {...this.state.filterCondition,[key]:value};
-        if(value==null || value==undefined){
-            delete filterCondition[key];
-        }
-        this.onSearch({filterCondition},()=>{
-            this.setState({filterCondition});
-        });
+    handleChangeFilter = (filterCondition)=>{
+        this.onSearch({filterCondition},()=>this.setState({filterCondition}));
     }
 
     onChangeCourseType = (courseType) => {
@@ -91,27 +58,21 @@ class ProfileStudentPage extends AdminPage {
         const permission = this.getUserPermission('profileStudent');
         const { pageNumber, pageSize, pageTotal, totalItem, list } = this.props.profileStudent && this.props.profileStudent.page ?
             this.props.profileStudent.page : { pageNumber: 1, pageSize: 50, pageTotal: 1, totalItem: 0 };
-        // const teacherGroup = item && item.teacherGroups ? item.teacherGroups.find(group => group.teacher && group.teacher._id == currentUser._id) : null;
         const table = renderTable({
-            getDataSource: () => list, stickyHead: true,isFilterDropdown:true,
-            renderHead: () => (
-                <tr>
-                    <th style={{ width: 'auto', textAlign: 'center' }}>#</th>
-                    <th style={{ width: '100%' }}>Học viên</th>
-                    <th style={{ width: 'auto' }} nowrap='true'>Thông tin liên lạc</th>
-                    {/* <th style={{ width: 'auto' }} nowrap='true'>Đơn</th> */}
-                    {/* <th style={{ width: 'auto' }} nowrap='true'>Hình</th>
-                    <th style={{ width: 'auto' }} nowrap='true'>CMND/CCCD</th>
-                    <th style={{ width: 'auto' }} nowrap='true'>Giấy khám sức khỏe</th>
-                    <th style={{ width: 'auto' }} nowrap='true'>Bằng lái A1</th> */}
-                    <TableHeadCell content='Đơn' style={{width:'auto'}} nowrap='true' filter = {filterCondition} allowClear={true} onChange = {value=>this.handleSelected('isDon',value)}/>
-                    <TableHeadCell content='Hình' style={{width:'auto'}} nowrap='true' filter = {filterCondition} allowClear={true} onChange = {value=>this.handleSelected('isHinh',value)}/>
-                    <TableHeadCell content='CMND/CCCD' style={{width:'auto'}} nowrap='true' filter = {filterCondition} allowClear={true} onChange = {value=>this.handleSelected('isIdentityCard',value)}/>
-                    <TableHeadCell content='Giấy khám sức khỏe' style={{width:'auto'}} nowrap='true' filter = {filterCondition} allowClear={true} onChange = {value=>this.handleSelected('isGiayKhamSucKhoe',value)}/>
-                    <TableHeadCell content='Bằng lái A1' style={{width:'auto'}} nowrap='true' filter = {filterCondition} allowClear={true} onChange = {value=>this.handleSelected('isBangLaiA1',value)}/>
+            getDataSource: () => list, stickyHead: true,autoDisplay:true,
+        renderHead: () => (
+            <TableHead getPage = {this.props.getProfileStudentPage}>
+                <TableHeadCell style={{ width: 'auto', textAlign: 'center' }}>#</TableHeadCell>
+                <TableHeadCell style={{ width: '100%' }}>Học viên</TableHeadCell>
+                <TableHeadCell style={{ width: 'auto' }} nowrap='true'>Thông tin liên lạc</TableHeadCell>
+                <TableHeadCell name='isDon' content='Đơn' style={{width:'auto'}} nowrap='true' filter='select' filterData = {filterCondition}/>
+                <TableHeadCell name='isHinh' content='Hình' style={{width:'auto'}} nowrap='true'filter='select' filterData = {filterCondition}/>
+                <TableHeadCell name='isIdentityCard' content='CMND/CCCD' style={{width:'auto'}} filter='select' nowrap='true' filterData = {filterCondition}/>
+                <TableHeadCell name='isGiayKhamSucKhoe' content='Giấy khám sức khỏe' style={{width:'auto'}} filter='select' nowrap='true' filterData = {filterCondition}/>
+                <TableHeadCell name='isBangLaiA1' content='Bằng lái A1' style={{width:'auto'}} nowrap='true' filter='select' filterData = {filterCondition}/>
 
-                    <th style={{ width: 'auto' }} nowrap='true'>Hoàn tất</th>
-                </tr>),
+                <TableHeadCell style={{ width: 'auto' }} nowrap='true'>Hoàn tất</TableHeadCell>
+            </TableHead>),
             renderRow: (item, index) => (
                 <tr key={index}>
                     <TableCell type='number' content={(pageNumber - 1) * pageSize +index + 1} />
@@ -129,28 +90,8 @@ class ProfileStudentPage extends AdminPage {
 
         return this.renderPage({
             icon: 'fa fa-folder',
-            title: 'Bổ sung hồ sơ',
-            breadcrumb: ['Bổ sung hồ sơ'],
-            advanceSearch: <>
-                <div className='tile-body row'>
-                    <FormSelect ref={e => this.itemHoanTat = e} onChange = {value=>this.onChangeFilter(value.id)} label='Tình trạng hồ sơ' data={filterConditionData} className='col-md-12' />
-                </div>
-
-                <h6 className='tile-title mt-3' style={{display:this.state.isExpandFilter?'none':'block'}}>Các mục chưa hoàn tất</h6>
-                <div className='tile-body row' style={{display:this.state.isExpandFilter?'none':'flex'}}>
-                <FormCheckbox ref={e => this.itemIsDon = e} className='col-md-4' label='Đơn' />
-                <FormCheckbox ref={e => this.itemIsHinh = e} className='col-md-4' label='Hình' />
-                <FormCheckbox ref={e => this.itemIsIdentityCard = e} className='col-md-4' label='CMND/CCCD' />
-                <FormCheckbox ref={e => this.itemIsGiayKhamSucKhoe = e} className='col-md-4' label='Giấy khám sức khỏe' />
-                <FormCheckbox ref={e => this.itemIsBangLaiA1 = e} className='col-md-4' label='Bằng lái A1' />
-                </div>
-
-                <div className='m-auto'>
-                    <button className='btn btn-success' style={{ marginTop: '11px' }} type='button' onClick={this.handleFilter}>
-                        <i className='fa fa-filter' /> Lọc danh sách
-                    </button>
-                </div>
-            </>,
+            title: 'Theo dõi hồ sơ học viên',
+            breadcrumb: ['Theo dõi hồ sơ học viên'],
             content: (
                 <div className='tile'>
                     <div className='tile-body'>

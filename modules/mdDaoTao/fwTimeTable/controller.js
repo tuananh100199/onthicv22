@@ -1,15 +1,16 @@
 module.exports = (app) => {
-    // const menu = {
-    //     parentMenu: app.parentMenu.trainning,
-    //     menus: {
-    //         4050: { title: 'Thời khóa biểu', link: '/user/time-table' },
-    //     }
-    // };
+    const enrollmentMenu = {
+        parentMenu: app.parentMenu.enrollment,
+        menus: {
+            8070: { title: 'Thời khóa biểu học viên', link: '/user/time-table' },
+        }
+    };
     app.permission.add(
-        { name: 'timeTable:read' }, { name: 'timeTable:write' }, { name: 'timeTable:delete' }, { name: 'timeTable:create' }
+        { name: 'timeTable:read' }, { name: 'timeTable:write' }, { name: 'timeTable:delete' }, { name: 'timeTable:create' },{ name: 'timeTable:enroll',menu:enrollmentMenu },
     );
 
     app.get('/user/time-table', app.permission.check('timeTable:read'), app.templates.admin);
+    app.get('/user/time-table/teacher', app.permission.check('timeTable:read'), app.templates.admin);
     app.get('/user/hoc-vien/khoa-hoc/:_id/thoi-khoa-bieu', app.permission.check('user:login'), app.templates.admin);
     app.get('/user/lecturer/student-time-table', app.permission.check('timeTable:write'), app.templates.admin);
     app.get('/user/course-admin/student-time-table', app.permission.check('timeTable:write'), app.templates.admin);
@@ -20,6 +21,7 @@ module.exports = (app) => {
         let pageNumber = parseInt(req.params.pageNumber),
             pageSize = parseInt(req.params.pageSize),
             condition = req.query.pageCondition || {},
+            filter=req.query.filter||null,sort=req.query.sort||null,
             pageCondition = {};
         try {
             if (condition) {
@@ -34,9 +36,13 @@ module.exports = (app) => {
                 if (condition.student) {
                     pageCondition.student = condition.student;
                 }
-                if (pageCondition.$or.length == 0) delete pageCondition.$or;
+                filter && app.handleFilter(filter,['student'],filterCondition=>{
+                    pageCondition={...pageCondition,...filterCondition};
+                });
             }
-            app.model.timeTable.getPage(pageNumber, pageSize, pageCondition, (error, page) => res.send({ error, page }));
+            if (pageCondition.$or && pageCondition.$or.length == 0) delete pageCondition.$or;
+
+            app.model.timeTable.getPage(pageNumber, pageSize, pageCondition,sort, (error, page) => res.send({ error, page }));
         } catch (error) {
             res.send({ error });
         }

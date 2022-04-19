@@ -11,14 +11,18 @@ module.exports = app => {
        
         create: (data, done) => model.create(data, done),
 
-        getPage: (pageNumber, pageSize, condition, done) => model.countDocuments(condition, (error, totalItem) => {
+        getPage: (pageNumber, pageSize, condition,sort, done) => model.countDocuments(condition, (error, totalItem) => {
+            if(done==undefined){
+                done=sort;
+                sort={dateOff: -1};
+            }
             if (error) {
                 done(error);
             } else {
                 let result = { totalItem, pageSize, pageTotal: Math.ceil(totalItem / pageSize) };
                 result.pageNumber = pageNumber === -1 ? result.pageTotal : Math.min(pageNumber, result.pageTotal);
                 const skipNumber = (result.pageNumber > 0 ? result.pageNumber - 1 : 0) * result.pageSize;
-                model.find(condition).populate('lecturer', 'lastname firstname phoneNumber identityCard').sort({ dateOff: -1, }).skip(skipNumber).limit(result.pageSize).exec((error, list) => {
+                model.find(condition).populate('lecturer', 'lastname firstname phoneNumber identityCard').sort(sort||{ dateOff: -1 }).skip(skipNumber).limit(result.pageSize).exec((error, list) => {
                     result.list = error ? [] : list;
                     done(error, result);
                 });

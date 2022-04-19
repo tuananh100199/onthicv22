@@ -5,7 +5,12 @@ module.exports = app => {
             2060: { title: 'Người dùng', link: '/user/member', icon: 'fa-users', backgroundColor: '#2e7d32' },
         },
     };
-
+    const teacherMenu = {
+        parentMenu: app.parentMenu.enrollment,
+        menus: {
+            8050: { title: 'Đánh giá giáo viên', link: '/user/rating-teacher', icon: 'fa-users', backgroundColor: '#2e7d32' },
+        },
+    };
     // const menuLecturer = {
     //     parentMenu: app.parentMenu.enrollment,
     //     menus: {
@@ -16,6 +21,7 @@ module.exports = app => {
     app.permission.add(
         { name: 'user:read', menu }, { name: 'user:write' }, { name: 'user:delete' },
         { name: 'manageLecturer:read' }, { name: 'manageLecturer:write' }, { name: 'manageLecturer:delete' },
+        { name: 'ratingTeacher:read', menu:teacherMenu }, { name: 'ratingTeacher:write' }, { name: 'ratingTeacher:delete' },
     );
 
     ['/registered(.htm(l)?)?', '/active-user/:userId', '/forgot-password/:userId/:userToken'].forEach((route) => app.get(route, app.templates.home));
@@ -23,14 +29,18 @@ module.exports = app => {
     app.get('/user/member', app.permission.check('user:read'), app.templates.admin);
     app.get('/user/manage-lecturer', app.permission.check('user:read'), app.templates.admin);
     app.get('/user/manage-lecturer/:_id/rating', app.permission.check('user:read'), app.templates.admin);
+    app.get('/user/rating-teacher', app.permission.check('ratingTeacher:read'), app.templates.admin);
 
     // APIs -----------------------------------------------------------------------------------------------------------------------------------------
     app.get('/api/user/page/:pageNumber/:pageSize', (req, res, next) => app.isDebug ? next() : app.permission.check('user:read')(req, res, next), (req, res) => {
         let pageNumber = parseInt(req.params.pageNumber),
             pageSize = parseInt(req.params.pageSize),
-            condition = req.query.condition || {},
+            condition = req.query.condition || {},filter=req.query.filter||null,sort=req.query.sort||null,
             pageCondition = {};
         try {
+            if(condition.isLecturer){
+                pageCondition.isLecturer=condition.isLecturer;
+            }
             if (condition && condition.searchText && condition.searchText.startsWith('teacherPage')) {
                 let teacherCondition = {};
                 teacherCondition.$or = [];
@@ -73,12 +83,35 @@ module.exports = app => {
                         $lt: new Date(condition.dateEnd)
                     };
                 }
-
-                if (pageCondition.$or.length == 0) delete pageCondition.$or;
             }
-
+            if(filter){
+                if(filter.fullName){
+                    pageCondition['$expr']= {
+                        '$regexMatch': {
+                          'input': { '$concat': ['$lastname', ' ', '$firstname'] },
+                          'regex': `.*${filter.fullName}.*`,  //Your text search here
+                          'options': 'i'
+                        }
+                    };
+                }
+                if(filter.ratingScore){
+                    let ratingScore = filter.ratingScore;
+                    console.log(ratingScore);
+                    ratingScore.forEach(score=>{
+                        let condition =score=='0'?{ratingScore:null} :{ratingScore:{$gte:Number(score),$lt:Number(score)+1}};
+                        pageCondition['$or'].push(condition);
+                    });
+                }
+            }
+            if(sort){
+                if(sort.fullName){
+                    let value= sort.fullName;
+                    sort = {firstname:value};
+                }
+            }
+            if (pageCondition.$or.length == 0) delete pageCondition.$or;
             if (req.session.user.division && req.session.user.division.isOutside) pageCondition.division = req.session.user.division._id;
-            app.model.user.getPage(pageNumber, pageSize, pageCondition, (error, page) => res.send({ error, page }));
+            app.model.user.getPage(pageNumber, pageSize, pageCondition,sort, (error, page) => res.send({ error, page }));
         } catch (error) {
             res.send({ error });
         }

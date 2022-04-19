@@ -54,6 +54,7 @@ module.exports = (app, appName) => {
         trainning: { index: 4000, title: 'Đào tạo', icon: 'fa-graduation-cap' },
         driveTest: { index: 6000, title: 'Ôn tập', icon: 'fa-graduation-cap' },
         enrollment: { index: 8000, title: 'Tuyển sinh', icon: 'fa fa-user-plus' },
+        teacher: { index: 9000, title: 'Giáo viên', icon: 'fa fa-pencil-square-o' },
     };
 
     // Upload Hook -----------------------------------------------------------------------------------------------------

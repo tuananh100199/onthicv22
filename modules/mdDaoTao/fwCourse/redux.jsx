@@ -2,6 +2,7 @@ import T from 'view/js/common';
 
 // Reducer ------------------------------------------------------------------------------------------------------------
 const CourseGetPage = 'CourseGetPage';
+const CourseGetAll = 'CourseGetAll';
 const CourseGetItem = 'CourseGetItem';
 const CourseGetUserChat = 'CourseGetUserChat';
 const CourseGetPageByUser = 'CourseGetPageByUser';
@@ -16,6 +17,10 @@ export default function courseReducer(state = {}, data) {
             const newState = {};
             newState[data.courseTypes] = data.page;
             return Object.assign({}, state, newState);
+        }
+
+        case CourseGetAll: {
+            return Object.assign({}, state, { list: data.list });
         }
 
         case CourseGetItem: {
@@ -103,6 +108,21 @@ export function getCoursePage(courseType, pageNumber, pageSize, pageCondition, d
                 dispatch({ type: CourseGetPage, courseTypes, page: data.page });
             }
         }, error => console.error(error) || T.notify('Lấy danh sách khóa học bị lỗi!', 'danger'));
+    };
+}
+
+export function getCourseAll(condition,done) {
+    return dispatch => {
+        const url = '/api/course/all';
+        T.get(url,{condition}, data => {
+            if (data.error) {
+                T.notify('Lấy gói học phí bị lỗi', 'danger');
+                console.error('GET: ' + url + '. ' + data.error);
+            } else {
+                done && data && done(data.list);
+                dispatch({ type: CourseGetAll, list: data.list });
+            }
+        }, error => console.error(error) || T.notify('Lấy gói học phí bị lỗi', 'danger'));
     };
 }
 
@@ -249,10 +269,14 @@ export function autoAssignStudent(_courseId, done) {
 }
 
 // Course teacherGroups -----------------------------------------------------------------------------------------------
-export function updateCourseTeacherGroup(_courseId,_teacherUserId, type, done) {
+export function updateCourseTeacherGroup(_courseId,_teacherUserId, type,description, done) {
+    if(typeof description == 'function'){
+        done = description;
+        description=null;
+    }
     return dispatch => {
         const url = '/api/course/teacher-group/teacher';
-        T.put(url, { _courseId,_teacherUserId, type }, data => {
+        T.put(url, { _courseId,_teacherUserId, type,description }, data => {
             if (data.error) {
                 T.notify('Gán giáo viên bị lỗi!', 'danger');
                 console.error('PUT: ' + url + '.', data.error);
