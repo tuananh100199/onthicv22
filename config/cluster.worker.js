@@ -24,14 +24,14 @@ module.exports = (cluster, isDebug) => {
     app.email = appConfig.email;
     app.defaultAdminEmail = appConfig.default.adminEmail;
     app.defaultAdminPassword = appConfig.default.adminPassword;
-    app.assetPath = app.path.join(__dirname, '..', appConfig.path.asset);
+    app.assetPath = app.path.join(__dirname, '../asset');
     app.bundlePath = app.path.join(app.assetPath, 'bundle');
-    app.viewPath = app.path.join(__dirname, '..', appConfig.path.view);
-    app.modulesPath = app.path.join(__dirname, '..', appConfig.path.modules);
-    app.publicPath = app.path.join(__dirname, '..', appConfig.path.public);
-    app.imagePath = app.path.join(appConfig.path.public, 'img');
-    app.uploadPath = app.path.join(__dirname, '..', appConfig.path.upload);
-    app.faviconPath = app.path.join(__dirname, '..', appConfig.path.favicon);
+    app.viewPath = app.path.join(__dirname, '../view');
+    app.modulesPath = app.path.join(__dirname, '../modules');
+    app.publicPath = app.path.join(__dirname, '../public');
+    app.imagePath = app.path.join('public', 'img');
+    app.uploadPath = app.path.join(__dirname, '../asset/upload');
+    app.faviconPath = app.path.join(__dirname, '../public/img/favicon.ico');
     app.database = {};
     app.model = {};
 
