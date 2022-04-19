@@ -113,7 +113,7 @@ module.exports = (app) => {
 
         datSatHach: { type: Boolean, default: false },
         totNghiep: { type: Boolean, default: false },
-        kySatHach:{ type: app.db.Schema.ObjectId, ref: 'LicenseTest' },
+        kySatHach:{ type: app.database.mongoDB.Schema.ObjectId, ref: 'LicenseTest' },
         // ngaySatHach:Date,
         
         // nhận chứng chỉ sơ cấp, giấy phép lái xe

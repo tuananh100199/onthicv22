@@ -1,9 +1,9 @@
 module.exports = app => {
-    const schema = app.db.Schema({
+    const schema = app.database.mongoDB.Schema({
         title: String,
         date:{ type: Date, default: Date.now },
     });
-    const model = app.db.model('LicenseTest', schema);
+    const model = app.database.mongoDB.model('LicenseTest', schema);
 
     app.model.licenseTest = {
         create: (data, done) => model.create(data, done),
