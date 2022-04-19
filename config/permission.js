@@ -113,7 +113,7 @@ module.exports = app => {
                     }
                 });
             } else if (req.headers.authorization) { // is token
-                app.redis.get(req.headers.authorization, (error, value) => {
+                app.database.redis.get(req.headers.authorization, (error, value) => {
                     if (error) {
                         res.send({ error: 'System has errors!' });
                     } else if (value) {
@@ -140,7 +140,7 @@ module.exports = app => {
                     }
                 });
             } else if (req.headers.authorization) { // is token
-                app.redis.get(req.headers.authorization, (error, value) => {
+                app.database.redis.get(req.headers.authorization, (error, value) => {
                     if (error) {
                         res.send({ error: 'System has errors!' });
                     } else if (value) {
@@ -213,7 +213,7 @@ module.exports = app => {
                 }
                 // Add login permission => user.active == true => user:login
                 if (user.active) app.permissionHooks.pushUserPermission(user, 'user:login');
-                if(!(user.isLecturer || user.isCourseAdmin)) app.permissionHooks.pushUserPermission(user, 'driverTest:view');
+                if (!(user.isLecturer || user.isCourseAdmin)) app.permissionHooks.pushUserPermission(user, 'driverTest:view');
                 new Promise(resolve => { // User is CourseAdmin
                     if (user.isCourseAdmin) {
                         app.permissionHooks.pushUserPermission(user, 'courseAdmin:login');

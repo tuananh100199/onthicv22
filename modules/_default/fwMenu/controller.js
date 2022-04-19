@@ -47,7 +47,7 @@ module.exports = app => {
             };
 
         app.model.menu.getAll({}, (error, menuTree) =>
-            getMenu(0, menuTree, () => app.redis.set(app.redis.menusKey, JSON.stringify(menus))));
+            getMenu(0, menuTree, () => app.database.redis.set(app.database.redis.menusKey, JSON.stringify(menus))));
     };
 
     app.get('/api/menu/all', app.permission.check('menu:read'), (req, res) => {
@@ -166,7 +166,7 @@ module.exports = app => {
 
     app.get('/api/menu/path', (req, res) => {
         new Promise((resolve, reject) => { // Get menus from Redis
-            app.redis.get(app.redis.menusKey, (error, menus) => {
+            app.database.redis.get(app.database.redis.menusKey, (error, menus) => {
                 if (error) {
                     reject('System has errors!');
                 } else {
@@ -218,9 +218,9 @@ module.exports = app => {
 
     // Hook readyHooks ------------------------------------------------------------------------------------------------------------------------------
     app.readyHooks.add('MenuReady', {
-        ready: () => app.redis,
+        ready: () => app.database.redis,
         run: () => {
-            app.redis.menusKey = app.appName + ':menus';
+            app.database.redis.menusKey = app.appName + ':menus';
             app.primaryWorker && buildAppMenus();
         },
     });

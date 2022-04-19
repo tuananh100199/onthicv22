@@ -32,6 +32,8 @@ module.exports = (cluster, isDebug) => {
     app.imagePath = app.path.join(appConfig.path.public, 'img');
     app.uploadPath = app.path.join(__dirname, '..', appConfig.path.upload);
     app.faviconPath = app.path.join(__dirname, '..', appConfig.path.favicon);
+    app.database = {};
+    app.model = {};
 
     // Configure ------------------------------------------------------------------------------------------------------
     require('./common')(app, app.appName);

@@ -1,11 +1,11 @@
 module.exports = (app) => {
     app.readyHooks.add('schedule', {
-        ready: () => app.redis,
+        ready: () => app.database.redis,
         run: () => {
             // Thực hiện task lúc nửa đêm
             app.schedule('0 0 * * *', () => {
                 // Cập nhật biến đếm ngày hôm nay về 0
-                if (app.primaryWorker) app.redis.set(`${app.appName}:state:todayViews`, 0);
+                if (app.primaryWorker) app.database.redis.set(`${app.appName}:state:todayViews`, 0);
 
                 // Dọn rác /temp/:dateFolderName cách 1 ngày
                 if (app.primaryWorker) {
@@ -60,13 +60,13 @@ module.exports = (app) => {
                                     if (error) {
                                         reject(error);
                                     } else {
-                                        app.model.user.count({ isLecturer: true, daNghiDay:true, ngayNghiDay: { $gte: new Date().setFullYear(year, 0, 1), $lt: new Date().setFullYear(year + 1, 0, -1) } }, (error, numberOfRemoveTeacher) => {
+                                        app.model.user.count({ isLecturer: true, daNghiDay: true, ngayNghiDay: { $gte: new Date().setFullYear(year, 0, 1), $lt: new Date().setFullYear(year + 1, 0, -1) } }, (error, numberOfRemoveTeacher) => {
                                             if (error) {
                                                 reject(error);
                                             } else {
                                                 const obj = {};
                                                 totalTeacher = totalTeacher + numberOfTeacher - numberOfRemoveTeacher;
-                                                obj[year] = 'totalTeacher:' + totalTeacher + ':newTeacher:' + numberOfTeacher +':removeTeacher:' + numberOfRemoveTeacher;
+                                                obj[year] = 'totalTeacher:' + totalTeacher + ':newTeacher:' + numberOfTeacher + ':removeTeacher:' + numberOfRemoveTeacher;
                                                 resolve(obj);
                                             }
                                         });

@@ -17,10 +17,10 @@ module.exports = app => {
     const getFriendsKey = (_userId) => `${app.appName}:chat:friends${_userId}`;
     const updateChatUsers = (_userId1, _userId2) => {
         const key = getFriendsKey(_userId1);
-        app.redis.get(key, (error, users) => {
+        app.database.redis.get(key, (error, users) => {
             if (!error) {
                 users = users ? users.replace(_userId2, '').replace(',,', ',') : '';
-                app.redis.set(key, _userId2 + (users.length ? ',' : '') + users);
+                app.database.redis.set(key, _userId2 + (users.length ? ',' : '') + users);
             }
         });
     };
@@ -75,22 +75,22 @@ module.exports = app => {
         count: (condition, done) => done ? model.countDocuments(condition, done) : model.countDocuments({}, condition),
 
         // Redis ------------------------------------------------------------------------------------------------------------------------------------
-        getFriends: (_userId, done) => app.redis.get(getFriendsKey(_userId), (error, items) =>
+        getFriends: (_userId, done) => app.database.redis.get(getFriendsKey(_userId), (error, items) =>
             done(error, items ? items.split(',') : [])),
 
-        getSocketIds: (_userId, done) => app.redis.get(getSocketIdsKey(_userId), (error, items) =>
+        getSocketIds: (_userId, done) => app.database.redis.get(getSocketIdsKey(_userId), (error, items) =>
             done(error, items ? items.split(',') : [])),
 
         join: (_userId, _socketId, done) => {
             const key = getSocketIdsKey(_userId);
-            app.redis.get(key, (error, socketIds) => {
+            app.database.redis.get(key, (error, socketIds) => {
                 if (error) {
                     done && done(error);
                 } else {
                     if (!socketIds) {
-                        app.redis.set(key, _socketId);
+                        app.database.redis.set(key, _socketId);
                     } else if (socketIds.indexOf(_socketId) == -1) {
-                        app.redis.set(key, _socketId + ',' + socketIds);
+                        app.database.redis.set(key, _socketId + ',' + socketIds);
                     }
                     done && done();
                 }
@@ -98,19 +98,19 @@ module.exports = app => {
         },
         leave: (_userId, _socketId, done) => {
             const key = getSocketIdsKey(_userId);
-            app.redis.get(key, (error, socketIds) => {
+            app.database.redis.get(key, (error, socketIds) => {
                 if (error) {
                     done && done(error);
                 } else {
                     if (socketIds && socketIds.indexOf(_socketId) != -1) {
-                        app.redis.set(key, socketIds.replace(_socketId, '').replace(',,', ','));
+                        app.database.redis.set(key, socketIds.replace(_socketId, '').replace(',,', ','));
                     }
                     done && done();
                 }
             });
         },
 
-        clearSocketIds: () => app.redis.keys(getSocketIdsKey('*'), (error, keys) =>
-            !error && keys && keys.forEach(key => app.redis.set(key, ''))),
+        clearSocketIds: () => app.database.redis.keys(getSocketIdsKey('*'), (error, keys) =>
+            !error && keys && keys.forEach(key => app.database.redis.set(key, ''))),
     };
 };

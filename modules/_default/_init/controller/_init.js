@@ -71,7 +71,7 @@ module.exports = (app) => {
                                 }
                             }
                         });
-                    } else  if (dataName && dataName.startsWith('loginForm')) {
+                    } else if (dataName && dataName.startsWith('loginForm')) {
                         app.fs.rename(srcPath, destPath, (error) => {
                             if (error) {
                                 done({ error });
@@ -85,7 +85,7 @@ module.exports = (app) => {
                                 }
                             }
                         });
-                    } else  if (dataName && dataName.startsWith('hang')) {
+                    } else if (dataName && dataName.startsWith('hang')) {
                         app.fs.rename(srcPath, destPath, (error) => {
                             if (error) {
                                 done({ error });
@@ -166,13 +166,13 @@ module.exports = (app) => {
     };
 
     // handleFilterConditionDefault (default handle) ---------------------------------------------------------------------------
-    app.handleFilter = (filter,fields,done) => {
+    app.handleFilter = (filter, fields, done) => {
         let condition = {};
-        fields.forEach(name=>{
-            if(filter[name]){
-                if(Array.isArray(filter[name])){
-                    condition[name]={$in:filter[name]};
-                }else{
+        fields.forEach(name => {
+            if (filter[name]) {
+                if (Array.isArray(filter[name])) {
+                    condition[name] = { $in: filter[name] };
+                } else {
                     condition[name] = { $regex: `.*${filter[name]}.*`, $options: 'i' };
                 }
             }
@@ -202,14 +202,14 @@ module.exports = (app) => {
             mobile: '(08) 2214 6555',
             address: '',
             smsAPIToken: app.getToken(32),
-            activeZalo:false,
-            zaloId:''
+            activeZalo: false,
+            zaloId: ''
         },
 
-        init: () => app.redis.keys(`${app.appName}:state:*`, (_, keys) => {
+        init: () => app.database.redis.keys(`${app.appName}:state:*`, (_, keys) => {
             keys && Object.keys(app.state.initState).forEach(key => {
                 const redisKey = `${app.appName}:state:${key}`;
-                if (keys.indexOf(redisKey) == -1) app.redis.set(redisKey, app.state.initState[key]);
+                if (keys.indexOf(redisKey) == -1) app.database.redis.set(redisKey, app.state.initState[key]);
             });
         }),
 
@@ -219,7 +219,7 @@ module.exports = (app) => {
             if (n >= 1 && typeof params[n - 1] == 'function') {
                 const done = params.pop(); // done(error, values)
                 const keys = n == 1 ? app.state.keys : params.map(key => `${app.appName}:state:${key}`); // get chỉ có done => đọc hết app.state
-                app.redis.mget(keys, (error, values) => {
+                app.database.redis.mget(keys, (error, values) => {
                     if (error || values == null) {
                         done(error || 'Error when get Redis value!');
                     } else if (n == 2) {
@@ -240,7 +240,7 @@ module.exports = (app) => {
             if (n >= 1 && typeof params[n - 1] == 'function') {
                 const done = (n % 2) ? params.pop() : null;
                 for (let i = 0; i < n - 1; i += 2) params[i] = app.state.prefixKey + params[i];
-                n == 1 ? done() : app.redis.mset(params, error => done && done(error));
+                n == 1 ? done() : app.database.redis.mset(params, error => done && done(error));
             } else {
                 console.log('Error when set app.state');
             }
@@ -250,7 +250,7 @@ module.exports = (app) => {
 
     // Hook readyHooks ------------------------------------------------------------------------------------------------------------------------------
     app.readyHooks.add('readyInit', {
-        ready: () => app.redis,
+        ready: () => app.database.redis,
         run: () => app.primaryWorker && app.state.init(),
     });
 };

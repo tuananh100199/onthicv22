@@ -26,8 +26,8 @@ module.exports = (app, appName) => {
             app.templates[templateName] = (req, res) => {
                 const today = new Date().yyyymmdd();
                 if (req.session.today != today) {
-                    app.redis.incr(`${appName}:state:todayViews`);
-                    app.redis.incr(`${appName}:state:allViews`);
+                    app.database.redis.incr(`${appName}:state:todayViews`);
+                    app.database.redis.incr(`${appName}:state:allViews`);
                     req.session.today = today;
                 }
 
