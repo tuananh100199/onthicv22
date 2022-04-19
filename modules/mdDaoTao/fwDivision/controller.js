@@ -1,8 +1,8 @@
 module.exports = app => {
     const menu = {
-        parentMenu: app.parentMenu.trainning,
+        parentMenu: app.parentMenu.facility,
         menus: {
-            4005: { title: 'Cơ sở đào tạo', link: '/user/division', icon: 'fa fa-university', backgroundColor: 'rgb(106, 90, 205)' }
+            40001: { title: 'Cơ sở đào tạo', link: '/user/division', icon: 'fa fa-university', backgroundColor: 'rgb(106, 90, 205)' }
         }
     };
     app.permission.add({ name: 'division:read', menu }, { name: 'division:write' }, { name: 'division:delete' });
@@ -43,6 +43,56 @@ module.exports = app => {
     // Home -----------------------------------------------------------------------------------------------------------
     app.get('/home/division/all', (req, res) => {
         app.model.division.getAll((error, list) => res.send({ error, list }));
+    });
+
+    app.get('/api/division/export', app.permission.check('division:write'), (req, res) => {
+        const sessionUser = req.session.user,
+            division = sessionUser.division;
+        if (sessionUser && sessionUser.isCourseAdmin && division && division.isOutside) {
+            res.send({ error: 'Bạn không có quyền xuất file excel này!' });
+        } else {
+            app.model.division.getAll({}, (error, list) => {
+                if (error || !list) {
+                    res.send({ error: 'Hệ thống bị lỗi!' });
+                } else {
+                    const workbook = app.excel.create(), worksheet = workbook.addWorksheet('Danh sách cơ sở đào tạo');
+                    const cells = [
+                        { cell: 'A1', value: 'STT', bold: true, border: '1234' },
+                        { cell: 'B1', value: 'Tên cơ sở', bold: true, border: '1234' },
+                        { cell: 'C1', value: 'Địa chỉ', bold: true, border: '1234' },
+                        { cell: 'D1', value: 'Email', bold: true, border: '1234' },
+                        { cell: 'E1', value: 'Số điện thoại', bold: true, border: '1234' },
+                        { cell: 'F1', value: 'Di động', bold: true, border: '1234' },
+                        { cell: 'G1', value: 'Đường dẫn Google Map', bold: true, border: '1234' },
+                        { cell: 'H1', value: 'Cơ sở ngoài', bold: true, border: '1234' },
+                    ];
+                    worksheet.columns = [
+                        { header: 'STT', key: '_id', width: 15 },
+                        { header: 'Tên cơ sở', key: 'title', width: 15 },
+                        { header: 'Địa chỉ', key: 'address', width: 15 },
+                        { header: 'Email', key: 'email', width: 15 },
+                        { header: 'Số điện thoại', key: 'phoneNumber', width: 15 },
+                        { header: 'Di động', key: 'mobile', width: 15 },
+                        { header: 'Đường dẫn Google Map', key: 'mapURL', width: 25 },
+                        { header: 'Cơ sở ngoài', key: 'isOutside', width: 15 },
+                    ];
+                    list.forEach((division, index) => {
+                        worksheet.addRow({
+                            _id: index + 1,
+                            title: division.title,
+                            address: division.address,
+                            email: division.email,
+                            phoneNumber: division.phoneNumber,
+                            mobile: division.mobile,
+                            mapURL: division.mapURL,
+                            isOutside: division.isOutside ? 'X' : '',
+                        });
+                    });
+                    app.excel.write(worksheet, cells);
+                    app.excel.attachment(workbook, res, 'Danh sách cơ sở đào tạo.xlsx');
+                }
+            });
+        }
     });
 
     // Hook upload images ---------------------------------------------------------------------------------------------

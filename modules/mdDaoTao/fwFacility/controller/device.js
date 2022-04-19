@@ -1,8 +1,8 @@
 module.exports = app => {
     const menu = {
-        parentMenu: app.parentMenu.trainning,
+        parentMenu: app.parentMenu.facility,
         menus: {
-            4041: { title: 'Quản lý cơ sở vật chất', link: '/user/facility' }
+            40002: { title: 'Quản lý cơ sở vật chất', link: '/user/facility' }
         }
     };
     app.permission.add({ name: 'facility:read', menu }, { name: 'facility:write' }, { name: 'facility:delete' }, { name: 'facility:import' }, { name: 'facility:export' });

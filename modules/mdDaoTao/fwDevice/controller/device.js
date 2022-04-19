@@ -1,8 +1,8 @@
 module.exports = app => {
     const menu = {
-        parentMenu: app.parentMenu.trainning,
+        parentMenu: app.parentMenu.facility,
         menus: {
-            4040: { title: 'Quản lý thiết bị giảng dạy', link: '/user/device' }
+            40003: { title: 'Quản lý thiết bị giảng dạy', link: '/user/device' }
         }
     };
     app.permission.add({ name: 'device:read', menu }, { name: 'device:write' }, { name: 'device:delete' }, { name: 'device:import' }, { name: 'device:export' });

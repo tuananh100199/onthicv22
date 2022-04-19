@@ -1,8 +1,8 @@
 module.exports = app => {
     const menu = {
-        parentMenu: app.parentMenu.trainning,
+        parentMenu: app.parentMenu.facility,
         menus: {
-            4035: { title: 'Quản lý xe', link: '/user/car' }
+            40004: { title: 'Quản lý xe', link: '/user/car' }
         }
     };
     app.permission.add({ name: 'car:read', menu }, { name: 'car:write' }, { name: 'car:delete' }, { name: 'car:import' }, { name: 'car:export' }, { name: 'car:fuel' }, { name: 'car:repair' }, { name: 'car:practice' }, { name: 'car:registration' }, { name: 'car:insurance' });

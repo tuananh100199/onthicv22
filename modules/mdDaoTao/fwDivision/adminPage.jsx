@@ -1,7 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { getDivisionAll, createDivision, deleteDivision, updateDivision,swapDivision } from './redux';
-import { AdminPage, AdminModal, FormTextBox, TableCell, renderTable } from 'view/component/AdminPage';
+import { getDivisionAll, createDivision, deleteDivision, updateDivision,swapDivision, exportDivision } from './redux';
+import { AdminPage, AdminModal, FormTextBox, TableCell, renderTable, CirclePageButton } from 'view/component/AdminPage';
 
 class DivisionModal extends AdminModal {
     componentDidMount() {
@@ -74,6 +74,7 @@ class DivisionPage extends AdminPage {
             content: <>
                 <div className='tile'>{table}</div>
                 <DivisionModal ref={e => this.modal = e} create={this.props.createDivision} history={this.props.history} readOnly={!permission.write} />
+                <CirclePageButton type='export' style={{ right: '75px'}} onClick={() => exportDivision()} />
             </>,
             onCreate: permission.write ? this.create : null,
         });
