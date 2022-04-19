@@ -1,10 +1,10 @@
 module.exports = app => {
-    const schema = app.db.Schema({
+    const schema = app.database.mongoDB.Schema({
         title: String,
         titleVisible: { type: Boolean, default: true },
         description: String,
     });
-    const model = app.db.model('Statistic', schema);
+    const model = app.database.mongoDB.model('Statistic', schema);
 
     app.model.statistic = {
         create: (data, done) => model.create(data, done),

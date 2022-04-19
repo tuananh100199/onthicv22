@@ -1,9 +1,9 @@
 module.exports = app => {
-    const schema = app.db.Schema({
+    const schema = app.database.mongoDB.Schema({
         name: String,                                                       // Tên khóa học
         shortDescription: String,                                           // Giới thiệu ngắn khóa học
         detailDescription: String,                                          // Chi tiết khóa học
-        courseType: { type: app.db.Schema.ObjectId, ref: 'CourseType' },    // Loại khóa học
+        courseType: { type: app.database.mongoDB.Schema.ObjectId, ref: 'CourseType' },    // Loại khóa học
         courseFee: { type: Number, default: 0 },                            // Học phí => Delete
         courseFees: [{                                                      // Học phí => courseFee
             division: String,
@@ -21,7 +21,7 @@ module.exports = app => {
 
         practiceNumOfHours: { type: Number },                                 // Tổng số giờ học thực hành
 
-        subjects: [{ type: app.db.Schema.ObjectId, ref: 'Subject' }],       // Danh sách môn học
+        subjects: [{ type: app.database.mongoDB.Schema.ObjectId, ref: 'Subject' }],       // Danh sách môn học
         maxStudent: { type: Number, default: 100 },                         // Số lượng học viên tối đa
         modifiedDate: { type: Date, default: Date.now },
         createdDate: { type: Date, default: Date.now },
@@ -37,44 +37,44 @@ module.exports = app => {
         thoiGianThiTotNghiepDuKien: { type: Date, default: Date.now },
         thoiGianThiTotNghiepChinhThuc: { type: Date, default: Date.now },
 
-        admins: [{ type: app.db.Schema.ObjectId, ref: 'User' }],            // Quản trị viên khóa học
+        admins: [{ type: app.database.mongoDB.Schema.ObjectId, ref: 'User' }],            // Quản trị viên khóa học
         teacherGroups: [{
-            teacher: { type: app.db.Schema.Types.ObjectId, ref: 'User' },
-            student: [{ type: app.db.Schema.Types.ObjectId, ref: 'Student' }],
+            teacher: { type: app.database.mongoDB.Schema.Types.ObjectId, ref: 'User' },
+            student: [{ type: app.database.mongoDB.Schema.Types.ObjectId, ref: 'Student' }],
         }],
 
-        studyProgram: { type: app.db.Schema.ObjectId, ref: 'StudyProgram' },
+        studyProgram: { type: app.database.mongoDB.Schema.ObjectId, ref: 'StudyProgram' },
 
-        hoiDongTotNghiep:[{
+        hoiDongTotNghiep: [{
             name: String,
             chucVu: String,
             nhiemVu: String,
             gender: { type: String, enum: ['male', 'female'], default: 'male' },
         }],
 
-        hoiDongChamThi:[{
+        hoiDongChamThi: [{
             name: String,
             chucVu: String,
             nhiemVu: String,
             gender: { type: String, enum: ['male', 'female'], default: 'male' },
-            chamLyThuyet:{type: Boolean, default: false},
-            chamThucHanh: {type: Boolean, default: false},
-            isTruongBanChamThi: {type: Boolean, default: false},
-            isThuKyChamThi: {type: Boolean, default: false},
+            chamLyThuyet: { type: Boolean, default: false },
+            chamThucHanh: { type: Boolean, default: false },
+            isTruongBanChamThi: { type: Boolean, default: false },
+            isThuKyChamThi: { type: Boolean, default: false },
         }],
 
-        hoiDongKiemTraKetThucKhoa:[{
+        hoiDongKiemTraKetThucKhoa: [{
             name: String,
             chucVu: String,
             nhiemVu: String,
             gender: { type: String, enum: ['male', 'female'], default: 'male' },
-            thuKyBaoCao:{type: Boolean, default: false},
+            thuKyBaoCao: { type: Boolean, default: false },
         }],
 
         lock: { type: Boolean, default: false },                            // Cho phép thay đổi thông tin toàn khoá học => TODO: readOnly
         close: { type: Boolean, default: false },                           // Khóa học đã đóng
     });
-    const model = app.db.model('Course', schema);
+    const model = app.database.mongoDB.model('Course', schema);
 
     app.model.course = {
         create: (data, done) => app.model.courseType.get(data.courseType, (_, item) =>

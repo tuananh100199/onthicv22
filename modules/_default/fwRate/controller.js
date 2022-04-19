@@ -2,10 +2,12 @@ module.exports = (app) => {
     app.permission.add({ name: 'rate:read' }, { name: 'rate:write' });
 
     app.get('/api/rate/admin/page/:pageNumber/:pageSize', (req, res) => {
-        const pageNumber = parseInt(req.params.pageNumber),
+        let pageNumber = parseInt(req.params.pageNumber),
             pageSize = parseInt(req.params.pageSize),
             condition = req.query.condition || {},
+            filter = req.query.filter||null,sort=req.query.sort||null,
             pageCondition = {};
+
             pageCondition.$or = [];
         if (condition.searchText) {
             const value = { $regex: `.*${condition.searchText}.*`, $options: 'i' };
@@ -13,6 +15,11 @@ module.exports = (app) => {
                 { note: value },
             );
         }
+
+        filter && app.handleFilter(filter,['value'],defaultFilter=>{
+            // console.log('-----------------defaultCondition:----------------------');
+            pageCondition={...pageCondition,...defaultFilter};
+        });
         if (pageCondition.$or.length == 0) delete pageCondition.$or;
         pageCondition._refId = condition._refId;
         
@@ -20,7 +27,7 @@ module.exports = (app) => {
             if (error || !user) {
                 res.send({ error: 'Lấy thông tin giáo viên bị lỗi!'});
             } else {
-                app.model.rate.getPage(pageNumber, pageSize, pageCondition, (error, page) => {
+                app.model.rate.getPage(pageNumber, pageSize, pageCondition,sort, (error, page) => {
                     page = app.clone(page);
                     page.lecturer = user;
                     res.send({ error, page });
@@ -61,14 +68,43 @@ module.exports = (app) => {
         }
     });
 
+    const updateRatingTeacher = (_teacherId)=> new Promise((resolve,reject)=>{
+        app.model.rate.getAll({_refId:_teacherId},(error,ratingTeachers)=>{
+            if(error) reject(error);
+            else if(!ratingTeachers.length){
+                resolve();
+            }else{
+                const ratingAmount = ratingTeachers.length;
+                const ratingScore = ratingTeachers.reduce((result,rate)=>result+rate.value,0)/ratingAmount;
+                app.model.user.update(_teacherId,{ratingAmount,ratingScore},error=>{
+                    error?reject(error):resolve();
+                });
+            }
+        });
+    });
+
     app.put('/api/rate/student', app.permission.check('user:login'), (req, res) => {
         const changes = req.body.changes;
-        app.model.rate.update(req.body._id, changes, (error, item) => res.send({ error, item }));
+        app.model.rate.update(req.body._id, changes, (error, item) => {
+            if(error)res.send({error});
+            else{
+                updateRatingTeacher(changes._refId).then(()=>{
+                    res.send({item});
+                }).catch(error=>res.send({error}));
+            }
+        });
     });
 
     app.post('/api/rate/student', app.permission.check('user:login'), (req, res) => { //mobile
-        app.model.rate.create(app.clone(req.body.newData, { user: req.session.user._id }),
-            (error, item) => res.send({ error, item }));
+        let newData = req.body.newData||{};
+        app.model.rate.create(app.clone(newData, { user: req.session.user._id }),(error, item) =>{
+            if(error)res.send({error});
+            else{
+                updateRatingTeacher(newData._refId).then(()=>{
+                    res.send({item});
+                }).catch(error=>res.send({error}));
+            }
+        });
     });
     app.get('/api/rate/student/:type', app.permission.check('user:login'), (req, res) => { //mobile
         const condition = { type: req.params.type, _refId: req.query._refId, user: req.session.user._id };

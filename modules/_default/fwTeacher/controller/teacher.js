@@ -1,14 +1,14 @@
 module.exports = (app) => {
     const menu = {
-        parentMenu: app.parentMenu.enrollment,
+        parentMenu: app.parentMenu.teacher,
         menus: {
-            8090: { title: 'Quản lý giáo viên', link: '/user/teacher', icon: 'fa-bars', backgroundColor: '#00b0ff' },
+            9001: { title: 'Hồ sơ giáo viên', link: '/user/teacher', icon: 'fa-bars', backgroundColor: '#00b0ff' },
             // 8091: { title: 'Danh mục chứng chỉ', link: '/user/teacher-certification/category', icon: 'fa-bars', backgroundColor: '#00b0ff' },
-            8092: { title: 'Danh mục hợp đồng', link: '/user/contract/category', icon: 'fa-bars', backgroundColor: '#00b0ff' },
-            8093: { title: 'Danh mục giấy phép lái xe', link: '/user/gplx/category', icon: 'fa-bars', backgroundColor: '#00b0ff' },
-            8094: { title: 'Danh mục hồ sơ', link: '/user/profile/category', icon: 'fa-bars', backgroundColor: '#00b0ff' },
-            8095: { title: 'Danh mục loại giáo viên', link: '/user/teacher-type/category', icon: 'fa-bars', backgroundColor: '#00b0ff' },
-        
+            9002: { title: 'Danh mục hợp đồng', link: '/user/contract/category', icon: 'fa-bars', backgroundColor: '#00b0ff' },
+            9003: { title: 'Danh mục giấy phép lái xe', link: '/user/gplx/category', icon: 'fa-bars', backgroundColor: '#00b0ff' },
+            9004: { title: 'Danh mục hồ sơ', link: '/user/profile/category', icon: 'fa-bars', backgroundColor: '#00b0ff' },
+            9005: { title: 'Danh mục loại giáo viên', link: '/user/teacher-type/category', icon: 'fa-bars', backgroundColor: '#00b0ff' },
+            9020: { title: 'Quản lý đi khóa', link: '/user/teacher-course', icon: 'fa-bars', backgroundColor: '#00b0ff' },
         }
     };
 
@@ -22,7 +22,8 @@ module.exports = (app) => {
     app.get('/user/gplx/category', app.permission.check('category:read'), app.templates.admin);
     app.get('/user/teacher', app.permission.check('teacher:read'), app.templates.admin);
     app.get('/user/teacher/:id', app.permission.check('teacher:write'), app.templates.admin);
-
+    app.get('/user/teacher-course', app.permission.check('teacher:read'), app.templates.admin);
+    app.get('/user/teacher-course/:id', app.permission.check('teacher:write'), app.templates.admin);
     //APIs -----------------------------------------------------------------------------------------------
     app.get('/api/teacher/page/:pageNumber/:pageSize', app.permission.check('teacher:read'), (req, res) => {
         let pageNumber = parseInt(req.params.pageNumber),
@@ -50,7 +51,7 @@ module.exports = (app) => {
         
         //lọc nghỉ việc
         if(condition.nghiViec){
-          pageCondition.thoiGianLamViec={['nghiViec']:condition.nghiViec=='1'?true:false};
+          pageCondition={...pageCondition,['thoiGianLamViec.nghiViec']:condition.nghiViec};
         } 
 
 
@@ -91,6 +92,16 @@ module.exports = (app) => {
                 pageCondition.courses= {$in: [null,[],...courses]};
             }else{
                 pageCondition.courses={$in:filter.courses};
+            }
+        }
+
+        // doneCourse
+        if(filter.doneCourses && filter.doneCourses.length){
+            if(filter.doneCourses.find(item=>item=='null')){
+                const courses = filter.doneCourses.filter(course=>course!='null');
+                pageCondition.doneCourses= {$in: [null,[],...courses]};
+            }else{
+                pageCondition.doneCourses={$in:filter.doneCourses};
             }
         }
         // filter lọc nghỉ việc

@@ -1,6 +1,6 @@
 module.exports = (app) => {
-    const schema = app.db.Schema({
-        user: { type: app.db.Schema.ObjectId, ref: 'User' },
+    const schema = app.database.mongoDB.Schema({
+        user: { type: app.database.mongoDB.Schema.ObjectId, ref: 'User' },
 
         firstname: String,
         lastname: String,
@@ -30,10 +30,10 @@ module.exports = (app) => {
         hinhChupTrucTiep: { type: Boolean, default: false },
 
         planCourse: String,                                                                         // Khóa học dự kiến
-        planLecturer: { type: app.db.Schema.ObjectId, ref: 'User' },                                // Giáo viên dự kiến                                 
-        division: { type: app.db.Schema.ObjectId, ref: 'Division' },                                // Cơ sở đào tạo
-        course: { type: app.db.Schema.ObjectId, ref: 'Course' },                                    // Khóa học
-        courseType: { type: app.db.Schema.ObjectId, ref: 'CourseType' },                            // Hạng đăng ký
+        planLecturer: { type: app.database.mongoDB.Schema.ObjectId, ref: 'User' },                                // Giáo viên dự kiến                                 
+        division: { type: app.database.mongoDB.Schema.ObjectId, ref: 'Division' },                                // Cơ sở đào tạo
+        course: { type: app.database.mongoDB.Schema.ObjectId, ref: 'Course' },                                    // Khóa học
+        courseType: { type: app.database.mongoDB.Schema.ObjectId, ref: 'CourseType' },                            // Hạng đăng ký
 
         goiHocVien: { type: String, enum: ['coban', 'tuchon'], default: 'coban' },                  // Gói đăng ký của học viên => được học vào T7, CN, ngoài giờ
 
@@ -41,13 +41,13 @@ module.exports = (app) => {
         hocPhiMienGiam: Number,                                                                     // Số tiền được miễn giảm
         hocPhiDaDong: Number,                                                                       // Học phí đã đóng
         ngayHetHanNopHocPhi: Date,                                                                  // Ngày hết hạn nộp học phí
-        coursePayment: { type: app.db.Schema.ObjectId, ref: 'CoursePayment' },
-        discount: { type: app.db.Schema.ObjectId, ref: 'Discount' },
-        courseFee: { type: app.db.Schema.ObjectId, ref: 'CourseFee' },
+        coursePayment: { type: app.database.mongoDB.Schema.ObjectId, ref: 'CoursePayment' },
+        discount: { type: app.database.mongoDB.Schema.ObjectId, ref: 'Discount' },
+        courseFee: { type: app.database.mongoDB.Schema.ObjectId, ref: 'CourseFee' },
         lichSuDongTien: [{
             date: { type: Date, default: Date.now },
             fee: { type: Number, default: 0 },
-            user: { type: app.db.Schema.ObjectId, ref: 'User' },                                    // Người xác nhận tiền 
+            user: { type: app.database.mongoDB.Schema.ObjectId, ref: 'User' },                                    // Người xác nhận tiền 
             isOnlinePayment: { type: Boolean, default: false },
         }],
 
@@ -56,10 +56,10 @@ module.exports = (app) => {
                 transactionId: String,
                 item: [{
                     isDefault: { type: Boolean, default: false },
-                    _id: { type: app.db.Schema.ObjectId },
+                    _id: { type: app.database.mongoDB.Schema.ObjectId },
                     name: String,
-                    courseType: { type: app.db.Schema.ObjectId, ref: 'CourseType' },
-                    feeType: { type: app.db.Schema.ObjectId, ref: 'FeeType' },
+                    courseType: { type: app.database.mongoDB.Schema.ObjectId, ref: 'CourseType' },
+                    feeType: { type: app.database.mongoDB.Schema.ObjectId, ref: 'FeeType' },
                     fee: Number,
                     description: String,
                     quantity: Number,
@@ -74,10 +74,10 @@ module.exports = (app) => {
             transactionId: String,
             item: [{
                 isDefault: { type: Boolean, default: false },
-                _id: { type: app.db.Schema.ObjectId },
+                _id: { type: app.database.mongoDB.Schema.ObjectId },
                 name: String,
-                courseType: { type: app.db.Schema.ObjectId, ref: 'CourseType' },
-                feeType: { type: app.db.Schema.ObjectId, ref: 'FeeType' },
+                courseType: { type: app.database.mongoDB.Schema.ObjectId, ref: 'CourseType' },
+                feeType: { type: app.database.mongoDB.Schema.ObjectId, ref: 'FeeType' },
                 fee: Number,
                 description: String,
                 quantity: Number,
@@ -86,8 +86,8 @@ module.exports = (app) => {
             lock: { type: Boolean, default: false }
         },
         // active manual
-        activeKhoaLyThuyet:{type:Boolean, default:false},
-        activeKhoaThucHanh:{type:Boolean, default:false},
+        activeKhoaLyThuyet: { type: Boolean, default: false },
+        activeKhoaThucHanh: { type: Boolean, default: false },
 
         tienDoHocTap: {},
         tienDoThiHetMon: {},
@@ -98,13 +98,13 @@ module.exports = (app) => {
         duKienNamThi: Number,                                                                       // Dự kiến năm thi
 
         diemThiTotNghiep: [{
-            monThiTotNghiep: { type: app.db.Schema.ObjectId },
+            monThiTotNghiep: { type: app.database.mongoDB.Schema.ObjectId },
             point: Number,
             diemLiet: { type: Boolean, default: false },
         }],
 
         diemThiHetMon: [{
-            subject: { type: app.db.Schema.ObjectId, ref: 'Subject' },
+            subject: { type: app.database.mongoDB.Schema.ObjectId, ref: 'Subject' },
             point: Number,
         }],
 
@@ -113,14 +113,14 @@ module.exports = (app) => {
 
         datSatHach: { type: Boolean, default: false },
         totNghiep: { type: Boolean, default: false },
-        kySatHach:String,
-        ngaySatHach:Date,
-        
+        kySatHach: String,
+        ngaySatHach: Date,
+
         // nhận chứng chỉ sơ cấp, giấy phép lái xe
-        isCertification:{ type: Boolean, default: false },  // trung tâm đã có CCSC
-        hasCertification:{type: Boolean, default: false},   // Học viên đã nhận được CCSC
-        isLicense:{ type: Boolean, default: false },        // Trung tâm đã có GPLX
-        hasLicense:{type: Boolean, default: false},         // Học viên đã nhận được GPLX
+        isCertification: { type: Boolean, default: false },  // trung tâm đã có CCSC
+        hasCertification: { type: Boolean, default: false },   // Học viên đã nhận được CCSC
+        isLicense: { type: Boolean, default: false },        // Trung tâm đã có GPLX
+        hasLicense: { type: Boolean, default: false },         // Học viên đã nhận được GPLX
 
         ngayDuKienThiSatHach: Date,
         liDoChuaDatSatHach: String,
@@ -136,11 +136,11 @@ module.exports = (app) => {
         tongThoiGianTaiLieu: Number,
         tongThoiGianForum: Number,
 
-        isDon:{ type: Boolean, default: false },
-        isHinh:{ type: Boolean, default: false },
-        isIdentityCard:{ type: Boolean, default: false },
-        isGiayKhamSucKhoe:{ type: Boolean, default: false },
-        isBangLaiA1:{ type: Boolean, default: false },
+        isDon: { type: Boolean, default: false },
+        isHinh: { type: Boolean, default: false },
+        isIdentityCard: { type: Boolean, default: false },
+        isGiayKhamSucKhoe: { type: Boolean, default: false },
+        isBangLaiA1: { type: Boolean, default: false },
 
         soNamLaiXe: Number,
         soKMLaiXe: Number,
@@ -158,7 +158,7 @@ module.exports = (app) => {
     });
 
     // Không được phép viết hàm getAll cho model student
-    const model = app.db.model('Student', schema);
+    const model = app.database.mongoDB.model('Student', schema);
     app.model.student = {
         create: (data, done) => model.create(data, done),
 
@@ -222,7 +222,7 @@ module.exports = (app) => {
                             const _ids = list.map(item => item._id);
                             delete condition.searchText;
                             if (sort && sort.division == 0) delete sort.division;
-                            model.find({ _id: { $in: _ids }, ...condition }).sort(sort).skip(skipNumber).limit(result.pageSize)
+                            model.find({ _id: { $in: _ids }, ...condition }).sort(sort || { firstname: 1 }).skip(skipNumber).limit(result.pageSize)
                                 .populate('user', '-password').populate('division', '_id title isOutside').populate('planLecturer', '_id lastname firstname').populate('courseType').populate('course').populate({
                                     path: 'course', populate: { path: 'subjects', select: '-detailDescription' }
                                 }).populate('courseFee').populate('_id name')
@@ -235,7 +235,7 @@ module.exports = (app) => {
                 } else {
                     delete condition.searchText;
                     if (sort && sort.division == 0) delete sort.division;
-                    model.find(condition).sort(sort).skip(skipNumber).limit(result.pageSize)
+                    model.find(condition).sort(sort || { firstname: 1 }).skip(skipNumber).limit(result.pageSize)
                         .populate('user', '-password').populate('division', '_id title isOutside').populate('planLecturer', '_id lastname firstname').populate('courseType').populate('course').populate({
                             path: 'course', populate: { path: 'subjects', select: '-detailDescription' }
                         }).populate('courseFee').populate('discount').populate('coursePayment')
@@ -261,7 +261,7 @@ module.exports = (app) => {
         },
 
         // changes = { $set, $unset, $push, $pull }
-        update: (_id, changes,$unset, done) => {
+        update: (_id, changes, $unset, done) => {
             if (!done) {
                 done = $unset;
                 $unset = {};
@@ -279,14 +279,14 @@ module.exports = (app) => {
                             Object.assign(changes.tienDoHocTap, obj);
                         });
                         changes.modifiedDate = new Date();
-                        model.findOneAndUpdate({ _id }, {$set:changes,$unset}, { new: true }).populate('user', 'email phoneNumber').populate('division', 'id title').exec(done);
+                        model.findOneAndUpdate({ _id }, { $set: changes, $unset }, { new: true }).populate('user', 'email phoneNumber').populate('division', 'id title').exec(done);
                     } else {
                         done();
                     }
                 });
             } else {
                 changes.modifiedDate = new Date();
-                model.findOneAndUpdate({ _id }, {$set:changes,$unset}, { new: true }).populate('user', 'email phoneNumber').populate('division', 'id title').populate('course', 'name').exec(done);
+                model.findOneAndUpdate({ _id }, { $set: changes, $unset }, { new: true }).populate('user', 'email phoneNumber').populate('division', 'id title').populate('course', 'name').exec(done);
             }
         },
 

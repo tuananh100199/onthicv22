@@ -1,15 +1,15 @@
 
 module.exports = app => {
-    const schema = app.db.Schema({
+    const schema = app.database.mongoDB.Schema({
         title: String,
         price: Number,
         shortDescription: String,
         detailDescription: String,
         image: String,
         contentSyntax: String,
-        subjects: [{ type: app.db.Schema.ObjectId, ref: 'Subject' }],
+        subjects: [{ type: app.database.mongoDB.Schema.ObjectId, ref: 'Subject' }],
         questionTypes: [{
-            category: { type: app.db.Schema.ObjectId, ref: 'Category' },
+            category: { type: app.database.mongoDB.Schema.ObjectId, ref: 'Category' },
             amount: Number,
         }],
 
@@ -27,10 +27,10 @@ module.exports = app => {
         practiceNumOfHours: { type: Number, default: 0 },                           // Tổng giờ dạy thực hành
         practiceNumOfReviewHours: { type: Number, default: 0 },                     // Tổng giờ ôn tập thực hành
 
-        soLuongCauHoiThi:  { type: Number, default: 0 },                            // Số lượng câu hỏi trong một đề thi
-        soLuongCauDat:  { type: Number, default: 0 },                               // Số lượng câu để thi đậu
+        soLuongCauHoiThi: { type: Number, default: 0 },                            // Số lượng câu hỏi trong một đề thi
+        soLuongCauDat: { type: Number, default: 0 },                               // Số lượng câu để thi đậu
     });
-    const model = app.db.model('CourseType', schema);
+    const model = app.database.mongoDB.model('CourseType', schema);
 
     app.model.courseType = {
         create: (data, done) => model.create({ ...data, title: data.title || 'Loại khóa học mới' }, (error, item) => {

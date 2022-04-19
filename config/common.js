@@ -1,4 +1,4 @@
-module.exports = (app, appName) => {
+module.exports = (app, appConfig) => {
     app.clone = function () {
         const length = arguments.length;
         let result = null;
@@ -26,8 +26,8 @@ module.exports = (app, appName) => {
             app.templates[templateName] = (req, res) => {
                 const today = new Date().yyyymmdd();
                 if (req.session.today != today) {
-                    app.redis.incr(`${appName}:state:todayViews`);
-                    app.redis.incr(`${appName}:state:allViews`);
+                    app.database.redisDB.incr(`${appConfig.name}:state:todayViews`);
+                    app.database.redisDB.incr(`${appConfig.name}:state:allViews`);
                     req.session.today = today;
                 }
 
@@ -54,6 +54,7 @@ module.exports = (app, appName) => {
         trainning: { index: 4000, title: 'Đào tạo', icon: 'fa-graduation-cap' },
         driveTest: { index: 6000, title: 'Ôn tập', icon: 'fa-graduation-cap' },
         enrollment: { index: 8000, title: 'Tuyển sinh', icon: 'fa fa-user-plus' },
+        teacher: { index: 9000, title: 'Giáo viên', icon: 'fa fa-pencil-square-o' },
     };
 
     // Upload Hook -----------------------------------------------------------------------------------------------------

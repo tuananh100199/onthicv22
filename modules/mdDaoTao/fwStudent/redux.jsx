@@ -68,6 +68,24 @@ export function getStudentPage(pageNumber, pageSize, pageCondition, done) {
     };
 }
 
+T.initCookiePage('officialStudentPage');
+export function getOfficialStudentPage(pageNumber, pageSize, pageCondition,filter,sort, done) {
+    const page = T.updatePage('officialStudentPage', pageNumber, pageSize,pageCondition,filter,sort);
+    return dispatch => {
+        const url = `/api/student/official/page/${page.pageNumber}/${page.pageSize}`;
+        T.get(url, { pageCondition:page.pageCondition,filter:page.filter,sort:page.sort }, data => {
+            if (data.error) {
+                T.notify('Lấy danh sách học viên bị lỗi!', 'danger');
+                console.error(`GET: ${url}. ${data.error}`);
+            } else {
+                if (pageCondition) data.page.pageCondition = pageCondition;
+                done && done(data.page);
+                dispatch({ type: StudentGetPage, page: data.page });
+            }
+        }, error => console.error(error) || T.notify('Lấy danh sách học viên bị lỗi!', 'danger'));
+    };
+}
+
 T.initCookiePage('pageDebtStudent', true);
 export function getDebtStudentPage(pageNumber, pageSize, pageCondition, filter, sort, done) {
     if(typeof sort=='function'){
@@ -113,6 +131,23 @@ export function updateStudent(_id, changes, done) {
                 done && done(data.item);
                 dispatch({ type: StudentUpdate, item: data.item });
                 // dispatch(getStudentPage());
+            }
+            done && done(data.error);
+        }, error => console.error(error) || T.notify('Cập nhật thông tin học viên bị lỗi!', 'danger'));
+    };
+}
+
+export function updateOfficialStudent(_id, changes, done) {
+    return dispatch => {
+        const url = '/api/student';
+        T.put(url, { _id, changes }, data => {
+            if (data.error) {
+                T.notify('Cập nhật thông tin học viên bị lỗi!', 'danger');
+                console.error(`PUT: ${url}. ${data.error}`);
+            } else {
+                done && done(data.item);
+                dispatch({ type: StudentUpdate, item: data.item });
+                dispatch(getOfficialStudentPage());
             }
             done && done(data.error);
         }, error => console.error(error) || T.notify('Cập nhật thông tin học viên bị lỗi!', 'danger'));
@@ -182,6 +217,13 @@ export function getStudent(_id, done) {
             }
         }, error => console.error(error) || T.notify('Lấy thông tin học viên bị lỗi', 'danger'));
     };
+}
+
+export function exportOfficialStudent() {
+    const page = T.updatePage('officialStudentPage');
+    const {filter=null} = page;
+    const condition = filter && Object.keys(filter).length ? JSON.stringify(filter):'all';
+    T.download(T.url(`/api/student/official/export/${condition}`));
 }
 
 export function getStudentScore(courseId, done) {
@@ -257,16 +299,23 @@ export function updateActiveCourse(_id, type, done) {
 
 // Pre-student Actions ------------------------------------------------------------------------------------------------
 T.initCookiePage('adminPreStudent');
-export function getPreStudentPage(pageNumber, pageSize, pageCondition, sort, done) {
-    const page = T.updatePage('adminPreStudent', pageNumber, pageSize);
+export function getPreStudentPage(pageNumber, pageSize, pageCondition,filter, sort, done) {
+    if(typeof sort=='function'){
+        done=sort;
+        sort=undefined;
+    }else if(typeof filter == 'function'){
+        done=filter;
+        filter=undefined;
+    }
+    const page = T.updatePage('adminPreStudent', pageNumber, pageSize,pageCondition,filter,sort);
     return dispatch => {
         const url = `/api/pre-student/page/${page.pageNumber}/${page.pageSize}`;
-        T.get(url, { condition: pageCondition, sort }, data => {
+        T.get(url, { condition: page.pageCondition,filter:page.filter, sort:page.sort }, data => {
             if (data.error) {
                 T.notify('Lấy danh sách học viên bị lỗi!', 'danger');
                 console.error(`GET: ${url}. ${data.error}`);
             } else {
-                if (pageCondition) data.page.pageCondition = pageCondition;
+                if (page.pageCondition) data.page.pageCondition = page.pageCondition;
                 done && done(data.page);
                 dispatch({ type: PreStudentGetPage, page: data.page });
             }
@@ -428,3 +477,10 @@ export const ajaxSelectStudentOfLecturer = (courseId, lecturerId) => ({
     processResults: response => ({ results: response && response.list ? response.list.map(student => ({ id: student._id, text: `${student.lastname} ${student.firstname}` })) : [] }),
     fetchOne: (_id, done) => (getStudent(_id, student => done && done({ id: student._id, text: `${student.lastname} ${student.firstname}` })))()
 });
+
+export const ajaxSelectStudent = T.createAjaxAdapter(
+    '/api/student/page/1/20',
+    params => ({ pageCondition: { searchText: params.term } }),
+    response => response && response.page && response.page.list ?
+        response.page.list.map(student => ({ id: student._id, text: `${student.lastname} ${student.firstname}` + (student.identityCard ? ` (${student.identityCard})` : '') })) : [],
+);

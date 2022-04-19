@@ -3,8 +3,15 @@ import { connect } from 'react-redux';
 import { getRatePageByAdmin } from 'modules/_default/fwRate/redux';
 import { Link } from 'react-router-dom';
 import Pagination from 'view/component/Pagination';
-import { AdminPage, TableCell, renderTable } from 'view/component/AdminPage';
+import { AdminPage, TableCell, renderTable,TableHead,TableHeadCell } from 'view/component/AdminPage';
 
+const ratingDropDown = [
+    {id:1,text:'1'},
+    {id:2,text:'2'},
+    {id:3,text:'3'},
+    {id:4,text:'4'},
+    {id:5,text:'5'},
+];
 class AdminTeacherRatePage extends AdminPage {
     state = {};
     componentDidMount() {
@@ -42,15 +49,23 @@ class AdminTeacherRatePage extends AdminPage {
         let { pageNumber, pageSize, pageTotal, pageCondition, totalItem, list, lecturer } = this.props.rate && this.props.rate.page ?
             this.props.rate.page : { pageNumber: 1, pageSize: 50, pageTotal: 1, pageCondition: {}, totalItem: 0, list: [] };
         const table = renderTable({
-            getDataSource: () => list, stickyHead: true,
+            getDataSource: () => list, stickyHead: true,autoDisplay:true,
             renderHead: () => (
-                <tr>
-                    <th style={{ width: 'auto' }}>#</th>
-                    <th style={{ width: 'auto' }} nowrap='true'>Học viên đánh giá</th>
-                    <th style={{ width: 'auto' }} nowrap='true'>Số sao</th>
-                    <th style={{ width: '80%' }}>Nội dung đánh giá</th>
-                    <th style={{ width: '20%' }}>Ngày đánh giá</th>
-                </tr>),
+                // <tr>
+                //     <th style={{ width: 'auto' }}>#</th>
+                //     <th style={{ width: 'auto' }} nowrap='true'>Học viên đánh giá</th>
+                //     <th style={{ width: 'auto' }} nowrap='true'>Số sao</th>
+                //     <th style={{ width: '80%' }}>Nội dung đánh giá</th>
+                //     <th style={{ width: '20%' }}>Ngày đánh giá</th>
+                // </tr>
+                <TableHead getPage={this.props.getRatePageByAdmin}>
+                    <TableHeadCell style={{ width: 'auto' }}>#</TableHeadCell>
+                    <TableHeadCell style={{ width: 'auto' }} nowrap='true'>Học viên đánh giá</TableHeadCell>
+                    <TableHeadCell name='value' filter='select' filterData={ratingDropDown} sort={true} style={{ width: 'auto' }} nowrap='true'>Số sao</TableHeadCell>
+                    <TableHeadCell style={{ width: '80%' }}>Nội dung đánh giá</TableHeadCell>
+                    <TableHeadCell name='createdDate' sort={true} style={{ width: '20%' }}>Ngày đánh giá</TableHeadCell>
+                </TableHead>
+                ),
             renderRow: (item, index) => (
                 <tr key={index}>
                     <TableCell type='number' content={index + 1} />
@@ -63,8 +78,8 @@ class AdminTeacherRatePage extends AdminPage {
 
         return this.renderPage({
             icon: 'fa fa-star',
-            title: `Đánh giá giáo viên: ${lecturer && lecturer.lastname + ' ' + lecturer.firstname}`,
-            breadcrumb: [<Link key={0} to='/user/manage-lecturer'>Giáo viên</Link>, 'Đánh giá giáo viên'],
+            title: `Đánh giá giáo viên: ${lecturer ? (lecturer.lastname + ' ' + lecturer.firstname):'...'}`,
+            breadcrumb: [<Link key={0} to='/user/rating-teacher'>Giáo viên</Link>, 'Đánh giá giáo viên'],
             content: (
                 <div className='tile'>
                     <div className='tile-body'>{table}</div>
@@ -72,7 +87,7 @@ class AdminTeacherRatePage extends AdminPage {
                         getPage={this.props.getRatePageByAdmin} />
                 </div>
             ),
-            backRoute: '/user/teacher',
+            backRoute: '/user/rating-teacher',
         });
     }
 }

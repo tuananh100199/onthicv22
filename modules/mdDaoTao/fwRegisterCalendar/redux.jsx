@@ -38,6 +38,23 @@ export default function registerCalendarReducer(state = {}, data) {
 
 // Actions ------------------------------------------------------------------------------------------------------------
 T.initCookiePage('pageRegisterCalendar');
+
+export function getRegisterCalendarPage(pageNumber, pageSize, pageCondition,filter,sort, done) {
+    const page = T.updatePage('pageRegisterCalendar', pageNumber, pageSize,pageCondition,filter,sort);
+    return dispatch => {
+        const url = `/api/register-calendar/page/${page.pageNumber}/${page.pageSize}`;
+        T.get(url, { condition:page.pageCondition,filter:page.filter,sort:page.sort }, data => {
+            if (data.error) {
+                T.notify('Lấy lịch nghỉ bị lỗi!', 'danger');
+                console.error(`GET: ${url}. ${data.error}`);
+            } else {
+                done && done(data.page);
+                dispatch({ type: RegisterCalendarGetPage, page: data.page });
+            }
+        }, error => console.error(error) || T.notify('Lấy lịch nghỉ bị lỗi!', 'danger'));
+    };
+}
+
 export function getRegisterCalendarPageByAdmin(pageNumber, pageSize, pageCondition, done) {
     const page = T.updatePage('pageRegisterCalendar', pageNumber, pageSize);
     return dispatch => {

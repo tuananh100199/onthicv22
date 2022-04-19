@@ -1,6 +1,6 @@
 {
   "name": "hiep-phat",
-  "version": "1.0.149",
+  "version": "1.0.151",
   "title": "Hiep Phat Website",
   "description": "Trung tam dao tao lai xe Hiep Phat",
   "main": "hiepphat.main.js",
@@ -41,16 +41,6 @@
   "default": {
     "adminEmail": "thanhtung@hcmut.edu.vn",
     "adminPassword": "18012016"
-  },
-  "path": {
-    "view": "view",
-    "modules": "modules",
-    "asset": "asset",
-    "temp": "asset/temp",
-    "upload": "asset/upload",
-    "public": "public",
-    "favicon": "public/img/favicon.ico",
-    "log": "asset/log"
   },
   "author": "Nguyen Thanh Tung",
   "license": "ISC",

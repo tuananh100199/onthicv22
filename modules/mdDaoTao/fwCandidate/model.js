@@ -1,5 +1,5 @@
 module.exports = app => {
-    const schema = app.db.Schema({
+    const schema = app.database.mongoDB.Schema({
         firstname: String,
         lastname: String,
         email: String,
@@ -7,25 +7,25 @@ module.exports = app => {
         birthday: Date,
         identityCard: String,
         planCourse: String,
-        user: { type: app.db.Schema.ObjectId, ref: 'User' },
-        staff: { type: app.db.Schema.ObjectId, ref: 'User' },               // Nhân viên cập nhật dữ liệu
+        user: { type: app.database.mongoDB.Schema.ObjectId, ref: 'User' },
+        staff: { type: app.database.mongoDB.Schema.ObjectId, ref: 'User' },               // Nhân viên cập nhật dữ liệu
         state: { type: String, enum: ['MoiDangKy', 'DangLienHe', 'Huy', 'UngVien'], default: 'MoiDangKy' },
         createdDate: { type: Date, default: Date.now },                     // Ngày tạo
         modifiedDate: { type: Date, default: null },                        // Ngày cập nhật cuối cùng
-        courseType: { type: app.db.Schema.Types.ObjectId, ref: 'CourseType' },
-        division: { type: app.db.Schema.ObjectId, ref: 'Division' },
+        courseType: { type: app.database.mongoDB.Schema.Types.ObjectId, ref: 'CourseType' },
+        division: { type: app.database.mongoDB.Schema.ObjectId, ref: 'Division' },
         // Thêm phần gợi ý khóa học phí
-        coursePayment: { type: app.db.Schema.ObjectId, ref: 'CoursePayment' },
-        discount: { type: app.db.Schema.ObjectId, ref: 'Discount' },
-        courseFee: { type: app.db.Schema.ObjectId, ref: 'CourseFee' },
+        coursePayment: { type: app.database.mongoDB.Schema.ObjectId, ref: 'CoursePayment' },
+        discount: { type: app.database.mongoDB.Schema.ObjectId, ref: 'Discount' },
+        courseFee: { type: app.database.mongoDB.Schema.ObjectId, ref: 'CourseFee' },
         // thêm phần bổ sung hồ sơ
-        isDon:{ type: Boolean, default: false },
-        isHinh:{ type: Boolean, default: false },
-        isIdentityCard:{ type: Boolean, default: false },
-        isGiayKhamSucKhoe:{ type: Boolean, default: false },
-        isBangLaiA1:{ type: Boolean, default: false },
+        isDon: { type: Boolean, default: false },
+        isHinh: { type: Boolean, default: false },
+        isIdentityCard: { type: Boolean, default: false },
+        isGiayKhamSucKhoe: { type: Boolean, default: false },
+        isBangLaiA1: { type: Boolean, default: false },
     });
-    const model = app.db.model('Candidate', schema);
+    const model = app.database.mongoDB.model('Candidate', schema);
 
     app.model.candidate = {
         create: (data, done) => model.create(data, done),
@@ -42,11 +42,11 @@ module.exports = app => {
                 result.pageNumber = pageNumber === -1 ? result.pageTotal : Math.min(pageNumber, result.pageTotal);
                 const skipNumber = (result.pageNumber > 0 ? result.pageNumber - 1 : 0) * result.pageSize;
                 model.find(condition).populate('courseType', 'title').populate('division', 'title').populate('user', 'firstname lastname').populate('staff', 'firstname lastname')
-                .populate('courseFee', '_id name courseType').populate('discount', '_id name').populate('coursePayment', '_id title')
-                .sort({ _id: -1 }).skip(skipNumber).limit(result.pageSize).exec((error, list) => {
-                    result.list = list;
-                    done(error, result);
-                });
+                    .populate('courseFee', '_id name courseType').populate('discount', '_id name').populate('coursePayment', '_id title')
+                    .sort({ _id: -1 }).skip(skipNumber).limit(result.pageSize).exec((error, list) => {
+                        result.list = list;
+                        done(error, result);
+                    });
             }
         }),
 

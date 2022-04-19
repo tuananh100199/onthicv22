@@ -215,7 +215,6 @@ const T = {
             parseResponse = parseData;
             parseData = {};
         }
-        console.log({parseData});
         return ({
             ajax: true,
             url: T.url(url),

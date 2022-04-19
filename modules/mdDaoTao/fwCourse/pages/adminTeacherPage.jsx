@@ -84,6 +84,76 @@ class TeacherModal extends AdminModal {
     }
 }
 
+class RemoveTeacherCourseModal extends AdminModal {
+    state = { showSubmitBtn: false,checkValue:''};
+    componentDidMount() {
+        T.ready(() => this.onShown(() => {}));
+    }
+
+    onShow = (teacher)=>{
+        this.setState({teacher});
+    }
+
+    checkOther = (item) => {
+        if(item && item != ''){
+            $('#khac').prop('checked',true);
+            this.setState({showSubmitBtn:true});
+        } else{
+            $('#khac').prop('checked',false);
+            this.setState({showSubmitBtn:false});
+        }
+    }
+
+    checked = (checkValue) =>{
+        this.setState({showSubmitBtn: true,checkValue});
+    }
+
+    getValueRemove = ()=>{
+        switch (this.state.checkValue) {
+            case 'nhamKhoa':
+                return 'Chọn nhầm khóa';
+        
+            case 'khac':
+                return this.itemLyDo.value();
+            
+            default:
+                return '';
+        }
+    }
+
+    render = () => this.renderModal({
+        title: 'Huỷ đi khóa giáo viên',
+        dataBackdrop: 'static',
+        body: (
+            <div>
+                <div className='tile-body'>
+                    <div><b>Chọn lý do huỷ đi khóa cho giáo viên:</b></div>
+                    <div className='form-check'>
+                        <input className='form-check-input' type='radio' name='lyDo' id='nhamKhoa' onChange={()=>this.checked('nhamKhoa')}/>
+                        <label className='form-check-label' htmlFor='doiGoi'>
+                            Gán nhầm khóa
+                        </label>
+                    </div>
+                    <div className='form-check' style={{width:'100%'}}>
+                        <input className='form-check-input' type='radio' name='lyDo' id='khac' onChange={()=>this.checked('khac')}/>
+                        <label className='form-check-label' htmlFor='khac'>
+                            Khác:
+                            <FormTextBox ref={e => this.itemLyDo = e} style={{width:'100%'}} onChange={e => this.checkOther(e.target.value)} type='text' readOnly={false} />
+                        </label>
+                    </div>
+                </div>
+            </div>),
+        buttons:
+        this.state.showSubmitBtn ? <button className='btn btn-danger' style={{ textAlign: 'right' }}
+            onClick={() => {
+                this.props.course && this.props.course.item && this.props.update(this.props.course.item._id,this.state.teacher._id, 'remove',this.getValueRemove(),()=>{
+                    this.hide();
+                });
+            }}
+        >Xác nhận huỷ đi khóa</button> : null
+    });
+}
+
 class AdminTeacherPage extends AdminPage {
     state = { searchStudentText: '', outsideStudentVisible: true, sortType: 'division', assignedButtonVisible: false }; // sortType = name | division
     students = {};
@@ -127,7 +197,8 @@ class AdminTeacherPage extends AdminPage {
         }
     }
     removeTeacher = (e, teacher) => e.preventDefault() || T.confirm('Xoá Giáo viên', `Bạn có chắc muốn xoá ${teacher.lastname} ${teacher.firstname} khỏi khóa học này?`, true, isConfirm =>
-        isConfirm && this.props.course && this.props.course.item && this.props.updateCourseTeacherGroup(this.props.course.item._id, teacher._id, 'remove'));
+        isConfirm && this.cancelModal.show(teacher));
+        // this.props.course && this.props.course.item && this.props.updateCourseTeacherGroup(this.props.course.item._id, teacher._id, 'remove'));
 
     removeStudent = (e, teacher, student) => e.preventDefault() || T.confirm('Xoá học viên', `Bạn có chắc muốn xoá học viên '${student.lastname} ${student.firstname}' khỏi giáo viên '${teacher.lastname} ${teacher.firstname}'?`, true, isConfirm =>
         isConfirm && this.props.updateCourseTeacherGroupStudent(this.props.course.item._id, teacher._id, [student._id], 'remove'));
@@ -383,6 +454,7 @@ class AdminTeacherPage extends AdminPage {
                         {!isOutsideCourseAdmin ? <CirclePageButton type='export' onClick={() => exportTeacherAndStudentToExcel(_courseId)} /> : null}
                         <AssignModal ref={e => this.autoAssignmodal = e} handleAutoAssignStudent={this.handleAutoAssignStudent} />
                         <AdminStudentModal ref={e => this.studentModal = e} updateStudent={this.updateStudent} />
+                        <RemoveTeacherCourseModal  readOnly={true} update={this.props.updateCourseTeacherGroup } ref={e => this.cancelModal = e} course={this.props.course} />
                     </div>
                 </div>),
             backRoute,

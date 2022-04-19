@@ -3,6 +3,7 @@ module.exports = (app) => {
         parentMenu: app.parentMenu.enrollment,
         menus: {
             8020: { title: 'Ứng viên', link: '/user/pre-student' },
+            8027: { title: 'Học viên', link: '/user/student' },
             8060: { title: 'Theo dõi công nợ', link: '/user/student/debt-enroll' },
         }
     },
@@ -43,8 +44,9 @@ module.exports = (app) => {
     app.get('/user/student/active-course',app.permission.check('activeCourse:read'), app.templates.admin);
     app.get('/user/student/debt-enroll', app.permission.check('debt:read'), app.templates.admin);
     app.get('/user/revenue', app.permission.check('debt:read'), app.templates.admin);
+    app.get('/user/student', app.permission.check('student:read'), app.templates.admin);
     // Student APIs ---------------------------------------------------------------------------------------------------
-    app.get('/api/student/page/:pageNumber/:pageSize', app.permission.check('student:read'), (req, res) => {
+    app.get('/api/student/page/:pageNumber/:pageSize', (req, res) => {
         let pageNumber = parseInt(req.params.pageNumber),
             pageSize = parseInt(req.params.pageSize),
             condition = req.query.pageCondition || {},
@@ -123,6 +125,44 @@ module.exports = (app) => {
         } catch (error) {
             res.send({ error });
         }
+    });
+
+    app.get('/api/student/official/page/:pageNumber/:pageSize', app.permission.check('student:read'), (req, res) => {
+        let pageNumber = parseInt(req.params.pageNumber),
+            pageSize = parseInt(req.params.pageSize),
+            filter=req.query.filter||null,sort=req.query.sort||null,
+            pageCondition = { course: null };
+        app.model.course.getAll({isDefault:true},(error,defaultCourses)=>{
+            if(error)res.send({error});
+            else{
+                const defaultIds = defaultCourses.map(item=>item._id.toString());
+                pageCondition.course={};
+                pageCondition.course={['$nin']:defaultIds};
+                if (req.session.user.isCourseAdmin && req.session.user.division && req.session.user.division.isOutside) { // Session user là quản trị viên khóa học
+                    pageCondition.division = req.session.user.division._id;
+                }
+                
+                if(filter){
+                    app.handleFilter(filter,['courseType','division','course'],filterCondition=>{
+                        pageCondition={...pageCondition,...filterCondition};
+                    });
+                    if(filter.fullName){// họ tên
+                        pageCondition['$expr']= {
+                            '$regexMatch': {
+                                'input': { '$concat': ['$lastname', ' ', '$firstname'] },
+                                'regex': `.*${filter.fullName}.*`,  //Your text search here
+                                'options': 'i'
+                            }
+                        };
+                    }
+                }
+                if(sort && sort.fullName) sort={firstname:sort.fullName}; 
+
+                app.model.student.getPage(pageNumber, pageSize, pageCondition, sort, (error, page) => {
+                    res.send({ error, page });
+                });
+            }
+        });
     });
 
 
@@ -227,6 +267,7 @@ module.exports = (app) => {
                 const cartItem = student.cart ? student.cart.item : [],
                 transactionId = student.cart ? student.cart.transactionId : '';
                 const data = {item:  cartItem, transactionId};
+                console.log(cartItem);
                 app.model.student.addPaymentExtra({ _id: student._id }, data, (error) => {
                     if(error) res.send({error});
                     else{
@@ -411,6 +452,118 @@ module.exports = (app) => {
             res.send({ error });
         }
     });
+
+    app.get('/api/student/official/export/:filter', app.permission.check('student:write'), (req, res) => {
+        const filter = req.params.filter && req.params.filter!='all'?JSON.parse(req.params.filter):{};
+        let pageCondition={};
+        filter && app.handleFilter(filter,['division','courseType','course'],filterCondition=>{
+            pageCondition={...filterCondition};
+        });
+        if(filter.fullName){// họ tên
+            pageCondition['$expr']= {
+                '$regexMatch': {
+                    'input': { '$concat': ['$lastname', ' ', '$firstname'] },
+                    'regex': `.*${filter.fullName}.*`,  //Your text search here
+                    'options': 'i'
+                }
+            };
+        }
+        new Promise((resolve,reject)=>{
+            app.model.course.getAll({isDefault:true},(error,defaultCourses)=>error?reject(error):resolve(defaultCourses));
+        }).then(defaultCourses=>new Promise((resolve,reject)=>{
+            if(!pageCondition.course && defaultCourses.length){
+                pageCondition.course={$nin:defaultCourses.map(course=>course._id)};
+            }
+            app.model.student.getAll(pageCondition,(error,students)=>error?reject(error):resolve(students));
+        })).then(list=> {// print report
+            const workbook = app.excel.create(), worksheet = workbook.addWorksheet('Học viên');
+            const cells = [
+                { cell: 'A1', value: 'STT', bold: true, border: '1234' },
+                { cell: 'B1', value: 'họ', bold: true, border: '1234' },
+                { cell: 'C1', value: 'tên', bold: true, border: '1234' },
+                { cell: 'D1', value: 'email', bold: true, border: '1234' },
+                { cell: 'E1', value: 'Số điện thoại', bold: true, border: '1234' },
+                { cell: 'F1', value: 'Giới tính', bold: true, border: '1234' },
+                { cell: 'G1', value: 'Ngày sinh', bold: true, border: '1234' },
+                { cell: 'H1', value: 'Quốc tịch', bold: true, border: '1234' },
+                { cell: 'I1', value: 'Nơi cư trú', bold: true, border: '1234' },
+                { cell: 'J1', value: 'Nơi đăng ký hộ khẩu thường trú', bold: true, border: '1234' },
+                { cell: 'K1', value: 'Số CMND,CCCD', bold: true, border: '1234' },
+                { cell: 'L1', value: 'Nơi cấp CMND,CCCD', bold: true, border: '1234' },
+                { cell: 'M1', value: 'Ngày cấp CMND,CCCD', bold: true, border: '1234' },
+                { cell: 'N1', value: 'Bản sao CMND,CCCD', bold: true, border: '1234' },
+                { cell: 'O1', value: 'Số GPLX 2 bánh', bold: true, border: '1234' },
+                { cell: 'P1', value: 'Ngày trúng tuyển GPLX 2 bánh', bold: true, border: '1234' },
+                { cell: 'Q1', value: 'Nơi cấp GPLX 2 bánh', bold: true, border: '1234' },
+                { cell: 'R1', value: 'Bản sao bằng lái A1', bold: true, border: '1234' },
+                { cell: 'S1', value: 'Giấy khám sức khỏe', bold: true, border: '1234' },
+                { cell: 'T1', value: 'Ngày khám sức khỏe', bold: true, border: '1234' },
+                { cell: 'U1', value: 'Hình thẻ 3x4', bold: true, border: '1234' },
+                { cell: 'V1', value: 'Hình chụp trực tiếp', bold: true, border: '1234' },
+                { cell: 'W1', value: 'Hạng đăng ký', bold: true, border: '1234' },
+                { cell: 'X1', value: 'Khóa học', bold: true, border: '1234' },
+                { cell: 'Y1', value: 'Đơn', bold: true, border: '1234' },
+            ];
+            worksheet.columns = [
+                { key: 'idx', header: 'STT', width: 10  },
+                { key: 'lastname', header: 'họ', width: 20  },
+                { key: 'firstname', header: 'tên', width: 10  },
+                { key: 'email', header: 'email', width: 15  },
+                { key: 'phoneNumber', header: 'Số điện thoại', width: 15 },
+                { key: 'sex', header: 'Giới tính', width: 10 },
+                { key: 'birthday', header: 'Ngày sinh', width: 15 },
+                { key: 'nationality', header: 'Quốc tịch', width: 15 },
+                { key: 'residence', header: 'Nơi cư trú', width: 25 },
+                { key: 'regularResidence', header: 'Nơi đăng ký hộ khẩu thường trú', width: 25  },
+                { key: 'identityCard', header: 'Số CMND,CCCD', width: 15 },
+                { key: 'identityIssuedBy', header: 'Nơi cấp CMND,CCCD', width: 25  },
+                { key: 'identityDate', header: 'Ngày cấp CMND,CCCD', width: 15  },
+                { key: 'isIdentityCard', header: 'Bản sao CMND,CCCD', width: 20  },
+                { key: 'giayPhepLaiXe2BanhSo', header: 'Số GPLX 2 bánh', width: 20  },
+                { key: 'giayPhepLaiXe2BanhNgay', header: 'Ngày trúng tuyển GPLX 2 bánh', width: 25  },
+                { key: 'giayPhepLaiXe2BanhNoiCap', header: 'Nơi cấp GPLX 2 bánh', width: 20  },
+                { key: 'isBangLaiA1', header: 'Bản sao bằng lái A1', width: 20  },
+                { key: 'giayKhamSucKhoe', header: 'Giấy khám sức khỏe', width: 20  },
+                { key: 'giayKhamSucKhoeNgayKham', header: 'Ngày khám sức khỏe', width: 20 },
+                { key: 'hinhThe3x4', header: 'Hình thẻ 3x4', width: 20 },
+                { key: 'hinhChupTrucTiep', header: 'Hình chụp trực tiếp', width: 20 },
+                { key: 'courseType', header: 'Hạng đăng ký', width: 20 },
+                { key: 'course', header: 'Khóa học', width: 20 },
+                { key: 'isDon', header: 'Đơn', width: 10 },
+            ];
+            list.forEach((student, index) => {
+                worksheet.addRow({
+                    idx: index + 1,
+                    lastname:student.lastname,
+                    firstname:student.firstname,
+                    email:student.user?student.user.email:'',
+                    phoneNumber: student.user?student.user.phoneNumber:'',
+                    sex: student.sex,
+                    birthday: student.birthday,
+                    nationality: student.nationality,
+                    residence: student.residence,
+                    regularResidence: student.regularResidence,
+                    identityCard: student.identityCard,
+                    identityIssuedBy: student.identityIssuedBy,
+                    identityDate: student.identityDate,
+                    isIdentityCard: student.isIdentityCard?'x':'',
+                    giayPhepLaiXe2BanhSo: student.giayPhepLaiXe2BanhSo,
+                    giayPhepLaiXe2BanhNgay: student.giayPhepLaiXe2BanhNgay,
+                    giayPhepLaiXe2BanhNoiCap: student.giayPhepLaiXe2BanhNoiCap,
+                    isBangLaiA1: student.isBangLaiA1?'x':'',
+                    giayKhamSucKhoe: student.giayKhamSucKhoe?'x':'',
+                    giayKhamSucKhoeNgayKham: student.giayKhamSucKhoeNgayKham,
+                    hinhThe3x4: student.hinhThe3x4?'x':'',
+                    hinhChupTrucTiep: student.hinhChupTrucTiep?'x':'',
+                    courseType: student.courseType?student.courseType.title:'',
+                    course: student.course?student.course.name:'',
+                    isDon: student.isDon?'x':'',
+                });
+            });
+            app.excel.write(worksheet, cells);
+            app.excel.attachment(workbook, res, 'HOC_VIEN.xlsx');
+        }).catch(error=>console.log(error)||res.send({error}));
+    });
     // Active Course APIs -----------------------------------------------------------------------------------------------
 
     app.get('/api/student/active-course/page/:pageNumber/:pageSize', app.permission.check('activeCourse:read'), (req, res) => {
@@ -466,7 +619,7 @@ module.exports = (app) => {
     app.get('/api/pre-student/page/:pageNumber/:pageSize', app.permission.check('pre-student:read'), (req, res) => {
         let pageNumber = parseInt(req.params.pageNumber),
             pageSize = parseInt(req.params.pageSize),
-            condition = req.query.condition || {},
+            condition = req.query.condition || {},filter=req.query.filter||null,sort=req.query.sort||null,
             pageCondition = { course: null };
             app.model.course.getAll({isDefault:true},(error,defaultCourses)=>{
                 if(error)res.send('không có khóa học mặc định');
@@ -488,7 +641,23 @@ module.exports = (app) => {
                             { identityCard: value },
                         ];
                     }
-                    app.model.student.getPage(pageNumber, pageSize, pageCondition, req.query.sort, (error, page) => {
+                    if(filter){
+                        app.handleFilter(filter,['courseType','division'],filterCondition=>{
+                            pageCondition={...pageCondition,...filterCondition};
+                        });
+                        if(filter.fullName){// họ tên
+                            pageCondition['$expr']= {
+                                '$regexMatch': {
+                                  'input': { '$concat': ['$lastname', ' ', '$firstname'] },
+                                  'regex': `.*${filter.fullName}.*`,  //Your text search here
+                                  'options': 'i'
+                                }
+                            };
+                        }
+                    }
+                    if(sort && sort.fullName) sort={firstname:sort.fullName}; 
+
+                    app.model.student.getPage(pageNumber, pageSize, pageCondition, sort, (error, page) => {
                         res.send({ error, page });
                     });
                 }

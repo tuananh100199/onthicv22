@@ -1,11 +1,11 @@
 module.exports = app => {
-    const schema = app.db.Schema({
+    const schema = app.database.mongoDB.Schema({
         title: String,
         abstract: String,
         image: String,
-        items: [{ type: app.db.Schema.ObjectId, ref: 'Content' }],
+        items: [{ type: app.database.mongoDB.Schema.ObjectId, ref: 'Content' }],
     });
-    const model = app.db.model('ListContent', schema);
+    const model = app.database.mongoDB.model('ListContent', schema);
 
     app.model.listContent = {
         create: (data, done) => model.create(data, done),

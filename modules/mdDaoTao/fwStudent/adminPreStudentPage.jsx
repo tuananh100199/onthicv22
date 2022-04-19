@@ -4,7 +4,7 @@ import { getPreStudentPage, createPreStudent, updatePreStudent, deletePreStudent
 import { ajaxSelectCourseType } from 'modules/mdDaoTao/fwCourseType/redux';
 import { ajaxSelectLecturer } from 'modules/_default/fwUser/redux';
 import Pagination from 'view/component/Pagination';
-import { AdminPage, CirclePageButton, FormImageBox, FormDatePicker, AdminModal, FormTextBox, FormRichTextBox, FormSelect, TableCell, renderTable,FormCheckbox } from 'view/component/AdminPage';
+import { AdminPage, CirclePageButton, FormImageBox, FormDatePicker, AdminModal, FormTextBox, FormRichTextBox, FormSelect, TableCell, renderTable,FormCheckbox,TableHead,TableHeadCell } from 'view/component/AdminPage';
 import { ajaxSelectDivision } from 'modules/mdDaoTao/fwDivision/redux';
 import {ajaxSelectCourseFeeByCourseType,getCourseFeeAll} from 'modules/_default/fwCourseFee/redux';
 import {ajaxSelectCoursePayment,getCoursePaymentAll} from 'modules/_default/fwCoursePayment/redux';
@@ -205,8 +205,8 @@ class PreStudentPage extends AdminPage {
 
     componentDidMount() {
         T.ready(() => T.showSearchBox());
-        this.props.getPreStudentPage(1, 50, undefined);
-        T.onSearch = (searchText) => this.props.getPreStudentPage(undefined, undefined, searchText ? { searchText } : null, () => {
+        this.props.getPreStudentPage(1, 50, undefined,{},{});
+        T.onSearch = (searchText) => this.props.getPreStudentPage(undefined, undefined, searchText ? { searchText } : null,null,null, () => {
             this.setState({ searchText, isSearching: searchText != '' });
         });
 
@@ -237,16 +237,18 @@ class PreStudentPage extends AdminPage {
             this.props.student.prePage : { pageNumber: 1, pageSize: 50, pageTotal: 1, pageCondition: {}, totalItem: 0, list: [] };
         const table = renderTable({
             getDataSource: () => list,
+            stickyHead:true,autoDisplay:true,
             renderHead: () => (
-                <tr>
-                    <th style={{ width: 'auto', textAlign: 'center' }}>#</th>
-                    <th style={{ width: '50%' }}>Họ và Tên</th>
-                    <th style={{ width: 'auto' }} nowrap='true'>CMND/CCCD</th>
-                    <th style={{ width: 'auto' }} nowrap='true'>Thông tin liên hệ</th>
-                    <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Hạng đăng ký</th>
-                    <th style={{ width: '50%' }} nowrap='true'>Cơ sở đào tạo</th>
-                    <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Thao tác</th>
-                </tr>),
+                <TableHead getPage={this.props.getPreStudentPage}>
+                    <TableHeadCell style={{ width: 'auto', textAlign: 'center' }}>#</TableHeadCell>
+                    <TableHeadCell name='fullName' sort={true} filter='search' style={{ width: '50%' }}>Họ và Tên</TableHeadCell>
+                    <TableHeadCell name='identityCard' style={{ width: 'auto' }} nowrap='true'>CMND/CCCD</TableHeadCell>
+                    <TableHeadCell style={{ width: 'auto' }} nowrap='true'>Thông tin liên hệ</TableHeadCell>
+                    <TableHeadCell name='courseType' filter='select' filterData={ajaxSelectCourseType} style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Hạng đăng ký</TableHeadCell>
+                    <TableHeadCell name='division' filter='select' filterData={ajaxSelectDivision} style={{ width: '50%' }} nowrap='true'>Cơ sở đào tạo</TableHeadCell>
+                    <TableHeadCell style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Thao tác</TableHeadCell>
+                </TableHead>
+                ),
             renderRow: (item, index) => (
                 <tr key={index}>
                     <TableCell type='number' content={(pageNumber - 1) * pageSize + index + 1} />

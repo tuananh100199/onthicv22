@@ -175,7 +175,7 @@ class AdminTeacherPage extends AdminPage {
                     <TableHeadCell name='maGiaoVien' sort={true} style={{ width: 'auto', textAlign: 'center' }} content='Mã giáo viên' nowrap='true'  filter='search'/> 
                     <TableHeadCell sort={true} style={{ width: '100%' }} content='Họ tên' nowrap='true' name='firstname' filter='search'/>
                     <TableHeadCell style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Thông tin liên lạc</TableHeadCell>
-                    <TableHeadCell name='birthday' sort={true} style={{ width: 'auto', textAlign: 'center' }} content='Ngày sinh' nowrap='true'/> 
+                    <TableHeadCell name='birthday' style={{ width: 'auto', textAlign: 'center' }} content='Ngày sinh' nowrap='true'/> 
                     <TableHeadCell style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Cơ sở đào tạo</TableHeadCell>
                     <TableHeadCell style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Loại giáo viên</TableHeadCell>
                     <TableHeadCell name='courseTypes' filter='select' filterData = {ajaxSelectCourseType} style={{ width: 'auto', textAlign: 'center' }} nowrap='true' content='Loại khóa học' /> 

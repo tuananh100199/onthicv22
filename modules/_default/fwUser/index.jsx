@@ -37,5 +37,9 @@ export default {
             path: '/user/profile',
             component: Loadable({ loading: Loading, loader: () => import('./adminProfilePage') }),
         },
+        {
+            path: '/user/rating-teacher',
+            component: Loadable({ loading: Loading, loader: () => import('./adminTeacherRatePage') }),
+        },
     ],
 };

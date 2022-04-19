@@ -1,10 +1,10 @@
 module.exports = app => {
-    const schema = app.db.Schema({
+    const schema = app.database.mongoDB.Schema({
         title: String,
         height: { type: Number, default: 255 },
-        items: [{ type: app.db.Schema.ObjectId, ref: 'Video' }],
+        items: [{ type: app.database.mongoDB.Schema.ObjectId, ref: 'Video' }],
     });
-    const model = app.db.model('ListVideo', schema);
+    const model = app.database.mongoDB.model('ListVideo', schema);
 
     app.model.listVideo = {
         create: (data, done) => model.create(data, done),

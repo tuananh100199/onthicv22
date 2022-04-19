@@ -1,12 +1,12 @@
 module.exports = (app) => {
-    const schema = app.db.Schema({
+    const schema = app.database.mongoDB.Schema({
         name: String,
         fee: Number,
         description: String,
         isDefault: { type: Boolean, default: false },
     });
 
-    const model = app.db.model('Discount', schema);
+    const model = app.database.mongoDB.model('Discount', schema);
     app.model.discount = {
         create: (data, done) => model.create(data, done),
 

@@ -1,10 +1,17 @@
 module.exports = (app) => {
+    const menu = {
+        parentMenu: app.parentMenu.enrollment,
+        menus: {
+            8080: { title: 'Lịch nghỉ giáo viên', link: '/user/register-calendar/enrollment' },
+        }
+    };
     app.permission.add(
-        { name: 'registerCalendar:read' }, { name: 'registerCalendar:write' }, { name: 'registerCalendar:delete' }
+        { name: 'registerCalendar:read',menu }, { name: 'registerCalendar:write' }, { name: 'registerCalendar:delete' }
     );
 
     app.get('/user/register-calendar', app.permission.check('registerCalendar:read'), app.templates.admin);
     app.get('/user/hoc-vien/khoa-hoc/:_id/dang-ky-lich-hoc', app.permission.check('user:login'), app.templates.admin);
+    app.get('/user/register-calendar/enrollment', app.permission.check('registerCalendar:read'), app.templates.admin);
 
     // APIs -----------------------------------------------------------------------------------------------------------
 
@@ -16,6 +23,24 @@ module.exports = (app) => {
             teacherCondition.state = 'waiting';
         }
         app.model.registerCalendar.getAll(teacherCondition, (error, list) => res.send({ error, list }));
+    });
+
+    app.get('/api/register-calendar/page/:pageNumber/:pageSize', app.permission.check('registerCalendar:read'), (req, res) => {
+        // const { isCourseAdmin } = req.session.user || {};
+        let pageNumber = parseInt(req.params.pageNumber),
+            pageSize = parseInt(req.params.pageSize),
+            // condition = req.query.pageCondition || {},s
+            filter = req.query.filter||null,sort=req.query.sort||null,
+            pageCondition = {};
+            // if (isCourseAdmin) {
+            //     pageCondition.state = { $in:  ['approved', 'waiting', 'reject'] };
+            // }
+            filter && app.handleFilter(filter,['timeOff','state','lecturer'],filterCondition=>{
+                pageCondition={...pageCondition,...filterCondition};
+            });
+            app.model.registerCalendar.getPage(pageNumber, pageSize, pageCondition,sort, (error, page) =>{
+                res.send({ error, page });
+            } );
     });
 
     app.get('/api/register-calendar', app.permission.check('registerCalendar:read'), (req, res) => {

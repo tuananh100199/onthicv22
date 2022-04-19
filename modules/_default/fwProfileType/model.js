@@ -1,12 +1,12 @@
 module.exports = app => {
-    const schema = app.db.Schema({
-        title:String,
-        courseType: { type: app.db.Schema.ObjectId, ref: 'CourseType' },   
+    const schema = app.database.mongoDB.Schema({
+        title: String,
+        courseType: { type: app.database.mongoDB.Schema.ObjectId, ref: 'CourseType' },
         active: { type: Boolean, default: false },
-        papers: { type: [{ type: app.db.Schema.Types.ObjectId, ref: 'ProfileStudentType' }], default: [] }
+        papers: { type: [{ type: app.database.mongoDB.Schema.Types.ObjectId, ref: 'ProfileStudentType' }], default: [] }
 
     });
-    const model = app.db.model('ProfileType', schema);
+    const model = app.database.mongoDB.model('ProfileType', schema);
 
     app.model.profileType = {
         create: (data, done) => model.create(data, done),
@@ -20,18 +20,18 @@ module.exports = app => {
                 const skipNumber = (result.pageNumber > 0 ? result.pageNumber - 1 : 0) * result.pageSize;
 
                 model.find(condition).sort({ title: -1 }).skip(skipNumber).limit(result.pageSize)
-                .populate('courseType','_id title').populate('papers','_id title')
-                .exec((error, items) => {
-                    result.list = error ? [] : items;
-                    done(error, result);
-                });
+                    .populate('courseType', '_id title').populate('papers', '_id title')
+                    .exec((error, items) => {
+                        result.list = error ? [] : items;
+                        done(error, result);
+                    });
             }
         }),
 
         getAll: (condition, done) => done ?
             model.find(condition).sort({ title: -1 }).exec(done) :
             model.find({}).sort({ title: -1 }).exec(condition),
-        
+
 
         // changes = { $set, $unset, $push, $pull }
         update: (_id, changes, done) => model.findOneAndUpdate({ _id }, changes, { new: true }, done),

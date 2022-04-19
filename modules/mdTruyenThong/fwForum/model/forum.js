@@ -1,16 +1,16 @@
 module.exports = app => {
-    const schema = app.db.Schema({
-        course: { type: app.db.Schema.ObjectId, ref: 'Course' },
-        user: { type: app.db.Schema.ObjectId, ref: 'User' },
+    const schema = app.database.mongoDB.Schema({
+        course: { type: app.database.mongoDB.Schema.ObjectId, ref: 'Course' },
+        user: { type: app.database.mongoDB.Schema.ObjectId, ref: 'User' },
         title: String,
         content: String,
         state: { type: String, enum: ['approved', 'waiting', 'reject'], default: 'waiting' }, // QTHT hoặc QTKH phê duyệt
-        category: { type: app.db.Schema.ObjectId, ref: 'Category' },              // Phân loại forum
+        category: { type: app.database.mongoDB.Schema.ObjectId, ref: 'Category' },              // Phân loại forum
         createdDate: { type: Date, default: Date.now },
         modifiedDate: { type: Date, default: Date.now },
         active: { type: Boolean, default: false }, // bật/tắt forum
     });
-    const model = app.db.model('Forum', schema);
+    const model = app.database.mongoDB.model('Forum', schema);
 
     app.model.forum = {
         create: (data, done) => model.create(data, done),

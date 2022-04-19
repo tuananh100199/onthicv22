@@ -1,7 +1,7 @@
 module.exports = app => {
-    const schema = app.db.Schema({
+    const schema = app.database.mongoDB.Schema({
         priority: Number,
-        categories: [{ type: app.db.Schema.ObjectId, ref: 'Category' }],
+        categories: [{ type: app.database.mongoDB.Schema.ObjectId, ref: 'Category' }],
         title: String,
         image: String,
         link: String,
@@ -13,7 +13,7 @@ module.exports = app => {
         stopPost: Date,
         view: { type: Number, default: 0 },
     });
-    const model = app.db.model('News', schema);
+    const model = app.database.mongoDB.model('News', schema);
 
     app.model.news = {
         create: (data, done) => model.find({}).sort({ priority: -1 }).limit(1).exec((error, items) => {

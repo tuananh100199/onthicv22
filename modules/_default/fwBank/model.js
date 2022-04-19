@@ -1,5 +1,5 @@
 module.exports = app => {
-    const schema = app.db.Schema({
+    const schema = app.database.mongoDB.Schema({
         code: String,
         name: String,
         shortname: String,
@@ -17,7 +17,7 @@ module.exports = app => {
         contentSyntaxExtra: { type: String, default: '{cmnd} {ten_loai_khoa_hoc} {ma_giao_dich}' },
     });
 
-    const model = app.db.model('Bank', schema);
+    const model = app.database.mongoDB.model('Bank', schema);
 
     app.model.bank = {
         create: (data, done) => model.create(data, done),

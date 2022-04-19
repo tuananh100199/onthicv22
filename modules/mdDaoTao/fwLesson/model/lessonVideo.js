@@ -1,11 +1,11 @@
 module.exports = app => {
-    const schema = app.db.Schema({
+    const schema = app.database.mongoDB.Schema({
         title: String,
         link: String,
         image: String,
         active: { type: Boolean, default: true },
     });
-    const model = app.db.model('LessonVideo', schema);
+    const model = app.database.mongoDB.model('LessonVideo', schema);
 
     app.model.lessonVideo = {
         create: (data, done) => model.create(data, done),

@@ -1,5 +1,5 @@
 module.exports = app => {
-    const schema = app.db.Schema({
+    const schema = app.database.mongoDB.Schema({
         priority: Number,
         type: String,
         title: String,
@@ -7,7 +7,7 @@ module.exports = app => {
         active: { type: Boolean, default: true },
         description: String,
     });
-    const model = app.db.model('Category', schema);
+    const model = app.database.mongoDB.model('Category', schema);
 
     app.model.category = {
         create: (data, done) => model.find({}).sort({ priority: -1 }).limit(1).exec((error, items) => {
