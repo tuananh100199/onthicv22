@@ -13,13 +13,20 @@ class CarFuelModal extends AdminModal {
     }
 
     onShow = (item) => {
-        const { date, fee, quantity } = item || { _id: null, licensePlates: '', fee: '', quantity: '' },
+        const { date, fee, quantity, donGia, diSaHinh, diDuong, diDangKiem, soKMDau, soKMCuoi, tongGioDay  } = item || { _id: null,donGia:'', licensePlates: '', fee: '', quantity: '' },
             { licensePlates, _id } = this.props.data,
             fuelId = item && item._id;
         this.itemLicensePlates.value(licensePlates);
         this.itemNgayTiepNhienLieu.value(date ? date : new Date());
         this.itemSoLuong.value(quantity);
+        this.itemDonGia.value(donGia);
         this.itemChiPhi.value(fee);
+        this.itemDiSaHinh.value(diSaHinh);
+        this.itemDiDuong.value(diDuong);
+        this.itemDiDangKiem.value(diDangKiem);
+        this.itemSoKMDau.value(soKMDau);
+        this.itemSoKMCuoi.value(soKMCuoi);
+        this.itemTongGioDay.value(tongGioDay);
         this.setState({ _id, fuelId });
     }
 
@@ -28,13 +35,35 @@ class CarFuelModal extends AdminModal {
             date: this.itemNgayTiepNhienLieu.value(),
             fee: this.itemChiPhi.value(),
             quantity: this.itemSoLuong.value(),
-            fuelId: this.state.fuelId
+            fuelId: this.state.fuelId,
+            donGia: this.itemDonGia.value(),
+            diSaHinh: this.itemDiSaHinh.value(),
+            diDuong: this.itemDiDuong.value(),
+            diDangKiem: this.itemDiDangKiem.value(),
+            soKMDau: this.itemSoKMDau.value(),
+            soKMCuoi: this.itemSoKMCuoi.value(),
+            tongGioDay: this.itemTongGioDay.value(),
         };
         if (data.fee == '' && data.quantity == '') {
             T.notify('Chi phí không được trống!', 'danger');
             this.itemChiPhi.focus();
+        } else if (data.donGia == '') {
+            T.notify('Đơn giá không được trống!', 'danger');
+            this.itemDonGia.focus();
+        } else if (data.itemSoLuong == '') {
+            T.notify('Số lượng không được trống!', 'danger');
+            this.itemSoLuong.focus();
+        } else if (data.fee == '') {
+            T.notify('Thành tiền không được trống!', 'danger');
+            this.itemDonGia.focus();
         } else {
             this.props.update(this.state._id, data, this.hide());
+        }
+    }
+
+    calculateFee = () => {
+        if(this.itemDonGio && this.itemSoLuong && this.itemDonGia.value() && this.itemSoLuong.value()){
+            this.itemChiPhi.value(parseInt(this.itemDonGia.value())*parseInt(this.itemSoLuong.value()));
         }
     }
 
@@ -42,13 +71,22 @@ class CarFuelModal extends AdminModal {
         const readOnly = this.props.readOnly;
         return this.renderModal({
             title: 'Quản lý cấp phát nhiên liệu',
+            size:'large',
             body:
-                <>
-                    <FormTextBox ref={e => this.itemLicensePlates = e} label='Biển số xe' readOnly={true} />
-                    <FormTextBox type='number' ref={e => this.itemChiPhi = e} label='Chi phí tiếp nhiên liệu' readOnly={readOnly} />
-                    <FormTextBox type='number' ref={e => this.itemSoLuong = e} label='Số lượng xăng (L)' readOnly={readOnly} />
-                    <FormDatePicker ref={e => this.itemNgayTiepNhienLieu = e} label='Ngày tiếp nhiên liệu' readOnly={readOnly} type='date-mask' />
-                </>
+                <div className='row'>
+                    <FormTextBox className='col-md-6' ref={e => this.itemLicensePlates = e} label='Biển số xe' readOnly={true} />
+                    <FormDatePicker className='col-md-6' ref={e => this.itemNgayTiepNhienLieu = e} label='Ngày tiếp nhiên liệu' readOnly={readOnly} type='date-mask' />
+                    <FormTextBox className='col-md-4' type='number' ref={e => this.itemSoLuong = e} label='Số lượng xăng (L)' onChange={this.calculateFee} readOnly={readOnly} />
+                    <FormTextBox className='col-md-4' type='number' ref={e => this.itemDonGia = e} label='Đơn giá (VND/L)' onChange={this.calculateFee} readOnly={readOnly} />
+                    <FormTextBox className='col-md-4' type='number' ref={e => this.itemChiPhi = e} label='Chi phí tiếp nhiên liệu' readOnly={readOnly} />
+                    <FormTextBox className='col-md-4' type='number' ref={e => this.itemDiSaHinh = e} label='Đi sa hình (giờ)' readOnly={readOnly} />
+                    <FormTextBox className='col-md-4' type='number' ref={e => this.itemDiDuong = e} label='Đi đường (giờ)' readOnly={readOnly} />
+                    <FormTextBox className='col-md-4' type='number' ref={e => this.itemDiDangKiem = e} label='Đi đăng kiểm (giờ)' readOnly={readOnly} />
+                    <FormTextBox className='col-md-4' type='number' ref={e => this.itemSoKMDau = e} label='Số km đầu' readOnly={readOnly} />
+                    <FormTextBox className='col-md-4' type='number' ref={e => this.itemSoKMCuoi = e} label='Số km cuối' readOnly={readOnly} />
+                    <FormTextBox className='col-md-4' type='number' ref={e => this.itemTongGioDay = e} label='Tổng giờ dạy' readOnly={readOnly} />
+                    
+                </div>
         });
     }
 }

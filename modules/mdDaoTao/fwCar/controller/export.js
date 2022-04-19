@@ -397,4 +397,71 @@ app.get('/api/car/calendar/export/:_carId', app.permission.check('car:export'), 
 }
 );
 
+app.get('/api/car/fuel/export/page/:pageNumber/:pageSize/:filter/:sort', app.permission.check('car:read'), (req, res) => {
+    let pageNumber = parseInt(req.params.pageNumber),
+    pageSize = parseInt(req.params.pageSize),
+    pageCondition = {},filter=req.params.filter ? JSON.parse(req.params.filter) : {},sort=req.params.sort ? JSON.parse(req.params.sort) : null; 
+    filter && app.handleFilter(filter,['courseType','brand','division','licensePlates'],defaultFilter=>{
+        // console.log('-----------------defaultCondition:----------------------');
+        pageCondition={...pageCondition,...defaultFilter};
+    }); 
+    const sourcePromise =  app.excel.readFile(app.publicPath+'/document/TONG DANH SACH CAP NHIEN LIEU XE.xlsx');
+    const getCarPage = new Promise((resolve,reject)=>{ 
+        app.model.car.getPage(pageNumber, pageSize, pageCondition, sort, (error, page) => {
+            error?reject(error):resolve(page);
+        });
+    });
+    Promise.all([sourcePromise,getCarPage]).then(([sourceWorkbook,page])=>{
+        if(page && page.list){
+            let list = page && page.list ? page.list : [];
+            let data = [];
+            list && list.length && list.forEach(car => {
+                const sortArr = car && car.fuel && car.fuel.sort((a, b) => new Date(b.date) - new Date(a.date));
+                    sortArr.forEach((fuel) => {
+                        data.push({ car, fuel });
+                    });
+            });
+            list = data;
+            let worksheet = sourceWorkbook.getWorksheet(1);
+            for(let i = 0;i<list.length;i++){
+                const fuel = list[i];
+                let item = [];
+                item.push(i+1);
+                item.push('');
+                item.push('');
+                item.push(fuel && fuel.car ? fuel.car.licensePlates : '');
+                item.push(fuel && fuel.car && fuel.car.user ? (fuel.car.user.lastname + ' ' + fuel.car.user.firstname) : '');
+                item.push(fuel && fuel.car && fuel.car.courseType ? fuel.car.courseType.title : '');
+                item.push('');
+                item.push(fuel && fuel.car && (fuel.car.typeOfFuel != 'dau' && fuel.car.typeOfFuel != 'nhot') ? (fuel.fuel && fuel.fuel.quantity ? fuel.fuel.quantity : '') : '');
+                item.push(fuel && fuel.car && (fuel.car.typeOfFuel == 'dau') ? (fuel.fuel && fuel.fuel.quantity ? fuel.fuel.quantity : '') : '');
+                item.push(fuel && fuel.car && (fuel.car.typeOfFuel == 'nhot') ? (fuel.fuel && fuel.fuel.quantity ? fuel.fuel.quantity : '') : '');
+                item.push(fuel && fuel.fuel && fuel.fuel.date ? new Date(fuel.fuel.date).getDate() : '');
+                item.push(fuel && fuel.fuel && fuel.fuel.date ? (new Date(fuel.fuel.date).getMonth() + 1) : '');
+                item.push(fuel && fuel.fuel && fuel.fuel.date ? new Date(fuel.fuel.date).getFullYear() : '');
+                item.push(fuel && fuel.fuel ? fuel.fuel.diSaHinh  : '');
+                item.push(fuel && fuel.fuel ? fuel.fuel.diDuong  : '');
+                item.push(fuel && fuel.fuel ? fuel.fuel.diDangKiem  : '');
+                item.push(fuel && fuel.fuel ? fuel.fuel.soKMDau  : '');
+                item.push(fuel && fuel.fuel ? fuel.fuel.soKMCuoi  : '');
+                item.push(fuel && fuel.fuel ? (parseInt(fuel.fuel.soKMCuoi) - parseInt(fuel.fuel.soKMDau))  : '');
+                item.push(fuel && fuel.fuel ? fuel.fuel.tongGioDay  : '');
+                item.push(fuel && fuel.fuel && fuel.fuel.donGia ? fuel.fuel.donGia  : '');
+                item.push(fuel && fuel.fuel ? fuel.fuel.fee  : '');
+                const insertRow =worksheet.insertRow(7+i,item);
+                let j=1;
+                while(j<=23){// báo cáo của sở chỉ có 14 cột.
+                    insertRow.getCell(j).border = {
+                        top: {style:'thin'},
+                        left: {style:'thin'},
+                        bottom: {style:'thin'},
+                        right: {style:'thin'}
+                      };
+                    j+=1;
+                }
+            }
+        app.excel.attachment(sourceWorkbook, res, 'TONG DANH SACH CAP NHIEN LIEU XE.xlsx');
+        }
+        });
+    });
 };

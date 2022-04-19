@@ -44,7 +44,7 @@ module.exports = app => {
         }
 
         if (pageCondition && pageCondition.searchText == '') delete pageCondition.searchText;
-        filter && app.handleFilter(filter,['courseType'],defaultFilter=>{
+        filter && app.handleFilter(filter,['courseType','brand','division','licensePlates'],defaultFilter=>{
             // console.log('-----------------defaultCondition:----------------------');
             pageCondition={...pageCondition,...defaultFilter};
         }); 
@@ -347,6 +347,13 @@ module.exports = app => {
                         item.fuel[indexFuel].date = data.date;
                         item.fuel[indexFuel].fee = data.fee;
                         item.fuel[indexFuel].quantity = data.quantity;
+                        item.fuel[indexFuel].donGia = data.donGia;
+                        item.fuel[indexFuel].diSaHinh = data.diSaHinh;
+                        item.fuel[indexFuel].diDuong = data.diDuong;
+                        item.fuel[indexFuel].diDangKiem = data.diDangKiem;
+                        item.fuel[indexFuel].soKMDau = data.soKMDau;
+                        item.fuel[indexFuel].soKMCuoi = data.soKMCuoi;
+                        item.fuel[indexFuel].tongGioDay = data.tongGioDay;
                         app.model.car.update(carId, item, (error, item) => {
                                 res.send({ error, item });
                             }
@@ -650,7 +657,8 @@ module.exports = app => {
                                 ngayHetHanTapLai: stringToDate(values[6]),
                                 ngayDangKy: stringToDate(values[7]),
                                 ngayThanhLy: values[8] ? stringToDate(values[8]) : null,
-                                user: values[9]
+                                user: values[9],
+                                typeOfFuel: values[10] ? values[10].toLowerCase().trim() : 'xang',
                             });
                             handleUpload(index + 1);
                         }

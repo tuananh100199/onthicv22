@@ -8,10 +8,18 @@ module.exports = app => {
         ngayDangKy: { type: Date, default: Date.now },
         ngayThanhLy: { type: Date },
         ngayHetHanBaoHiem: { type: Date, default: Date.now }, 
+        typeOfFuel: { type: String, enum: ['xang', 'dau', 'nhot'], default: 'xang' }, // Loại nhiên liệu xe sử dụng
         fuel: [{
             date: { type: Date, default: Date.now },
             fee: { type: Number, default: 0 },
             quantity: { type: Number, default: 0 },
+            diSaHinh: { type: Number, default: 0 },                         //Số giờ sử dụng để đi sa hình
+            diDuong: { type: Number, default: 0 },                          //Số giờ sử dụng để đi đường
+            diDangKiem: {type: Number, default: 0},                         //Số giờ sử dụng để đi đăng kiểm
+            soKMDau: {type: Number, default: 0},                            //Số km của lần đổ trước đó
+            soKMCuoi: { type: Number, default: 0 },                         //Số km hiện tại
+            tongGioDay: { type: Number, default: 0 },                       //Tổng giờ dạy
+            donGia: { type: Number, default: 0 },                           // Đơn giá khi đổ
         }],
         repair: [{
             dateStart: { type: Date, default: Date.now },

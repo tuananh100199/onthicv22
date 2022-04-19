@@ -102,7 +102,7 @@ class EditCoursePage extends AdminPage {
     render() {
         const course = this.props.course ? this.props.course.item || {} : {};
         const currentUser = this.props.system ? this.props.system.user : null,
-            permission = this.getUserPermission('course'),
+            permission = this.getUserPermission('course', ['lock', 'read', 'write', 'delete']),
             previousRoute = '/user/course/' + (course ? course._id || '' : ''),
             { isLecturer, isCourseAdmin } = currentUser,
             lock = this.state.lock,

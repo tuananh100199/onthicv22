@@ -58,6 +58,13 @@ export function getCarPage(pageNumber, pageSize, pageCondition, filter,sort, don
     };
 }
 
+export function exportFuelCarPage() {
+    const page = T.updatePage('adminCar');
+    const url = `/api/car/fuel/export/page/${page.pageNumber}/${page.pageSize}/${JSON.stringify(page.filter)}/${JSON.stringify(page.sort)}`;
+    T.download(T.url(url));
+    // T.download(T.get(url, { filter:page.filter,sort:page.sort }));
+}
+
 export function getAllCars(condition, done) {
     return dispatch => {
         const url = '/api/car/all';
