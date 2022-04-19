@@ -21,11 +21,11 @@ export default function licenseTestReducer(state = {}, data) {
 
 // Actions ------------------------------------------------------------------------------------------------------------
 T.initCookiePage('pageLicenseTest');
-export function getLicenseTestPage(pageNumber, pageSize, done) {
+export function getLicenseTestPage(pageNumber, pageSize,condition, done) {
     const page = T.updatePage('pageLicenseTest', pageNumber, pageSize);
     return (dispatch) => {
-        const url = `/api/teacher-diploma/page/${page.pageNumber}/${page.pageSize}`;
-        T.get(url, data => {
+        const url = `/api/license-test/page/${page.pageNumber}/${page.pageSize}`;
+        T.get(url,{condition}, data => {
             if (data.error) {
                 T.notify('Lấy danh sách chứng chỉ bị lỗi!', 'danger');
                 console.error('GET: ' + url + '.', data.error);
@@ -39,7 +39,7 @@ export function getLicenseTestPage(pageNumber, pageSize, done) {
 
 export function getLicenseTestAll(condition,done) {
     return dispatch => {
-        const url = '/api/teacher-diploma/all';
+        const url = '/api/license-test/all';
         T.get(url,{condition}, data => {
             if (data.error) {
                 T.notify('Lấy kỳ sát hạch bị lỗi', 'danger');
@@ -66,7 +66,7 @@ export function getLicenseTest(_id, done) {
 
 export function createLicenseTest(data, done) {
     return dispatch => {
-        const url = '/api/teacher-diploma';
+        const url = '/api/license-test';
         T.post(url, { data }, data => {
             if (data.error) {
                 T.notify('Tạo kỳ sát hạch bị lỗi!', 'danger');
@@ -81,7 +81,7 @@ export function createLicenseTest(data, done) {
 
 export function updateLicenseTest(_id, changes, done) {
     return dispatch => {
-        const url = '/api/teacher-diploma';
+        const url = '/api/license-test';
         T.put(url, { _id, changes }, data => {
             if (data.error) {
                 T.notify('Cập nhật kỳ sát hạch bị lỗi!', 'danger');
@@ -113,13 +113,15 @@ export function deleteLicenseTest(_id) {
 }
 
 
-export const ajaxLicenseTest = {
+export const ajaxSelectLicenseTest = {
     ajax: true,
     url: '/api/license-test/page/1/20',
-    data: params=>({searchText:params.term}),
-    processResults: response => ({
-        results: response && response.list ? response.list.map(item => ({ id: item._id, text: item.title })) : []
-    }),
+    data: params=>({condition:{searchText:params.term}}),
+    processResults: response => {
+        return ({
+            results: response && response.page&& response.page.list ? response.page.list.map(item => ({ id: item._id, text: item.title })) : []
+        });
+    },
     fetchOne: (_id, done) => getLicenseTest(_id, ({ item }) => done && done({ id: item._id, text: item.title }))
 };
 

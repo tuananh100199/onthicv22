@@ -74,7 +74,7 @@ module.exports = app => {
         if(condition.isLicense) pageCondition.isLicense=true;
         pageCondition.datSatHach=true;
         if(filter){
-            app.handleFilter(filter,['isCertification','isLicense','course'],filterCondition=>{
+            app.handleFilter(filter,['isCertification','isLicense','course','kySatHach'],filterCondition=>{
                 pageCondition={...pageCondition,...filterCondition};
             });
 

@@ -2,14 +2,14 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { getLicensePage, updateCertificate,exportFinalLicense } from './redux';
 import Pagination from 'view/component/Pagination';
-import { AdminPage, AdminModal, FormTextBox, TableCell, renderTable, FormCheckbox,CirclePageButton,TableHead,TableHeadCell } from 'view/component/AdminPage';
+import { AdminPage, AdminModal, FormTextBox, TableCell, renderTable, FormCheckbox, FormSelect, CirclePageButton,TableHead,TableHeadCell } from 'view/component/AdminPage';
 import FileSaver from 'file-saver';
 import {getCourseAll} from 'modules/mdDaoTao/fwCourse/redux';
+import {ajaxSelectLicenseTest} from 'modules/mdDaoTao/fwLicenseTest/redux';
 const isCertificateData = [
     {id:'1',text:'Đã cấp'},
     {id:'0',text:'Chưa cấp'},
 ];
-
 class ExportModal extends AdminModal {
     state = { copied: false,listStudent:[] };
     componentDidMount() {
@@ -51,7 +51,7 @@ class ExportModal extends AdminModal {
                     <TableCell type='text' content={item.identityCard} />
                     {/* <TableCell type='text' style={{ whiteSpace: 'nowrap', textAlign: 'center' }} content={item.feeType ? item.feeType.title : ''} /> */}
                     <TableCell type='text' style={{ whiteSpace: 'nowrap', textAlign: 'center' }} content={item.course && item.course.name} />
-                    <TableCell type='text' style={{ whiteSpace: 'nowrap', textAlign: 'center' }} content={item.kySatHach} />
+                    <TableCell type='text' style={{ whiteSpace: 'nowrap', textAlign: 'center' }} content={item.kySatHach?item.kySatHach.title:''} />
                     <TableCell type='buttons' content={{ item, index }} permission={{ delete: true }} onDelete={e=>this.delete(e,item)} />
                 </tr>),
         });
@@ -71,14 +71,14 @@ class ExportModal extends AdminModal {
 class CertificateModal extends AdminModal {
     state = {showCapPhat:false};
     onShow = (item) => {
-        let { _id, lastname, firstname, identityCard, courseType,course,isCertification, isLicense,hasLicense,kySatHach  } = item || { _id: null, student: null,isCertification:false,isLicense:false,hasLicense:false,kySatHach:'' };
+        let { _id, lastname, firstname, identityCard, courseType,course,isCertification, isLicense,hasLicense,kySatHach  } = item || { _id: null, student: null,isCertification:false,isLicense:false,hasLicense:false };
         this.itemStudent.value(lastname + ' ' + firstname);
         this.itemCourseType.value(courseType ? courseType.title : '');
         this.itemIdentityCard.value(identityCard);
         this.itemCourse.value(course?course.name:'');
         this.itemIsCertification.value(isCertification);
         this.itemIsLicense.value(isLicense);
-        this.itemKySatHach.value(kySatHach);
+        this.itemKySatHach.value(kySatHach?{id:kySatHach._id,text:kySatHach.title}:null);
         this.itemHasLicense.value(hasLicense);
         
         this.setState({ _id,showCapPhat:isCertification && isLicense });
@@ -109,7 +109,7 @@ class CertificateModal extends AdminModal {
                     <FormTextBox className='col-md-4' ref={e => this.itemIdentityCard = e} label='CMND/CCCD' readOnly={true} />
                     <FormTextBox className='col-md-4' ref={e => this.itemCourseType = e} label='Loại khóa học' readOnly={true} />
                     <FormTextBox className='col-md-4' ref={e => this.itemCourse = e} label='Khóa học' readOnly={true} />
-                    <FormTextBox  ref={e => this.itemKySatHach = e} className='col-md-4' label='Kỳ sát hạch' readOnly={readOnly} />
+                    <FormSelect  ref={e => this.itemKySatHach = e} data={ajaxSelectLicenseTest} className='col-md-4' label='Kỳ sát hạch' readOnly={readOnly} />
                     <FormCheckbox ref={e => this.itemIsCertification = e} isSwitch={true} className='col-md-4' label='Đã có CCSC' readOnly={readOnly} onChange={this.handleChange} />
                     <FormCheckbox ref={e => this.itemIsLicense = e} isSwitch={true} className='col-md-4' label='Đã có GPLX' readOnly={readOnly} onChange={this.handleChange} />
                     <FormCheckbox className='col-md-4' style={{display:this.state.showCapPhat?'flex':'none'}} ref={e => this.itemHasLicense = e} isSwitch={true} label='Cấp phát' readOnly={readOnly} />
@@ -200,6 +200,7 @@ class LicensePage extends AdminPage {
         const permission = this.getUserPermission('certificate');
         let { pageNumber, pageSize, pageTotal, totalItem, list } = this.props.certificate && this.props.certificate.licensePage ?
             this.props.certificate.licensePage : { pageNumber: 1, pageSize: 50, pageTotal: 1, totalItem: 0, list: null };
+            console.log({list});
             const table = renderTable({
             getDataSource: () => list, stickyHead: true,autoDisplay:true,
             renderHead: () => (
@@ -209,7 +210,7 @@ class LicensePage extends AdminPage {
                     <TableHeadCell style={{ width: 'auto' }} nowrap='true'>CMND/CCCD</TableHeadCell>
                     <TableHeadCell style={{ width: 'auto' }} nowrap='true'>Loại khóa học</TableHeadCell>
                     <TableHeadCell  name='course' filter='select' filterData={this.state.course} style={{ width: 'auto' }} menuStyle={{width:200}} nowrap='true'>Khóa học</TableHeadCell>
-                    <TableHeadCell style={{ width: 'auto' }} nowrap='true'>Kỳ sát hạch</TableHeadCell>
+                    <TableHeadCell name = 'kySatHach' filter='select' filterData= {ajaxSelectLicenseTest} style={{ width: 'auto' }} nowrap='true'>Kỳ sát hạch</TableHeadCell>
                     <TableHeadCell name='isCertification' filter='select' filterData={isCertificateData} style={{ width: 'auto' }} nowrap='true'>Đã có CCSC</TableHeadCell>
                     <TableHeadCell name='isLicense' filter='select' filterData={isCertificateData} style={{ width: 'auto' }} nowrap='true'>Đã có GPLX</TableHeadCell>
                     <TableHeadCell name='capPhat' filter='select' filterData={isCertificateData} style={{ width: 'auto' }} nowrap='true'>Cấp phát</TableHeadCell>
@@ -223,7 +224,7 @@ class LicensePage extends AdminPage {
                     <TableCell type='text' content={item.identityCard} />
                     <TableCell type='text' content={item.courseType && item.courseType.title} />
                     <TableCell type='text' content={item.course && item.course.name} />
-                    <TableCell type='text' content={item.kySatHach} style={{whiteSpace:'nowrap'}} />
+                    <TableCell type='text' content={item.kySatHach?item.kySatHach.title:''} style={{whiteSpace:'nowrap'}} />
                     <TableCell type='checkbox' content={item.isCertification} permission={permission} onChanged = {value=>this.updateIsLicense(item._id,item.hasLicense,{isCertification:value})}/>
                     <TableCell type='checkbox' content={item.isLicense} permission={permission} onChanged = {value=>this.updateIsLicense(item._id,item.hasLicense,{isLicense:value})}/>
                     {item.isLicense && item.isCertification ? <TableCell type='checkbox' content={item.hasLicense} permission={permission} onChanged = {value=>this.update(item._id,{hasLicense:value,hasCertification:value})}/>:<TableCell type='text' content=''/>}

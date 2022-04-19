@@ -1246,7 +1246,7 @@ module.exports = (app) => {
                         if (index == student.length) {
                             res.send({ error: err });
                         } else {
-                            const { identityCard, course,kySatHach,ngaySatHach } = student[index];
+                            const { identityCard, course,kySatHach } = student[index];
                             app.model.student.get({ identityCard, course }, (error, item) => {
                                 if (error || !item) {
                                     err = error;
@@ -1258,7 +1258,6 @@ module.exports = (app) => {
 
                                     // thêm kỳ sát hạch và ngày sát hạch
                                     item.kySatHach= kySatHach;
-                                    item.ngaySatHach=ngaySatHach;
                                     item.modifiedDate = new Date();
                                     item.save((error, student) => {
                                         if (error || !student) {
