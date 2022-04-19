@@ -1,7 +1,7 @@
 module.exports = app => {
-    const schema = app.db.Schema({
-        title:String,
-        link:String,
+    const schema = app.database.mongoDB.Schema({
+        title: String,
+        link: String,
         image: String,
     });
     const model = app.db.model('IntroVideo', schema);

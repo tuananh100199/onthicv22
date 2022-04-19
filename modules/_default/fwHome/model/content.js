@@ -1,5 +1,5 @@
 module.exports = app => {
-    const schema = app.db.Schema({
+    const schema = app.database.mongoDB.Schema({
         title: String,
         titleVisible: { type: Boolean, default: true },
         abstract: String,

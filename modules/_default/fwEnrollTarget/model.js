@@ -1,5 +1,5 @@
 module.exports = app => {
-    const schema = app.db.Schema({
+    const schema = app.database.mongoDB.Schema({
         year: Number,
         trinhDo: String,
         nganhNghe: String,
@@ -30,7 +30,7 @@ module.exports = app => {
         getAll: (condition, done) => done ?
             model.find(condition).sort({ year: 1 }).exec(done) :
             model.find({}).sort({ year: 1 }).exec(condition),
-        
+
 
         // changes = { $set, $unset, $push, $pull }
         update: (_id, changes, done) => model.findOneAndUpdate({ _id }, changes, { new: true }, done),

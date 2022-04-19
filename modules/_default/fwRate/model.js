@@ -1,7 +1,7 @@
 module.exports = app => {
-    const schema = app.db.Schema({
-        user: { type: app.db.Schema.ObjectId, ref: 'User' },        // Người đánh giá
-        _refId: app.db.Schema.ObjectId,      // Đối tượng được đánh giá
+    const schema = app.database.mongoDB.Schema({
+        user: { type: app.database.mongoDB.Schema.ObjectId, ref: 'User' },        // Người đánh giá
+        _refId: app.database.mongoDB.Schema.ObjectId,      // Đối tượng được đánh giá
         createdDate: { type: Date, default: Date.now },
         value: Number,
         note: String,
@@ -12,7 +12,7 @@ module.exports = app => {
     app.model.rate = {
         create: (data, done) => model.create(data, done),
 
-        getPage: (pageNumber, pageSize, condition,sort, done) => model.countDocuments(condition, (error, totalItem) => {
+        getPage: (pageNumber, pageSize, condition, sort, done) => model.countDocuments(condition, (error, totalItem) => {
             if (error) {
                 done(error);
             } else {

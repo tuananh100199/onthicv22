@@ -1,5 +1,5 @@
 module.exports = app => {
-    const schema = app.db.Schema({
+    const schema = app.database.mongoDB.Schema({
         active: { type: Boolean, default: true },
         title: String,
         image: String,

@@ -1,8 +1,8 @@
 module.exports = app => {
-    const schema = app.db.Schema({
-        title:String,
+    const schema = app.database.mongoDB.Schema({
+        title: String,
         active: { type: Boolean, default: false },
-        required:{ type: Boolean, default: true },
+        required: { type: Boolean, default: true },
     });
     const model = app.db.model('ProfileStudentType', schema);
 
@@ -27,7 +27,7 @@ module.exports = app => {
         getAll: (condition, done) => done ?
             model.find(condition).sort({ title: -1 }).exec(done) :
             model.find({}).sort({ title: -1 }).exec(condition),
-        
+
 
         // changes = { $set, $unset, $push, $pull }
         update: (_id, changes, done) => model.findOneAndUpdate({ _id }, changes, { new: true }, done),

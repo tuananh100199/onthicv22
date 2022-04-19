@@ -1,12 +1,12 @@
 module.exports = app => {
-    const schema = app.db.Schema({
+    const schema = app.database.mongoDB.Schema({
         title: String,
         shortDescription: String,
         detailDescription: String,
         taiLieuThamKhao: String,
-        author: { type: app.db.Schema.ObjectId, ref: 'User' },
-        videos: { type: [{ type: app.db.Schema.Types.ObjectId, ref: 'LessonVideo' }], default: [] },
-        questions: { type: [{ type: app.db.Schema.Types.ObjectId, ref: 'Question' }], default: [] },
+        author: { type: app.database.mongoDB.Schema.ObjectId, ref: 'User' },
+        videos: { type: [{ type: app.database.mongoDB.Schema.Types.ObjectId, ref: 'LessonVideo' }], default: [] },
+        questions: { type: [{ type: app.database.mongoDB.Schema.Types.ObjectId, ref: 'Question' }], default: [] },
         numQuestion: { type: Number, default: 5 },
     });
     const model = app.db.model('Lesson', schema);

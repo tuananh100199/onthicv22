@@ -1,13 +1,13 @@
 module.exports = app => {
-    const schema = app.db.Schema({
-        category:{ type: app.db.Schema.ObjectId, ref: 'Category' },
-        totNghiepChuyenMon:{type:Boolean,default:false},
+    const schema = app.database.mongoDB.Schema({
+        category: { type: app.database.mongoDB.Schema.ObjectId, ref: 'Category' },
+        totNghiepChuyenMon: { type: Boolean, default: false },
         // amount:[{
         //     numOfProfile:Number,
         //     typeOfProfile: { type: String, enum: ['S', 'C', 'P','B']},
         // }],
-        soLuong:String,
-        teacher:{ type: app.db.Schema.ObjectId, ref: 'Teacher' }, 
+        soLuong: String,
+        teacher: { type: app.database.mongoDB.Schema.ObjectId, ref: 'Teacher' },
     });
     const model = app.db.model('TeacherProfile', schema);
 
@@ -15,7 +15,7 @@ module.exports = app => {
         create: (data, done) => model.create(data, done),
 
         getAll: (condition, done) => {
-            done ? model.find(condition).populate('category','_id title').exec(done) : model.find({}).populate('category','_id title').exec(condition);
+            done ? model.find(condition).populate('category', '_id title').exec(done) : model.find({}).populate('category', '_id title').exec(condition);
         },
 
         get: (condition, done) => {

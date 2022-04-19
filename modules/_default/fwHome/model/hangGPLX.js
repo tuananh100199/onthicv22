@@ -1,5 +1,5 @@
 module.exports = app => {
-    const schema = app.db.Schema({
+    const schema = app.database.mongoDB.Schema({
         title: String, // tên của component
         title1: String, //tên hạng 1
         abstract1: String,

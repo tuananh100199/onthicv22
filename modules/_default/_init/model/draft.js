@@ -1,7 +1,7 @@
 module.exports = app => {
-    const schema = app.db.Schema({
-        editorId: app.db.Schema.Types.ObjectId,
-        documentId: app.db.Schema.Types.ObjectId,
+    const schema = app.database.mongoDB.Schema({
+        editorId: app.database.mongoDB.Schema.Types.ObjectId,
+        documentId: app.database.mongoDB.Schema.Types.ObjectId,
         editorName: String,
         title: String,
         documentType: String, // news | event

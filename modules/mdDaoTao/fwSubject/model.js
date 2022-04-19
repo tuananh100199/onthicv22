@@ -1,15 +1,15 @@
 module.exports = app => {
-    const schema = app.db.Schema({
+    const schema = app.database.mongoDB.Schema({
         title: String,
         shortDescription: String,
         detailDescription: String,
         totalTime: Number,
         monThucHanh: { type: Boolean, default: false },
         monTienQuyet: { type: Boolean, default: false },
-        lessons: { type: [{ type: app.db.Schema.Types.ObjectId, ref: 'Lesson' }], default: [] },
-        questions: { type: [{ type: app.db.Schema.Types.ObjectId, ref: 'Question' }], default: [] },
+        lessons: { type: [{ type: app.database.mongoDB.Schema.Types.ObjectId, ref: 'Lesson' }], default: [] },
+        questions: { type: [{ type: app.database.mongoDB.Schema.Types.ObjectId, ref: 'Question' }], default: [] },
         questionTypes: [{
-            category: { type: app.db.Schema.ObjectId, ref: 'Category' },
+            category: { type: app.database.mongoDB.Schema.ObjectId, ref: 'Category' },
             amount: Number,
         }],
         finalQuestions: [],

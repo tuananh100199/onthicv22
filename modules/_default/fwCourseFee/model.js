@@ -1,8 +1,8 @@
 module.exports = (app) => {
-    const schema = app.db.Schema({
+    const schema = app.database.mongoDB.Schema({
         name: String,
-        courseType: { type: app.db.Schema.ObjectId, ref: 'CourseType' },    // Loại khóa học
-        feeType: { type: app.db.Schema.ObjectId, ref: 'FeeType' },
+        courseType: { type: app.database.mongoDB.Schema.ObjectId, ref: 'CourseType' },    // Loại khóa học
+        feeType: { type: app.database.mongoDB.Schema.ObjectId, ref: 'FeeType' },
         fee: Number,
         description: String,
         quantity: Number,                                                   // Số lượng gói còn lại

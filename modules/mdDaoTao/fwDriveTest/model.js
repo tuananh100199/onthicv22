@@ -1,10 +1,10 @@
 module.exports = app => {
-    const schema = app.db.Schema({
+    const schema = app.database.mongoDB.Schema({
         title: String,
         active: { type: Boolean, default: true },
         priority: { type: Number, default: 0 },
-        courseType: { type: app.db.Schema.ObjectId, ref: 'CourseType' },
-        questions: { type: [{ type: app.db.Schema.Types.ObjectId, ref: 'DriveQuestion' }], default: [] },
+        courseType: { type: app.database.mongoDB.Schema.ObjectId, ref: 'CourseType' },
+        questions: { type: [{ type: app.database.mongoDB.Schema.Types.ObjectId, ref: 'DriveQuestion' }], default: [] },
         description: String,
     });
     const model = app.db.model('DriveTest', schema);

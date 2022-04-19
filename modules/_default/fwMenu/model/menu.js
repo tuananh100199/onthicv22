@@ -1,7 +1,7 @@
 module.exports = app => {
-    const schema = app.db.Schema({
-        parentId: app.db.Schema.Types.ObjectId,
-        componentId: app.db.Schema.Types.ObjectId,
+    const schema = app.database.mongoDB.Schema({
+        parentId: app.database.mongoDB.Schema.Types.ObjectId,
+        componentId: app.database.mongoDB.Schema.Types.ObjectId,
         priority: Number,
         title: String,
         link: String,

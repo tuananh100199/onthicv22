@@ -1,12 +1,12 @@
 module.exports = app => {
-    const schema = app.db.Schema({
-        payer: { type: app.db.Schema.ObjectId, ref: 'Student' },                       // Người đóng tiền
-        receiver: { type: app.db.Schema.ObjectId, ref: 'User' },                    // Người nhận tiền,
+    const schema = app.database.mongoDB.Schema({
+        payer: { type: app.database.mongoDB.Schema.ObjectId, ref: 'Student' },                       // Người đóng tiền
+        receiver: { type: app.database.mongoDB.Schema.ObjectId, ref: 'User' },                    // Người nhận tiền,
         type: { type: String, enum: ['online', 'offline'], default: 'offline' },    // Hình thức đóng tiền
-        date: { type: Date, default: Date.now },   
+        date: { type: Date, default: Date.now },
         fee: Number,                                                                // Số tiền đóng
-        course: { type: app.db.Schema.ObjectId, ref: 'Course' },
-        courseType: { type: app.db.Schema.ObjectId, ref: 'CourseType' },
+        course: { type: app.database.mongoDB.Schema.ObjectId, ref: 'Course' },
+        courseType: { type: app.database.mongoDB.Schema.ObjectId, ref: 'CourseType' },
     });
 
     const model = app.db.model('Revenue', schema);

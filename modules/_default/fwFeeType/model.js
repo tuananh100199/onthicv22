@@ -1,9 +1,9 @@
 module.exports = (app) => {
-    const schema = app.db.Schema({
+    const schema = app.database.mongoDB.Schema({
         title: String,
         active: { type: Boolean, default: true },
         official: { type: Boolean, default: false },
-        isExtra: {type: Boolean, default: false},
+        isExtra: { type: Boolean, default: false },
     });
 
     const model = app.db.model('FeeType', schema);
@@ -14,9 +14,9 @@ module.exports = (app) => {
             model.findOne(condition, done) : model.findById(condition, done),
 
         getAll: (condition, done) => done ?
-        model.find(condition).sort({ title: 1 }).exec(done) :
-        model.find({}).sort({ title: 1 }).exec(condition),
-    
+            model.find(condition).sort({ title: 1 }).exec(done) :
+            model.find({}).sort({ title: 1 }).exec(condition),
+
 
         getPage: (pageNumber, pageSize, condition, done) => model.countDocuments(condition, (error, totalItem) => {
             if (error) {

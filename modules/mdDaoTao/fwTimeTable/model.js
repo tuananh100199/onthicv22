@@ -1,6 +1,6 @@
 module.exports = app => {
-    const schema = app.db.Schema({
-        student: { type: app.db.Schema.ObjectId, ref: 'Student' },
+    const schema = app.database.mongoDB.Schema({
+        student: { type: app.database.mongoDB.Schema.ObjectId, ref: 'Student' },
 
         date: { type: Date, default: Date.now },                                        // Ngày học
         startHour: { type: Number, default: 8 },                                        // Thời gian bắt đầu học
@@ -8,7 +8,7 @@ module.exports = app => {
         dateNumber: { type: Number, default: -1 },                                      // Buổi học thứ
         truant: { type: Boolean, default: false },                                      // Học viên không đến lớp
         state: { type: String, enum: ['approved', 'waiting', 'reject', 'cancel', 'autoCancel'], default: 'waiting' }, // Trạng thái của thời khóa biểu
-        car: { type: app.db.Schema.ObjectId, ref: 'Car' },                              // Xe học
+        car: { type: app.database.mongoDB.Schema.ObjectId, ref: 'Car' },                              // Xe học
         createdAt: { type: Date, default: Date.now },                                   // Thời gian tạo thời khóa biểu
         content: String,                                                                // Nội dung học
         note: String,                                                                   // Ghi chú
@@ -29,10 +29,10 @@ module.exports = app => {
             }
         }),
 
-        getPage: (pageNumber, pageSize, condition,sort, done) => model.countDocuments(condition, (error, totalItem) => {
-            if(done==undefined){
-                done=sort;
-                sort = {date: -1,startHour:1};
+        getPage: (pageNumber, pageSize, condition, sort, done) => model.countDocuments(condition, (error, totalItem) => {
+            if (done == undefined) {
+                done = sort;
+                sort = { date: -1, startHour: 1 };
             }
             if (error) {
                 done(error);
@@ -40,7 +40,7 @@ module.exports = app => {
                 let result = { totalItem, pageSize, pageTotal: Math.ceil(totalItem / pageSize) };
                 result.pageNumber = pageNumber === -1 ? result.pageTotal : Math.min(pageNumber, result.pageTotal);
                 const skipNumber = (result.pageNumber > 0 ? result.pageNumber - 1 : 0) * result.pageSize;
-                model.find(condition).populate(populateStudent).populate('car', 'licensePlates').sort(sort||{date:-1,startHour:1}).skip(skipNumber).limit(result.pageSize).exec((error, list) => {
+                model.find(condition).populate(populateStudent).populate('car', 'licensePlates').sort(sort || { date: -1, startHour: 1 }).skip(skipNumber).limit(result.pageSize).exec((error, list) => {
                     result.list = error ? [] : list;
                     done(error, result);
                 });
@@ -52,12 +52,12 @@ module.exports = app => {
         get: (condition, done) => {
             const findTask = typeof condition == 'string' ? model.findById(condition) : model.findOne(condition);
             findTask.populate('student').populate({
-                path : 'student',
-                populate : {
-                  path : 'course',
-                  select: 'practiceNumOfHours'
+                path: 'student',
+                populate: {
+                    path: 'course',
+                    select: 'practiceNumOfHours'
                 }
-              }).exec(done);
+            }).exec(done);
         },
 
         // changes = { $set, $unset, $push, $pull }

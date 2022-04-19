@@ -1,8 +1,8 @@
 module.exports = app => {
-    const schema = app.db.Schema({
-        student: { type: app.db.Schema.ObjectId, ref: 'Student' },              // Học viên đổi
+    const schema = app.database.mongoDB.Schema({
+        student: { type: app.database.mongoDB.Schema.ObjectId, ref: 'Student' },              // Học viên đổi
         requestedLecturer: String,                                              // Giáo viên được học viên yêu cầu
-        lecturer: { type: app.db.Schema.ObjectId, ref: 'User' },                // Giáo viên được thay đổi
+        lecturer: { type: app.database.mongoDB.Schema.ObjectId, ref: 'User' },                // Giáo viên được thay đổi
         reason: String,
         createdDate: { type: Date, default: Date.now },
         startDate: { type: Date, default: Date.now },
@@ -26,24 +26,24 @@ module.exports = app => {
                 });
             }
         }),
-        
+
         getAll: (condition, done) => done ?
             model.find(condition).sort({ title: 1 }).exec(done) :
             model.find({}).sort({ title: 1 }).exec(condition),
 
         get: (condition, done) => typeof condition == 'string' ?
             model.findById(condition).populate({
-                path : 'student',
-                populate : {
-                  path : 'course'
+                path: 'student',
+                populate: {
+                    path: 'course'
                 }
-              }).exec(done) :
+            }).exec(done) :
             model.findOne(condition).populate({
-                path : 'student',
-                populate : {
-                  path : 'course'
+                path: 'student',
+                populate: {
+                    path: 'course'
                 }
-              }).exec(done),
+            }).exec(done),
 
         // changes = { $set, $unset, $push, $pull }
         update: (_id, changes, done) => model.findOneAndUpdate({ _id }, changes, { new: true }, done),

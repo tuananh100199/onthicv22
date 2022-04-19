@@ -1,6 +1,6 @@
 module.exports = app => {
-    const schema = app.db.Schema({
-        carouselId: app.db.Schema.Types.ObjectId,
+    const schema = app.database.mongoDB.Schema({
+        carouselId: app.database.mongoDB.Schema.Types.ObjectId,
         priority: Number,
         title: String,
         subtitle: String,

@@ -1,10 +1,10 @@
 module.exports = app => {
-    const schema = app.db.Schema({
-        refParentId: app.db.Schema.ObjectId,
-        refId: app.db.Schema.ObjectId,
-        parentId: app.db.Schema.ObjectId,
+    const schema = app.database.mongoDB.Schema({
+        refParentId: app.database.mongoDB.Schema.ObjectId,
+        refId: app.database.mongoDB.Schema.ObjectId,
+        parentId: app.database.mongoDB.Schema.ObjectId,
 
-        author: { type: app.db.Schema.ObjectId, ref: 'User' },
+        author: { type: app.database.mongoDB.Schema.ObjectId, ref: 'User' },
         content: String,
         createdDate: { type: Date, default: Date.now },
         updatedDate: Date,

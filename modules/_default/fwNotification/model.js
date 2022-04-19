@@ -1,8 +1,8 @@
 module.exports = app => {
-    const schema = app.db.Schema({
+    const schema = app.database.mongoDB.Schema({
         type: String,                                               // Loại notification
-        course: { type: app.db.Schema.ObjectId, ref: 'Course' },    // Khóa học
-        user: { type: app.db.Schema.ObjectId, ref: 'User' },        // Thông báo đến đúng cá nhân
+        course: { type: app.database.mongoDB.Schema.ObjectId, ref: 'Course' },    // Khóa học
+        user: { type: app.database.mongoDB.Schema.ObjectId, ref: 'User' },        // Thông báo đến đúng cá nhân
 
         title: String,
         content: String,

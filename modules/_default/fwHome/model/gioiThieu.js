@@ -1,5 +1,5 @@
 module.exports = app => {
-    const schema = app.db.Schema({
+    const schema = app.database.mongoDB.Schema({
         title: String,
         titleVisible: { type: Boolean, default: true },
         abstract: String,
@@ -8,9 +8,9 @@ module.exports = app => {
         image1: String,
         image2: String,
         image3: String,
-        content1: { type: app.db.Schema.ObjectId, ref: 'Content' },
-        content2: { type: app.db.Schema.ObjectId, ref: 'Content' },
-        content3: { type: app.db.Schema.ObjectId, ref: 'Content' },
+        content1: { type: app.database.mongoDB.Schema.ObjectId, ref: 'Content' },
+        content2: { type: app.database.mongoDB.Schema.ObjectId, ref: 'Content' },
+        content3: { type: app.database.mongoDB.Schema.ObjectId, ref: 'Content' },
     });
     const model = app.db.model('GioiThieu', schema);
 
@@ -25,18 +25,18 @@ module.exports = app => {
                 result.pageNumber = pageNumber === -1 ? result.pageTotal : Math.min(pageNumber, result.pageTotal);
                 const skipNumber = (result.pageNumber > 0 ? result.pageNumber - 1 : 0) * result.pageSize;
                 model.find(condition).sort({ title: 1 }).skip(skipNumber).limit(result.pageSize)
-                .populate('content1','_id title abstract image').populate('content2','_id title abstract image').populate('content3','_id title abstract image')
-                .exec((error, list) => {
-                    result.list = list;
-                    done(error, result);
-                });
+                    .populate('content1', '_id title abstract image').populate('content2', '_id title abstract image').populate('content3', '_id title abstract image')
+                    .exec((error, list) => {
+                        result.list = list;
+                        done(error, result);
+                    });
             }
         }),
 
         getAll: (done) => model.find({}, '-content').sort({ _id: -1 }).exec(done),
 
-        get: (condition, done) => typeof condition == 'string' ? model.findById(condition).populate('content1','_id title abstract image').populate('content2','_id title abstract image').populate('content3','_id title abstract image').exec(done) 
-        : model.findOne(condition, done).populate('content1').populate('content2','_id title').populate('content3','_id title').exec(done),
+        get: (condition, done) => typeof condition == 'string' ? model.findById(condition).populate('content1', '_id title abstract image').populate('content2', '_id title abstract image').populate('content3', '_id title abstract image').exec(done)
+            : model.findOne(condition, done).populate('content1').populate('content2', '_id title').populate('content3', '_id title').exec(done),
 
         update: (_id, changes, done) => model.findOneAndUpdate({ _id }, { $set: changes }, { new: true }, done),
 

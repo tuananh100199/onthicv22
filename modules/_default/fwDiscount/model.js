@@ -1,5 +1,5 @@
 module.exports = (app) => {
-    const schema = app.db.Schema({
+    const schema = app.database.mongoDB.Schema({
         name: String,
         fee: Number,
         description: String,

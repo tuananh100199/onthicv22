@@ -1,10 +1,10 @@
 module.exports = app => {
-    const schema = app.db.Schema({
+    const schema = app.database.mongoDB.Schema({
         name: String,
         email: String,
         subject: String,
         message: String,
-        userId: app.db.Schema.Types.ObjectId,
+        userId: app.database.mongoDB.Schema.Types.ObjectId,
         read: { type: Boolean, default: false },
         createdDate: { type: Date, default: Date.now },
     });

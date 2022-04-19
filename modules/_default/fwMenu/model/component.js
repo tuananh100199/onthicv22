@@ -1,11 +1,11 @@
 module.exports = app => {
-    const schema = app.db.Schema({
+    const schema = app.database.mongoDB.Schema({
         priority: Number,
         viewType: String,
-        viewId: app.db.Schema.Types.ObjectId,
+        viewId: app.database.mongoDB.Schema.Types.ObjectId,
         className: String,
         style: String,
-        componentIds: [{ type: app.db.Schema.Types.ObjectId, ref: 'Component' }],
+        componentIds: [{ type: app.database.mongoDB.Schema.Types.ObjectId, ref: 'Component' }],
         href: String,
     });
     const model = app.db.model('Component', schema);

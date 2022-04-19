@@ -1,7 +1,7 @@
 module.exports = app => {
-    const schema = app.db.Schema({
-        forum: { type: app.db.Schema.ObjectId, ref: 'Forum' },
-        user: { type: app.db.Schema.ObjectId, ref: 'User' },
+    const schema = app.database.mongoDB.Schema({
+        forum: { type: app.database.mongoDB.Schema.ObjectId, ref: 'Forum' },
+        user: { type: app.database.mongoDB.Schema.ObjectId, ref: 'User' },
         content: String,
         state: { type: String, enum: ['approved', 'waiting', 'reject'], default: 'waiting' },
         createdDate: { type: Date, default: Date.now },

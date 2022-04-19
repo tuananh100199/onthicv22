@@ -1,9 +1,9 @@
 module.exports = app => {
-    const schema = app.db.Schema({
+    const schema = app.database.mongoDB.Schema({
         message: String,
-        receiver: { type: app.db.Schema.ObjectId, ref: 'User' },
+        receiver: { type: app.database.mongoDB.Schema.ObjectId, ref: 'User' },
         sent: { type: Date, default: Date.now },
-        sender: { type: app.db.Schema.ObjectId, ref: 'User' },
+        sender: { type: app.database.mongoDB.Schema.ObjectId, ref: 'User' },
         read: { type: Boolean, default: false },
     });
     const model = app.db.model('Chat', schema);

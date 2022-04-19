@@ -1,17 +1,17 @@
 module.exports = app => {
-    const schema = app.db.Schema({
-        _refId: app.db.Schema.ObjectId, // _courseId
+    const schema = app.database.mongoDB.Schema({
+        _refId: app.database.mongoDB.Schema.ObjectId, // _courseId
         type: String,                   // Loại phản hồi: course
 
         createdDate: { type: Date, default: Date.now },
         content: String,
-        user: { type: app.db.Schema.ObjectId, ref: 'User' },
+        user: { type: app.database.mongoDB.Schema.ObjectId, ref: 'User' },
         isSeen: { type: Boolean, default: false },
 
         replies: [{
             createdDate: { type: Date, default: Date.now },
             content: String,
-            adminUser: { type: app.db.Schema.ObjectId, ref: 'User' },
+            adminUser: { type: app.database.mongoDB.Schema.ObjectId, ref: 'User' },
         }],
     });
     const model = app.db.model('Feedback', schema);

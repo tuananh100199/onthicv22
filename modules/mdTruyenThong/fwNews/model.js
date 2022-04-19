@@ -1,7 +1,7 @@
 module.exports = app => {
-    const schema = app.db.Schema({
+    const schema = app.database.mongoDB.Schema({
         priority: Number,
-        categories: [{ type: app.db.Schema.ObjectId, ref: 'Category' }],
+        categories: [{ type: app.database.mongoDB.Schema.ObjectId, ref: 'Category' }],
         title: String,
         image: String,
         link: String,
