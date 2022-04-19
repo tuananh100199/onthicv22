@@ -1,15 +1,15 @@
 module.exports = app => {
-    const schema = app.db.Schema({
-        staffGroupId: app.db.Schema.Types.ObjectId,
+    const schema = app.database.mongoDB.Schema({
+        staffGroupId: app.database.mongoDB.Schema.Types.ObjectId,
         priority: Number,
-        user: { type: app.db.Schema.Types.ObjectId, ref: 'User' },
+        user: { type: app.database.mongoDB.Schema.Types.ObjectId, ref: 'User' },
         active: { type: Boolean, default: false },
         description: String,
         title: String, // Chức danh
         image: String,
-        content: { type: app.db.Schema.ObjectId, ref: 'Content' },
+        content: { type: app.database.mongoDB.Schema.ObjectId, ref: 'Content' },
     });
-    const model = app.db.model('Staff', schema);
+    const model = app.database.mongoDB.model('Staff', schema);
 
     app.model.staff = {
         create: (data, done) => model.find({}).sort({ priority: -1 }).limit(1).exec((error, items) => {

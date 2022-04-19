@@ -1,4 +1,4 @@
-module.exports = (app, appName) => {
+module.exports = (app, appConfig) => {
     app.clone = function () {
         const length = arguments.length;
         let result = null;
@@ -26,8 +26,8 @@ module.exports = (app, appName) => {
             app.templates[templateName] = (req, res) => {
                 const today = new Date().yyyymmdd();
                 if (req.session.today != today) {
-                    app.redis.incr(`${appName}:state:todayViews`);
-                    app.redis.incr(`${appName}:state:allViews`);
+                    app.database.redisDB.incr(`${appConfig.name}:state:todayViews`);
+                    app.database.redisDB.incr(`${appConfig.name}:state:allViews`);
                     req.session.today = today;
                 }
 

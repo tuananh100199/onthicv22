@@ -1,9 +1,9 @@
 module.exports = app => {
-    const schema = app.db.Schema({
+    const schema = app.database.mongoDB.Schema({
         title: String,
         active: { type: Boolean, default: false },                     // Cơ sở đào tạo ngoài
     });
-    const model = app.db.model('Department', schema);
+    const model = app.database.mongoDB.model('Department', schema);
 
     app.model.department = {
         create: (data, done) => model.create(data, done),
@@ -26,7 +26,7 @@ module.exports = app => {
         getAll: (condition, done) => done ?
             model.find(condition).sort({ title: 1 }).exec(done) :
             model.find({}).sort({ title: 1 }).exec(condition),
-        
+
 
         // changes = { $set, $unset, $push, $pull }
         update: (_id, changes, done) => model.findOneAndUpdate({ _id }, changes, { new: true }, done),

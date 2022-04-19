@@ -1,13 +1,13 @@
 module.exports = app => {
-    const schema = app.db.Schema({
-        forum: { type: app.db.Schema.ObjectId, ref: 'Forum' },
-        user: { type: app.db.Schema.ObjectId, ref: 'User' },
+    const schema = app.database.mongoDB.Schema({
+        forum: { type: app.database.mongoDB.Schema.ObjectId, ref: 'Forum' },
+        user: { type: app.database.mongoDB.Schema.ObjectId, ref: 'User' },
         content: String,
         state: { type: String, enum: ['approved', 'waiting', 'reject'], default: 'waiting' },
         createdDate: { type: Date, default: Date.now },
         modifiedDate: { type: Date, default: Date.now },
     });
-    const model = app.db.model('ForumMessage', schema);
+    const model = app.database.mongoDB.model('ForumMessage', schema);
 
     app.model.forumMessage = {
         create: (data, done) => model.create(data, done),

@@ -1,11 +1,11 @@
 module.exports = app => {
-    const schema = app.db.Schema({
+    const schema = app.database.mongoDB.Schema({
         title: String,
         content: String,
         type: String,
         abstract: String,
     });
-    const model = app.db.model('NotificationTemplate', schema);
+    const model = app.database.mongoDB.model('NotificationTemplate', schema);
 
     app.model.notificationTemplate = {
         create: (data, done) => model.create(data, done),

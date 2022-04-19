@@ -69,11 +69,11 @@ class BankEditPage extends AdminPage {
         T.ready('/user/bank', () => {
             const route = T.routeMatcher('/user/bank/:_id'),
                 params = route.parse(window.location.pathname);
-                if(params._id){
-                    this.getBanks(this.getData(params._id));
-                }else{
-                    this.props.history.push('/user/bank');
-                }
+            if (params._id) {
+                this.getBanks(this.getData(params._id));
+            } else {
+                this.props.history.push('/user/bank');
+            }
 
         });
     }
@@ -91,7 +91,7 @@ class BankEditPage extends AdminPage {
         );
     }
 
-    getData = (id)=>{
+    getData = (id) => {
         this.props.getBank(id, item => {
             // this.bank.value(item.code);
             this.active.value(item.active || false);
@@ -150,20 +150,20 @@ class BankEditPage extends AdminPage {
             contentLine: this.contentLine.value(),
             contentStr: this.contentStr.value().trim(),
         };
-        console.log('changes: ',changes);
+        console.log('changes: ', changes);
         if (changes.contentSyntax == '') {
             T.notify('Cú pháp chuyển tiền học phí chính thức của học viên bị trống!', 'danger');
             this.contentSyntax.focus();
         } if (changes.contentSyntaxExtra == '') {
             T.notify('Cú pháp chuyển tiền học phí tăng thêm của học viên bị trống!', 'danger');
             this.contentSyntaxExtra.focus();
-        } else if (changes.moneyLine == '' && changes.contentLine!==0) {
+        } else if (changes.moneyLine == '' && changes.contentLine !== 0) {
             T.notify('Dòng biến động số dư bị trống!', 'danger');
             this.moneyLine.focus();
         } else if (changes.moneyStr == '') {
             T.notify('Chuỗi biến động số dư bị trống!', 'danger');
             this.moneyStr.focus();
-        } else if (changes.contentLine == '' && changes.contentLine!==0) {
+        } else if (changes.contentLine == '' && changes.contentLine !== 0) {
             T.notify('Dòng nội dung giao dịch bị trống!', 'danger');
             this.contentLine.focus();
         } else if (changes.contentStr == '') {

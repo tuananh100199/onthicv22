@@ -1,5 +1,5 @@
 module.exports = app => {
-    const schema = app.db.Schema({
+    const schema = app.database.mongoDB.Schema({
         title: String, // tên của component
         title1: String, //tên hạng 1
         abstract1: String,
@@ -13,7 +13,7 @@ module.exports = app => {
         abstract3: String,
         image3: String,
     });
-    const model = app.db.model('HangGPLX', schema);
+    const model = app.database.mongoDB.model('HangGPLX', schema);
 
     app.model.hangGPLX = {
         create: (data, done) => model.create(data, done),

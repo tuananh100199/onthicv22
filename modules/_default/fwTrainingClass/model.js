@@ -1,14 +1,14 @@
 module.exports = (app) => {
-    const schema = app.db.Schema({
+    const schema = app.database.mongoDB.Schema({
         name: String,
-        teachers: { type: [{ type: app.db.Schema.Types.ObjectId, ref: 'Teacher' }], default: [] },// danh sách giáo viên được đề nghị
-        startDate:{type:Date,default:Date.now},
-        endDate:{type:Date,default:Date.now},
-        diaChi:String,
-        hangTapHuan: { type: app.db.Schema.Types.ObjectId, ref: 'Category' },//Hạng GPLX,gplx category
+        teachers: { type: [{ type: app.database.mongoDB.Schema.Types.ObjectId, ref: 'Teacher' }], default: [] },// danh sách giáo viên được đề nghị
+        startDate: { type: Date, default: Date.now },
+        endDate: { type: Date, default: Date.now },
+        diaChi: String,
+        hangTapHuan: { type: app.database.mongoDB.Schema.Types.ObjectId, ref: 'Category' },//Hạng GPLX,gplx category
     });
 
-    const model = app.db.model('TrainingClass', schema);
+    const model = app.database.mongoDB.model('TrainingClass', schema);
     app.model.trainingClass = {
         create: (data, done) => model.create(data, done),
 
@@ -25,7 +25,7 @@ module.exports = (app) => {
                 const skipNumber = (result.pageNumber > 0 ? result.pageNumber - 1 : 0) * result.pageSize;
 
                 model.find(condition).sort({ name: 1 }).skip(skipNumber).limit(result.pageSize)
-                    .populate('teacher','_id firstname lastname').populate('hangTapHuan','_id title')
+                    .populate('teacher', '_id firstname lastname').populate('hangTapHuan', '_id title')
                     .exec((error, items) => {
                         result.list = error ? [] : items;
                         done(error, result);

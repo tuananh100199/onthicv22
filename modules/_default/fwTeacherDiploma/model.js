@@ -1,10 +1,10 @@
 module.exports = app => {
-    const schema = app.db.Schema({
+    const schema = app.database.mongoDB.Schema({
         title: String,
         active: { type: Boolean, default: false },
-        isSuPham:{ type: Boolean, default: false },
+        isSuPham: { type: Boolean, default: false },
     });
-    const model = app.db.model('TeacherDiploma', schema);
+    const model = app.database.mongoDB.model('TeacherDiploma', schema);
 
     app.model.teacherDiploma = {
         create: (data, done) => model.create(data, done),
@@ -25,9 +25,9 @@ module.exports = app => {
         }),
 
         getAll: (condition, done) => done ?
-            model.find(condition).sort({ title: 1 }).populate('category','_id title isSuPham').exec(done) :
-            model.find({}).sort({ title: 1 }).populate('category','_id title isSuPham').exec(condition),
-        
+            model.find(condition).sort({ title: 1 }).populate('category', '_id title isSuPham').exec(done) :
+            model.find({}).sort({ title: 1 }).populate('category', '_id title isSuPham').exec(condition),
+
 
         // changes = { $set, $unset, $push, $pull }
         update: (condition, changes, $unset, done) => {
@@ -39,7 +39,7 @@ module.exports = app => {
                 model.findOneAndUpdate({ _id: condition }, { $set: changes, $unset }, { new: true }, done) :
                 model.updateMany(condition, { $set: changes, $unset }, { new: true }, done);
         },
-        
+
         delete: (_id, done) => model.findById(_id, (error, item) => {
             if (error) {
                 done(error);

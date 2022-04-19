@@ -1,8 +1,8 @@
 module.exports = app => {
-    const schema = app.db.Schema({
+    const schema = app.database.mongoDB.Schema({
         licensePlates: String,                                              // Biển số xe
-        courseType: { type: app.db.Schema.ObjectId, ref: 'CourseType' },    // Loại khóa học
-        user: { type: app.db.Schema.ObjectId, ref: 'User' },                // Thầy dạy lái xe
+        courseType: { type: app.database.mongoDB.Schema.ObjectId, ref: 'CourseType' },    // Loại khóa học
+        user: { type: app.database.mongoDB.Schema.ObjectId, ref: 'User' },                // Thầy dạy lái xe
         ngayHetHanDangKiem: { type: Date, default: Date.now },              // Ngày hết hạn đăng kiểm xe để NV đưa xe đi đăng kiểm lại
         ngayHetHanTapLai: { type: Date, default: Date.now },                // Ngày hết hạn tập lái xe để NV đưa xe đi đăng kiểm lại
         ngayDangKy: { type: Date, default: Date.now },
@@ -32,20 +32,20 @@ module.exports = app => {
         status: { type: String, enum: ['dangSuDung', 'dangSuaChua', 'dangThanhLy', 'daThanhLy'], default: 'dangSuDung' },
         currentCourseClose: { type: Boolean, default: false },
         courseHistory: [{
-            course: { type: app.db.Schema.ObjectId, ref: 'Course' },
-            user: { type: app.db.Schema.ObjectId, ref: 'User' },
+            course: { type: app.database.mongoDB.Schema.ObjectId, ref: 'Course' },
+            user: { type: app.database.mongoDB.Schema.ObjectId, ref: 'User' },
         }],
         owner: String,
         calendarHistory: [{
-            thoiGianBatDau: { type: Date, default: Date.now }, 
-            thoiGianKetThuc: { type: Date }, 
-            user: { type: app.db.Schema.ObjectId, ref: 'User' },
+            thoiGianBatDau: { type: Date, default: Date.now },
+            thoiGianKetThuc: { type: Date },
+            user: { type: app.database.mongoDB.Schema.ObjectId, ref: 'User' },
         }],
-        brand: { type: app.db.Schema.ObjectId, ref: 'Category' },
+        brand: { type: app.database.mongoDB.Schema.ObjectId, ref: 'Category' },
         isPersonalCar: { type: Boolean, default: false },                   // Xe cá nhân hay xe của trung tâm
-        division: { type: app.db.Schema.ObjectId, ref: 'Division' },        // Xe thuộc cơ sở nào
+        division: { type: app.database.mongoDB.Schema.ObjectId, ref: 'Division' },        // Xe thuộc cơ sở nào
     });
-    const model = app.db.model('Car', schema);
+    const model = app.database.mongoDB.model('Car', schema);
 
     app.model.car = {
         create: (data, done) => model.create(data, done),
@@ -109,15 +109,17 @@ module.exports = app => {
         addLichSuDangKiem: (_id, data, done) => {
             model.findOneAndUpdate(_id, { $push: { lichSuDangKiem: data } }, { new: true }).exec(done);
         },
-        addCalendarHistory: (condition, data, done = () => {}) => {
+        addCalendarHistory: (condition, data, done = () => { }) => {
             model.findOneAndUpdate(condition, { $push: { calendarHistory: data } }, { new: true }).exec(done);
         },
         updateCalendarHistory: (_id, done) => {
             model.findById(_id).exec((error, item) => {
                 if (item.calendarHistory[item.calendarHistory.length - 1]) {
-                    model.findOneAndUpdate({ _id, 'calendarHistory._id': item.calendarHistory[item.calendarHistory.length - 1]._id }, { '$set': {
-                        'calendarHistory.$.thoiGianKetThuc': new Date(),
-                    }}, { new: true }).exec(done);
+                    model.findOneAndUpdate({ _id, 'calendarHistory._id': item.calendarHistory[item.calendarHistory.length - 1]._id }, {
+                        '$set': {
+                            'calendarHistory.$.thoiGianKetThuc': new Date(),
+                        }
+                    }, { new: true }).exec(done);
                 }
             });
         },
@@ -130,7 +132,7 @@ module.exports = app => {
         deleteCar: (_id, data, done) => {
             if (data._courseHistoryId) {
                 model.findOneAndUpdate({ _id }, { $pull: { courseHistory: { _id: data._courseHistoryId } } }, { new: true }).exec(done);
-            }if (data._courseId) {
+            } if (data._courseId) {
                 model.findOneAndUpdate({ _id }, { $pull: { courseHistory: { course: data._courseId } } }, { new: true }).exec(done);
             } else if (data._repairId) {
                 model.findOneAndUpdate({ _id }, { $pull: { repair: { _id: data._repairId } } }, { new: true }).exec(done);

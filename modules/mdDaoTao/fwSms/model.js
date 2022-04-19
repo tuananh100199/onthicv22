@@ -1,11 +1,11 @@
 module.exports = app => {
-    const schema = app.db.Schema({
+    const schema = app.database.mongoDB.Schema({
         timeReceived: { type: Date, default: Date.now },
         sender: String,
         body: String,
         isHandled: { type: Boolean, default: false },
     });
-    const model = app.db.model('Sms', schema);
+    const model = app.database.mongoDB.model('Sms', schema);
 
     app.model.sms = {
         create: (data, done) => model.create(data, done),
@@ -19,12 +19,12 @@ module.exports = app => {
 
                 const skipNumber = (result.pageNumber > 0 ? result.pageNumber - 1 : 0) * result.pageSize;
                 model.find(condition).sort({ timeReceived: -1 }).skip(skipNumber).limit(result.pageSize).exec((error, list) => {
-                        result.list = list;
-                        done(error, result);
-                    });
+                    result.list = list;
+                    done(error, result);
+                });
             }
         }),
-        
+
         delete: (_id, done) => model.findOne({ _id }, (error, item) => {
             if (error) {
                 done(error);

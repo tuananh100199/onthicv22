@@ -1,22 +1,22 @@
 module.exports = app => {
-    const schema = app.db.Schema({
+    const schema = app.database.mongoDB.Schema({
         type: String, // mã chứng từ
         timeReceived: Date,
         code: String, // số chứng từ -> unique: type+key of mongoose
         firstname: String, // học viên
         lastname: String, // học viên
-        student: { type: app.db.Schema.Types.ObjectId, ref: 'Student' },
+        student: { type: app.database.mongoDB.Schema.Types.ObjectId, ref: 'Student' },
         content: String, // diễn giải
         debitAccount: String, //tk nợ, fixed
         creditAccount: String, //tk có, fixed
         moneyAmount: Number,
         creditObject: String,  //đối tượng có = identityCard?
         debitObject: String, //đối tượng nợ , should create new bank model ?
-        courseTypeName: String, 
-        courseType: { type: app.db.Schema.ObjectId, ref: 'CourseType' },
-        sms: { type: app.db.Schema.ObjectId, ref: 'Sms' },
+        courseTypeName: String,
+        courseType: { type: app.database.mongoDB.Schema.ObjectId, ref: 'CourseType' },
+        sms: { type: app.database.mongoDB.Schema.ObjectId, ref: 'Sms' },
     });
-    const model = app.db.model('Payment', schema);
+    const model = app.database.mongoDB.model('Payment', schema);
 
     app.model.payment = {
         create: (data, done) => model.create(data, done),
@@ -30,9 +30,9 @@ module.exports = app => {
 
                 const skipNumber = (result.pageNumber > 0 ? result.pageNumber - 1 : 0) * result.pageSize;
                 model.find(condition).sort({ timeReceived: -1 }).skip(skipNumber).limit(result.pageSize).populate('sms', '-isHandled').exec((error, list) => {
-                        result.list = list;
-                        done(error, result);
-                    });
+                    result.list = list;
+                    done(error, result);
+                });
             }
         }),
     };

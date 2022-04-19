@@ -1,10 +1,10 @@
 module.exports = app => {
-    const schema = app.db.Schema({
+    const schema = app.database.mongoDB.Schema({
         title: String,
         active: { type: Boolean, default: false },
         numberOfStaff: { type: Number, default: 0 },
     });
-    const model = app.db.model('StaffGroup', schema);
+    const model = app.database.mongoDB.model('StaffGroup', schema);
 
     app.model.staffGroup = {
 

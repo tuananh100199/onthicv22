@@ -1,20 +1,20 @@
 module.exports = app => {
-    const schema = app.db.Schema({
-        lecturer: { type: app.db.Schema.ObjectId, ref: 'User' },                        // Tên giáo viên
+    const schema = app.database.mongoDB.Schema({
+        lecturer: { type: app.database.mongoDB.Schema.ObjectId, ref: 'User' },                        // Tên giáo viên
         dateOff: { type: Date, default: Date.now },                                     // Ngày nghỉ
         timeOff: { type: String, enum: ['morning', 'noon', 'allDay'], default: 'allDay' }, // Buổi nghỉ
         state: { type: String, enum: ['approved', 'waiting', 'reject', 'cancel'], default: 'waiting' },
     });
-    const model = app.db.model('RegisterCalendar', schema);
+    const model = app.database.mongoDB.model('RegisterCalendar', schema);
 
     app.model.registerCalendar = {
-       
+
         create: (data, done) => model.create(data, done),
 
-        getPage: (pageNumber, pageSize, condition,sort, done) => model.countDocuments(condition, (error, totalItem) => {
-            if(done==undefined){
-                done=sort;
-                sort={dateOff: -1};
+        getPage: (pageNumber, pageSize, condition, sort, done) => model.countDocuments(condition, (error, totalItem) => {
+            if (done == undefined) {
+                done = sort;
+                sort = { dateOff: -1 };
             }
             if (error) {
                 done(error);
@@ -22,7 +22,7 @@ module.exports = app => {
                 let result = { totalItem, pageSize, pageTotal: Math.ceil(totalItem / pageSize) };
                 result.pageNumber = pageNumber === -1 ? result.pageTotal : Math.min(pageNumber, result.pageTotal);
                 const skipNumber = (result.pageNumber > 0 ? result.pageNumber - 1 : 0) * result.pageSize;
-                model.find(condition).populate('lecturer', 'lastname firstname phoneNumber identityCard').sort(sort||{ dateOff: -1 }).skip(skipNumber).limit(result.pageSize).exec((error, list) => {
+                model.find(condition).populate('lecturer', 'lastname firstname phoneNumber identityCard').sort(sort || { dateOff: -1 }).skip(skipNumber).limit(result.pageSize).exec((error, list) => {
                     result.list = error ? [] : list;
                     done(error, result);
                 });

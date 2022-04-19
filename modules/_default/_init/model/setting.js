@@ -1,10 +1,10 @@
 module.exports = (app) => {
-    const schema = app.db.Schema({
+    const schema = app.database.mongoDB.Schema({
         key: String,
         value: String
     });
 
-    const model = app.db.model('Setting', schema);
+    const model = app.database.mongoDB.model('Setting', schema);
     app.model.setting = {
         get: function () {
             let result = {}, keys = [...arguments];

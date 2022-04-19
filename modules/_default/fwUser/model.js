@@ -1,8 +1,8 @@
 module.exports = (app) => {
-    const schema = app.db.Schema({
-        division: { type: app.db.Schema.ObjectId, ref: 'Division' },                                // Thuộc đơn vị nào
+    const schema = app.database.mongoDB.Schema({
+        division: { type: app.database.mongoDB.Schema.ObjectId, ref: 'Division' },                                // Thuộc đơn vị nào
 
-        roles: [{ type: app.db.Schema.ObjectId, ref: 'Role', default: [] }],
+        roles: [{ type: app.database.mongoDB.Schema.ObjectId, ref: 'Role', default: [] }],
         firstname: String,
         lastname: String,
         sex: { type: String, enum: ['male', 'female'], default: 'male' },
@@ -26,18 +26,18 @@ module.exports = (app) => {
         tokenDate: Date,
         fcmToken: String,
 
-        notificationRead: [{ type: app.db.Schema.ObjectId, ref: 'Notification' }],                  // Người dùng đã đọc các notification này
-        notificationUnread: [{ type: app.db.Schema.ObjectId, ref: 'Notification' }],                // Người dùng chưa đọc các notification này
+        notificationRead: [{ type: app.database.mongoDB.Schema.ObjectId, ref: 'Notification' }],                  // Người dùng đã đọc các notification này
+        notificationUnread: [{ type: app.database.mongoDB.Schema.ObjectId, ref: 'Notification' }],                // Người dùng chưa đọc các notification này
         //rating teacher
-        ratingScore:Number,
-        ratingAmount:Number,
+        ratingScore: Number,
+        ratingAmount: Number,
     });
 
     schema.methods.equalPassword = function (password) {
         return app.crypt.compareSync(password, this.password);
     };
 
-    const model = app.db.model('User', schema);
+    const model = app.database.mongoDB.model('User', schema);
     app.model.user = {
         hashPassword: (password) =>
             app.crypt.hashSync(password, app.crypt.genSaltSync(8), null),
@@ -101,7 +101,7 @@ module.exports = (app) => {
         get: (condition, done) => (typeof condition == 'object' ? model.findOne(condition) : model.findById(condition))
             .select('-password -token -tokenDate').populate('roles').populate('division').exec(done),
 
-        getOld: (done) => model.find({isLecturer: true}).sort({ createdDate: 1 }).limit(1).exec(done),
+        getOld: (done) => model.find({ isLecturer: true }).sort({ createdDate: 1 }).limit(1).exec(done),
 
         getPage: (pageNumber, pageSize, condition, sort, done) => {
             model.countDocuments(condition, (error, totalItem) => {
@@ -168,9 +168,9 @@ module.exports = (app) => {
                 done('Cannot delete default admin menu!');
             } else {
                 app.deleteImage(item.image);
-                app.model.chat.getAll( {$or: [{ 'sender': item._id }, { 'receiver': item._id  }]}, (error, list) => {
-                    if(error) item.remove(done);
-                    else{
+                app.model.chat.getAll({ $or: [{ 'sender': item._id }, { 'receiver': item._id }] }, (error, list) => {
+                    if (error) item.remove(done);
+                    else {
                         const handleDeleteChat = (index = 0) => {
                             if (index == list.length) {
                                 item.remove(done);

@@ -1,13 +1,13 @@
 module.exports = app => {
-    const schema = app.db.Schema({
-        parentId: app.db.Schema.Types.ObjectId,
-        componentId: app.db.Schema.Types.ObjectId,
+    const schema = app.database.mongoDB.Schema({
+        parentId: app.database.mongoDB.Schema.Types.ObjectId,
+        componentId: app.database.mongoDB.Schema.Types.ObjectId,
         priority: Number,
         title: String,
         link: String,
         active: { type: Boolean, default: false }
     });
-    const model = app.db.model('Menu', schema);
+    const model = app.database.mongoDB.model('Menu', schema);
 
     app.model.menu = {
         create: (data, done) => model.find({}).sort({ priority: +1 }).limit(1).exec((error, items) => {

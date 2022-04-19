@@ -1,13 +1,13 @@
 module.exports = app => {
-    const schema = app.db.Schema({
-        statisticId: app.db.Schema.Types.ObjectId,
+    const schema = app.database.mongoDB.Schema({
+        statisticId: app.database.mongoDB.Schema.Types.ObjectId,
         priority: Number,
         title: String,
         image: String,
         number: Number,
         active: { type: Boolean, default: false },
     });
-    const model = app.db.model('StatisticItem', schema);
+    const model = app.database.mongoDB.model('StatisticItem', schema);
 
     app.model.statisticItem = {
         create: (data, done) => model.find({}).sort({ priority: -1 }).limit(1).exec((error, items) => {

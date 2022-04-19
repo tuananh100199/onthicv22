@@ -1,5 +1,5 @@
 module.exports = app => {
-    const schema = app.db.Schema({
+    const schema = app.database.mongoDB.Schema({
         title: String,
         kiemTra: String,                                                    // Chương trình học
         note: String,
@@ -7,10 +7,10 @@ module.exports = app => {
         thucHanh: String,
         monHoc: String,
         active: { type: Boolean, default: false },
-        courseType: { type: app.db.Schema.ObjectId, ref: 'CourseType' },
+        courseType: { type: app.database.mongoDB.Schema.ObjectId, ref: 'CourseType' },
         time: String,
     });
-    const model = app.db.model('StudyProgram', schema);
+    const model = app.database.mongoDB.model('StudyProgram', schema);
 
     app.model.studyProgram = {
         create: (data, done) => model.create(data, done),

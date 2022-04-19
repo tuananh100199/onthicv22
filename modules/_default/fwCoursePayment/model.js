@@ -1,12 +1,12 @@
 module.exports = (app) => {
-    const schema = app.db.Schema({
+    const schema = app.database.mongoDB.Schema({
         title: String,
         numOfPayments: Number,
         description: String,
-        default:{type:Boolean,default:false}
+        default: { type: Boolean, default: false }
     });
 
-    const model = app.db.model('CoursePayment', schema);
+    const model = app.database.mongoDB.model('CoursePayment', schema);
     app.model.coursePayment = {
         create: (data, done) => model.create(data, done),
 
@@ -14,9 +14,9 @@ module.exports = (app) => {
             model.findOne(condition, done) : model.findById(condition, done),
 
         getAll: (condition, done) => done ?
-        model.find(condition).sort({ title: 1 }).exec(done) :
-        model.find({}).sort({ title: 1 }).exec(condition),
-    
+            model.find(condition).sort({ title: 1 }).exec(done) :
+            model.find({}).sort({ title: 1 }).exec(condition),
+
 
         getPage: (pageNumber, pageSize, condition, done) => model.countDocuments(condition, (error, totalItem) => {
             if (error) {
@@ -32,18 +32,18 @@ module.exports = (app) => {
             }
         }),
 
-        update: (_id, changes, done) =>{
-          model.findById(_id,(error,item)=>{
-            if(error)done('System has errors!');
-            else if((changes.default==true||changes.default=='true') && (!item.default)){
-                changes.default=true;
-                model.updateMany({},{ $set: { default: false } }, error=>error?
-                    done(error):model.findOneAndUpdate({ _id }, { $set: changes }, { new: true }).exec(done));
-            }else{
-                delete changes.default;
-                model.findOneAndUpdate({_id},changes,{new:true}).exec(done);
-            }
-          });
+        update: (_id, changes, done) => {
+            model.findById(_id, (error, item) => {
+                if (error) done('System has errors!');
+                else if ((changes.default == true || changes.default == 'true') && (!item.default)) {
+                    changes.default = true;
+                    model.updateMany({}, { $set: { default: false } }, error => error ?
+                        done(error) : model.findOneAndUpdate({ _id }, { $set: changes }, { new: true }).exec(done));
+                } else {
+                    delete changes.default;
+                    model.findOneAndUpdate({ _id }, changes, { new: true }).exec(done);
+                }
+            });
         },
 
         delete: (_id, done) => model.findById(_id, (error, item) => {
