@@ -2,7 +2,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { getRegisterCalendarPage } from './redux';
 import Pagination from 'view/component/Pagination';
-import { AdminPage, TableCell, renderTable,TableHead,TableHeadCell } from 'view/component/AdminPage';
+import { AdminPage, TableCell, renderTable,TableHead,TableHeadCell,FormSelect,FormDatePicker,FormTextBox } from 'view/component/AdminPage';
 import { RegisterCalendarStatesMapper, timeOffStatesMapper } from './index';
 import {ajaxSelectTeacher} from 'modules/_default/fwUser/redux';
 const timeOffValues = [
@@ -17,12 +17,19 @@ const stateValues = [
     {id:'reject',text:'Từ chối'},
     {id:'cancel',text:'Hủy'},
 ];
+
+const dataThongKe = [
+    {   id: 'all', text: 'Tất cả'    },
+    {   id: 'year', text: 'Lọc theo năm'    },
+    {   id: 'month', text: 'Lọc theo tháng'  },
+];
 class TimeTablePage extends AdminPage {
     state = { searchText: '', isSearching: false };
     componentDidMount() {
         T.ready(()=>{
             this.props.getRegisterCalendarPage(1, 50, {},{},{});
         });
+        this.type && this.type.value('all');
         // T.ready(() => T.showSearchBox());
         // T.onSearch = (searchText) => this.props.getRegisterCalendarPage(undefined, undefined, searchText ? { searchText: searchText } : null, () => {
         //     this.setState({ searchText, isSearching: searchText != '' });
@@ -33,6 +40,33 @@ class TimeTablePage extends AdminPage {
     delete = (e, item) => e.preventDefault() || T.confirm('Xoá thời khóa biểu', 'Bạn có chắc muốn xoá thời khóa biểu này?', true, isConfirm =>
         isConfirm && this.props.deleteTimeTable(item._id));
 
+    onChangeType=(filterTimeValue)=>{
+        this.setState({filterTimeValue});
+        if(filterTimeValue=='all'){
+            this.props.getRegisterCalendarPage(1,null,{});
+        }
+    }
+
+    handleFilterTime = ()=>{
+        let dateStart,dateEnd;
+        if(this.state.filterTimeValue){
+            if(this.state.filterTimeValue=='year'){
+                dateStart=this.yearStart.value();
+                dateEnd=this.yearEnd.value();
+            }else{
+                dateStart=this.monthStart.value();
+                dateEnd=this.monthEnd.value();
+            }
+            if (dateStart > dateEnd) {
+                T.notify('Ngày bắt đầu phải nhỏ hơn ngày kết thúc !', 'danger');
+            }else{
+                const condition = {
+                    dateOff:{dateStart,dateEnd,type:this.state.filterTimeValue}
+                };
+                this.props.getRegisterCalendarPage(1,null,condition);
+            }
+        }
+    }
     render() {
         const today = T.dateToText(new Date().toISOString(), 'dd/mm/yyyy');
         // const permission = this.getUserPermission('registerCalendar');
@@ -44,7 +78,7 @@ class TimeTablePage extends AdminPage {
             renderHead: () => (
                 <TableHead getPage = {this.props.getRegisterCalendarPage}>
                     <TableHeadCell style={{ width: 'auto', textAlign: 'center' }}>#</TableHeadCell>
-                    <TableHeadCell style={{ width: '100%' }} nowrap='true' name='lecturer' filter='select' filterData={ajaxSelectTeacher}>Giáo viên</TableHeadCell>
+                    <TableHeadCell style={{ width: '100%' }} menuStyle={{width:200}} nowrap='true' name='lecturer' filter='select' filterData={ajaxSelectTeacher}>Giáo viên</TableHeadCell>
                     <TableHeadCell style={{ width: 'auto' }} nowrap='true'>CMND/CCCD</TableHeadCell>
                     <TableHeadCell style={{ width: 'auto' }} nowrap='true'>Số điện thoại</TableHeadCell>
                     <TableHeadCell name = 'dateOff' sort={true} style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Ngày nghỉ</TableHeadCell>
@@ -68,7 +102,49 @@ class TimeTablePage extends AdminPage {
             title: 'Lịch nghỉ giáo viên',
             breadcrumb: ['Lịch nghỉ giáo viên'],
             content: <>
-                <div className='tile'>{table}</div>
+                <div className='tile'>
+                <div className='row'>
+                    <div className='col-auto'>
+                        <label className='col-form-label'>Lọc theo thời gian: </label>
+                    </div>
+                    <FormSelect ref={e => this.type = e} data={dataThongKe} placeholder='Lọc theo thời gian'
+                        onChange={data => this.onChangeType(data.id)} style={{ margin: 0, width: '200px' }} />
+                </div>
+                    {this.state.filterTimeValue && this.state.filterTimeValue!='all' && <h3 className='tile-title pt-3'>{this.state.filterTimeValue=='year'?dataThongKe[1].text:dataThongKe[2].text}</h3>}
+                    <div className='tile-body row'>
+
+                        {(this.type && this.type.value() =='month') ? (
+                        <>
+                            <FormDatePicker ref={e => this.monthStart = e} label={'Thời gian bắt đầu (mm/yyyy)'} className='col-md-5' type={'month-mask'} />
+                            <FormDatePicker ref={e => this.monthEnd = e} label={'Thời gian kết thúc (mm/yyyy)'} className='col-md-5' type={'month-mask'} />
+                        </>
+                        ) : null}
+
+                        {(this.type && this.type.value() =='year') ? (
+                        <>
+                            <FormTextBox ref={e => this.yearStart = e} label={'Năm bắt đầu'} className='col-md-5' type={'number'} />
+                            <FormTextBox ref={e => this.yearEnd = e} label={'Năm kết thúc'} className='col-md-5' type={'number'} />
+                        </>
+                        ) : null}
+                        {this.state.filterTimeValue && this.state.filterTimeValue!='all' &&(<div className='m-auto col-md-2'>
+                            <button className='btn btn-success' style={{ marginTop: '11px' }} type='button' onClick={this.handleFilterTime}>
+                                <i className='fa fa-filter' /> Lọc
+                            </button>
+                        </div>)}
+                    </div>
+                        {/* {(this.type && this.type.value() =='year') ? (
+                        <div className='tile-body row'>
+                            <FormTextBox ref={e => this.yearStart = e} label={'Năm bắt đầu (mm/yyyy)'} className='col-md-5' type='number' />
+                            <FormTextBox ref={e => this.yearEnd = e} label={'Năm kết thúc (mm/yyyy)'} className='col-md-5' type='number' />
+                            <div className='m-auto col-md-2'>
+                                <button className='btn btn-success' style={{ marginTop: '11px' }} type='button' onClick={this.handleFilter}>
+                                    <i className='fa fa-filter' /> Lọc
+                                </button>
+                            </div>
+                        </div>) : null}     */}
+                    {table}
+                    
+                </div>
                 <Pagination name='pageRegisterCalendar' pageNumber={pageNumber} pageSize={pageSize} pageTotal={pageTotal} totalItem={totalItem}
                     getPage={this.props.getRegisterCalendarPage} />
             </>,

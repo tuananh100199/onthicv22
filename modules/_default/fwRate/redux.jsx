@@ -27,7 +27,6 @@ export function getRatePageByAdmin(pageNumber, pageSize, pageCondition, filter, 
         done = filter;
         filter={};
     }
-    console.log({pageCondition,filter,sort});
     const page = T.updatePage('rateAdminPage', pageNumber, pageSize, pageCondition, filter, sort);
     return dispatch => {
         const url = `/api/rate/admin/page/${pageNumber}/${pageSize}`;

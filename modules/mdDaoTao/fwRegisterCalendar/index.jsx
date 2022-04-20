@@ -19,6 +19,10 @@ export default {
         {
             path: '/user/register-calendar/enrollment',
             component: Loadable({ loading: Loading, loader: () => import('./adminPage') })
+        },
+        {
+            path: '/user/register-calendar/teacher',
+            component: Loadable({ loading: Loading, loader: () => import('./adminPage') })
         }
     ,],
     Section: {
