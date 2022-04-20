@@ -81,20 +81,20 @@ module.exports = (app) => {
         let pageNumber = parseInt(req.params.pageNumber),
             pageSize = parseInt(req.params.pageSize),
             condition = req.query.pageCondition || {},
-            pageCondition = {};
+            pageCondition = {},filter=req.query.filter||{},sort=req.query.sort||null; 
 
         try {
             if (req.session.user.isCourseAdmin && req.session.user.division && req.session.user.division.isOutside) { // Session user là quản trị viên khóa học
                 pageCondition.division = req.session.user.division._id;
             }
-            if (condition.searchText) {
-                const value = { $regex: `.*${condition.searchText}.*`, $options: 'i' };
-                pageCondition.$or = [
-                    { firstname: value },
-                    { lastname: value },
-                    { identityCard: value },
-                ];
-            }
+            // if (condition.searchText) {
+            //     const value = { $regex: `.*${condition.searchText}.*`, $options: 'i' };
+            //     pageCondition.$or = [
+            //         { firstname: value },
+            //         { lastname: value },
+            //         { identityCard: value },
+            //     ];
+            // }
             if(condition.course) {
                 if((condition.course == '1') && condition.courseTypeId){
                     app.model.course.get({isDefault: true, courseType: condition.courseTypeId}, (error,course) => {
@@ -107,7 +107,19 @@ module.exports = (app) => {
                 }
             } else  {
                 if(condition.courseTypeId) pageCondition.courseType = condition.courseTypeId;
-                app.model.student.getPage(pageNumber, pageSize, pageCondition, (error, page) => res.send({ error, page }));
+                filter && app.handleFilter(filter,['coursePayment', 'courseFee', 'discount'],defaultFilter=>{
+                    pageCondition={...pageCondition,...defaultFilter};
+                });
+                if(filter.firstname){// họ tên
+                    pageCondition['$expr']= {
+                        '$regexMatch': {
+                          'input': { '$concat': ['$lastname', ' ', '$firstname'] },
+                          'regex': `.*${filter.firstname}.*`,  //Your text search here
+                          'options': 'i'
+                        }
+                    };
+                }
+                app.model.student.getPage(pageNumber, pageSize, pageCondition, sort, (error, page) => res.send({ error, page }));
             }
             // app.model.student.getPage(pageNumber, pageSize, pageCondition, (error, page) => res.send({ error, page }));
         } catch (error) {
@@ -1024,6 +1036,110 @@ module.exports = (app) => {
                 }                    
             }
         });
+    });
+
+    app.get('/api/student/debt/export/page/:pageNumber/:pageSize/:filter/:sort', app.permission.check('student:write'), (req, res) => {
+            let pageNumber = parseInt(req.params.pageNumber),
+            pageSize = parseInt(req.params.pageSize),
+            pageCondition = {},filter=req.params.filter ? JSON.parse(req.params.filter) : {},sort=req.params.sort ? JSON.parse(req.params.sort) : null; 
+        const renderLichSuDongTien = (lichSuDongTien, type) => {
+            let text = '';
+            if (lichSuDongTien.length) {
+                lichSuDongTien.forEach((item, index) => {
+                    let i = index + 1;
+                    if (type == 'fee') text = text + 'Lần ' + i + ': ' + item.fee + '\n';
+                    else if (type == 'isOnline') text = text + 'Lần ' + i + ': ' + (item.isOnlinePayment ? 'Thanh toán online' : 'Thanh toán trực tiếp') + '\n';
+                    else if (type == 'sum') text = parseInt(text + item.fee);
+                });
+                return text;
+            } else return text;
+        };
+        const chechHocPhiConLai = (item) => {
+            const lichSuDongTien = item && item.lichSuDongTien;
+            let fee = item && item.courseFee ? item.courseFee.fee - (item.discount ? item.discount.fee : 0) : 0;
+            let soTienDaDong = 0;
+            lichSuDongTien && lichSuDongTien.length ? lichSuDongTien.forEach(item => {
+                soTienDaDong = parseInt(soTienDaDong + item.fee);
+            }) : 0;
+            return fee - soTienDaDong;
+        };
+        try {
+            if (req.session.user.isCourseAdmin && req.session.user.division && req.session.user.division.isOutside) { // Session user là quản trị viên khóa học
+                pageCondition.division = req.session.user.division._id;
+            }
+            filter && app.handleFilter(filter,['coursePayment', 'courseFee', 'discount'],defaultFilter=>{
+                pageCondition={...pageCondition,...defaultFilter};
+            });
+            if(filter.firstname){// họ tên
+                pageCondition['$expr']= {
+                    '$regexMatch': {
+                      'input': { '$concat': ['$lastname', ' ', '$firstname'] },
+                      'regex': `.*${filter.firstname}.*`,  //Your text search here
+                      'options': 'i'
+                    }
+                };
+            }
+            app.model.student.getPage(pageNumber, pageSize, pageCondition, sort, (error, page) => {
+               if(page && page.list){
+                    const list = page && page.list ? page.list : [];
+                    const workbook = app.excel.create(), worksheet = workbook.addWorksheet('Theo Doi Cong No');
+                const cells = [
+                    { cell: 'A1', value: 'STT', bold: true, border: '1234' },
+                    { cell: 'B1', value: 'Họ', bold: true, border: '1234' },
+                    { cell: 'C1', value: 'Tên', bold: true, border: '1234' },
+                    { cell: 'D1', value: 'CMND/CCCD', bold: true, border: '1234' },
+                    { cell: 'E1', value: 'Loại gói', bold: true, border: '1234' },
+                    { cell: 'F1', value: 'Số tiền gói', bold: true, border: '1234' },
+                    { cell: 'G1', value: 'Giảm giá', bold: true, border: '1234' },
+                    { cell: 'H1', value: 'Số tiền phải đóng', bold: true, border: '1234' },
+                    { cell: 'I1', value: 'Số lần thanh toán', bold: true, border: '1234' },
+                    { cell: 'J1', value: 'Số tiền thanh toán', bold: true, border: '1234' },
+                    { cell: 'K1', value: 'Hình thức thanh toán', bold: true, border: '1234' },
+                    { cell: 'L1', value: 'Số tiền đã đóng', bold: true, border: '1234' },
+                    { cell: 'M1', value: 'Số tiền còn nợ', bold: true, border: '1234' },
+                ];
+
+                worksheet.columns = [
+                    { header: 'STT', key: '_id', width: 15 },
+                    { header: 'Họ', key: 'lastname', width: 15 },
+                    { header: 'Tên', key: 'firstname', width: 15 },
+                    { header: 'CMND/CCCD', key: 'identityCard', width: 15 },
+                    { header: 'Loại gói', key: 'loaiGoi', width: 30 },
+                    { header: 'Số tiền gói', key: 'soTienGoi', width: 15 },
+                    { header: 'Giảm giá', key: 'giamGia', width: 15 },
+                    { header: 'Số tiền phải đóng', key: 'soTienPhaiDong', width: 15 },
+                    { header: 'Số lần thanh toán', key: 'soLanThanhToan', width: 15 },
+                    { header: 'Số tiền thanh toán', key: 'soTienThanhToan', width: 40 },
+                    { header: 'Hình thức thanh toán', key: 'hinhThucThanhToan', width: 40 },
+                    { header: 'Số tiền đã đóng', key: 'soTienDaDong', width: 15 },
+                    { header: 'Số tiền còn nợ', key: 'soTienConNo', width: 15 },
+
+                ];
+                list.forEach((item, index) => {
+                    worksheet.addRow({
+                        _id: index + 1,
+                        lastname: item.lastname,
+                        firstname: item.firstname,
+                        identityCard: item.identityCard,
+                        loaiGoi: item.courseFee ? item.courseFee.name : '',
+                        soTienGoi: item.courseFee ? item.courseFee.fee : '',
+                        giamGia: item.discount ? item.discount.fee : '',
+                        soTienPhaiDong: item.courseFee ? item.courseFee.fee - (item.discount ? item.discount.fee : 0) : '',
+                        soLanThanhToan: item.coursePayment ? item.coursePayment.numOfPayments : '',
+                        soTienThanhToan: item.lichSuDongTien ? renderLichSuDongTien(item.lichSuDongTien, 'fee') : '',
+                        hinhThucThanhToan: item.lichSuDongTien ? renderLichSuDongTien(item.lichSuDongTien, 'isOnline') : '',
+                        soTienDaDong: item.lichSuDongTien ? renderLichSuDongTien(item.lichSuDongTien, 'sum') : '',
+                        soTienConNo: chechHocPhiConLai(item) ? chechHocPhiConLai(item) : ''
+
+                    });
+                });
+                app.excel.write(worksheet, cells);
+                app.excel.attachment(workbook, res, 'Theo Doi Cong No.xlsx');
+                }
+            });
+        } catch (error) {
+            res.send({ error: 'Hệ thống bị lỗi!' });
+        }
     });
 
     // User API ------------------------------------------------------------------------------------------------------

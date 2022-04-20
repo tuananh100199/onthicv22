@@ -2,7 +2,7 @@ module.exports = (app) => {
     const menu = {
         parentMenu: app.parentMenu.accountant,
         menus: {
-            7003: { title: 'Giảm giá', link: '/user/discount', icon: 'fa-money', backgroundColor: '#00897b' },
+            7004: { title: 'Giảm giá', link: '/user/discount', icon: 'fa-money', backgroundColor: '#00897b' },
         },
     };
 

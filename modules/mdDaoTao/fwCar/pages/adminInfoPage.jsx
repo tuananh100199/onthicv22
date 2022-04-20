@@ -5,7 +5,7 @@ import { getAllLecturer } from 'modules/_default/fwUser/redux';
 import { getCategoryAll } from 'modules/_default/fwCategory/redux';
 import { ajaxSelectCourseType } from 'modules/mdDaoTao/fwCourseType/redux';
 import Pagination from 'view/component/Pagination';
-import { AdminPage, CirclePageButton, FormDatePicker, AdminModal, FormTextBox, FormSelect, TableCell, renderTable, FormCheckbox } from 'view/component/AdminPage';
+import { AdminPage, CirclePageButton, FormDatePicker, AdminModal, FormTextBox, FormSelect, TableCell, renderTable, FormCheckbox, TableHeadCell,TableHead, } from 'view/component/AdminPage';
 import { ajaxSelectDivision } from 'modules/mdDaoTao/fwDivision/redux';
 import T from 'view/js/common';
 
@@ -15,9 +15,15 @@ const dataFilterType = [
     { id: 2, text: 'Xe đang sửa chữa', condition: { status: 'dangSuaChua' } },
     { id: 3, text: 'Xe chờ thanh lý', condition: { status: 'choThanhLy' } },
     { id: 4, text: 'Xe đã thanh lý', condition: { status: 'daThanhLy' } },
-    { id: 5, text: 'Xe đi khóa', condition: { currentCourseClose: true } },
-    { id: 6, text: 'Xe đã có giáo viên', condition: { user: { $exists: true } } },
-    { id: 7, text: 'Xe đang trống giáo viên', condition: { user: { $exists: false } } },
+    { id: 5, text: 'Xe đi khóa', condition: { currentCourseClose: false } },
+    { id: 6, text: 'Xe đang trống khoá', condition: { currentCourseClose: true } },
+    { id: 7, text: 'Xe đã có giáo viên', condition: { user: { $exists: true } } },
+    { id: 8, text: 'Xe đang trống giáo viên', condition: { user: { $exists: false } } },
+];
+const dataFuel = [
+    { id: 'xang', text: 'Xăng'},
+    { id: 'dau', text: 'Dầu'},
+    { id: 'nhot', text: 'Nhớt'},
 ];
 const dataRepairType = [{ id: 'dangSuDung', text: 'Xe đang sử dụng' }, { id: 'dangSuaChua', text: 'Xe đang sửa chữa' }, { id: 'dangThanhLy', text: 'Xe chờ thanh lý' }, { id: 'daThanhLy', text: 'Xe thanh lý' }];
 class CarModal extends AdminModal {
@@ -27,7 +33,7 @@ class CarModal extends AdminModal {
     }
 
     onShow = (item) => {
-        const { _id, licensePlates, courseType, user, ngayHetHanDangKiem, ngayHetHanTapLai, ngayDangKy, brand, status, division, isPersonalCar } = item || { _id: null, licensePlates: '', ngayHetHanDangKiem: '', ngayHetHanTapLai: '', ngayDangKy: '', ngayThanhLy: '', brand: {} };
+        const { _id, licensePlates, courseType, user, ngayHetHanDangKiem, ngayHetHanTapLai, ngayDangKy, brand, status, division, isPersonalCar, typeOfFuel } = item || { _id: null, licensePlates: '', ngayHetHanDangKiem: '', ngayHetHanTapLai: '', ngayDangKy: '', ngayThanhLy: '', brand: {} };
         this.itemDivision.value(division ? { id: division._id, text: division.title } : null);
         this.itemCourseType.value(courseType ? { id: courseType._id, text: courseType.title } : null);
         this.itemLicensePlates.value(licensePlates);
@@ -36,6 +42,7 @@ class CarModal extends AdminModal {
         this.itemNgayHetHanDangKiem.value(ngayHetHanDangKiem);
         this.itemNgayHetHanTapLai.value(ngayHetHanTapLai);
         this.itemNgayDangKy.value(ngayDangKy);
+        this.itemTypeOfFuel.value(typeOfFuel ? typeOfFuel : 'xang');
         this.itemStatus.value(status ? status : 'dangSuDung');
         this.setState({ _id, user }, () => this.itemUser.value(user ? { id: user._id, text: user.lastname + ' ' + user.firstname } : { id: 0, text: 'Trống' }));
     }
@@ -51,7 +58,8 @@ class CarModal extends AdminModal {
             ngayHetHanTapLai: this.itemNgayHetHanTapLai.value(),
             ngayDangKy: this.itemNgayDangKy.value(),
             status: this.itemStatus.value(),
-            division: this.itemDivision.value()
+            division: this.itemDivision.value(),
+            typeOfFuel: this.itemTypeOfFuel.value(),
         };
         if (data.licensePlates == '') {
             T.notify('Biển số xe không được trống!', 'danger');
@@ -94,7 +102,7 @@ class CarModal extends AdminModal {
                     <FormSelect className='col-md-3' ref={e => this.itemCourseType = e} label='Hạng đào tạo' data={ajaxSelectCourseType} readOnly={readOnly} />
                     <FormSelect className='col-md-5' ref={e => this.itemDivision = e} label='Cơ sở đào tạo' data={ajaxSelectDivision} readOnly={readOnly} />
                     <FormSelect className='col-md-4' ref={e => this.itemUser = e} label='Quản lý phụ trách xe' data={ajaxSelectAvaiableLecturer(this.state.user)} readOnly={readOnly} />
-
+                    <FormSelect className='col-md-6' ref={e => this.itemTypeOfFuel = e} label='Loại nhiên liệu sử dụng' data={dataFuel} readOnly={readOnly} />
                 </div >
         });
     }
@@ -161,6 +169,19 @@ class CarPage extends AdminPage {
     delete = (e, item) => e.preventDefault() || T.confirm('Xoá thông tin xe', 'Bạn có chắc muốn xoá xe này?', true, isConfirm =>
         isConfirm && this.props.deleteCar(item));
 
+    renderTypeOfFuel = (type) => {
+        switch(type){
+            case 'xang':
+                return 'Xăng';
+            case 'dau':
+                return 'Dầu';
+            case 'nhot':
+                return 'Nhớt';
+            default:
+                 return 'Xăng';
+        }
+    }
+
     render() {
         const permission = this.getUserPermission('car', ['read', 'write', 'delete', 'import', 'fuel']);
         const header = <>
@@ -171,18 +192,21 @@ class CarPage extends AdminPage {
             this.props.car.page : { pageNumber: 1, pageSize: 50, pageTotal: 1, pageCondition: {}, totalItem: 0, list: [] };
         const table = renderTable({
             getDataSource: () => list && list.filter(item => item.course == null),
+            stickyHead:true,
+            autoDisplay:true,
             renderHead: () => (
-                <tr>
+                <TableHead getPage={this.props.getCarPage}>
                     <th style={{ width: 'auto', textAlign: 'center' }}>#</th>
                     <th style={{ width: 'auto' }} nowrap='true'>Xe</th>
                     <th style={{ width: 'auto' }} nowrap='true'>Quản lý phụ trách xe</th>
-                    <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Hạng đào tạo</th>
+                    <TableHeadCell name='courseType' filter='select' filterData = {ajaxSelectCourseType} style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Hạng đào tạo</TableHeadCell>
                     <th style={{ width: '100%' }} nowrap='true'>Cơ sở</th>
+                    <th style={{ width: '100%' }} nowrap='true'>Loại nhiên liệu</th>
                     <th style={{ width: 'auto' }} nowrap='true'>Ngày hết hạn đăng kiểm</th>
                     <th style={{ width: 'auto' }} nowrap='true'>Ngày hết hạn tập lái</th>
                     {/* <th style={{ width: 'auto' }} nowrap='true'>Xe cá nhân</th> */}
                     <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Thao tác</th>
-                </tr>),
+                </TableHead>),
             renderRow: (item, index) => (
                 <tr key={index}>
                     <TableCell type='number' content={(pageNumber - 1) * pageSize + index + 1} />
@@ -191,6 +215,7 @@ class CarPage extends AdminPage {
                     <TableCell type='text' style={{ whiteSpace: 'nowrap' }} content={<p>{item.user && (item.user.lastname + ' ' + item.user.firstname)} <br /> {item.isPersonalCar ? '(Xe cá nhân)' : ''}</p>} />
                     <TableCell type='text' style={{ whiteSpace: 'nowrap' }} content={item.courseType && item.courseType.title} />
                     <TableCell type='text' style={{ whiteSpace: 'nowrap' }} content={item.division ? item.division.title : ''} />
+                    <TableCell type='text' style={{ whiteSpace: 'nowrap' }} content={item.typeOfFuel ? this.renderTypeOfFuel(item.typeOfFuel) : 'Xăng'} />
                     <TableCell type='text' style={{ whiteSpace: 'nowrap' }} content={T.dateToText(item.ngayHetHanDangKiem, 'dd/mm/yyyy')} />
                     <TableCell type='text' style={{ whiteSpace: 'nowrap' }} content={T.dateToText(item.ngayHetHanTapLai, 'dd/mm/yyyy')} />
                     {/* <TableCell type='text' style={{ whiteSpace: 'nowrap', textAlign: 'center' }} content={item.isPersonalCar ? 'X' : ''} /> */}

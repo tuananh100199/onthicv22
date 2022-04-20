@@ -301,21 +301,40 @@ module.exports = (app) => {
                 delete changes.courseFee;
                 changes.courseFees = courseFees;
                 app.model.course.update(req.body._id, changes, () => getCourseData(req.body._id, req.session.user, (error, course) => {
-                    // const item = {};
-                    // course && Object.keys(changes).forEach(key => item[key] = course[key]);
-                    if(error) res.send({error});
-                    else if(course && course.close && !item.close){// course được update trạng thái close từ false =>true
-                        app.model.teacher.updateDoneCourse(course._id,error=>{
-                            res.send({error,item:course});
+                    if(changes.close != undefined){
+                        const listTeacher = [];
+                        course && course.teacherGroups && course.teacherGroups.forEach(teacherGroup => {
+                            if(teacherGroup && teacherGroup.teacher)
+                            listTeacher.push(teacherGroup.teacher._id);
                         });
-                    }else if(course && !course.close && item.close){
-                        console.log('update undone course');
-                        app.model.teacher.updateUnDoneCourse(course._id,error=>{
-                            res.send({error,item:course});
-                        });
-                    }else{
-                        res.send({ item: course });
-                    }
+                        const handleUpdateCar = (index = 0) => {
+                            if (index == listTeacher.length) {
+                                if(course && course.close && !item.close){// course được update trạng thái close từ false =>true
+                                    app.model.teacher.updateDoneCourse(course._id,error=>{
+                                        res.send({error,item:course});
+                                    });
+                                }else if(course && !course.close && item.close){
+                                    app.model.teacher.updateUnDoneCourse(course._id,error=>{
+                                        res.send({error,item:course});
+                                    });
+                                } else {
+                                    res.send({ item: course });
+                                }
+                            } else {
+                                const teacher = listTeacher[index];
+                                app.model.car.get({user: teacher}, (error, car) => {
+                                    if(error || !car){
+                                        handleUpdateCar(index + 1);
+                                    } else {
+                                        app.model.car.update({_id: car._id}, {currentCourseClose: changes.close}, () => {
+                                            handleUpdateCar(index + 1);
+                                        });
+                                    }
+                                });
+                            }
+                        };
+                        handleUpdateCar();
+                    } else res.send({ error, item: course });
                 }));
             }
         });

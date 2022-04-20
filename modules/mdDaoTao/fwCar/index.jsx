@@ -34,8 +34,16 @@ export default {
             component: Loadable({ loading: Loading, loader: () => import('./pages/adminRegistrationPage') })
         },
         {
+            path: '/user/car/insurance',
+            component: Loadable({ loading: Loading, loader: () => import('./pages/adminInsurancePage') })
+        },
+        {
             path: '/user/car/registration/:_id',
             component: Loadable({ loading: Loading, loader: () => import('./pages/adminRegistrationEditPage') })
+        },
+        {
+            path: '/user/car/insurance/:_id',
+            component: Loadable({ loading: Loading, loader: () => import('./pages/adminInsuranceEditPage') })
         },
         {
             path: '/user/car/category',

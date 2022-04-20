@@ -24,7 +24,7 @@ export class AdminTimeTableCarPage extends AdminPage {
             this.courseType.value(courseTypes.length && courseTypes[0].id);
 
             this.props.getAllCars({ courseType: courseTypes.length && courseTypes[0].id }, listCar => {
-                this.setState({ currentLecturer: listCar[0].user, currentCar: listCar[0], listCar, filterOn: false, key: listCar[0], list: true, calendar: false });
+                if(listCar[0]) this.setState({ currentLecturer: listCar[0].user, currentCar: listCar[0], listCar, filterOn: false, key: listCar[0], list: true, calendar: false });
             });
         });
 
@@ -51,7 +51,7 @@ export class AdminTimeTableCarPage extends AdminPage {
             <label style={{ lineHeight: '40px', marginBottom: 0 }}>Loại khóa học:</label>&nbsp;&nbsp;
             <FormSelect ref={e => this.courseType = e} data={courseTypes} onChange={value => this.onChangeCourseType({ courseType: value.id })} style={{ minWidth: '200px', marginBottom: 0, marginRight: 12 }} />
         </>;
-        const inboxTimeTable = listCar && listCar.length && listCar.map((car, index) => {
+        const inboxTimeTable = listCar && listCar.length ? listCar.map((car, index) => {
             const isSelectedCar = currentCar && currentCar._id == car._id;
             return (
                 <div key={index} className={'lecturer_list' + (isSelectedCar ? ' active_lecturer' : '')} style={{ cursor: 'pointer' }} onClick={e => e.preventDefault() || this.selectCar(car)}>
@@ -61,7 +61,7 @@ export class AdminTimeTableCarPage extends AdminPage {
                         </div>
                     </div>
                 </div>);
-        });
+        }) : <p>Chưa có dữ liệu xe</p>;
 
         return this.renderPage({
             icon: 'fa fa-calendar',

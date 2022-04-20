@@ -1,9 +1,13 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { getDebtStudentPage, exportPhieuThu } from './redux';
+import { getDebtStudentPage, exportPhieuThu, exportDebtStudentPage } from './redux';
 import FileSaver from 'file-saver';
-import { AdminPage,FormTextBox, FormCheckbox, renderTable, TableCell, AdminModal } from 'view/component/AdminPage';
+import { AdminPage,FormTextBox, FormCheckbox, CirclePageButton, renderTable, TableCell, TableHeadCell,TableHead, AdminModal } from 'view/component/AdminPage';
 import Pagination from 'view/component/Pagination';
+import {ajaxSelectCoursePayment} from 'modules/_default/fwCoursePayment/redux';
+import {ajaxSelectCourseFeeByCourseType} from 'modules/_default/fwCourseFee/redux';
+import {ajaxSelectDiscount} from 'modules/_default/fwDiscount/redux';
+import { ajaxSelectCourse } from 'modules/mdDaoTao/fwCourse/redux';
 import { getText } from 'number-to-text-vietnamese';
 
 class InPhieuThuModal extends AdminModal {
@@ -82,7 +86,7 @@ class DebtTrackingPage extends AdminPage {
             T.showSearchBox(() => this.setState({ dateStart: '', dateEnd: '' }));
             T.onSearch = (searchText) => this.onSearch({ searchText });
         });
-        this.props.getDebtStudentPage();
+        this.props.getDebtStudentPage(1, undefined, {}, {}, {});
     }
 
     onSearch = ({ pageNumber, pageSize, searchText }, done) => {
@@ -122,25 +126,26 @@ class DebtTrackingPage extends AdminPage {
             this.props.student.page : { pageNumber: 1, pageSize: 50, pageTotal: 1, pageCondition: {}, totalItem: 0, list: [] };
 
         const table = renderTable({
+            autoDisplay:true,
             getDataSource: () => list, stickyHead: true,
             renderHead: () => (
-                <tr>
+                <TableHead getPage={this.props.getDebtStudentPage}>
                     <th style={{ width: 'auto', textAlign: 'center' }}>#</th>
-                    <th style={{ width: '100%' }}>Họ và tên</th>
-                    <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Khóa học</th>
-                    <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Loại gói</th>
-                    <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Số tiền gói</th>
-                    <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Giảm giá</th>
+                    <TableHeadCell sort={true} filter='search' name='firstname'  style={{ width: '100%' }}>Họ và tên</TableHeadCell>
+                    <TableHeadCell name='course' filter='select' filterData = {ajaxSelectCourse} style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Khóa học</TableHeadCell>
+                    <TableHeadCell name='courseFee' filter='select' filterData = {ajaxSelectCourseFeeByCourseType()} style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Loại gói</TableHeadCell>
+                    <TableHeadCell sort={true} name='courseFee' style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Số tiền gói</TableHeadCell>
+                    <TableHeadCell name='discount' filter='select' filterData={ajaxSelectDiscount} style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Giảm giá</TableHeadCell>
                     <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Số tiền phải đóng</th>
-                    <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Số lần thanh toán</th>
+                    <TableHeadCell name='coursePayment' filter='select' filterData = {ajaxSelectCoursePayment} style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Số lần thanh toán</TableHeadCell>
                     <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Số tiền thanh toán</th>
                     <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Hình thức thanh toán</th>
                     <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Thông tin đóng</th>
-                    <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Số tiền đã đóng</th>
-                    <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Số tiền còn nợ</th>
+                    <TableHeadCell  style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Số tiền đã đóng</TableHeadCell>
+                    <TableHeadCell  style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Số tiền còn nợ</TableHeadCell>
                     <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Thời hạn đóng</th>
                     {permission.write && <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Thao tác</th>}
-                </tr>),
+                    </TableHead>),
             renderRow: (item, index) => (
                 <tr key={index}>
                     <TableCell type='number' content={index + 1} />
@@ -151,7 +156,7 @@ class DebtTrackingPage extends AdminPage {
                     <TableCell type='number' content={item.discount ? item.discount.fee : ''} />
                     <TableCell type='number' content={item.courseFee ? item.courseFee.fee - (item.discount ? item.discount.fee : 0) : ''} />
                     <TableCell type='number' content={item.coursePayment ? item.coursePayment.numOfPayments : ''} />
-                    <TableCell type='text' style={{textAlign: 'center'}} content={item.lichSuDongTien ? this.renderLichSuDongTien(item.lichSuDongTien, 'fee') : ''} />
+                    <TableCell type='text'  content={item.lichSuDongTien ? this.renderLichSuDongTien(item.lichSuDongTien, 'fee') : ''} />
                     <TableCell type='number' content={item.lichSuDongTien ? this.renderLichSuDongTien(item.lichSuDongTien, 'isOnline') : ''} />
                     <TableCell type='number' content={''} />
                     <TableCell type='number' content={item.lichSuDongTien ? this.renderLichSuDongTien(item.lichSuDongTien, 'sum') : ''} />
@@ -178,8 +183,9 @@ class DebtTrackingPage extends AdminPage {
                         {table}
                     </div>
                 </div>
+                <CirclePageButton type='export' onClick={() => exportDebtStudentPage()} />
                 <InPhieuThuModal readOnly={false} ref={e => this.modal = e} exportPhieuThu={this.props.exportPhieuThu} />
-                <Pagination pageCondition={pageCondition} pageNumber={pageNumber} pageSize={pageSize} pageTotal={pageTotal} totalItem={totalItem} getPage={(pageNumber, pageSize) => this.onSearch({ pageNumber, pageSize })} />
+                <Pagination pageCondition={pageCondition} pageNumber={pageNumber} pageSize={pageSize} pageTotal={pageTotal} totalItem={totalItem} getPage={this.props.getDebtStudentPage}  />
             </>,
         });
     }

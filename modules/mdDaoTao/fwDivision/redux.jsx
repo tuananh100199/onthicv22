@@ -128,6 +128,10 @@ export function getAllDivisionByUser(done) {
     };
 }
 
+export function exportDivision() {
+    T.download(T.url('/api/division/export'));
+}
+
 // AJAX ---------------------------------------------------------------------------------------------------------------
 export const ajaxSelectDivision = T.createAjaxAdapter(
     '/api/division/all',

@@ -9,6 +9,11 @@ import { importCar } from '../redux';
 import { Link } from 'react-router-dom';
 import { AdminPage, AdminModal, FormFileBox, FormCheckbox, FormDatePicker, FormTextBox, FormSelect, TableCell, renderTable } from 'view/component/AdminPage';
 
+const dataFuel = [
+    { id: 'xang', text: 'Xăng'},
+    { id: 'dau', text: 'Dầu'},
+    { id: 'nhot', text: 'Nhớt'},
+];
 class CarModal extends AdminModal {
     state = {};
     componentDidMount() {
@@ -16,7 +21,7 @@ class CarModal extends AdminModal {
     }
 
     onShow = (item) => {
-        const { id, licensePlates, user, ngayHetHanDangKiem, ngayHetHanTapLai, ngayDangKy, ngayThanhLy, brand, isPersonalCar } = item || { id: '', licensePlates: '', ngayHetHanDangKiem: '', ngayHetHanTapLai: '', ngayDangKy: '', ngayThanhLy: '', brand: {} };
+        const { id, licensePlates, user, ngayHetHanDangKiem, ngayHetHanTapLai, ngayDangKy, ngayThanhLy, brand, isPersonalCar, typeOfFuel } = item || { id: '', licensePlates: '', ngayHetHanDangKiem: '', ngayHetHanTapLai: '', ngayDangKy: '', ngayThanhLy: '', brand: {} };
         this.itemLicensePlates.value(licensePlates);
         this.itemUser.value(user ? user.id : '0');
         this.itemBrand.value(brand ? brand.id : null);
@@ -25,6 +30,7 @@ class CarModal extends AdminModal {
         this.itemNgayHetHanTapLai.value(ngayHetHanTapLai);
         this.itemNgayDangKy.value(ngayDangKy);
         this.itemNgayThanhLy.value(ngayThanhLy ? ngayDangKy : null);
+        this.itemTypeOfFuel.value(typeOfFuel ? typeOfFuel : 'xang');
         this.setState({ id });
     }
 
@@ -50,6 +56,7 @@ class CarModal extends AdminModal {
             ngayHetHanTapLai: this.itemNgayHetHanTapLai.value(),
             ngayDangKy: this.itemNgayDangKy.value(),
             ngayThanhLy: this.itemNgayThanhLy.value(),
+            typeOfFuel: this.itemTypeOfFuel.value(),
         };
         if (data.licensePlates == '') {
             T.notify('Biển số xe không được trống!', 'danger');
@@ -82,7 +89,7 @@ class CarModal extends AdminModal {
                     <FormDatePicker ref={e => this.itemNgayDangKy = e} className='col-md-6' label='Ngày đăng ký' readOnly={readOnly} type='date-mask' />
                     <FormDatePicker ref={e => this.itemNgayThanhLy = e} className='col-md-6' label='Ngày thanh lý' readOnly={readOnly} type='date-mask' />
                     <FormSelect className='col-md-4' ref={e => this.itemUser = e} label='Chủ xe' data={this.props.dataLecturer} readOnly={readOnly} />
-
+                    <FormSelect className='col-md-6' ref={e => this.itemTypeOfFuel = e} label='Loại nhiên liệu sử dụng' data={dataFuel} readOnly={readOnly} />
                 </div >
         });
     }
@@ -160,6 +167,19 @@ class ImportPage extends AdminPage {
         this.setState({ data: [], isFileBoxHide: false });
     }
 
+    renderTypeOfFuel = (type) => {
+        switch(type){
+            case 'xang':
+                return 'Xăng';
+            case 'dau':
+                return 'Dầu';
+            case 'nhot':
+                return 'Nhớt';
+            default:
+                 return 'Xăng';
+        }
+    }
+
     render() {
         const permission = this.getUserPermission('car', ['read', 'write', 'delete', 'import']),
             readOnly = !permission.write;
@@ -174,6 +194,7 @@ class ImportPage extends AdminPage {
                     <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Ngày hết hạn đăng ký tập lái</th>
                     <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Ngày đăng ký</th>
                     <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Ngày thanh lý</th>
+                    <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Loại nhiên liệu</th>
                     <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Chủ xe</th>
                     <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Thao tác</th>
                 </tr>),
@@ -186,6 +207,7 @@ class ImportPage extends AdminPage {
                     <TableCell type='text' style={{ whiteSpace: 'nowrap' }} content={T.dateToText(item.ngayHetHanTapLai, 'dd/mm/yyyy')} />
                     <TableCell type='text' style={{ whiteSpace: 'nowrap' }} content={T.dateToText(item.ngayDangKy, 'dd/mm/yyyy')} />
                     <TableCell type='text' style={{ whiteSpace: 'nowrap' }} content={item.ngayThanhLy ? T.dateToText(item.ngayThanhLy, 'dd/mm/yyyy') : ''} />
+                    <TableCell type='text' style={{ whiteSpace: 'nowrap' }} content={item.typeOfFuel ? this.renderTypeOfFuel(item.typeOfFuel) : 'Xăng'} />
                     <TableCell type='text' style={{ whiteSpace: 'nowrap' }} content={item.user && item.user.text} />
                     <TableCell type='buttons' content={item} permission={permission} onEdit={this.showEditModal} onDelete={this.delete} />
                 </tr>),
