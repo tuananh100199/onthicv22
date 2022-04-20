@@ -154,6 +154,7 @@ class RevenuePage extends AdminPage {
                 <div className='row'>
                     <PageIcon to={'/user/revenue/info'} icon='fa-line-chart' iconBackgroundColor='#69f0ae' text='Tổng quan doanh thu' />
                     <PageIcon to={'/user/revenue/debt'} icon='fa-line-chart' iconBackgroundColor='teal' text='Tổng quan công nợ' />
+                    <PageIcon to={'/user/revenue/tracking'} icon='fa-line-chart' iconBackgroundColor='#900' text='Thống kê doanh thu' />
                     
                     <div className='col-md-6'>
                         <div className='tile'>

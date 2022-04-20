@@ -33,11 +33,19 @@ export default function CarReducer(state = [], data) {
 }
 
 // Actions ------------------------------------------------------------------------------------------------------------
-export function getCarPage(pageNumber, pageSize, pageCondition, done) {
-    const page = T.updatePage('adminCar', pageNumber, pageSize);
+export function getCarPage(pageNumber, pageSize, pageCondition, filter,sort, done) {
+    if(typeof sort=='function'){
+        done=sort;
+        sort=undefined;
+    }
+    else if(typeof filter=='function'){
+        done=filter;
+        filter=undefined;
+    }
+    const page = T.updatePage('adminCar', pageNumber, pageSize, pageCondition, filter, sort);
     return dispatch => {
         const url = `/api/car/page/${page.pageNumber}/${page.pageSize}`;
-        T.get(url, { pageCondition }, data => {
+        T.get(url, { pageCondition,filter:page.filter,sort:page.sort }, data => {
             if (data.error) {
                 T.notify('Lấy danh sách xe bị lỗi!', 'danger');
                 console.error(`GET: ${url}. ${data.error}`);
@@ -48,6 +56,13 @@ export function getCarPage(pageNumber, pageSize, pageCondition, done) {
             }
         }, error => console.error(error) || T.notify('Lấy danh sách xe bị lỗi!', 'danger'));
     };
+}
+
+export function exportFuelCarPage() {
+    const page = T.updatePage('adminCar');
+    const url = `/api/car/fuel/export/page/${page.pageNumber}/${page.pageSize}/${JSON.stringify(page.filter)}/${JSON.stringify(page.sort)}`;
+    T.download(T.url(url));
+    // T.download(T.get(url, { filter:page.filter,sort:page.sort }));
 }
 
 export function getAllCars(condition, done) {
@@ -240,6 +255,23 @@ export function addCarRegistration(_carId, data, done) {
     };
 }
 
+export function addCarInsurance(_carId, data, done) {
+    return dispatch => {
+        const url = '/api/car/insurance';
+        T.post(url, { _carId, data }, data => {
+            if (data.error) {
+                T.notify('Thêm lịch sử đóng bảo hiểm bị lỗi!', 'danger');
+                console.error('POST: ' + url + '.', data.error);
+            } else if (data.check) {
+                T.notify(data.check, 'danger');
+            } else {
+                dispatch({ type: CarGetItem, item: data.item });
+                done && done(data.item);
+            }
+        }, error => console.error('POST: ' + url + '.', error));
+    };
+}
+
 export function addCarPractice(_carId, data, done) {
     return dispatch => {
         const url = '/api/car/practice';
@@ -334,6 +366,12 @@ export function exportPracticeCar(_carId) {
 
 export function exportRegistrationCar(_carId) {
     T.download(T.url(`/api/car/registration/export/${_carId}`));
+}
+export function exportInsuranceCar(_carId) {
+    T.download(T.url(`/api/car/insurance/export/${_carId}`));
+}
+export function exportCourseCar(_carId) {
+    T.download(T.url(`/api/car/course/export/${_carId}`));
 }
 export function exportCarCalendar(_carId) {
     T.download(T.url(`/api/car/calendar/export/${_carId}`));

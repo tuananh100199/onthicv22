@@ -15,6 +15,7 @@ module.exports = app => {
         courseTypeName: String,
         courseType: { type: app.database.mongoDB.Schema.ObjectId, ref: 'CourseType' },
         sms: { type: app.database.mongoDB.Schema.ObjectId, ref: 'Sms' },
+        userImport: { type: app.database.mongoDB.Schema.ObjectId, ref: 'User' },
     });
     const model = app.database.mongoDB.model('Payment', schema);
 
@@ -29,10 +30,10 @@ module.exports = app => {
                 result.pageNumber = pageNumber === -1 ? result.pageTotal : Math.min(pageNumber, result.pageTotal);
 
                 const skipNumber = (result.pageNumber > 0 ? result.pageNumber - 1 : 0) * result.pageSize;
-                model.find(condition).sort({ timeReceived: -1 }).skip(skipNumber).limit(result.pageSize).populate('sms', '-isHandled').exec((error, list) => {
-                    result.list = list;
-                    done(error, result);
-                });
+                model.find(condition).sort({ timeReceived: -1 }).skip(skipNumber).limit(result.pageSize).populate('sms', '-isHandled').populate('userImport').exec((error, list) => {
+                        result.list = list;
+                        done(error, result);
+                    });
             }
         }),
     };

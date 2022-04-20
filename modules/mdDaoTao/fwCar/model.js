@@ -7,10 +7,19 @@ module.exports = app => {
         ngayHetHanTapLai: { type: Date, default: Date.now },                // Ngày hết hạn tập lái xe để NV đưa xe đi đăng kiểm lại
         ngayDangKy: { type: Date, default: Date.now },
         ngayThanhLy: { type: Date },
+        ngayHetHanBaoHiem: { type: Date, default: Date.now }, 
+        typeOfFuel: { type: String, enum: ['xang', 'dau', 'nhot'], default: 'xang' }, // Loại nhiên liệu xe sử dụng
         fuel: [{
             date: { type: Date, default: Date.now },
             fee: { type: Number, default: 0 },
             quantity: { type: Number, default: 0 },
+            diSaHinh: { type: Number, default: 0 },                         //Số giờ sử dụng để đi sa hình
+            diDuong: { type: Number, default: 0 },                          //Số giờ sử dụng để đi đường
+            diDangKiem: {type: Number, default: 0},                         //Số giờ sử dụng để đi đăng kiểm
+            soKMDau: {type: Number, default: 0},                            //Số km của lần đổ trước đó
+            soKMCuoi: { type: Number, default: 0 },                         //Số km hiện tại
+            tongGioDay: { type: Number, default: 0 },                       //Tổng giờ dạy
+            donGia: { type: Number, default: 0 },                           // Đơn giá khi đổ
         }],
         repair: [{
             dateStart: { type: Date, default: Date.now },
@@ -23,6 +32,11 @@ module.exports = app => {
             fee: { type: Number, default: 0 },
             ngayHetHanDangKiem: { type: Date },
         }],
+        lichSuDongBaoHiem: [{
+            ngayDongBaoHiem: { type: Date },
+            fee: { type: Number, default: 0 },
+            ngayHetHanBaoHiem: { type: Date },
+        }],
         lichSuDangKy: [{
             progress: String,
             ngayDangKy: { type: Date },
@@ -30,7 +44,7 @@ module.exports = app => {
             ngayHetHanDangKy: { type: Date },
         }],
         status: { type: String, enum: ['dangSuDung', 'dangSuaChua', 'dangThanhLy', 'daThanhLy'], default: 'dangSuDung' },
-        currentCourseClose: { type: Boolean, default: false },
+        currentCourseClose: { type: Boolean, default: true },
         courseHistory: [{
             course: { type: app.database.mongoDB.Schema.ObjectId, ref: 'Course' },
             user: { type: app.database.mongoDB.Schema.ObjectId, ref: 'User' },
@@ -52,7 +66,7 @@ module.exports = app => {
 
         getAll: (condition, done) => model.find(condition).populate('user', 'lastname firstname').sort({ priority: -1 }).exec(done),
 
-        getPage: (pageNumber, pageSize, condition, done) => model.countDocuments(condition, (error, totalItem) => {
+        getPage: (pageNumber, pageSize, condition, sort, done) => model.countDocuments(condition, (error, totalItem) => {
             if (error) {
                 done(error);
             } else {
@@ -60,7 +74,7 @@ module.exports = app => {
                 result.pageNumber = pageNumber === -1 ? result.pageTotal : Math.min(pageNumber, result.pageTotal);
 
                 const skipNumber = (result.pageNumber > 0 ? result.pageNumber - 1 : 0) * result.pageSize;
-                model.find(condition).sort({ licensePlates: 1 }).skip(skipNumber).limit(result.pageSize).populate('division', 'title').populate('user', 'firstname lastname').populate('courseType', 'title').populate('brand', 'title').exec((error, list) => {
+                model.find(condition).sort(sort ? sort:{ licensePlates: 1 }).skip(skipNumber).limit(result.pageSize).populate('division', 'title').populate('user', 'firstname lastname').populate('courseType', 'title').populate('brand', 'title').exec((error, list) => {
                     result.list = list;
                     done(error, result);
                 });
@@ -109,7 +123,10 @@ module.exports = app => {
         addLichSuDangKiem: (_id, data, done) => {
             model.findOneAndUpdate(_id, { $push: { lichSuDangKiem: data } }, { new: true }).exec(done);
         },
-        addCalendarHistory: (condition, data, done = () => { }) => {
+        addLichSuDongBaoHiem: (_id, data, done) => {
+            model.findOneAndUpdate(_id, { $push: { lichSuDongBaoHiem: data } }, { new: true }).exec(done);
+        },
+        addCalendarHistory: (condition, data, done = () => {}) => {
             model.findOneAndUpdate(condition, { $push: { calendarHistory: data } }, { new: true }).exec(done);
         },
         updateCalendarHistory: (_id, done) => {
@@ -138,6 +155,8 @@ module.exports = app => {
                 model.findOneAndUpdate({ _id }, { $pull: { repair: { _id: data._repairId } } }, { new: true }).exec(done);
             } else if (data._registrationId) {
                 model.findOneAndUpdate({ _id }, { $pull: { lichSuDangKiem: { _id: data._registrationId } } }, { new: true }).exec(done);
+            }  else if (data._insuranceId) {
+                model.findOneAndUpdate({ _id }, { $pull: { lichSuDongBaoHiem: { _id: data.insuranceId } } }, { new: true }).exec(done);
             } else if (data._practiceId) {
                 model.findOneAndUpdate({ _id }, { $pull: { lichSuDangKy: { _id: data._practiceId } } }, { new: true }).exec(done);
             } else model.findOneAndUpdate({ _id }, { $pull: { fuel: { _id: data._fuelId } } }, { new: true }).exec(done);

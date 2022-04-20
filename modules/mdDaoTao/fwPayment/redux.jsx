@@ -31,3 +31,23 @@ export function getPaymentPage(pageNumber, pageSize, pageCondition, done) {
         }, error => console.error(error) || T.notify('Lấy danh sách thu công nợ bị lỗi!', 'danger'));
     };
 }
+
+export function importPayment(payments, done) {
+    return dispatch => {
+        const url = '/api/payment/import';
+        T.post(url, { payments }, data => {
+            if (data.error) {
+                T.notify('Import doanh thu bị lỗi!', 'danger');
+                console.error(`POST: ${url}. ${data.error}`);
+            } else {
+                T.notify('Import doanh thu thành công!', 'success');
+                dispatch(getPaymentPage());
+                done && done(data);
+            }
+        }, error => console.error(error) || T.notify('Import doanh thu bị lỗi!', 'danger'));
+    };
+}
+
+export function exportBankBaoCao(dataStart, dateEnd) {
+    T.download(T.url(`/api/payment/export/${dataStart}/${dateEnd}`));
+}

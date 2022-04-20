@@ -1,11 +1,11 @@
 module.exports = app => {
     const menu = {
-        parentMenu: app.parentMenu.trainning,
+        parentMenu: app.parentMenu.facility,
         menus: {
-            4035: { title: 'Quản lý xe', link: '/user/car' }
+            40004: { title: 'Quản lý xe', link: '/user/car' }
         }
     };
-    app.permission.add({ name: 'car:read', menu }, { name: 'car:write' }, { name: 'car:delete' }, { name: 'car:import' }, { name: 'car:export' }, { name: 'car:fuel' }, { name: 'car:repair' }, { name: 'car:practice' }, { name: 'car:registration' });
+    app.permission.add({ name: 'car:read', menu }, { name: 'car:write' }, { name: 'car:delete' }, { name: 'car:import' }, { name: 'car:export' }, { name: 'car:fuel' }, { name: 'car:repair' }, { name: 'car:practice' }, { name: 'car:registration' }, { name: 'car:insurance' });
 
     app.get('/user/car', app.permission.check('car:read'), app.templates.admin);
     app.get('/user/car/manager', app.permission.check('car:read'), app.templates.admin);
@@ -14,6 +14,8 @@ module.exports = app => {
     app.get('/user/car/fuel/:_id', app.permission.check('car:read'), app.templates.admin);
     app.get('/user/car/registration', app.permission.check('car:read'), app.templates.admin);
     app.get('/user/car/registration/:_id', app.permission.check('car:read'), app.templates.admin);
+    app.get('/user/car/insurance', app.permission.check('car:read'), app.templates.admin);
+    app.get('/user/car/insurance/:_id', app.permission.check('car:read'), app.templates.admin);
     app.get('/user/car/quantity', app.permission.check('car:read'), app.templates.admin);
     app.get('/user/car/repair', app.permission.check('car:read'), app.templates.admin);
     app.get('/user/car/repair/:_id', app.permission.check('car:read'), app.templates.admin);
@@ -31,7 +33,8 @@ module.exports = app => {
         const pageNumber = parseInt(req.params.pageNumber),
             pageSize = parseInt(req.params.pageSize);
         let pageCondition = req.query.pageCondition,
-            searchText = pageCondition && pageCondition.searchText;
+            searchText = pageCondition && pageCondition.searchText,
+            filter=req.query.filter||{},sort=req.query.sort||null;
         if (pageCondition && pageCondition.filterType) {
             pageCondition = pageCondition.filterType;
         }
@@ -41,7 +44,11 @@ module.exports = app => {
         }
 
         if (pageCondition && pageCondition.searchText == '') delete pageCondition.searchText;
-        app.model.car.getPage(pageNumber, pageSize, pageCondition, (error, page) => {
+        filter && app.handleFilter(filter,['courseType','brand','division','licensePlates'],defaultFilter=>{
+            // console.log('-----------------defaultCondition:----------------------');
+            pageCondition={...pageCondition,...defaultFilter};
+        }); 
+        app.model.car.getPage(pageNumber, pageSize, pageCondition, sort, (error, page) => {
             res.send({ page, error });
         });
     });
@@ -72,6 +79,11 @@ module.exports = app => {
                 });
             }
         });
+    });
+
+    app.get('/api/car/all', (req, res) => {
+        const condition = req.query.condition;
+        app.model.car.getAll(condition, (error, list) => res.send({ error, list }));
     });
 
     app.get('/api/car/lecturer', (req, res) => {
@@ -335,6 +347,13 @@ module.exports = app => {
                         item.fuel[indexFuel].date = data.date;
                         item.fuel[indexFuel].fee = data.fee;
                         item.fuel[indexFuel].quantity = data.quantity;
+                        item.fuel[indexFuel].donGia = data.donGia;
+                        item.fuel[indexFuel].diSaHinh = data.diSaHinh;
+                        item.fuel[indexFuel].diDuong = data.diDuong;
+                        item.fuel[indexFuel].diDangKiem = data.diDangKiem;
+                        item.fuel[indexFuel].soKMDau = data.soKMDau;
+                        item.fuel[indexFuel].soKMCuoi = data.soKMCuoi;
+                        item.fuel[indexFuel].tongGioDay = data.tongGioDay;
                         app.model.car.update(carId, item, (error, item) => {
                                 res.send({ error, item });
                             }
@@ -431,6 +450,35 @@ module.exports = app => {
             });
         } else {
             app.model.car.addLichSuDangKiem({ _id: carId }, data, (error, item) => res.send({ error, item }));
+        }
+
+    });
+
+    app.post('/api/car/insurance', app.permission.check('car:write'), (req, res) => {
+        const carId = req.body._carId,
+            data = req.body.data;
+        if (data.insuranceId) {
+            app.model.car.get({ _id: carId }, (error, item) => {
+                if (!item || error) {
+                    res.send({ error, item });
+                } else {
+                    const indexInsurance = item.lichSuDongBaoHiem && item.lichSuDongBaoHiem.findIndex(lichSuDongBaoHiem => lichSuDongBaoHiem._id == data.insuranceId);
+                    delete data.insuranceId;
+                    if (indexInsurance == -1) {
+                        app.model.car.addLichSuDongBaoHiem({ _id: carId }, data, (error, item) => res.send({ error, item }));
+                    } else {
+                        item.lichSuDongBaoHiem[indexInsurance].ngayDongBaoHiem = data.ngayDongBaoHiem;
+                        item.lichSuDongBaoHiem[indexInsurance].ngayHetHanBaoHiem = data.ngayHetHanBaoHiem;
+                        item.lichSuDongBaoHiem[indexInsurance].fee = data.fee;
+                        app.model.car.update(carId, item, (error, item) => {
+                                res.send({ error, item });
+                            }
+                        );
+                    }
+                }
+            });
+        } else {
+            app.model.car.addLichSuDongBaoHiem({ _id: carId }, data, (error, item) => res.send({ error, item }));
         }
 
     });
@@ -609,7 +657,8 @@ module.exports = app => {
                                 ngayHetHanTapLai: stringToDate(values[6]),
                                 ngayDangKy: stringToDate(values[7]),
                                 ngayThanhLy: values[8] ? stringToDate(values[8]) : null,
-                                user: values[9]
+                                user: values[9],
+                                typeOfFuel: values[10] ? values[10].toLowerCase().trim() : 'xang',
                             });
                             handleUpload(index + 1);
                         }

@@ -9,6 +9,7 @@ module.exports = app => {
     app.get('/user/revenue', app.permission.check('revenue:read'), app.templates.admin);
     app.get('/user/revenue/info', app.permission.check('revenue:read'), app.templates.admin);
     app.get('/user/revenue/debt', app.permission.check('revenue:read'), app.templates.admin);
+    app.get('/user/revenue/tracking', app.permission.check('revenue:read'), app.templates.admin);
 
     // APIs -----------------------------------------------------------------------------------------------------------------------------------------
     app.get('/api/revenue/page/:pageNumber/:pageSize', app.permission.check('revenue:read'), (req, res) => {
