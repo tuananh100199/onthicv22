@@ -7,7 +7,7 @@ import { getDivisionAll } from 'modules/mdDaoTao/fwDivision/redux';
 import { getCategoryAll } from 'modules/_default/fwCategory/redux';
 import { ajaxSelectCourseType } from 'modules/mdDaoTao/fwCourseType/redux';
 import {getCourseAll} from 'modules/mdDaoTao/fwCourse/redux';
-
+import { Link } from 'react-router-dom';
 class AdminTeacherPage extends AdminPage {
     state = { course:'' };
     componentDidMount() {
@@ -56,7 +56,10 @@ class AdminTeacherPage extends AdminPage {
         isConfirm && this.props.deleteTeacher(item._id));
     
     renderListCourse = courses=>(<>
-        {courses.map((course,index)=><p style={{marginBottom:0}} key={index}>{course.name}</p>)}
+        {courses.map((course,index)=>
+        <Link key={index} to={`/user/course/${course._id}`} className='mb-1' style={{ textDecoration: 'none',display:'block' }}>{course.name}</Link>
+        // <p style={{marginBottom:0}} key={index}>{course.name}</p>
+        )}
     </>)
     render() {
         const permission = this.getUserPermission('teacher');
