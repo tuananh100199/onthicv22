@@ -21,15 +21,15 @@ module.exports = app => {
     app.permission.add(
         { name: 'user:read', menu }, { name: 'user:write' }, { name: 'user:delete' },
         { name: 'manageLecturer:read' }, { name: 'manageLecturer:write' }, { name: 'manageLecturer:delete' },
-        { name: 'ratingTeacher:read', menu:teacherMenu }, { name: 'ratingTeacher:write' }, { name: 'ratingTeacher:delete' },
+        { name: 'ratingTeacher:read' }, { name: 'ratingTeacher:write' }, { name: 'ratingTeacher:delete' },{ name: 'ratingTeacher:view',menu:teacherMenu }
     );
 
     ['/registered(.htm(l)?)?', '/active-user/:userId', '/forgot-password/:userId/:userToken'].forEach((route) => app.get(route, app.templates.home));
     app.get('/user/profile', app.permission.check(), app.templates.admin);
     app.get('/user/member', app.permission.check('user:read'), app.templates.admin);
     app.get('/user/manage-lecturer', app.permission.check('user:read'), app.templates.admin);
-    app.get('/user/manage-lecturer/:_id/rating', app.permission.check('user:read'), app.templates.admin);
-    app.get('/user/rating-teacher', app.permission.check('ratingTeacher:read'), app.templates.admin);
+    app.get('/user/manage-lecturer/:_id/rating', app.permission.check('ratingTeacher:view'), app.templates.admin);
+    app.get('/user/rating-teacher', app.permission.check('ratingTeacher:view'), app.templates.admin);
 
     // APIs -----------------------------------------------------------------------------------------------------------------------------------------
     app.get('/api/user/page/:pageNumber/:pageSize', (req, res, next) => app.isDebug ? next() : app.permission.check('user:read')(req, res, next), (req, res) => {
@@ -96,7 +96,6 @@ module.exports = app => {
                 }
                 if(filter.ratingScore){
                     let ratingScore = filter.ratingScore;
-                    console.log(ratingScore);
                     ratingScore.forEach(score=>{
                         let condition =score=='0'?{ratingScore:null} :{ratingScore:{$gte:Number(score),$lt:Number(score)+1}};
                         pageCondition['$or'].push(condition);

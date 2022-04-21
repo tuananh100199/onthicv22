@@ -269,6 +269,20 @@ export function autoAssignStudent(_courseId, done) {
 }
 
 // Course teacherGroups -----------------------------------------------------------------------------------------------
+export function getCourseLecturerAll(_teacherId,done) {
+    return () => {
+        const url = '/api/course/lecturer/all';
+        T.get(url,{_teacherId}, data => {
+            if (data.error) {
+                T.notify('Lấy danh sách khóa học bị lỗi!', 'danger');
+                console.error('GET: ' + url + '. ' + data.error);
+            } else {
+                done && done(data.list);
+            }
+        }, error => console.error(error) || T.notify('Lấy danh sách khóa học bị lỗi!', 'danger'));
+    };
+}
+
 export function updateCourseTeacherGroup(_courseId,_teacherUserId, type,description, done) {
     if(typeof description == 'function'){
         done = description;

@@ -105,7 +105,13 @@ module.exports = app => {
             }
         }),
 
-        getAll: (condition, done) => model.find(condition).sort({ priority: -1 }).exec(done),
+        getAll: (condition, done) => model.find(condition)
+        .populate({
+            path: 'teacherGroups.teacher', select: '-password'
+        })
+        .populate({
+            path: 'teacherGroups.student', populate: { path: 'user division courseType course', select: 'email title name image phoneNumber' }
+        }).sort({ priority: -1 }).exec(done),
 
         get: (condition, done) => {
             const findTask = typeof condition == 'string' ? model.findById(condition) : model.findOne(condition);

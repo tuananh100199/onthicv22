@@ -1,5 +1,5 @@
 module.exports = (app) => {
-    app.permission.add({ name: 'rate:read' }, { name: 'rate:write' });
+    app.permission.add({ name: 'rate:read' }, { name: 'rate:write' }, { name: 'rate:delete' });
 
     app.get('/api/rate/admin/page/:pageNumber/:pageSize', (req, res) => {
         let pageNumber = parseInt(req.params.pageNumber),
@@ -88,7 +88,7 @@ module.exports = (app) => {
         app.model.rate.update(req.body._id, changes, (error, item) => {
             if(error)res.send({error});
             else{
-                updateRatingTeacher(changes._refId).then(()=>{
+                updateRatingTeacher(item._refId).then(()=>{
                     res.send({item});
                 }).catch(error=>res.send({error}));
             }
@@ -97,12 +97,28 @@ module.exports = (app) => {
 
     app.post('/api/rate/student', app.permission.check('user:login'), (req, res) => { //mobile
         let newData = req.body.newData||{};
-        app.model.rate.create(app.clone(newData, { user: req.session.user._id }),(error, item) =>{
+        app.model.rate.create(app.clone(newData, { user:newData.user?newData.user: req.session.user._id }),(error, item) =>{
             if(error)res.send({error});
             else{
                 updateRatingTeacher(newData._refId).then(()=>{
                     res.send({item});
                 }).catch(error=>res.send({error}));
+            }
+        });
+    });
+
+    app.delete('/api/rate/student', app.permission.check('rate:delete'), (req, res) => {
+        app.model.rate.get({_id:req.body._id},(error,item)=>{
+            if(error||!item) res.send({error:'Không tìm thấy đánh giá'});
+            else{
+                app.model.rate.delete(item._id,error=>{
+                    if(error) res.send({error});
+                    else{
+                        updateRatingTeacher(item._refId).then(()=>{
+                            res.send({item});
+                        }).catch(error=>res.send({error}));
+                    }
+                });
             }
         });
     });
@@ -117,8 +133,14 @@ module.exports = (app) => {
             if(error || !item)
                 res.send({error});
             else{
+                let listStudentId = [];
                 const listTeacherId = item.teacherGroups && item.teacherGroups.length && item.teacherGroups.map(group => group.teacher._id);
-                app.model.rate.getAll({_refId: {$in: listTeacherId}}, (error, list) => res.send({ error, list }));
+                item.teacherGroups && item.teacherGroups.length && item.teacherGroups.forEach(group=>{
+                    group.student && group.student.length && group.student.forEach(student=>{
+                        student.user && listStudentId.push(student.user._id);
+                    });
+                });
+                app.model.rate.getAll({_refId: {$in: listTeacherId},user:{$in:listStudentId}}, (error, list) => res.send({ error, list }));
             }
         });
     });

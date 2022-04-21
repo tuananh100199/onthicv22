@@ -138,7 +138,6 @@ class StudentPage extends AdminPage {
             T.showSearchBox();
             this.props.getOfficialStudentPage(1, 50, undefined,{},{});
             this.props.getCourseAll({isDefault:false},list=>{
-                console.log({list});
                 this.setState({course:list.map(item=>({id:item._id,text:item.name}))});   
             }
             );
@@ -155,7 +154,6 @@ class StudentPage extends AdminPage {
         const permission = this.getUserPermission('student', ['read', 'write', 'delete']);
         let { pageNumber, pageSize, pageTotal, totalItem, list } = this.props.student && this.props.student.page ?
             this.props.student.page : { pageNumber: 1, pageSize: 50, pageTotal: 1, pageCondition: {}, totalItem: 0 };
-        console.log({list});
             const table = renderTable({
             getDataSource: () => list,
             stickyHead:true,autoDisplay:true,

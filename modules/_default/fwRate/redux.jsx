@@ -166,6 +166,22 @@ export function createRate(newData, done) {
     };
 }
 
+export function deleteRate(_id, done) {
+    return () => {
+        const url = '/api/rate/student';
+        T.delete(url, { _id }, data => {
+            if (data.error) {
+                T.notify('Xóa đánh giá bị lỗi!', 'danger');
+                console.error('DELETE: ' + url + '. ' + data.error);
+            } else {
+                T.alert('Đánh giá được xóa thành công!', 'error', false, 800);
+                done && done();
+            }
+
+        }, error => console.error(error) || T.notify('Xóa đánh giá bị lỗi!', 'danger'));
+    };
+}
+
 
 // export function updateRate(_id, changes, done) {
 //     return dispatch => {

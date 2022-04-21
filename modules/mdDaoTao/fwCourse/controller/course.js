@@ -438,7 +438,6 @@ module.exports = (app) => {
     //Teacher API
     app.put('/api/course/teacher-group/teacher', app.permission.check('course:write'), (req, res) => {
         const { _courseId,_teacherUserId, type, description='' } = req.body;
-        console.log({_courseId,_teacherUserId,type,description});
         const user = req.session.user;
         new Promise((resolve, reject) => {
             if (type == 'add') {
@@ -569,6 +568,13 @@ module.exports = (app) => {
 
 
     // Lecturer API
+    app.get('/api/course/lecturer/all', app.permission.check('course:read'), (req, res) => {
+        let _teacherId = req.query._teacherId || {};
+        const condition = {teacherGroups:{ $elemMatch :{teacher:{$in:[_teacherId]}}}};
+        app.model.course.getAll(condition, (error, list) => {
+            res.send({ error, list });
+        });
+    });
     app.get('/api/course/lecturer/student', app.permission.check('course:read'), (req, res) => {
         const { courseId, lecturerId } = req.query.condition;
         app.model.course.get(courseId, (error, item) => {
