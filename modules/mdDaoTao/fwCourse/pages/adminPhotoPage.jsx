@@ -68,7 +68,7 @@ class AdminPhotoPage extends AdminPage {
                         <div className='row'>
                             {data && data.item && data.item.length ? data.item.map((image, index) => (
                                 !isNaN(image.slice(0, 13)) && <div key={index} className='col-md-6 col-lg-4 col-xs-12'>
-                                    <img src={data.path + '/' + image}></img>
+                                    <img style={{ height: '120px'}} src={data.path + '/' + image}></img>
                                     <p className='mb-0'>{T.dateToText(new Date(parseInt(image.slice(0, 13))))}</p>
                                     {image.slice(14, 17) == 'png' ? null : <p>{this.getNameImage(image.slice(13))}</p>}
                                 </div>

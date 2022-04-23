@@ -44,7 +44,7 @@ module.exports = app => {
         }
 
         if (pageCondition && pageCondition.searchText == '') delete pageCondition.searchText;
-        filter && app.handleFilter(filter,['courseType','brand','division','licensePlates'],defaultFilter=>{
+        filter && app.handleFilter(filter,['courseType','brand','division','licensePlates','state'],defaultFilter=>{
             // console.log('-----------------defaultCondition:----------------------');
             pageCondition={...pageCondition,...defaultFilter};
         }); 
@@ -384,6 +384,8 @@ module.exports = app => {
                         item.repair[indexRepair].dateEnd = data.dateEnd;
                         item.repair[indexRepair].fee = data.fee;
                         item.repair[indexRepair].content = data.content;
+                        item.repair[indexRepair].type = data.type;
+                        item.repair[indexRepair].state = data.state;
                         app.model.car.update(carId, item, (error, item) => {
                                 res.send({ error, item });
                             }

@@ -14,7 +14,7 @@ class CarRepairModal extends AdminModal {
     }
 
     onShow = (item) => {
-        const { dateStart, dateEnd, fee, content } = item || { _id: null, licensePlates: '', fee: '' },
+        const { dateStart, dateEnd, fee, content } = item || { _id: null, licensePlates: '', fee: '', type:'' },
             { licensePlates, _id } = this.props.data,
             repairId = item && item._id;
         this.itemLicensePlates.value(licensePlates);
@@ -31,11 +31,14 @@ class CarRepairModal extends AdminModal {
             dateEnd: this.itemNgayHoanThanh.value(),
             fee: this.itemChiPhi.value(),
             content: this.itemNoiDungSuaChua.value(),
-            repairId: this.state.repairId
+            repairId: this.state.repairId,
         };
         if (data.content == '') {
             T.notify('Nội dung sửa chữa không được trống!', 'danger');
             this.itemNoiDungSuaChua.focus();
+        } else if (data.type == '') {
+            T.notify('Phân loại không được trống!', 'danger');
+            this.itemType.focus();
         } else {
             this.props.update(this.state._id, data, () => {
                 this.props.updateCar(this.state._id, { status: 'dangSuaChua' }, this.hide());
@@ -66,7 +69,7 @@ class CarRepairCompleteModal extends AdminModal {
     }
 
     onShow = (item) => {
-        const { dateStart, dateEnd, fee, content } = item || { _id: null, licensePlates: '', fee: '' },
+        const { dateStart, dateEnd, fee, content } = item || { _id: null, licensePlates: '', fee: '', type: '' },
             { licensePlates, _id } = this.props.data,
             repairId = item && item._id;
         this.itemLicensePlates.value(licensePlates);
@@ -83,7 +86,7 @@ class CarRepairCompleteModal extends AdminModal {
             dateEnd: this.itemNgayHoanThanh.value(),
             fee: this.itemChiPhi.value(),
             content: this.itemNoiDungSuaChua.value(),
-            repairId: this.state.repairId
+            repairId: this.state.repairId,
         };
         if (data.content == '') {
             T.notify('Nội dung sửa chữa không được trống!', 'danger');
@@ -142,6 +145,7 @@ class CarRepairEditPage extends AdminPage {
     }
 
     edit = (e, item) => e.preventDefault() || this.modal.show(item);
+
     complete = (e, item) => e.preventDefault() || this.completeModal.show(item);
 
     delete = (e, item) => e.preventDefault() || T.confirm('Xoá lịch sử sửa chữa', `Bạn có chắc muốn xoá lịch sử sửa chữa ngày ${T.dateToText(item.date, 'dd/mm/yyyy')}?`, true, isConfirm =>

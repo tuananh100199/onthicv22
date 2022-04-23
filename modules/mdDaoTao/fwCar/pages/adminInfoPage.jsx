@@ -25,6 +25,7 @@ const dataFuel = [
     { id: 'dau', text: 'Dầu'},
     { id: 'nhot', text: 'Nhớt'},
 ];
+const listState = [{id: 'S', text: 'Đang sử dụng'}, {id: 'R', text: 'Đã rút'}];
 const dataRepairType = [{ id: 'dangSuDung', text: 'Xe đang sử dụng' }, { id: 'dangSuaChua', text: 'Xe đang sửa chữa' }, { id: 'dangThanhLy', text: 'Xe chờ thanh lý' }, { id: 'daThanhLy', text: 'Xe thanh lý' }];
 class CarModal extends AdminModal {
     state = {};
@@ -33,7 +34,7 @@ class CarModal extends AdminModal {
     }
 
     onShow = (item) => {
-        const { _id, licensePlates, courseType, user, ngayHetHanDangKiem, ngayHetHanTapLai, ngayDangKy, brand, status, division, isPersonalCar, typeOfFuel } = item || { _id: null, licensePlates: '', ngayHetHanDangKiem: '', ngayHetHanTapLai: '', ngayDangKy: '', ngayThanhLy: '', brand: {} };
+        const { _id, licensePlates, courseType, user, ngayHetHanDangKiem, ngayHetHanTapLai, ngayDangKy, brand, status, division, isPersonalCar, typeOfFuel, type, state,carId } = item || { _id: null, licensePlates: '', ngayHetHanDangKiem: '', ngayHetHanTapLai: '', ngayDangKy: '', ngayThanhLy: '', brand: {}, type: '', carId: '', state:'S' };
         this.itemDivision.value(division ? { id: division._id, text: division.title } : null);
         this.itemCourseType.value(courseType ? { id: courseType._id, text: courseType.title } : null);
         this.itemLicensePlates.value(licensePlates);
@@ -41,6 +42,10 @@ class CarModal extends AdminModal {
         this.itemIsPersonalCar.value(isPersonalCar);
         this.itemNgayHetHanDangKiem.value(ngayHetHanDangKiem);
         this.itemNgayHetHanTapLai.value(ngayHetHanTapLai);
+        this.itemNgayDangKy.value(ngayDangKy);
+        this.itemType.value(type);
+        this.itemCarId.value(carId);
+        this.itemState.value(state ? state : 'S');
         this.itemNgayDangKy.value(ngayDangKy);
         this.itemTypeOfFuel.value(typeOfFuel ? typeOfFuel : 'xang');
         this.itemStatus.value(status ? status : 'dangSuDung');
@@ -60,9 +65,15 @@ class CarModal extends AdminModal {
             status: this.itemStatus.value(),
             division: this.itemDivision.value(),
             typeOfFuel: this.itemTypeOfFuel.value(),
+            state: this.itemState.value(),
+            type: this.itemType.value(),
+            carId: this.itemCarId.value(),
         };
         if (data.licensePlates == '') {
             T.notify('Biển số xe không được trống!', 'danger');
+            this.itemLicensePlates.focus();
+        } else if (data.carId == '') {
+            T.notify('Mã xe không được trống!', 'danger');
             this.itemLicensePlates.focus();
         } else if (data.brand == '') {
             T.notify('Nhãn hiệu xe không được trống!', 'danger');
@@ -92,7 +103,8 @@ class CarModal extends AdminModal {
             size: 'large',
             body:
                 <div className='row'>
-                    <FormTextBox className='col-md-5' ref={e => this.itemLicensePlates = e} label='Biển số xe' readOnly={readOnly} />
+                    <FormTextBox className='col-md-3' ref={e => this.itemLicensePlates = e} label='Biển số xe' readOnly={readOnly} />
+                    <FormTextBox className='col-md-2' ref={e => this.itemCarId = e} label='Mã xe' readOnly={readOnly} />
                     <FormSelect ref={e => this.itemBrand = e} className='col-md-4' data={this.props.brandTypes} label='Nhãn hiệu xe' readOnly={readOnly} />
                     <FormCheckbox ref={e => this.itemIsPersonalCar = e} isSwitch={true} className='col-md-3' label='Xe cá nhân' readOnly={readOnly} />
                     <FormDatePicker ref={e => this.itemNgayHetHanDangKiem = e} className='col-md-6' label='Ngày hết hạn đăng kiểm' readOnly={true} type='date-mask' />
@@ -102,7 +114,9 @@ class CarModal extends AdminModal {
                     <FormSelect className='col-md-3' ref={e => this.itemCourseType = e} label='Hạng đào tạo' data={ajaxSelectCourseType} readOnly={readOnly} />
                     <FormSelect className='col-md-5' ref={e => this.itemDivision = e} label='Cơ sở đào tạo' data={ajaxSelectDivision} readOnly={readOnly} />
                     <FormSelect className='col-md-4' ref={e => this.itemUser = e} label='Quản lý phụ trách xe' data={ajaxSelectAvaiableLecturer(this.state.user)} readOnly={readOnly} />
-                    <FormSelect className='col-md-6' ref={e => this.itemTypeOfFuel = e} label='Loại nhiên liệu sử dụng' data={dataFuel} readOnly={readOnly} />
+                    <FormSelect className='col-md-4' ref={e => this.itemTypeOfFuel = e} label='Loại nhiên liệu sử dụng' data={dataFuel} readOnly={readOnly} />
+                    <FormSelect className='col-md-4' ref={e => this.itemState = e} label='Trạng thái sử dụng ' data={listState} eadOnly={readOnly} />
+                    <FormTextBox className='col-md-4' ref={e => this.itemType = e} label='Phân loại ' readOnly={readOnly} />
                 </div >
         });
     }
@@ -204,6 +218,8 @@ class CarPage extends AdminPage {
                     <th style={{ width: '100%' }} nowrap='true'>Loại nhiên liệu</th>
                     <th style={{ width: 'auto' }} nowrap='true'>Ngày hết hạn đăng kiểm</th>
                     <th style={{ width: 'auto' }} nowrap='true'>Ngày hết hạn tập lái</th>
+                    <th style={{ width: 'auto' }} nowrap='true'>Loại xe</th>
+                    <th style={{ width: 'auto' }} nowrap='true'>Trạng thái khi sửa</th>
                     {/* <th style={{ width: 'auto' }} nowrap='true'>Xe cá nhân</th> */}
                     <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Thao tác</th>
                 </TableHead>),
@@ -218,6 +234,8 @@ class CarPage extends AdminPage {
                     <TableCell type='text' style={{ whiteSpace: 'nowrap' }} content={item.typeOfFuel ? this.renderTypeOfFuel(item.typeOfFuel) : 'Xăng'} />
                     <TableCell type='text' style={{ whiteSpace: 'nowrap' }} content={T.dateToText(item.ngayHetHanDangKiem, 'dd/mm/yyyy')} />
                     <TableCell type='text' style={{ whiteSpace: 'nowrap' }} content={T.dateToText(item.ngayHetHanTapLai, 'dd/mm/yyyy')} />
+                    <TableCell type='text' style={{ whiteSpace: 'nowrap' }} content={item  ? item.type : ''} />
+                    <TableCell type='text' style={{ whiteSpace: 'nowrap' }} content={item ? (item.state == 'R' ? 'Đã rút' : 'Đang sử dụng') : 'Đang sử dụng'} />
                     {/* <TableCell type='text' style={{ whiteSpace: 'nowrap', textAlign: 'center' }} content={item.isPersonalCar ? 'X' : ''} /> */}
                     <TableCell type='buttons' content={item} permission={permission} onEdit={this.edit} onLiquidate={this.liquidate} onDelete={this.delete} onEditFuel={'/user/car/fuel/' + item._id} onEditRepair={'/user/car/repair/' + item._id} onEditCourseHistory={'/user/car/course/' + item._id} />
                 </tr >),

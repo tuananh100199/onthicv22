@@ -1,6 +1,7 @@
 module.exports = app => {
     const schema = app.database.mongoDB.Schema({
         licensePlates: String,                                              // Biển số xe
+        carId: String,
         courseType: { type: app.database.mongoDB.Schema.ObjectId, ref: 'CourseType' },    // Loại khóa học
         user: { type: app.database.mongoDB.Schema.ObjectId, ref: 'User' },                // Thầy dạy lái xe
         ngayHetHanDangKiem: { type: Date, default: Date.now },              // Ngày hết hạn đăng kiểm xe để NV đưa xe đi đăng kiểm lại
@@ -9,6 +10,8 @@ module.exports = app => {
         ngayThanhLy: { type: Date },
         ngayHetHanBaoHiem: { type: Date, default: Date.now }, 
         typeOfFuel: { type: String, enum: ['xang', 'dau', 'nhot'], default: 'xang' }, // Loại nhiên liệu xe sử dụng
+        state: {type: String, enum: ['S', 'R'], default: 'S'},
+        type: { type: String },
         fuel: [{
             date: { type: Date, default: Date.now },
             fee: { type: Number, default: 0 },
