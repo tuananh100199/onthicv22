@@ -1,7 +1,7 @@
 module.exports = app => {
     const schema = app.database.mongoDB.Schema({
         student: { type: app.database.mongoDB.Schema.ObjectId, ref: 'Student' },
-
+        lecturer:{ type: app.database.mongoDB.Schema.ObjectId, ref: 'User' },           // Giáo viên dạy
         date: { type: Date, default: Date.now },                                        // Ngày học
         startHour: { type: Number, default: 8 },                                        // Thời gian bắt đầu học
         numOfHours: { type: Number, default: 1 },                                       // Số giờ học, số nguyên dương.

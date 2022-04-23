@@ -79,4 +79,5 @@
 	9006 - Danh mục chứng chỉ (/user/teacher-diploma)
 	9010 - Lớp tập huấn (/user/training-class)
 	9020 - Quản lý đi khóa (/user/teacher-course)
+	9040 - Thời khóa biểu giáo viên (/user/teacher-calendar)
 	9060 - Lịch nghỉ giáo viên (/user/register-calendar/teacher)

@@ -9,6 +9,7 @@ module.exports = (app) => {
             9004: { title: 'Danh mục hồ sơ', link: '/user/profile/category', icon: 'fa-bars', backgroundColor: '#00b0ff' },
             9005: { title: 'Danh mục loại giáo viên', link: '/user/teacher-type/category', icon: 'fa-bars', backgroundColor: '#00b0ff' },
             9020: { title: 'Quản lý đi khóa', link: '/user/teacher-course', icon: 'fa-bars', backgroundColor: '#00b0ff' },
+            9040: { title: 'Thời khóa biểu giáo viên', link: '/user/teacher-calendar', icon: 'fa-bars', backgroundColor: '#00b0ff' },
         }
     };
 
@@ -24,6 +25,8 @@ module.exports = (app) => {
     app.get('/user/teacher/:id', app.permission.check('teacher:write'), app.templates.admin);
     app.get('/user/teacher-course', app.permission.check('teacher:read'), app.templates.admin);
     app.get('/user/teacher-course/:id', app.permission.check('teacher:write'), app.templates.admin);
+    app.get('/user/teacher-calendar', app.permission.check('teacher:read'), app.templates.admin);
+    app.get('/user/teacher-calendar/:id', app.permission.check('teacher:read'), app.templates.admin);
     //APIs -----------------------------------------------------------------------------------------------
     app.get('/api/teacher/page/:pageNumber/:pageSize', app.permission.check('teacher:read'), (req, res) => {
         let pageNumber = parseInt(req.params.pageNumber),
@@ -109,7 +112,34 @@ module.exports = (app) => {
         //   pageCondition.thoiGianLamViec={['nghiViec']:condition.nghiViec=='1'?true:false};
         // }
         app.model.teacher.getPage(pageNumber, pageSize, pageCondition, sort , (error, page) => {
-            res.send({ error, page});
+            if(error) res.send({error});
+            else{
+                const getCountCalendarTeacher = (index=0)=>{
+                    if(index>=page.list.length){
+                        res.send({page});
+                    }else{
+                        let teacher = page.list[index]._doc;
+                        const teacherUserId = teacher.user._id;
+                        app.model.timeTable.count({lecturer:teacherUserId,state:'approved'},(error,numOfCalendar)=>{
+                            if(error) res.send({error});
+                            else{
+                                Object.assign(teacher,{numOfCalendar});
+                                page.list[index]=teacher;
+                                getCountCalendarTeacher(index+1);
+                            }
+                        });
+                        // app.model.teacher.count({trainingClass:trainingClass._id},(error,numOfTeacher)=>{
+                        //     if(error)res.send({error});
+                        //     else{
+                        //         Object.assign(trainingClass,{numOfTeacher});
+                        //         page.list[index]=trainingClass;
+                        //         getListTeacher(index+1);
+                        //     }
+                        // });
+                    }
+                };
+                getCountCalendarTeacher();
+            }
         });
     });
 

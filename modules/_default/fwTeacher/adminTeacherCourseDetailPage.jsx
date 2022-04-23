@@ -46,7 +46,6 @@ class StaffEditPage extends AdminPage {
         const readOnly = !permission.write;
         const item = this.state.item ? this.state.item:null;
         const list = item && item.courseHistory && item.courseHistory.length ? item.courseHistory:[];
-        console.log({item});
         const tableCourseHistory = renderTable({
             getDataSource: () => list,
             stickyHead: false,

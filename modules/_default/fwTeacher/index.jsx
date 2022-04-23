@@ -45,5 +45,13 @@ export default {
             path: '/user/teacher-course/:_id',
             component: Loadable({ loading: Loading, loader: () => import('./adminTeacherCourseDetailPage') }),
         },
+        {
+            path: '/user/teacher-calendar',
+            component: Loadable({ loading: Loading, loader: () => import('./adminTeacherCalendarPage') }),
+        },
+        {
+            path: '/user/teacher-calendar/:_id',
+            component: Loadable({ loading: Loading, loader: () => import('./adminTeacherCalendarDetailPage') }),
+        },
     ]
 };

@@ -201,7 +201,9 @@ class RegisterTimeTableModal extends AdminModal {
                 <div className='row'>
                     {OffCalendar ? <p className='col-lg-12' style={{ background: 'antiquewhite', paddingBottom: '10px', paddingTop: '10px'}} >Giáo viên: <b>{OffCalendar && OffCalendar.lecturer ? OffCalendar.lecturer.lastname + ' ' + OffCalendar.lecturer.firstname : 'Không có thông tin'}</b> nghỉ <b>{timeOffStatesMapper && timeOffStatesMapper[OffCalendar.timeOff] && timeOffStatesMapper[OffCalendar.timeOff].text}</b> <span className='text-danger'>{new Date(date).getDateText()}</span> </p> : null}
                 </div>
-                <div style={{ display: !OffCalendar || OffCalendar && OffCalendar.timeOff != 'allDay' ? 'block' : 'none' }}>
+                <div 
+                style={{ display: !OffCalendar || OffCalendar && OffCalendar.timeOff != 'allDay' ? 'block' : 'none' }}
+                >
                     <div className='row'>
                         {student ? <p className='col-md-4'>Học viên: <b>{student ? student.lastname + ' ' + student.firstname : 'Không có thông tin'}</b></p> : null}
                         {student ? <p className='col-md-4'>Số điện thoại: <b>{student && student.user && student.user.phoneNumber ? student.user.phoneNumber : 'Không có thông tin'}</b></p> : null}
@@ -279,7 +281,7 @@ class StudentView extends AdminPage {
                     weekNumberCalculation: 'ISO',
                     fixedWeekCount: false, displayEventEnd: true,
                     showNonCurrentDates: false,
-                    monthNames: ['Tháng Một','Tháng Hai','Tháng Ba','Tháng Bốn','Tháng Năm','Tháng Sáu','Tháng Bảy','Tháng Tám','Tháng Chín','Tháng Mười','Tháng Mười Một','Tháng Mười Hai'],
+                    monthNames: ['Tháng Một','Tháng Hai','Tháng Ba','Tháng Tư','Tháng Năm','Tháng Sáu','Tháng Bảy','Tháng Tám','Tháng Chín','Tháng Mười','Tháng Mười Một','Tháng Mười Hai'],
                     monthNamesShort: ['Tháng 1','Tháng 2','Tháng 3','Tháng 4','Tháng 5','Tháng 6','Tháng 7','Tháng 8','Tháng 9','Tháng 10','Tháng 11','Tháng 12'],
                     dayNames: ['Chủ Nhật','Thứ Hai','Thứ Ba','Thứ Tư','Thứ Năm','Thứ Sáu','Thứ Bảy'],
                     dayNamesShort: ['CN', 'Thứ 2','Thứ 3','Thứ 4','Thứ 5','Thứ 6','Thứ 7'],
@@ -368,6 +370,10 @@ class StudentView extends AdminPage {
     }
 
     onModalFormSave = (_id, data, done) => {
+        const student = this.state.student;
+        const teacherGroup = student && student.course && student.course.teacherGroups && student.course.teacherGroups.length
+        ?student.course.teacherGroups.find(item=>item.student.find(stu=>stu==student._id)!=undefined):null; 
+        // const lecturer = student.group
         const { selectedSectionHours, selectedSectionOverTimeHours } = data;
         // if (selectedSectionHours && selectedSectionHours.length) {
             const list = selectedSectionHours.concat(selectedSectionOverTimeHours);
@@ -379,7 +385,8 @@ class StudentView extends AdminPage {
                     let newData = { 
                         date: data.date, 
                         startHour: list[index].startHour, 
-                        numOfHours: 1 
+                        numOfHours: 1,
+                        lecturer:teacherGroup.teacher 
                     };
                     if(this.state.car) {
                         newData.car = this.state.car && this.state.car._id;
