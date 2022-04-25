@@ -116,13 +116,13 @@ export function getCourseAll(condition,done) {
         const url = '/api/course/all';
         T.get(url,{condition}, data => {
             if (data.error) {
-                T.notify('Lấy gói học phí bị lỗi', 'danger');
+                T.notify('Lấy danh sách khóa học bị lỗi', 'danger');
                 console.error('GET: ' + url + '. ' + data.error);
             } else {
                 done && data && done(data.list);
                 dispatch({ type: CourseGetAll, list: data.list });
             }
-        }, error => console.error(error) || T.notify('Lấy gói học phí bị lỗi', 'danger'));
+        }, error => console.error(error) || T.notify('Lấy danh sách khóa học bị lỗi', 'danger'));
     };
 }
 
