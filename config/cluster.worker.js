@@ -49,7 +49,7 @@ module.exports = (cluster, isDebug) => {
     app.loadModules();
     app.readyHooks.add('setupAdmin', {
         ready: () => app.model && app.model.user,
-        run: () => process.env['primaryWorker'] == 'true' && app.setupAdmin(),
+        run: () => app.primaryWorker && app.setupAdmin(),
     });
 
     app.get('/user', app.permission.check(), app.templates.admin);
