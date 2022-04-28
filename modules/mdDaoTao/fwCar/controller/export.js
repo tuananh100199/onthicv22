@@ -83,7 +83,7 @@ app.get('/api/car/expired/export/:fileType/:filterType', app.permission.check('c
     if (sessionUser && sessionUser.isCourseAdmin && division && division.isOutside) {
         res.send({ error: 'Bạn không có quyền xuất file excel này!' });
     } else {
-        app.model.car.getPage(undefined, undefined, condition, (error, page) => {
+        app.model.car.getPage(undefined, undefined, condition,undefined, (error, page) => {
             if (error || !page.list) {
                 res.send({ error: 'Hệ thống bị lỗi!' });
             } else {
@@ -497,7 +497,7 @@ app.get('/api/car/calendar/export/:_carId', app.permission.check('car:export'), 
                             item.push(index == 0 ? i+1 : '');
                             item.push(index == 0 ? (car ? car.carId : '') : '');
                             item.push(index == 0 ? (car ? car.licensePlates : '') : '');
-                            item.push(index == 0 ? (car ? car.type : '') : '');
+                            item.push(index == 0 ? (car && car.type ? car.type.title : '') : '');
                             item.push(index == 0 ? (car && car.state && car.state != '' ? car.state : 'S') : '');
                             item.push(index == 0 ? (car && car.courseType ? car.courseType.title : '') : '');
                             item.push(index+1);
@@ -572,7 +572,7 @@ app.get('/api/car/calendar/export/:_carId', app.permission.check('car:export'), 
                             item.push(index == 0 ? i+1 : '');
                             item.push(index == 0 ? (car ? car.carId : '') : '');
                             item.push(index == 0 ? (car ? car.licensePlates : '') : '');
-                            item.push(index == 0 ? (car ? car.type : '') : '');
+                            item.push(index == 0 ? (car && car.type ? car.type.title : '') : '');
                             item.push(index == 0 ? (car && car.state && car.state != '' ? car.state : 'S') : '');
                             item.push(index == 0 ? (car && car.courseType ? car.courseType.title : '') : '');
                             item.push(index+1);

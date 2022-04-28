@@ -50,6 +50,10 @@ export default {
             component: Loadable({ loading: Loading, loader: () => import('./pages/adminCategoryPage') })
         },
         {
+            path: '/user/car/type-category',
+            component: Loadable({ loading: Loading, loader: () => import('./pages/adminCategoryCarTypePage') })
+        },
+        {
             path: '/user/car/fuel',
             component: Loadable({ loading: Loading, loader: () => import('./pages/adminFuelPage') })
         },

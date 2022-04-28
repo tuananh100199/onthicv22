@@ -11,6 +11,7 @@ module.exports = app => {
     app.get('/user/car/manager', app.permission.check('car:read'), app.templates.admin);
     app.get('/user/car/fuel', app.permission.check('car:read'), app.templates.admin);
     app.get('/user/car/category', app.permission.check('car:read'), app.templates.admin);
+    app.get('/user/car/type-category', app.permission.check('car:read'), app.templates.admin);
     app.get('/user/car/fuel/:_id', app.permission.check('car:read'), app.templates.admin);
     app.get('/user/car/registration', app.permission.check('car:read'), app.templates.admin);
     app.get('/user/car/registration/:_id', app.permission.check('car:read'), app.templates.admin);

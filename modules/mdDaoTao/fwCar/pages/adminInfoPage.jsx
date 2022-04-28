@@ -43,7 +43,7 @@ class CarModal extends AdminModal {
         this.itemNgayHetHanDangKiem.value(ngayHetHanDangKiem);
         this.itemNgayHetHanTapLai.value(ngayHetHanTapLai);
         this.itemNgayDangKy.value(ngayDangKy);
-        this.itemType.value(type);
+        this.itemType.value(type ? type._id : null);
         this.itemCarId.value(carId);
         this.itemState.value(state ? state : 'S');
         this.itemNgayDangKy.value(ngayDangKy);
@@ -116,7 +116,7 @@ class CarModal extends AdminModal {
                     <FormSelect className='col-md-4' ref={e => this.itemUser = e} label='Quản lý phụ trách xe' data={ajaxSelectAvaiableLecturer(this.state.user)} readOnly={readOnly} />
                     <FormSelect className='col-md-4' ref={e => this.itemTypeOfFuel = e} label='Loại nhiên liệu sử dụng' data={dataFuel} readOnly={readOnly} />
                     <FormSelect className='col-md-4' ref={e => this.itemState = e} label='Trạng thái sử dụng ' data={listState} eadOnly={readOnly} />
-                    <FormTextBox className='col-md-4' ref={e => this.itemType = e} label='Phân loại ' readOnly={readOnly} />
+                    <FormSelect ref={e => this.itemType = e} className='col-md-4' data={this.props.types} label='Phân loại' readOnly={readOnly} />
                 </div >
         });
     }
@@ -138,6 +138,8 @@ class CarPage extends AdminPage {
         this.filterType.value(1);
         this.props.getCategoryAll('car', null, (items) =>
             this.setState({ brandTypes: (items || []).map(item => ({ id: item._id, text: item.title })) }));
+        this.props.getCategoryAll('carType', null, (items) =>
+            this.setState({ types: (items || []).map(item => ({ id: item._id, text: item.title })) }));
         T.onSearch = (searchText) => {
             const { filterType, dateStart, dateEnd, user } = this.state.condition,
                 condition = { filterType, dateStart, dateEnd, user };
@@ -234,7 +236,7 @@ class CarPage extends AdminPage {
                     <TableCell type='text' style={{ whiteSpace: 'nowrap' }} content={item.typeOfFuel ? this.renderTypeOfFuel(item.typeOfFuel) : 'Xăng'} />
                     <TableCell type='text' style={{ whiteSpace: 'nowrap' }} content={T.dateToText(item.ngayHetHanDangKiem, 'dd/mm/yyyy')} />
                     <TableCell type='text' style={{ whiteSpace: 'nowrap' }} content={T.dateToText(item.ngayHetHanTapLai, 'dd/mm/yyyy')} />
-                    <TableCell type='text' style={{ whiteSpace: 'nowrap' }} content={item  ? item.type : ''} />
+                    <TableCell type='text' style={{ whiteSpace: 'nowrap' }} content={item.type && item.type.title} />
                     <TableCell type='text' style={{ whiteSpace: 'nowrap' }} content={item ? (item.state == 'R' ? 'Đã rút' : 'Đang sử dụng') : 'Đang sử dụng'} />
                     {/* <TableCell type='text' style={{ whiteSpace: 'nowrap', textAlign: 'center' }} content={item.isPersonalCar ? 'X' : ''} /> */}
                     <TableCell type='buttons' content={item} permission={permission} onEdit={this.edit} onLiquidate={this.liquidate} onDelete={this.delete} onEditFuel={'/user/car/fuel/' + item._id} onEditRepair={'/user/car/repair/' + item._id} onEditCourseHistory={'/user/car/course/' + item._id} />
@@ -266,7 +268,7 @@ class CarPage extends AdminPage {
                 </div>
                 <Pagination name='adminCar' style={{ marginLeft: 60 }} pageCondition={pageCondition} pageNumber={pageNumber} pageSize={pageSize} pageTotal={pageTotal} totalItem={totalItem}
                     getPage={this.props.getCarPage} />
-                <CarModal readOnly={!permission.write} ref={e => this.modal = e} brandTypes={this.state.brandTypes} create={this.props.createCar} update={this.props.updateCar} dataLecturer={this.state.listLecturer} />
+                <CarModal readOnly={!permission.write} ref={e => this.modal = e} brandTypes={this.state.brandTypes} types={this.state.types} create={this.props.createCar} update={this.props.updateCar} dataLecturer={this.state.listLecturer} />
                 {permission.import ? <CirclePageButton type='import' style={{ right: '70px', backgroundColor: 'brown', borderColor: 'brown' }} onClick={() => this.props.history.push('/user/car/import')} /> : null}
                 {permission.import ? <CirclePageButton type='export' style={{ right: '130px', backgroundColor: 'brown', borderColor: 'brown' }} onClick={() => exportInfoCar(this.state.filterKey)} /> : null}
             </>,

@@ -11,7 +11,6 @@ module.exports = app => {
         ngayHetHanBaoHiem: { type: Date, default: Date.now }, 
         typeOfFuel: { type: String, enum: ['xang', 'dau', 'nhot'], default: 'xang' }, // Loại nhiên liệu xe sử dụng
         state: {type: String, enum: ['S', 'R'], default: 'S'},
-        type: { type: String },
         fuel: [{
             date: { type: Date, default: Date.now },
             fee: { type: Number, default: 0 },
@@ -59,6 +58,7 @@ module.exports = app => {
             user: { type: app.database.mongoDB.Schema.ObjectId, ref: 'User' },
         }],
         brand: { type: app.database.mongoDB.Schema.ObjectId, ref: 'Category' },
+        type: { type: app.database.mongoDB.Schema.ObjectId, ref: 'Category' },
         isPersonalCar: { type: Boolean, default: false },                   // Xe cá nhân hay xe của trung tâm
         division: { type: app.database.mongoDB.Schema.ObjectId, ref: 'Division' },        // Xe thuộc cơ sở nào
     });
@@ -77,7 +77,7 @@ module.exports = app => {
                 result.pageNumber = pageNumber === -1 ? result.pageTotal : Math.min(pageNumber, result.pageTotal);
 
                 const skipNumber = (result.pageNumber > 0 ? result.pageNumber - 1 : 0) * result.pageSize;
-                model.find(condition).sort(sort ? sort:{ licensePlates: 1 }).skip(skipNumber).limit(result.pageSize).populate('division', 'title').populate('user', 'firstname lastname').populate('courseType', 'title').populate('brand', 'title').exec((error, list) => {
+                model.find(condition).sort(sort ? sort:{ licensePlates: 1 }).skip(skipNumber).limit(result.pageSize).populate('division', 'title').populate('user', 'firstname lastname').populate('courseType', 'title').populate('brand', 'title').populate('type', 'title').exec((error, list) => {
                     result.list = list;
                     done(error, result);
                 });
@@ -86,13 +86,13 @@ module.exports = app => {
 
         getOld: (done) => model.find({}).sort({ ngayDangKy: 1 }).limit(1).exec(done),
 
-        get: (condition, done) => typeof condition == 'string' ? model.findById(condition).populate('division', 'title').populate('courseType', 'title').populate('brand', 'title').populate({
+        get: (condition, done) => typeof condition == 'string' ? model.findById(condition).populate('division', 'title').populate('courseType', 'title').populate('brand', 'title').populate('type', 'title').populate({
             path: 'courseHistory.course', populate: { path: 'course', select: 'name thoiGianBatDau thoiGianKetThuc' }
         }).populate({
             path: 'courseHistory.user', populate: { path: 'user', select: 'firstname lastname' }
         }).populate({
             path: 'calendarHistory.user', populate: { path: 'user', select: 'firstname lastname' }
-        }).exec(done) : model.findOne(condition).populate('division', 'title').populate('courseType', 'title').populate('brand', 'title').exec(done),
+        }).exec(done) : model.findOne(condition).populate('division', 'title').populate('courseType', 'title').populate('brand', 'title').populate('type', 'title').exec(done),
 
         update: (condition, changes, $unset, done) => {
             if (!done) {

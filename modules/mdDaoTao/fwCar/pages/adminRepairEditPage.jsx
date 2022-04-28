@@ -183,7 +183,7 @@ class CarRepairEditPage extends AdminPage {
                 <CarRepairCompleteModal readOnly={!permission.write} ref={e => this.completeModal = e} data={this.state.data} update={this.props.addCarRepair} updateCar={this.props.updateCar} />
                 <CirclePageButton type='export' style={{ right: '70px' }} onClick={() => exportRepairCar(this.state.data._id)} />
             </>,
-            backRoute: permission.write ? '/user/car/manager' : '/user/car',
+            backRoute: permission.write ? '/user/car/repair' : '/user/car',
             onCreate: permission.write ? this.edit : null,
         });
     }

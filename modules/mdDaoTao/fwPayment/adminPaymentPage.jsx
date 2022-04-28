@@ -2,7 +2,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { getPaymentPage, exportBankBaoCao } from './redux';
 import Pagination from 'view/component/Pagination';
-import { AdminPage, AdminModal, TableCell, renderTable, FormDatePicker, CirclePageButton } from 'view/component/AdminPage';
+import { AdminPage, AdminModal, TableCell, renderTable, FormDatePicker, CirclePageButton, TableHead, TableHeadCell } from 'view/component/AdminPage';
 
 class SmsModal extends AdminModal {
     onShow = ({sender, body, timeReceived}) => {
@@ -28,7 +28,7 @@ class PaymentPage extends AdminPage {
 
     componentDidMount() {
         T.ready('/user/payment');
-        this.props.getPaymentPage(1, 50, undefined);
+        this.props.getPaymentPage(1, undefined, {}, {}, {});
     }
 
     handleFilterByDate = () => {
@@ -37,7 +37,7 @@ class PaymentPage extends AdminPage {
         if (dateStart > dateEnd) {
             T.notify('Ngày bắt đầu phải nhỏ hơn ngày kết thúc !', 'danger');
         } else {
-            this.props.getPaymentPage(1, 50, {dateStart, dateEnd}, data => {
+            this.props.getPaymentPage(1, 50, {dateStart, dateEnd}, {}, {}, data => {
                 this.setState({ isSearching: false, dateStart: dateStart, dateEnd: dateEnd, data});
             });
         }
@@ -47,13 +47,14 @@ class PaymentPage extends AdminPage {
         const {dateStart, dateEnd} = this.state;
         let { pageNumber, pageSize, pageTotal, pageCondition, totalItem, list } = this.props.payment && this.props.payment.page ?
             this.props.payment.page : { pageNumber: 1, pageSize: 50, pageTotal: 1, pageCondition: {}, totalItem: 0, list: [] };
-        console.log(list);
-            const table = renderTable({
+        const table = renderTable({
+            autoDisplay:true,
+            stickyHead: true,
             getDataSource: () => list,
             renderHead: () => (
-                <tr> 
-                 <th style={{ width: 'auto', textAlign: 'center' }}>#</th>
-                    <th style={{ width: 'auto' }} nowrap='true'>Mã chứng từ</th>
+                <TableHead getPage={this.props.getPaymentPage}>
+                    <th style={{ width: 'auto', textAlign: 'center' }}>#</th>
+                    <TableHeadCell sort={true} filter='search' name='type' style={{ width: 'auto' }} nowrap='true'>Mã chứng từ</TableHeadCell>
                     <th style={{ width: 'auto' }} nowrap='true'>Thời gian nhận</th>
                     <th style={{ width: 'auto' }} nowrap='true'>Số chứng từ</th>
                     <th style={{ width: '100%' }} nowrap='true'>Học viên</th>
@@ -63,8 +64,8 @@ class PaymentPage extends AdminPage {
                     <th style={{ width: 'auto' }} nowrap='true'>Số tiền(VNĐ)</th>
                     <th style={{ width: 'auto' }}  nowrap='true'>Đối tượng nợ</th>
                     <th style={{ width: 'auto' }}  nowrap='true'>Đối tượng có</th>
-                    <th style={{ width: 'auto' }}  nowrap='true'>SMS Banking ( Nhân viên nhập dữ liệu )</th>
-                </tr>),
+                    <th style={{ width: 'auto' }}  nowrap='true'>Nội dung SMS ( Nhân viên nhập dữ liệu )</th>
+                </TableHead>),
             renderRow: (item, index) => (
                 <tr key={index}>
                     <TableCell type='number' content={(pageNumber - 1) * pageSize + index + 1} />

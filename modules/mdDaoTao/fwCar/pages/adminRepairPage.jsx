@@ -4,70 +4,8 @@ import { getCarPage, createCar, updateCar, deleteCar, exportRepairCarPage, addCa
 import { getAllLecturer } from 'modules/_default/fwUser/redux';
 import { getCategoryAll } from 'modules/_default/fwCategory/redux';
 import Pagination from 'view/component/Pagination';
-import { AdminPage, FormDatePicker, AdminModal, FormTextBox, TableCell, renderTable, CirclePageButton, FormRichTextBox, TableHead,TableHeadCell } from 'view/component/AdminPage';
+import { AdminPage, TableCell, renderTable, CirclePageButton, TableHead,TableHeadCell } from 'view/component/AdminPage';
 import T from 'view/js/common';
-
-class CarRepairModal extends AdminModal {
-    state = {};
-    componentDidMount() {
-        $(document).ready(() => this.onShown(() => this.itemLicensePlates.focus()));
-    }
-
-    onShow = (item) => {
-        const { licensePlates, _id } = item || { _id: null, licensePlates: '' },
-            list = item && item.repair && item.repair.sort((a, b) => new Date(b.dateStart) - new Date(a.dateStart)),
-            current = list && list[0],
-            { dateStart, dateEnd, fee, content } = current || { dateStart: '', dateEnd: '', fee: '', content: '' },
-            repairId = current && current._id;
-
-        this.itemLicensePlates.value(licensePlates);
-        this.itemNgaySuaChua.value(dateStart ? dateStart : new Date());
-        this.itemNgayHoanThanh.value(dateEnd);
-        this.itemChiPhi.value(fee);
-        this.itemNoiDungSuaChua.value(content);
-        this.setState({ _id, repairId });
-    }
-
-    onSubmit = () => {
-        const data = {
-            dateStart: this.itemNgaySuaChua.value(),
-            dateEnd: this.itemNgayHoanThanh.value(),
-            fee: this.itemChiPhi.value(),
-            content: this.itemNoiDungSuaChua.value(),
-            repairId: this.state.repairId
-        };
-        if (data.content == '') {
-            T.notify('Nội dung sửa chữa không được trống!', 'danger');
-            this.itemNoiDungSuaChua.focus();
-        } else if (!data.fee || data.fee == '') {
-            T.notify('Chi phí sửa chữa không được trống!', 'danger');
-            this.itemChiPhi.focus();
-        } else if (!data.dateEnd || data.dateEnd == '') {
-            T.notify('Ngày hoàn thành không được trống!', 'danger');
-            this.itemNgayHoanThanh.focus();
-        } else {
-            this.props.update(this.state._id, data, () => {
-                this.props.updateCar(this.state._id, { status: 'dangSuDung' }, this.hide());
-            });
-        }
-    }
-
-    render = () => {
-        const readOnly = this.props.readOnly;
-        return this.renderModal({
-            title: 'Hoàn thành sửa chữa xe',
-            body:
-                <>
-                    <FormTextBox ref={e => this.itemLicensePlates = e} label='Biển số xe' readOnly={true} />
-                    <FormTextBox type='number' ref={e => this.itemChiPhi = e} label='Chi phí sửa chữa' readOnly={readOnly} />
-                    <FormDatePicker ref={e => this.itemNgaySuaChua = e} label='Ngày sửa chữa' readOnly={readOnly} type='date-mask' />
-                    <FormDatePicker ref={e => this.itemNgayHoanThanh = e} label='Ngày hoàn thành' readOnly={readOnly} type='date-mask' />
-                    <FormRichTextBox ref={e => this.itemNoiDungSuaChua = e} label='Nội dung sửa chữa' readOnly={readOnly} />
-                </>
-        });
-    }
-}
-
 class CarRepairPage extends AdminPage {
     state = { searchText: '', isSearching: false, isAll: false };
 
@@ -131,7 +69,7 @@ class CarRepairPage extends AdminPage {
                     <TableCell type='text' content={item.car ? (item.car.brand && item.car.brand.title) : item.brand && item.brand.title} />
                     <TableCell type='text' style={{ whiteSpace: 'nowrap' }} content={item.car ? (item.car.user && (item.car.user.lastname + ' ' + item.car.user.firstname)) : item.user && (item.user.lastname + ' ' + item.user.firstname)} />
                     <TableCell type='text' style={{ whiteSpace: 'nowrap' }} content={item.car ? T.dateToText(item.repair.dateStart, 'dd/mm/yyyy') : (item.repair && item.repair.length ? T.dateToText((item.repair.sort((a, b) => new Date(b.dateStart) - new Date(a.dateStart)) && item.repair.sort((a, b) => new Date(b.dateStart) - new Date(a.dateStart))[0].dateStart), 'dd/mm/yyyy') : '')} />
-                    <TableCell type='buttons' content={item} permission={permission} onEdit={this.edit} />
+                    <TableCell type='buttons' content={item} permission={permission} onEdit={'/user/car/repair/' + item.car._id} />
                 </tr >),
         });
         return this.renderPage({
@@ -144,7 +82,7 @@ class CarRepairPage extends AdminPage {
                 </div>
                 <Pagination name='adminCar' style={{ marginLeft: 60 }} pageCondition={pageCondition} pageNumber={pageNumber} pageSize={pageSize} pageTotal={pageTotal} totalItem={totalItem}
                     getPage={this.props.getCarPage} />
-                <CarRepairModal readOnly={!permission.write} ref={e => this.modal = e} brandTypes={this.state.brandTypes} update={this.props.addCarRepair} updateCar={this.props.updateCar} />
+                {/* <CarRepairModal readOnly={!permission.write} ref={e => this.modal = e} brandTypes={this.state.brandTypes} update={this.props.addCarRepair} updateCar={this.props.updateCar} /> */}
                 <CirclePageButton type='export' onClick={() => exportRepairCarPage()} />
             </>,
             backRoute: '/user/car',
