@@ -119,7 +119,7 @@ export function getCourseAll(condition,done) {
                 T.notify('Lấy danh sách khóa học bị lỗi', 'danger');
                 console.error('GET: ' + url + '. ' + data.error);
             } else {
-                done && data && done(data.list);
+                done  && done(data.list);
                 dispatch({ type: CourseGetAll, list: data.list });
             }
         }, error => console.error(error) || T.notify('Lấy danh sách khóa học bị lỗi', 'danger'));
@@ -234,6 +234,41 @@ export function exportSatHachs(satHachs,type, done) {
                 T.notify('Xuất file word thành công!', 'success');
             }
         }, error => console.error(error) || T.notify('Xuất file word bị lỗi!', 'danger'));
+    };
+}
+// Course roles ----------------------------------------------------------------------------------------------------
+export function updateCourseRole(_courseId, data, type , role , done) {
+    return dispatch => {
+        const url = '/api/course/assign-role';
+        T.put(url, { _courseId, data, type , role }, data => {
+            console.log({data});
+            if (data.error) {
+                T.notify('Cập nhật nhân sự khóa học bị lỗi!', 'danger');
+                console.error('PUT: ' + url + '.', data.error);
+                done && done(data.error);
+            } else {
+                T.notify('Cập nhật nhân sự khóa học thành công!');
+                dispatch({ type: CourseGetItem, item: data.item });
+                done && done();
+            }
+        }, error => console.error(error) || T.notify('Cập nhật nhân sự bị lỗi!', 'danger'));
+    };
+}
+
+export function updateAdminCourseRole(_courseId, _userId, action , done) {
+    return dispatch => {
+        const url = '/api/course/assign-role/course-admin';
+        T.put(url, { _courseId, _userId, action }, data => {
+            if (data.error) {
+                T.notify('Cập nhật nhân sự khóa học bị lỗi!', 'danger');
+                console.error('PUT: ' + url + '.', data.error);
+                done && done(data.error);
+            } else {
+                T.notify('Cập nhật nhân sự khóa học thành công!');
+                dispatch({ type: CourseGetItem, item: data.item });
+                done && done();
+            }
+        }, error => console.error(error) || T.notify('Cập nhật nhân sự bị lỗi!', 'danger'));
     };
 }
 
@@ -908,5 +943,15 @@ export const ajaxSelectCourseTeacher= {
     }, 
     fetchOne: (_id, done) => fetchCourse(_id, ({ item }) => done && done({ id: item._id, text: item.name + (item.courseType ? ` (${item.courseType.title})` : '') }))
 };
+
+export const ajaxSelectOfficialCourse = {
+    ajax: false,
+    url: '/api/course/page/1/20?isDefault=false',
+    data: {},
+    processResults: response => ({ results: response && response.page && response.page.list ? response.page.list.map(course => ({ id: course._id, text: course.name + (course.courseType ? ` (${course.courseType.title})` : '') })) : [] }),
+    fetchOne: (_id, done) => fetchCourse(_id, ({ item }) => done && done({ id: item._id, text: item.name + (item.courseType ? ` (${item.courseType.title})` : '') }))
+};
+
+
 
 

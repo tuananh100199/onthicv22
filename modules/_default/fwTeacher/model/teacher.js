@@ -195,7 +195,6 @@ module.exports = (app) => {
                 { new: true }).populate('courses', '_id title').populate('doneCourses', '_id title').exec(done);
         },
         updateUnDoneCourse: (_courseId, done) => {// update khi admin mở lại khóa học, lúc này thì những khóa học thuộc doneCourses sẽ trở lại courses
-            console.log('update unDoneCourse,courseId = ', _courseId);
             model.updateMany({ doneCourses: { $in: [_courseId] } },
                 { $push: { ['courses']: _courseId }, $pull: { ['doneCourses']: _courseId } },
                 // {firstname:'vy'},

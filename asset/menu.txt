@@ -14,6 +14,7 @@
 	2120 - Tài liệu (/user/document)
 	2130 - Phòng ban (/user/department)
 	2140 - Thông tin nhân viên (/user/staff-info)
+	2150 - Nhân sự (/user/assign-role)
 3000. Truyền thông (undefined)
 	3002 - Liên hệ (/user/contact)
 	3003 - Đăng ký nhận tin (/user/subscribe)

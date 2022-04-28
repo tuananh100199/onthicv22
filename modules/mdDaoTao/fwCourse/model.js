@@ -38,6 +38,16 @@ module.exports = app => {
         thoiGianThiTotNghiepChinhThuc: { type: Date, default: Date.now },
 
         admins: [{ type: app.database.mongoDB.Schema.ObjectId, ref: 'User' }],            // Quản trị viên khóa học
+        // enrollManager: [{ type: app.database.mongoDB.Schema.ObjectId, ref: 'User' }],            
+        roleManager:{
+            type:[{// Tuyển sinh khóa học
+                user:{ type: app.database.mongoDB.Schema.ObjectId, ref: 'User' },
+                role:{type:String,enum:['enrollManager','teacherManager','deviceManager','accountantManager']}
+                }],
+            default:[],
+        },
+        
+        teacherManager: [{ type: app.database.mongoDB.Schema.ObjectId, ref: 'User' }],            // Quản lý giáo viên khóa học
         teacherGroups: [{
             teacher: { type: app.database.mongoDB.Schema.Types.ObjectId, ref: 'User' },
             student: [{ type: app.database.mongoDB.Schema.Types.ObjectId, ref: 'Student' }],
@@ -121,6 +131,8 @@ module.exports = app => {
                 path: 'teacherGroups.student', populate: { path: 'user division courseType course', select: 'email title name image phoneNumber' }
             }).populate({
                 path: 'admins', select: '-password', populate: { path: 'division' }
+            }).populate({
+                path: 'roleManager.user',select: '_id lastname firstname identityCard'
             }).exec(done);
         },
 
@@ -162,7 +174,9 @@ module.exports = app => {
                 });
             }).then(() => {
                 changes.modifiedDate = new Date();
-                model.findOneAndUpdate({ _id }, changes, { new: true }).populate('admins', '-password').populate('subjects', '-detailDescription').populate('teacherGroups.teacher', 'firstname lastname division').populate('teacherGroups.student', 'firstname lastname').exec(done);
+                model.findOneAndUpdate({ _id }, changes, { new: true }).populate('admins', '-password').populate('subjects', '-detailDescription')
+                .populate('teacherGroups.teacher', 'firstname lastname division').populate('teacherGroups.student', 'firstname lastname')
+                .populate('roleManager.user', '_id firstname lastname identityCard').exec(done);
             }).catch(error => done(error));
         },
 

@@ -161,6 +161,11 @@ module.exports = (app) => {
             condition.admins = sessionUser._id;
             condition.active = true;
         }
+
+        // if (sessionUser.isStaff && !sessionUser.isLecturer && !sessionUser.isCourseAdmin) {
+        //     condition.roleManager = {$elemMatch:{user:sessionUser._id}};
+        //     condition.active = true;
+        // }
         if(req.query.isDefault){
             condition.isDefault=req.query.isDefault=='true'?true:{$ne:true};
         }
@@ -206,6 +211,10 @@ module.exports = (app) => {
             condition.admins = sessionUser._id;
             condition.active = true;
         }
+        // if (sessionUser.isStaff && !sessionUser.isLecturer && !sessionUser.isCourseAdmin) {
+        //     condition.roleManager = {$elemMatch:{user:sessionUser._id}};
+        //     condition.active = true;
+        // }
         if(condition.isDefault){
             condition.isDefault=condition.isDefault=='true'?true:{$ne:true};
         }
@@ -749,6 +758,70 @@ module.exports = (app) => {
 
     app.put('/api/course/additional-profile', app.permission.check('course:write'), (req, res) => {
         app.model.student.update(req.body._id, req.body.changes, (error, item) => res.send({ error, item }));
+    });
+
+    // course assign role
+
+    app.put('/api/course/assign-role/course-admin', app.permission.check('course:write'), (req, res) => {
+        // role:admins,enrolls,teacherManagers,...
+        //type=add,remove...
+        // const user = req.session.user;
+        const {_userId,action,_courseId} = req.body;
+        const type='admins';
+        app.model.course.get(_courseId,(error,course)=>{
+            if(error){
+                res.send({error});
+            }
+            else{
+                let data = course[type];
+                if(action=='add'){
+                    // check if _userId exist in data
+                    if(data.find(item=>item._id==_userId)){
+                        res.send({error:'Người dùng đã được gán quyền'});
+                        return;
+                    }else{
+                        (data=data.map(item=>item._id)).push(_userId);
+                    }
+                }else{//action==remove
+                    data = data.filter(item=>item._id!=_userId);
+                }
+                app.model.course.update(_courseId,{[type]:data},(error,item)=>res.send({error,item}));
+            }
+        });
+    });
+
+    app.put('/api/course/assign-role', app.permission.check('course:write'), (req, res) => {
+        // role:admins,enrolls,teacherManagers,...
+        //type=add,remove...
+        // const user = req.session.user;
+        const {role,data,type,_courseId} = req.body;
+        const {_userId} = data||{};
+        app.model.course.get(_courseId,(error,course)=>{
+            if(error){
+                res.send({error});
+            }
+            else{
+                let data = course.roleManager && course.roleManager.length?course.roleManager.filter(item=>item.role==role):[];
+                if(type=='add'){
+                    // check if _userId exist in data
+                    if(data.find(item=>item.user._id==_userId)){
+                        res.send({error:'Người dùng đã được gán quyền'});
+                        return;
+                    }else{
+                        (data=data.map(item=>({user:item.user._id,role:item.role}))).push({user:_userId,role});
+                    }
+                }else if(type=='remove'){//type==remove
+                    data = data.filter(item=>item.user && item.user._id!=_userId|| (item.user.id==_userId && item.role!=role) );
+                }
+                data=(course.roleManager && course.roleManager.length?course.roleManager:[]).map(item=>({user:item.user._id,role:item.role})).filter(item=>item.role!=role).concat(data);
+                app.model.course.update(_courseId,{roleManager:data},(error,item)=>{
+                    if(error)res.send({error});
+                    else{
+                        res.send({item});
+                    }
+                });
+            }
+        });
     });
 
     // API: Mobile
