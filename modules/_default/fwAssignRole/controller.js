@@ -50,5 +50,4 @@ module.exports = (app) => {
         const { _id } = req.body;
         app.model.assignRole.delete(_id, (error) => res.send({ error }));
     });
-
 };

@@ -56,7 +56,7 @@ class CourseEnrollPage extends AdminPage {
 
     create = (e) => e.preventDefault() || this.modal.show();
 
-    delete = (e, item) => e.preventDefault() || T.confirm('Quản trị viên khóa học', 'Bạn có chắc bạn muốn xóa quản trị viên này?', true, isConfirm =>{
+    delete = (e, item) => e.preventDefault() || T.confirm('Nhân sự khóa học', 'Bạn có chắc bạn muốn xóa nhân sự này?', true, isConfirm =>{
         if (isConfirm && this.props.course && this.props.course.item) {
             let { _id } = this.props.course.item;
             this.props.updateCourseRole(_id,{_userId:item.user._id},'remove',this.state.type);

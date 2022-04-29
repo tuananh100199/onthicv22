@@ -30,7 +30,7 @@ class AssignRoleModal extends AdminModal {
         } 
     }
     render = () => this.renderModal({
-        title: 'Tuyển sinh khóa học',
+        title: 'Quản lý giáo viên',
         body: <>
             <div className='row'>
                 <FormSelect ref={e => this.itemCourse = e} className='col-md-12' label='Khóa học' data={ajaxSelectOfficialCourse}  readOnly={this.props.readOnly}/>
