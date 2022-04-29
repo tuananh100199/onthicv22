@@ -546,7 +546,13 @@ module.exports = app => {
         if (payments && payments.length > 0) {
             const handleImport = (index = 0) => {
                 if (index == payments.length) {
-                    res.send({ error: err });
+                    const dataEncryption = {
+                        type: 'import',
+                        author: sessionUser._id,
+                        filename: 'Công nợ từ phần mềm kế toán',
+                        chucVu: 'Kế toán'
+                    };
+                    app.model.encryption.create(dataEncryption, () => res.send({ error: err }));
                 } else {
                     const { creditObject} = payments[index];
                     const payment = payments[index];

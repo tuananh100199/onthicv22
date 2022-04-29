@@ -146,7 +146,7 @@ app.get('/api/car/fuel/export/:_carId', app.permission.check('car:export'), (req
                     });
                 });
                 app.excel.write(worksheet, cells);
-                app.excel.attachment(workbook, res, 'Danh sách cấp phát nhiên liệu.xlsx');
+                    app.excel.attachment(workbook, res, 'Danh sách cấp phát nhiên liệu.xlsx');
             }
         });
     }
@@ -405,6 +405,7 @@ app.get('/api/car/calendar/export/:_carId', app.permission.check('car:export'), 
         // console.log('-----------------defaultCondition:----------------------');
         pageCondition={...pageCondition,...defaultFilter};
     }); 
+    const sessionUser = req.session.user;
     const sourcePromise =  app.excel.readFile(app.publicPath+'/document/TONG DANH SACH CAP NHIEN LIEU XE.xlsx');
     const getCarPage = new Promise((resolve,reject)=>{ 
         app.model.car.getPage(pageNumber, pageSize, pageCondition, sort, (error, page) => {
@@ -460,7 +461,16 @@ app.get('/api/car/calendar/export/:_carId', app.permission.check('car:export'), 
                     j+=1;
                 }
             }
-        app.excel.attachment(sourceWorkbook, res, 'TONG DANH SACH CAP NHIEN LIEU XE.xlsx');
+            const dataEncryption ={
+                author: sessionUser._id,
+                type: 'export',
+                filename: 'TONG DANH SACH CAP NHIEN LIEU XE.xlsx',
+            };
+            app.model.encryption.create(dataEncryption, () => {
+                app.excel.attachment(sourceWorkbook, res, 'TONG DANH SACH CAP NHIEN LIEU XE.xlsx');
+            });
+            
+        
         }
         });
     });

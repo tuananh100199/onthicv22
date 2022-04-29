@@ -9,6 +9,7 @@ import fwCoursePayment from 'modules/_default/fwCoursePayment/index';
 import fwDepartment from 'modules/_default/fwDepartment/index';
 import fwDiscount from 'modules/_default/fwDiscount/index';
 import fwEmail from 'modules/_default/fwEmail/index';
+import fwEncryption from 'modules/_default/fwEncryption/index';
 import fwEnrollTarget from 'modules/_default/fwEnrollTarget/index';
 import fwFeeType from 'modules/_default/fwFeeType/index';
 import fwHome from 'modules/_default/fwHome/index';
@@ -53,4 +54,4 @@ import fwNews from 'modules/mdTruyenThong/fwNews/index';
 import fwNotificationTemplate from 'modules/mdTruyenThong/fwNotificationTemplate/index';
 import fwSubscribe from 'modules/mdTruyenThong/fwSubscribe/index';
 
-export const modules = [_init, fwBank, fwCategory, fwCluster, fwComment, fwCourseFee, fwCoursePayment, fwDepartment, fwDiscount, fwEmail, fwEnrollTarget, fwFeeType, fwHome, fwMenu, fwNotification, fwProfileType, fwRate, fwRevenue, fwRole, fwStaff, fwTeacher, fwTeacherDiploma, fwTrainingClass, fwUser, fwCandidate, fwCar, fwCertificate, fwChangeLecturer, fwChat, fwCourse, fwCourseType, fwDevice, fwDivision, fwDriveQuestion, fwDriveTest, fwFacility, fwLesson, fwPayment, fwProfileStudent, fwProfileStudentType, fwRegisterCalendar, fwSign, fwSms, fwStudent, fwStudyProgram, fwSubject, fwTimeTable, fwContact, fwFeedback, fwForum, fwNews, fwNotificationTemplate, fwSubscribe];
+export const modules = [_init, fwBank, fwCategory, fwCluster, fwComment, fwCourseFee, fwCoursePayment, fwDepartment, fwDiscount, fwEmail, fwEncryption, fwEnrollTarget, fwFeeType, fwHome, fwMenu, fwNotification, fwProfileType, fwRate, fwRevenue, fwRole, fwStaff, fwTeacher, fwTeacherDiploma, fwTrainingClass, fwUser, fwCandidate, fwCar, fwCertificate, fwChangeLecturer, fwChat, fwCourse, fwCourseType, fwDevice, fwDivision, fwDriveQuestion, fwDriveTest, fwFacility, fwLesson, fwPayment, fwProfileStudent, fwProfileStudentType, fwRegisterCalendar, fwSign, fwSms, fwStudent, fwStudyProgram, fwSubject, fwTimeTable, fwContact, fwFeedback, fwForum, fwNews, fwNotificationTemplate, fwSubscribe];

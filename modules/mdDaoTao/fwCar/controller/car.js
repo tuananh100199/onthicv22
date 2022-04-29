@@ -48,7 +48,14 @@ module.exports = app => {
         filter && app.handleFilter(filter,['courseType','brand','division','licensePlates','state'],defaultFilter=>{
             // console.log('-----------------defaultCondition:----------------------');
             pageCondition={...pageCondition,...defaultFilter};
-        }); 
+        });
+        if(filter.course){
+            let conditionCourse = {
+                $eq: [{'$arrayElemAt': ['$courseHistory.course', -1]}, filter.course]
+            };
+            pageCondition={...pageCondition,...conditionCourse};
+        } 
+        console.log(pageCondition);
         app.model.car.getPage(pageNumber, pageSize, pageCondition, sort, (error, page) => {
             res.send({ page, error });
         });

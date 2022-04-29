@@ -4,7 +4,7 @@ import { getCarPage, createCar, updateCar, deleteCar, exportRepairCarPage, addCa
 import { getAllLecturer } from 'modules/_default/fwUser/redux';
 import { getCategoryAll } from 'modules/_default/fwCategory/redux';
 import Pagination from 'view/component/Pagination';
-import { AdminPage, TableCell, renderTable, CirclePageButton, TableHead,TableHeadCell } from 'view/component/AdminPage';
+import { AdminPage, TableCell, renderTable, CirclePageButton, TableHead,TableHeadCell, FormDatePicker } from 'view/component/AdminPage';
 import T from 'view/js/common';
 class CarRepairPage extends AdminPage {
     state = { searchText: '', isSearching: false, isAll: false };
@@ -36,16 +36,33 @@ class CarRepairPage extends AdminPage {
 
     edit = (e, item) => e.preventDefault() || this.modal.show(item.car ? item.car : item);
 
+    handleFilterByDate = () => {
+        const dateStart = this.dateStartDate ? this.dateStartDate.value() : '';
+        const dateEnd = this.dateEndDate ? this.dateEndDate.value() : '';
+        if (dateStart > dateEnd) {
+            T.notify('Ngày bắt đầu phải nhỏ hơn ngày kết thúc !', 'danger');
+        } else {
+            this.setState({ isSearching: false, dateStartDate: dateStart, dateEndDate: dateEnd });
+        }
+    }
+
     render() {
         const permission = this.getUserPermission('car', ['read', 'write', 'delete', 'import']);
-        const {brandTypes, listLicensePlates} = this.state;
+        const {brandTypes, listLicensePlates, dateStartDate, dateEndDate} = this.state;
         let { pageNumber, pageSize, pageTotal, pageCondition, totalItem, list } = this.props.car && this.props.car.page ?
             this.props.car.page : { pageNumber: 1, pageSize: 50, pageTotal: 1, pageCondition: {}, totalItem: 0, list: [] };
         let data = [];
         list && list.length && list.forEach(car => {
         const sortArr = car && car.repair && car.repair.sort((a, b) => new Date(b.dateStart) - new Date(a.dateStart));
             sortArr.forEach((repair) => {
-                data.push({ car, repair });
+                if(dateStartDate){
+                    if(dateStartDate < new Date(repair.dateStart) && dateEndDate > new Date(repair.dateEnd)){
+                        data.push({ car, repair });
+                    }
+                } else {
+                    data.push({ car, repair });
+                }
+                // data.push({ car, repair });
             });
         });
         list = data;
@@ -74,10 +91,20 @@ class CarRepairPage extends AdminPage {
         });
         return this.renderPage({
             icon: 'fa fa-wrench',
-            title: 'Xe sữa chữa, thanh lý',
-            breadcrumb: ['Xe sữa chữa, thanh lý'],
+            title: 'Xe sữa chữa, bảo dưỡng',
+            breadcrumb: ['Xe sữa chữa, bảo dưỡng'],
             content: <>
                 <div className='tile'>
+                    <div className='tile-body row'>
+                        <FormDatePicker ref={e => this.dateStartDate = e} label='Thời gian bắt đầu (dd/mm/yyyy)' className='col-md-5' type='date-mask' />
+                        <FormDatePicker ref={e => this.dateEndDate = e} label='Thời gian kết thúc (dd/mm/yyyy)' className='col-md-5' type='date-mask' />
+                          <div className='m-auto col-md-2'>
+                            <button className='btn btn-success' style={{ marginTop: '11px' }} type='button' onClick={this.handleFilterByDate}>
+                                <i className='fa fa-filter' /> Lọc
+                            </button>
+                        </div>
+                    </div>
+                    <p>Số lượng xe: {list.length}</p>
                     {table}
                 </div>
                 <Pagination name='adminCar' style={{ marginLeft: 60 }} pageCondition={pageCondition} pageNumber={pageNumber} pageSize={pageSize} pageTotal={pageTotal} totalItem={totalItem}

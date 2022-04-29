@@ -78,3 +78,6 @@
 	9006 - Danh mục chứng chỉ (/user/teacher-diploma)
 	9010 - Lớp tập huấn (/user/training-class)
 	9020 - Quản lý đi khóa (/user/teacher-course)
+90000. Mã hoá truyền tin (undefined)
+	90001 - Quản lý gửi file (/user/encryption/export)
+	90002 - Quản lý nhận file (/user/encryption/import)

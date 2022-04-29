@@ -438,7 +438,6 @@ module.exports = (app) => {
     //Teacher API
     app.put('/api/course/teacher-group/teacher', app.permission.check('course:write'), (req, res) => {
         const { _courseId,_teacherUserId, type, description='' } = req.body;
-        console.log({_courseId,_teacherUserId,type,description});
         const user = req.session.user;
         new Promise((resolve, reject) => {
             if (type == 'add') {

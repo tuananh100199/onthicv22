@@ -4,6 +4,7 @@ import { getCarPage, createCar, updateCar, deleteCar, liquidateCar, exportInfoCa
 import { getAllLecturer } from 'modules/_default/fwUser/redux';
 import { getCategoryAll } from 'modules/_default/fwCategory/redux';
 import { ajaxSelectCourseType } from 'modules/mdDaoTao/fwCourseType/redux';
+import { ajaxSelectCourse } from 'modules/mdDaoTao/fwCourse/redux';
 import Pagination from 'view/component/Pagination';
 import { AdminPage, CirclePageButton, FormDatePicker, AdminModal, FormTextBox, FormSelect, TableCell, renderTable, FormCheckbox, TableHeadCell,TableHead, } from 'view/component/AdminPage';
 import { ajaxSelectDivision } from 'modules/mdDaoTao/fwDivision/redux';
@@ -127,7 +128,7 @@ class CarPage extends AdminPage {
 
     componentDidMount() {
         T.ready('/user/car', () => T.showSearchBox(() => this.setState({ dateStart: '', dateEnd: '' })));
-        this.props.getCarPage(1, 50, { status: 'dangSuDung' });
+        this.props.getCarPage(1, 50, { status: 'dangSuDung' }, {}, {});
         this.props.getAllLecturer(data => {
             if (data && data.length) {
                 const listLecturer = [{ id: 0, text: 'Trống' }];
@@ -198,6 +199,12 @@ class CarPage extends AdminPage {
         }
     }
 
+    renderCourseHistory = (courseHistory) => {
+        if(courseHistory && courseHistory.length){
+            return courseHistory[courseHistory.length-1] && courseHistory[courseHistory.length-1].course && courseHistory[courseHistory.length-1].course.name;
+        } else return '';
+    }
+
     render() {
         const permission = this.getUserPermission('car', ['read', 'write', 'delete', 'import', 'fuel']);
         const header = <>
@@ -214,14 +221,15 @@ class CarPage extends AdminPage {
                 <TableHead getPage={this.props.getCarPage}>
                     <th style={{ width: 'auto', textAlign: 'center' }}>#</th>
                     <th style={{ width: 'auto' }} nowrap='true'>Xe</th>
-                    <th style={{ width: 'auto' }} nowrap='true'>Quản lý phụ trách xe</th>
-                    <TableHeadCell name='courseType' filter='select' filterData = {ajaxSelectCourseType} style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Hạng đào tạo</TableHeadCell>
+                    <th style={{ width: 'auto' }} nowrap='true'>Giáo viên phụ trách</th>
+                    <TableHeadCell name='courseType' filter='select' filterData = {ajaxSelectCourseType} style={{ width: 'auto', textAlign: 'center' }} >Hạng đào tạo</TableHeadCell>
+                    <TableHeadCell name='course' filter='select' filterData = {ajaxSelectCourse} style={{ width: '100%' }} nowrap='true'>Khoá mới nhất</TableHeadCell>
                     <th style={{ width: '100%' }} nowrap='true'>Cơ sở</th>
-                    <th style={{ width: '100%' }} nowrap='true'>Loại nhiên liệu</th>
-                    <th style={{ width: 'auto' }} nowrap='true'>Ngày hết hạn đăng kiểm</th>
+                    {/* <th style={{ width: '100%' }} nowrap='true'>Loại nhiên liệu</th> */}
+                    {/* <th style={{ width: 'auto' }} nowrap='true'>Ngày hết hạn đăng kiểm</th> */}
                     <th style={{ width: 'auto' }} nowrap='true'>Ngày hết hạn tập lái</th>
                     <th style={{ width: 'auto' }} nowrap='true'>Loại xe</th>
-                    <th style={{ width: 'auto' }} nowrap='true'>Trạng thái khi sửa</th>
+                    {/* <th style={{ width: 'auto' }} nowrap='true'>Trạng thái khi sửa</th> */}
                     {/* <th style={{ width: 'auto' }} nowrap='true'>Xe cá nhân</th> */}
                     <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Thao tác</th>
                 </TableHead>),
@@ -232,12 +240,13 @@ class CarPage extends AdminPage {
                     {/* <TableCell type='text' content={item.brand && item.brand.title} /> */}
                     <TableCell type='text' style={{ whiteSpace: 'nowrap' }} content={<p>{item.user && (item.user.lastname + ' ' + item.user.firstname)} <br /> {item.isPersonalCar ? '(Xe cá nhân)' : ''}</p>} />
                     <TableCell type='text' style={{ whiteSpace: 'nowrap' }} content={item.courseType && item.courseType.title} />
+                    <TableCell type='text' style={{ whiteSpace: 'nowrap' }} content={item.courseHistory ? this.renderCourseHistory(item.courseHistory) : ''} />
                     <TableCell type='text' style={{ whiteSpace: 'nowrap' }} content={item.division ? item.division.title : ''} />
-                    <TableCell type='text' style={{ whiteSpace: 'nowrap' }} content={item.typeOfFuel ? this.renderTypeOfFuel(item.typeOfFuel) : 'Xăng'} />
-                    <TableCell type='text' style={{ whiteSpace: 'nowrap' }} content={T.dateToText(item.ngayHetHanDangKiem, 'dd/mm/yyyy')} />
+                    {/* <TableCell type='text' style={{ whiteSpace: 'nowrap' }} content={item.typeOfFuel ? this.renderTypeOfFuel(item.typeOfFuel) : 'Xăng'} /> */}
+                    {/* <TableCell type='text' style={{ whiteSpace: 'nowrap' }} content={T.dateToText(item.ngayHetHanDangKiem, 'dd/mm/yyyy')} /> */}
                     <TableCell type='text' style={{ whiteSpace: 'nowrap' }} content={T.dateToText(item.ngayHetHanTapLai, 'dd/mm/yyyy')} />
                     <TableCell type='text' style={{ whiteSpace: 'nowrap' }} content={item.type && item.type.title} />
-                    <TableCell type='text' style={{ whiteSpace: 'nowrap' }} content={item ? (item.state == 'R' ? 'Đã rút' : 'Đang sử dụng') : 'Đang sử dụng'} />
+                    {/* <TableCell type='text' style={{ whiteSpace: 'nowrap' }} content={item ? (item.state == 'R' ? 'Đã rút' : 'Đang sử dụng') : 'Đang sử dụng'} /> */}
                     {/* <TableCell type='text' style={{ whiteSpace: 'nowrap', textAlign: 'center' }} content={item.isPersonalCar ? 'X' : ''} /> */}
                     <TableCell type='buttons' content={item} permission={permission} onEdit={this.edit} onLiquidate={this.liquidate} onDelete={this.delete} onEditFuel={'/user/car/fuel/' + item._id} onEditRepair={'/user/car/repair/' + item._id} onEditCourseHistory={'/user/car/course/' + item._id} />
                 </tr >),
