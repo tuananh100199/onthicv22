@@ -2,6 +2,8 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { getStudent, addStudentPayment, addStudentPaymentExtra, updateStudent } from './redux';
 import { createNotification } from 'modules/_default/fwNotification/redux';
+import { getUserChatToken, getAllUserChatToken } from 'modules/mdDaoTao/fwChat/redux';
+import axios from 'axios';
 import { getCourseFeeByStudent, updateCourseFeeByStudent } from 'modules/_default/fwCourseFee/redux';
 import { updateTimeTableByAccountant } from 'modules/mdDaoTao/fwRegisterCalendar/redux';
 import { Link } from 'react-router-dom';
@@ -47,6 +49,27 @@ class PaymentInfoModal extends AdminModal {
                         sentDate: new Date(),
                     };
                     this.props.create(data, () => {
+                        this.props.getUserChatToken(data.user, dataUser => {
+                            if (dataUser && dataUser.token){
+                                axios.post('https://fcm.googleapis.com/fcm/send', {
+                                    notification: {
+                                        title: data.title,
+                                        type: data.type,
+                                        body: data.content,
+                                        abstract: data.abstract,
+                                        mutable_content: true,
+                                        sound: 'Tri-tone'
+                                    },
+                                    to:  dataUser.token
+                                },
+                                    {
+                                        headers: {
+                                            Authorization: 'key=AAAAyyg1JDc:APA91bGhj8NFiemEgwLCesYoQcbGOiZ0KX2qbc7Ir7sFnANrypzIpniGsVZB9xS8ZtAkRrYqLCi5QhFGp32cKjsK_taIIXrkGktBrCZk7u0cphZ1hjI_QXFGRELhQQ_55xdYccZvmZWg'
+                                        }
+                                    }
+                                );
+                            }
+                        });
                         T.notify('Gửi thông báo thành công!', 'success');
                         this.hide();
                         window.location.reload();
@@ -103,6 +126,27 @@ class PaymentExtraInfoModal extends AdminModal {
                     };
                     this.props.updateTimeTableByAccountant(this.props.studentId, this.state.cart, () => {
                         this.props.create(data, () => {
+                            this.props.getUserChatToken(data.user, dataUser => {
+                                if (dataUser && dataUser.token){
+                                    axios.post('https://fcm.googleapis.com/fcm/send', {
+                                        notification: {
+                                            title: data.title,
+                                            type: data.type,
+                                            body: data.content,
+                                            abstract: data.abstract,
+                                            mutable_content: true,
+                                            sound: 'Tri-tone'
+                                        },
+                                        to:  dataUser.token
+                                    },
+                                        {
+                                            headers: {
+                                                Authorization: 'key=AAAAyyg1JDc:APA91bGhj8NFiemEgwLCesYoQcbGOiZ0KX2qbc7Ir7sFnANrypzIpniGsVZB9xS8ZtAkRrYqLCi5QhFGp32cKjsK_taIIXrkGktBrCZk7u0cphZ1hjI_QXFGRELhQQ_55xdYccZvmZWg'
+                                            }
+                                        }
+                                    );
+                                }
+                            });
                             T.notify('Gửi thông báo thành công!', 'success');
                             this.hide();
                             window.location.reload();
@@ -557,5 +601,5 @@ class ThanhToanTrucTiepPage extends AdminPage {
 }
 
 const mapStateToProps = state => ({ system: state.system, student: state.trainning.student, courseFee: state.accountant.courseFee });
-const mapActionsToProps = { getStudent, addStudentPayment, getCourseFeeByStudent, updateStudent, addStudentPaymentExtra, createNotification, updateTimeTableByAccountant, updateCourseFeeByStudent };
+const mapActionsToProps = { getStudent, addStudentPayment, getCourseFeeByStudent, updateStudent, addStudentPaymentExtra, createNotification, updateTimeTableByAccountant, updateCourseFeeByStudent, getUserChatToken, getAllUserChatToken };
 export default connect(mapStateToProps, mapActionsToProps)(ThanhToanTrucTiepPage);

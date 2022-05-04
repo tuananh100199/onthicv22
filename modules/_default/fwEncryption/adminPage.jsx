@@ -13,7 +13,7 @@ class EncryptionPage extends AdminPage {
 
     create = (e) => e.preventDefault() || this.modal.show();
 
-    delete = (e, item) => e.preventDefault() || T.confirm('Chứng chỉ giáo viên', 'Bạn có chắc bạn muốn xóa loại chứng chỉ này?', true, isConfirm =>
+    delete = (e, item) => e.preventDefault() || T.confirm('Thông tin gửi file', 'Bạn có chắc bạn muốn xóa thông tin gửi file này?', true, isConfirm =>
         isConfirm && this.props.deleteEncryption(item._id));
 
     edit = (e, item) => e.preventDefault() || this.modal.show(item);

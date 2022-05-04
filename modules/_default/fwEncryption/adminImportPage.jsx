@@ -13,7 +13,7 @@ class EncryptionPage extends AdminPage {
 
     create = (e) => e.preventDefault() || this.modal.show();
 
-    delete = (e, item) => e.preventDefault() || T.confirm('Chứng chỉ giáo viên', 'Bạn có chắc bạn muốn xóa loại chứng chỉ này?', true, isConfirm =>
+    delete = (e, item) => e.preventDefault() || T.confirm('Thông tin nhận file', 'Bạn có chắc bạn muốn xóa thông tin nhận file này?', true, isConfirm =>
         isConfirm && this.props.deleteEncryption(item._id));
 
     edit = (e, item) => e.preventDefault() || this.modal.show(item);
@@ -53,8 +53,8 @@ class EncryptionPage extends AdminPage {
 
         return this.renderPage({
             icon: 'fa fa-folder',
-            title: 'Quản lý gửi file',
-            breadcrumb: ['Quản lý gửi file'],
+            title: 'Quản lý nhận file',
+            breadcrumb: ['Quản lý nhận file'],
             content: <>
                 <div className='tile'>
                     {table}
