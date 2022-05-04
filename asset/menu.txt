@@ -82,3 +82,6 @@
 	9020 - Quản lý đi khóa (/user/teacher-course)
 	9040 - Thời khóa biểu giáo viên (/user/teacher-calendar)
 	9060 - Lịch nghỉ giáo viên (/user/register-calendar/teacher)
+90000. Mã hoá truyền tin (undefined)
+	90001 - Quản lý gửi file (/user/encryption/export)
+	90002 - Quản lý nhận file (/user/encryption/import)

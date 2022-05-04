@@ -30,6 +30,7 @@ class EditCoursePage extends AdminPage {
                     {car && car._id ? null : <PageIconHeader text='Thông tin chung' />}
                     <PageIcon visible={permission.write} to={'/user/car/manager'} icon='fa-info' iconBackgroundColor='#17a2b8' text='Danh sách xe' />
                     <PageIcon visible={permission.write} to={'/user/car/category'} icon='fa-list' iconBackgroundColor='#8e24aa' text='Danh mục nhãn hiệu xe ' />
+                    <PageIcon visible={permission.write} to={'/user/car/type-category'} icon='fa-list' iconBackgroundColor='orange' text='Danh mục loại xe ' />
                     <PageIconHeader text='Quản lý hồ sơ' />
                     <PageIcon visible={permission.write} to={'/user/car/practice'} icon='fa-road' iconBackgroundColor='#dc143c' text='Theo dõi giấy phép xe tập lái' />
                     <PageIcon visible={permission.write} to={'/user/car/registration'} icon='fa-file-text-o' iconBackgroundColor='#CC0' text='Đăng kiểm xe' />

@@ -58,13 +58,6 @@ export function getCarPage(pageNumber, pageSize, pageCondition, filter,sort, don
     };
 }
 
-export function exportFuelCarPage() {
-    const page = T.updatePage('adminCar');
-    const url = `/api/car/fuel/export/page/${page.pageNumber}/${page.pageSize}/${JSON.stringify(page.filter)}/${JSON.stringify(page.sort)}`;
-    T.download(T.url(url));
-    // T.download(T.get(url, { filter:page.filter,sort:page.sort }));
-}
-
 export function getAllCars(condition, done) {
     return dispatch => {
         const url = '/api/car/all';
@@ -347,9 +340,25 @@ export function exportExpiredCar(fileType, carType) {
     T.download(T.url(`/api/car/expired/export/${fileType}/${filterType}`));
 }
 
-export function exportListRepairCar(carType) {
-    const filterType = (carType == undefined ? 'tatCa' : carType);
-    T.download(T.url(`/api/car/list-repair/export/${filterType}`));
+export function exportFuelCarPage() {
+    const page = T.updatePage('adminCar');
+    const url = `/api/car/fuel/export/page/${page.pageNumber}/${page.pageSize}/${JSON.stringify(page.filter)}/${JSON.stringify(page.sort)}`;
+    T.download(T.url(url));
+    // T.download(T.get(url, { filter:page.filter,sort:page.sort }));
+}
+
+export function exportRepairCarPage() {
+    const page = T.updatePage('adminCar');
+    const url = `/api/car/repair/export/page/${page.pageNumber}/${page.pageSize}/${JSON.stringify(page.filter)}/${JSON.stringify(page.sort)}`;
+    T.download(T.url(url));
+    // T.download(T.get(url, { filter:page.filter,sort:page.sort }));
+}
+
+export function exportRegistrationCarPage(dateStartDate, dateEndDate) {
+    const page = T.updatePage('adminCar');
+    const url = `/api/car/registration/export/page/${page.pageNumber}/${page.pageSize}/${JSON.stringify(page.filter)}/${JSON.stringify(page.sort)}/${dateStartDate ? new Date(dateStartDate).getTime(): 'undefined'}/${dateEndDate ? new Date(dateEndDate).getTime() : 'undefined'}`;
+    T.download(T.url(url));
+    // T.download(T.get(url, { filter:page.filter,sort:page.sort }));
 }
 
 export function exportFuelCar(_carId) {
@@ -367,6 +376,7 @@ export function exportPracticeCar(_carId) {
 export function exportRegistrationCar(_carId) {
     T.download(T.url(`/api/car/registration/export/${_carId}`));
 }
+
 export function exportInsuranceCar(_carId) {
     T.download(T.url(`/api/car/insurance/export/${_carId}`));
 }

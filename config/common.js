@@ -56,6 +56,7 @@ module.exports = (app, appConfig) => {
         enrollment: { index: 8000, title: 'Tuyển sinh', icon: 'fa fa-user-plus' },
         teacher: { index: 9000, title: 'Giáo viên', icon: 'fa fa-pencil-square-o' },
         facility: { index: 40000, title: 'Quản lý thiết bị', icon: 'fa-university' },
+        encryption: { index: 90000, title: 'Mã hoá truyền tin', icon: 'fa-exchange' },
     };
 
     // Upload Hook -----------------------------------------------------------------------------------------------------

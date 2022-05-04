@@ -83,7 +83,7 @@ app.get('/api/car/expired/export/:fileType/:filterType', app.permission.check('c
     if (sessionUser && sessionUser.isCourseAdmin && division && division.isOutside) {
         res.send({ error: 'Bạn không có quyền xuất file excel này!' });
     } else {
-        app.model.car.getPage(undefined, undefined, condition, (error, page) => {
+        app.model.car.getPage(undefined, undefined, condition,undefined, (error, page) => {
             if (error || !page.list) {
                 res.send({ error: 'Hệ thống bị lỗi!' });
             } else {
@@ -146,7 +146,7 @@ app.get('/api/car/fuel/export/:_carId', app.permission.check('car:export'), (req
                     });
                 });
                 app.excel.write(worksheet, cells);
-                app.excel.attachment(workbook, res, 'Danh sách cấp phát nhiên liệu.xlsx');
+                    app.excel.attachment(workbook, res, 'Danh sách cấp phát nhiên liệu.xlsx');
             }
         });
     }
@@ -397,7 +397,7 @@ app.get('/api/car/calendar/export/:_carId', app.permission.check('car:export'), 
 }
 );
 
-app.get('/api/car/fuel/export/page/:pageNumber/:pageSize/:filter/:sort', app.permission.check('car:read'), (req, res) => {
+    app.get('/api/car/fuel/export/page/:pageNumber/:pageSize/:filter/:sort', app.permission.check('car:read'), (req, res) => {
     let pageNumber = parseInt(req.params.pageNumber),
     pageSize = parseInt(req.params.pageSize),
     pageCondition = {},filter=req.params.filter ? JSON.parse(req.params.filter) : {},sort=req.params.sort ? JSON.parse(req.params.sort) : null; 
@@ -405,6 +405,7 @@ app.get('/api/car/fuel/export/page/:pageNumber/:pageSize/:filter/:sort', app.per
         // console.log('-----------------defaultCondition:----------------------');
         pageCondition={...pageCondition,...defaultFilter};
     }); 
+    const sessionUser = req.session.user;
     const sourcePromise =  app.excel.readFile(app.publicPath+'/document/TONG DANH SACH CAP NHIEN LIEU XE.xlsx');
     const getCarPage = new Promise((resolve,reject)=>{ 
         app.model.car.getPage(pageNumber, pageSize, pageCondition, sort, (error, page) => {
@@ -428,7 +429,7 @@ app.get('/api/car/fuel/export/page/:pageNumber/:pageSize/:filter/:sort', app.per
                 let item = [];
                 item.push(i+1);
                 item.push('');
-                item.push('');
+                item.push(fuel && fuel.car ? fuel.car.carId : '');
                 item.push(fuel && fuel.car ? fuel.car.licensePlates : '');
                 item.push(fuel && fuel.car && fuel.car.user ? (fuel.car.user.lastname + ' ' + fuel.car.user.firstname) : '');
                 item.push(fuel && fuel.car && fuel.car.courseType ? fuel.car.courseType.title : '');
@@ -460,8 +461,168 @@ app.get('/api/car/fuel/export/page/:pageNumber/:pageSize/:filter/:sort', app.per
                     j+=1;
                 }
             }
-        app.excel.attachment(sourceWorkbook, res, 'TONG DANH SACH CAP NHIEN LIEU XE.xlsx');
+            const dataEncryption ={
+                author: sessionUser._id,
+                type: 'export',
+                filename: 'TONG DANH SACH CAP NHIEN LIEU XE.xlsx',
+            };
+            app.model.encryption.create(dataEncryption, () => {
+                app.excel.attachment(sourceWorkbook, res, 'TONG DANH SACH CAP NHIEN LIEU XE.xlsx');
+            });
+            
+        
         }
         });
+    });
+
+    app.get('/api/car/repair/export/page/:pageNumber/:pageSize/:filter/:sort', app.permission.check('car:read'), (req, res) => {
+        let pageNumber = parseInt(req.params.pageNumber),
+        pageSize = parseInt(req.params.pageSize),
+        pageCondition = {},filter=req.params.filter ? JSON.parse(req.params.filter) : {},sort=req.params.sort ? JSON.parse(req.params.sort) : null; 
+        filter && app.handleFilter(filter,['courseType','brand','division','licensePlates'],defaultFilter=>{
+            // console.log('-----------------defaultCondition:----------------------');
+            pageCondition={...pageCondition,...defaultFilter};
+        }); 
+        const sourcePromise =  app.excel.readFile(app.publicPath+'/document/TONG DANH SACH XE SUA CHUA.xlsx');
+        const getCarPage = new Promise((resolve,reject)=>{ 
+            app.model.car.getPage(pageNumber, pageSize, pageCondition, sort, (error, page) => {
+                error?reject(error):resolve(page);
+            });
+        });
+        Promise.all([sourcePromise,getCarPage]).then(([sourceWorkbook,page])=>{
+            if(page && page.list){
+                let list = page && page.list ? page.list : [];
+                let data = [];
+                let fees = 0;
+                let indexRow = 0;
+                let worksheet = sourceWorkbook.getWorksheet(1);
+                list && list.length && list.forEach((car,i) => {
+                    const sortArr = car && car.repair && car.repair.sort((a, b) => new Date(b.date) - new Date(a.date));
+                        const totalFee = sortArr.reduce((result,item) => result + parseInt(item.fee) , 0);
+                        fees = fees + totalFee;
+                        sortArr.forEach((repair,index) => {
+                            data.push({ car, repair });
+                            let item = [];
+                            item.push(index == 0 ? i+1 : '');
+                            item.push(index == 0 ? i+1 : '');
+                            item.push(index == 0 ? (car ? car.carId : '') : '');
+                            item.push(index == 0 ? (car ? car.licensePlates : '') : '');
+                            item.push(index == 0 ? (car && car.type ? car.type.title : '') : '');
+                            item.push(index == 0 ? (car && car.state && car.state != '' ? car.state : 'S') : '');
+                            item.push(index == 0 ? (car && car.courseType ? car.courseType.title : '') : '');
+                            item.push(index+1);
+                            item.push(repair && repair.dateStart ? new Date(repair.dateStart).getDate() : '');
+                            item.push(repair && repair.dateStart ? new Date(repair.dateStart).getMonth() + 1 : '');
+                            item.push(repair && repair.dateStart ? new Date(repair.dateStart).getFullYear() : '');
+                            item.push(repair ? repair.content  : '');
+                            item.push(repair ? repair.fee : '');
+                            item.push(index == 0 ? totalFee : '');
+                            item.push('');
+                        const insertRow =worksheet.insertRow(7+ indexRow,item);
+                        indexRow ++;
+                        let j=1;
+                        while(j<=15){// báo cáo của sở chỉ có 14 cột.
+                            insertRow.getCell(j).border = {
+                                    top: {style:'thin'},
+                                    left: {style:'thin'},
+                                    bottom: {style:'thin'},
+                                    right: {style:'thin'}
+                                    };
+                                j+=1;
+                            }
+                        });
+                        if(car.repair.length){
+                            worksheet.mergeCells(7 + indexRow - car.repair.length, 1, 7 + indexRow -1, 1);
+                            worksheet.mergeCells(7 + indexRow - car.repair.length, 2, 7 + indexRow -1, 2);
+                            worksheet.mergeCells(7 + indexRow - car.repair.length, 3, 7 + indexRow -1, 3);
+                            worksheet.mergeCells(7 + indexRow - car.repair.length, 4, 7 + indexRow -1, 4);
+                            worksheet.mergeCells(7 + indexRow - car.repair.length, 5, 7 + indexRow -1, 5);
+                            worksheet.mergeCells(7 + indexRow - car.repair.length, 6, 7 + indexRow -1, 6);
+                            worksheet.mergeCells(7 + indexRow - car.repair.length, 7, 7 + indexRow -1, 7);
+                            worksheet.mergeCells(7 + indexRow - car.repair.length, 14, 7 + indexRow -1, 14);
+                        }
+                });
+            app.excel.attachment(sourceWorkbook, res, 'TONG DANH SACH SUA CHUA XE.xlsx');
+            }
+            });
+    });
+
+    app.get('/api/car/registration/export/page/:pageNumber/:pageSize/:filter/:sort/:dateStart/:dateEnd', app.permission.check('car:read'), (req, res) => {
+        let pageNumber = parseInt(req.params.pageNumber),
+        pageSize = parseInt(req.params.pageSize),
+        pageCondition = {},filter=req.params.filter ? JSON.parse(req.params.filter) : {},sort=req.params.sort ? JSON.parse(req.params.sort) : null,
+        dateStart = req.params.dateStart, dateEnd = req.params.dateEnd;
+        console.log(dateStart); 
+        filter && app.handleFilter(filter,['courseType','brand','division','licensePlates'],defaultFilter=>{
+            // console.log('-----------------defaultCondition:----------------------');
+            pageCondition={...pageCondition,...defaultFilter};
+        }); 
+        const sourcePromise =  app.excel.readFile(app.publicPath+'/document/TONG DANH SACH DANG KIEM XE.xlsx');
+        const getCarPage = new Promise((resolve,reject)=>{ 
+            app.model.car.getPage(pageNumber, pageSize, pageCondition, sort, (error, page) => {
+                error?reject(error):resolve(page);
+            });
+        });
+        Promise.all([sourcePromise,getCarPage]).then(([sourceWorkbook,page])=>{
+            if(page && page.list){
+                let list = page && page.list ? page.list : [];
+                let fees = 0;
+                let indexRow = 0;
+                let worksheet = sourceWorkbook.getWorksheet(1);
+                list && list.length && list.forEach((car,i) => {
+                    let sortArr = car && car.lichSuDangKiem && car.lichSuDangKiem.sort((a, b) => new Date(b.date) - new Date(a.date));
+                        const totalFee = sortArr.reduce((result,item) => result + parseInt(item.fee) , 0);
+                        if(dateStart != 'undefined'){
+                            sortArr = sortArr.filter(lichSuDangKiem => dateStart < new Date(lichSuDangKiem.ngayDangKiem).getTime() && dateEnd > new Date(lichSuDangKiem.ngayDangKiem).getTime());
+                        }
+                        fees = fees + totalFee;
+                        sortArr.forEach((lichSuDangKiem,index) => {
+                            let item = [];
+                            item.push(index == 0 ? i+1 : '');
+                            item.push(index == 0 ? i+1 : '');
+                            item.push(index == 0 ? (car ? car.carId : '') : '');
+                            item.push(index == 0 ? (car ? car.licensePlates : '') : '');
+                            item.push(index == 0 ? (car && car.type ? car.type.title : '') : '');
+                            item.push(index == 0 ? (car && car.state && car.state != '' ? car.state : 'S') : '');
+                            item.push(index == 0 ? (car && car.courseType ? car.courseType.title : '') : '');
+                            item.push(index+1);
+                            item.push(lichSuDangKiem && lichSuDangKiem.ngayDangKiem ? new Date(lichSuDangKiem.ngayDangKiem).getDate() : '');
+                            item.push(lichSuDangKiem && lichSuDangKiem.ngayDangKiem ? new Date(lichSuDangKiem.ngayDangKiem).getMonth() + 1 : '');
+                            item.push(lichSuDangKiem && lichSuDangKiem.ngayDangKiem ? new Date(lichSuDangKiem.ngayDangKiem).getFullYear() : '');
+                            item.push(index != 0 ? convert(sortArr[index-1].ngayHetHanDangKiem) : ''  );
+                            item.push(lichSuDangKiem && lichSuDangKiem.ngayHetHanDangKiem ? convert(lichSuDangKiem.ngayHetHanDangKiem) : '');
+                            item.push(index == 0 ? ((new Date() - new Date(car.ngayHetHanDangKiem) > 0) ? 'Hết hạn' : 0) : '');
+                            item.push(lichSuDangKiem ?  lichSuDangKiem.fee : '');
+                            item.push(index == 0 ? totalFee  : '');
+                            item.push('');
+                        const insertRow =worksheet.insertRow(8+ indexRow,item);
+                        indexRow ++;
+                        let j=1;
+                        while(j<=17){// báo cáo của sở chỉ có 14 cột.
+                            insertRow.getCell(j).border = {
+                                    top: {style:'thin'},
+                                    left: {style:'thin'},
+                                    bottom: {style:'thin'},
+                                    right: {style:'thin'}
+                                    };
+                                j+=1;
+                            }
+                        });
+                        if(car.repair.length){
+                            worksheet.mergeCells(7 + indexRow - car.repair.length, 1, 7 + indexRow -1, 1);
+                            worksheet.mergeCells(7 + indexRow - car.repair.length, 2, 7 + indexRow -1, 2);
+                            worksheet.mergeCells(7 + indexRow - car.repair.length, 3, 7 + indexRow -1, 3);
+                            worksheet.mergeCells(7 + indexRow - car.repair.length, 4, 7 + indexRow -1, 4);
+                            worksheet.mergeCells(7 + indexRow - car.repair.length, 5, 7 + indexRow -1, 5);
+                            worksheet.mergeCells(7 + indexRow - car.repair.length, 6, 7 + indexRow -1, 6);
+                            worksheet.mergeCells(7 + indexRow - car.repair.length, 7, 7 + indexRow -1, 7);
+                            worksheet.mergeCells(7 + indexRow - car.repair.length, 12, 7 + indexRow -1, 12);
+                            worksheet.mergeCells(7 + indexRow - car.repair.length, 14, 7 + indexRow -1, 14);
+                            worksheet.mergeCells(7 + indexRow - car.repair.length, 16, 7 + indexRow -1, 16);
+                        }
+                });
+            app.excel.attachment(sourceWorkbook, res, 'TONG DANH SACH DANG KIEM XE.xlsx');
+            }
+            });
     });
 };

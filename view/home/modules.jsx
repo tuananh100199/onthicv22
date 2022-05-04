@@ -5,6 +5,7 @@ import fwCourseFee from 'modules/_default/fwCourseFee/index';
 import fwCoursePayment from 'modules/_default/fwCoursePayment/index';
 import fwDepartment from 'modules/_default/fwDepartment/index';
 import fwDiscount from 'modules/_default/fwDiscount/index';
+import fwEncryption from 'modules/_default/fwEncryption/index';
 import fwEnrollTarget from 'modules/_default/fwEnrollTarget/index';
 import fwFeeType from 'modules/_default/fwFeeType/index';
 import fwHome from 'modules/_default/fwHome/index';
@@ -29,4 +30,4 @@ import fwContact from 'modules/mdTruyenThong/fwContact/index';
 import fwNews from 'modules/mdTruyenThong/fwNews/index';
 import fwSubscribe from 'modules/mdTruyenThong/fwSubscribe/index';
 
-export const modules = [_init, fwComment, fwCourseFee, fwCoursePayment, fwDepartment, fwDiscount, fwEnrollTarget, fwFeeType, fwHome, fwMenu, fwNotification, fwProfileType, fwStaff, fwTeacher, fwTeacherDiploma, fwTrainingClass, fwUser, fwCandidate, fwCertificate, fwChangeLecturer, fwCourse, fwCourseType, fwDivision, fwLicenseTest, fwProfileStudentType, fwStudyProgram, fwContact, fwNews, fwSubscribe];
+export const modules = [_init, fwComment, fwCourseFee, fwCoursePayment, fwDepartment, fwDiscount, fwEncryption, fwEnrollTarget, fwFeeType, fwHome, fwMenu, fwNotification, fwProfileType, fwStaff, fwTeacher, fwTeacherDiploma, fwTrainingClass, fwUser, fwCandidate, fwCertificate, fwChangeLecturer, fwCourse, fwCourseType, fwDivision, fwLicenseTest, fwProfileStudentType, fwStudyProgram, fwContact, fwNews, fwSubscribe];

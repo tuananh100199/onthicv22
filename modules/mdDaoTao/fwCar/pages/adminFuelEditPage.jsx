@@ -62,7 +62,7 @@ class CarFuelModal extends AdminModal {
     }
 
     calculateFee = () => {
-        if(this.itemDonGio && this.itemSoLuong && this.itemDonGia.value() && this.itemSoLuong.value()){
+        if(this.itemDonGia && this.itemSoLuong && this.itemDonGia.value() && this.itemSoLuong.value()){
             this.itemChiPhi.value(parseInt(this.itemDonGia.value())*parseInt(this.itemSoLuong.value()));
         }
     }

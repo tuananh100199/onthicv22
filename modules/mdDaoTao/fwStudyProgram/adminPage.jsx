@@ -83,9 +83,9 @@ class CoursePage extends AdminPage {
                 <tr key={index}>
                     <TableCell type='number' content={index + 1} />
                     <TableCell type='link' content={item.title} url={'/user/study-program/' + item._id} />
-                    <TableCell type='text' content={item.courseType ? item.courseType.title : ''} url={'/user/course/' + item._id} />
+                    <TableCell type='text' content={item.courseType ? item.courseType.title : ''}/>
                     {!readOnly && <TableCell type='checkbox' content={item.active} permission={permission} onChanged={active => this.changeDefault(item, active)} />}
-                    {!readOnly && <TableCell type='buttons' content={item} permission={permission} onEdit={'/user/course/' + item._id} onDelete={this.delete} />}
+                    {!readOnly && <TableCell type='buttons' content={item} permission={permission} onEdit={'/user/study-program/' + item._id} onDelete={this.delete} />}
                 </tr>),
         });
         return this.renderPage({

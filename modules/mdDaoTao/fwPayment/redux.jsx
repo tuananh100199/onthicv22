@@ -15,11 +15,19 @@ export default function paymentReducer(state = {}, data) {
 
 // Payment Actions ----------------------------------------------------------------------------------------------------
 T.initCookiePage('adminPayment');
-export function getPaymentPage(pageNumber, pageSize, pageCondition, done) {
-    const page = T.updatePage('adminPayment', pageNumber, pageSize);
+export function getPaymentPage(pageNumber, pageSize, pageCondition, filter, sort, done) {
+    if(typeof sort=='function'){
+        done=sort;
+        sort=undefined;
+    }
+    else if(typeof filter=='function'){
+        done=filter;
+        filter=undefined;
+    }
+    const page = T.updatePage('adminPayment', pageNumber, pageSize,pageCondition,filter,sort);
     return dispatch => {
         const url = `/api/payment/page/${page.pageNumber}/${page.pageSize}`;
-        T.get(url, { pageCondition }, data => {
+        T.get(url, { pageCondition,filter:page.filter,sort:page.sort }, data => {
             if (data.error) {
                 T.notify('Lấy danh sách thu công nợ bị lỗi!', 'danger');
                 console.error(`GET: ${url}. ${data.error}`);
@@ -49,5 +57,7 @@ export function importPayment(payments, done) {
 }
 
 export function exportBankBaoCao(dataStart, dateEnd) {
-    T.download(T.url(`/api/payment/export/${dataStart}/${dateEnd}`));
+    const page = T.updatePage('adminPayment');
+    const url = `/api/payment/export/${page.pageNumber}/${page.pageSize}/${JSON.stringify(page.filter)}/${JSON.stringify(page.sort)}/${dataStart}/${dateEnd}`;
+    T.download(T.url(url));
 }

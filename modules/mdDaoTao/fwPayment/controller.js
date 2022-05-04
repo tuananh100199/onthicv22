@@ -414,25 +414,50 @@ module.exports = app => {
     app.get('/api/payment/page/:pageNumber/:pageSize', app.permission.check('payment:read'), (req, res) => {
         let pageNumber = parseInt(req.params.pageNumber),
             pageSize = parseInt(req.params.pageSize),
-            condition = req.query.pageCondition || {};
+            condition = req.query.pageCondition || {},filter=req.query.filter||{},sort=req.query.sort||null; 
         try {
+            filter && app.handleFilter(filter,[],defaultFilter=>{
+                condition={...condition,...defaultFilter};
+            });
+            if(filter.type){// họ tên
+                condition['$expr']= {
+                    '$regexMatch': {
+                        'input': { '$concat': ['$type',''] },
+                        'regex': `.*${filter.type}.*`,  //Your text search here
+                        'options': 'i'
+                    }
+             };
+            }
             if(condition.dateStart) {
                 const { dateStart, dateEnd } = condition;
-                app.model.payment.getPage(pageNumber, pageSize, { timeReceived: {$gte: dateStart, $lt: dateEnd}}, (error, page) => res.send({ error, page }));
-            } else app.model.payment.getPage(pageNumber, pageSize, condition, (error, page) => res.send({ error, page }));
+                condition.timeReceived = { $gte: dateStart, $lt: dateEnd};
+                delete condition.dateStart;
+                delete condition.dateEnd;
+                app.model.payment.getPage(pageNumber, pageSize, condition,sort, (error, page) => res.send({ error, page }));
+            } else app.model.payment.getPage(pageNumber, pageSize, condition, sort, (error, page) => res.send({ error, page }));
         } catch (error) {
             res.send({ error });
         }
     });
     
-    app.get('/api/payment/export/:dateStart/:dateEnd', app.permission.check('payment:write'), (req, res) => {
-        const { dateStart, dateEnd } = req.params;
+    app.get('/api/payment/export/:pageNumber/:pageSize/:filter/:sort/:dateStart/:dateEnd', app.permission.check('payment:write'), (req, res) => {
+        const { dateStart, dateEnd, pageNumber, pageSize } = req.params;
+        let filter=req.params.filter ? JSON.parse(req.params.filter) : {},sort=req.params.sort ? JSON.parse(req.params.sort) : null;
         let condition = {};
         if(dateStart && dateStart != '' && dateStart != 'undefined')
             condition = { timeReceived: {$gte: dateStart, $lt: dateEnd} };
         const sourcePromise =  app.excel.readFile(app.publicPath + '/document/BAO CAO THU CONG NO.xlsx');
         const getPayment = new Promise((resolve,reject)=>{ 
-            app.model.payment.getPage(undefined, undefined, condition, (error, page) =>{
+            if(filter.type){// họ tên
+                condition['$expr']= {
+                    '$regexMatch': {
+                        'input': { '$concat': ['$type',''] },
+                        'regex': `.*${filter.type}.*`,  //Your text search here
+                        'options': 'i'
+                    }
+             };
+            }
+            app.model.payment.getPage(pageNumber, pageSize, condition, sort, (error, page) =>{
                 error?reject(error):resolve(page);
             });
         });
@@ -443,7 +468,7 @@ module.exports = app => {
                 const payment = list[i];
                 let item = [];
                 item.push(i+1);
-                item.push('BC');
+                item.push(payment.type);
                 item.push(payment.timeReceived);
                 item.push(payment.code);
                 item.push(payment.lastname + ' ' + payment.firstname);
@@ -453,7 +478,7 @@ module.exports = app => {
                 item.push(payment.moneyAmount);
                 item.push(payment.debitObject);
                 item.push(payment.creditObject);
-                item.push('');
+                item.push(payment.userImport ? (payment.userImport.lastname + ' ' + payment.userImport.firstname) : '');
                 const maxCol = 12;
                 const row = 3;
                 const insertRow =worksheet.insertRow(row+i,item);
@@ -473,7 +498,6 @@ module.exports = app => {
     });
 
     app.uploadHooks.add('uploadPaymentFile', (req, fields, files, params, done) => {
-        console.log(files.PaymentFile);
         if (files.PaymentFile && files.PaymentFile.length > 0) {
             console.log('Hook: uploadExcelFile => your payment file upload');
             const srcPath = files.PaymentFile[0].path;
@@ -522,7 +546,13 @@ module.exports = app => {
         if (payments && payments.length > 0) {
             const handleImport = (index = 0) => {
                 if (index == payments.length) {
-                    res.send({ error: err });
+                    const dataEncryption = {
+                        type: 'import',
+                        author: sessionUser._id,
+                        filename: 'Công nợ từ phần mềm kế toán',
+                        chucVu: 'Kế toán'
+                    };
+                    app.model.encryption.create(dataEncryption, () => res.send({ error: err }));
                 } else {
                     const { creditObject} = payments[index];
                     const payment = payments[index];

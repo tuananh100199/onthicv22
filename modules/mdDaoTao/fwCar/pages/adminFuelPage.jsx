@@ -6,7 +6,7 @@ import { getCategoryAll } from 'modules/_default/fwCategory/redux';
 import { ajaxSelectDivision } from 'modules/mdDaoTao/fwDivision/redux';
 import Pagination from 'view/component/Pagination';
 import { ajaxSelectCourseType } from 'modules/mdDaoTao/fwCourseType/redux';
-import { AdminPage, TableCell, CirclePageButton, renderTable, TableHead,TableHeadCell } from 'view/component/AdminPage';
+import { AdminPage, TableCell, CirclePageButton, renderTable, TableHead,TableHeadCell, FormDatePicker } from 'view/component/AdminPage';
 import T from 'view/js/common';
 class CarFuelPage extends AdminPage {
     state = { searchText: '', isSearching: false };
@@ -30,17 +30,35 @@ class CarFuelPage extends AdminPage {
         });
     }
 
+    handleFilterByDate = () => {
+        const dateStart = this.dateStartDate ? this.dateStartDate.value() : '';
+        const dateEnd = this.dateEndDate ? this.dateEndDate.value() : '';
+        if (dateStart > dateEnd) {
+            T.notify('Ngày bắt đầu phải nhỏ hơn ngày kết thúc !', 'danger');
+        } else {
+            this.setState({ isSearching: false, dateStartDate: dateStart, dateEndDate: dateEnd });
+        }
+    }
+
     render() {
         const permission = this.getUserPermission('car', ['read', 'write', 'delete', 'import']);
-        const {brandTypes, listLicensePlates} = this.state;
+        const {brandTypes, listLicensePlates, dateStartDate, dateEndDate} = this.state;
         let { pageNumber, pageSize, pageTotal, pageCondition, totalItem, list } = this.props.car && this.props.car.page ?
             this.props.car.page : { pageNumber: 1, pageSize: 50, pageTotal: 1, pageCondition: {}, totalItem: 0, list: [] };
         let data = [],totalCost = 0;
         list && list.length && list.forEach(car => {
             const sortArr = car && car.fuel && car.fuel.sort((a, b) => new Date(b.date) - new Date(a.date));
                 sortArr.forEach((fuel) => {
-                    totalCost += fuel.fee;
-                    data.push({ car, fuel });
+                    if(dateStartDate){
+                        if(dateStartDate < new Date(fuel.date) && dateEndDate > new Date(fuel.date)){
+                            totalCost += fuel.fee;
+                            data.push({ car, fuel });
+                        }
+                    } else {
+                        totalCost += fuel.fee;
+                        data.push({ car, fuel });
+                    }
+            //  data.push({ car, fuel });
                 });
         });
         list = data;
@@ -81,6 +99,15 @@ class CarFuelPage extends AdminPage {
             breadcrumb: ['Quản lý cấp phát nhiên liệu'],
             content: <>
                 <div className='tile'>
+                <div className='tile-body row'>
+                        <FormDatePicker ref={e => this.dateStartDate = e} label='Thời gian bắt đầu (dd/mm/yyyy)' className='col-md-5' type='date-mask' />
+                        <FormDatePicker ref={e => this.dateEndDate = e} label='Thời gian kết thúc (dd/mm/yyyy)' className='col-md-5' type='date-mask' />
+                          <div className='m-auto col-md-2'>
+                            <button className='btn btn-success' style={{ marginTop: '11px' }} type='button' onClick={this.handleFilterByDate}>
+                                <i className='fa fa-filter' /> Lọc
+                            </button>
+                        </div>
+                    </div>
                     <p>Tổng tiền đổ xăng: {T.numberDisplay(totalCost)} VNĐ</p>
                     {table}
                 </div>
