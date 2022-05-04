@@ -2,6 +2,8 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { exportExamStudent, getStudentPage, updateStudent } from './redux';
 import { createNotification } from 'modules/_default/fwNotification/redux';
+import { getUserChatToken, getAllUserChatToken } from 'modules/mdDaoTao/fwChat/redux';
+import axios from 'axios';
 import { getNotificationTemplateAll, getNotificationTemplate } from 'modules/mdTruyenThong/fwNotificationTemplate/redux';
 import { getCourseTypeAll, ajaxSelectCourseType } from 'modules/mdDaoTao/fwCourseType/redux';
 import { ajaxSelectCourseByCourseType } from 'modules/mdDaoTao/fwCourse/redux';
@@ -93,7 +95,28 @@ class NotificationModal extends AdminModal {
                         sentDate: new Date(),
                     };
                     this.props.create(data, () => {
-                        handleSendNotification(index + 1);
+                        this.props.getUserChatToken(data.user, dataUser => {
+                            if (dataUser && dataUser.token){
+                                axios.post('https://fcm.googleapis.com/fcm/send', {
+                                    notification: {
+                                        title: data.title,
+                                        type: data.type,
+                                        body: data.content,
+                                        abstract: data.abstract,
+                                        mutable_content: true,
+                                        sound: 'Tri-tone'
+                                    },
+                                    to:  dataUser.token
+                                },
+                                    {
+                                        headers: {
+                                            Authorization: 'key=AAAAyyg1JDc:APA91bGhj8NFiemEgwLCesYoQcbGOiZ0KX2qbc7Ir7sFnANrypzIpniGsVZB9xS8ZtAkRrYqLCi5QhFGp32cKjsK_taIIXrkGktBrCZk7u0cphZ1hjI_QXFGRELhQQ_55xdYccZvmZWg'
+                                        }
+                                    }
+                                );
+                            }
+                            handleSendNotification(index + 1);
+                        });
                     });
                 }
             };
@@ -109,6 +132,27 @@ class NotificationModal extends AdminModal {
                 sentDate: new Date(),
             };
             this.props.create(data, () => {
+                this.props.getUserChatToken(data.user, dataUser => {
+                    if (dataUser && dataUser.token){
+                        axios.post('https://fcm.googleapis.com/fcm/send', {
+                            notification: {
+                                title: data.title,
+                                type: data.type,
+                                body: data.content,
+                                abstract: data.abstract,
+                                mutable_content: true,
+                                sound: 'Tri-tone'
+                            },
+                            to:  dataUser.token
+                        },
+                            {
+                                headers: {
+                                    Authorization: 'key=AAAAyyg1JDc:APA91bGhj8NFiemEgwLCesYoQcbGOiZ0KX2qbc7Ir7sFnANrypzIpniGsVZB9xS8ZtAkRrYqLCi5QhFGp32cKjsK_taIIXrkGktBrCZk7u0cphZ1hjI_QXFGRELhQQ_55xdYccZvmZWg'
+                                }
+                            }
+                        );
+                    }
+                });
                 T.notify('Gửi thông báo thành công!', 'success');
                 this.hide();
             });
@@ -289,5 +333,5 @@ class FailGraduationPage extends AdminPage {
 }
 
 const mapStateToProps = state => ({ system: state.system, student: state.trainning.student, notificationTemplate: state.communication.notificationTemplate });
-const mapActionsToProps = { getStudentPage, updateStudent, createNotification, getCourseTypeAll, getNotificationTemplateAll, getNotificationTemplate };
+const mapActionsToProps = { getStudentPage, updateStudent, createNotification, getCourseTypeAll, getNotificationTemplateAll, getNotificationTemplate, getUserChatToken, getAllUserChatToken };
 export default connect(mapStateToProps, mapActionsToProps)(FailGraduationPage);

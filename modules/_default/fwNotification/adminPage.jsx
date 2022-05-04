@@ -3,6 +3,8 @@ import { connect } from 'react-redux';
 import { getNotificationPage, createNotification, updateNotification, deleteNotification } from './redux';
 import { ajaxSelectUser } from 'modules/_default/fwUser/redux';
 import { ajaxSelectCourse } from 'modules/mdDaoTao/fwCourse/redux';
+import { getUserChatToken, getAllUserChatToken } from 'modules/mdDaoTao/fwChat/redux';
+import axios from 'axios';
 import { AdminPage, AdminModal, FormTextBox, FormSelect, FormEditor, FormRichTextBox } from 'view/component/AdminPage';
 import Pagination from 'view/component/Pagination';
 import './style.scss';
@@ -114,8 +116,57 @@ class NotificationPage extends AdminPage {
         this.props.getNotificationPage();
     }
 
-    send = (e, item) => e.preventDefault() || item.sentDate || T.confirm('Gửi thông báo', `Bạn có chắc muốn gửi thông báo ${item.title}?`, true, isConfirm =>
-        isConfirm && this.props.updateNotification(item._id, { sentDate: new Date() }));
+    send = (e, item) => e.preventDefault() || item.sentDate || T.confirm('Gửi thông báo', `Bạn có chắc muốn gửi thông báo ${item.title}?`, true, isConfirm => {
+        if(isConfirm){
+            this.props.updateNotification(item._id, { sentDate: new Date() });
+            if(item.type ==1) {
+                this.props.getAllUserChatToken(item.course, data => {
+                    if (data && data.list && data.list.length) {
+                        axios.post('https://fcm.googleapis.com/fcm/send', {
+                            notification: {
+                                title: item.title,
+                                type: item.type,
+                                body: item.content,
+                                abstract: item.abstract,
+                                mutable_content: true,
+                                sound: 'Tri-tone'
+                            },
+                            registration_ids: data.list
+                        },
+                            {
+                                headers: {
+                                    Authorization: 'key=AAAAyyg1JDc:APA91bGhj8NFiemEgwLCesYoQcbGOiZ0KX2qbc7Ir7sFnANrypzIpniGsVZB9xS8ZtAkRrYqLCi5QhFGp32cKjsK_taIIXrkGktBrCZk7u0cphZ1hjI_QXFGRELhQQ_55xdYccZvmZWg'
+                                }
+                            }
+                            );
+                    }
+                });
+            } else {
+                this.props.getUserChatToken(item.user, data => {
+                    if (data && data.token){
+                        axios.post('https://fcm.googleapis.com/fcm/send', {
+                            notification: {
+                                title: item.title,
+                                type: item.type,
+                                body: item.content,
+                                abstract: item.abstract,
+                                mutable_content: true,
+                                sound: 'Tri-tone'
+                            },
+                            to:  data.token
+                        },
+                            {
+                                headers: {
+                                    Authorization: 'key=AAAAyyg1JDc:APA91bGhj8NFiemEgwLCesYoQcbGOiZ0KX2qbc7Ir7sFnANrypzIpniGsVZB9xS8ZtAkRrYqLCi5QhFGp32cKjsK_taIIXrkGktBrCZk7u0cphZ1hjI_QXFGRELhQQ_55xdYccZvmZWg'
+                                }
+                            }
+                        );
+                    }
+                });
+            } 
+        }
+    });
+       
 
     delete = (e, item) => e.preventDefault() || T.confirm('Xoá thông báo', `Bạn có chắc muốn xoá thông báo ${item.title}?`, true, isConfirm =>
         isConfirm && this.props.deleteNotification(item._id));
@@ -172,5 +223,5 @@ class NotificationPage extends AdminPage {
 }
 
 const mapStateToProps = state => ({ system: state.system, notification: state.framework.notification });
-const mapActionsToProps = { getNotificationPage, createNotification, updateNotification, deleteNotification };
+const mapActionsToProps = { getNotificationPage, createNotification, updateNotification, deleteNotification, getUserChatToken, getAllUserChatToken };
 export default connect(mapStateToProps, mapActionsToProps)(NotificationPage);
