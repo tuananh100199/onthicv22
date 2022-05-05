@@ -536,10 +536,19 @@ module.exports = app => {
     app.post('/api/car/import', app.permission.check('car:write'), (req, res) => {
         let cars = req.body.cars;
         let err = null;
+        const sessionUser = req.session.user;
         if (cars && cars.length) {
             const handleCreateCar = (index = 0) => {
                 if (index == cars.length) {
-                    res.send({ error: err });
+                    const dataEncryption ={
+                        author: sessionUser._id,
+                        type: 'import',
+                        filename: 'Import danh sách xe mới.xlsx',
+                        chucVu: 'Nhân viên quản lý xe',
+                    };
+                    app.model.encryption.create(dataEncryption, () => {
+                        res.send({ error: err });
+                    });
                 } else {
                     const car = cars[index];
                     car.division = req.body.division;

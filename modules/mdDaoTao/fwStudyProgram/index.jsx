@@ -17,5 +17,9 @@ export default {
             path: '/user/study-program/:_id',
             component: Loadable({ loading: Loading, loader: () => import('./adminEditPage') }),
         },
+        {
+            path: '/user/hoc-vien/khoa-hoc/chuong-trinh-hoc/:_id',
+            component: Loadable({ loading: Loading, loader: () => import('./userPageView') }),
+        },
     ]
 };

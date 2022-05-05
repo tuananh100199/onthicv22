@@ -5,6 +5,7 @@ import { AdminPage, TableCell, renderTable,TableHeadCell,TableHead } from 'view/
 import { ajaxSelectUser } from '../fwUser/redux';
 import Pagination from 'view/component/Pagination';
 
+const dataChucVu = [{id: 'Kế toán', text: 'Kế toán'}, {id: 'Nhân viên quản lý xe', text: 'Nhân viên quản lý xe'}, {id:'Tuyển sinh', text: 'Tuyển sinh'}];
 class EncryptionPage extends AdminPage {
     componentDidMount() {
         T.ready();
@@ -35,7 +36,7 @@ class EncryptionPage extends AdminPage {
                     <TableHead getPage={this.props.getEncryptionPage}>
                         <th style={{ width: 'auto', textAlign: 'center' }}>#</th>
                         <TableHeadCell name='author' filter='select' filterData = {ajaxSelectUser} style={{ width: '100%' }}>Tên người thực hiện</TableHeadCell>
-                        <TableHeadCell name='chucVu' filter='select' filterData = {[]} style={{ width: 'auto' }}>Chức vụ</TableHeadCell>
+                        <TableHeadCell name='chucVu' filter='select' filterData = {dataChucVu} style={{ width: 'auto' }}>Chức vụ</TableHeadCell>
                         <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Tên file</th>
                         <TableHeadCell sort={true} style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Thời gian</TableHeadCell>
                         {/* <th style={{ width: 'auto' }} nowrap='true'>Thao tác</th> */}

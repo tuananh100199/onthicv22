@@ -825,6 +825,7 @@ module.exports = (app) => {
     });
 
     app.post('/api/pre-student/import', app.permission.check('pre-student:write'), (req, res) => {
+        const sessionUser = req.session.user;
         let students = req.body.students;
         let studentError = []; // những học viên có số CMND,CCCD của giáo viên dự kiến sai
         let err = null;
@@ -839,7 +840,15 @@ module.exports = (app) => {
             if (students && students.length) {
                 const handleCreateStudent = (index = 0) => {
                     if (index == students.length) {
-                        res.send({ error: err, studentError });
+                        const dataEncryption ={
+                            author: sessionUser._id,
+                            type: 'export',
+                            filename: 'Import danh sách ứng viên.xlsx',
+                            chucVu: 'Tuyển sinh',
+                        };
+                        app.model.encryption.create(dataEncryption, () => {
+                            res.send({ error: err, studentError });
+                        });
                     } else {
                         const student = students[index];
                         student.division = req.body.division;
@@ -917,6 +926,7 @@ module.exports = (app) => {
     });
 
     app.get('/api/pre-student/export', app.permission.check('pre-student:export'), (req, res) => {
+        const sessionUser = req.session.user;
         new Promise((resolve,reject)=>{
             app.model.course.getAll({isDefault:true},(error,defaultCourses)=>error?reject(error):resolve(defaultCourses));
         }).then(defaultCourses=> new Promise((resolve,reject)=>{// get student
@@ -1008,7 +1018,15 @@ module.exports = (app) => {
                 });
             });
             app.excel.write(worksheet, cells);
-            app.excel.attachment(workbook, res, 'DANH_SACH_UNG_VIEN.xlsx');
+            const dataEncryption ={
+                author: sessionUser._id,
+                type: 'export',
+                filename: 'DANH_SACH_UNG_VIEN.xlsx',
+                chucVu: 'Tuyển sinh',
+            };
+            app.model.encryption.create(dataEncryption, () => {
+                app.excel.attachment(workbook, res, 'DANH_SACH_UNG_VIEN.xlsx');
+            });
         }).catch(error=>console.log(error)||res.send({error}));
     });
     app.get('/api/student/phieu-thu/export', app.permission.check('user:login'), (req, res) => {
@@ -1039,9 +1057,10 @@ module.exports = (app) => {
     });
 
     app.get('/api/student/debt/export/page/:pageNumber/:pageSize/:filter/:sort', app.permission.check('student:write'), (req, res) => {
-            let pageNumber = parseInt(req.params.pageNumber),
+        let pageNumber = parseInt(req.params.pageNumber),
             pageSize = parseInt(req.params.pageSize),
             pageCondition = {},filter=req.params.filter ? JSON.parse(req.params.filter) : {},sort=req.params.sort ? JSON.parse(req.params.sort) : null; 
+        const sessionUser = req.session.user;
         const renderLichSuDongTien = (lichSuDongTien, type) => {
             let text = '';
             if (lichSuDongTien.length) {
@@ -1134,7 +1153,15 @@ module.exports = (app) => {
                     });
                 });
                 app.excel.write(worksheet, cells);
-                app.excel.attachment(workbook, res, 'Theo Doi Cong No.xlsx');
+                const dataEncryption ={
+                    author: sessionUser._id,
+                    type: 'export',
+                    filename: 'Theo Doi Cong No.xlsx',
+                    chucVu: 'Kế toán',
+                };
+                app.model.encryption.create(dataEncryption, () => {
+                    app.excel.attachment(workbook, res, 'Theo Doi Cong No.xlsx');
+                });
                 }
             });
         } catch (error) {

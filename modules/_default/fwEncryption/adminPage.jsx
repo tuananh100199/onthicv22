@@ -44,7 +44,7 @@ class EncryptionPage extends AdminPage {
                     <tr key={index}>
                         <TableCell type='number' content={(pageNumber - 1) * pageSize + index + 1} />
                         <TableCell type='text' content={item.author ? (item.author.lastname + ' ' + item.author.firstname) : ''} />
-                        <TableCell type='text' style={{ whiteSpace: 'nowrap' }} content={item.chucVu ? item.chucVu : 'Nhân viên quản lý xe'} />
+                        <TableCell type='text' style={{ whiteSpace: 'nowrap' }} content={item.chucVu ? item.chucVu : 'Nhân viên trung tâm'} />
                         <TableCell type='text' style={{ whiteSpace: 'nowrap' }} content={item.filename}   />
                         <TableCell type='text' content={item.date ? T.dateToText(item.date) : ''} />
                         {/* <TableCell type='buttons' content={item} permission={permission} onEdit={this.edit} onDelete={this.delete} /> */}
