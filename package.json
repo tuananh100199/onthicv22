@@ -1,6 +1,6 @@
 {
   "name": "hiep-phat",
-  "version": "1.0.153",
+  "version": "1.0.156",
   "title": "Hiep Phat Website",
   "description": "Trung tam dao tao lai xe Hiep Phat",
   "main": "hiepphat.main.js",
@@ -72,7 +72,6 @@
     "react-number-format": "^4.9.1",
     "react-redux": "^7.2.2",
     "react-router-dom": "^5.2.0",
-    "react-select-country": "0.0.15",
     "redux": "^4.1.2",
     "redux-devtools-extension": "^2.13.8",
     "redux-thunk": "^2.3.0",
