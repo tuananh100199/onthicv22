@@ -4,7 +4,7 @@ import { getTeacherPage,createTeacher,updateTeacher,deleteTeacher } from './redu
 import { AdminPage, AdminModal,FormDatePicker,FormSelect, FormTextBox, TableCell, renderTable, FormRichTextBox, FormCheckbox, TableHead,TableHeadCell } from 'view/component/AdminPage';
 import Pagination from 'view/component/Pagination';
 import { ajaxSelectDivision,getDivisionAll } from 'modules/mdDaoTao/fwDivision/redux';
-import { Link } from 'react-router-dom';
+// import { Link } from 'react-router-dom';
 import { getCategoryAll } from 'modules/_default/fwCategory/redux';
 import { ajaxSelectCourseType } from 'modules/mdDaoTao/fwCourseType/redux';
 import {getCourseAll} from 'modules/mdDaoTao/fwCourse/redux';
@@ -178,8 +178,8 @@ class AdminTeacherPage extends AdminPage {
                     <TableHeadCell name='birthday' style={{ width: 'auto', textAlign: 'center' }} content='Ngày sinh' nowrap='true'/> 
                     <TableHeadCell style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Cơ sở đào tạo</TableHeadCell>
                     <TableHeadCell style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Loại giáo viên</TableHeadCell>
-                    <TableHeadCell name='courseTypes' filter='select' filterData = {ajaxSelectCourseType} style={{ width: 'auto', textAlign: 'center' }} nowrap='true' content='Loại khóa học' /> 
-                    <TableHeadCell name='courses' style={{ width: 'auto', textAlign: 'center' }} menuStyle={{width:200}} filter='select' filterData = {this.state.courses}>Khóa học đang dạy</TableHeadCell>
+                    {/* <TableHeadCell name='courseTypes' filter='select' filterData = {ajaxSelectCourseType} style={{ width: 'auto', textAlign: 'center' }} nowrap='true' content='Loại khóa học' />  */}
+                    {/* <TableHeadCell name='courses' style={{ width: 'auto', textAlign: 'center' }} menuStyle={{width:200}} filter='select' filterData = {this.state.courses}>Khóa học đang dạy</TableHeadCell> */}
                     <TableHeadCell style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Thao tác</TableHeadCell>
                 </TableHead>
                 ),
@@ -193,13 +193,9 @@ class AdminTeacherPage extends AdminPage {
                         <TableCell  content={item.birthday ? T.dateToText(item.birthday, 'dd/mm/yyyy') : ''} />
                         <TableCell  style={{whiteSpace:'nowrap'}} content={item.division? item.division.title:''} />
                         <TableCell  content={item.dayLyThuyet?'GV lý thuyết':'GV thực hành'} />
-                        <TableCell  content={item.courseTypes && item.courseTypes.length ? item.courseTypes.reduce((result,item)=> result+(result!=''?(', '+item.title):item.title),''):'chưa có'} />
-                        <TableCell  content={item.courses && item.courses.length ? this.renderListCourse(item.courses):'chưa có'} />
-                        <TableCell type='buttons' content={item} permission={permission} onEdit={'/user/teacher/' + item._id} onDelete={this.delete}>
-                            <Link className='btn btn-warning' to={`/user/manage-lecturer/${item.user._id}/rating`}>
-                                <i className="fa fa-star" aria-hidden="true"></i>
-                            </Link>
-                        </TableCell>
+                        {/* <TableCell  content={item.courseTypes && item.courseTypes.length ? item.courseTypes.reduce((result,item)=> result+(result!=''?(', '+item.title):item.title),''):'chưa có'} /> */}
+                        {/* <TableCell  content={item.courses && item.courses.length ? this.renderListCourse(item.courses):'chưa có'} /> */}
+                        <TableCell type='buttons' content={item} permission={permission} onEdit={'/user/teacher/' + item._id} onDelete={this.delete}></TableCell>
                     </tr>);
             } ,
         });

@@ -122,7 +122,6 @@ export class DropdownSelectMulti extends React.Component {
         const searchText = this.searchBox.value.toLowerCase().trim();
         const done=()=>{
             const items = this.props.items;
-            console.log({items});
             if(!items){
                 setTimeout(done,100);
             }else{

@@ -36,6 +36,10 @@ module.exports = (app) => {
                 if (condition.student) {
                     pageCondition.student = condition.student;
                 }
+
+                if (condition.lecturer) {
+                    pageCondition.lecturer = condition.lecturer;
+                }
                 filter && app.handleFilter(filter,['student'],filterCondition=>{
                     pageCondition={...pageCondition,...filterCondition};
                 });
@@ -46,6 +50,19 @@ module.exports = (app) => {
         } catch (error) {
             res.send({ error });
         }
+    });
+
+    app.get('/api/time-table/all', app.permission.check('timeTable:read'), (req, res) => {
+        let condition = req.query.condition ||{}; 
+        if(condition.date){
+            const day = new Date(condition.date).getDate(),
+            month = new Date(condition.date).getMonth(),
+            year = new Date(condition.date).getFullYear();
+            condition.date = {$gte: new Date(new Date().setFullYear(year, month, day)).setHours(0,0,0,0), $lt: new Date(new Date().setFullYear(year, month, day + 1)).setHours(0,0,0,0)};
+        }
+        app.model.timeTable.getAll(condition,(error,list)=>{
+            res.send({error,list});
+        });
     });
 
     app.get('/api/time-table', app.permission.check('timeTable:read'), (req, res) => {
@@ -104,33 +121,24 @@ module.exports = (app) => {
         if (data.car == '') {
             delete data.car;
         }
-        app.model.student.get(data.student, (error, item) => {
-            if (error || item == null) {
+        app.model.student.get(data.student, (error, student) => {
+            if (error || student == null) {
                 res.send({ error: 'Lỗi khi tạo thời khóa biểu học viên' });
             } else {
-                let soGioThucHanhDaHoc = item.soGioThucHanhDaHoc ? Number(item.soGioThucHanhDaHoc) : 0,
-                tongSoGioHocThucHanh = item.course && item.course.practiceNumOfHours ? Number(item.course.practiceNumOfHours) : 0;
-
-                if (soGioThucHanhDaHoc < tongSoGioHocThucHanh) {
-                    if (data.state == 'approved') {
-                        soGioThucHanhDaHoc += Number(data.numOfHours);
-                    }
-
-                    if (soGioThucHanhDaHoc > tongSoGioHocThucHanh) {
-                        res.send({ error: 'Tổng số giờ học lớn hơn giờ học quy định, học viên vui lòng mua thêm giờ học'});
-                    } else {
-                        app.model.timeTable.create(data, (error, newItem) => {
-                            if (error && !newItem) {
-                                res.send({ error });
-                            } else {
-                                app.model.student.update(newItem.student && newItem.student._id, { soGioThucHanhDaHoc }, () => {
-                                    app.model.timeTable.get(newItem._id, (error, item) => res.send({ error, item }));
-                                });
-                            }
-                        });
-                    }
+                let soGioThucHanhDaHoc = student.soGioThucHanhDaHoc ? Number(student.soGioThucHanhDaHoc) : 0,
+                tongSoGioHocThucHanh = student.course && student.course.practiceNumOfHours ? Number(student.course.practiceNumOfHours) : 0;
+                if (parseInt(tongSoGioHocThucHanh) - parseInt(soGioThucHanhDaHoc)) {
+                    app.model.timeTable.create(data, (error, newItem) => {
+                        if (error && !newItem) {
+                            res.send({ error });
+                        } else {
+                            app.model.student.update(student._id , { soGioThucHanhDaHoc: parseInt(soGioThucHanhDaHoc) + 1}, (error) => {
+                                res.send({error,item:newItem});
+                            });
+                        }
+                    });
                 } else {
-                    res.send({ error: 'Học viên đã hết số giờ học thực hành quy định' });
+                    res.send({ error: 'Bạn đã hết thời gian học thực hành. Vui lòng mua thêm gói!' });
                 }
             }
         });        
@@ -145,7 +153,6 @@ module.exports = (app) => {
         if (changes.car == '') {
             delete changes.car;
         }
-        
         app.model.timeTable.get(_id, (error, item) => {
             if (error) {
                 res.send({ error });
@@ -155,13 +162,23 @@ module.exports = (app) => {
                 let tongSoGioHocThucHanh = item.student && item.student.course ? item.student.course.practiceNumOfHours : 0,
                 soGioThucHanhDaHoc = item.student ?  Number(item.student.soGioThucHanhDaHoc) : 0;
 
-                if (changes.state != 'approved' && item.state == 'approved') {
-                    soGioThucHanhDaHoc -= changes.numOfHours ? Number(changes.numOfHours) : Number(item.numOfHours);
-                } else if (changes.state == 'approved' && item.state != 'approved') {
-                    soGioThucHanhDaHoc += changes.numOfHours ? Number(changes.numOfHours) : Number(item.numOfHours);
-                } else if (changes.state == 'approved' && item.state == 'approved' && (changes.numOfHours != item.numOfHours)) {
-                    const numHoursChange = Number(changes.numOfHours) - Number(item.numOfHours);
-                    soGioThucHanhDaHoc += numHoursChange;
+                // if (changes.state != 'approved' && item.state == 'approved') {
+                //     soGioThucHanhDaHoc -= changes.numOfHours ? Number(changes.numOfHours) : Number(item.numOfHours);
+                // } else if (changes.state == 'approved' && item.state != 'approved') {
+                //     soGioThucHanhDaHoc += changes.numOfHours ? Number(changes.numOfHours) : Number(item.numOfHours);
+                // } else if (changes.state == 'approved' && item.state == 'approved' && (changes.numOfHours != item.numOfHours)) {
+                //     const numHoursChange = Number(changes.numOfHours) - Number(item.numOfHours);
+                //     soGioThucHanhDaHoc += numHoursChange;
+                // }
+                if(changes.state){
+                    const addingTimeState = ['approved','waiting'];
+                    // nếu cập nhật từ reject,cancel -> waiting,approved => cộng số giờ học thực hành
+                    if(addingTimeState.find(state=>state==changes.state)!=undefined && !addingTimeState.find(state=>state==item.state)){
+                        soGioThucHanhDaHoc+=changes.numOfHours ? Number(changes.numOfHours) : 1;
+                    }else if(!addingTimeState.find(state=>state==changes.state) && addingTimeState.find(state=>state==item.state)!=undefined){
+                    // nếu cập nhật từ waiting,approved -> reject,cancel=> trừ số giờ học thực hành
+                        soGioThucHanhDaHoc-=changes.numOfHours ? Number(changes.numOfHours) : 1;
+                    }
                 }
 
                 if (soGioThucHanhDaHoc > tongSoGioHocThucHanh) {
@@ -171,8 +188,8 @@ module.exports = (app) => {
                         if (error && !timeTable) {
                             res.send({ error });
                         } else {
-                            app.model.student.update(item.student && item.student._id, { soGioThucHanhDaHoc }, () => {
-                                app.model.timeTable.get(timeTable._id, (error, item) => res.send({ error, item }));
+                            app.model.student.update(item.student && item.student._id, { soGioThucHanhDaHoc }, (error) => {
+                                res.send({error,item:timeTable});
                             });
                         }
                     });
@@ -193,7 +210,7 @@ module.exports = (app) => {
                 res.send({ error: 'Lỗi khi lấy thông tin thời khóa biểu học viên' });
             } else {
                 let soGioThucHanhDaHoc = item.student.soGioThucHanhDaHoc;
-                if (item.state == 'approved') {
+                if (item.state == 'approved'||item.state == 'waiting') {
                         soGioThucHanhDaHoc -= item.numOfHours;
                 }
                 app.model.student.update(item.student && item.student._id, { soGioThucHanhDaHoc }, () => {
@@ -294,6 +311,17 @@ module.exports = (app) => {
     });
     
     // Student API-----------------------------------------------------------------------------------------------------
+    app.get('/api/time-table/student', app.permission.check('user:login'), (req, res) => {
+        const userId = req.session.user._id;
+        app.model.student.get({ user: userId }, (error, item) => {
+            if (error || item == null) {
+                res.send({ error: 'Lỗi khi lấy thời khóa biểu học viên' });
+            } else {
+                app.model.timeTable.getPage(undefined, undefined, { student: item._id, state: 'approved' }, (error, page) => res.send({ error, page }));
+            }
+        });
+    });
+
     app.get('/api/time-table/student', app.permission.check('user:login'), (req, res) => {
         const userId = req.session.user._id;
         app.model.student.get({ user: userId }, (error, item) => {

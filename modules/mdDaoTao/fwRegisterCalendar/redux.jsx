@@ -55,6 +55,55 @@ export function getRegisterCalendarPage(pageNumber, pageSize, pageCondition,filt
     };
 }
 
+export function createRegisterCalendar(data, done) {
+    return dispatch => {
+        const url = '/api/register-calendar/admin';
+        T.post(url, { data }, data => {
+            if (data.error) {
+                T.notify('Tạo lịch nghỉ bị lỗi!', 'danger');
+                console.error(`POST: ${url}. ${data.error}`);
+            } else {
+                T.notify('Tạo lịch nghỉ thành công!', 'success');
+                done && done(data.item);
+                dispatch(getRegisterCalendarPage());
+            }
+        }, error => console.error(error) || T.notify('Tạo lịch nghỉ bị lỗi!', 'danger'));
+    };
+}
+
+export function updateRegisterCalendar(_id, changes, done) {
+    return dispatch => {
+        const url = '/api/register-calendar/admin';
+        T.put(url, { _id, changes }, data => {
+            if (data.error) {
+                T.notify('Cập nhật lịch nghỉ bị lỗi!', 'danger');
+                console.error(`PUT: ${url}. ${data.error}`);
+            } else {
+                T.notify('Cập nhật lịch nghỉ thành công!', 'success');
+                done && done(data.item);
+                dispatch(getRegisterCalendarPage());
+            }
+            done && done(data.error);
+        }, error => console.error(error) || T.notify('Cập nhật lịch nghỉ bị lỗi!', 'danger'));
+    };
+}
+
+export function deleteRegisterCalendar(_id,done) {
+    return dispatch => {
+        const url = '/api/register-calendar/admin';
+        T.delete(url, { _id }, data => {
+            if (data.error) {
+                T.notify('Xóa lịch nghỉ bị lỗi!', 'danger');
+                console.error(`DELETE: ${url}. ${data.error}`);
+            } else {
+                T.alert('Lịch nghỉ được xóa thành công!', 'error', false, 800);
+                done && done();
+                dispatch(getRegisterCalendarPageByAdmin());
+            }
+        }, error => console.error(error) || T.notify('Xóa lịch nghỉ bị lỗi!', 'danger'));
+    };
+}
+
 export function getRegisterCalendarPageByAdmin(pageNumber, pageSize, pageCondition, done) {
     const page = T.updatePage('pageRegisterCalendar', pageNumber, pageSize);
     return dispatch => {

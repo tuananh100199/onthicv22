@@ -75,6 +75,21 @@ export function getTimeTablePageByAdmin(pageNumber, pageSize, pageCondition, don
     };
 }
 
+export function getTimeTabletAll(condition,done) {
+    return dispatch => {
+        const url = '/api/time-table/all';
+        T.get(url,{condition}, data => {
+            if (data.error) {
+                T.notify('Lấy lịch học bị lỗi', 'danger');
+                console.error('GET: ' + url + '. ' + data.error);
+            } else {
+                done && data && done(data.list);
+                dispatch({ type: TimeTableGetAll, list: data.list });
+            }
+        }, error => console.error(error) || T.notify('Lấy kỳ sát hạch bị lỗi', 'danger'));
+    };
+}
+
 export function getTimeTable(_id, done) {
     return dispatch => {
         const url = '/api/time-table';
@@ -120,6 +135,22 @@ export function getTimeTableOfLecturer(condition, done) {
 export function createTimeTable(data, done) {
     return dispatch => {
         const url = '/api/time-table';
+        T.post(url, { data }, data => {
+            if (data.error) {
+                T.notify('Tạo thời khóa biểu bị lỗi!', 'danger');
+                console.error(`POST: ${url}. ${data.error}`);
+            } else {
+                T.notify('Tạo thời khóa biểu thành công!', 'success');
+                done && done(data.item);
+                dispatch(getTimeTablePage());
+            }
+        }, error => console.error(error) || T.notify('Tạo thời khóa biểu bị lỗi!', 'danger'));
+    };
+}
+
+export function createTimeTableMulti(data, done) {
+    return dispatch => {
+        const url = '/api/time-table/multi';
         T.post(url, { data }, data => {
             if (data.error) {
                 T.notify('Tạo thời khóa biểu bị lỗi!', 'danger');

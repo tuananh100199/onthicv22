@@ -113,9 +113,9 @@ module.exports = (app) => {
 
         datSatHach: { type: Boolean, default: false },
         totNghiep: { type: Boolean, default: false },
-        kySatHach: String,
-        ngaySatHach: Date,
-
+        kySatHach:{ type: app.database.mongoDB.Schema.ObjectId, ref: 'LicenseTest' },
+        // ngaySatHach:Date,
+        
         // nhận chứng chỉ sơ cấp, giấy phép lái xe
         isCertification: { type: Boolean, default: false },  // trung tâm đã có CCSC
         hasCertification: { type: Boolean, default: false },   // Học viên đã nhận được CCSC
@@ -174,7 +174,7 @@ module.exports = (app) => {
                 .populate('user', 'email phoneNumber image fcmToken')
                 .populate('course', 'courseType name active')
                 .populate('division')
-                .populate('courseType', 'title')
+                .populate('courseType', 'title').populate('kySatHach','_id title date')
                 .populate({
                     path: 'course', populate: { path: 'subjects', select: '-detailDescription' }
                 })
@@ -225,7 +225,7 @@ module.exports = (app) => {
                             model.find({ _id: { $in: _ids }, ...condition }).sort(sort || { firstname: 1 }).skip(skipNumber).limit(result.pageSize)
                                 .populate('user', '-password').populate('division', '_id title isOutside').populate('planLecturer', '_id lastname firstname').populate('courseType').populate('course').populate({
                                     path: 'course', populate: { path: 'subjects', select: '-detailDescription' }
-                                }).populate('courseFee').populate('_id name')
+                                }).populate('courseFee').populate('_id name').populate('kySatHach','_id title date')
                                 .exec((error, list) => {
                                     result.list = list;
                                     done(error, result);
@@ -238,7 +238,7 @@ module.exports = (app) => {
                     model.find(condition).sort(sort || { firstname: 1 }).skip(skipNumber).limit(result.pageSize)
                         .populate('user', '-password').populate('division', '_id title isOutside').populate('planLecturer', '_id lastname firstname').populate('courseType').populate('course').populate({
                             path: 'course', populate: { path: 'subjects', select: '-detailDescription' }
-                        }).populate('courseFee').populate('discount').populate('coursePayment')
+                        }).populate('courseFee').populate('discount').populate('coursePayment').populate('kySatHach','_id title date')
                         .exec((error, list) => {
                             result.list = list;
                             done(error, result);

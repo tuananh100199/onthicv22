@@ -19,6 +19,10 @@ export default {
         {
             path: '/user/register-calendar/enrollment',
             component: Loadable({ loading: Loading, loader: () => import('./adminPage') })
+        },
+        {
+            path: '/user/register-calendar/teacher',
+            component: Loadable({ loading: Loading, loader: () => import('./adminPage') })
         }
     ,],
     Section: {
@@ -30,7 +34,7 @@ export default {
 export const RegisterCalendarStates = [
     { id: 'approved', text: 'Đã duyệt', color: '#1488db', className: 'btn btn-primary', icon: 'fa fa-lg fa-check' },
     { id: 'waiting', text: 'Đang chờ duyệt', color: '#ffc107', className: 'btn btn-warning', icon: 'fa fa-lg fa-clock-o' },
-    { id: 'reject', text: 'Từ chối', color: 'black', className: 'btn btn-danger', icon: 'fa fa-lg fa-times' },
+    { id: 'reject', text: 'Từ chối', color: '#F80000', className: 'btn btn-danger', icon: 'fa fa-lg fa-times' },
     { id: 'cancel', text: 'Hủy', color: '#6C757D', className: 'btn btn-danger', icon: 'fa fa-ban' },
 ];
 export const RegisterCalendarStatesMapper = {};

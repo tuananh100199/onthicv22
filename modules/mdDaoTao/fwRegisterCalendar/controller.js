@@ -1,17 +1,26 @@
 module.exports = (app) => {
-    const menu = {
+    const enrollMenu = {
         parentMenu: app.parentMenu.enrollment,
         menus: {
             8080: { title: 'Lịch nghỉ giáo viên', link: '/user/register-calendar/enrollment' },
         }
     };
+
+    const teacherMenu = {
+        parentMenu: app.parentMenu.teacher,
+        menus: {
+            9060: { title: 'Lịch nghỉ giáo viên', link: '/user/register-calendar/teacher' },
+        }
+    };
     app.permission.add(
-        { name: 'registerCalendar:read',menu }, { name: 'registerCalendar:write' }, { name: 'registerCalendar:delete' }
+        { name: 'registerCalendar:read' }, { name: 'registerCalendar:write' }, { name: 'registerCalendar:delete' },
+        { name: 'registerCalendar:enroll',menu:enrollMenu },{ name: 'registerCalendar:teacher',menu:teacherMenu }
     );
 
     app.get('/user/register-calendar', app.permission.check('registerCalendar:read'), app.templates.admin);
     app.get('/user/hoc-vien/khoa-hoc/:_id/dang-ky-lich-hoc', app.permission.check('user:login'), app.templates.admin);
     app.get('/user/register-calendar/enrollment', app.permission.check('registerCalendar:read'), app.templates.admin);
+    app.get('/user/register-calendar/teacher', app.permission.check('registerCalendar:read'), app.templates.admin);
 
     // APIs -----------------------------------------------------------------------------------------------------------
 
@@ -29,12 +38,22 @@ module.exports = (app) => {
         // const { isCourseAdmin } = req.session.user || {};
         let pageNumber = parseInt(req.params.pageNumber),
             pageSize = parseInt(req.params.pageSize),
-            // condition = req.query.pageCondition || {},s
+            condition = req.query.condition || {},
             filter = req.query.filter||null,sort=req.query.sort||null,
             pageCondition = {};
-            // if (isCourseAdmin) {
-            //     pageCondition.state = { $in:  ['approved', 'waiting', 'reject'] };
-            // }
+            
+            if(condition.dateOff){
+                const {type,dateStart,dateEnd}=condition.dateOff;
+                if(type=='year'){
+                    pageCondition.dateOff={ $gte: new Date().setFullYear(dateStart,0,1), $lt: new Date().setFullYear(dateEnd,1,0) };
+                }else if(type=='month'){//type=month
+                    const monthStart = new Date(dateStart).getMonth(),
+                    yearStart = new Date(dateStart).getFullYear(),
+                    monthEnd = new Date(dateEnd).getMonth(),
+                    yearEnd = new Date(dateEnd).getFullYear();   
+                    pageCondition.dateOff={ $gte: new Date().setFullYear(yearStart, monthStart, 1), $lt: new Date().setFullYear(yearEnd, monthEnd + 1, 0) };
+                }
+            }
             filter && app.handleFilter(filter,['timeOff','state','lecturer'],filterCondition=>{
                 pageCondition={...pageCondition,...filterCondition};
             });

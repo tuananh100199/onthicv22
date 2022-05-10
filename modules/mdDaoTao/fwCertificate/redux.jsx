@@ -105,11 +105,20 @@ export function getCertificationPage(pageNumber, pageSize, condition, done) {
 
 // Actions ------------------------------------------------------------------------------------------------------------
 T.initCookiePage('pageLicense');
-export function getLicensePage(pageNumber, pageSize, searchText, done) {
-    const page = T.updatePage('pageLicense', pageNumber, pageSize);
+export function getLicensePage(pageNumber, pageSize, pageCondition,filter,sort, done) {
+    console.log({filter,sort});
+    
+    if(typeof sort=='function'){
+        done = sort;
+        sort = undefined;
+    }else if(typeof filter == 'function'){
+        done = filter;
+        filter=undefined;
+    }
+    const page = T.updatePage('pageLicense', pageNumber, pageSize,pageCondition,filter,sort);
     return dispatch => {
         const url = `/api/license/page/${page.pageNumber}/${page.pageSize}`;
-        T.get(url, { searchText }, data => {
+        T.get(url, { pageCondition:page.pageCondition,filter:page.filter,sort:page.sort }, data => {
             if (data.error) {
                 T.notify('Lấy danh sách giấy phép lái xe bị lỗi!', 'danger');
                 console.error(`GET: ${url}. ${data.error}`);
@@ -139,7 +148,7 @@ export function exportFinalLicense(listStudents, done) {
 
 export const ajaxSelectStudentPassLicense = T.createAjaxAdapter(
     '/api/license/page/1/20',
-    params => ({searchText: params.term,isLicense:true}),
+    params => ({condition: {searchText: params.term,isLicense:true}}),
     response => response && response.page && response.page.list ?
         response.page.list.map(student => ({ id: student._id, text: `${student.lastname} ${student.firstname}${student.identityCard?' ('+student.identityCard+')':''}` })) : [],
 );

@@ -27,7 +27,6 @@ export function getRatePageByAdmin(pageNumber, pageSize, pageCondition, filter, 
         done = filter;
         filter={};
     }
-    console.log({pageCondition,filter,sort});
     const page = T.updatePage('rateAdminPage', pageNumber, pageSize, pageCondition, filter, sort);
     return dispatch => {
         const url = `/api/rate/admin/page/${pageNumber}/${pageSize}`;
@@ -164,6 +163,22 @@ export function createRate(newData, done) {
                 done && done(data.item);
             }
         }, error => console.error(error) || T.notify('Tạo đánh giá bị lỗi!', 'danger'));
+    };
+}
+
+export function deleteRate(_id, done) {
+    return () => {
+        const url = '/api/rate/student';
+        T.delete(url, { _id }, data => {
+            if (data.error) {
+                T.notify('Xóa đánh giá bị lỗi!', 'danger');
+                console.error('DELETE: ' + url + '. ' + data.error);
+            } else {
+                T.alert('Đánh giá được xóa thành công!', 'error', false, 800);
+                done && done();
+            }
+
+        }, error => console.error(error) || T.notify('Xóa đánh giá bị lỗi!', 'danger'));
     };
 }
 
