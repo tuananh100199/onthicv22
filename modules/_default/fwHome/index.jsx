@@ -14,6 +14,7 @@ import loginForm, { ajaxSelectLoginForm, ajaxGetLoginForm } from './redux/reduxL
 import gioiThieu, { ajaxSelectGioiThieu, ajaxGetGioiThieu } from './redux/reduxGioiThieuHiepPhat';
 import hangGPLX, { ajaxSelectHangGPLX, ajaxGetHangGPLX } from './redux/reduxHangGPLX';
 import introVideo, { ajaxSelectIntroVideo, ajaxGetIntroVideo } from './redux/reduxIntroVideo';
+import viPham from './redux/reduxViPham';
 
 import SectionListContent from './sectionListContent';
 import SectionContent from './sectionContent';
@@ -115,7 +116,7 @@ export default {
     },
     redux: {
         parent: 'component',
-        reducers: { carousel, content, listContent, staffGroup, statistic, video, listVideo, gioiThieu, loginForm, hangGPLX,introVideo },
+        reducers: { carousel, content, listContent, staffGroup, statistic, video, viPham, listVideo, gioiThieu, loginForm, hangGPLX,introVideo },
     },
     routes: [
         {

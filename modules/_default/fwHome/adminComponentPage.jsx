@@ -4,6 +4,7 @@ import { AdminPage, FormTabs } from 'view/component/AdminPage';
 import ContentView from './adminContentView';
 import CarouselView from './adminCarouselView';
 import VideoPage from './adminVideoView';
+import ViPhamPage from './adminViPhamView';
 import StatisticPage from './adminStatisticView';
 import StaffGroupPage from './adminStaffGroupView';
 import ListVideoPage from './adminListVideoView';
@@ -27,6 +28,7 @@ export class ComponentPage extends AdminPage {
         tabs.push({ key: tabs.length, title: 'Giới thiệu Hiệp Phát', component: <GioiThieuHiepPhatView permission={permission} history={this.props.history} /> });
         tabs.push({ key: tabs.length, title: 'Các hạng GPLX', component: <HangGPLXView permission={permission} history={this.props.history} /> });
         tabs.push({ key: tabs.length, title: 'Video giới thiệu', component: <IntroVideoView permission={permission} history={this.props.history} /> });
+        tabs.push({ key: tabs.length, title: 'Các lỗi thường gặp', component: <ViPhamPage permission={permission} history={this.props.history} /> });
         return this.renderPage({
             icon: 'fa fa-cogs',
             title: 'Thành phần giao diện',
