@@ -70,7 +70,6 @@ class ProfileStudentPage extends AdminPage {
                 <TableHeadCell name='isIdentityCard' content='CMND/CCCD' style={{width:'auto'}} filter='select' nowrap='true' filterData = {filterCondition}/>
                 <TableHeadCell name='isGiayKhamSucKhoe' content='Giấy khám sức khỏe' style={{width:'auto'}} filter='select' nowrap='true' filterData = {filterCondition}/>
                 <TableHeadCell name='isBangLaiA1' content='Bằng lái A1' style={{width:'auto'}} nowrap='true' filter='select' filterData = {filterCondition}/>
-
                 <TableHeadCell style={{ width: 'auto' }} nowrap='true'>Hoàn tất</TableHeadCell>
             </TableHead>),
             renderRow: (item, index) => (

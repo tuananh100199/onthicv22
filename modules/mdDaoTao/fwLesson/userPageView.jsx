@@ -149,9 +149,9 @@ class adminEditPage extends AdminPage {
                                                         this.setState(prevState => ({
                                                             faceDetect: prevState.faceDetect ? prevState.faceDetect + 1 : 1
                                                         }), () => {
-                                                            if (this.state.faceDetect > 2) {
-                                                                this.confirmModal.show();
-                                                            }
+                                                            // if (this.state.faceDetect > 2) {
+                                                            //     this.confirmModal.show();
+                                                            // }
                                                         });
                                                     }
                                                 });
