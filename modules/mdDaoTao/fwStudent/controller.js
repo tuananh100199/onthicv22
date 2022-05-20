@@ -903,7 +903,7 @@ module.exports = (app) => {
         const { _id } = req.body;
         app.model.student.get(_id, (error, student) => {
             if (student) {
-                if (student.course) {
+                if (student.course && !student.course.isDefault) {
                     res.send({ error: 'Bạn không được quyền xoá học viên!' });
                 } else if (req.session.user.division && req.session.user.division.isOutside && student.user && req.session.user.division._id != student.user._id) {
                     res.send({ error: 'Bạn không được quyền xoá học viên không thuộc cơ sở của bạn!' });
