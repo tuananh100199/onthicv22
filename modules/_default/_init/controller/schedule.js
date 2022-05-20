@@ -88,34 +88,102 @@ module.exports = (app) => {
                 });
             });
             app.schedule('0 6 * * *', () => {
+                // const axios = require('axios');
                 // Tìm và gửi thông báo chúc mừng sinh nhật học viên
                 // if (app.primaryWorker) {
-                //     app.model.user.getAll({ $eq: [{ $dayOfYear: new Date()  },{ $dayOfYear: new Date(birthday)  }]}, (error, items) => {
-                //         let timeTables = [];
-                //         (items || []).forEach(item => {
-                //             const expiredDate = new Date(item.createdAt).getTime() + 1000 * 3600 * 24;
-                //             const now = new Date().getTime();
-                //             if (expiredDate < now) {
-                //                 timeTables.push(item);
-                //             }
-                //         });
-                //         if (timeTables && timeTables.length) {
-                //             const handleDeleteTimeTable = (index = 0) => {
-                //                 if (index == timeTables.length) {
+                //     app.model.user.getAll({$expr:{$eq: [{$dayOfYear: new Date()}, {$dayOfYear: '$birthday'}]}}, (error, items) => {
+                //         if (items && items.length) {
+                //             const handleNotificationUser = (index = 0) => {
+                //                 if (index == items.length) {
                 //                     return;
                 //                 } else {
-                //                     const timeTable = timeTables[index];
-                //                     app.model.timeTable.update(timeTable._id, { state: 'autoCancel' }, () => {
-                //                         handleDeleteTimeTable(index + 1);
-                //                     });
+                //                     const user = items[index];
+                //                     const currentDay = new Date().getDate();
+                //                     const currentMonth = new Date.getMonth();
+                //                     if(user && user.birthday && (user.birthday.getDate() == currentDay) && (user.birthday.getMonth() == currentMonth)){
+                //                         axios.post('https://fcm.googleapis.com/fcm/send', {
+                //                             notification: {
+                //                                 title: 'Chúc mừng sinh nhật',
+                //                                 // type: item.type,
+                //                                 body: 'Trung tâm đào tạo lái xe Hiệp Phát chúc mừng sinh nhật bạn!',
+                //                                 mutable_content: true,
+                //                                 sound: 'Tri-tone'
+                //                             },
+                //                             to: user.fcmToken 
+                //                         },
+                //                         {
+                //                             headers: {
+                //                                 Authorization: 'key=AAAAyyg1JDc:APA91bGhj8NFiemEgwLCesYoQcbGOiZ0KX2qbc7Ir7sFnANrypzIpniGsVZB9xS8ZtAkRrYqLCi5QhFGp32cKjsK_taIIXrkGktBrCZk7u0cphZ1hjI_QXFGRELhQQ_55xdYccZvmZWg'
+                //                             }
+                //                         }
+                //                         );
+                //                     } 
+                //                     handleNotificationUser(index+1);
                 //                 }
                 //             };
-                //             handleDeleteTimeTable();
+                //             handleNotificationUser();
                 //         }
-                //         console.log(items)
                 //     });
                 // }
-              
+                // Tìm và gửi thông báo lịch học/ dạy
+                // if(app.primaryWorker){
+                //     const today = new Date();
+                //     let tomorrow =  new Date();
+                //         tomorrow.setDate(today.getDate() + 1);
+                //     const promiseList = [];
+                //     const getStudents = new Promise((resolve,reject)=>{ 
+                //         app.model.timeTable.getAll({ date: {$gte: today, $lt: tomorrow}, state: 'approved'},  (error, items) => {
+                //             const listStudent = {};
+                //             items.forEach(item => {
+                //                 const fcmToken = item.student && item.student.user ? item.student.user.fcmToken : null;
+                //                 if(fcmToken && listStudent[fcmToken]){
+                //                     listStudent[fcmToken] = listStudent[fcmToken] + ', ' + item.startHour;
+                //                 } else if(fcmToken) {
+                //                     listStudent[fcmToken] = [item.startHour];
+                //                 }
+                //             });
+                //             resolve(listStudent);
+                //         });
+                //     });
+                //     const getTeachers = new Promise((resolve,reject)=>{ 
+                //         app.model.timeTable.getAll({ date: {$gte: today, $lt: tomorrow}, state: 'approved'},  (error, items) => {
+                //             const listTeacher = {};
+                //             items.forEach(item => {
+                //                 console.log(item)
+                //             });
+                //             resolve(listTeacher);
+                //         });
+                //     });
+                //     Promise.all([getTeachers,getStudents]).then(([listTeacher,listStudent]) => {
+                //         let list = {...listTeacher, ...listStudent}; 
+                //         const listFcmToken = Object.keys(list);
+                //         const handleNotificationStudent = (index = 0) => {
+                //             if (index == listFcmToken.length) {
+                //                 return;
+                //             } else {
+                //                 const fcmToken = listFcmToken[index];
+                //                 axios.post('https://fcm.googleapis.com/fcm/send', {
+                //                     notification: {
+                //                         title: 'Thông báo thời khoá biểu hôm nay',
+                //                         // type: item.type,
+                //                         body: 'Bạn có thời khoá biểu học thực hành vào các khung giờ ' + listStudent[fcmToken],
+                //                         mutable_content: true,
+                //                         sound: 'Tri-tone'
+                //                     },
+                //                     to: fcmToken 
+                //                 },
+                //                 {
+                //                     headers: {
+                //                         Authorization: 'key=AAAAyyg1JDc:APA91bGhj8NFiemEgwLCesYoQcbGOiZ0KX2qbc7Ir7sFnANrypzIpniGsVZB9xS8ZtAkRrYqLCi5QhFGp32cKjsK_taIIXrkGktBrCZk7u0cphZ1hjI_QXFGRELhQQ_55xdYccZvmZWg'
+                //                     }
+                //                 }
+                //                 );
+                //                 handleNotificationStudent(index + 1);
+                //             }
+                //         };
+                //         handleNotificationStudent();
+                //     }).catch(error => console.error(error));
+                // }
             });
         },
     });
