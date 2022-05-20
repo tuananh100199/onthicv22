@@ -16,13 +16,13 @@ class PreStudenModal extends AdminModal {
     }
 
     onShow = (item) => {
-        const { _id, firstname, lastname, birthday, user, image, residence, regularResidence, courseType,course, sex, division, identityCard,courseFee,discount,coursePayment,isDon,isHinh,isIdentityCard,isGiayKhamSucKhoe,isBangLaiA1 } = item 
-        || { _id: null, firstname: '', lastname: '', birthday: '', user: {}, image, residence: '', regularResidence: '', identityCard: '', planCourse: '', hocPhiPhaiDong: '',isDon:false,isHinh:false,isIdentityCard:false,isGiayKhamSucKhoe:false,isBangLaiA1:false };
+        const { _id, firstname, lastname, birthday,email,phoneNumber, user, image, residence, regularResidence, courseType,course, sex, division, identityCard,courseFee,discount,coursePayment,isDon,isHinh,isIdentityCard,isGiayKhamSucKhoe,isBangLaiA1 } = item 
+        || { _id: null, firstname: '', lastname: '', birthday: '', image, residence: '', regularResidence: '', identityCard: '', planCourse: '', hocPhiPhaiDong: '',isDon:false,isHinh:false,isIdentityCard:false,isGiayKhamSucKhoe:false,isBangLaiA1:false };
         this.itemFirstname.value(firstname || '');
         this.itemLastname.value(lastname || '');
         this.itemBirthday.value(birthday);
-        this.itemEmail.value(user.email || '');
-        this.itemPhoneNumber.value(user.phoneNumber || '');
+        this.itemEmail.value(email||user.email || '');
+        this.itemPhoneNumber.value(phoneNumber||user.phoneNumber || '');
         this.itemIdentityCard.value(identityCard || '');
         this.itemSex.value(sex ? sex : 'male');
         this.itemResidence.value(residence || '');
