@@ -46,7 +46,7 @@ module.exports = app => {
                 done = condition;
                 condition = {};
             }
-            model.find(condition).sort({ title: 1 }).exec(done);
+            model.find(condition).sort({ title: 1 }).populate('lessons','_id title').exec(done);
         },
 
         get: (condition, done) => {

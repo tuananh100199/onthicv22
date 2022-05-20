@@ -3,67 +3,37 @@ module.exports = app => {
         parentMenu: app.parentMenu.enrollment,
         menus: {
             8010: { title: 'Đăng ký tư vấn', link: '/user/candidate', icon: 'fa-envelope-o', backgroundColor: '#00897b' },
+            8011: { title: 'Ứng viên tiềm năng', link: '/user/candidate-potential', icon: 'fa-users', backgroundColor: '#00897b' },
         },
     };
     app.permission.add({ name: 'candidate:read', menu }, { name: 'candidate:write' }, { name: 'candidate:delete' }, { name: 'candidate:export' });
 
     app.get('/user/candidate', app.permission.check('candidate:read'), app.templates.admin);
+    app.get('/user/candidate-potential', app.permission.check('candidate:read'), app.templates.admin);
 
     // APIs -----------------------------------------------------------------------------------------------------------------------------------------
-    // const getDefaultCourseFee = data=>new Promise((resolve,reject)=>{// thêm courseFee mặc định
-    //     if(!data.courseType){
-    //         reject('Không có loại khóa học!');
-    //     }else if(data.courseFee && data.courseFee!=''){// Có gói học phí
-    //         resolve(data.courseFee);
-    //     }else{
-    //         app.model.courseFee.get({isDefault:true,courseType:data.courseType},(error,item)=>{
-    //             if(error || !item) reject('Lỗi không tìm thấy gói học phí mặc định!');
-    //             else{
-    //                 resolve(item._id);
-    //             }
-    //         });
-    //     }
-    // });
-
-    // const getDefaultDiscount = data=>new Promise((resolve,reject)=>{// thêm discount mặc định
-    //     if(data.discount&& data.discount!=''){// Có giảm giá
-    //         resolve(data.discount);
-    //     }else{
-    //         app.model.discount.get({isDefault:true},(error,item)=>{
-    //             if(error || !item) reject('Lỗi không tìm thấy giảm giá mặc định!');
-    //             else{
-    //                 resolve(item._id);
-    //             }
-    //         });
-    //     }
-    // });
-
-    // const getDefaultCoursePayment = data=>new Promise((resolve,reject)=>{// thêm coursePayment mặc định
-    //     if(data.coursePayment && data.coursePayment!=''){// Có số lần đóng học phí
-    //         resolve(data.coursePayment);
-    //     }else{
-    //         app.model.coursePayment.get({default:true},(error,item)=>{
-    //             if(error || !item) reject('Lỗi không tìm thấy số lần đóng học phí mặc định!');
-    //             else{
-    //                 resolve(item._id);
-    //             }
-    //         });
-    //     }
-    // });
     
     app.get('/api/candidate/page/:pageNumber/:pageSize', app.permission.check('candidate:read'), (req, res) => {
         const pageNumber = parseInt(req.params.pageNumber),
             pageSize = parseInt(req.params.pageSize);
-        const condition = { state: { $in: ['MoiDangKy', 'DangLienHe', 'Huy'] } },
-            searchText = req.query.searchText;
-        if (searchText) {
-            const value = new RegExp(searchText, 'i');
-            condition.email = value;
-            condition.firstname = value;
-            condition.lastname = value;
+        const condition = req.query.condition||{},
+        // { state: { $in: ['MoiDangKy', 'DangLienHe', 'Huy'] } },
+        pageCondition = {},
+            searchText = condition.searchText;
+        if(condition.state){
+            pageCondition.state=condition.state;
+        }else{
+            pageCondition.state={ $in: ['MoiDangKy', 'DangLienHe', 'Huy'] };
         }
-
-        app.model.candidate.getPage(pageNumber, pageSize, condition, (error, page) => {
+        if (searchText) {
+            const value = { $regex: `.*${searchText}.*`, $options: 'i' };
+            pageCondition['$or'] = [
+                { email: value },
+                { lastname: value },
+                { firstname: value },
+            ];
+        }
+        app.model.candidate.getPage(pageNumber, pageSize, pageCondition, (error, page) => {
             page.list = page.list.map(item => app.clone(item, { message: '' }));
             res.send({ error, page });
         });
@@ -222,6 +192,10 @@ module.exports = app => {
 
     app.delete('/api/candidate', app.permission.check('candidate:delete'), (req, res) => {
         app.model.candidate.delete(req.body._id, error => res.send({ error }));
+    });
+
+    app.put('/api/candidate-potential', app.permission.check('candidate:write'), (req, res) => {
+        app.model.candidate.update(req.body._id,{state:'UngVienTiemNang'},error=>res.send({error}));
     });
 
     // Home -----------------------------------------------------------------------------------------------------------------------------------------

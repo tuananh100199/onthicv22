@@ -24,6 +24,9 @@ export default {
         {
             path: '/user/candidate',
             component: Loadable({ loading: Loading, loader: () => import('./adminPage') })
+        },{
+            path: '/user/candidate-potential',
+            component: Loadable({ loading: Loading, loader: () => import('./adminUngVienTiemNangPage') })
         },
     ],
     Section: {

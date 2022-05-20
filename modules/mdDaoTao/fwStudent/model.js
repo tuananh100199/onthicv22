@@ -93,7 +93,10 @@ module.exports = (app) => {
         tienDoThiHetMon: {},
         diemThucHanh: Number,
         diemBoDeThi: {},
-
+        tienDoHocThucHanh:[{
+            _lessionId: { type: app.database.mongoDB.Schema.ObjectId },
+            state: { type: String, enum: ['approved', 'waiting', 'reject'], default: 'waiting' }, // Trạng thái của Môn học thực hành
+        }],
         duKienThangThi: Number,                                                                     // Dự kiến tháng thi
         duKienNamThi: Number,                                                                       // Dự kiến năm thi
 
@@ -313,6 +316,16 @@ module.exports = (app) => {
             app.model.student.get(data.studentId, (error, student) => {
                 if (error) {
                     done(error);
+                }else if(data.state){
+                    // giáo viên thực hành đánh dấu cho học viên.
+                    const obj = {};
+                    if (student.tienDoHocTap[data.subjectId] && student.tienDoHocTap[data.subjectId][data.lessonId]) {
+                        student.tienDoHocTap[data.subjectId][data.lessonId].state = data.state;
+                    } else {
+                        obj[data.lessonId] = { state: data.state };
+                        Object.assign(student.tienDoHocTap[data.subjectId], obj);
+                    }
+                    model.findOneAndUpdate({ _id: data.studentId }, { tienDoHocTap: student.tienDoHocTap }, { new: true }).exec(done);
                 } else if (data.view) {
                     const obj = {};
                     if (student.tienDoHocTap[data.subjectId] && student.tienDoHocTap[data.subjectId][data.lessonId]) {

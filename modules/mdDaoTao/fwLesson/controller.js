@@ -260,6 +260,20 @@ module.exports = (app) => {
             }
         });
     });
+// update student lesson state-------------------------------------------------------------------------
+    app.post('/api/lesson/student-lesson-state', app.permission.check('user:login'), (req, res) => {
+        const { studentId , courseId, subjectId, lessonId, state } = req.body;
+        app.model.student.get({ _id: studentId, course: courseId }, (error, student) => {
+            if (error) {
+                res.send({ error });
+            } else {
+                const data = { studentId: student._id, subjectId, lessonId, state };
+                app.model.student.updateLearningProgress(data, (error, item) => {
+                    res.send({ error, item });
+                });
+            }
+        });
+    });
 
 
     // Hook readyHooks  -----------------------------------------------------------------------------------------------

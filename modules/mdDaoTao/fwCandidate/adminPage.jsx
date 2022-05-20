@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { getCandidatePage, getCandidate, updateCandidate, deleteCandidate } from './redux';
+import { getCandidatePage, getCandidate, updateCandidate, deleteCandidate,updateUngVienTiemNang } from './redux';
 import Pagination from 'view/component/Pagination';
 import { getCourseTypeAll, ajaxSelectCourseType, ajaxGetCourseType } from 'modules/mdDaoTao/fwCourseType/redux';
 import { AdminPage, AdminModal, FormTextBox, TableCell, renderTable, FormSelect, FormDatePicker,FormCheckbox } from 'view/component/AdminPage';
@@ -235,7 +235,7 @@ class CandidatePage extends AdminPage {
     state = { courseTypes: [] };
     componentDidMount() {
         T.ready(() => T.showSearchBox());
-        this.props.getCandidatePage();
+        this.props.getCandidatePage(null,null,{});
         this.props.getCourseTypeAll(list => {
             const courseTypes = list.map(item => ({ id: item._id, text: item.title }));
             this.setState({ courseTypes });
@@ -256,7 +256,7 @@ class CandidatePage extends AdminPage {
         this.props.getCoursePaymentAll({default:true},defaultCoursePayments=>{//get default coursePayment
             this.setState({defaultCoursePayment:defaultCoursePayments? defaultCoursePayments[0]:null});
         });
-        T.onSearch = (searchText) => this.props.getCandidatePage(1, 50, searchText);
+        T.onSearch = (searchText) => this.props.getCandidatePage(1, 50, {searchText});
     }
 
     edit = (e, item) => e.preventDefault() || this.candidateModal.show(item);
@@ -269,6 +269,9 @@ class CandidatePage extends AdminPage {
 
     delete = (e, item) => e.preventDefault() || T.confirm('Xoá đăng ký tư vấn', 'Bạn có chắc muốn xoá đăng ký tư vấn này?', true, isConfirm =>
         isConfirm && this.props.deleteCandidate(item._id));
+
+    updateUngVienTaiNang = (e, item) => e.preventDefault() || T.confirm('Chuyển thành ứng viên tiềm năng', 'Bạn có chắc muốn chuyển thành ứng viên tiềm năng chứ?', true, isConfirm =>
+    isConfirm && this.props.updateUngVienTiemNang(item._id));
 
     upStudent = (e, item, courseTypeText) => e.preventDefault() || T.confirm('Trở thành ứng viên ', `Bạn có chắc muốn ${item.lastname + ' ' + item.firstname} trở thành ứng viên ${courseTypeText}?`, true, isConfirm =>
         isConfirm && this.props.updateCandidate(item._id, item));
@@ -311,7 +314,10 @@ class CandidatePage extends AdminPage {
                         <TableCell content={dropdownCourseType} style={{ whiteSpace: 'nowrap', textAlign: 'center' }} />
                         <TableCell content={item.state == 'UngVien' ? <span style={{ color: '#28A745' }}>Ứng viên</span> : dropdownState} style={{ whiteSpace: 'nowrap', textAlign: 'center' }} />
                         <TableCell content={dates} style={{ whiteSpace: 'nowrap', textAlign: 'center' }} />
-                        <TableCell type='buttons' content={item} permission={permission} onEdit={this.edit} onDelete={this.delete}>
+                        <TableCell type='buttons' content={item} permission={permission} onEdit={this.edit}>
+                        <a className='btn btn-warning' href='#' onClick={e =>this.updateUngVienTaiNang(e,item)}>
+                            <i className='fa fa-lg fa-recycle' />
+                        </a>
                         </TableCell>
                     </tr>);
             },
@@ -333,5 +339,5 @@ class CandidatePage extends AdminPage {
 }
 
 const mapStateToProps = state => ({ system: state.system, candidate: state.communication.candidate });
-const mapActionsToProps = { getCourseTypeAll, getCandidatePage, getCandidate, updateCandidate, deleteCandidate, getDivisionAll,getCourseFeeAll,getCoursePaymentAll,getDiscountAll };
+const mapActionsToProps = { getCourseTypeAll, getCandidatePage, getCandidate, updateCandidate, deleteCandidate, getDivisionAll,getCourseFeeAll,getCoursePaymentAll,getDiscountAll,updateUngVienTiemNang };
 export default connect(mapStateToProps, mapActionsToProps)(CandidatePage);

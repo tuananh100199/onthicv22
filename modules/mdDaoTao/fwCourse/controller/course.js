@@ -53,6 +53,8 @@ module.exports = (app) => {
     app.get('/user/course/:_id/import-final-score', app.permission.check('course:import'), app.templates.admin);
     app.get('/user/course/:_courseId/photo/:_id', app.permission.check('user:login'), app.templates.admin);
     app.get('/user/course/:_courseId/additional-profile', app.permission.check('course:read'), app.templates.admin);
+    app.get('/user/course/:_id/practical-subject', app.permission.check('course:read'), app.templates.admin);
+    app.get('/user/course/:_id/practical-subject/:_subjectId/lesson/:_lessonId', app.permission.check('course:read'), app.templates.admin);
     
     app.get('/user/course/:_id/report', app.permission.check('course:report'), app.templates.admin);
     app.get('/user/course/:_id/report/dang-ky-sat-hach', app.permission.check('course:report'), app.templates.admin);
