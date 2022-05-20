@@ -19,10 +19,10 @@ class AccountModal extends AdminModal {
         } else {
             this.type = 'add';
         }
-        let { number, active, holder } = Object.assign({ number: '', holder: '', active: false }, item);
+        let { number, holder } = Object.assign({ number: '', holder: '', active: false }, item);
         this.itemName.value(holder);
         this.itemNumber.value(number);
-        this.itemActive.value(active);
+        // this.itemActive.value(active);
     }
 
     onSubmit = (e) => {
@@ -31,7 +31,7 @@ class AccountModal extends AdminModal {
         const changes = {
             holder: this.itemName.value().trim(),
             number: this.itemNumber.value().trim(),
-            active: this.itemActive.value(),
+            // active: this.itemActive.value(),
         };
         if (changes.holder == '') {
             T.notify('Người sở hữu tài khoản bị trống!', 'danger');
@@ -57,7 +57,7 @@ class AccountModal extends AdminModal {
         body: <div>
             <FormTextBox ref={e => this.itemNumber = e} label='Số tài khoản' readOnly={this.props.readOnly} />
             <FormTextBox ref={e => this.itemName = e} label='Họ và tên người sở hữu tài khoản' readOnly={this.props.readOnly} />
-            <FormCheckbox ref={e => this.itemActive = e} label='Kích hoạt' readOnly={this.props.readOnly} />
+            {/* <FormCheckbox ref={e => this.itemActive = e} label='Kích hoạt' readOnly={this.props.readOnly} /> */}
         </div>,
     });
 }
@@ -197,6 +197,17 @@ class BankEditPage extends AdminPage {
         }
     });
 
+    activeAccount = (accounts, index, active) => {
+        const { _id } = this.state;
+        if(active){
+            accounts.forEach((account,i) => {
+                if(i == index) account.active = true;
+                else account.active = false;
+            });
+        } else accounts[index].active = false;
+        this.props.updateBank(_id, { accounts }, () => this.props.getBank(_id));
+    }
+
     render() {
         const permission = this.getUserPermission('bank');
         const readOnly = !permission.write;
@@ -219,10 +230,9 @@ class BankEditPage extends AdminPage {
                     <TableCell type='number' content={index + 1} />
                     <TableCell type='link' content={item.number} onClick={e => this.showModal(e, { item, index })} />
                     <TableCell content={item.holder} />
-                    <TableCell type='checkbox' content={item.active} permission={permission} isSwitch={false}
+                    <TableCell type='checkbox' content={item.active} permission={permission} isSwitch={true}
                         onChanged={active => {
-                            accounts[index].active = active;
-                            this.props.updateBank(_id, { accounts }, () => this.props.getBank(_id));
+                            this.activeAccount(accounts, index, active);
                         }} />
                     <TableCell type='buttons' content={{ item, index }} permission={permission} onEdit={this.showModal} onDelete={this.delete} />
                 </tr>),

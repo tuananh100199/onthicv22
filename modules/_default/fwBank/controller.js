@@ -1,6 +1,6 @@
 module.exports = app => {
     const menu = {
-        parentMenu: app.parentMenu.setting,
+        parentMenu: app.parentMenu.accountant,
         menus: {
             2030: { title: 'Ngân hàng', link: '/user/bank', icon: 'fa-university', backgroundColor: '#00ffb3' }
         }
