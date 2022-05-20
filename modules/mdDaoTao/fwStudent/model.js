@@ -93,10 +93,6 @@ module.exports = (app) => {
         tienDoThiHetMon: {},
         diemThucHanh: Number,
         diemBoDeThi: {},
-        tienDoHocThucHanh:[{
-            _lessionId: { type: app.database.mongoDB.Schema.ObjectId },
-            state: { type: String, enum: ['approved', 'waiting', 'reject'], default: 'waiting' }, // Trạng thái của Môn học thực hành
-        }],
         duKienThangThi: Number,                                                                     // Dự kiến tháng thi
         duKienNamThi: Number,                                                                       // Dự kiến năm thi
 
