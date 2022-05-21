@@ -49,6 +49,7 @@ module.exports = (app) => {
             fee: { type: Number, default: 0 },
             user: { type: app.database.mongoDB.Schema.ObjectId, ref: 'User' },                                    // Người xác nhận tiền 
             isOnlinePayment: { type: Boolean, default: false },
+            image: String,                                                                          // Hình ảnh hoá đơn nếu có
         }],
 
         lichSuMuaThemGoi: [

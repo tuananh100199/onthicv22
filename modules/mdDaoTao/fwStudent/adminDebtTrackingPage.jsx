@@ -1,15 +1,22 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { getDebtStudentPage, exportPhieuThu, exportDebtStudentPage } from './redux';
+import { getDebtStudentPage, exportPhieuThu, exportDebtStudentPage, addStudentPayment } from './redux';
 import FileSaver from 'file-saver';
-import { AdminPage,FormTextBox, FormCheckbox, CirclePageButton, renderTable, TableCell, TableHeadCell,TableHead, AdminModal } from 'view/component/AdminPage';
+import axios from 'axios';
+import { getUserChatToken } from 'modules/mdDaoTao/fwChat/redux';
+import { AdminPage,FormTextBox, FormCheckbox, CirclePageButton, FormRichTextBox, FormEditor, renderTable, TableCell, TableHeadCell,TableHead, AdminModal } from 'view/component/AdminPage';
 import Pagination from 'view/component/Pagination';
 import {ajaxSelectCoursePayment} from 'modules/_default/fwCoursePayment/redux';
 import {ajaxSelectCourseFeeByCourseType} from 'modules/_default/fwCourseFee/redux';
 import {ajaxSelectDiscount} from 'modules/_default/fwDiscount/redux';
 import { ajaxSelectCourse } from 'modules/mdDaoTao/fwCourse/redux';
 import { getText } from 'number-to-text-vietnamese';
+import { createNotification } from 'modules/_default/fwNotification/redux';
+import { getNotificationTemplateAll } from 'modules/mdTruyenThong/fwNotificationTemplate/redux';
 
+    const defaultTitleHoanTien = 'Thông báo về việc hoàn trả tiền học phí cho học viên!',
+    defaultAbstractHoanTien = 'Thông báo về việc hoàn trả tiền học phí cho học viên khóa {khoa}',
+    defaultContentHoanTien = '<p>Xin chào {ho_ten}({cmnd}),</p>\n<p>Bạn được hoàn lại số tiền {fee} đã đóng cho khóa {khoa}, bạn vui lòng đến trung tâm đào tạo lái xe Hiệp Phát để nhận lại. Khi đi vui lòng mang theo giấy tờ tuỳ thân để xác minh</p>';
 class InPhieuThuModal extends AdminModal {
     state = { billId: null };
     componentDidMount() {
@@ -79,6 +86,135 @@ class InPhieuThuModal extends AdminModal {
     }
 }
 
+class HoanTienModal extends AdminModal {
+    state = { };
+    componentDidMount() {
+        T.ready(() => this.onShown(() => this.itemName.focus()));
+    }
+
+    onShow = (item) => {
+        const { lastname, firstname } = item || { lastname: '', firstname: ''};
+        const hocPhiConLai = this.props.chechHocPhiConLai(item)*-1;
+        this.itemName.value(lastname + ' ' + firstname);
+        this.itemHocPhiConLai.value(T.numberDisplay(hocPhiConLai) + ' đồng');
+        this.itemHoanTien.value('');
+        this.setState({hocPhiConLai, data: item});
+    }
+
+    render = () => {
+        const { hocPhiConLai, soTienDong, data } = this.state;
+        return this.renderModal({
+            title: 'Hoàn tiền học phí',
+            body: (
+                <div>
+                   <FormTextBox ref={e => this.itemName = e} type='text' label='Tên học viên' readOnly={true} />
+                   <FormTextBox ref={e => this.itemHocPhiConLai = e} type='text' label='Số tiền đóng thừa' readOnly={true} />
+                   <FormTextBox ref={e => this.itemHoanTien = e} type='number' onChange={value => this.setState({ soTienDong: value })} max={hocPhiConLai} label='Số tiền hoàn lại' readOnly={false} />
+                </div>),
+            buttons: soTienDong ? 
+                [<button key={0} className='btn btn-success' onClick={() => {
+                    T.confirm('Xác nhận gửi thông báo hoàn tiền', 'Bạn có chắc muốn gửi thông báo hoàn tiền đến học viên ' + data.lastname + ' ' + data.firstname + ' với số tiền ' + T.numberDisplay(soTienDong), true, isConfirm =>
+                    isConfirm && this.props.showNoti({soTienDong, data}));
+                }}>Thanh toán</button>] : 
+                null
+        });
+    }
+}
+
+class NotificationModal extends AdminModal {
+    state = {};
+    componentDidMount() {
+        $(document).ready(() => this.onShown(() => this.itemTitle.focus()));
+    }
+
+    onShow = (item) => {
+        const { _id, title, content, abstract } = this.props.data || { _id: '', title: '', content: '', abstract: '' };
+        const soTienDong = item && item.soTienDong;
+        const name = item && item.data ? item.data.lastname + ' ' + item.data.firstname : '',
+        course = item && item.data && item.data.course && item.data.course.name,
+        identityCard = item && item.data && item.data.identityCard;
+        let newAbstract = '',
+        newContent = '';
+        newAbstract = abstract.replaceAll('{ho_ten}', name)
+            .replaceAll('{fee}', T.numberDisplay(soTienDong))
+            .replaceAll('{khoa}', course)
+            .replaceAll('{cmnd}', identityCard);
+            newContent = content.replaceAll('{ho_ten}', name)
+            .replaceAll('{fee}', T.numberDisplay(soTienDong))
+            .replaceAll('{khoa}', course)
+            .replaceAll('{cmnd}', identityCard); 
+        this.itemTitle.value(title);
+        this.itemSoTienDong.value(T.numberDisplay(soTienDong));
+        this.itemAbstract.value(newAbstract);
+        this.itemContent.html(newContent);
+        this.setState({ _id, item, content, abstract, soTienDong });
+    }
+
+    onSend = () => {
+        const soTienDong = this.state.soTienDong;
+        const student = this.state.item && this.state.item.data;
+        const user = student && student.user;
+        const { courseFee, discount, lichSuDongTien } = student;
+        const hocPhiDaDong = lichSuDongTien && lichSuDongTien.length ? lichSuDongTien.map(item => item.fee).reduce((prev, next) => prev + next) : 0;
+        const hocPhiConLai = courseFee && courseFee.fee && courseFee.fee - (hocPhiDaDong ? hocPhiDaDong : 0) - ((discount && discount.fee) ? discount.fee : 0);
+        const hocPhi = courseFee && courseFee.fee && courseFee.fee - ((discount && discount.fee) ? discount.fee : 0);
+        const data = {
+            title: this.itemTitle.value(),
+            abstract: this.itemAbstract.value(),
+            content: this.itemContent.html(),
+            type: '0',
+            user: user._id,
+            sentDate: new Date(),
+        };
+        T.confirm('Xác nhận gửi thông báo hoàn tiền', 'Bạn có chắc muốn gửi thông báo hoàn tiền đến học viên ' + user.lastname + ' ' + user.firstname + ' với số tiền ' + T.numberDisplay(soTienDong), true, isConfirm =>
+            isConfirm && this.props.addStudentPayment(student._id, {fee: soTienDong*-1, user: user._id}, hocPhi, hocPhiConLai, () => {
+                this.props.create(data, () => {
+                    this.props.getUserChatToken(data.user, dataUser => {
+                        if (dataUser && dataUser.token){
+                            axios.post('https://fcm.googleapis.com/fcm/send', {
+                                notification: {
+                                    title: data.title,
+                                    type: data.type,
+                                    body: data.content,
+                                    abstract: data.abstract,
+                                    mutable_content: true,
+                                    sound: 'Tri-tone'
+                                },
+                                to:  dataUser.token
+                            },
+                                {
+                                    headers: {
+                                        Authorization: 'key=AAAAyyg1JDc:APA91bGhj8NFiemEgwLCesYoQcbGOiZ0KX2qbc7Ir7sFnANrypzIpniGsVZB9xS8ZtAkRrYqLCi5QhFGp32cKjsK_taIIXrkGktBrCZk7u0cphZ1hjI_QXFGRELhQQ_55xdYccZvmZWg'
+                                    }
+                                }
+                            );
+                        }
+                    });
+                    T.notify('Gửi thông báo thành công!', 'success');
+                    this.hide();
+                    window.location.reload();
+                });
+            }));
+        
+    }
+
+    render = () => this.renderModal({
+        title: 'Cấu hình thông báo học viên',
+        size: 'large',
+        dataBackdrop: 'static',
+        body: <>
+            <FormTextBox ref={e => this.itemTitle = e} label='Chủ đề' readOnly={this.props.readOnly} />
+            <FormTextBox ref={e => this.itemSoTienDong = e} label='Số tiền hoàn' readOnly={true} />
+            <FormRichTextBox ref={e => this.itemAbstract = e} label='Mô tả ngắn gọn' readOnly={this.props.readOnly} />
+            <FormEditor ref={e => this.itemContent = e} smallText={'{ho_ten},{cmnd}'} uploadUrl='/user/upload?category=notification' label='Nội dung' readOnly={this.props.readOnly} />
+        </>,
+        buttons:
+            <a className='btn btn-success' href='#' onClick={e => this.onSend(e)} style={{ color: 'white' }}>
+                <i className='fa fa-lg fa-paper-plane' /> Gửi thông báo
+            </a>
+    });
+}
+
 class DebtTrackingPage extends AdminPage {
     state = { isSearching: false, searchText: '' };
     componentDidMount() {
@@ -87,6 +223,30 @@ class DebtTrackingPage extends AdminPage {
             T.onSearch = (searchText) => this.onSearch({ searchText });
         });
         this.props.getDebtStudentPage(1, undefined, {}, {}, {});
+        this.props.getNotificationTemplateAll({}, data => {
+            if (data && data.length) {
+                const indexHoanTien = data.findIndex(template => template.type == '0');
+                if (indexHoanTien != -1) {
+                    this.setState({ data: data[indexHoanTien] });
+                } else {
+                    this.setState({
+                        data: {
+                            title: defaultTitleHoanTien,
+                            abstract: defaultAbstractHoanTien,
+                            content: defaultContentHoanTien
+                        }
+                    });
+                }
+            } else {
+                this.setState({
+                    data: {
+                        title: defaultTitleHoanTien,
+                        abstract: defaultAbstractHoanTien,
+                        content: defaultContentHoanTien
+                    }
+                });
+            }
+        });
     }
 
     onSearch = ({ pageNumber, pageSize, searchText }, done) => {
@@ -170,6 +330,12 @@ class DebtTrackingPage extends AdminPage {
                         <a className='btn btn-success' href={'/user/student/payment/' + item._id}>
                             <i className='fa fa-lg fa-money' />
                         </a>
+                        {this.chechHocPhiConLai(item) && this.chechHocPhiConLai(item) < 0 ? 
+                            <a className='btn btn-danger' href='#' onClick={() => this.modalHoanTien.show(item)}>
+                                <i className='fa fa-lg fa-reply' />
+                            </a> 
+                            : null
+                        }
                     </TableCell>}
                 </tr>)
         });
@@ -185,6 +351,8 @@ class DebtTrackingPage extends AdminPage {
                 </div>
                 <CirclePageButton type='export' onClick={() => exportDebtStudentPage()} />
                 <InPhieuThuModal readOnly={false} ref={e => this.modal = e} exportPhieuThu={this.props.exportPhieuThu} />
+                <HoanTienModal readOnly={false} ref={e => this.modalHoanTien = e} showNoti={this.notiModal && this.notiModal.show} chechHocPhiConLai={this.chechHocPhiConLai} />
+                <NotificationModal readOnly={!permission.write} addStudentPayment={this.props.addStudentPayment} ref={e => this.notiModal = e} create={this.props.createNotification} getUserChatToken={this.props.getUserChatToken} data={this.state.data} />
                 <Pagination pageCondition={pageCondition} pageNumber={pageNumber} pageSize={pageSize} pageTotal={pageTotal} totalItem={totalItem} getPage={this.props.getDebtStudentPage}  />
             </>,
         });
@@ -192,5 +360,5 @@ class DebtTrackingPage extends AdminPage {
 }
 
 const mapStateToProps = state => ({ system: state.system, student: state.trainning.student });
-const mapActionsToProps = { getDebtStudentPage, exportPhieuThu };
+const mapActionsToProps = { getDebtStudentPage, exportPhieuThu, getNotificationTemplateAll, createNotification, addStudentPayment, getUserChatToken };
 export default connect(mapStateToProps, mapActionsToProps)(DebtTrackingPage);

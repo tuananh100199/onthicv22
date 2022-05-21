@@ -12,7 +12,7 @@ module.exports = (app) => {
         password: String,
         phoneNumber: String,
         image: String,
-        active: { type: Boolean, default: false },
+        active: { type: Boolean, default: true },
         createdDate: { type: Date, default: Date.now },
 
         isCourseAdmin: { type: Boolean, default: false },                                           // Là quản trị viên khóa học

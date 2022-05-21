@@ -2,7 +2,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { exportExamStudent, getStudentPage, updateStudent } from './redux';
 import { createNotification } from 'modules/_default/fwNotification/redux';
-import { getUserChatToken, getAllUserChatToken } from 'modules/mdDaoTao/fwChat/redux';
+import { getUserChatToken } from 'modules/mdDaoTao/fwChat/redux';
 import axios from 'axios';
 import { ajaxSelectCourseType, getCourseTypeAll } from 'modules/mdDaoTao/fwCourseType/redux';
 import { getNotificationTemplateAll, getNotificationTemplate } from 'modules/mdTruyenThong/fwNotificationTemplate/redux';
@@ -349,7 +349,7 @@ class FailStudentPage extends AdminPage {
                 {this.course && (this.course.value() != '0') ? <CirclePageButton type='custom' customClassName='btn-warning' customIcon='fa-paper-plane' style={{ right: '130px' }} onClick={(e) => this.sendNotificationCourse(e, this.course.value())} /> : null}
                 {/* {this.course && (this.course.value() != '0') ? <CirclePageButton type='custom' customClassName='btn-info' customIcon='fa-users' style={{ right: '190px' }} onClick={() => this.exportPhuLuc11B(this.course.value())} /> : null} */}
                 <StudentModal readOnly={!permission.write} ref={e => this.modal = e} update={this.props.updateStudent} />
-                <NotificationModal readOnly={!permission.write} ref={e => this.notiModal = e} create={this.props.createNotification} data={this.state.data} />
+                <NotificationModal readOnly={!permission.write} ref={e => this.notiModal = e} create={this.props.createNotification} data={this.state.data} getUserChatToken={this.props.getUserChatToken} />
                 <Pagination pageCondition={pageCondition} pageNumber={pageNumber} pageSize={pageSize} pageTotal={pageTotal} totalItem={totalItem} getPage={(pageNumber, pageSize) => this.onSearch({ pageNumber, pageSize })} />
             </>,
         });
@@ -357,5 +357,5 @@ class FailStudentPage extends AdminPage {
 }
 
 const mapStateToProps = state => ({ system: state.system, student: state.trainning.student, notificationTemplate: state.communication.notificationTemplate });
-const mapActionsToProps = { getStudentPage, updateStudent, createNotification, getCourseTypeAll, getNotificationTemplateAll, getNotificationTemplate, getUserChatToken, getAllUserChatToken };
+const mapActionsToProps = { getStudentPage, updateStudent, createNotification, getCourseTypeAll, getNotificationTemplateAll, getNotificationTemplate, getUserChatToken };
 export default connect(mapStateToProps, mapActionsToProps)(FailStudentPage);
