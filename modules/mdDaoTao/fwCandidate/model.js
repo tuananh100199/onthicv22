@@ -34,7 +34,7 @@ module.exports = app => {
             model.find({}).populate('courseType', 'title').sort({ _id: -1 }).exec(condition) :
             model.find(condition).populate('courseType', 'title').sort({ _id: -1 }).exec(done),
 
-        getPage: (pageNumber, pageSize, condition, done) => model.countDocuments(condition, (error, totalItem) => {
+        getPage: (pageNumber, pageSize, condition,sort, done) => model.countDocuments(condition, (error, totalItem) => {
             if (error) {
                 done(error);
             } else {
@@ -43,7 +43,7 @@ module.exports = app => {
                 const skipNumber = (result.pageNumber > 0 ? result.pageNumber - 1 : 0) * result.pageSize;
                 model.find(condition).populate('courseType', 'title').populate('division', 'title').populate('user', 'firstname lastname').populate('staff', 'firstname lastname')
                     .populate('courseFee', '_id name courseType').populate('discount', '_id name').populate('coursePayment', '_id title')
-                    .sort({ _id: -1 }).skip(skipNumber).limit(result.pageSize).exec((error, list) => {
+                    .sort(sort||{lastname:1}).skip(skipNumber).limit(result.pageSize).exec((error, list) => {
                         result.list = list;
                         done(error, result);
                     });

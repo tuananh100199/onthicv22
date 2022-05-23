@@ -235,7 +235,7 @@ class CandidatePage extends AdminPage {
     state = { courseTypes: [] };
     componentDidMount() {
         T.ready(() => T.showSearchBox());
-        this.props.getCandidatePage(null,null,{});
+        this.props.getCandidatePage(null,null,{},{},{});
         this.props.getCourseTypeAll(list => {
             const courseTypes = list.map(item => ({ id: item._id, text: item.title }));
             this.setState({ courseTypes });

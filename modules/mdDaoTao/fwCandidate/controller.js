@@ -16,7 +16,7 @@ module.exports = app => {
     app.get('/api/candidate/page/:pageNumber/:pageSize', app.permission.check('candidate:read'), (req, res) => {
         const pageNumber = parseInt(req.params.pageNumber),
             pageSize = parseInt(req.params.pageSize);
-        const condition = req.query.condition||{},
+        let condition = req.query.condition||{},filter = req.query.filter || null,sort=req.query.sort||{},
         // { state: { $in: ['MoiDangKy', 'DangLienHe', 'Huy'] } },
         pageCondition = {},
             searchText = condition.searchText;
@@ -33,7 +33,32 @@ module.exports = app => {
                 { firstname: value },
             ];
         }
-        app.model.candidate.getPage(pageNumber, pageSize, pageCondition, (error, page) => {
+        // --------------filter------------------------
+        filter && app.handleFilter(filter,['email','phoneNumber','courseType'],defaultFilter=>{
+            //('-----------------defaultCondition:----------------------');
+            pageCondition={...pageCondition,...defaultFilter};
+        }); 
+        // mã giáo viên
+        // if(filter.maGiaoVien){
+        //     const value = { $regex: `.*${filter.maGiaoVien}.*`, $options: 'i' };
+        //     pageCondition.maGiaoVien=value;
+        // }
+
+        if(filter && filter.fullName){// họ tên
+            pageCondition['$expr']= {
+                '$regexMatch': {
+                  'input': { '$concat': ['$lastname', ' ', '$firstname'] },
+                  'regex': `.*${filter.fullName}.*`,  //Your text search here
+                  'options': 'i'
+                }
+            };
+        }
+        //sort--------------------------
+        if(sort && sort.fullName){
+            delete sort.fullName;
+            sort = {firstname:sort.fullName};
+        }
+        app.model.candidate.getPage(pageNumber, pageSize, pageCondition,sort, (error, page) => {
             page.list = page.list.map(item => app.clone(item, { message: '' }));
             res.send({ error, page });
         });
@@ -95,6 +120,7 @@ module.exports = app => {
         changes.modifiedDate = new Date();
         // changes.courseFee=='' && delete changes.courseFee;
         changes.discount=='' && delete changes.discount;//Không phải học viên nào cũng có discount
+        (!changes.state || changes.state=='') && delete changes.state;
         // changes.coursePayment=='' && delete changes.coursePayment;
         app.model.candidate.update(req.body._id, changes, (error, item) => {
             if (error) {
