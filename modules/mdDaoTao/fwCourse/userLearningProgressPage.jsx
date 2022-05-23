@@ -49,6 +49,35 @@ class LecturerStudentPage extends AdminPage {
         return Number(completedLessons / numberLessons).toFixed(1) * 100;
     }
 
+    checkTienDoHocThucHanh = (student, subject) => {
+        let completedLessons = 0;
+        const numberLessons = subject && subject.lessons ? subject.lessons.length : 0;
+        if (subject && student.tienDoHocTap && student.tienDoHocTap[subject._id]) {
+            const lessons = student.tienDoHocTap[subject._id];
+            completedLessons = subject.lessons && subject.lessons.length?subject.lessons.reduce((result,item)=>{
+                return lessons[item] && lessons[item].isPass && lessons[item].isPass=='true'?result+1:result;
+            },0):0;
+        }
+        return (completedLessons==0||numberLessons==0)?0:Number(completedLessons / numberLessons).toFixed(1) * 100;
+    }
+
+    checkThucHanh = (student, subjects) => {
+        let completedLessons = 0,numberLessons = 0;
+        subjects.forEach(subject=>{
+            const lessons = subject.lessons && subject.lessons.length ?subject.lessons:[];
+            if(lessons.length){
+                numberLessons+=lessons.length;
+                if(student.tienDoHocTap && student.tienDoHocTap[subject._id]){
+                    const tienDoBaiHoc = student.tienDoHocTap[subject._id];
+                    completedLessons+= lessons.reduce((result,item)=>{
+                        return tienDoBaiHoc[item] && tienDoBaiHoc[item].isPass && tienDoBaiHoc[item].isPass=='true'?result+1:result;
+                    },0);
+                }
+            }
+        });
+        return (completedLessons==0||numberLessons==0)?0:Number(completedLessons / numberLessons).toFixed(1) * 100;
+    }
+
     checkHocPhi = (student) => {
         const giamGia = student && student.discount && student.discount.fee ? student.discount.fee : 0;
         const hocPhi = student && student.courseFee && student.courseFee.fee ? student.courseFee.fee - giamGia : 0;
@@ -68,7 +97,21 @@ class LecturerStudentPage extends AdminPage {
                 <p>{this.checkTienDoHocTap(student, subjects[i]) < 100 ? null : (this.checkMonLyThuyet(student, subjects[i]) ? 'Thi hết môn: Đạt' : 'Thi hết môn: Chưa đạt')}</p>
             </>
       } iconBackgroundColor='#17a2b8' text={subjects[i].title && subjects[i].title.startsWith('Đạo đức') ? 'Đạo đức lái xe' : subjects[i].title}/>);
-      else return (<PageIcon  icon='fa-book' className='col-md-4 invisible' iconBackgroundColor='#17a2b8' />);
+      else return null;
+    }
+
+    renderPracticalSubject = (student,subject)=>{
+        if(subject){
+            return (<PageIcon key={student._id} to={'/user/hoc-vien/khoa-hoc/' + this.state.courseId + '/mon-hoc/' + subject._id} icon='fa-book' className={'col-12'} subtitle={
+                <>
+                     <div className='progress'>
+                        <div className={'progress-bar progress-bar-striped progress-bar-animated ' + (this.checkTienDoHocThucHanh(student, subject) == 100 ? 'bg-success' : '')} role='progressbar' style={{width: this.checkTienDoHocThucHanh(student,subject) + '%'}} aria-valuenow={this.checkTienDoHocThucHanh(student,subject)} aria-valuemin='0' aria-valuemax='100'></div>
+                    </div>
+                </>
+          } iconBackgroundColor='#17a2b8' text={subject.title}/>);
+        }else{
+            return null;
+        }
     }
 
     render() {
@@ -76,6 +119,7 @@ class LecturerStudentPage extends AdminPage {
         const subjects = course && course.item && course.item.subjects;
         const student = course && course.student;
         const monLyThuyet = subjects ? subjects.filter(subject => subject.monThucHanh == false) : [];
+        const monThucHanh = subjects ? subjects.filter(subject => subject.monThucHanh == true) : [];
         const subjectColumns = [];
         const giamGia = student && student.discount && student.discount.fee ? student.discount.fee : 0;
         const hocPhi = student && student.courseFee && student.courseFee.fee ? student.courseFee.fee - giamGia : 0;
@@ -83,7 +127,7 @@ class LecturerStudentPage extends AdminPage {
         (monLyThuyet || []).forEach((subject, index) => {
             subjectColumns.push(<th key={index} style={{ width: 'auto', textAlign: 'center' }}  >{subject.title}</th>);
         });
-
+        console.log({monThucHanh});
         const pageIcon = 
         student ? 
         <>
@@ -94,10 +138,10 @@ class LecturerStudentPage extends AdminPage {
                         {(student.isDon && student.isHinh && student.isIdentityCard && student.isGiayKhamSucKhoe && student.isBangLaiA1) ? 'Đã hoàn thành' : 'Chưa hoàn thành'}
                     </p>
                 } iconBackgroundColor={(student.isDon && student.isHinh && student.isIdentityCard && student.isGiayKhamSucKhoe && student.isBangLaiA1) ? '#8A0' : 'gray'} text={'Hồ sơ học viên'} />
-                {this.renderSubject(student, subjects, 0)}
+                {this.renderSubject(student, monLyThuyet, 0)}
             </div>
             <div className='row justify-content-end'>
-                {this.renderSubject(student, subjects, 1)}
+                {this.renderSubject(student, monLyThuyet, 1)}
             </div>
             <div className='row'>
                 <PageIcon to={'/user/hoc-vien/khoa-hoc/' + this.state.courseId + '/cong-no'} className='col-md-4 hocphi' icon='fa-money' subtitle={
@@ -111,24 +155,35 @@ class LecturerStudentPage extends AdminPage {
               <PageIcon className='col-md-4 lythuyet' icon='fa-briefcase' subtitle={
                     <>
                     <div className='progress'>
-                       <div className={'progress-bar progress-bar-striped progress-bar-animated ' + (this.checkLyThuyet(student, subjects) == 100 ? 'bg-success' : '')} role='progressbar' style={{width: this.checkLyThuyet(student, subjects) + '%'}} aria-valuenow={this.checkMonLyThuyet(student, subjects)} aria-valuemin='0' aria-valuemax='100'></div>
+                       <div className={'progress-bar progress-bar-striped progress-bar-animated ' + (this.checkLyThuyet(student, subjects) == 100 ? 'bg-success' : '')} 
+                            role='progressbar' style={{width: this.checkLyThuyet(student, subjects) + '%'}} 
+                            aria-valuenow={this.checkMonLyThuyet(student, subjects)} aria-valuemin='0' aria-valuemax='100'>
+                        </div>
                    </div>
                    </> 
               } iconBackgroundColor={hocPhi ? (parseInt(hocPhiDaDong)/parseInt(hocPhi) < 0.5 ? 'gray' : '#dc143c') : '#dc143c'} text={'Lý thuyết'} />
-              {this.renderSubject(student, subjects, 2)}
+              {this.renderSubject(student, monLyThuyet, 2)}
             </div>
             <div className='row justify-content-end'>
-                {this.renderSubject(student, subjects, 3)}
+                {this.renderSubject(student, monLyThuyet, 3)}
             </div>
             <div className='row justify-content-end'>
-                {this.renderSubject(student, subjects, 4)}
+                {this.renderSubject(student, monLyThuyet, 4)}
             </div>
             <div className='row justify-content-start'>
-                <PageIcon icon='fa-car' to={'#'} subtitle={
-                    <p>
-                        {(student.diemThucHanh && student.diemThucHanh >= 5) ? 'Đạt' : 'Chưa đạt'}
-                    </p>
+                <PageIcon icon='fa-car' to={'#'} className='col-md-4' subtitle={
+                    <div className='progress'>
+                        <div className={'progress-bar progress-bar-striped progress-bar-animated ' + (this.checkHocPhi(student) == 100 ? 'bg-success' : '')} role='progressbar' style={{width: this.checkThucHanh(student,monThucHanh) + '%'}} aria-valuenow={this.checkHocPhi(student)} aria-valuemin='0' aria-valuemax='100'></div>
+                    </div>
+                    // <p>
+                    //     {(student.diemThucHanh && student.diemThucHanh >= 5) ? 'Đạt' : 'Chưa đạt'}
+                    // </p>
                 } iconBackgroundColor={hocPhi ? (parseInt(hocPhiDaDong)/parseInt(hocPhi) < 1 ? 'gray' : '#69f0ae') : '#69f0ae'} text={'Thực hành'}/>
+                <div className="col-md-4">
+                    <div className="row">
+                    {monThucHanh && monThucHanh.map(item=>this.renderPracticalSubject(student,item))}
+                    </div>
+                </div>
             </div>
             <div className='row'>
                 <PageIcon className='col-md-4' to={'#'} icon='fa-graduation-cap' subtitle={
