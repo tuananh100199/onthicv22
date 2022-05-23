@@ -78,7 +78,7 @@ class adminStudyProgramPage extends AdminPage {
             permission = this.getUserPermission('studyProgram'),
             previousRoute = '/user/study-program',
             { isLecturer, isCourseAdmin } = currentUser,
-            readOnly = ((!permission.write || isLecturer) && !isCourseAdmin); //TODO: xem lại !isCourseAdmin
+            readOnly = ((!permission.write || isLecturer) && !isCourseAdmin);
        
         return this.renderPage({
             icon: 'fa fa-tasks',

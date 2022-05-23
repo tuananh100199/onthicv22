@@ -3,13 +3,16 @@ import { connect } from 'react-redux';
 import { createNotificationTemplate, getNotificationTemplateAll, updateNotificationTemplate, deleteNotificationTemplate } from './redux';
 import { AdminPage, FormTextBox, FormTabs, FormEditor, CirclePageButton, FormRichTextBox } from 'view/component/AdminPage';
 
-const listParams = ['{ho_ten}', '{cmnd}', '{khoa}', '{ngay_thi_tot_nghiep}', '{ngay_thi_sat_hach}'],
+const listParams = ['{ho_ten}', '{cmnd}', '{khoa}', '{ngay_thi_tot_nghiep}', '{ngay_thi_sat_hach}', '{fee}'],
     defaultTitleTotNghiep = 'Thông báo thời gian thi tốt nghiệp',
     defaultAbstractTotNghiep = 'Thông báo thời gian thi tốt nghiệp khóa {khoa}',
     defaultContentTotNghiep = '<p>Xin chào {ho_ten}({cmnd}),</p>\n<p>Thời gian thi tốt nghiệp khóa {khoa} của bạn là: {ngay_thi_tot_nghiep}</p>',
     defaultTitleSatHach = 'Thông báo thời gian thi sát hạch',
     defaultAbstractSatHach = 'Thông báo thời gian thi sát hạch khóa {khoa}',
-    defaultContentSatHach = '<p>Xin chào {ho_ten}({cmnd}),</p>\n<p>Thời gian thi sát hạch khóa {khoa} của bạn là: {ngay_thi_sat_hach}</p>';
+    defaultContentSatHach = '<p>Xin chào {ho_ten}({cmnd}),</p>\n<p>Thời gian thi sát hạch khóa {khoa} của bạn là: {ngay_thi_sat_hach}</p>',
+    defaultTitleHoanTien = 'Thông báo về việc hoàn trả tiền học phí cho học viên!',
+    defaultAbstractHoanTien = 'Thông báo về việc hoàn trả tiền học phí cho học viên khóa {khoa}',
+    defaultContentHoanTien = '<p>Xin chào {ho_ten}({cmnd}),</p>\n<p>Bạn được hoàn lại số tiền {fee} đã đóng cho khóa {khoa}, bạn vui lòng đến trung tâm đào tạo lái xe Hiệp Phát để nhận lại. Khi đi vui lòng mang theo giấy tờ tuỳ thân để xác minh</p>';
 class NotificationTemplatePage extends AdminPage {
     state = {};
     componentDidMount() {
@@ -38,6 +41,17 @@ class NotificationTemplatePage extends AdminPage {
                         this.itemAbstractSatHach.value(defaultAbstractSatHach);
                         this.editorSatHach.html(defaultContentSatHach);
                     }
+                    const indexHoanTien = data.findIndex(template => template.type == '0');
+                    if (indexHoanTien != -1) {
+                        this.itemTitleHoanTien.value(data[indexHoanTien].title);
+                        this.itemAbstractHoanTien.value(data[indexHoanTien].abstract);
+                        this.editorHoanTien.html(data[indexHoanTien].content);
+                        this.setState({ idHoanTien: data[indexHoanTien]._id });
+                    } else {
+                        this.itemTitleHoanTien.value(defaultTitleHoanTien);
+                        this.itemAbstractHoanTien.value(defaultAbstractHoanTien);
+                        this.editorHoanTien.html(defaultContentHoanTien);
+                    }
                 } else {
                     this.itemTitleTotNghiep.value(defaultTitleTotNghiep);
                     this.itemAbstractTotNghiep.value(defaultAbstractTotNghiep);
@@ -45,6 +59,9 @@ class NotificationTemplatePage extends AdminPage {
                     this.itemTitleSatHach.value(defaultTitleSatHach);
                     this.itemAbstractSatHach.value(defaultAbstractSatHach);
                     this.editorSatHach.html(defaultContentSatHach);
+                    this.itemTitleHoanTien.value(defaultTitleHoanTien);
+                    this.itemAbstractHoanTien.value(defaultAbstractHoanTien);
+                    this.editorHoanTien.html(defaultContentHoanTien);
                 }
             });
         });
@@ -68,7 +85,7 @@ class NotificationTemplatePage extends AdminPage {
                     });
                 });
             }
-        } else {
+        } else if(index == 1) {
             const changes = {
                 title: this.itemTitleSatHach.value().trim(),
                 abstract: this.itemAbstractSatHach.value().trim(),
@@ -81,6 +98,22 @@ class NotificationTemplatePage extends AdminPage {
                 this.props.createNotificationTemplate(changes, data => {
                     data && data.item && this.setState({
                         idThiSatHach: data.item._id
+                    });
+                });
+            }
+        } else {
+            const changes = {
+                title: this.itemTitleHoanTien.value().trim(),
+                abstract: this.itemAbstractHoanTien.value().trim(),
+                content: this.editorHoanTien.html(),
+                type: '0',
+            };
+            if (this.state.idHoanTien) {
+                this.props.updateNotificationTemplate(this.state.idHoanTien, changes);
+            } else {
+                this.props.createNotificationTemplate(changes, data => {
+                    data && data.item && this.setState({
+                        idHoanTien: data.item._id
                     });
                 });
             }
@@ -107,9 +140,19 @@ class NotificationTemplatePage extends AdminPage {
             </div>
         );
 
+        const hoanTienTabs = (
+            <div className='tile-body' id={this.props.id}>
+                <FormTextBox ref={e => this.itemTitleHoanTien = e} label='Chủ đề' readOnly={this.props.readOnly} />
+                <FormRichTextBox ref={e => this.itemAbstractHoanTien = e} listParams={listParams} label='Mô tả ngắn gọn' readOnly={this.props.readOnly} />
+                <FormEditor ref={e => this.editorHoanTien = e} height='600px' label='Nội dung' uploadUrl='/user/upload?category=notification' listParams={listParams} readOnly={this.props.readOnly} />
+                {permission.write ? <CirclePageButton type='save' onClick={this.save} /> : null}
+            </div>
+        );
+
         const tabs = [
             { title: 'Thông báo thi tốt nghiệp', component: thiTotNghiepTabs },
-            { title: 'Thông báo thi sát hạch', component: thiSatHachTabs }
+            { title: 'Thông báo thi sát hạch', component: thiSatHachTabs },
+            { title: 'Thông báo hoàn tiền', component: hoanTienTabs }
         ];
 
         return this.renderPage({

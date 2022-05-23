@@ -29,6 +29,7 @@ class NewsPage extends AdminPage {
                     <th style={{ width: 'auto', textAlign: 'center' }}>#</th>
                     <th style={{ width: '80%' }}>Tiêu đề</th>
                     <th style={{ width: '20%', textAlign: 'center' }}>Hình ảnh</th>
+                    <th style={{ width: 'auto' }} nowrap='true'>Tin tức giao thông</th>
                     <th style={{ width: 'auto' }} nowrap='true'>Kích hoạt</th>
                     <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Thao tác</th>
                 </tr>),
@@ -37,6 +38,7 @@ class NewsPage extends AdminPage {
                     <TableCell type='number' content={(pageNumber - 1) * pageSize + index + 1} />
                     <TableCell type='link' content={item.title} url={'/user/news/' + item._id} />
                     <TableCell type='image' content={item.image || '/img/avatar.png'} style={{ height: '32px' }} />
+                    <TableCell type='checkbox' content={item.isTrafficNews} permission={permission} onChanged={isTrafficNews => this.props.updateNews(item._id, { isTrafficNews })} />
                     <TableCell type='checkbox' content={item.active} permission={permission} onChanged={active => this.props.updateNews(item._id, { active })} />
                     <TableCell type='buttons' content={item} permission={permission} onSwap={this.swap} onEdit={'/user/news/' + item._id} onDelete={this.delete} />
                 </tr>),

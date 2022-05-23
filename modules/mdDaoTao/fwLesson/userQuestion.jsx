@@ -148,7 +148,7 @@ class userQuestion extends AdminPage {
                                                     faceDetect: prevState.faceDetect ? prevState.faceDetect + 1 : 1
                                                 }), () => {
                                                     if (this.state.faceDetect > 2) {
-                                                        this.confirmModal.show();
+                                                        // this.confirmModal.show();
                                                     }
                                                 });
                                             }

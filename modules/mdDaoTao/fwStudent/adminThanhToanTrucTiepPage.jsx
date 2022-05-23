@@ -590,10 +590,10 @@ class ThanhToanTrucTiepPage extends AdminPage {
                 </div>
                 {showOfficial ? official : null}
                 {showExtra ? extra : null}
-                <PaymentInfoModal fee={this.state.soTienDong} student={this.state.data} hocPhi={hocPhi} create={this.props.createNotification} hocPhiConLai={hocPhiConLai} name={name} userId={userId} courseFeeName={student && student.courseFee ? student.courseFee.name : ''} accounts={this.state.accounts} readOnly={true} addStudentPayment={this.props.addStudentPayment} studentId={studentId} ref={e => this.modal = e} />
+                <PaymentInfoModal fee={this.state.soTienDong} getUserChatToken={this.props.getUserChatToken}  student={this.state.data} hocPhi={hocPhi} create={this.props.createNotification} hocPhiConLai={hocPhiConLai} name={name} userId={userId} courseFeeName={student && student.courseFee ? student.courseFee.name : ''} accounts={this.state.accounts} readOnly={true} addStudentPayment={this.props.addStudentPayment} studentId={studentId} ref={e => this.modal = e} />
                 <CartModal fee={soTienThanhToan} showPayment={this.paymentExtraModal && this.paymentExtraModal.show} updateState={this.updateState} listWaiting={this.state.listWaiting} count={count} student={this.state.data}  lock={lock} readOnly={true} updateStudent={this.props.updateStudent} updateCourseFeeByStudent={this.props.updateCourseFeeByStudent} cart={cart} transactionId={transactionId} studentId={studentId} ref={e => this.cartModal = e} />
                 <CancelPaymentModal  readOnly={true}  updateStudent={this.props.updateStudent} cart={cart} transactionId={transactionId} studentId={studentId} ref={e => this.cancelModal = e} />
-                <PaymentExtraInfoModal readOnly={true} cart={cart} updateTimeTableByAccountant={this.props.updateTimeTableByAccountant} create={this.props.createNotification} student={this.state.data} addStudentPaymentExtra={this.props.addStudentPaymentExtra} studentId={studentId} ref={e => this.paymentExtraModal = e} />
+                <PaymentExtraInfoModal readOnly={true} cart={cart} getUserChatToken={this.props.getUserChatToken} updateTimeTableByAccountant={this.props.updateTimeTableByAccountant} create={this.props.createNotification} student={this.state.data} addStudentPaymentExtra={this.props.addStudentPaymentExtra} studentId={studentId} ref={e => this.paymentExtraModal = e} />
             </>,
             backRoute: '/user/student/debt'
         });

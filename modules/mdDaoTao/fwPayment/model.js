@@ -34,7 +34,7 @@ module.exports = app => {
                 result.pageNumber = pageNumber === -1 ? result.pageTotal : Math.min(pageNumber, result.pageTotal);
 
                 const skipNumber = (result.pageNumber > 0 ? result.pageNumber - 1 : 0) * result.pageSize;
-                model.find(condition).sort(sort || { timeReceived: -1 }).skip(skipNumber).limit(result.pageSize).populate('sms', '-isHandled').populate('userImport').exec((error, list) => {
+                model.find(condition).sort(sort || { timeReceived: -1 }).skip(skipNumber).limit(parseInt(result.pageSize)).populate('sms', '-isHandled').populate('userImport').exec((error, list) => {
                         result.list = list;
                         done(error, result);
                     });

@@ -12,7 +12,7 @@ class CourseFeeModal extends AdminModal {
     }
 
     onShow = (item) => {
-        const { _id, name, courseType, feeType, fee, description, quantity, start, isDaily,  } = item || { _id: null, name: '', courseType: null, fee: 0, description: '', quantity: 0, numOfHour : 0, type: null, isExtra: false };
+        const { _id, name, courseType, feeType, fee, description, quantity, start, isDaily,  } = item || { _id: null, name: '', courseType: null, fee: 0, description: '', quantity: 0, numOfHour : 0, type: null, isExtra: false, start: null };
         this.itemName.value(name);
         this.itemCourseType.value(courseType ? { id: courseType._id, text: courseType.title } : null);
         this.itemFee.value(fee);
@@ -20,7 +20,7 @@ class CourseFeeModal extends AdminModal {
         this.itemType.value(feeType ? { id: feeType._id, text: feeType.title, isExtra: feeType.isExtra } : null);
         // this.itemNumOfHour.value(numOfHour)
         this.itemDescription.value(description);
-        this.itemStart.value(start && new Date(start).getHours());
+        this.itemStart.value(start ? new Date(start).getHours() : null);
         this.itemIsDaily.value(isDaily);
         // this.itemTypeExtra.value(type ? { id: type, text: type== 'cuoiTuan' ? 'Cuối tuần' : (type == 'ngoaiGio' ? 'Ngoài giờ' : 'Ngày thường') } : {id: 'ngayThuong', text: 'Ngày thường'});
         this.setState({ _id, className: (feeType && feeType.isExtra) ? 'visible' : 'd-none', });
@@ -35,9 +35,11 @@ class CourseFeeModal extends AdminModal {
             fee: this.itemFee.value(),
             description: this.itemDescription.value(),
             quantity: this.itemQuantity.value(),
-            start: this.itemStart.value(),
             isDaily: this.itemIsDaily.value(),
         };
+        if(this.itemStart.value()){
+            data.start = this.itemStart.value();
+        }
         if (data.name == '') {
             T.notify('Tên gói học phí bị trống!', 'danger');
             this.itemTitle.focus();
@@ -54,7 +56,7 @@ class CourseFeeModal extends AdminModal {
             let d = new Date();
             let d2 = new Date( d );
             d2 = d2.setDate(d.getDate() + 1);
-            data.start = new Date( d2 ).setHours(data.start);
+            if(data.start) data.start = new Date( d2 ).setHours(data.start);
             // console.log(data.start);
             this.state._id ? this.props.update(this.state._id, data, this.hide()) : this.props.create(data, this.hide());
         }

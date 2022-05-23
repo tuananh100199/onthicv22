@@ -4,10 +4,10 @@ import { getCarPage, createCar, updateCar, deleteCar, exportExpiredCar } from '.
 import { getAllLecturer } from 'modules/_default/fwUser/redux';
 import { getCategoryAll } from 'modules/_default/fwCategory/redux';
 import Pagination from 'view/component/Pagination';
-import { AdminPage, FormSelect, TableCell, renderTable, CirclePageButton } from 'view/component/AdminPage';
+import { AdminPage, FormSelect, TableCell, renderTable, CirclePageButton, FormDatePicker } from 'view/component/AdminPage';
 import T from 'view/js/common';
 
-const dataCarType = [{ id: 0, text: 'Tất cả xe' }, { id: 1, text: 'Hết hạn < 1 tháng' }, { id: 3, text: 'Hết hạn < 3 tháng' }, { id: -1, text: 'Đã hết hạn' }];
+const dataCarType = [{ id: 0, text: 'Tất cả xe' }, { id: 1, text: 'Hết hạn < 1 tháng' }, { id: 3, text: 'Hết hạn < 3 tháng' }, { id: -1, text: 'Đã hết hạn' }, {id: -2, text: 'Chưa có lịch sử đăng kiểm'}];
 class CarPage extends AdminPage {
     state = { searchText: '', isSearching: false };
 
@@ -63,6 +63,16 @@ class CarPage extends AdminPage {
     delete = (e, item) => e.preventDefault() || T.confirm('Xoá thông tin xe', 'Bạn có chắc muốn xoá xe này?', true, isConfirm =>
         isConfirm && this.props.deleteCar(item._id));
 
+    handleFilterByDate = () => {
+        const dateStart = this.dateStartDate ? this.dateStartDate.value() : '';
+        const dateEnd = this.dateEndDate ? this.dateEndDate.value() : '';
+        if (dateStart > dateEnd) {
+            T.notify('Ngày bắt đầu phải nhỏ hơn ngày kết thúc !', 'danger');
+        } else {
+            this.setState({ isSearching: false, dateStartDate: dateStart, dateEndDate: dateEnd });
+        }
+    }
+        
     render() {
         const permission = this.getUserPermission('car', ['read', 'write', 'delete', 'import']);
         let { pageNumber, pageSize, pageTotal, pageCondition, totalItem, list } = this.props.car && this.props.car.page ?
@@ -71,6 +81,25 @@ class CarPage extends AdminPage {
             <label style={{ lineHeight: '40px', marginBottom: 0 }}>Loại xe:</label>&nbsp;&nbsp;
             <FormSelect ref={e => this.carType = e} data={dataCarType} onChange={value => this.onSearch({ carType: value.id })} style={{ minWidth: '200px', marginBottom: 0, marginRight: 12 }} />
         </>;
+        const { dateStartDate, dateEndDate, carType } = this.state;
+        let data = [];
+         if(carType != -2){
+            list && list.length && list.forEach(car => {
+                const sortArr = car && car.lichSuDangKy && car.lichSuDangKy.sort((a, b) => new Date(b.ngayHetHanDangKy) - new Date(a.ngayHetHanDangKy));
+                    sortArr.forEach((lichSuDangKy) => {
+                    if(dateStartDate){
+                        if(dateStartDate < new Date(lichSuDangKy.ngayHetHanDangKy) && dateEndDate > new Date(lichSuDangKy.ngayHetHanDangKy)){
+                            data.push({ car, lichSuDangKy });
+                        }
+                    }else {
+                        data.push({ car, lichSuDangKy });
+                    }
+                    });
+                });
+                list = data;
+         } else {
+             list = list && list.filter(car => !car.lichSuDangKy.length);
+         }
         const table = renderTable({
             getDataSource: () => list && list.filter(item => item.course == null),
             renderHead: () => (
@@ -99,6 +128,15 @@ class CarPage extends AdminPage {
             breadcrumb: ['Theo dõi giấy phép xe tập lái'],
             content: <>
                 <div className='tile'>
+                    <div className='tile-body row'>
+                        <FormDatePicker ref={e => this.dateStartDate = e} label='Thời gian bắt đầu (dd/mm/yyyy)' className='col-md-5' type='date-mask' />
+                        <FormDatePicker ref={e => this.dateEndDate = e} label='Thời gian kết thúc (dd/mm/yyyy)' className='col-md-5' type='date-mask' />
+                          <div className='m-auto col-md-2'>
+                            <button className='btn btn-success' style={{ marginTop: '11px' }} type='button' onClick={this.handleFilterByDate}>
+                                <i className='fa fa-filter' /> Lọc
+                            </button>
+                        </div>
+                    </div>
                     <p>Số lượng xe: {totalItem}</p>
                     {table}
                 </div>

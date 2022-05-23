@@ -325,7 +325,7 @@ class FailGraduationPage extends AdminPage {
                 {this.course && (this.course.value() != '0') ? <CirclePageButton type='custom' customClassName='btn-warning' customIcon='fa-paper-plane' style={{ right: '70px' }} onClick={(e) => this.sendNotificationCourse(e, this.course.value())} /> : null}
                     
                 <StudentModal readOnly={!permission.write} ref={e => this.modal = e} update={this.props.updateStudent} />
-                <NotificationModal readOnly={!permission.write} ref={e => this.notiModal = e} create={this.props.createNotification} data={this.state.data} />
+                <NotificationModal readOnly={!permission.write} ref={e => this.notiModal = e} getUserChatToken={this.props.getUserChatToken} create={this.props.createNotification} data={this.state.data} />
                 <Pagination pageCondition={pageCondition} pageNumber={pageNumber} pageSize={pageSize} pageTotal={pageTotal} totalItem={totalItem} getPage={(pageNumber, pageSize) => this.onSearch({ pageNumber, pageSize })} />
             </>,
         });

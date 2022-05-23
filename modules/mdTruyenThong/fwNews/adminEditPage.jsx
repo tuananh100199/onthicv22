@@ -13,11 +13,12 @@ class NewsEditPage extends AdminPage {
                 _id = route.parse(window.location.pathname)._id;
             this.props.getNews(_id, data => {
                 if (data.item && data.categories) {
-                    const { _id, title, image, link, startPost, stopPost, categories, abstract, content, createdDate, view, active } = data.item;
+                    const { _id, title, image, link, startPost, stopPost, categories, abstract, content, createdDate, view, active, isTrafficNews } = data.item;
                     this.itemTitle.value(title);
                     this.itemLink.value(link ? link : '');
                     this.itemView.value(view);
                     this.itemActive.value(active);
+                    this.itemTrafficNews.value(isTrafficNews);
                     this.itemCreatedDate.value(createdDate ? T.dateToText(createdDate) : '');
                     this.itemStartPost.value(startPost);
                     this.itemStopPost.value(stopPost);
@@ -47,6 +48,7 @@ class NewsEditPage extends AdminPage {
             content: this.itemContent.html(),
             startPost: this.itemStartPost.value(),
             stopPost: this.itemStopPost.value(),
+            isTrafficNews: this.itemTrafficNews.value(),
         };
         if (newData.title == '') {
             T.notify('Tên tin tức bị trống!', 'danger');
@@ -86,6 +88,7 @@ class NewsEditPage extends AdminPage {
                                     <FormImageBox ref={e => this.itemImage = e} label='Hình ảnh' uploadType='NewsImage' image={this.state.image || '/img/avatar.jpg'} className='col-md-6' readOnly={readOnly} />
                                     <div className='col-md-6'>
                                         <FormCheckbox ref={e => this.itemActive = e} label='Kích hoạt' readOnly={this.props.readOnly} />
+                                        <FormCheckbox ref={e => this.itemTrafficNews = e} label='Tin tức giao thông' readOnly={this.props.readOnly} />
                                         <FormTextBox type='number' ref={e => this.itemView = e} label={'Lượt xem'} readOnly={true} />
                                     </div>
                                 </div>

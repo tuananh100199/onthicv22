@@ -87,6 +87,104 @@ module.exports = (app) => {
                     }).catch(error => console.error(error));
                 });
             });
+            app.schedule('0 6 * * *', () => {
+                // const axios = require('axios');
+                // Tìm và gửi thông báo chúc mừng sinh nhật học viên
+                // if (app.primaryWorker) {
+                //     app.model.user.getAll({$expr:{$eq: [{$dayOfYear: new Date()}, {$dayOfYear: '$birthday'}]}}, (error, items) => {
+                //         if (items && items.length) {
+                //             const handleNotificationUser = (index = 0) => {
+                //                 if (index == items.length) {
+                //                     return;
+                //                 } else {
+                //                     const user = items[index];
+                //                     const currentDay = new Date().getDate();
+                //                     const currentMonth = new Date.getMonth();
+                //                     if(user && user.birthday && (user.birthday.getDate() == currentDay) && (user.birthday.getMonth() == currentMonth)){
+                //                         axios.post('https://fcm.googleapis.com/fcm/send', {
+                //                             notification: {
+                //                                 title: 'Chúc mừng sinh nhật',
+                //                                 // type: item.type,
+                //                                 body: 'Trung tâm đào tạo lái xe Hiệp Phát chúc mừng sinh nhật bạn!',
+                //                                 mutable_content: true,
+                //                                 sound: 'Tri-tone'
+                //                             },
+                //                             to: user.fcmToken 
+                //                         },
+                //                         {
+                //                             headers: {
+                //                                 Authorization: 'key=AAAAyyg1JDc:APA91bGhj8NFiemEgwLCesYoQcbGOiZ0KX2qbc7Ir7sFnANrypzIpniGsVZB9xS8ZtAkRrYqLCi5QhFGp32cKjsK_taIIXrkGktBrCZk7u0cphZ1hjI_QXFGRELhQQ_55xdYccZvmZWg'
+                //                             }
+                //                         }
+                //                         );
+                //                     } 
+                //                     handleNotificationUser(index+1);
+                //                 }
+                //             };
+                //             handleNotificationUser();
+                //         }
+                //     });
+                // }
+                // Tìm và gửi thông báo lịch học/ dạy
+                // if(app.primaryWorker){
+                //     const today = new Date();
+                //     let tomorrow =  new Date();
+                //         tomorrow.setDate(today.getDate() + 1);
+                //     const promiseList = [];
+                //     const getStudents = new Promise((resolve,reject)=>{ 
+                //         app.model.timeTable.getAll({ date: {$gte: today, $lt: tomorrow}, state: 'approved'},  (error, items) => {
+                //             const listStudent = {};
+                //             items.forEach(item => {
+                //                 const fcmToken = item.student && item.student.user ? item.student.user.fcmToken : null;
+                //                 if(fcmToken && listStudent[fcmToken]){
+                //                     listStudent[fcmToken] = listStudent[fcmToken] + ', ' + item.startHour;
+                //                 } else if(fcmToken) {
+                //                     listStudent[fcmToken] = [item.startHour];
+                //                 }
+                //             });
+                //             resolve(listStudent);
+                //         });
+                //     });
+                //     const getTeachers = new Promise((resolve,reject)=>{ 
+                //         app.model.timeTable.getAll({ date: {$gte: today, $lt: tomorrow}, state: 'approved'},  (error, items) => {
+                //             const listTeacher = {};
+                //             items.forEach(item => {
+                //                 console.log(item)
+                //             });
+                //             resolve(listTeacher);
+                //         });
+                //     });
+                //     Promise.all([getTeachers,getStudents]).then(([listTeacher,listStudent]) => {
+                //         let list = {...listTeacher, ...listStudent}; 
+                //         const listFcmToken = Object.keys(list);
+                //         const handleNotificationStudent = (index = 0) => {
+                //             if (index == listFcmToken.length) {
+                //                 return;
+                //             } else {
+                //                 const fcmToken = listFcmToken[index];
+                //                 axios.post('https://fcm.googleapis.com/fcm/send', {
+                //                     notification: {
+                //                         title: 'Thông báo thời khoá biểu hôm nay',
+                //                         // type: item.type,
+                //                         body: 'Bạn có thời khoá biểu học thực hành vào các khung giờ ' + listStudent[fcmToken],
+                //                         mutable_content: true,
+                //                         sound: 'Tri-tone'
+                //                     },
+                //                     to: fcmToken 
+                //                 },
+                //                 {
+                //                     headers: {
+                //                         Authorization: 'key=AAAAyyg1JDc:APA91bGhj8NFiemEgwLCesYoQcbGOiZ0KX2qbc7Ir7sFnANrypzIpniGsVZB9xS8ZtAkRrYqLCi5QhFGp32cKjsK_taIIXrkGktBrCZk7u0cphZ1hjI_QXFGRELhQQ_55xdYccZvmZWg'
+                //                     }
+                //                 }
+                //                 );
+                //                 handleNotificationStudent(index + 1);
+                //             }
+                //         };
+                //         handleNotificationStudent();
+                //     }).catch(error => console.error(error));
+                // }
+            });
         },
     });
 };

@@ -17,7 +17,7 @@ module.exports = app => {
 
     const populateStudent = {
         path: 'student',
-        populate: [{ path: 'course', select: 'name' }, { path: 'courseType', select: 'title' }, { path: 'user', select: 'phoneNumber' }],
+        populate: [{ path: 'course', select: 'name' }, { path: 'courseType', select: 'title' }, { path: 'user', select: 'phoneNumber fcmToken' }],
     };
 
     app.model.timeTable = {

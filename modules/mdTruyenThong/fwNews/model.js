@@ -9,6 +9,7 @@ module.exports = app => {
         abstract: String,
         content: String,
         createdDate: { type: Date, default: Date.now },
+        isTrafficNews: { type: Boolean, default: false},
         startPost: Date,
         stopPost: Date,
         view: { type: Number, default: 0 },

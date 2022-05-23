@@ -148,8 +148,8 @@ class NotificationPage extends AdminPage {
                             notification: {
                                 title: item.title,
                                 type: item.type,
-                                body: item.content,
-                                abstract: item.abstract,
+                                body: item.abstract,
+                                content: item.content,
                                 mutable_content: true,
                                 sound: 'Tri-tone'
                             },

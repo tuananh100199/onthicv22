@@ -15,7 +15,7 @@ module.exports = app => {
         app.model.studyProgram.getAll(req.query.condition, (error, list) => res.send({ error, list }));
     });
 
-    app.get('/api/study-program', app.permission.check('studyProgram:read'), (req, res) =>
+    app.get('/api/study-program', app.permission.check('user:login'), (req, res) =>
         app.model.studyProgram.get(req.query._id, (error, item) => res.send({ error, item })));
 
     app.post('/api/study-program', app.permission.check('studyProgram:write'), (req, res) => {

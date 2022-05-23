@@ -465,6 +465,7 @@ app.get('/api/car/calendar/export/:_carId', app.permission.check('car:export'), 
                 author: sessionUser._id,
                 type: 'export',
                 filename: 'TONG DANH SACH CAP NHIEN LIEU XE.xlsx',
+                chucVu: 'Nhân viên quản lý xe',
             };
             app.model.encryption.create(dataEncryption, () => {
                 app.excel.attachment(sourceWorkbook, res, 'TONG DANH SACH CAP NHIEN LIEU XE.xlsx');
@@ -483,6 +484,7 @@ app.get('/api/car/calendar/export/:_carId', app.permission.check('car:export'), 
             // console.log('-----------------defaultCondition:----------------------');
             pageCondition={...pageCondition,...defaultFilter};
         }); 
+        const sessionUser = req.session.user;
         const sourcePromise =  app.excel.readFile(app.publicPath+'/document/TONG DANH SACH XE SUA CHUA.xlsx');
         const getCarPage = new Promise((resolve,reject)=>{ 
             app.model.car.getPage(pageNumber, pageSize, pageCondition, sort, (error, page) => {
@@ -542,7 +544,15 @@ app.get('/api/car/calendar/export/:_carId', app.permission.check('car:export'), 
                             worksheet.mergeCells(7 + indexRow - car.repair.length, 14, 7 + indexRow -1, 14);
                         }
                 });
-            app.excel.attachment(sourceWorkbook, res, 'TONG DANH SACH SUA CHUA XE.xlsx');
+                const dataEncryption ={
+                    author: sessionUser._id,
+                    type: 'export',
+                    filename: 'TONG DANH SACH SUA CHUA XE.xlsx',
+                    chucVu: 'Nhân viên quản lý xe',
+                };
+                app.model.encryption.create(dataEncryption, () => {
+                    app.excel.attachment(sourceWorkbook, res, 'TONG DANH SACH SUA CHUA XE.xlsx');
+                });
             }
             });
     });
@@ -552,11 +562,11 @@ app.get('/api/car/calendar/export/:_carId', app.permission.check('car:export'), 
         pageSize = parseInt(req.params.pageSize),
         pageCondition = {},filter=req.params.filter ? JSON.parse(req.params.filter) : {},sort=req.params.sort ? JSON.parse(req.params.sort) : null,
         dateStart = req.params.dateStart, dateEnd = req.params.dateEnd;
-        console.log(dateStart); 
         filter && app.handleFilter(filter,['courseType','brand','division','licensePlates'],defaultFilter=>{
             // console.log('-----------------defaultCondition:----------------------');
             pageCondition={...pageCondition,...defaultFilter};
         }); 
+        const sessionUser = req.session.user;
         const sourcePromise =  app.excel.readFile(app.publicPath+'/document/TONG DANH SACH DANG KIEM XE.xlsx');
         const getCarPage = new Promise((resolve,reject)=>{ 
             app.model.car.getPage(pageNumber, pageSize, pageCondition, sort, (error, page) => {
@@ -621,7 +631,16 @@ app.get('/api/car/calendar/export/:_carId', app.permission.check('car:export'), 
                             worksheet.mergeCells(7 + indexRow - car.repair.length, 16, 7 + indexRow -1, 16);
                         }
                 });
-            app.excel.attachment(sourceWorkbook, res, 'TONG DANH SACH DANG KIEM XE.xlsx');
+                const dataEncryption ={
+                    author: sessionUser._id,
+                    type: 'export',
+                    filename: 'TONG DANH SACH DANG KIEM XE.xlsx',
+                    chucVu: 'Nhân viên quản lý xe',
+                };
+                app.model.encryption.create(dataEncryption, () => {
+                    app.excel.attachment(sourceWorkbook, res, 'TONG DANH SACH DANG KIEM XE.xlsx');
+                });
+            
             }
             });
     });
