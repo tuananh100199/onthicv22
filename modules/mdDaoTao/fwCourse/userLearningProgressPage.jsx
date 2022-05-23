@@ -71,6 +71,22 @@ class LecturerStudentPage extends AdminPage {
       else return (<PageIcon  icon='fa-book' className='col-md-4 invisible' iconBackgroundColor='#17a2b8' />);
     }
 
+    renderHoSo = (student) => {
+        let text = '',
+        hoSoConThieu = [];
+        if(student.isDon && student.isHinh && student.isIdentityCard && student.isGiayKhamSucKhoe && student.isBangLaiA1) text = 'Đã hoàn thành';
+        else {
+            text = 'Còn thiếu:';
+            if(!student.isDon) hoSoConThieu.push(' đơn');
+            if(!student.isHinh) hoSoConThieu.push(' hình');
+            if(!student.isIdentityCard) hoSoConThieu.push(' CMND');
+            if(!student.isGiayKhamSucKhoe) hoSoConThieu.push(' giấy khám sức khoẻ');
+            if(!student.isBangLaiA1) hoSoConThieu.push(' bằng lái A1');
+            text = text + hoSoConThieu.toString();
+        }
+        return text;
+    }
+
     render() {
         const course = this.props.course;
         const subjects = course && course.item && course.item.subjects;
@@ -91,7 +107,7 @@ class LecturerStudentPage extends AdminPage {
             <div className='row justify-content-between hoso'>
                 <PageIcon className='col-md-4' icon='fa-info' subtitle={
                     <p>
-                        {(student.isDon && student.isHinh && student.isIdentityCard && student.isGiayKhamSucKhoe && student.isBangLaiA1) ? 'Đã hoàn thành' : 'Chưa hoàn thành'}
+                        {this.renderHoSo(student)}
                     </p>
                 } iconBackgroundColor={(student.isDon && student.isHinh && student.isIdentityCard && student.isGiayKhamSucKhoe && student.isBangLaiA1) ? '#8A0' : 'gray'} text={'Hồ sơ học viên'} />
                 {this.renderSubject(student, subjects, 0)}

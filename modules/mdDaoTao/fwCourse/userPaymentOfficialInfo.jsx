@@ -181,12 +181,17 @@ class UserPaymentInfo extends AdminPage {
                         <h3 className='tile-title'>Thanh toán</h3>
                         {table}
                             {soTienThanhToan ? 
-                            <div className='d-flex justify-content-between'>
-                                <p>Số tiền thanh toán: <b>{T.numberDisplay(soTienThanhToan)} đồng</b></p>
-                                <button className={'btn ' + (soTienThanhToan != 0 ? 'btn-success' : 'btn-secondary')} style={{ textAlign: 'right' }}
-                                onClick={() => (soTienThanhToan == 0) ? T.alert('Vui lòng chọn số tiền muốn thanh toán', 'error', false, 8000) : this.modal.show()}
-                            >Thanh toán</button>
+                            <div>
+                                {lichSuDongTien && !lichSuDongTien.length ? <p className={(hocPhiConLai == soTienThanhToan) ? 'text-success' : 'text-danger'}>Bạn sẽ được tặng 1h thực hành khi thanh toán học phí 1 lần!</p> : null}
+                                    <div className='d-flex justify-content-between'> 
+                                        <p>Số tiền thanh toán: <b>{T.numberDisplay(soTienThanhToan)} đồng</b></p>
+                                        <button className={'btn ' + (soTienThanhToan != 0 ? 'btn-success' : 'btn-secondary')} style={{ textAlign: 'right' }}
+                                            onClick={() => (soTienThanhToan == 0) ? T.alert('Vui lòng chọn số tiền muốn thanh toán', 'error', false, 8000) : this.modal.show()}
+                                            >Thanh toán
+                                        </button>
+                                    </div>
                             </div>
+                           
                              : null}
                     </div>
                     <PaymentInfoModal fee={soTienThanhToan} accountsNumber={this.state.accounts && this.state.accounts.number} code={this.state.code} nameBank={this.state.nameBank} contentSyntax={this.state.contentSyntax} accounts={this.state.accounts} readOnly={true} ref={e => this.modal = e} />

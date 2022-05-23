@@ -1,9 +1,12 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { getListDocument, deleteDocument } from './redux';
-import { AdminPage, FormFileBox } from 'view/component/AdminPage';
+import { getListDocument, saveTaiLieuHuongDan } from './redux';
+import { AdminPage, FormFileBox, FormSelect } from 'view/component/AdminPage';
+// import { Document, Page } from 'react-pdf/dist/esm/entry.webpack5';
+// import 'react-pdf/dist/esm/Page/AnnotationLayer.css';
 import '../fwNotification/style.scss';
 
+const listHuongDan = [{ id: 'hocVien', text: 'Học viên'}, { id: 'giaoVien', text: 'Giáo viên'}, { id: 'keToan', text:'Kế toán'}, { id:'tuyenSinh', text: 'Tuyển sinh'}, { id:'quanLyXe', text:'Quản lý xe'}, { id:'admin', text:'Quản trị hệ thống'}];
 class SettingsPage extends AdminPage {
     state = {};
 
@@ -29,69 +32,60 @@ class SettingsPage extends AdminPage {
             isConfirm && this.props.deleteDocument(filename));
     }
 
+    onUploadSuccess = (data) => {
+        this.setState({url: data && data.srcPath, filename: data && data.filename});
+    }
+
+    save = () => {
+        if (!this.type.value()) {
+            T.notify('Chưa chọn đối tượng hướng dẫn!', 'danger');
+            this.type.focus();
+        } else {
+            this.props.saveTaiLieuHuongDan(this.state.url,this.type.value(), data => {
+                if (data.error) {
+                    T.notify('Import hướng dẫn bị lỗi!', 'danger');
+                } else {
+                    T.notify('Import hướng dẫn thành công!', 'success');
+                    this.onReUpload();
+                }
+            });
+        }
+    }
+
+    onReUpload = () => {
+        this.setState({ url: null, filename: '' });
+    }
+
     render() {
-        const listDocument = this.props.system && this.props.system.listDocument;
-        const gridFileIcon = (filename, index) => (
-            <div className='col-md-6 d-flex justify-content-center' key={index}>
-                <div className='card' style={{ 'width': '20rem', marginBottom: '10px' }}>
-                    <div className='card-img-top pt-1 text-center'><i className={this.icon(filename)}></i></div>
-                    <div className='card-body py-0'>
-                        <a href={'/document/' + filename} className='text-primary ml-4' ><h6 className='card-title text-center'>{filename}</h6></a>
-                    </div>
-                    <div className='card-body pt-0 text-right'>
-                        <a href={'/document/' + filename} className='card-link text-primary' ><i className='fa fa-lg fa-download' /></a>
-                        <a href='#' className='card-link text-danger' onClick={e => this.delete(e, filename)}><i className='fa fa-lg fa-trash' /></a>
-                    </div>
-                </div>
-            </div>
-        );
-        // const listFileIcon = (filename, index) => (
-        //     <li key={index} className='notification'>
-        //         {index + 1}. &nbsp;
-        //         <a href={'/document/' + filename} className='text-primary'>
-        //             <div className='d-flex align-items-start'>
-        //                 <i className={this.icon(filename)}></i>
-        //                 <div className='pl-2'>
-        //                     <p >{filename}</p>
-        //                 </div>
-        //             </div>
-        //         </a>
-        //         <a href={'/document/' + filename} className='notification-button text-primary' ><i className='fa fa-lg fa-download' /></a>
-        //         <a href='#' className='notification-button text-danger' onClick={e => this.delete(e, filename)}><i className='fa fa-lg fa-trash' /></a>
-        //     </li>
-        // );
+        const { url, filename } = this.state;
         return this.renderPage({
             icon: 'fa fa-book',
-            title: 'Tài liệu',
-            breadcrumb: ['Tài liệu'],
+            title: 'Tài liệu hướng dẫn',
+            breadcrumb: ['Tài liệu hướng dẫn'],
             content: <>
+                {url ? 
                 <div className='tile'>
-                    <h3 className='tile-title'>Import file tài liệu mới</h3>
-                    <FormFileBox ref={e => this.fileBox = e} uploadType='DiemThiTotNghiepFile'
-                        onSuccess={this.onUploadSuccess} r />
-                </div>
-                <div className='tile'>
-                    <h3 className='tile-title'>Danh sách tài liệu</h3>
-                    {/* <div className='text-right mb-3'>
-                        <button style={{ border: 'none', outline: 'none', marginRight: '3px', backgroundColor: '' }} ><i className='fa fa-bars'></i> Danh sách</button>
-                        <button style={{ border: 'none', outline: 'none', backgroundColor: '#2189CF' }} ><i className='fa fa-calendar'></i> Lưới</button>
-                    </div> */}
-                    <div className='tile-body row'>
-                        {/* {<ul style={{ paddingLeft: 12, listStyleType: 'none' }}>
-                            {listDocument && listDocument.length && listDocument.map((document, index) => (
-                                listFileIcon(document, index)
-                            ))}
-                        </ul>} */}
-                        {listDocument && listDocument.length && listDocument.map((document, index) => (
-                            gridFileIcon(document, index)
-                        ))}
+                    <FormSelect style={{width: '300px'}} ref={e => this.type = e} label='Đối tượng hướng dẫn' data={listHuongDan} readOnly={false} />
+                    <p>{filename}</p>
+                    <div className='tile-footer' style={{ textAlign: 'right' }}>
+                        <button className='btn btn-danger' type='button' style={{ marginRight: 10 }} onClick={this.onReUpload}>
+                            <i className='fa fa-fw fa-lg fa-cloud-upload' /> Upload lại
+                        </button>
+                        <button className='btn btn-primary' type='button' onClick={this.save}>
+                            <i className='fa fa-fw fa-lg fa-save' /> Lưu
+                        </button>
                     </div>
                 </div>
+                : <div className='tile'>
+                    <h3 className='tile-title'>Import file hướng dẫn mới</h3>
+                    <FormFileBox ref={e => this.fileBox = e} uploadType='HuongDanHeThongFile'
+                        onSuccess={this.onUploadSuccess} />
+                </div>}
             </>,
         });
     }
 }
 
 const mapStateToProps = state => ({ system: state.system });
-const mapActionsToProps = { getListDocument, deleteDocument };
+const mapActionsToProps = { getListDocument, saveTaiLieuHuongDan };
 export default connect(mapStateToProps, mapActionsToProps)(SettingsPage);

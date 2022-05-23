@@ -143,6 +143,21 @@ export function savePhoto(imageSrc, user, address, done) {
     };
 }
 
+export function saveTaiLieuHuongDan(documentSrc, type, done) {
+    return dispatch => {
+        const url = '/api/tai-lieu/save';
+        T.put(url, { documentSrc, type }, data => {
+            if (data.error) {
+                // T.notify(data.error, 'danger');
+                console.error('PUT: ' + url + '.', data.error);
+            } else {
+                done && done(data);
+                dispatch({ type: SystemUpdateState, state: data });
+            }
+        }, error => console.error(error) || T.notify('Lưu thông tin hệ thống lỗi!', 'danger'));
+    };
+}
+
 export function getListPhoto(date, user, done) {
     return dispatch => {
         const url = '/api/capture/photo';

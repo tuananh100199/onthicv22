@@ -434,28 +434,33 @@ class ThanhToanTrucTiepPage extends AdminPage {
         const hocPhiDaDong = lichSuDongTien && lichSuDongTien.length ? lichSuDongTien.map(item => item.fee).reduce((prev, next) => prev + next) : 0;
         const hocPhiConLai = courseFee && courseFee.fee && courseFee.fee - (hocPhiDaDong ? hocPhiDaDong : 0) - ((discount && discount.fee) ? discount.fee : 0);
         const hocPhi = courseFee && courseFee.fee && courseFee.fee - ((discount && discount.fee) ? discount.fee : 0);
-        if(lichSuDongTien && lichSuDongTien.length > numOfPayments){
-            for (let i = 1; i <= lichSuDongTien.length; i++) {
-                if (lichSuDongTien && lichSuDongTien[i - 1]) {
-                    list.push({ name: 'Thanh toán học phí lần ' + i, fee: lichSuDongTien[i - 1].fee, ngayThanhToan: lichSuDongTien[i - 1].date });
-                } else {
-                    list.push({ name: 'Thanh toán học phí lần ' + i, fee: (hocPhiConLai ? hocPhiConLai : 0) / (numOfPayments - (lichSuDongTien ? lichSuDongTien.length : 0)) });
+        if(lichSuDongTien && lichSuDongTien.length == 1 && lichSuDongTien[0].fee == hocPhi){
+            list.push({ name: 'Thanh toán học phí lần 1', fee: lichSuDongTien[0].fee, ngayThanhToan: lichSuDongTien[0].date });
+        } else {
+            if(lichSuDongTien && lichSuDongTien.length > numOfPayments){
+                for (let i = 1; i <= lichSuDongTien.length; i++) {
+                    if (lichSuDongTien && lichSuDongTien[i - 1]) {
+                        list.push({ name: 'Thanh toán học phí lần ' + i, fee: lichSuDongTien[i - 1].fee, ngayThanhToan: lichSuDongTien[i - 1].date });
+                    } else {
+                        list.push({ name: 'Thanh toán học phí lần ' + i, fee: (hocPhiConLai ? hocPhiConLai : 0) / (numOfPayments - (lichSuDongTien ? lichSuDongTien.length : 0)) });
+                    }
+        
                 }
-    
+            } else{
+                for (let i = 1; i <= numOfPayments; i++) {
+                    if (lichSuDongTien && lichSuDongTien[i - 1]) {
+                        list.push({ name: 'Thanh toán học phí lần ' + i, fee: lichSuDongTien[i - 1].fee, ngayThanhToan: lichSuDongTien[i - 1].date });
+                    } else {
+                        list.push({ name: 'Thanh toán học phí lần ' + i, fee: (hocPhiConLai ? hocPhiConLai : 0) / (numOfPayments - (lichSuDongTien ? lichSuDongTien.length : 0)) });
+                    }
+        
+                }
             }
-        } else{
-            for (let i = 1; i <= numOfPayments; i++) {
-                if (lichSuDongTien && lichSuDongTien[i - 1]) {
-                    list.push({ name: 'Thanh toán học phí lần ' + i, fee: lichSuDongTien[i - 1].fee, ngayThanhToan: lichSuDongTien[i - 1].date });
-                } else {
-                    list.push({ name: 'Thanh toán học phí lần ' + i, fee: (hocPhiConLai ? hocPhiConLai : 0) / (numOfPayments - (lichSuDongTien ? lichSuDongTien.length : 0)) });
-                }
-    
+            if(lichSuDongTien && lichSuDongTien.length >= numOfPayments && hocPhiConLai > 0){
+                list.push({ name: 'Thanh toán học phí lần ' + parseInt(lichSuDongTien.length + 1 ), fee: hocPhiConLai });
             }
         }
-        if(lichSuDongTien && lichSuDongTien.length >= numOfPayments && hocPhiConLai > 0){
-            list.push({ name: 'Thanh toán học phí lần ' + parseInt(lichSuDongTien.length + 1 ), fee: hocPhiConLai });
-        }
+        
         const table = renderTable({
             getDataSource: () => list,
             renderHead: () => (
