@@ -43,11 +43,11 @@ export default function candidateReducer(state = null, data) {
 
 // Actions ------------------------------------------------------------------------------------------------------------
 T.initCookiePage('pageCandidate');
-export function getCandidatePage(pageNumber, pageSize, searchText, done) {
-    const page = T.updatePage('pageCandidate', pageNumber, pageSize);
+export function getCandidatePage(pageNumber, pageSize, condition, done) {
+    const page = T.updatePage('pageCandidate', pageNumber, pageSize,condition);
     return dispatch => {
         const url = '/api/candidate/page/' + page.pageNumber + '/' + page.pageSize;
-        T.get(url, { searchText }, data => {
+        T.get(url, { condition:page.pageCondition }, data => {
             if (data.error) {
                 T.notify('Lấy danh sách đăng ký tư vấn bị lỗi!', 'danger');
                 console.error('GET: ' + url + '. ' + data.error);
@@ -100,6 +100,21 @@ export function deleteCandidate(_id) {
                 console.error('DELETE: ' + url + '. ' + data.error);
             } else {
                 T.alert('Xoá đăng ký tư vấn thành công!', 'error', false, 800);
+                dispatch(getCandidatePage());
+            }
+        }, error => console.error(error) || T.notify('Xoá đăng ký tư vấn bị lỗi', 'danger'));
+    };
+}
+
+export function updateUngVienTiemNang(_id) {
+    return dispatch => {
+        const url = '/api/candidate-potential';
+        T.put(url, { _id }, data => {
+            if (data.error) {
+                T.notify('Chuyển thành ứng viên tiềm năng bị lỗi', 'danger');
+                console.error('DELETE: ' + url + '. ' + data.error);
+            } else {
+                T.alert('Chuyển thành ứng viên tiềm năng thành công!', 'success', false, 800);
                 dispatch(getCandidatePage());
             }
         }, error => console.error(error) || T.notify('Xoá đăng ký tư vấn bị lỗi', 'danger'));

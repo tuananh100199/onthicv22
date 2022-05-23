@@ -9,7 +9,7 @@ module.exports = app => {
         planCourse: String,
         user: { type: app.database.mongoDB.Schema.ObjectId, ref: 'User' },
         staff: { type: app.database.mongoDB.Schema.ObjectId, ref: 'User' },               // Nhân viên cập nhật dữ liệu
-        state: { type: String, enum: ['MoiDangKy', 'DangLienHe', 'Huy', 'UngVien'], default: 'MoiDangKy' },
+        state: { type: String, enum: ['MoiDangKy', 'DangLienHe', 'Huy', 'UngVien','UngVienTiemNang'], default: 'MoiDangKy' },
         createdDate: { type: Date, default: Date.now },                     // Ngày tạo
         modifiedDate: { type: Date, default: null },                        // Ngày cập nhật cuối cùng
         courseType: { type: app.database.mongoDB.Schema.Types.ObjectId, ref: 'CourseType' },

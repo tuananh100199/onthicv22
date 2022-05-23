@@ -133,6 +133,8 @@ module.exports = app => {
                 path: 'admins', select: '-password', populate: { path: 'division' }
             }).populate({
                 path: 'roleManager.user',select: '_id lastname firstname identityCard'
+            }).populate({
+                path: 'subjects.lessons', select: '_id title'
             }).exec(done);
         },
 

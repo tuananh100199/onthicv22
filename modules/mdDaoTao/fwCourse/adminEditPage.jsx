@@ -60,6 +60,7 @@ class EditCoursePage extends AdminPage {
                     <PageIcon visible={ permission.delete } to={`/user/course/${item._id}/additional-profile`} icon='fa-folder' iconBackgroundColor='#1488db' text='Bổ sung hồ sơ học viên' />
                     <PageIcon visible={isLecturer} to={`/user/course/${item._id}/your-students`} icon='fa-graduation-cap' iconBackgroundColor='#18ffff' text='Học viên của bạn' />
                     <PageIcon visible={isLecturer || isCourseAdmin} to={`/user/course/${item._id}/learning`} icon='fa-line-chart' iconBackgroundColor='#69f0ae' text='Tiến độ học tập' />
+                    <PageIcon visible={isLecturer || isCourseAdmin} to={`/user/course/${item._id}/practical-subject`} icon='fa-car' iconBackgroundColor='#D00' text='Học thực hành' />
                     <PageIcon visible={!item.isDefault && permission.delete} to={`/user/course/${item._id}/rate-subject`} icon='fa-folder-open' iconBackgroundColor='#900' text='Đánh giá bài học' />
                     <PageIcon visible={!item.isDefault && (isLecturer && !isCourseAdmin)} to={`/user/course/${item._id}/lecturer/calendar`} icon='fa-calendar' iconBackgroundColor='#3e24aa' text='Thời khoá biểu' />
                     <PageIcon visible={!item.isDefault && (isLecturer && !isCourseAdmin)} to={`/user/course/${item._id}/lecturer/register-calendar`} icon='fa-calendar-plus-o' iconBackgroundColor='#8d74aa' text='Đăng ký lịch nghỉ' />

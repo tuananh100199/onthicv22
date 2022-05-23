@@ -294,7 +294,15 @@ export default {
         {
             path: '/user/hoc-vien/khoa-hoc/:_id/cong-no/lich-su',
             component: Loadable({ loading: Loading, loader: () => import('./userPaymentHistory') })
-        }
+        },
+        {
+            path: '/user/course/:_id/practical-subject',
+            component: Loadable({ loading: Loading, loader: () => import('./pages/adminPracticalSubjectPage') })
+        },
+        {
+            path: '/user/course/:_id/practical-subject/:_subjectId/lesson/:_lessonId',
+            component: Loadable({ loading: Loading, loader: () => import('./pages/adminPracticalSubjectDetailPage') })
+        },
     ],
     Section: {
         // SectionCourse, SectionCourseList,

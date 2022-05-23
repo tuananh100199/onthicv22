@@ -232,6 +232,21 @@ export function changeLessonQuestions(data) {
     return { type: LessonGetItem, item: { questions: data.questions } };
 }
 
+// teacherMark------------------------------------------------------
+export function updateStudentLessonState(studentId,lessonId, subjectId, courseId, state, done) {
+    return () => {
+        const url = '/api/lesson/student-lesson-state';
+        T.post(url, {studentId, lessonId, subjectId, courseId, state }, data => {
+            if (data.error) {
+                T.notify('Cập nhật trạng thái học bị lỗi!', 'danger');
+                console.error('GET: ' + url + '.', data.error);
+            } else {
+                T.notify('Cập nhật trạng thái học thành công!', 'success');
+                done && done(data);
+            }
+        }, error => console.error(error) || T.notify('Cập nhật trạng thái học bị lỗi!', 'danger'));
+    };
+}
 // Lesson Video ----------------------------------------------------------------------------------------------------
 export function viewLesson(lessonId, subjectId, courseId, view, done) {
     return () => {
