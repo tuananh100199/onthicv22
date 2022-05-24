@@ -84,7 +84,6 @@ class CandidateModal extends AdminModal {
             planCourse: this.itemPlanCourse.value(),
             courseType: this.courseType.value(),
             division: this.division.value(),
-            state: this.states.value(),
             courseFee:this.itemCourseFee.value(),
             discount:this.itemDiscount.value(),
             coursePayment:this.itemCoursePayment.value(),
