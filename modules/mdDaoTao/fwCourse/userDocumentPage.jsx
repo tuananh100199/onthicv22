@@ -11,7 +11,7 @@ import './huongDan.css';
 
 const previousRoute = '/user';
 class UserDocumentPage extends AdminPage {
-    state = { name: '...', isLoadSuccess: false };
+    state = { name: '...' };
     componentDidMount() {
         const route = T.routeMatcher('/user/hoc-vien/khoa-hoc/huong-dan-su-dung/:_id'),
             _id = route.parse(window.location.pathname)._id;
@@ -38,15 +38,15 @@ class UserDocumentPage extends AdminPage {
     }
 
     onDocumentLoadSuccess = ({ numPages: nextNumPages }) => {
-        this.setState({ numPages: nextNumPages, isLoadSuccess: true});
+        this.setState({ numPages: nextNumPages});
     };
 
-    onDocumentLoadError = () => {
-        this.setState({ isLoadSuccess: false});
-    };
+    // onDocumentLoadError = () => {
+    //     this.setState({ isLoadSuccess: false});
+    // };
 
     render() {
-        const { courseId, name, numPages, isLoadSuccess} = this.state;
+        const { courseId, name, numPages} = this.state;
         const userPageLink = '/user/hoc-vien/khoa-hoc/' + courseId;
         const options = {
             cMapUrl: 'cmaps/',
@@ -60,13 +60,13 @@ class UserDocumentPage extends AdminPage {
             content: (
                 <>
                     <div className='tile'>
-                        {isLoadSuccess ? <div className='document-container'>
-                            <Document file={'/document/huongDanHocVien/hocVien.pdf'} onLoadError={this.onDocumentLoadError} onLoadSuccess={this.onDocumentLoadSuccess} options={options}>
+                        <div className='document-container'>
+                            <Document file={'/document/huongDan/hocVien.pdf'} onLoadError={this.onDocumentLoadError} onLoadSuccess={this.onDocumentLoadSuccess} options={options}>
                                 {Array.from(new Array(numPages), (el, index) => (
                                 <Page key={`page_${index + 1}`} pageNumber={index + 1} />
                                 ))}
                             </Document>
-                        </div> : <p>Chưa có dữ liệu!</p>}  
+                        </div>
                     </div>
                 </>
             ),
