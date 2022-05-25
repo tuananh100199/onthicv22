@@ -7,7 +7,7 @@ module.exports = app => {
         app.model.viPham.getPage(pageNumber, pageSize, {}, (error, page) => res.send({ error, page }));
     });
 
-    app.get('/api/viPham/all', app.permission.check('component:read'), (req, res) => {
+    app.get('/api/viPham/all', (req, res) => {
         const condition = req.query.condition || {};
         app.model.viPham.getAll(condition, (error, list) => res.send({ error, list }));
     });

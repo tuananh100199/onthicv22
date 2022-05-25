@@ -13,5 +13,9 @@ export default {
             path: '/user/enroll-target',
             component: Loadable({ loading: Loading, loader: () => import('./adminPage') }),
         },
+        {
+            path: '/user/enroll-tutorial',
+            component: Loadable({ loading: Loading, loader: () => import('./enrollDocumentPage.jsx') }),
+        },
     ]
 };

@@ -6,6 +6,7 @@ import { updateStudent } from 'modules/mdDaoTao/fwStudent/redux';
 import { getCourseFeeByStudent, updateCourseFeeByStudent } from 'modules/_default/fwCourseFee/redux';
 import { Link } from 'react-router-dom';
 import { CopyToClipboard } from 'react-copy-to-clipboard';
+import MessengerCustomerChat from 'react-messenger-customer-chat';
 import { AdminPage, TableCell, renderTable, AdminModal, FormTextBox } from 'view/component/AdminPage';
 
 
@@ -463,6 +464,10 @@ class UserPaymentInfo extends AdminPage {
                             </div>
                         </div>
                     </div> : null}
+                    <MessengerCustomerChat
+                        pageId='102156059185946'
+                        appId='735844990778782'
+                    />
                     <PaymentInfoModal fee={soTienThanhToan} code={this.state.code} nameBank={this.state.nameBank} accounts={this.state.accounts} accountsNumber={accounts && accounts.number} contentSyntaxExtra={contentSyntaxExtra} readOnly={true} updateStudent={this.props.updateStudent} cart={cart} transactionId={transactionId} studentId={studentId} ref={e => this.modal = e} />
                     <CartModal fee={soTienThanhToan} updateState={this.updateState} defaultContentSyntaxExtra={this.state.defaultContentSyntaxExtra} count={count} student={this.state.student} showPayment={this.modal && this.modal.show}  lock={lock} contentSyntaxExtra={contentSyntaxExtra} readOnly={true} updateStudent={this.props.updateStudent}  updateCourseFeeByStudent={this.props.updateCourseFeeByStudent} cart={cart} transactionId={transactionId} studentId={studentId} ref={e => this.cartModal = e} />
                     <CancelPaymentModal  readOnly={true} updateStudent={this.props.updateStudent} cart={cart} transactionId={transactionId} studentId={studentId} ref={e => this.cancelModal = e} />
