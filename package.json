@@ -33,10 +33,7 @@
   ],
   "email": {
     "from": "thanhtung@hcmut.edu.vn",
-    "password": "C0nc0b3b3",
-    "cc": [
-      "quangsang@hcmut.edu.vn"
-    ]
+    "password": "C0nc0b3b3"
   },
   "default": {
     "adminEmail": "thanhtung@hcmut.edu.vn",

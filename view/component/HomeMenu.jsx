@@ -234,8 +234,10 @@ class HomeMenu extends React.Component {
                             <ul className='d-flex flex-row align-items-center justify-content-start'>
                                 {user && user._id ?
                                     <div className='btn-group'>
-                                        <div className='button button_2 mr-1 large_btn'><a href={'tel:' + mobile}><i className='fa fa-phone' /> {mobile}</a></div>
-                                        <div className='button button_1 mr-1 large_btn' > <a href='#' onClick={this.showCandidateModal}>Đăng ký tư vấn</a></div>
+                                        {/* <div className='button button_2 mr-1 large_btn'><a href={'tel:' + mobile}><i className='fa fa-phone' /> {mobile}</a></div>
+                                        <div className='button button_1 mr-1 large_btn' > <a href='#' onClick={this.showCandidateModal}>Đăng ký tư vấn</a></div> */}
+                                        <div className='button button_2 mr-1 large_btn' > <a href='#' onClick={this.showCandidateModal}>Đăng ký tư vấn</a></div>
+                                        <div className='button button_1 mr-1 large_btn'><a href={'tel:' + mobile}><i className='fa fa-phone' /> 028 36 362 362</a></div>
 
                                         <div className='btn-group m-auto pl-2 small_btn' >
                                             <li data-toggle='tooltip' title='Số điện thoại'>
@@ -297,7 +299,7 @@ class HomeMenu extends React.Component {
                     </div> : <div className='button button_4 mr-1 text-center'><a href='#' onClick={this.props.showLoginModal}>Đăng nhập</a></div>} */}
                 </nav>
                 <div className='menu_extra'>
-                    <div className='menu_link'>Hotline liên hệ: {mobile}</div>
+                    <div className='menu_link'>Hotline liên hệ: <a href={'tel:' + mobile}>{mobile}</a></div>
                 </div>
                 <div className='social menu_social'>
                     <ul className='d-flex flex-row align-items-center justify-content-start'>

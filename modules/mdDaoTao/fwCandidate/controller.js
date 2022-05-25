@@ -160,25 +160,27 @@ module.exports = app => {
                                     lastname: item.lastname,
                                     phoneNumber: item.phoneNumber,
                                     birthday: item.birthday,
-                                    password: dataPassword
+                                    password: dataPassword,
+                                    active:true,
                                 };
                             app.model.user.create(newUser, (error, user) => {
                                 if (error) {
                                     reject('Lỗi khi tạo người dùng!');
                                 } else { // Tạo user thành công. Gửi email & password đến người dùng!
                                     resolve(user._id);
-                                    // if(user.email) {
-                                    //     app.model.setting.get('email', 'emailPassword', 'emailCreateMemberByAdminTitle', 'emailCreateMemberByAdminText', 'emailCreateMemberByAdminHtml', result => {
-                                    //         const url = `${app.isDebug || app.rootUrl}/active-user/${user._id}`,
-                                    //             fillParams = (data) => data.replaceAll('{name}', `${user.lastname} ${user.firstname}`)
-                                    //                 .replaceAll('{firstname}', user.firstname).replaceAll('{lastname}', user.lastname)
-                                    //                 .replaceAll('{email}', user.email).replaceAll('{password}', dataPassword).replaceAll('{url}', url),
-                                    //             mailTitle = result.emailCreateMemberByAdminTitle,
-                                    //             mailText = fillParams(result.emailCreateMemberByAdminText),
-                                    //             mailHtml = fillParams(result.emailCreateMemberByAdminHtml);
-                                    //         app.email.sendEmail(result.email, result.emailPassword, user.email, app.email.cc, mailTitle, mailText, mailHtml, null);
-                                    //     });
-                                    // }
+                                    if(user.email) {
+                                        app.model.setting.get('email', 'emailPassword', 'emailCreateMemberByAdminTitle', 'emailCreateMemberByAdminText', 'emailCreateMemberByAdminHtml', result => {
+                                            const url = `${app.isDebug || app.rootUrl}/active-user/${user._id}`,
+                                                fillParams = (data) => data.replaceAll('{name}', `${user.lastname} ${user.firstname}`)
+                                                    .replaceAll('{firstname}', user.firstname).replaceAll('{lastname}', user.lastname).replaceAll('{identityCard}', user.identityCard)
+                                                    .replaceAll('{email}', user.email).replaceAll('{password}', dataPassword).replaceAll('{url}', url),
+                                                mailTitle = result.emailCreateMemberByAdminTitle,
+                                                mailText = fillParams(result.emailCreateMemberByAdminText),
+                                                mailHtml = fillParams(result.emailCreateMemberByAdminHtml);
+                                                console.log({mailHtml});
+                                            app.email.sendEmail(result.email, result.emailPassword, user.email, app.email.cc, mailTitle, mailText, mailHtml, null);
+                                        });
+                                    }
                                 }
                             });
                         }

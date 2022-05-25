@@ -59,7 +59,11 @@ class SectionAdvisoryForm extends React.Component {
         } else {
             this.props.createCandidate(data, () => {
                 !user ? this.firstname.value = this.lastname.value = this.email.value = this.phoneNumber.value = '' : null;
-                T.alert('Đăng ký tư vấn của bạn đã được gửi!', 'success', false, 2000);
+                const successContent = `<h5 style='color:#199D76'><b>Cảm ơn anh/chị đã chọn Hiệp Phát</b></h5>
+                <p style='color:#333'>Đăng ký của anh/chị đã được tiếp nhận</p>
+                <p style='color:#333'>Trung tâm sẽ liên hệ anh/chị trong thời gian sớm nhất</p>
+                <p style='color:#333'>Hotline: <span style='color:red'>028.36.362362</span></p>`;
+                T.alert(successContent, 'success', true, 60000);
                 this.props.hide && this.props.hide();
             });
         }
@@ -120,6 +124,7 @@ class SectionAdvisoryForm extends React.Component {
                                 </div>
                             </div>
                             <button className='button button_1 intro_button trans_200 advisory_btn'>Đăng ký</button>
+                                <p className='pt-2 text-center'>Hotline: <span style={{color:'red'}}>028.36.362.362</span></p>
                         </form>
                     </div>
                 {/* </div> */}

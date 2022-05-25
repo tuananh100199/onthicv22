@@ -35,7 +35,6 @@ class EmailPage extends AdminPage {
 
     componentDidMount() {
         T.ready(() => getSystemEmails(data => {
-            console.log({data});
             this.emailRegisterMember.set(data.emailRegisterMemberTitle, data.emailRegisterMemberText, data.emailRegisterMemberHtml);
             this.emailCreateMemberByAdmin.set(data.emailCreateMemberByAdminTitle, data.emailCreateMemberByAdminText, data.emailCreateMemberByAdminHtml);
             this.emailNewPassword.set(data.emailNewPasswordTitle, data.emailNewPasswordText, data.emailNewPasswordHtml);
