@@ -11,7 +11,7 @@ module.exports = app => {
 
         const mailOptions = {
             from: mailFrom,
-            cc: mailCc.toString(),
+            cc: mailCc?mailCc.toString():null,
             to: mailTo,
             subject: mailSubject,
             text: mailText,

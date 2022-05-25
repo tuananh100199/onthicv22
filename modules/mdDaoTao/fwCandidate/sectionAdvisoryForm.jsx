@@ -59,7 +59,11 @@ class SectionAdvisoryForm extends React.Component {
         } else {
             this.props.createCandidate(data, () => {
                 !user ? this.firstname.value = this.lastname.value = this.email.value = this.phoneNumber.value = '' : null;
-                T.notify('Đăng ký tư vấn của bạn đã được gửi!', 'success', true, 8000);
+                const successContent = `<h5 style='color:#199D76'><b>Cảm ơn anh/chị đã chọn Hiệp Phát</b></h5>
+                <p style='color:#333'>Đăng ký của anh/chị đã được tiếp nhận</p>
+                <p style='color:#333'>Trung tâm sẽ liên hệ anh/chị trong thời gian sớm nhất</p>
+                <p style='color:#333'>Hotline: <span style='color:red'>028.36.362362</span></p>`;
+                T.alert(successContent, 'success', true, 60000);
                 this.props.hide && this.props.hide();
             });
         }
@@ -116,10 +120,11 @@ class SectionAdvisoryForm extends React.Component {
                                         type='tel' className='intro_input w-100' placeholder='Số điện thoại' ref={e => this.phoneNumber = e} />
                                 </p>
                                 <div className='mb-5' style={{ width: '100%', padding: '0 8px', margin: 0, color: '#199d76' }}>
-                                    <FormSelect ref={e => this.courseType = e} className='advisory_form_container__form-select' label='Loại khóa học:' data={ajaxSelectCourseType} style={{ margin: 0, width: '100% !important' }} labelStyle={{ color: 'white' }} />
+                                    <FormSelect ref={e => this.courseType = e} className='advisory_form_container__form-select' label='Hạng đào tạo:' data={ajaxSelectCourseType} style={{ margin: 0, width: '100% !important' }} labelStyle={{ color: 'white' }} />
                                 </div>
                             </div>
                             <button className='button button_1 intro_button trans_200 advisory_btn'>Đăng ký</button>
+                                <p className='pt-2 text-center'>Hotline: <span style={{color:'red'}}>028.36.362.362</span></p>
                         </form>
                     </div>
                 {/* </div> */}

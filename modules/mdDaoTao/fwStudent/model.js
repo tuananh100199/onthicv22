@@ -318,8 +318,9 @@ module.exports = (app) => {
                     const obj = {};
                     if (student.tienDoHocTap[data.subjectId] && student.tienDoHocTap[data.subjectId][data.lessonId]) {
                         student.tienDoHocTap[data.subjectId][data.lessonId].state = data.state;
+                        student.tienDoHocTap[data.subjectId][data.lessonId].isPass = data.state=='pass'?'true':'false';
                     } else {
-                        obj[data.lessonId] = { state: data.state };
+                        obj[data.lessonId] = { state: data.state,isPass:data.state=='pass'?'true':'false' };
                         Object.assign(student.tienDoHocTap[data.subjectId], obj);
                     }
                     model.findOneAndUpdate({ _id: data.studentId }, { tienDoHocTap: student.tienDoHocTap }, { new: true }).exec(done);

@@ -16,7 +16,7 @@ module.exports = app => {
     app.get('/api/candidate/page/:pageNumber/:pageSize', app.permission.check('candidate:read'), (req, res) => {
         const pageNumber = parseInt(req.params.pageNumber),
             pageSize = parseInt(req.params.pageSize);
-        const condition = req.query.condition||{},
+        let condition = req.query.condition||{},filter = req.query.filter || null,sort=req.query.sort||{},
         // { state: { $in: ['MoiDangKy', 'DangLienHe', 'Huy'] } },
         pageCondition = {},
             searchText = condition.searchText;
@@ -33,7 +33,32 @@ module.exports = app => {
                 { firstname: value },
             ];
         }
-        app.model.candidate.getPage(pageNumber, pageSize, pageCondition, (error, page) => {
+        // --------------filter------------------------
+        filter && app.handleFilter(filter,['email','phoneNumber','courseType'],defaultFilter=>{
+            //('-----------------defaultCondition:----------------------');
+            pageCondition={...pageCondition,...defaultFilter};
+        }); 
+        // mã giáo viên
+        // if(filter.maGiaoVien){
+        //     const value = { $regex: `.*${filter.maGiaoVien}.*`, $options: 'i' };
+        //     pageCondition.maGiaoVien=value;
+        // }
+
+        if(filter && filter.fullName){// họ tên
+            pageCondition['$expr']= {
+                '$regexMatch': {
+                  'input': { '$concat': ['$lastname', ' ', '$firstname'] },
+                  'regex': `.*${filter.fullName}.*`,  //Your text search here
+                  'options': 'i'
+                }
+            };
+        }
+        //sort--------------------------
+        if(sort && sort.fullName){
+            delete sort.fullName;
+            sort = {firstname:sort.fullName};
+        }
+        app.model.candidate.getPage(pageNumber, pageSize, pageCondition,sort, (error, page) => {
             page.list = page.list.map(item => app.clone(item, { message: '' }));
             res.send({ error, page });
         });
@@ -95,6 +120,7 @@ module.exports = app => {
         changes.modifiedDate = new Date();
         // changes.courseFee=='' && delete changes.courseFee;
         changes.discount=='' && delete changes.discount;//Không phải học viên nào cũng có discount
+        (!changes.state || changes.state=='') && delete changes.state;
         // changes.coursePayment=='' && delete changes.coursePayment;
         app.model.candidate.update(req.body._id, changes, (error, item) => {
             if (error) {
@@ -134,25 +160,27 @@ module.exports = app => {
                                     lastname: item.lastname,
                                     phoneNumber: item.phoneNumber,
                                     birthday: item.birthday,
-                                    password: dataPassword
+                                    password: dataPassword,
+                                    active:true,
                                 };
                             app.model.user.create(newUser, (error, user) => {
                                 if (error) {
                                     reject('Lỗi khi tạo người dùng!');
                                 } else { // Tạo user thành công. Gửi email & password đến người dùng!
                                     resolve(user._id);
-                                    // if(user.email) {
-                                    //     app.model.setting.get('email', 'emailPassword', 'emailCreateMemberByAdminTitle', 'emailCreateMemberByAdminText', 'emailCreateMemberByAdminHtml', result => {
-                                    //         const url = `${app.isDebug || app.rootUrl}/active-user/${user._id}`,
-                                    //             fillParams = (data) => data.replaceAll('{name}', `${user.lastname} ${user.firstname}`)
-                                    //                 .replaceAll('{firstname}', user.firstname).replaceAll('{lastname}', user.lastname)
-                                    //                 .replaceAll('{email}', user.email).replaceAll('{password}', dataPassword).replaceAll('{url}', url),
-                                    //             mailTitle = result.emailCreateMemberByAdminTitle,
-                                    //             mailText = fillParams(result.emailCreateMemberByAdminText),
-                                    //             mailHtml = fillParams(result.emailCreateMemberByAdminHtml);
-                                    //         app.email.sendEmail(result.email, result.emailPassword, user.email, app.email.cc, mailTitle, mailText, mailHtml, null);
-                                    //     });
-                                    // }
+                                    if(user.email) {
+                                        app.model.setting.get('email', 'emailPassword', 'emailCreateMemberByAdminTitle', 'emailCreateMemberByAdminText', 'emailCreateMemberByAdminHtml', result => {
+                                            const url = `${app.isDebug || app.rootUrl}/active-user/${user._id}`,
+                                                fillParams = (data) => data.replaceAll('{name}', `${user.lastname} ${user.firstname}`)
+                                                    .replaceAll('{firstname}', user.firstname).replaceAll('{lastname}', user.lastname).replaceAll('{identityCard}', user.identityCard)
+                                                    .replaceAll('{email}', user.email).replaceAll('{password}', dataPassword).replaceAll('{url}', url),
+                                                mailTitle = result.emailCreateMemberByAdminTitle,
+                                                mailText = fillParams(result.emailCreateMemberByAdminText),
+                                                mailHtml = fillParams(result.emailCreateMemberByAdminHtml);
+                                                console.log({mailHtml});
+                                            app.email.sendEmail(result.email, result.emailPassword, user.email, app.email.cc, mailTitle, mailText, mailHtml, null);
+                                        });
+                                    }
                                 }
                             });
                         }
@@ -208,15 +236,16 @@ module.exports = app => {
                 res.send({ notify: 'Bạn đã đăng ký khóa học này, xin vui lòng chờ nhân viên chúng tôi liên hệ lại trong thời gian sớm nhất!' });
             } else {
                 app.model.candidate.create(candidate, (error, item) => {
-                    // if (item) {
-                    //     app.model.setting.get('email', 'emailPassword', 'emailCandidateTitle', 'emailCandidateText', 'emailCandidateHtml', result => {
-                    //         const fillParams = (data) => data.replaceAll('{name}', `${item.lastname} ${item.firstname}`),
-                    //             mailSubject = fillParams(result.emailCandidateTitle),
-                    //             mailText = fillParams(result.emailCandidateText),
-                    //             mailHtml = fillParams(result.emailCandidateHtml);
-                    //         app.email.sendEmail(result.email, result.emailPassword, item.email, [], mailSubject, mailText, mailHtml, null);
-                    //     });
-                    // }
+                    if (item) {
+                        app.model.setting.get('email', 'emailPassword', 'emailCandidateTitle', 'emailCandidateText', 'emailCandidateHtml', result => {
+                            console.log(result);
+                            const fillParams = (data) => data.replaceAll('{name}', `${item.lastname} ${item.firstname}`),
+                                mailSubject = fillParams(result.emailCandidateTitle),
+                                mailText = fillParams(result.emailCandidateText),
+                                mailHtml = fillParams(result.emailCandidateHtml);
+                                app.email.sendEmail(result.email, result.emailPassword, item.email, [], mailSubject, mailText, mailHtml, null);
+                        });
+                    }
                     res.send({ error, item });
                 });
             }

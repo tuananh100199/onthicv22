@@ -173,7 +173,9 @@ const T = {
             options.icon = 'success';
             options.button = true;
         }
-        options.text = text;
+        const content = document.createElement('div');
+        content.innerHTML = text;
+        options.content=content;
         swal(options);
     },
 
