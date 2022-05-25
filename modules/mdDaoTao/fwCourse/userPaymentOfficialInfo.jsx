@@ -4,6 +4,7 @@ import { getCourseByStudent } from 'modules/mdDaoTao/fwCourse/redux';
 import { getBankByStudent } from 'modules/_default/fwBank/redux';
 import { Link } from 'react-router-dom';
 import { CopyToClipboard } from 'react-copy-to-clipboard';
+import MessengerCustomerChat from 'react-messenger-customer-chat';
 import { AdminPage, TableCell, renderTable, FormCheckbox, AdminModal, FormTextBox } from 'view/component/AdminPage';
 
 
@@ -194,6 +195,10 @@ class UserPaymentInfo extends AdminPage {
                            
                              : null}
                     </div>
+                    <MessengerCustomerChat
+                        pageId='102156059185946'
+                        appId='735844990778782'
+                    />
                     <PaymentInfoModal fee={soTienThanhToan} accountsNumber={this.state.accounts && this.state.accounts.number} code={this.state.code} nameBank={this.state.nameBank} contentSyntax={this.state.contentSyntax} accounts={this.state.accounts} readOnly={true} ref={e => this.modal = e} />
                 </>
             ),

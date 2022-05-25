@@ -4,6 +4,7 @@ import { getCourseByStudent } from './redux';
 import { createChangeLecturer } from 'modules/mdDaoTao/fwChangeLecturer/redux';
 import { getRateByUser } from 'modules/_default/fwRate/redux';
 import RateModal from 'modules/_default/fwRate/RateModal';
+import MessengerCustomerChat from 'react-messenger-customer-chat';
 import { AdminPage, CirclePageButton, PageIconHeader, PageIcon, AdminModal, FormTextBox, FormRichTextBox, FormDatePicker } from 'view/component/AdminPage';
 
 class ViewScoreModal extends AdminModal {
@@ -205,7 +206,10 @@ class UserCoursePageDetail extends AdminPage {
                         <PageIcon to={`/user/hoc-vien/khoa-hoc/${courseId}/phan-hoi`} icon='fa-commenting-o' iconBackgroundColor='#dc3545' text='Phản hồi' />
                         <CirclePageButton type='custom' customClassName='btn-success' customIcon='fa-comments-o' onClick={() => this.props.history.push('/user/chat/' + this.state.courseId)} />
                     </> : null}
-
+                    <MessengerCustomerChat
+                        pageId='102156059185946'
+                        appId='735844990778782'
+                    />
                     <ViewScoreModal ref={e => this.viewScoreModal = e} />
                     <ChangeLecturerModal ref={e => this.changeLecturerModal = e} create={this.props.createChangeLecturer} />
                 </div>
