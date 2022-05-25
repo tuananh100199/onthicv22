@@ -1,7 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { getCourseByStudent } from './redux';
-import { getBankByStudent } from 'modules/_default/fwBank/redux';
 import { Document, Page } from 'react-pdf/dist/esm/entry.webpack5';
 import 'react-pdf/dist/esm/Page/AnnotationLayer.css';
 import { Link } from 'react-router-dom';
@@ -76,5 +75,5 @@ class UserDocumentPage extends AdminPage {
 }
 
 const mapStateToProps = state => ({ system: state.system, course: state.trainning.course });
-const mapActionsToProps = { getCourseByStudent, getBankByStudent };
+const mapActionsToProps = { getCourseByStudent };
 export default connect(mapStateToProps, mapActionsToProps)(UserDocumentPage);

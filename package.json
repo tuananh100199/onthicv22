@@ -131,6 +131,7 @@
     "react-connect-elements": "^0.1.1",
     "react-copy-to-clipboard": "^5.0.4",
     "react-datetime": "^3.0.4",
+    "react-messenger-customer-chat": "^0.8.0",
     "react-pdf": "^5.7.2",
     "react-player": "^2.9.0",
     "react-qr-code": "^2.0.3",
