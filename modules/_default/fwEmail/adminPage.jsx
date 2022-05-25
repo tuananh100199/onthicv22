@@ -30,18 +30,19 @@ class EmailPage extends AdminPage {
         { title: 'Quên mật khẩu', id: 'emailForgotPassword', params: '{name}, {email}, {url}' },
         { title: 'Liên hệ', id: 'emailContact', params: '{name}, {subject}, {message}' },
         { title: 'Từ chối đơn đề nghị học', id: 'emailTuChoiDonDeNghiHoc', params: '{name}, {subject}, {message}' },
-        { title: 'Đăng ký tư vấn', id: 'emailDangKyTuVan', params: '{name}' },
+        { title: 'Đăng ký tư vấn', id: 'emailCandidate', params: '{name}' },
     ];
 
     componentDidMount() {
         T.ready(() => getSystemEmails(data => {
+            console.log({data});
             this.emailRegisterMember.set(data.emailRegisterMemberTitle, data.emailRegisterMemberText, data.emailRegisterMemberHtml);
             this.emailCreateMemberByAdmin.set(data.emailCreateMemberByAdminTitle, data.emailCreateMemberByAdminText, data.emailCreateMemberByAdminHtml);
             this.emailNewPassword.set(data.emailNewPasswordTitle, data.emailNewPasswordText, data.emailNewPasswordHtml);
             this.emailForgotPassword.set(data.emailForgotPasswordTitle, data.emailForgotPasswordText, data.emailForgotPasswordHtml);
             this.emailContact.set(data.emailContactTitle, data.emailContactText, data.emailContactHtml);
             this.emailTuChoiDonDeNghiHoc.set(data.emailTuChoiDonDeNghiHocTitle, data.emailTuChoiDonDeNghiHocText, data.emailTuChoiDonDeNghiHocHtml);
-            this.emailDangKyTuVan.set(data.emailDangKyTuVanTitle, data.emailDangKyTuVanText, data.emailDangKyTuVanHtml);
+            this.emailCandidate.set(data.emailCandidateTitle, data.emailCandidateText, data.emailCandidateHtml);
         }));
     }
 
