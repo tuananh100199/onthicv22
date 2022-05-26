@@ -86,7 +86,7 @@ class App extends React.Component {
                                 pageId='102156059185946'
                                 appId='735844990778782'
                                 // htmlRef='<REF_STRING>'
-                            />,
+                            />
                             <Switch>
                                 {this.state.routes}
                                 <Route path='**' component={Loadable({ loading: Loading, loader: () => import('view/component/MessagePage') })} />
