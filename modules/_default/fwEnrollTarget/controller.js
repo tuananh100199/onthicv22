@@ -2,12 +2,14 @@ module.exports = app => {
     const menu = {
         parentMenu: app.parentMenu.enrollment,
         menus: {
-            8001: { title: 'Chỉ tiêu tuyển sinh', link: '/user/enroll-target', icon: 'fa-envelope-o', backgroundColor: '#00897b' },
+            8009: { title: 'Chỉ tiêu tuyển sinh', link: '/user/enroll-target', icon: 'fa-envelope-o', backgroundColor: '#00897b' },
+            8008: { title: 'Hướng dẫn', link: '/user/enroll-tutorial', icon: 'fa-envelope-o', backgroundColor: '#00897b' },
         },
     };
     app.permission.add({ name: 'enrollTarget:read', menu }, { name: 'enrollTarget:write' }, { name: 'enrollTarget:delete' }, { name: 'enrollTarget:export' });
 
     app.get('/user/enroll-target', app.permission.check('enrollTarget:read'), app.templates.admin);
+    app.get('/user/enroll-tutorial', app.permission.check('enrollTarget:read'), app.templates.admin);
 
     // APIs -----------------------------------------------------------------------------------------------------------
     app.get('/api/enroll-target/all',app.permission.check('enrollTarget:read'), (req, res) => {

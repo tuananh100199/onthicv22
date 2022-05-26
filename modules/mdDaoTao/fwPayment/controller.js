@@ -183,7 +183,11 @@ module.exports = app => {
                                                                                                             res.send({ error: 'Update doanh thu hàng năm bị lỗi' });
                                                                                                         } else {
                                                                                                             if (hocPhi && (hocPhiConLai - data.fee) <= (0)) {
-                                                                                                                app.model.student.update({ _id: item._id }, { activeKhoaThucHanh: true }, (error) => {
+                                                                                                                let changes = { activeKhoaThucHanh: true };
+                                                                                                                if(hocPhi == data.fee && lichSuDongTien && !lichSuDongTien.length){
+                                                                                                                    changes = { activeKhoaThucHanh: true,  soGioThucHanhTangThem: 1};
+                                                                                                                }
+                                                                                                                app.model.student.update({ _id: item._id }, changes, (error) => {
                                                                                                                     if (error) res.send({ error });
                                                                                                                     else {
                                                                                                                         app.model.payment.create(payment, (error, item) => {

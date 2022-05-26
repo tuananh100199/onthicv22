@@ -227,7 +227,13 @@ module.exports = (app) => {
                                             if (err) {
                                                 res.send({ error: 'Update doanh thu hàng năm bị lỗi' });
                                             } else {
-                                                if(courseFee && (fee-data.fee) <= (courseFee/2)){
+                                                if(courseFee && (fee-data.fee) <= 0){
+                                                    if(courseFee == data.fee){
+                                                        app.model.student.update({_id: item._id}, {activeKhoaLyThuyet: true, activeKhoaThucHanh: true, soGioThucHanhTangThem: 1}, (error, student) => res.send({ error, item: student}));
+                                                    } else {
+                                                        app.model.student.update({_id: item._id}, {activeKhoaLyThuyet: true, activeKhoaThucHanh: true}, (error, student) => res.send({ error, item: student}));
+                                                    }
+                                                } else if(courseFee && (fee-data.fee) <= (courseFee/2)){
                                                     app.model.student.update({_id: item._id}, {activeKhoaLyThuyet: true}, (error, student) => res.send({ error, item: student}));
                                                 } else res.send({ error, student: item });
                                             }

@@ -1,0 +1,25 @@
+.document-container {
+    margin: 1em 0;
+  }
+  
+  .document-container .react-pdf__Document {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .document-container .react-pdf__Page {
+    max-width: calc(100% - 2em);
+    box-shadow: 0 0 8px rgba(0, 0, 0, 0.5);
+    margin: 1em;
+  }
+  
+  .document-container .react-pdf__Page canvas {
+    max-width: 100%;
+    height: auto !important;
+  }
+  
+  .document-container .react-pdf__message {
+    padding: 20px;
+    color: white;
+  }

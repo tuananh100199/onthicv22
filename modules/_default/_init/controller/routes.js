@@ -23,7 +23,7 @@ module.exports = (app) => {
     const menuDocument = {
         parentMenu: app.parentMenu.setting,
         menus: {
-            2120: { title: 'Tài liệu', link: '/user/document', icon: 'fa-camera', backgroundColor: '#0091EA' }
+            2120: { title: 'Tài liệu hướng dẫn', link: '/user/document', icon: 'fa-camera', backgroundColor: '#0091EA' }
         },
     };
 
@@ -389,6 +389,17 @@ module.exports = (app) => {
         });
     });
 
+    app.put('/api/tai-lieu/save', app.permission.check('course:write'), (req, res) => {
+        const { documentSrc, type } = req.body;
+        app.createFolder(
+            app.path.join(app.publicPath, 'document', '/huongDan')
+        );
+        app.deleteFile(app.path.join(app.publicPath, 'document', '/huongDan','/' + type +'.pdf'));
+        app.fs.rename(documentSrc, app.path.join(app.publicPath, 'document', '/huongDan','/' + type +'.pdf'), (error) => {
+            res.send({ error });
+        });
+    });
+
     app.put('/api/capture/avatar', app.permission.check('user:login'), (req, res) => {
         const { imageSrc, user } = req.body;
         const base64Data = imageSrc.replace(/^data:image\/jpeg;base64,/, '');
@@ -453,6 +464,16 @@ module.exports = (app) => {
         const { filename } = req.body;
         app.fs.unlinkSync(app.publicPath + '/document/' + filename);
         res.send({});
+    });
+
+    // Upload file hướng dẫn
+    app.uploadHooks.add('uploadHuongDanHeThongFile', (req, fields, files, params, done) => {
+        if (files.HuongDanHeThongFile && files.HuongDanHeThongFile.length > 0) {
+            console.log('Hook: uploadHuongDanHeThongFile => your document file upload');
+            const srcPath = files.HuongDanHeThongFile[0].path;
+            console.log(files.HuongDanHeThongFile[0].originalFilename);
+            done({srcPath,filename: files.HuongDanHeThongFile[0].originalFilename});
+        }
     });
 
     // Hook upload images ---------------------------------------------------------------------------------------------------------------------------

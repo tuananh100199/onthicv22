@@ -4,6 +4,7 @@ import { getCourseByStudent } from './redux';
 import { createChangeLecturer } from 'modules/mdDaoTao/fwChangeLecturer/redux';
 import { getRateByUser } from 'modules/_default/fwRate/redux';
 import RateModal from 'modules/_default/fwRate/RateModal';
+import MessengerCustomerChat from 'react-messenger-customer-chat';
 import { AdminPage, CirclePageButton, PageIconHeader, PageIcon, AdminModal, FormTextBox, FormRichTextBox, FormDatePicker } from 'view/component/AdminPage';
 
 class ViewScoreModal extends AdminModal {
@@ -165,6 +166,7 @@ class UserCoursePageDetail extends AdminPage {
 
                     <PageIcon to={`/user/hoc-vien/khoa-hoc/thong-tin/${courseId}`} icon='fa-info' iconBackgroundColor='#17a2b8' text='Thông tin khóa học' />
                     <PageIcon to={`/user/hoc-vien/khoa-hoc/chuong-trinh-hoc/${courseId}`} icon='fa-tasks' iconBackgroundColor='#18ffff' text='Chương trình học' />
+                    <PageIcon to={`/user/hoc-vien/khoa-hoc/huong-dan-su-dung/${courseId}`} icon='fa-book' iconBackgroundColor='#CD5C5C' text='Hướng dẫn' />
                     {course && !course.isDefault ? <PageIcon to='#' icon='fa-graduation-cap ' text='Xem điểm thi tốt nghiệp' iconBackgroundColor={showDiemThiTotNghiep ? '#8d6e63' : 'secondary'} onClick={(e) => { e.preventDefault(); showDiemThiTotNghiep ? this.viewScoreModal.show({ student, course }) : T.alert('Bạn chưa có điểm thi tốt nghiệp!', 'error', false, 8000); }} /> : null}
                     <PageIcon to={`/user/course/${courseId}/forum`} icon='fa-users' iconBackgroundColor='#3e24aa' text='Forum' />
                     <PageIcon to={''} icon='fa-star' iconBackgroundColor='orange' text='Đánh giá giáo viên' visible={teacher != null}
@@ -204,7 +206,10 @@ class UserCoursePageDetail extends AdminPage {
                         <PageIcon to={`/user/hoc-vien/khoa-hoc/${courseId}/phan-hoi`} icon='fa-commenting-o' iconBackgroundColor='#dc3545' text='Phản hồi' />
                         <CirclePageButton type='custom' customClassName='btn-success' customIcon='fa-comments-o' onClick={() => this.props.history.push('/user/chat/' + this.state.courseId)} />
                     </> : null}
-
+                    <MessengerCustomerChat
+                        pageId='102156059185946'
+                        appId='735844990778782'
+                    />
                     <ViewScoreModal ref={e => this.viewScoreModal = e} />
                     <ChangeLecturerModal ref={e => this.changeLecturerModal = e} create={this.props.createChangeLecturer} />
                 </div>

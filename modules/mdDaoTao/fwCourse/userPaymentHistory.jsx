@@ -52,6 +52,7 @@ class UserPaymentHistory extends AdminPage {
     render() {
         const userPageLink = '/user/hoc-vien/khoa-hoc/' + this.state.courseId + '/cong-no';
         const {student, courseId} = this.state;
+        const hocPhi = student && student.courseFee && student.courseFee.fee && student.courseFee.fee - ((student.discount && student.discount.fee) ? student.discount.fee : 0);
         let list = [];
         if(student && student.cart && student.cart.lock && student.cart.item.length){
             student.cart.name = 'Thanh toán học phí tăng thêm lần ' + (student.lichSuMuaThemGoi ? student.lichSuMuaThemGoi.length + 1 : 1);
@@ -59,9 +60,14 @@ class UserPaymentHistory extends AdminPage {
             list.push(student.cart);
         }
         if(student && student.lichSuDongTien && student.lichSuDongTien.length){
-            for(let i = 1; i <= student.lichSuDongTien.length; i++){
-                student.lichSuDongTien[i-1].name = 'Thanh toán học phí lần ' + i;
-                list.push(student.lichSuDongTien[i-1]);
+            if(student.lichSuDongTien.length == 1 && student.lichSuDongTien[0].fee == hocPhi){
+                student.lichSuDongTien[0].name = 'Thanh toán học phí lần 1 (được khuyến mãi 1h học thực hành)';
+                list.push(student.lichSuDongTien[0]);
+            } else {
+                for(let i = 1; i <= student.lichSuDongTien.length; i++){
+                    student.lichSuDongTien[i-1].name = 'Thanh toán học phí lần ' + i;
+                    list.push(student.lichSuDongTien[i-1]);
+                }
             }
         }
         if(student && student.lichSuMuaThemGoi && student.lichSuMuaThemGoi.length){

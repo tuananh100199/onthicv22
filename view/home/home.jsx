@@ -15,6 +15,8 @@ import HomeMenu from 'view/component/HomeMenu';
 import HomeFooter from 'view/component/HomeFooter';
 import LoginModal from 'view/component/LoginModal';
 import HomeContactMobile from 'view/component/HomeContactMobile';
+
+import MessengerCustomerChat from 'react-messenger-customer-chat';
 // import SideMenu from 'modules/_default/fwHome/sectionSideMenu';
 // Load modules -------------------------------------------------------------------------------------------------------------------------------------
 import { getSystemState, register, login, forgotPassword, logout } from 'modules/_default/_init/redux';
@@ -80,6 +82,11 @@ class App extends React.Component {
                 {this.state.isMatch ?
                     <React.Fragment>
                         <HomeMenu showLoginModal={this.showLoginModal} />
+                            <MessengerCustomerChat
+                                pageId='102156059185946'
+                                appId='735844990778782'
+                                // htmlRef='<REF_STRING>'
+                            />,
                             <Switch>
                                 {this.state.routes}
                                 <Route path='**' component={Loadable({ loading: Loading, loader: () => import('view/component/MessagePage') })} />

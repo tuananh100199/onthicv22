@@ -110,6 +110,7 @@ module.exports = (app) => {
 
         diemTrungBinhThiHetMon: Number,
         soGioThucHanhDaHoc: { type: Number, default: 0 },
+        soGioThucHanhTangThem: { type: Number, default: 0 },
 
         datSatHach: { type: Boolean, default: false },
         totNghiep: { type: Boolean, default: false },

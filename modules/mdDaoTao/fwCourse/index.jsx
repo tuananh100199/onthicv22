@@ -280,6 +280,10 @@ export default {
             component: Loadable({ loading: Loading, loader: () => import('./userLearningProgressPage') })
         },
         {
+            path: '/user/hoc-vien/khoa-hoc/huong-dan-su-dung/:_id',
+            component: Loadable({ loading: Loading, loader: () => import('./userDocumentPage') })
+        },
+        {
             path: '/user/hoc-vien/khoa-hoc/:_id/cong-no',
             component: Loadable({ loading: Loading, loader: () => import('./userPaymentInfo') })
         },
