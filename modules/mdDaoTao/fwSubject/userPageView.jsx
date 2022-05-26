@@ -10,6 +10,14 @@ const stateMapper = {
     waiting:{text:'Đang chờ',color:'#ffc107'},
     fail:{text:'Không đạt',color:'#dc3545'},
 };
+
+const colorMapper = {
+    pass:'#17a2b8',
+    waiting:'#ffc107',
+    fail:'#dc3545',
+    disabled:'#6c757d',
+    notView:'#007bff',
+};
 class AdminEditPage extends AdminPage {
     state = {};
     componentDidMount() {
@@ -46,6 +54,85 @@ class AdminEditPage extends AdminPage {
         } else {
             this.props.history.push('/user');
         }
+    }
+
+    renderContentBaiHocLyThuyet = (lesson,tienDoHocTap,finishedLesson,index)=>{
+        // const backgroundColor = finishedLesson == index ? '#007bff' : (finishedLesson > index ? '#17a2b8' : '#6c757d');
+        const getBackgroundColor = ()=>{
+            if(finishedLesson==index){
+                return '#007bff';
+            }else if(finishedLesson<index){
+                return colorMapper.disabled;
+            }else{
+                return colorMapper.pass;
+            }
+        };
+
+        const backgroundColor = getBackgroundColor();
+        const content = (
+            <div className='widget-small coloured-icon info'>
+                <i className='icon fa fa-3x fa fa-briefcase' style={{ backgroundColor  }} />
+                <div className='info'>
+                    <h4>{lesson && lesson.title}</h4>
+                    {tienDoHocTap && tienDoHocTap[lesson._id] && tienDoHocTap[lesson._id].answers ?
+                        <div>
+                            <p>Đã hoàn thành</p>
+                            <p> Điểm ôn tập:{((tienDoHocTap[lesson._id].score ?
+                                tienDoHocTap[lesson._id].score : 0) + '/' + Math.min(lesson.numQuestion, Object.keys(tienDoHocTap[lesson._id].answers).length))}
+                                {(tienDoHocTap[lesson._id].diemTB && tienDoHocTap[lesson._id].diemTB >= 0.5) ? ' (Đạt)' : ' (Chưa đạt)'}
+                            </p>
+                        </div>
+                        : ((lesson.questions.length) ? <p>Chưa hoàn thành</p> :
+                        //  (((tienDoHocTap && tienDoHocTap[lesson._id] && (tienDoHocTap[lesson._id].view || (tienDoHocTap[lesson._id].viewedVideo && lesson.videos && Object.keys(tienDoHocTap[lesson._id].viewedVideo).length == lesson.videos.length))) ? <p>Đã hoàn thành</p> : <p>Chưa hoàn thành</p>))
+                        <p>Đã hoàn thành</p>
+                            )}
+                </div>
+            </div>
+        );
+
+        return content;
+    }
+
+    renderContentBaiHocThucHanh = (lesson,tienDoHocTap,finishedLesson,index)=>{
+
+        const getBackgroundColor = ()=>{
+            if(finishedLesson==index){
+                return '#007bff';
+            }else if(finishedLesson<index){
+                return '#6c757d';
+            }else{
+                return !tienDoHocTap[lesson._id].state?'#ffc107':stateMapper[tienDoHocTap[lesson._id].state].color;
+            }
+        };
+        const backgroundColor = getBackgroundColor();
+        const getMonThucHanhStateText = ()=>{
+            if(  tienDoHocTap && 
+                tienDoHocTap[lesson._id] && 
+                (tienDoHocTap[lesson._id].view || 
+                    (tienDoHocTap[lesson._id].viewedVideo && lesson.videos && 
+                        Object.keys(tienDoHocTap[lesson._id].viewedVideo).length == lesson.videos.length
+                    )
+                )
+            ){
+                return <>
+                    <p>Đã hoàn thành</p>
+                    <p>Giáo viên chấm: {!tienDoHocTap[lesson._id].state?'Đang chờ':stateMapper[tienDoHocTap[lesson._id].state].text}</p>
+                </>;
+            }else{
+                return <p>Chưa hoàn thành</p>;
+            }
+        };
+
+        const content = (
+            <div className='widget-small coloured-icon info'>
+                <i className='icon fa fa-3x fa fa-briefcase' style={{ backgroundColor }} />
+                <div className='info'>
+                    <h4>{lesson && lesson.title}</h4>
+                    {getMonThucHanhStateText()}
+                </div>
+            </div>
+        );
+        return content;
     }
 
     render() {
@@ -139,7 +226,9 @@ class AdminEditPage extends AdminPage {
                                 {
                                     finishedLesson < index ? content :
                                         <Link to={'/user/hoc-vien/khoa-hoc/' + this.state.courseId + '/mon-hoc/' + this.state.subjectId + '/bai-hoc/' + lesson._id}>
-                                            {content}
+                                            {/* {content} */}
+                                            {monThucHanh ? this.renderContentBaiHocThucHanh(lesson,tienDoHocTap,finishedLesson,index)
+                                            :this.renderContentBaiHocLyThuyet(lesson,tienDoHocTap,finishedLesson,index)}
                                         </Link>
                                 }
                             </div>);
