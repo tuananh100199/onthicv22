@@ -349,7 +349,7 @@ module.exports = (app) => {
         const _userId = req.session.user._id,
             _courseId = req.query.courseId;
         app.model.student.get({ user: _userId, course: _courseId }, (error, item) => {
-            res.send({ error, item: item && item.tienDoHocTap });
+            res.send({ error, item: item && item.tienDoHocTap?item.tienDoHocTap:{} });
         });
     });
 
