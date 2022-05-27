@@ -3,36 +3,32 @@ import { connect } from 'react-redux';
 import { getProfileStudentPage,updateProfileStudent } from './redux';
 import { AdminPage, renderTable, TableCell,FormSelect,TableHeadCell,TableHead } from 'view/component/AdminPage';
 import Pagination from 'view/component/Pagination';
-import {  getCourseTypeAll } from 'modules/mdDaoTao/fwCourseType/redux';
+import {  getCourseTypeAll,ajaxSelectCourseType } from 'modules/mdDaoTao/fwCourseType/redux';
+import {ajaxSelectCourseByCourseType} from 'modules/mdDaoTao/fwCourse/redux';
 
 const filterCondition = [
     {id:'1',text:'Hoàn tất'},
     {id:'0',text:'Chưa hoàn tất'},
 ];
 class ProfileStudentPage extends AdminPage {
-    state = {defaultFilterValue:'all',filterCondition:{},searchText:'',isExpandFilter:true};
+    state = {defaultFilterValue:'all',filterCondition:{},isExpandFilter:true};
     componentDidMount() {
         T.ready('/user/profile-student', () => {
-            T.showSearchBox();
-            T.onSearch = (searchText) => this.onSearch({searchText},()=>this.setState({searchText}));
+            // T.showSearchBox();
+            // T.onSearch = (searchText) => this.onSearch({searchText},()=>this.setState({searchText}));
             
             this.props.getCourseTypeAll(data => {
-                const courseTypes = [{id:0,text:'Tất cả'}];
-                data.length && data.forEach(item => {
-                    courseTypes.push({ id: item._id, text: item.title });
-                });
-                this.setState({courseTypes},()=>{
-                    this.courseType.value(0);
-                });
+                const courseTypes = data.length && data.map(item => ({ id: item._id, text: item.title }));
+                this.courseType.value(courseTypes.length ? courseTypes[0] : null);
             });
             // this.onSearch({});
             this.props.getProfileStudentPage(1,null,{},{});
         });
     }
 
-    onSearch = ({pageNumber,pageSize,searchText=this.state.searchText,courseType = this.courseType.value()},done)=>{        
+    onSearch = ({pageNumber,pageSize,courseType = this.courseType.value(),course=this.course.value()},done)=>{        
         // const courseType = this.state.courseTypeId;
-        const condition = courseType == '0' ? { searchText } : {searchText, courseType };
+        const condition = course == '0' ? { courseType } : { courseType, course };
         this.props.getProfileStudentPage(pageNumber, pageSize, condition, () => {
             done && done();
         });
@@ -63,7 +59,8 @@ class ProfileStudentPage extends AdminPage {
         renderHead: () => (
             <TableHead getPage = {this.props.getProfileStudentPage}>
                 <TableHeadCell style={{ width: 'auto', textAlign: 'center' }}>#</TableHeadCell>
-                <TableHeadCell style={{ width: '100%' }}>Học viên</TableHeadCell>
+                <TableHeadCell name='fullName' content='Học viên' style={{width:'100%'}} filter='search' />
+                <TableHeadCell name='identityCard' content='CMND/CCCD' style={{width:'auto'}} nowrap='true' filter='search' />
                 <TableHeadCell style={{ width: 'auto' }} nowrap='true'>Thông tin liên lạc</TableHeadCell>
                 <TableHeadCell name='isDon' content='Đơn' style={{width:'auto'}} nowrap='true' filter='select' filterData = {filterCondition}/>
                 <TableHeadCell name='isHinh' content='Hình' style={{width:'auto'}} nowrap='true'filter='select' filterData = {filterCondition}/>
@@ -75,7 +72,8 @@ class ProfileStudentPage extends AdminPage {
             renderRow: (item, index) => (
                 <tr key={index}>
                     <TableCell type='number' content={(pageNumber - 1) * pageSize +index + 1} />
-                    <TableCell type='text' content={<>{item.lastname} {item.firstname} <br/> {item.identityCard}</>} />
+                    <TableCell type='text' content={<>{item.lastname} {item.firstname}</>} />
+                    <TableCell type='text' content={item.identityCard} />
                     <TableCell type='text' content={item.user ? <>{item.user.email} <br/> {item.user.phoneNumber}</> : ''} />
                     <TableCell type='checkbox' isSwitch={false} content={item.isDon} permission={permission} onChanged={active => this.update(item._id, { isDon:active })}/>
                     <TableCell type='checkbox' isSwitch={false} content={item.isHinh} permission={permission} onChanged={active => this.update(item._id, { isHinh:active })}/>
@@ -94,17 +92,24 @@ class ProfileStudentPage extends AdminPage {
             content: (
                 <div className='tile'>
                     <div className='tile-body'>
-                    <div className='row' style={{marginBottom:'10px'}}>
+                    {/* <div className='row' style={{marginBottom:'10px'}}>
                         <div className='col-auto'>
                             <label className='col-form-label'>Loại khóa học: </label>
                         </div>
                         <FormSelect ref={e => this.courseType = e} data={this.state.courseTypes} placeholder='Loại khóa học'
                             onChange={data => this.onSearch(data.id)} style={{ margin: 0, width: '200px' }} />
-                        {/* <div className='col-auto'>
+                    </div> */}
+                    <div className='row mb-2'>
+                        <div className='col-auto'>
+                            <label className='col-form-label'>Loại khóa học: </label>
+                        </div>
+                        <FormSelect ref={e => this.courseType = e} data={ajaxSelectCourseType} placeholder='Loại khóa học'
+                            onChange={data => this.onChangeCourseType(data.id)} style={{ margin: 0, width: '200px' }} />
+                        <div className='col-auto'>
                             <label className='col-form-label'>Khóa học: </label>
                         </div>
                         <FormSelect ref={e => this.course = e} data={ajaxSelectCourseByCourseType(this.state.courseTypeId)} placeholder='Khóa học'
-                            onChange={data => this.onSearch(data.id)} style={{ margin: 0, width: '200px' }} /> */}
+                            onChange={data => this.onSearch(data.id)} style={{ margin: 0, width: '200px' }} />
                     </div>
                         {table}
                     </div>

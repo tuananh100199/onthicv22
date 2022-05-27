@@ -74,10 +74,18 @@ module.exports = app => {
         if(condition.isLicense) pageCondition.isLicense=true;
         pageCondition.datSatHach=true;
         if(filter){
-            app.handleFilter(filter,['isCertification','isLicense','course','kySatHach'],filterCondition=>{
+            app.handleFilter(filter,['identityCard','isCertification','isLicense','course','kySatHach'],filterCondition=>{
                 pageCondition={...pageCondition,...filterCondition};
             });
-
+            if(filter.fullName){
+                pageCondition['$expr']= {
+                    '$regexMatch': {
+                      'input': { '$concat': ['$lastname', ' ', '$firstname'] },
+                      'regex': `.*${filter.fullName}.*`,  //Your text search here
+                      'options': 'i'
+                    }
+                };
+            }
             if(filter.capPhat && filter.capPhat.length<2){// đk đã cấp phát chứng chỉ và chỉ có 1 đk
                 // nếu như chọn cả 2 đk là cấp phát và chưa cấp phát thì ko gán câu nghi vấn.
                 filter.capPhat.forEach(item=>{
