@@ -347,23 +347,34 @@ section {
 
 .button_1 {
     background: transparent;
-    border: solid 2px red;
-    color: red;
+    border: solid 2px #ff1a1a;
+    color: #ff1a1a;
 }
 
 .button_1 a {
-    color: red;
+    color: #ff1a1a;
 }
 
 .button_1:hover {
-    color: red;
+    color: #ff1a1a;
+    animation: none;
     /* background: #4ca758; */
 }
 
 .button_1:hover a {
-    color: red;
+    color: #ff1a1a;
     /* background: #4ca758; */
 }
+
+.animation-blink{
+    animation: animationBlink 2s infinite;
+  }
+  
+  @keyframes animationBlink {
+    0%   {opacity: 0.5;}
+    50% {opacity: 1;}
+    100% {opacity: 0.3;}
+  }
 
 .button_2 {
     background: transparent;

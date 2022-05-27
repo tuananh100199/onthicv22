@@ -237,7 +237,7 @@ class HomeMenu extends React.Component {
                                         {/* <div className='button button_2 mr-1 large_btn'><a href={'tel:' + mobile}><i className='fa fa-phone' /> {mobile}</a></div>
                                         <div className='button button_1 mr-1 large_btn' > <a href='#' onClick={this.showCandidateModal}>Đăng ký tư vấn</a></div> */}
                                         <div className='button button_2 mr-1 large_btn' > <a href='#' onClick={this.showCandidateModal}>Đăng ký tư vấn</a></div>
-                                        <div className='button button_1 mr-1 large_btn'><a href={'tel:' + mobile}><i className='fa fa-phone' /> 028 36 362 362</a></div>
+                                        <div className='button button_1 mr-1 large_btn animation-blink'><a href={'tel:' + mobile}><i className='fa fa-phone' /> 028 36 362 362</a></div>
 
                                         <div className='btn-group m-auto pl-2 small_btn' >
                                             <li data-toggle='tooltip' title='Số điện thoại'>
