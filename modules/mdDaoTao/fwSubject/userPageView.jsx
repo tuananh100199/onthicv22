@@ -6,17 +6,11 @@ import { Link } from 'react-router-dom';
 import { AdminPage } from 'view/component/AdminPage';
 
 const stateMapper = {
-    pass:{text:'Đạt',color:'#17a2b8'},
+    pass:{text:'Đạt',color:'#7cb342'},
     waiting:{text:'Đang chờ',color:'#ffc107'},
     fail:{text:'Không đạt',color:'#dc3545'},
-};
-
-const colorMapper = {
-    pass:'#17a2b8',
-    waiting:'#ffc107',
-    fail:'#dc3545',
-    disabled:'#6c757d',
-    notView:'#007bff',
+    disabled:{text:'Chưa mở',color:'#6c757d'},
+    notView:{text:'Chưa hoàn thành',color:'#007bff'}
 };
 class AdminEditPage extends AdminPage {
     state = {};
@@ -57,14 +51,18 @@ class AdminEditPage extends AdminPage {
     }
 
     renderContentBaiHocLyThuyet = (lesson,tienDoHocTap,finishedLesson,index)=>{
-        // const backgroundColor = finishedLesson == index ? '#007bff' : (finishedLesson > index ? '#17a2b8' : '#6c757d');
         const getBackgroundColor = ()=>{
             if(finishedLesson==index){
-                return '#007bff';
+                if(tienDoHocTap && tienDoHocTap[lesson._id] && tienDoHocTap[lesson._id].answers){
+                    const state =tienDoHocTap[lesson._id].diemTB && tienDoHocTap[lesson._id].diemTB >= 0.5 ? 'pass' : 'fail';
+                    return stateMapper[state].color;
+                }else{
+                    return stateMapper.notView.color;
+                }
             }else if(finishedLesson<index){
-                return colorMapper.disabled;
+                return stateMapper.disabled.color;
             }else{
-                return colorMapper.pass;
+                return stateMapper.pass.color;
             }
         };
 
@@ -161,14 +159,14 @@ class AdminEditPage extends AdminPage {
         }
         return this.renderPage({
             icon: 'fa fa-book',
-            title: 'Môn học: ' + (this.state.title || '...'),
+            title: 'MÔN HỌC: ' + (this.state.title?this.state.title.toUpperCase() : '...'),
             breadcrumb: [<Link key={0} to={userPageLink}>Khóa học</Link>, 'Môn học'],
             content: (
                 <div className='row'>
                     <h4 style={{ width: '100%' }}>Thông tin chung</h4>
                     <Link className='col-md-6' to={'/user/hoc-vien/khoa-hoc/' + this.state.courseId + '/mon-hoc/thong-tin/' + this.state.subjectId}>
                         <div className={'widget-small coloured-icon info'}>
-                            <i className='icon fa fa-3x fa-info' />
+                            <i className='icon fa fa-3x fa-info'/>
                             <div className='info'>
                                 <h4>Thông tin môn học</h4>
                             </div>
@@ -250,7 +248,7 @@ class AdminEditPage extends AdminPage {
                                 <h4 style={{ width: '100%' }}>Thi hết môn</h4>
                                 <Link className='col-md-6' to={'/user/hoc-vien/khoa-hoc/' + this.state.courseId + '/mon-hoc/thi-het-mon/' + this.state.subjectId}>
                                     <div className={'widget-small coloured-icon danger'} >
-                                        <i className='icon fa fa-3x fa-pencil-square-o' />
+                                        <i className='icon fa fa-3x fa-pencil-square-o' style={{backgroundColor:'#3e24aa'}} />
                                         <div className='info'>
                                             <h4>Thi hết môn</h4>
                                             {tienDoThiHetMon ? <p>Điểm: {diemThiHetMon + ' (' + ((diemThiHetMon >= 5) ? 'Đạt) ' : 'Không đạt) ')}</p> : null}
