@@ -17,6 +17,10 @@ export default {
             component: Loadable({ loading: Loading, loader: () => import('./studentRegisterCalendarPage') })
         },
         {
+            path: '/user/hoc-vien/khoa-hoc/:_id/dang-ky-lich-hoc/huong-dan',
+            component: Loadable({ loading: Loading, loader: () => import('./userDocumentPage') })
+        },
+        {
             path: '/user/register-calendar/enrollment',
             component: Loadable({ loading: Loading, loader: () => import('./adminPage') })
         },

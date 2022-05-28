@@ -55,6 +55,7 @@ class PaymentInfoModal extends AdminModal {
                         </CopyToClipboard>
                     </div>
                 </div>
+                <div>{this.props.lichSuDongTien && !this.props.lichSuDongTien.length ? <p className='text-success'>Bạn sẽ được tặng thêm 1h thực hành khi thanh toán học phí 1 lần qua chuyển khoản online!</p> : null}</div>
             </div>),
     });
 }
@@ -199,7 +200,7 @@ class UserPaymentInfo extends AdminPage {
                         pageId='102156059185946'
                         appId='735844990778782'
                     />
-                    <PaymentInfoModal fee={soTienThanhToan} accountsNumber={this.state.accounts && this.state.accounts.number} code={this.state.code} nameBank={this.state.nameBank} contentSyntax={this.state.contentSyntax} accounts={this.state.accounts} readOnly={true} ref={e => this.modal = e} />
+                    <PaymentInfoModal fee={soTienThanhToan} lichSuDongTien={lichSuDongTien} accountsNumber={this.state.accounts && this.state.accounts.number} code={this.state.code} nameBank={this.state.nameBank} contentSyntax={this.state.contentSyntax} accounts={this.state.accounts} readOnly={true} ref={e => this.modal = e} />
                 </>
             ),
             backRoute: userPageLink,

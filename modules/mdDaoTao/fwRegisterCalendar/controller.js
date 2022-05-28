@@ -19,6 +19,7 @@ module.exports = (app) => {
 
     app.get('/user/register-calendar', app.permission.check('registerCalendar:read'), app.templates.admin);
     app.get('/user/hoc-vien/khoa-hoc/:_id/dang-ky-lich-hoc', app.permission.check('user:login'), app.templates.admin);
+    app.get('/user/hoc-vien/khoa-hoc/:_id/dang-ky-lich-hoc/huong-dan', app.permission.check('user:login'), app.templates.admin);
     app.get('/user/register-calendar/enrollment', app.permission.check('registerCalendar:read'), app.templates.admin);
     app.get('/user/register-calendar/teacher', app.permission.check('registerCalendar:read'), app.templates.admin);
 

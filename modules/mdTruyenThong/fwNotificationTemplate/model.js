@@ -4,6 +4,7 @@ module.exports = app => {
         content: String,
         type: String,
         abstract: String,
+        state: { type: String, enum: ['thanhToan', 'hoanTien'], default: 'thanhToan' },
     });
     const model = app.database.mongoDB.model('NotificationTemplate', schema);
 

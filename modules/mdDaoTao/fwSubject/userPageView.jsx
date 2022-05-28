@@ -164,11 +164,20 @@ class AdminEditPage extends AdminPage {
             content: (
                 <div className='row'>
                     <h4 style={{ width: '100%' }}>Thông tin chung</h4>
-                    <Link className='col-md-6' to={'/user/hoc-vien/khoa-hoc/' + this.state.courseId + '/mon-hoc/thong-tin/' + this.state.subjectId}>
-                        <div className={'widget-small coloured-icon info'}>
-                            <i className='icon fa fa-3x fa-info'/>
+                    {/* <PageIcon style={{backgroundColor: '#17a2b8'}} to={'/user/hoc-vien/khoa-hoc/' + this.state.courseId + '/mon-hoc/huong-dan/' + this.state.subjectId} icon='fa-book' iconBackgroundColor='#CD5C5C' text='Hướng dẫn học lý thuyết' /> */}
+                    <Link className='col-md-6' to={'/user/hoc-vien/khoa-hoc/' + this.state.courseId + '/mon-hoc/huong-dan/' + this.state.subjectId}>
+                        <div className={'widget-small coloured-icon info'} style={{backgroundColor: '#17a2b8'}}>
+                            <i className='icon fa fa-3x fa-book' style={{borderRight:'1px solid white'}}/>
                             <div className='info'>
-                                <h4>Thông tin môn học</h4>
+                                <h4 style={{color: 'white'}}>Hướng dẫn học lý thuyết</h4>
+                            </div>
+                        </div>
+                    </Link>
+                    <Link className='col-md-6' to={'/user/hoc-vien/khoa-hoc/' + this.state.courseId + '/mon-hoc/thong-tin/' + this.state.subjectId}>
+                        <div className={'widget-small coloured-icon info'} style={{backgroundColor: '#17a2b8'}}>
+                            <i className='icon fa fa-3x fa-info' style={{borderRight:'1px solid white'}}/>
+                            <div className='info'>
+                                <h4 style={{color: 'white'}}>Thông tin môn học</h4>
                             </div>
                         </div>
                     </Link>

@@ -15,7 +15,7 @@ module.exports = (app) => {
     app.get('/user/hoc-vien/cong-no/:_id/tang-them', app.permission.check('user:login'), app.templates.admin);
     app.get('/user/hoc-vien/cong-no/:_id/lich-su', app.permission.check('user:login'), app.templates.admin);
     app.get('/user/hoc-vien/cong-no/:_id', app.permission.check('user:login'), app.templates.admin);
-
+    
     // APIs ------------------------------------------------------------------------------------------------------------
     app.get('/api/course-fee/page/:pageNumber/:pageSize', (req, res) => {
         const pageNumber = parseInt(req.params.pageNumber),
