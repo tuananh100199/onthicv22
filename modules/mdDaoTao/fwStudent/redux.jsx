@@ -455,6 +455,21 @@ export function getStudentByUser(condition, done) {
     };
 }
 
+// done learning progress API---------------------------------------------------------------------
+export function updateStudentDoneProgress(studentId, courseId, type , done) {
+    return () => {
+        const url = '/api/student/learning-progress/done';
+        T.put(url, { studentId, courseId, type }, data => {
+            if (data.error) {
+                T.notify('Duyệt chương trình học của học viên bị lỗi!', 'danger');
+                console.error(`PUT: ${url}. ${data.error}`);
+            } else {
+                T.notify('Duyệt chương trình học của học viên thành công!', 'info');
+                done && done(data.item);   
+            }
+        }, error => console.error(error) || T.notify('Duyệt chương trình học của học viên bị lỗi!', 'danger'));
+    };
+}
 // Ajax Selections ----------------------------------------------------------------------------------------------------
 export const ajaxSelectPreStudent = T.createAjaxAdapter(
     '/api/pre-student/page/1/20',

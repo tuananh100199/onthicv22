@@ -273,7 +273,6 @@ module.exports = (app) => {
                 const cartItem = student.cart ? student.cart.item : [],
                 transactionId = student.cart ? student.cart.transactionId : '';
                 const data = {item:  cartItem, transactionId};
-                console.log(cartItem);
                 app.model.student.addPaymentExtra({ _id: student._id }, data, (error) => {
                     if(error) res.send({error});
                     else{
@@ -619,6 +618,82 @@ module.exports = (app) => {
                 }
             }
         });
+    });
+
+    // Tiến độ học tập APIS--------------------------------------------------------------------------------------------
+    app.put('/api/student/learning-progress/done', app.permission.check('student:write'), (req, res) => {
+        const {studentId,courseId,type} = req.body;
+        new Promise((resolve,reject)=>{
+            //get student
+            app.model.student.get({_id:studentId,course:courseId},(error,student)=>{
+                error?reject(error):resolve(student);
+            });
+        }).then(student=> new Promise((resolve,reject)=>{
+            // get course
+            app.model.course.get({_id:courseId},(error,course)=>{
+                error?reject(error):resolve({student,course});
+            });
+        })).then(({student,course})=> new Promise((resolve,reject)=>{
+            // map data subject, lesson, video, question into course.
+            let subjects = course.subjects;
+            subjects=subjects.filter(subject=>{
+                if(type=='lyThuyet'){
+                    return !subject.monThucHanh;
+                }else if(type=='thucHanh'){
+                    return subject.monThucHanh;
+                }else{
+                    return true;
+                }
+            });
+            if(subjects && subjects.length){
+                let promiseList = [];
+                subjects.forEach(item=>{
+                    const subjectPromise = new Promise((resolve,reject)=>{
+                        app.model.subject.get({_id:item._id},(error,subject)=>{
+                            if(error) reject(error);
+                            else{
+                                resolve(subject);
+                            }
+                        });
+                    }).catch(error=>reject(error));
+
+                    promiseList.push(subjectPromise);
+                });
+                promiseList.length && Promise.all(promiseList).then(subjects => {
+                    course.subjects=subjects;
+                    resolve({student,course});
+                }).catch(error => reject(error));
+            }else{
+                reject('Không có môn học');
+            }
+        })).then(({student,course})=>{
+            const subjects = course.subjects;
+            let tienDoHocTap = student.tienDoHocTap || {};
+            let tienDoHocTapNew = {};
+            let tienDoThiHetMon = student.tienDoThiHetMon || {};
+            let tienDoThiHetMonNew = {};
+            subjects.forEach(subject=>{
+                tienDoHocTapNew[subject._id]={};
+                // nếu là môn lý thuyết thì sẽ có tiến độ thi hết môn.
+                if(!course.monThucHanh) tienDoThiHetMonNew[subject._id]={score:10,diemTB:1};
+                const lessons = subject.lessons;
+                lessons.forEach(lesson=>{
+                    tienDoHocTapNew[subject._id][lesson._id]={
+                        view:'true',
+                        diemTB:1,
+                        score:5,
+                        state:'pass',
+                        isPass:'true',
+                        totalSeconds : 3600,
+                    };
+                });
+            });
+            Object.assign(tienDoHocTap, tienDoHocTapNew);
+            Object.assign(tienDoThiHetMon, tienDoThiHetMonNew);
+            app.model.student.update(studentId,{tienDoHocTap,tienDoThiHetMon},(error,item)=>{
+                res.send({error,item});
+            });
+        }).catch(error=>console.log(error)||res.send({error}));
     });
 
     // Pre-student APIs -----------------------------------------------------------------------------------------------

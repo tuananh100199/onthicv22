@@ -2,7 +2,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { getCourse, getLearningProgressPage, exportLearningProgressToExcel, exportFinalExam, exportPhuLuc3B } from '../redux';
-import { updateStudent } from 'modules/mdDaoTao/fwStudent/redux';
+import { updateStudent, updateStudentDoneProgress } from 'modules/mdDaoTao/fwStudent/redux';
 import { AdminPage, AdminModal, CirclePageButton, TableCell, renderTable, FormTextBox, FormSelect, FormCheckbox } from 'view/component/AdminPage';
 import FileSaver from 'file-saver';
 import Pagination from 'view/component/Pagination';
@@ -261,6 +261,19 @@ class AdminLearningProgressPage extends AdminPage {
         return title;
     }
 
+    updateDoneProgress = (e, item, type='all') =>{
+        const typeMapper = {
+            lyThuyet:'lý thuyết',
+            thucHanh:'thực hành',
+            all:'',
+        };
+        e.preventDefault();
+        T.confirm(`Hoàn thành chương trình học ${typeMapper[type]}`, `Bạn có chắc bạn muốn cho học viên này hoàn thành chương trình học ${typeMapper[type]} không?`, true, isConfirm =>
+        isConfirm && this.props.updateStudentDoneProgress(item._id,this.state.courseId,type,()=>{
+            this.getPage();
+        }));
+    }
+
     render() {
         const user = this.props.system ? this.props.system.user : null,
             { isLecturer, isCourseAdmin } = user,
@@ -359,7 +372,20 @@ class AdminLearningProgressPage extends AdminPage {
                         {(!listShow.length || (listShow.length && listShow.indexOf('thoiGianForum') != -1)) && isCourseAdmin && <TableCell type='text' style={{ textAlign: 'center' }} content={students && students[index] && students[index].tongThoiGianForum ? convertTime(students[index].tongThoiGianForum) : convertTime(0)} />}
                         {(!listShow.length || (listShow.length && listShow.indexOf('thoiGianTaiLieu') != -1)) && isCourseAdmin && <TableCell type='text' style={{ textAlign: 'center' }} content={students && students[index] && students[index].tongThoiGianTaiLieu ? convertTime(students[index].tongThoiGianTaiLieu) : convertTime(0)} />}
                         {isCourseAdmin && (
-                            <TableCell type='buttons' content={item} permission={{ write: true, delete: true }} onEdit={e => this.edit(e, item)} />
+                            <TableCell type='buttons' content={item} permission={{ write: true, delete: true }} onEdit={e => this.edit(e, item)} >
+                                {isCourseAdmin &&
+                                <>
+                                <a className='btn btn-warning' href='#' onClick={e =>this.updateDoneProgress(e,item,'lyThuyet')}>
+                                    <i className='fa fa-lg fa-book' />
+                                </a>
+                                
+                                <a className='btn btn-info' href='#' onClick={e =>this.updateDoneProgress(e,item,'thucHanh')}>
+                                    <i className='fa fa-lg fa-car' />
+                                </a>
+                                </>
+                                
+                                }
+                            </TableCell>
                         )}
                     </tr>);
             },
@@ -399,5 +425,5 @@ class AdminLearningProgressPage extends AdminPage {
 }
 
 const mapStateToProps = state => ({ system: state.system, course: state.trainning.course });
-const mapActionsToProps = { getCourse, getLearningProgressPage, updateStudent, exportFinalExam, exportPhuLuc3B };
+const mapActionsToProps = { getCourse, getLearningProgressPage, updateStudent, exportFinalExam, exportPhuLuc3B, updateStudentDoneProgress };
 export default connect(mapStateToProps, mapActionsToProps)(AdminLearningProgressPage);

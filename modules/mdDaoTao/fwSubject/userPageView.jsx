@@ -80,10 +80,10 @@ class AdminEditPage extends AdminPage {
                                 {(tienDoHocTap[lesson._id].diemTB && tienDoHocTap[lesson._id].diemTB >= 0.5) ? ' (Đạt)' : ' (Chưa đạt)'}
                             </p>
                         </div>
-                        : ((lesson.questions.length) ? <p>Chưa hoàn thành</p> :
-                        //  (((tienDoHocTap && tienDoHocTap[lesson._id] && (tienDoHocTap[lesson._id].view || (tienDoHocTap[lesson._id].viewedVideo && lesson.videos && Object.keys(tienDoHocTap[lesson._id].viewedVideo).length == lesson.videos.length))) ? <p>Đã hoàn thành</p> : <p>Chưa hoàn thành</p>))
-                        <p>Đã hoàn thành</p>
-                            )}
+                        //
+                        :(tienDoHocTap && tienDoHocTap[lesson._id] && tienDoHocTap[lesson._id].score?<p>Đã hoàn thành</p>
+                        : ((lesson.questions.length) ? <p>Chưa hoàn thành</p> : <p>Đã hoàn thành</p>
+                            ))}
                 </div>
             </div>
         );
