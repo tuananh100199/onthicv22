@@ -7,6 +7,7 @@ import { AdminPage, FormFileBox, FormSelect } from 'view/component/AdminPage';
 import '../fwNotification/style.scss';
 
 const listHuongDan = [{ id: 'hocVien', text: 'Học viên'}, { id: 'giaoVien', text: 'Giáo viên'}, { id: 'keToan', text:'Kế toán'}, { id:'tuyenSinh', text: 'Tuyển sinh'}, { id:'quanLyXe', text:'Quản lý xe'}, { id:'admin', text:'Quản trị hệ thống'}];
+const listHocVien = [{ id: 'hocVienTongQuan', text: 'Tổng quan chương trình học'}, { id: 'hocVienHocPhi', text: 'Hướng dẫn đóng học phí'}, { id: 'hocVienLyThuyet', text: 'Hướng dẫn học lý thuyết'}, { id: 'hocVienDangKyLichHoc', text: 'Hướng dẫn đăng ký lịch học'}];
 class SettingsPage extends AdminPage {
     state = {};
 
@@ -41,7 +42,10 @@ class SettingsPage extends AdminPage {
             T.notify('Chưa chọn đối tượng hướng dẫn!', 'danger');
             this.type.focus();
         } else {
-            this.props.saveTaiLieuHuongDan(this.state.url,this.type.value(), data => {
+            let type = '';
+            if(this.type.value() != 'hocVien') type = this.type.value();
+            else type = this.hocVien.value();
+            this.props.saveTaiLieuHuongDan(this.state.url, type, data => {
                 if (data.error) {
                     T.notify('Import hướng dẫn bị lỗi!', 'danger');
                 } else {
@@ -56,8 +60,14 @@ class SettingsPage extends AdminPage {
         this.setState({ url: null, filename: '' });
     }
 
+    onChange = (data) => {
+        if(data == 'hocVien')
+        this.setState({ type: 'hocVien' });
+        this.hocVien.value('hocVienTongQuan');
+    }
+
     render() {
-        const { url, filename } = this.state;
+        const { url, filename, type } = this.state;
         return this.renderPage({
             icon: 'fa fa-book',
             title: 'Tài liệu hướng dẫn',
@@ -65,7 +75,11 @@ class SettingsPage extends AdminPage {
             content: <>
                 {url ? 
                 <div className='tile'>
-                    <FormSelect style={{width: '300px'}} ref={e => this.type = e} label='Đối tượng hướng dẫn' data={listHuongDan} readOnly={false} />
+                    <div className='row'>
+                        <FormSelect className='col-md-3' style={{width: '300px'}} ref={e => this.type = e} onChange={data => this.onChange(data.id)} label='Đối tượng hướng dẫn' data={listHuongDan} readOnly={false} />
+                        {type == 'hocVien' ? <FormSelect className='col-md-3' style={{width: '300px'}} ref={e => this.hocVien = e} label='Đối tượng hướng dẫn' data={listHocVien} readOnly={false} /> : null}
+                    </div>
+                    
                     <p>{filename}</p>
                     <div className='tile-footer' style={{ textAlign: 'right' }}>
                         <button className='btn btn-danger' type='button' style={{ marginRight: 10 }} onClick={this.onReUpload}>

@@ -185,7 +185,7 @@ module.exports = app => {
                                                                                                             if (hocPhi && (hocPhiConLai - data.fee) <= (0)) {
                                                                                                                 let changes = { activeKhoaThucHanh: true };
                                                                                                                 if(hocPhi == data.fee && lichSuDongTien && !lichSuDongTien.length){
-                                                                                                                    changes = { activeKhoaThucHanh: true,  soGioThucHanhTangThem: 1};
+                                                                                                                    changes = { activeKhoaThucHanh: true,  soGioThucHanhTangThem: 2};
                                                                                                                 }
                                                                                                                 app.model.student.update({ _id: item._id }, changes, (error) => {
                                                                                                                     if (error) res.send({ error });

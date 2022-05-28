@@ -143,7 +143,7 @@ class LecturerStudentPage extends AdminPage {
         (monLyThuyet || []).forEach((subject, index) => {
             subjectColumns.push(<th key={index} style={{ width: 'auto', textAlign: 'center' }}  >{subject.title}</th>);
         });
-        const showMonLyThuyet = parseInt(hocPhiDaDong)/parseInt(hocPhi) < 0.5;
+        const showMonLyThuyet = parseInt(hocPhiDaDong)/parseInt(hocPhi) > 0.5;
         const pageIcon = 
         student ? 
         <>
@@ -219,17 +219,6 @@ class LecturerStudentPage extends AdminPage {
                 } iconBackgroundColor='#1488db' text={'Nhận GPLX'} />
             </div>
         </div>
-        {/* <div className='test1'>a</div>
-        <div className='test2'>b</div>
-        <ConnectElements
-                selector='.line'
-                elements={[
-                    { from: '.test1', to: '.test2' },
-                    { from: '.lythuyet', to: '.mon0' },
-                ]}
-                color={'red'}
-                overlay={999999}
-            /> */}
         </>
          : null;
 

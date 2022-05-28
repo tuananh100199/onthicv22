@@ -12,6 +12,7 @@ module.exports = (app) => {
     app.get('/user/dao-tao/mon-hoc/:_id', app.templates.admin);
     app.get('/user/hoc-vien/khoa-hoc/:courseId/mon-hoc/:_id', app.permission.check('user:login'), app.templates.admin);
     app.get('/user/hoc-vien/khoa-hoc/:courseId/mon-hoc/thong-tin/:_id', app.permission.check('user:login'), app.templates.admin);
+    app.get('/user/hoc-vien/khoa-hoc/:courseId/mon-hoc/huong-dan/:_id', app.permission.check('user:login'), app.templates.admin);
     app.get('/user/hoc-vien/khoa-hoc/:courseId/mon-hoc/phan-hoi/:_id', app.permission.check('user:login'), app.templates.admin);
     app.get('/user/hoc-vien/khoa-hoc/:courseId/mon-hoc/thi-het-mon/:_id', app.permission.check('user:login'), app.templates.admin);
 
