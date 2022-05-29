@@ -17,5 +17,9 @@ export default {
             path: '/user/hoc-vien/cong-no/:_id',
             component: Loadable({ loading: Loading, loader: () => import('./userPayment') })
         },
+        {
+            path: '/user/hoc-vien/khoa-hoc/:_id/cong-no/huong-dan',
+            component: Loadable({ loading: Loading, loader: () => import('./userDocumentPaymentPage') })
+        },
     ]
 };

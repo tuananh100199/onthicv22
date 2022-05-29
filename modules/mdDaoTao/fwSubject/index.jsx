@@ -26,6 +26,10 @@ export default {
             component: Loadable({ loading: Loading, loader: () => import('./userSubjectInfo') })
         },
         {
+            path: '/user/hoc-vien/khoa-hoc/:courseId/mon-hoc/huong-dan/:_id',
+            component: Loadable({ loading: Loading, loader: () => import('./userDocumentSubjectPage') })
+        },
+        {
             path: '/user/hoc-vien/khoa-hoc/:courseId/mon-hoc/phan-hoi/:_id',
             component: Loadable({ loading: Loading, loader: () => import('./userFeedbackQuestion') })
         },

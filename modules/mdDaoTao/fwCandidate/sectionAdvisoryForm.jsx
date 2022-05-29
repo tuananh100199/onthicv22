@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { ajaxSelectCourseType, ajaxGetCourseType } from 'modules/mdDaoTao/fwCourseType/redux';
+import { ajaxSelectCourseTypeHome, ajaxGetCourseType } from 'modules/mdDaoTao/fwCourseType/redux';
 import { FormSelect } from 'view/component/AdminPage';
 import { createCandidate } from './redux';
 import './style.css';
@@ -120,7 +120,7 @@ class SectionAdvisoryForm extends React.Component {
                                         type='tel' className='intro_input w-100' placeholder='Số điện thoại' ref={e => this.phoneNumber = e} />
                                 </p>
                                 <div className='mb-5' style={{ width: '100%', padding: '0 8px', margin: 0, color: '#199d76' }}>
-                                    <FormSelect ref={e => this.courseType = e} className='advisory_form_container__form-select' label='Hạng đào tạo:' data={ajaxSelectCourseType} style={{ margin: 0, width: '100% !important' }} labelStyle={{ color: 'white' }} />
+                                    <FormSelect ref={e => this.courseType = e} className='advisory_form_container__form-select' label='Hạng đào tạo:' data={ajaxSelectCourseTypeHome} style={{ margin: 0, width: '100% !important' }} labelStyle={{ color: 'white' }} />
                                 </div>
                             </div>
                             <button className='button button_1 intro_button trans_200 advisory_btn'>Đăng ký</button>

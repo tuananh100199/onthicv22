@@ -225,7 +225,7 @@ class DebtTrackingPage extends AdminPage {
         this.props.getDebtStudentPage(1, undefined, {}, {}, {});
         this.props.getNotificationTemplateAll({}, data => {
             if (data && data.length) {
-                const indexHoanTien = data.findIndex(template => template.type == '0');
+                const indexHoanTien = data.findIndex(template => template.state == 'hoanTien');
                 if (indexHoanTien != -1) {
                     this.setState({ data: data[indexHoanTien] });
                 } else {

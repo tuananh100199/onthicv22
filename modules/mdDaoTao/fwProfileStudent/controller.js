@@ -17,35 +17,44 @@ module.exports = app => {
         let pageNumber = parseInt(req.params.pageNumber),
             pageSize = parseInt(req.params.pageSize),
             condition = req.query.pageCondition || {},
+            courseCondition =  {isDefault:false},
             pageCondition = {},filter=req.query.filter;
-            if(condition.course) pageCondition.course=condition.course;
-            if(condition.courseType) pageCondition.courseType=condition.courseType;
-        // handle searchText
-        pageCondition['$or'] =[];
-        if (condition.searchText) {
-            const value = { $regex: `.*${condition.searchText}.*`, $options: 'i' };
-            pageCondition['$or'] = [
-                { firstname: value },
-                { lastname: value },
-                { identityCard: value },
-            ];
-        }
-
-        // }
-        // if(filter){
-        //     for(const key in filter){
-        //         filter[key]!='all' && Object.assign(pageCondition,{[key]:{$in:filter[key]}});
-        //     }
-        // }
-
-        filter && app.handleFilter(filter,['isDon','isHinh','isIdentityCard','isGiayKhamSucKhoe','isBangLaiA1'],defaultFilter=>{
-            pageCondition={...pageCondition,...defaultFilter};
-        }); 
-        if(pageCondition['$or'].length==0) delete delete pageCondition.$or;
-        app.model.student.getPage(pageNumber, pageSize, pageCondition, (error, page) => {
-            res.send({error,page});
-            // res.send({ page, error: error || page == null ? 'Danh sách trống!' : null });
-        });
+            if(condition.courseType){
+                pageCondition.courseType=condition.courseType;
+                courseCondition.courseType=condition.courseType;
+            }
+            if(filter){
+                app.handleFilter(filter,['identityCard','isDon','isHinh','isIdentityCard','isGiayKhamSucKhoe','isBangLaiA1'],defaultFilter=>{
+                    pageCondition={...pageCondition,...defaultFilter};
+                });
+                if(filter.fullName){
+                    pageCondition['$expr']= {
+                        '$regexMatch': {
+                          'input': { '$concat': ['$lastname', ' ', '$firstname'] },
+                          'regex': `.*${filter.fullName}.*`,  //Your text search here
+                          'options': 'i'
+                        }
+                    };
+                }    
+            }
+        new Promise((resolve,reject)=>{// handle condition course.
+            if(condition.course){
+                pageCondition.course=condition.course;
+                resolve(pageCondition);
+            }else{
+                app.model.course.getAll(courseCondition,(error,courses)=>{
+                    if(error) reject(error);
+                    else{
+                        pageCondition.course = {$in:courses.map(item=>item._id)};
+                        resolve(pageCondition);
+                    }
+                });
+            }
+        }).then(pageCondition=>{
+            app.model.student.getPage(pageNumber, pageSize, pageCondition, (error, page) => {
+                res.send({error,page});
+            });
+        }).catch(error=>res.send({error}));
     });
 
     app.put('/api/profile-student', app.permission.check('profileStudent:write'), (req, res) => {

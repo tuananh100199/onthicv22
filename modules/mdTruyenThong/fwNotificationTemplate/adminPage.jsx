@@ -3,13 +3,16 @@ import { connect } from 'react-redux';
 import { createNotificationTemplate, getNotificationTemplateAll, updateNotificationTemplate, deleteNotificationTemplate } from './redux';
 import { AdminPage, FormTextBox, FormTabs, FormEditor, CirclePageButton, FormRichTextBox } from 'view/component/AdminPage';
 
-const listParams = ['{ho_ten}', '{cmnd}', '{khoa}', '{ngay_thi_tot_nghiep}', '{ngay_thi_sat_hach}', '{fee}'],
+const listParams = ['{ho_ten}', '{cmnd}', '{khoa}', '{ngay_thi_tot_nghiep}', '{ngay_thi_sat_hach}', '{fee}', '{hocPhiConLai}'],
     defaultTitleTotNghiep = 'Thông báo thời gian thi tốt nghiệp',
     defaultAbstractTotNghiep = 'Thông báo thời gian thi tốt nghiệp khóa {khoa}',
     defaultContentTotNghiep = '<p>Xin chào {ho_ten}({cmnd}),</p>\n<p>Thời gian thi tốt nghiệp khóa {khoa} của bạn là: {ngay_thi_tot_nghiep}</p>',
     defaultTitleSatHach = 'Thông báo thời gian thi sát hạch',
     defaultAbstractSatHach = 'Thông báo thời gian thi sát hạch khóa {khoa}',
     defaultContentSatHach = '<p>Xin chào {ho_ten}({cmnd}),</p>\n<p>Thời gian thi sát hạch khóa {khoa} của bạn là: {ngay_thi_sat_hach}</p>',
+    defaultTitleThanhToan = 'Thông báo thanh toán học phí thành công!',
+    defaultAbstractThanhToan = 'Bạn đã thanh toán thành công gói {khoa}',
+    defaultContentThanhToan = '<p>Bạn đã thanh toán thành công gói {khoa}<p>\n <p>Số tiền thanh toán: {fee} đồng<p> \n <p>Số tiền còn lại phải đóng: {hocPhiConLai} đồng<p>',
     defaultTitleHoanTien = 'Thông báo về việc hoàn trả tiền học phí cho học viên!',
     defaultAbstractHoanTien = 'Thông báo về việc hoàn trả tiền học phí cho học viên khóa {khoa}',
     defaultContentHoanTien = '<p>Xin chào {ho_ten}({cmnd}),</p>\n<p>Bạn được hoàn lại số tiền {fee} đã đóng cho khóa {khoa}, bạn vui lòng đến trung tâm đào tạo lái xe Hiệp Phát để nhận lại. Khi đi vui lòng mang theo giấy tờ tuỳ thân để xác minh</p>';
@@ -41,8 +44,19 @@ class NotificationTemplatePage extends AdminPage {
                         this.itemAbstractSatHach.value(defaultAbstractSatHach);
                         this.editorSatHach.html(defaultContentSatHach);
                     }
-                    const indexHoanTien = data.findIndex(template => template.type == '0');
-                    if (indexHoanTien != -1) {
+                    const indexThanhToan = data.findIndex(template => template.state == 'thanhToan');
+                    if (indexThanhToan != -1) {
+                        this.itemTitleThanhToan.value(data[indexThanhToan].title);
+                        this.itemAbstractThanhToan.value(data[indexThanhToan].abstract);
+                        this.editorThanhToan.html(data[indexThanhToan].content);
+                        this.setState({ idThanhToan: data[indexThanhToan]._id });
+                    } else {
+                        this.itemTitleThanhToan.value(defaultTitleThanhToan);
+                        this.itemAbstractThanhToan.value(defaultAbstractThanhToan);
+                        this.editorThanhToan.html(defaultContentThanhToan);
+                    }
+                    const indexHoanTien = data.findIndex(template => template.state == 'hoanTien');
+                    if (indexHoanTien != -1 ) {
                         this.itemTitleHoanTien.value(data[indexHoanTien].title);
                         this.itemAbstractHoanTien.value(data[indexHoanTien].abstract);
                         this.editorHoanTien.html(data[indexHoanTien].content);
@@ -62,6 +76,9 @@ class NotificationTemplatePage extends AdminPage {
                     this.itemTitleHoanTien.value(defaultTitleHoanTien);
                     this.itemAbstractHoanTien.value(defaultAbstractHoanTien);
                     this.editorHoanTien.html(defaultContentHoanTien);
+                    this.itemTitleThanhToan.value(defaultTitleThanhToan);
+                    this.itemAbstractThanhToan.value(defaultAbstractThanhToan);
+                    this.editorThanhToan.html(defaultContentThanhToan);
                 }
             });
         });
@@ -101,12 +118,30 @@ class NotificationTemplatePage extends AdminPage {
                     });
                 });
             }
+        } else if(index == 3) {
+            const changes = {
+                title: this.itemTitleThanhToan.value().trim(),
+                abstract: this.itemAbstractThanhToan.value().trim(),
+                content: this.editorThanhToan.html(),
+                type: '0',
+                state:'thanhToan'
+            };
+            if (this.state.idThanhToan) {
+                this.props.updateNotificationTemplate(this.state.idThanhToan, changes);
+            } else {
+                this.props.createNotificationTemplate(changes, data => {
+                    data && data.item && this.setState({
+                        idThanhToan: data.item._id
+                    });
+                });
+            }
         } else {
             const changes = {
                 title: this.itemTitleHoanTien.value().trim(),
                 abstract: this.itemAbstractHoanTien.value().trim(),
                 content: this.editorHoanTien.html(),
                 type: '0',
+                state:'hoanTien'
             };
             if (this.state.idHoanTien) {
                 this.props.updateNotificationTemplate(this.state.idHoanTien, changes);
@@ -149,10 +184,20 @@ class NotificationTemplatePage extends AdminPage {
             </div>
         );
 
+        const thanhToanTabs = (
+            <div className='tile-body' id={this.props.id}>
+                <FormTextBox ref={e => this.itemTitleThanhToan = e} label='Chủ đề' readOnly={this.props.readOnly} />
+                <FormRichTextBox ref={e => this.itemAbstractThanhToan = e} listParams={listParams} label='Mô tả ngắn gọn' readOnly={this.props.readOnly} />
+                <FormEditor ref={e => this.editorThanhToan = e} height='600px' label='Nội dung' uploadUrl='/user/upload?category=notification' listParams={listParams} readOnly={this.props.readOnly} />
+                {permission.write ? <CirclePageButton type='save' onClick={this.save} /> : null}
+            </div>
+        );
+
         const tabs = [
             { title: 'Thông báo thi tốt nghiệp', component: thiTotNghiepTabs },
             { title: 'Thông báo thi sát hạch', component: thiSatHachTabs },
-            { title: 'Thông báo hoàn tiền', component: hoanTienTabs }
+            { title: 'Thông báo hoàn tiền', component: hoanTienTabs },
+            { title: 'Thông báo thanh toán', component: thanhToanTabs }
         ];
 
         return this.renderPage({

@@ -40,7 +40,6 @@ class ExportModal extends AdminModal {
                     <th style={{ width: '100%' }}>Học viên</th>
                     <th style={{ width: '100%' }}>CMND</th>
                     <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Khóa học</th>
-                    {/* <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Loại gói học phí</th> */}
                     <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>kỳ sát hạch</th>
                     <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Thao tác</th>
                 </tr>),
@@ -49,7 +48,6 @@ class ExportModal extends AdminModal {
                     <TableCell type='number' content={index + 1} />
                     <TableCell type='text' content={`${item.lastname} ${item.firstname}`} />
                     <TableCell type='text' content={item.identityCard} />
-                    {/* <TableCell type='text' style={{ whiteSpace: 'nowrap', textAlign: 'center' }} content={item.feeType ? item.feeType.title : ''} /> */}
                     <TableCell type='text' style={{ whiteSpace: 'nowrap', textAlign: 'center' }} content={item.course && item.course.name} />
                     <TableCell type='text' style={{ whiteSpace: 'nowrap', textAlign: 'center' }} content={item.kySatHach?item.kySatHach.title:''} />
                     <TableCell type='buttons' content={{ item, index }} permission={{ delete: true }} onDelete={e=>this.delete(e,item)} />
@@ -206,8 +204,8 @@ class LicensePage extends AdminPage {
             renderHead: () => (
                 <TableHead getPage = {this.props.getLicensePage}>
                     <TableHeadCell style={{ width: 'auto' }}>#</TableHeadCell>
-                    <TableHeadCell style={{ width: '100%' }} nowrap='true'>Học viên</TableHeadCell>
-                    <TableHeadCell style={{ width: 'auto' }} nowrap='true'>CMND/CCCD</TableHeadCell>
+                    <TableHeadCell name='fullName' filter='search' style={{ width: '100%' }} nowrap='true'>Học viên</TableHeadCell>
+                    <TableHeadCell name='identityCard' filter='search' style={{ width: 'auto' }} nowrap='true'>CMND/CCCD</TableHeadCell>
                     <TableHeadCell style={{ width: 'auto' }} nowrap='true'>Loại khóa học</TableHeadCell>
                     <TableHeadCell  name='course' filter='select' filterData={this.state.course} style={{ width: 'auto' }} menuStyle={{width:200}} nowrap='true'>Khóa học</TableHeadCell>
                     <TableHeadCell name = 'kySatHach' filter='select' filterData= {ajaxSelectLicenseTest} style={{ width: 'auto' }} nowrap='true'>Kỳ sát hạch</TableHeadCell>

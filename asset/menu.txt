@@ -65,7 +65,7 @@
 	8011 - Ứng viên tiềm năng (/user/candidate-potential)
 	8020 - Ứng viên (/user/pre-student)
 	8021 - Loại hồ sơ (/user/profile-type)
-	8025 - Loại giấy tờ học viên (/user/profile-student-type)
+	8025 - Hồ sơ đăng ký (/user/profile-student-type)
 	8027 - Học viên (/user/student)
 	8030 - Theo dõi hồ sơ học viên (/user/profile-student)
 	8040 - Phát chứng chỉ, giấy phép (/user/license)

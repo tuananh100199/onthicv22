@@ -6,9 +6,11 @@ import { Link } from 'react-router-dom';
 import { AdminPage } from 'view/component/AdminPage';
 
 const stateMapper = {
-    pass:{text:'Đạt',color:'#17a2b8'},
+    pass:{text:'Đạt',color:'#7cb342'},
     waiting:{text:'Đang chờ',color:'#ffc107'},
     fail:{text:'Không đạt',color:'#dc3545'},
+    disabled:{text:'Chưa mở',color:'#6c757d'},
+    notView:{text:'Chưa hoàn thành',color:'#007bff'}
 };
 class AdminEditPage extends AdminPage {
     state = {};
@@ -48,6 +50,89 @@ class AdminEditPage extends AdminPage {
         }
     }
 
+    renderContentBaiHocLyThuyet = (lesson,tienDoHocTap,finishedLesson,index)=>{
+        const getBackgroundColor = ()=>{
+            if(finishedLesson==index){
+                if(tienDoHocTap && tienDoHocTap[lesson._id] && tienDoHocTap[lesson._id].answers){
+                    const state =tienDoHocTap[lesson._id].diemTB && tienDoHocTap[lesson._id].diemTB >= 0.5 ? 'pass' : 'fail';
+                    return stateMapper[state].color;
+                }else{
+                    return stateMapper.notView.color;
+                }
+            }else if(finishedLesson<index){
+                return stateMapper.disabled.color;
+            }else{
+                return stateMapper.pass.color;
+            }
+        };
+
+        const backgroundColor = getBackgroundColor();
+        const content = (
+            <div className='widget-small coloured-icon info'>
+                <i className='icon fa fa-3x fa fa-briefcase' style={{ backgroundColor  }} />
+                <div className='info'>
+                    <h4>{lesson && lesson.title}</h4>
+                    {tienDoHocTap && tienDoHocTap[lesson._id] && tienDoHocTap[lesson._id].answers ?
+                        <div>
+                            <p>Đã hoàn thành</p>
+                            <p> Điểm ôn tập:{((tienDoHocTap[lesson._id].score ?
+                                tienDoHocTap[lesson._id].score : 0) + '/' + Math.min(lesson.numQuestion, Object.keys(tienDoHocTap[lesson._id].answers).length))}
+                                {(tienDoHocTap[lesson._id].diemTB && tienDoHocTap[lesson._id].diemTB >= 0.5) ? ' (Đạt)' : ' (Chưa đạt)'}
+                            </p>
+                        </div>
+                        //
+                        :(tienDoHocTap && tienDoHocTap[lesson._id] && tienDoHocTap[lesson._id].score?<p>Đã hoàn thành</p>
+                        : ((lesson.questions.length) ? <p>Chưa hoàn thành</p> : <p>Đã hoàn thành</p>
+                            ))}
+                </div>
+            </div>
+        );
+
+        return content;
+    }
+
+    renderContentBaiHocThucHanh = (lesson,tienDoHocTap,finishedLesson,index)=>{
+
+        const getBackgroundColor = ()=>{
+            if(finishedLesson==index){
+                return '#007bff';
+            }else if(finishedLesson<index){
+                return '#6c757d';
+            }else{
+                return !tienDoHocTap[lesson._id].state?'#ffc107':stateMapper[tienDoHocTap[lesson._id].state].color;
+            }
+        };
+        const backgroundColor = getBackgroundColor();
+        const getMonThucHanhStateText = ()=>{
+            if(  tienDoHocTap && 
+                tienDoHocTap[lesson._id] && 
+                (tienDoHocTap[lesson._id].view || 
+                    (tienDoHocTap[lesson._id].viewedVideo && lesson.videos && 
+                        Object.keys(tienDoHocTap[lesson._id].viewedVideo).length == lesson.videos.length
+                    )
+                )
+            ){
+                return <>
+                    <p>Đã hoàn thành</p>
+                    <p>Giáo viên chấm: {!tienDoHocTap[lesson._id].state?'Đang chờ':stateMapper[tienDoHocTap[lesson._id].state].text}</p>
+                </>;
+            }else{
+                return <p>Chưa hoàn thành</p>;
+            }
+        };
+
+        const content = (
+            <div className='widget-small coloured-icon info'>
+                <i className='icon fa fa-3x fa fa-briefcase' style={{ backgroundColor }} />
+                <div className='info'>
+                    <h4>{lesson && lesson.title}</h4>
+                    {getMonThucHanhStateText()}
+                </div>
+            </div>
+        );
+        return content;
+    }
+
     render() {
         const { tienDoHocTap, tienDoThiHetMon } = this.state,
             diemThiHetMon = (tienDoThiHetMon && tienDoThiHetMon.diemTB) ? (tienDoThiHetMon.diemTB * 10) : 0,
@@ -74,16 +159,25 @@ class AdminEditPage extends AdminPage {
         }
         return this.renderPage({
             icon: 'fa fa-book',
-            title: 'Môn học: ' + (this.state.title || '...'),
+            title: 'MÔN HỌC: ' + (this.state.title?this.state.title.toUpperCase() : '...'),
             breadcrumb: [<Link key={0} to={userPageLink}>Khóa học</Link>, 'Môn học'],
             content: (
                 <div className='row'>
                     <h4 style={{ width: '100%' }}>Thông tin chung</h4>
-                    <Link className='col-md-6' to={'/user/hoc-vien/khoa-hoc/' + this.state.courseId + '/mon-hoc/thong-tin/' + this.state.subjectId}>
-                        <div className={'widget-small coloured-icon info'}>
-                            <i className='icon fa fa-3x fa-info' />
+                    {/* <PageIcon style={{backgroundColor: '#17a2b8'}} to={'/user/hoc-vien/khoa-hoc/' + this.state.courseId + '/mon-hoc/huong-dan/' + this.state.subjectId} icon='fa-book' iconBackgroundColor='#CD5C5C' text='Hướng dẫn học lý thuyết' /> */}
+                    <Link className='col-md-6' to={'/user/hoc-vien/khoa-hoc/' + this.state.courseId + '/mon-hoc/huong-dan/' + this.state.subjectId}>
+                        <div className={'widget-small coloured-icon info'} style={{backgroundColor: '#17a2b8'}}>
+                            <i className='icon fa fa-3x fa-book' style={{borderRight:'1px solid white'}}/>
                             <div className='info'>
-                                <h4>Thông tin môn học</h4>
+                                <h4 style={{color: 'white'}}>Hướng dẫn học lý thuyết</h4>
+                            </div>
+                        </div>
+                    </Link>
+                    <Link className='col-md-6' to={'/user/hoc-vien/khoa-hoc/' + this.state.courseId + '/mon-hoc/thong-tin/' + this.state.subjectId}>
+                        <div className={'widget-small coloured-icon info'} style={{backgroundColor: '#17a2b8'}}>
+                            <i className='icon fa fa-3x fa-info' style={{borderRight:'1px solid white'}}/>
+                            <div className='info'>
+                                <h4 style={{color: 'white'}}>Thông tin môn học</h4>
                             </div>
                         </div>
                     </Link>
@@ -139,7 +233,9 @@ class AdminEditPage extends AdminPage {
                                 {
                                     finishedLesson < index ? content :
                                         <Link to={'/user/hoc-vien/khoa-hoc/' + this.state.courseId + '/mon-hoc/' + this.state.subjectId + '/bai-hoc/' + lesson._id}>
-                                            {content}
+                                            {/* {content} */}
+                                            {monThucHanh ? this.renderContentBaiHocThucHanh(lesson,tienDoHocTap,finishedLesson,index)
+                                            :this.renderContentBaiHocLyThuyet(lesson,tienDoHocTap,finishedLesson,index)}
                                         </Link>
                                 }
                             </div>);
@@ -161,7 +257,7 @@ class AdminEditPage extends AdminPage {
                                 <h4 style={{ width: '100%' }}>Thi hết môn</h4>
                                 <Link className='col-md-6' to={'/user/hoc-vien/khoa-hoc/' + this.state.courseId + '/mon-hoc/thi-het-mon/' + this.state.subjectId}>
                                     <div className={'widget-small coloured-icon danger'} >
-                                        <i className='icon fa fa-3x fa-pencil-square-o' />
+                                        <i className='icon fa fa-3x fa-pencil-square-o' style={{backgroundColor:'#3e24aa'}} />
                                         <div className='info'>
                                             <h4>Thi hết môn</h4>
                                             {tienDoThiHetMon ? <p>Điểm: {diemThiHetMon + ' (' + ((diemThiHetMon >= 5) ? 'Đạt) ' : 'Không đạt) ')}</p> : null}

@@ -7,8 +7,12 @@ import axios from 'axios';
 import { getCourseFeeByStudent, updateCourseFeeByStudent } from 'modules/_default/fwCourseFee/redux';
 import { updateTimeTableByAccountant } from 'modules/mdDaoTao/fwRegisterCalendar/redux';
 import { Link } from 'react-router-dom';
+import { getNotificationTemplateAll } from 'modules/mdTruyenThong/fwNotificationTemplate/redux';
 import { AdminPage, FormSelect, FormTextBox, renderTable, TableCell, FormCheckbox, AdminModal } from 'view/component/AdminPage';
 
+const defaultTitleThanhToan = 'Thông báo thanh toán học phí thành công!',
+defaultAbstractThanhToan = 'Bạn đã thanh toán thành công gói {khoa}',
+defaultContentThanhToan = '<p>Bạn đã thanh toán thành công gói {khoa}<p>\n <p>Số tiền thanh toán: {fee} đồng<p> \n <p>Số tiền còn lại phải đóng: {hocPhiConLai} đồng<p>';
 class PaymentInfoModal extends AdminModal {
     state = { copied: false };
     componentDidMount() {
@@ -38,12 +42,22 @@ class PaymentInfoModal extends AdminModal {
         buttons:
             <a className='btn btn-warning' href='#' onClick={e => {
                 e.preventDefault();
-                let { studentId } = this.props;
+                let { studentId, name, courseFeeName, fee } = this.props;
+                const {title, content, abstract } = this.props.notiData || { title: '', content: '', abstract: '' };
+                let newAbstract = '',
+                    newContent = '';
+                newAbstract = abstract.replaceAll('{ho_ten}', name)
+                    .replaceAll('{fee}', T.numberDisplay(fee))
+                    .replaceAll('{khoa}', courseFeeName);
+                newContent = content.replaceAll('{ho_ten}', name)
+                    .replaceAll('{fee}', T.numberDisplay(fee))
+                    .replaceAll('{khoa}', courseFeeName)
+                    .replaceAll('{hocPhiConLai}', this.props.hocPhiConLai && T.numberDisplay(this.props.hocPhiConLai)); 
                 this.props.addStudentPayment(studentId, {fee: this.props.fee, user: this.props.userId}, this.props.hocPhi, this.props.hocPhiConLai, () => {
                     const data = {
-                        title: 'Thông báo thanh toán gói học phí thành công!',
-                        abstract: 'Bạn đã thanh toán thành công gói học phí khoá ' + this.props.courseFeeName,
-                        content: '<p>Bạn đã thanh toán thành công gói ' + this.props.courseFeeName +'<p>\n <p>Số tiền thanh toán: ' + T.numberDisplay(this.props.fee) + ' đồng<p> \n <p>Số tiền còn lại phải đóng: ' + T.numberDisplay(parseInt(this.props.hocPhiConLai ? this.props.hocPhiConLai : 0) - parseInt(this.props.fee ? this.props.fee : 0)) + ' đồng<p>',
+                        title: title,
+                        abstract: newAbstract,
+                        content: newContent,
                         type: '0',
                         user: this.state.userId,
                         sentDate: new Date(),
@@ -346,6 +360,30 @@ class ThanhToanTrucTiepPage extends AdminPage {
                 }
                 this.filter.value(0);   
             });
+            this.props.getNotificationTemplateAll({}, data => {
+                if (data && data.length) {
+                    const indexHoanTien = data.findIndex(template => template.state == 'thanhToan');
+                    if (indexHoanTien != -1) {
+                        this.setState({ notiData: data[indexHoanTien] });
+                    } else {
+                        this.setState({
+                            notiData: {
+                                title: defaultTitleThanhToan,
+                                abstract: defaultAbstractThanhToan,
+                                content: defaultContentThanhToan
+                            }
+                        });
+                    }
+                } else {
+                    this.setState({
+                        notiData: {
+                            title: defaultTitleThanhToan,
+                            abstract: defaultAbstractThanhToan,
+                            content: defaultContentThanhToan
+                        }
+                    });
+                }
+            });
         });
     }
 
@@ -595,7 +633,7 @@ class ThanhToanTrucTiepPage extends AdminPage {
                 </div>
                 {showOfficial ? official : null}
                 {showExtra ? extra : null}
-                <PaymentInfoModal fee={this.state.soTienDong} getUserChatToken={this.props.getUserChatToken}  student={this.state.data} hocPhi={hocPhi} create={this.props.createNotification} hocPhiConLai={hocPhiConLai} name={name} userId={userId} courseFeeName={student && student.courseFee ? student.courseFee.name : ''} accounts={this.state.accounts} readOnly={true} addStudentPayment={this.props.addStudentPayment} studentId={studentId} ref={e => this.modal = e} />
+                <PaymentInfoModal fee={this.state.soTienDong} getUserChatToken={this.props.getUserChatToken}  student={this.state.data} hocPhi={hocPhi} create={this.props.createNotification} hocPhiConLai={hocPhiConLai} name={name} userId={userId} courseFeeName={student && student.courseFee ? student.courseFee.name : ''} accounts={this.state.accounts} readOnly={true} addStudentPayment={this.props.addStudentPayment} studentId={studentId} notiData={this.state.notiData} ref={e => this.modal = e} />
                 <CartModal fee={soTienThanhToan} showPayment={this.paymentExtraModal && this.paymentExtraModal.show} updateState={this.updateState} listWaiting={this.state.listWaiting} count={count} student={this.state.data}  lock={lock} readOnly={true} updateStudent={this.props.updateStudent} updateCourseFeeByStudent={this.props.updateCourseFeeByStudent} cart={cart} transactionId={transactionId} studentId={studentId} ref={e => this.cartModal = e} />
                 <CancelPaymentModal  readOnly={true}  updateStudent={this.props.updateStudent} cart={cart} transactionId={transactionId} studentId={studentId} ref={e => this.cancelModal = e} />
                 <PaymentExtraInfoModal readOnly={true} cart={cart} getUserChatToken={this.props.getUserChatToken} updateTimeTableByAccountant={this.props.updateTimeTableByAccountant} create={this.props.createNotification} student={this.state.data} addStudentPaymentExtra={this.props.addStudentPaymentExtra} studentId={studentId} ref={e => this.paymentExtraModal = e} />
@@ -606,5 +644,5 @@ class ThanhToanTrucTiepPage extends AdminPage {
 }
 
 const mapStateToProps = state => ({ system: state.system, student: state.trainning.student, courseFee: state.accountant.courseFee });
-const mapActionsToProps = { getStudent, addStudentPayment, getCourseFeeByStudent, updateStudent, addStudentPaymentExtra, createNotification, updateTimeTableByAccountant, updateCourseFeeByStudent, getUserChatToken, getAllUserChatToken };
+const mapActionsToProps = { getStudent, addStudentPayment, getCourseFeeByStudent, updateStudent, addStudentPaymentExtra, createNotification, updateTimeTableByAccountant, updateCourseFeeByStudent, getUserChatToken, getAllUserChatToken, getNotificationTemplateAll };
 export default connect(mapStateToProps, mapActionsToProps)(ThanhToanTrucTiepPage);

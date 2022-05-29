@@ -394,6 +394,7 @@ module.exports = (app) => {
         app.createFolder(
             app.path.join(app.publicPath, 'document', '/huongDan')
         );
+        console.log(type);
         app.deleteFile(app.path.join(app.publicPath, 'document', '/huongDan','/' + type +'.pdf'));
         app.fs.rename(documentSrc, app.path.join(app.publicPath, 'document', '/huongDan','/' + type +'.pdf'), (error) => {
             res.send({ error });

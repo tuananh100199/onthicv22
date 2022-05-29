@@ -87,16 +87,16 @@ class LecturerStudentPage extends AdminPage {
         } return 100;
     }
 
-    renderSubject = (student, subjects, i) => {
+    renderSubject = (student, subjects, i, showMonLyThuyet) => {
         if(subjects && subjects[i]) 
-        return (<PageIcon to={'/user/hoc-vien/khoa-hoc/' + this.state.courseId + '/mon-hoc/' + subjects[i]._id} icon='fa-book' className={'col-md-4 mon' + i} subtitle={
+        return (<PageIcon to={showMonLyThuyet ? '/user/hoc-vien/khoa-hoc/' + this.state.courseId + '/mon-hoc/' + subjects[i]._id : '#'} icon='fa-book' className={'col-md-4 mon' + i} subtitle={
             <>
                  <div className='progress'>
                     <div className={'progress-bar progress-bar-striped progress-bar-animated ' + (this.checkTienDoHocTap(student, subjects[i]) == 100 ? 'bg-success' : '')} role='progressbar' style={{width: this.checkTienDoHocTap(student,subjects[i]) + '%'}} aria-valuenow={this.checkTienDoHocTap(student,subjects[i])} aria-valuemin='0' aria-valuemax='100'></div>
                 </div>
                 <p>{this.checkTienDoHocTap(student, subjects[i]) < 100 ? null : (this.checkMonLyThuyet(student, subjects[i]) ? 'Thi hết môn: Đạt' : 'Thi hết môn: Chưa đạt')}</p>
             </>
-      } iconBackgroundColor='#17a2b8' text={subjects[i].title && subjects[i].title.startsWith('Đạo đức') ? 'Đạo đức lái xe' : subjects[i].title}/>);
+      } iconBackgroundColor={showMonLyThuyet ? '#17a2b8' : 'gray'} text={subjects[i].title && subjects[i].title.startsWith('Đạo đức') ? 'Đạo đức lái xe' : subjects[i].title}/>);
       else return null;
     }
 
@@ -143,7 +143,7 @@ class LecturerStudentPage extends AdminPage {
         (monLyThuyet || []).forEach((subject, index) => {
             subjectColumns.push(<th key={index} style={{ width: 'auto', textAlign: 'center' }}  >{subject.title}</th>);
         });
-        console.log({monThucHanh});
+        const showMonLyThuyet = parseInt(hocPhiDaDong)/parseInt(hocPhi) > 0.5;
         const pageIcon = 
         student ? 
         <>
@@ -154,10 +154,10 @@ class LecturerStudentPage extends AdminPage {
                         {this.renderHoSo(student)}
                     </p>
                 } iconBackgroundColor={(student.isDon && student.isHinh && student.isIdentityCard && student.isGiayKhamSucKhoe && student.isBangLaiA1) ? '#8A0' : 'gray'} text={'Hồ sơ học viên'} />
-                {this.renderSubject(student, monLyThuyet, 0)}
+                {this.renderSubject(student, monLyThuyet, 0, showMonLyThuyet)}
             </div>
             <div className='row justify-content-end'>
-                {this.renderSubject(student, monLyThuyet, 1)}
+                {this.renderSubject(student, monLyThuyet, 1, showMonLyThuyet)}
             </div>
             <div className='row'>
                 <PageIcon to={'/user/hoc-vien/khoa-hoc/' + this.state.courseId + '/cong-no'} className='col-md-4 hocphi' icon='fa-money' subtitle={
@@ -178,13 +178,13 @@ class LecturerStudentPage extends AdminPage {
                    </div>
                    </> 
               } iconBackgroundColor={hocPhi ? (parseInt(hocPhiDaDong)/parseInt(hocPhi) < 0.5 ? 'gray' : '#dc143c') : '#dc143c'} text={'Lý thuyết'} />
-              {this.renderSubject(student, monLyThuyet, 2)}
+              {this.renderSubject(student, monLyThuyet, 2, showMonLyThuyet)}
             </div>
             <div className='row justify-content-end'>
-                {this.renderSubject(student, monLyThuyet, 3)}
+                {this.renderSubject(student, monLyThuyet, 3, showMonLyThuyet)}
             </div>
             <div className='row justify-content-end'>
-                {this.renderSubject(student, monLyThuyet, 4)}
+                {this.renderSubject(student, monLyThuyet, 4, showMonLyThuyet)}
             </div>
             <div className='row justify-content-start'>
                 <PageIcon icon='fa-car' to={'#'} className='col-md-4' subtitle={
@@ -219,17 +219,6 @@ class LecturerStudentPage extends AdminPage {
                 } iconBackgroundColor='#1488db' text={'Nhận GPLX'} />
             </div>
         </div>
-        {/* <div className='test1'>a</div>
-        <div className='test2'>b</div>
-        <ConnectElements
-                selector='.line'
-                elements={[
-                    { from: '.test1', to: '.test2' },
-                    { from: '.lythuyet', to: '.mon0' },
-                ]}
-                color={'red'}
-                overlay={999999}
-            /> */}
         </>
          : null;
 
