@@ -124,6 +124,7 @@ module.exports = (app) => {
                 changes[key + '.score'] = '';
                 changes[key + '.trueAnswers'] = '';
                 changes[key + '.answers'] = '';
+                changes[key + '.diemTB'] = '';
                 app.model.student.resetLesson({ _id: students[0]._id }, changes, (error, item) => {
                     res.send({ error, item });
                 });

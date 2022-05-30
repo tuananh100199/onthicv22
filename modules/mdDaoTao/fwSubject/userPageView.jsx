@@ -53,7 +53,7 @@ class AdminEditPage extends AdminPage {
     renderContentBaiHocLyThuyet = (lesson,tienDoHocTap,finishedLesson,index)=>{
         const getBackgroundColor = ()=>{
             if(finishedLesson==index){
-                if(tienDoHocTap && tienDoHocTap[lesson._id] && tienDoHocTap[lesson._id].answers){
+                if(tienDoHocTap && tienDoHocTap[lesson._id] && tienDoHocTap[lesson._id].answers && tienDoHocTap[lesson._id].answers.length){
                     const state =tienDoHocTap[lesson._id].diemTB && tienDoHocTap[lesson._id].diemTB >= 0.5 ? 'pass' : 'fail';
                     return stateMapper[state].color;
                 }else{
@@ -166,8 +166,8 @@ class AdminEditPage extends AdminPage {
                     <h4 style={{ width: '100%' }}>Thông tin chung</h4>
                     {/* <PageIcon style={{backgroundColor: '#17a2b8'}} to={'/user/hoc-vien/khoa-hoc/' + this.state.courseId + '/mon-hoc/huong-dan/' + this.state.subjectId} icon='fa-book' iconBackgroundColor='#CD5C5C' text='Hướng dẫn học lý thuyết' /> */}
                     <Link className='col-md-6' to={'/user/hoc-vien/khoa-hoc/' + this.state.courseId + '/mon-hoc/huong-dan/' + this.state.subjectId}>
-                        <div className={'widget-small coloured-icon info'} style={{backgroundColor: '#17a2b8'}}>
-                            <i className='icon fa fa-3x fa-book' style={{borderRight:'1px solid white'}}/>
+                        <div className={'widget-small coloured-icon info'} style={{backgroundColor: '#cd5c5c'}}>
+                            <i className='icon fa fa-3x fa-book' style={{borderRight:'1px solid white',backgroundColor: '#cd5c5c'}}/>
                             <div className='info'>
                                 <h4 style={{color: 'white'}}>Hướng dẫn học lý thuyết</h4>
                             </div>
