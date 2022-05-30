@@ -2,7 +2,7 @@ module.exports = (app) => {
     const menu = {
         parentMenu: app.parentMenu.trainning,
         menus: {
-            4057: { title: 'Danh mục kỳ sát hạch', link: '/user/license-test', icon: 'fa-bars', backgroundColor: '#00b0ff' },
+            4065: { title: 'Danh mục kỳ sát hạch', link: '/user/license-test', icon: 'fa-bars', backgroundColor: '#00b0ff' },
         },
     };
 

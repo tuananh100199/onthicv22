@@ -266,6 +266,16 @@ class AdminEditPage extends AdminPage {
                                         </div>
                                     </div>
                                 </Link>
+                                <h4 style={{ width: '100%' }}>Lớp ôn tập</h4>
+                                <Link className='col-md-6' to={'/user/hoc-vien/khoa-hoc/' + this.state.courseId + '/mon-hoc/thi-het-mon/' + this.state.subjectId}>
+                                    <div className={'widget-small coloured-icon danger'} >
+                                        <i className='icon fa fa-3x fa-pencil-square-o' />
+                                        <div className='info'>
+                                            <h4>Thi hết môn</h4>
+                                            {tienDoThiHetMon ? <p>Điểm: {diemThiHetMon + ' (' + ((diemThiHetMon >= 5) ? 'Đạt) ' : 'Không đạt) ')}</p> : null}
+                                        </div>
+                                    </div>
+                                </Link>
                             </>}
                         </> :
                         !monThucHanh && <>
