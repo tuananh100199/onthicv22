@@ -45,6 +45,7 @@ class UserDocumentPage extends AdminPage {
     // };
 
     render() {
+        const {mobile} = this.props.system;
         const { courseId, name} = this.state;
         const userPageLink = '/user/hoc-vien/khoa-hoc/' + courseId;
         // const options = {
@@ -59,7 +60,7 @@ class UserDocumentPage extends AdminPage {
             content: (
                 <>
                     <div className='tile'>
-                        <iframe src="/document/huongDan/hocVien.pdf" width='100%' height='550'></iframe>
+                        <iframe src="/document/huongDan/hocVien.pdf" width='100%' height='500'></iframe>
                         {/* <div className='document-container'>
                             <Document file={'/document/huongDan/hocVien.pdf'} onLoadError={this.onDocumentLoadError} onLoadSuccess={this.onDocumentLoadSuccess} options={options}>
                                 {Array.from(new Array(numPages), (el, index) => (
@@ -67,6 +68,8 @@ class UserDocumentPage extends AdminPage {
                                 ))}
                             </Document>
                         </div> */}
+
+                        <h5 className='text-right mt-2'>Nếu tồn tại thắc mắc, xin vui lòng liên hệ tới số <a href={'tel:' + mobile} className='text-primary'>{T.mobileDisplay(mobile)}</a></h5>     
                     </div>
                 </>
             ),
