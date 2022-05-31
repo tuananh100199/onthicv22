@@ -50,6 +50,7 @@
 	6020 - Bộ đề thi thử (/user/hoc-vien/khoa-hoc/bo-de-thi-thu)
 7000. Kế toán (undefined)
 	2030 - Ngân hàng (/user/bank)
+	6999 - Hướng dẫn (/user/accountant-tutorial)
 	7001 - Thu công nợ (/user/payment)
 	7002 - Gói học phí (/user/course-fee)
 	7003 - Loại gói học phí (/user/fee-type)

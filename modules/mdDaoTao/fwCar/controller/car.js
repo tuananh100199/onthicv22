@@ -8,6 +8,7 @@ module.exports = app => {
     app.permission.add({ name: 'car:read', menu }, { name: 'car:write' }, { name: 'car:delete' }, { name: 'car:import' }, { name: 'car:export' }, { name: 'car:fuel' }, { name: 'car:repair' }, { name: 'car:practice' }, { name: 'car:registration' }, { name: 'car:insurance' });
 
     app.get('/user/car', app.permission.check('car:read'), app.templates.admin);
+    app.get('/user/car-tutorial', app.permission.check('car:read'), app.templates.admin);
     app.get('/user/car/manager', app.permission.check('car:read'), app.templates.admin);
     app.get('/user/car/fuel', app.permission.check('car:read'), app.templates.admin);
     app.get('/user/car/category', app.permission.check('car:read'), app.templates.admin);

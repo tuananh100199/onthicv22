@@ -14,6 +14,10 @@ export default {
             component: Loadable({ loading: Loading, loader: () => import('./adminPage') })
         },
         {
+            path: '/user/car-tutorial',
+            component: Loadable({ loading: Loading, loader: () => import('./carDocumentPage') })
+        },
+        {
             path: '/user/car/manager',
             component: Loadable({ loading: Loading, loader: () => import('./pages/adminInfoPage') })
         },
