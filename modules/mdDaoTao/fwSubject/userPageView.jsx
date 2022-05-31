@@ -53,7 +53,8 @@ class AdminEditPage extends AdminPage {
     renderContentBaiHocLyThuyet = (lesson,tienDoHocTap,finishedLesson,index)=>{
         const getBackgroundColor = ()=>{
             if(finishedLesson==index){
-                if(tienDoHocTap && tienDoHocTap[lesson._id] && tienDoHocTap[lesson._id].answers && tienDoHocTap[lesson._id].answers.length){
+                console.log('finishLesson');
+                if(tienDoHocTap && tienDoHocTap[lesson._id] && tienDoHocTap[lesson._id].answers){
                     const state =tienDoHocTap[lesson._id].diemTB && tienDoHocTap[lesson._id].diemTB >= 0.5 ? 'pass' : 'fail';
                     return stateMapper[state].color;
                 }else{
@@ -81,8 +82,8 @@ class AdminEditPage extends AdminPage {
                             </p>
                         </div>
                         //
-                        :(tienDoHocTap && tienDoHocTap[lesson._id] && tienDoHocTap[lesson._id].view && tienDoHocTap[lesson._id].score?<p>Đã hoàn thành</p>
-                        : ((lesson.questions.length) ? <p>Chưa hoàn thành</p> : <p>Đã hoàn thành</p>
+                        :(tienDoHocTap && tienDoHocTap[lesson._id] && tienDoHocTap[lesson._id].score?<p>Đã hoàn thành</p>
+                        : (tienDoHocTap && tienDoHocTap[lesson._id] && tienDoHocTap[lesson._id].view && !(lesson.questions.length) ? <p>Đã hoàn thành</p> : <p>Chưa hoàn thành</p>
                             ))}
                 </div>
             </div>
