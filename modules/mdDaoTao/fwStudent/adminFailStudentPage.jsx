@@ -294,7 +294,7 @@ class FailStudentPage extends AdminPage {
     }
 
     render() {
-        const permission = this.getUserPermission('student', ['read', 'write']);
+        const permission = this.getUserPermission('student', ['read', 'write', 'import']);
         let { pageNumber, pageSize, pageTotal, pageCondition, totalItem, list } = this.props.student && this.props.student.page ?
             this.props.student.page : { pageNumber: 1, pageSize: 50, pageTotal: 1, pageCondition: {}, totalItem: 0, list: [] };
         const table = renderTable({
@@ -344,7 +344,7 @@ class FailStudentPage extends AdminPage {
                     </div>
                 </div>
 
-                <CirclePageButton type='custom' customIcon='fa-cloud-upload' style={{ right: 70 }} customClassName='btn-primary' onClick={() => this.props.history.push('/user/student/import-fail-pass')} />
+                {permission.import ? <CirclePageButton type='custom' customIcon='fa-cloud-upload' style={{ right: 70 }} customClassName='btn-primary' onClick={() => this.props.history.push('/user/student/import-fail-pass')} /> : null}
                 <CirclePageButton type='export' onClick={() => exportExamStudent(this.state.courseId, 'HVChuaDatSatHach')} />
                 {this.course && (this.course.value() != '0') ? <CirclePageButton type='custom' customClassName='btn-warning' customIcon='fa-paper-plane' style={{ right: '130px' }} onClick={(e) => this.sendNotificationCourse(e, this.course.value())} /> : null}
                 {/* {this.course && (this.course.value() != '0') ? <CirclePageButton type='custom' customClassName='btn-info' customIcon='fa-users' style={{ right: '190px' }} onClick={() => this.exportPhuLuc11B(this.course.value())} /> : null} */}

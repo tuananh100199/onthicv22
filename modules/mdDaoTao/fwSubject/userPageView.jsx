@@ -214,7 +214,8 @@ class AdminEditPage extends AdminPage {
                                 return <p>Chưa hoàn thành</p>;
                             }
                         };
-                        const content = (<div className='widget-small coloured-icon info'>
+                        const content = (
+                        <div className='widget-small coloured-icon info'>
                             <i className='icon fa fa-3x fa fa-briefcase' style={{ backgroundColor: getBackgroundColor() }} />
                             <div className='info'>
                                 <h4>{lesson && lesson.title}</h4>
@@ -261,6 +262,14 @@ class AdminEditPage extends AdminPage {
                                         <div className='info'>
                                             <h4>Thi hết môn</h4>
                                             {tienDoThiHetMon ? <p>Điểm: {diemThiHetMon + ' (' + ((diemThiHetMon >= 5) ? 'Đạt) ' : 'Không đạt) ')}</p> : null}
+                                        </div>
+                                    </div>
+                                </Link>
+                                <Link className='col-md-6' to={'/user/hoc-vien/khoa-hoc/' + this.state.courseId + '/mon-hoc/lop-on-tap/' + this.state.subjectId}>
+                                    <div className={'widget-small coloured-icon danger'} >
+                                        <i className='icon fa fa-3x fa-pencil-square-o' />
+                                        <div className='info'>
+                                            <h4>Lớp ôn tập</h4>
                                         </div>
                                     </div>
                                 </Link>
