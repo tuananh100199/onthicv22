@@ -14,6 +14,10 @@ export default {
             component: Loadable({ loading: Loading, loader: () => import('./adminRevenuePage') }),
         },
         {
+            path: '/user/accountant-tutorial',
+            component: Loadable({ loading: Loading, loader: () => import('./accountantDocumentPage') }),
+        },
+        {
             path: '/user/revenue/info',
             component: Loadable({ loading: Loading, loader: () => import('./adminPage') }),
         },
