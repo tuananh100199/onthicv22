@@ -711,7 +711,7 @@ module.exports = (app) => {
                 else{
                     const defaultIds = defaultCourses.map(item=>item._id.toString());
                     pageCondition.course={};
-                    pageCondition.course={['$in']:defaultIds};
+                    pageCondition.course={['$in']:[...defaultIds,null]};
                     if (req.session.user.isCourseAdmin && req.session.user.division && req.session.user.division.isOutside) { // Session user là quản trị viên khóa học
                         pageCondition.division = req.session.user.division._id;
                     }
