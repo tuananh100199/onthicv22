@@ -81,7 +81,7 @@ class AdminEditPage extends AdminPage {
                             </p>
                         </div>
                         //
-                        :(tienDoHocTap && tienDoHocTap[lesson._id] && tienDoHocTap[lesson._id].score?<p>Đã hoàn thành</p>
+                        :(tienDoHocTap && tienDoHocTap[lesson._id] && tienDoHocTap[lesson._id].view && tienDoHocTap[lesson._id].score?<p>Đã hoàn thành</p>
                         : ((lesson.questions.length) ? <p>Chưa hoàn thành</p> : <p>Đã hoàn thành</p>
                             ))}
                 </div>
