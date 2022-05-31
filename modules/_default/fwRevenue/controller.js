@@ -2,6 +2,7 @@ module.exports = app => {
     const menu = {
         parentMenu: app.parentMenu.accountant,
         menus: {
+            6999: { title: 'Hướng dẫn', link: '/user/accountant-tutorial' },
             7008: { title: 'Quản lý doanh thu', link: '/user/revenue' },
         }
     };
@@ -10,6 +11,7 @@ module.exports = app => {
     app.get('/user/revenue/info', app.permission.check('revenue:read'), app.templates.admin);
     app.get('/user/revenue/debt', app.permission.check('revenue:read'), app.templates.admin);
     app.get('/user/revenue/tracking', app.permission.check('revenue:read'), app.templates.admin);
+    app.get('/user/accountant-tutorial', app.permission.check('revenue:read'), app.templates.admin);
 
     // APIs -----------------------------------------------------------------------------------------------------------------------------------------
     app.get('/api/revenue/page/:pageNumber/:pageSize', app.permission.check('revenue:read'), (req, res) => {
