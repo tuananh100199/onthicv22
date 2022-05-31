@@ -21,16 +21,16 @@ export default function reviewClassReducer(state = {}, data) {
 
 // Actions ------------------------------------------------------------------------------------------------------------
 T.initCookiePage('pageReviewClass');
-export function getReviewClassPage(pageNumber, pageSize, done) {
+export function getReviewClassPage(pageNumber, pageSize, pageCondition, done) {
     const page = T.updatePage('pageReviewClass', pageNumber, pageSize);
     return (dispatch) => {
         const url = `/api/review-class/page/${page.pageNumber}/${page.pageSize}`;
-        T.get(url, data => {
+        T.get(url,{ pageCondition }, data => {
             if (data.error) {
                 T.notify('Lấy danh sách lớp ôn tập  bị lỗi!', 'danger');
                 console.error('GET: ' + url + '.', data.error);
             } else {
-                done && done(data.page.pageNumber, data.page.pageSize, data.page.pageTotal, data.page.totalItem);
+                done && done(data.page);
                 dispatch({ type: ReviewClassGetPage, page: data.page });
             }
         }, error => console.error(error) || T.notify('Lấy danh sách lớp ôn tập  bị lỗi!', 'danger'));
@@ -96,6 +96,41 @@ export function updateReviewClass(_id, changes, done) {
         }, error => console.error(error) || T.notify('Cập nhật lớp ôn tập  bị lỗi!', 'danger'));
     };
 }
+
+export function addStudentReviewClass(_id, student, done) {
+    return dispatch => {
+        const url = '/api/review-class/student';
+        T.put(url, { _id, student }, data => {
+            if (data.error) {
+                T.notify('Cập nhật thông tin lớp ôn tập  bị lỗi!', 'danger');
+                console.error('PUT: ' + url + '.', data.error);
+                done && done(data.error);
+            } else {
+                dispatch({ type: ReviewClassGetItem, item: data.item });
+                dispatch(getReviewClassPage());
+                T.notify('Cập nhật lớp ôn tập  thành công!', 'success');
+                done && done();
+            }
+        }, error => console.error(error) || T.notify('Cập nhật lớp ôn tập  bị lỗi!', 'danger'));
+    };
+}
+
+export function deleteStudentReviewClass(_id, _studentId, done) {
+    return dispatch => {
+        const url = '/api/review-class/student';
+        T.delete(url, { _id, _studentId }, data => {
+            if (data.error) {
+                T.notify('Xóa học viên bị lỗi!', 'danger');
+                console.error('DELETE: ' + url + '.', data.error);
+            } else {
+                dispatch({ type: ReviewClassGetItem, item: data.item});
+                done && done();
+            }
+        }, error => console.error('POST: ' + url + '.', error));
+    };
+}
+
+
 
 export function updateReviewClassDefault(diploma, done) {
     return dispatch => {

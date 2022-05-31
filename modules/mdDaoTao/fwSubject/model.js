@@ -55,7 +55,14 @@ module.exports = app => {
                 condition = {};
             }
             if (typeof condition == 'string') condition = { _id: condition };
-            model.findOne(condition).populate('lessons').populate('questions').exec(done);
+            model.findOne(condition)
+            .populate({
+                path: 'lessons', populate:[
+                    { path: 'videos', select: '-image' },
+                    { path: 'questions', select: '-image' }
+                ] 
+            })
+            .populate('questions').exec(done);
         },
 
         update: (_id, changes, done) => model.findOneAndUpdate({ _id }, changes, { new: true }, done).populate('questions'), // changes = { $set, $unset, $push, $pull }

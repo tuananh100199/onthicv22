@@ -17,5 +17,9 @@ export default {
             path: '/user/review-class/:_id',
             component: Loadable({ loading: Loading, loader: () => import('./adminEditPage') }),
         },
+        {
+            path: '/user/hoc-vien/khoa-hoc/:courseId/mon-hoc/lop-on-tap/:_id',
+            component: Loadable({ loading: Loading, loader: () => import('./userPageView') }),
+        },
     ]
 };

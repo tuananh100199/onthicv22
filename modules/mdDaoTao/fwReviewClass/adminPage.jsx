@@ -4,6 +4,8 @@ import { getReviewClassPage, createReviewClass, updateReviewClass, deleteReviewC
 import { AdminPage, AdminModal, FormTextBox, TableCell, renderTable, CirclePageButton, FormCheckbox , FormDatePicker, FormSelect} from 'view/component/AdminPage';
 import Pagination from 'view/component/Pagination';
 import {ajaxSelectTeacherByCourseType} from 'modules/_default/fwTeacher/redux';
+import {ajaxSelectCourseType} from 'modules/mdDaoTao/fwCourseType/redux';
+
 
 class ReviewClassModal extends AdminModal {
     componentDidMount() {
@@ -12,10 +14,13 @@ class ReviewClassModal extends AdminModal {
     }
 
     onShow = (item) => {
-        const { _id, title, active, dateStart } = item || { _id: null, title: '', active:true };
+        const { _id, title, active, dateStart, dateEnd, courseType, remainStudent } = item || { _id: null, title: '', active:true };
         this.itemTitle.value(title);
         this.itemActive.value(active);
         this.itemDateStart.value(dateStart);
+        this.itemDateEnd.value(dateEnd);
+        this.itemRemainStudent.value(remainStudent);
+        this.itemCourseType.value(courseType?{id:courseType._id,text:courseType.title}:null);
         // this.itemTeacher.value(teacher);
         this.setState({ _id });
     }
@@ -27,7 +32,9 @@ class ReviewClassModal extends AdminModal {
             active: this.itemActive.value()?1:0,
             dateStart: this.itemDateStart.value(),
             dateEnd: this.itemDateEnd.value(),
-            teacher: teacher[0],
+            teacher: teacher[1],
+            courseType: this.itemCourseType.value(),
+            remainStudent: this.itemRemainStudent.value(),
         };
         if (data.title == '') {
             T.notify('Tên lớp bị trống!', 'danger');
@@ -40,9 +47,11 @@ class ReviewClassModal extends AdminModal {
         title: 'Lớp ôn tập',
         body: <>
             <FormTextBox ref={e => this.itemTitle = e} label='Tên lớp' />
-            <FormDatePicker ref={e => this.itemDateStart = e} label='Thời gian bắt đầu (dd/mm/yyyy)'  type='date-mask' />
-            <FormDatePicker ref={e => this.itemDateEnd = e} label='Thời gian kết thúc đăng ký (dd/mm/yyyy)'  type='date-mask' />
+            <FormTextBox ref={e => this.itemRemainStudent = e} label='Số học viên tối đa' />
+            <FormDatePicker ref={e => this.itemDateStart = e} label='Thời gian bắt đầu'  type='time' />
+            <FormDatePicker ref={e => this.itemDateEnd = e} label='Thời gian kết thúc đăng ký'  type='time' />
             <FormSelect ref={e => this.itemTeacher = e} label='Giáo viên' data={ajaxSelectTeacherByCourseType('',0)}  style={{ width: '100%' }} />
+            <FormSelect ref={e => this.itemCourseType = e} label='Khoá học' data={ajaxSelectCourseType}  style={{ width: '100%' }} />
             <FormCheckbox ref={e => this.itemActive = e} isSwitch={true} label='Kích hoạt' readOnly={this.props.readOnly} />
         </>
     });
@@ -72,6 +81,7 @@ class ReviewClassPage extends AdminPage {
                         <th style={{ width: 'auto', textAlign: 'center' }}>#</th>
                         <th style={{ width: '100%' }}>Tên</th>
                         <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Thời gian bắt đầu</th>
+                        <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Số học viên còn lại</th>
                         <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Kích hoạt</th>
                         <th style={{ width: 'auto' }} nowrap='true'>Thao tác</th>
                     </tr>),
@@ -79,7 +89,8 @@ class ReviewClassPage extends AdminPage {
                     <tr key={index}>
                         <TableCell type='number' content={(pageNumber - 1) * pageSize + index + 1} />
                         <TableCell type='link' content={item.title} url={'/user/review-class/' + item._id}/>
-                        <TableCell type='text' content={item.dateStart ? T.dateToText(item.dateStart, 'dd/mm/yyyy') : ''} permission={permission}  />
+                        <TableCell type='text' style={{ width: 'auto', textAlign: 'center' }} content={item.dateStart ? T.dateToText(item.dateStart, 'dd/mm/yyyy') : ''} permission={permission}  />
+                        <TableCell type='text' style={{ width: 'auto', textAlign: 'center' }} content={item.remainStudent} permission={permission}  />
                         <TableCell type='checkbox' content={item.active} permission={permission} onChanged={active => this.props.updateReviewClass(item._id, {active})} />
                         <TableCell type='buttons' content={item} permission={permission} onEdit={this.edit} onDelete={this.delete} />
                     </tr>),

@@ -12,7 +12,8 @@ module.exports = (app) => {
 
     app.get('/user/review-class', app.permission.check('reviewClass:read'), app.templates.admin);
     app.get('/user/review-class/:_id', app.permission.check('reviewClass:read'), app.templates.admin);
-
+    app.get('/user/hoc-vien/khoa-hoc/:courseId/mon-hoc/lop-on-tap/:_id', app.permission.check('user:login'), app.templates.admin);
+    
 
     // APIs ------------------------------------------------------------------------------------------------------------
     app.get('/api/review-class/page/:pageNumber/:pageSize', (req, res) => {
@@ -40,6 +41,39 @@ module.exports = (app) => {
         const { _id, changes } = req.body;
         app.model.reviewClass.update(_id, changes, (error, item) => res.send({ error, item }));
 
+    });
+
+    app.put('/api/review-class/student', app.permission.check('user:login'), (req, res) => {
+        const { _id, student } = req.body;
+        app.model.reviewClass.get(_id, (error, item) => {
+            if(error) res.send({error});
+            else{
+                const remainStudent = item.remainStudent;
+                app.model.reviewClass.update(_id, {remainStudent: remainStudent - 1}, () => {
+                    app.model.reviewClass.addStudent(_id, student, (error, item) => res.send({ error, item }));
+                });
+            }
+        });
+    });
+
+    app.delete('/api/review-class/student', app.permission.check('reviewClass:write'), (req, res) => {
+        const { _id, _studentId } = req.body;
+        app.model.reviewClass.get(_id, (error, item) => {
+            if(error) res.send({error});
+            else{
+                const remainStudent = item.remainStudent;
+                app.model.reviewClass.update(_id, {remainStudent: remainStudent + 1}, () => {
+                    app.model.reviewClass.deleteLesson(_id, _studentId, (error) => {
+                        if (error) {
+                            res.send({ error });
+                        } else {
+                            app.model.reviewClass.get(_id, (error, item) => res.send({ error, item }));
+                        }
+                    });
+                });
+            }
+        });
+        
     });
 
     app.delete('/api/review-class', app.permission.check('reviewClass:delete'), (req, res) => {

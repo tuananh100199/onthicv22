@@ -267,28 +267,8 @@ module.exports = (app) => {
                 done = $unset;
                 $unset = {};
             }
-            if (changes && changes.course) {
-                app.model.course.get(changes.course, (error, item) => {
-                    if (error) {
-                        done(error);
-                    } else if (item) {
-                        changes.tienDoHocTap = {};
-                        changes.diemBoDeThi = {};
-                        item.subjects && item.subjects.forEach(subject => {
-                            const obj = {};
-                            obj[subject._id] = {};
-                            Object.assign(changes.tienDoHocTap, obj);
-                        });
-                        changes.modifiedDate = new Date();
-                        model.findOneAndUpdate({ _id }, { $set: changes, $unset }, { new: true }).populate('user', 'email phoneNumber').populate('division', 'id title').exec(done);
-                    } else {
-                        done();
-                    }
-                });
-            } else {
-                changes.modifiedDate = new Date();
-                model.findOneAndUpdate({ _id }, { $set: changes, $unset }, { new: true }).populate('user', 'email phoneNumber').populate('division', 'id title').populate('course', 'name').exec(done);
-            }
+            changes.modifiedDate = new Date();
+            model.findOneAndUpdate({ _id }, { $set: changes, $unset }, { new: true }).populate('user', 'email phoneNumber').populate('division', 'id title').populate('course', 'name').exec(done);
         },
 
         updateMany: (condition, changes, done) => {

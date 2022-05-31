@@ -200,6 +200,16 @@ export const ajaxSelectCourseType = {
     fetchOne: (_id, done) => getCourseType(_id, ({ item }) => done && done({ id: item._id, text: item.title }))
 };
 
+export const ajaxSelectCourseTypeHome = {
+    ajax: true,
+    url: '/api/course-type/all',
+    data: params => ({searchText: params.term}),
+    processResults: response => ({
+        results: response && response.list ? response.list.map(item => ({ id: item._id, text: `Hạng ${item.title}` })) : []
+    }),
+    fetchOne: (_id, done) => getCourseType(_id, ({ item }) => done && done({ id: item._id, text: `Hạng ${item.title}` }))
+};
+
 // export const ajaxSelectCourseType = T.createAjaxAdapter(
 //     '/api/course-type/all',
 //     response =>
