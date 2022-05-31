@@ -1,8 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { getSubjectByStudent } from './redux';
-import { Document, Page } from 'react-pdf/dist/esm/entry.webpack5';
-import 'react-pdf/dist/esm/Page/AnnotationLayer.css';
 import { Link } from 'react-router-dom';
 import { AdminPage } from 'view/component/AdminPage';
 import '../fwCourse/huongDan.css';
@@ -35,22 +33,9 @@ class UserDocumentPage extends AdminPage {
         }
     }
 
-    onDocumentLoadSuccess = ({ numPages: nextNumPages }) => {
-        this.setState({ numPages: nextNumPages});
-    };
-
-    // onDocumentLoadError = () => {
-    //     this.setState({ isLoadSuccess: false});
-    // };
-
     render() {
-        const {numPages} = this.state;
+        const {mobile} = this.props.system;
         const userPageLink = '/user/hoc-vien/khoa-hoc/' + this.state.courseId + '/mon-hoc/' + this.state.subjectId;
-        const options = {
-            cMapUrl: 'cmaps/',
-            cMapPacked: true,
-            standardFontDataUrl: 'standard_fonts/',
-          };
         return this.renderPage({
             icon: 'fa fa-cubes',
             title: 'Hướng dẫn môn học',
@@ -58,13 +43,8 @@ class UserDocumentPage extends AdminPage {
             content: (
                 <>
                     <div className='tile'>
-                        <div className='document-container'>
-                            <Document file={'/document/huongDan/hocVienLyThuyet.pdf'} onLoadError={this.onDocumentLoadError} onLoadSuccess={this.onDocumentLoadSuccess} options={options}>
-                                {Array.from(new Array(numPages), (el, index) => (
-                                <Page key={`page_${index + 1}`} pageNumber={index + 1} />
-                                ))}
-                            </Document>
-                        </div>
+                        <iframe src="/document/huongDan/hocVienLyThuyet.pdf" width='100%' height='500'></iframe>
+                        <h5 className='text-right mt-2'>Nếu tồn tại thắc mắc, xin vui lòng liên hệ tới số <a href={'tel:' + mobile} className='text-primary'>{T.mobileDisplay(mobile)}</a></h5>     
                     </div>
                 </>
             ),

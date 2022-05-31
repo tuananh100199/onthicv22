@@ -667,6 +667,9 @@ module.exports = (app) => {
                 reject('Không có môn học');
             }
         })).then(({student,course})=>{
+            const randomIntFromInterval=(min, max)=> { // random from min to max 
+                return Math.floor(Math.random() * (max - min + 1) + min);
+            };
             const subjects = course.subjects;
             let tienDoHocTap = student.tienDoHocTap || {};
             let tienDoHocTapNew = {};
@@ -675,7 +678,8 @@ module.exports = (app) => {
             subjects.forEach(subject=>{
                 tienDoHocTapNew[subject._id]={};
                 // nếu là môn lý thuyết thì sẽ có tiến độ thi hết môn.
-                if(!course.monThucHanh) tienDoThiHetMonNew[subject._id]={score:10,diemTB:1};
+                const randomDiemThiHetMon = randomIntFromInterval(5,10);
+                if(!course.monThucHanh) tienDoThiHetMonNew[subject._id]={score:randomDiemThiHetMon,diemTB:randomDiemThiHetMon/10};
                 const lessons = subject.lessons;
                 lessons.forEach(lesson=>{
                     tienDoHocTapNew[subject._id][lesson._id]={
@@ -684,7 +688,7 @@ module.exports = (app) => {
                         score:5,
                         state:'pass',
                         isPass:'true',
-                        totalSeconds : 3600,
+                        totalSeconds : randomIntFromInterval(2700,3600),
                     };
                 });
             });
