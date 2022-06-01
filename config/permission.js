@@ -213,7 +213,7 @@ module.exports = app => {
                 }
                 // Add login permission => user.active == true => user:login
                 if (user.active) app.permissionHooks.pushUserPermission(user, 'user:login');
-                if (!(user.isLecturer || user.isCourseAdmin)) app.permissionHooks.pushUserPermission(user, 'driverTest:view');
+                // if (!(user.isLecturer || user.isCourseAdmin)) app.permissionHooks.pushUserPermission(user, 'driverTest:view');
                 new Promise(resolve => { // User is CourseAdmin
                     if (user.isCourseAdmin) {
                         app.permissionHooks.pushUserPermission(user, 'courseAdmin:login');
@@ -235,6 +235,15 @@ module.exports = app => {
                     } else {
                         resolve();
                     }
+                })).then(() => new Promise(resolve => { // Check user is student
+                    app.model.student.get({user:user._id},(_,item)=>{
+                        if(item){
+                            app.permissionHooks.pushUserPermission(user, 'driverTest:view');
+                            resolve();
+                        }else{
+                            resolve();
+                        }
+                    });
                 }))
                     // .then(() => new Promise(resolve => { // Check và add course vào session user
                     //     app.model.student.getAll({ user: user._id }, (error, students) => {
