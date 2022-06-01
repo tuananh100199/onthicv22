@@ -7,6 +7,7 @@ module.exports = app => {
         birthday: Date,
         identityCard: String,
         planCourse: String,
+        plannedCourse:{ type: app.database.mongoDB.Schema.ObjectId, ref: 'planCourse' },
         user: { type: app.database.mongoDB.Schema.ObjectId, ref: 'User' },
         staff: { type: app.database.mongoDB.Schema.ObjectId, ref: 'User' },               // Nhân viên cập nhật dữ liệu
         state: { type: String, enum: ['MoiDangKy', 'DangLienHe', 'Huy', 'UngVien','UngVienTiemNang'], default: 'MoiDangKy' },
@@ -42,7 +43,7 @@ module.exports = app => {
                 result.pageNumber = pageNumber === -1 ? result.pageTotal : Math.min(pageNumber, result.pageTotal);
                 const skipNumber = (result.pageNumber > 0 ? result.pageNumber - 1 : 0) * result.pageSize;
                 model.find(condition).populate('courseType', 'title').populate('division', 'title').populate('user', 'firstname lastname').populate('staff', 'firstname lastname')
-                    .populate('courseFee', '_id name courseType').populate('discount', '_id name').populate('coursePayment', '_id title')
+                    .populate('courseFee', '_id name courseType').populate('discount', '_id name').populate('coursePayment', '_id title').populate('plannedCourse', '_id title')
                     .sort(sort||{lastname:1}).skip(skipNumber).limit(result.pageSize).exec((error, list) => {
                         result.list = list;
                         done(error, result);

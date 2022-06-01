@@ -65,6 +65,7 @@
 	8009 - Chỉ tiêu tuyển sinh (/user/enroll-target)
 	8010 - Đăng ký tư vấn (/user/candidate)
 	8011 - Ứng viên tiềm năng (/user/candidate-potential)
+	8019 - Khóa dự kiến (/user/plan-course)
 	8020 - Ứng viên (/user/pre-student)
 	8021 - Loại hồ sơ (/user/profile-type)
 	8025 - Hồ sơ đăng ký (/user/profile-student-type)
