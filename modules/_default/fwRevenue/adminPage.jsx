@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { getRevenuePage } from './redux';
+import { getRevenuePage, deleteRevenue } from './redux';
 import { Link } from 'react-router-dom';
 import { AdminPage,FormSelect, TableCell, renderTable } from 'view/component/AdminPage';
 import { ajaxSelectCourseByCourseType } from 'modules/mdDaoTao/fwCourse/redux';
@@ -36,9 +36,16 @@ class RevenuePage extends AdminPage {
         // this.onSearch({ courseType });
     }
 
+    delete = (e, item) => e.preventDefault() || T.confirm('Xoá thông tin doanh thu', 'Bạn có chắc bạn muốn xóa thông tin doanh thu này?', true, isConfirm =>{
+        if (isConfirm ) {
+            this.props.deleteRevenue(item._id);
+        }
+    });
+
     render() {
         let { pageNumber, pageSize, pageTotal, pageCondition, totalItem, list } = this.props.revenue && this.props.revenue.page ?
             this.props.revenue.page : { pageNumber: 1, pageSize: 50, pageTotal: 1, pageCondition: {}, totalItem: 0, list: [] };
+        const permission = this.getUserPermission('revenue',['admin','delete']);
         const courseTypes = this.state.courseTypes;
         const table = renderTable({
             getDataSource: () => list, stickyHead: true,
@@ -51,6 +58,7 @@ class RevenuePage extends AdminPage {
                     <th style={{ width: 'auto' }} nowrap='true'>Hình thức thanh toán</th>
                     <th style={{ width: 'auto' }} nowrap='true'>Người nhận</th>
                     <th style={{ width: 'auto' }} nowrap='true'>Thời gian đóng</th>
+                    {permission.admin ? <th style={{ width: 'auto' }} nowrap='true'>Thao tác</th> : null}
                 </tr>),
             renderRow: (item, index) => (
                 <tr key={index}>
@@ -61,6 +69,7 @@ class RevenuePage extends AdminPage {
                     <TableCell content={item.type == 'offline' ? 'Thanh toán trực tiếp' : 'Thanh toán online'} />
                     <TableCell type='text' style={{ whiteSpace: 'nowrap' }} content={item.receiver ? item.receiver.lastname + ' ' + item.receiver.firstname : ''} />
                     <TableCell style={{ whiteSpace: 'nowrap' }} content={item.date ? T.dateToText(item.date, 'dd/mm/yyyy hh:ss') : ''} />
+                    {permission.admin ? <TableCell type='buttons' content={item} permission={permission} onDelete={this.delete} /> : null}
                 </tr>),
         });
 
@@ -92,5 +101,5 @@ class RevenuePage extends AdminPage {
 }
 
 const mapStateToProps = state => ({ system: state.system, revenue: state.accountant.revenue });
-const mapActionsToProps = { getRevenuePage, getCourseTypeAll };
+const mapActionsToProps = { getRevenuePage, getCourseTypeAll, deleteRevenue };
 export default connect(mapStateToProps, mapActionsToProps)(RevenuePage);

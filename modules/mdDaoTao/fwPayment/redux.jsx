@@ -61,3 +61,18 @@ export function exportBankBaoCao(dataStart, dateEnd) {
     const url = `/api/payment/export/${page.pageNumber}/${page.pageSize}/${JSON.stringify(page.filter)}/${JSON.stringify(page.sort)}/${dataStart}/${dateEnd}`;
     T.download(T.url(url));
 }
+
+export function deletePayment(_id) {
+    return dispatch => {
+        const url = '/api/payment';
+        T.delete(url, { _id }, data => {
+            if (data.error) {
+                T.notify('Xóa công nợ bị lỗi!', 'danger');
+                console.error(`DELETE: ${url}. ${data.error}`);
+            } else {
+                T.alert('Công nợ được xóa thành công!', 'success', false, 800);
+                dispatch(getPaymentPage());
+            }
+        }, error => console.error(error) || T.notify('Xóa công nợ bị lỗi!', 'danger'));
+    };
+}

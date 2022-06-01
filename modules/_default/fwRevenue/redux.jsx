@@ -46,6 +46,7 @@ export default function revenueReducer(state = null, data) {
 }
 
 // Actions ------------------------------------------------------------------------------------------------------------
+T.initCookiePage('adminRevenue');
 export function getRevenuePage(pageNumber, pageSize, pageCondition, done) {
     const page = T.updatePage('adminRevenue', pageNumber, pageSize);
     return dispatch => {
@@ -121,6 +122,20 @@ export function getStatisticRevenue(done) {
     };
 }
 
+export function deleteStatisticRevenue(done) {
+    return dispatch => {
+        const url = '/api/revenue/statistic';
+        T.delete(url, data => {
+            data && dispatch({ type: RevenueGetItem, item: data.item });
+            done && done(data);
+        }, error => {
+            console.error(error);
+            T.notify('Xoá thông tin thống kê doanh thu lỗi!', 'danger');
+            done && done();
+        });
+    };
+}
+
 export function createRevenue(revenue, done) {
     return () => {
         const url = '/api/revenue';
@@ -160,8 +175,8 @@ export function deleteRevenue(_id) {
                 T.notify('Xóa doanh thu bị lỗi!', 'danger');
                 console.error(`DELETE: ${url}. ${data.error}`);
             } else {
-                T.alert('Doanh thu được xóa thành công!', 'error', false, 800);
-                dispatch(getRevenueAll());
+                T.alert('Doanh thu được xóa thành công!', 'success', false, 800);
+                dispatch(getRevenuePage());
             }
         }, error => console.error(error) || T.notify('Xóa doanh thu bị lỗi!', 'danger'));
     };
