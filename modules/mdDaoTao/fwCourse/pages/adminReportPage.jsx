@@ -73,7 +73,7 @@ class EditCoursePage extends AdminPage {
             content: (
                 <div className='row user-course'>
                     <PageIconHeader visible={isCourseAdmin || permission} text='Báo cáo 1' />
-                    <PageIcon visible={isCourseAdmin || permission } to={`/user/course/${item._id}/report/dang-ky-sat-hach`} icon='fa-file-word-o' iconBackgroundColor='#17a2b8' text='Đăng ký sát hạch lái xe (PL3A)' />
+                    {/* <PageIcon visible={isCourseAdmin || permission } to={`/user/course/${item._id}/report/dang-ky-sat-hach`} icon='fa-file-word-o' iconBackgroundColor='#17a2b8' text='Đăng ký sát hạch lái xe (PL3A)' /> */}
                     <PageIcon visible={isCourseAdmin || permission} to={`/user/course/${item._id}/report/danh-sach-hoc-vien`} icon='fa-file-word-o' iconBackgroundColor='#1488db' text='Lập danh sách học viên (PL3B)' />
                     <PageIcon visible={isCourseAdmin || permission} to={`/user/course/${item._id}/report/ke-hoach-dao-tao`} icon='fa-file-word-o' iconBackgroundColor='#dc143c' text='Lập kế hoạch đào tạo (PL4)' />
                     <PageIcon visible={isCourseAdmin || permission} to={`/user/course/${item._id}/report/xe-tap-lai`} icon='fa-file-word-o' iconBackgroundColor='#dc143c' text='Danh sách xe tập lái khoá (PL8)' />
@@ -97,7 +97,7 @@ class EditCoursePage extends AdminPage {
                     <PageIcon visible={isCourseAdmin || permission} to={`/user/course/${item._id}/report/bang-diem-thi-tot-nghiep`} icon='fa-file-excel-o' iconBackgroundColor='#DAA520' text={'Bảng điểm thi tốt nghiệp (TN10)'} />
 
                     <PageIconHeader visible={isCourseAdmin || permission} text='Báo cáo sát hạch' />
-                    <PageIcon visible={isCourseAdmin || permission} to={`/user/course/${item._id}/report/sat-hach-lai-xe`} icon='fa-file-word-o' iconBackgroundColor='orange' text='Báo cáo đề nghị tổ chức sát hạch lái xe (PL11A)' />
+                    {/* <PageIcon visible={isCourseAdmin || permission} to={`/user/course/${item._id}/report/sat-hach-lai-xe`} icon='fa-file-word-o' iconBackgroundColor='orange' text='Báo cáo đề nghị tổ chức sát hạch lái xe (PL11A)' /> */}
                     <PageIcon visible={isCourseAdmin || permission} to={`/user/course/${item._id}/report/danh-sach-du-thi-sat-hach`} icon='fa-file-word-o' iconBackgroundColor='teal' text='Danh sách học viên dự thi sát hạch (PL11B)' />
                     <PageIcon visible={isCourseAdmin || permission} to={`/user/course/${item._id}/report/danh-sach-du-thi-sat-hach-lai`} icon='fa-file-word-o' iconBackgroundColor='#9ced65' text='Danh sách thí sinh được phép dự sát hạch lại để cấp GPLX (SH01)' />
                     <PageIcon visible={isCourseAdmin || permission} to={`/user/course/${item._id}/report/danh-sach-du-thi-sat-hach-gplx-hang`} icon='fa-file-word-o' iconBackgroundColor='#900' text={'Danh sách thí sinh dự thi sát hạch để cấp GPLX các hạng (PL12B)'}/>

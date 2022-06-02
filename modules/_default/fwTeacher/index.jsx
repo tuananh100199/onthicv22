@@ -34,6 +34,10 @@ export default {
             component: Loadable({ loading: Loading, loader: () => import('./adminPage') }),
         },
         {
+            path: '/user/teacher-tutorial',
+            component: Loadable({ loading: Loading, loader: () => import('./teacherDocumentPage') }),
+        },
+        {
             path: '/user/teacher/:_id',
             component: Loadable({ loading: Loading, loader: () => import('./adminEditPage') }),
         },

@@ -6,7 +6,7 @@ import { AdminPage, FormFileBox, FormSelect } from 'view/component/AdminPage';
 // import 'react-pdf/dist/esm/Page/AnnotationLayer.css';
 import '../fwNotification/style.scss';
 
-const listHuongDan = [{ id: 'hocVien', text: 'Học viên'}, { id: 'giaoVien', text: 'Giáo viên'}, { id: 'keToan', text:'Kế toán'}, { id:'tuyenSinh', text: 'Tuyển sinh'}, { id:'quanLyXe', text:'Quản lý xe'}, { id:'admin', text:'Quản trị hệ thống'}];
+const listHuongDan = [{ id: 'hocVien', text: 'Học viên'}, { id: 'giaoVien', text: 'Giáo viên'}, { id: 'keToan', text:'Kế toán'}, { id:'tuyenSinh', text: 'Tuyển sinh'}, { id:'quanLyXe', text:'Quản lý xe'}, { id:'quanTriKhoaHoc', text:'Quản trị khoá học'}, { id:'quanLyGiaoVien', text:'Quản lý giáo viên'}, { id:'admin', text:'Quản trị hệ thống'}];
 const listHocVien = [{ id: 'hocVienTongQuan', text: 'Tổng quan chương trình học'}, { id: 'hocVienHocPhi', text: 'Hướng dẫn đóng học phí'}, { id: 'hocVienLyThuyet', text: 'Hướng dẫn học lý thuyết'}, { id: 'hocVienDangKyLichHoc', text: 'Hướng dẫn đăng ký lịch học'}];
 class SettingsPage extends AdminPage {
     state = {};
