@@ -19,7 +19,17 @@ module.exports = (app) => {
     app.get('/api/review-class/page/:pageNumber/:pageSize', (req, res) => {
         const pageNumber = parseInt(req.params.pageNumber),
             pageSize = parseInt(req.params.pageSize);
-        app.model.reviewClass.getPage(pageNumber, pageSize, {}, (error, page) => {
+        const {subject, courseType} = req.query.pageCondition || {};
+        let condition = {};
+        if(courseType) condition = {
+            courseType: courseType,
+            subject: {$in: [null, subject]},
+            remainStudent: {$gte: 1},
+            dateEnd: {$gte: new Date()},
+            state: 'waiting',
+            active: true
+        };
+        app.model.reviewClass.getPage(pageNumber, pageSize, condition, (error, page) => {
             res.send({ page, error: error ? 'Danh sách lớp ôn tập không sẵn sàng!' : null });
         });
     });
@@ -46,11 +56,11 @@ module.exports = (app) => {
     app.put('/api/review-class/student', app.permission.check('user:login'), (req, res) => {
         const { _id, student } = req.body;
         app.model.reviewClass.get(_id, (error, item) => {
-            if(error) res.send({error});
+            if(error || !item) res.send({error});
             else{
                 const remainStudent = item.remainStudent;
-                app.model.reviewClass.update(_id, {remainStudent: remainStudent - 1}, () => {
-                    app.model.reviewClass.addStudent(_id, student, (error, item) => res.send({ error, item }));
+                app.model.reviewClass.update(item._id, {remainStudent: remainStudent - 1}, () => {
+                    app.model.reviewClass.addStudent(item._id, student, (error, item) => res.send({ error, item }));
                 });
             }
         });

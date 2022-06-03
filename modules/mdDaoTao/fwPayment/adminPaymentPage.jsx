@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { getPaymentPage, exportBankBaoCao } from './redux';
+import { getPaymentPage, exportBankBaoCao, deletePayment } from './redux';
 import Pagination from 'view/component/Pagination';
 import { AdminPage, AdminModal, TableCell, renderTable, FormDatePicker, CirclePageButton, TableHead, TableHeadCell } from 'view/component/AdminPage';
 
@@ -43,8 +43,15 @@ class PaymentPage extends AdminPage {
         }
     }
 
+    delete = (e, item) => e.preventDefault() || T.confirm('Xoá thông tin công nợ', 'Bạn có chắc bạn muốn xóa thông tin công nợ này?', true, isConfirm =>{
+        if (isConfirm ) {
+            this.props.deletePayment(item._id);
+        }
+    });
+
     render() {
         const {dateStart, dateEnd} = this.state;
+        const permission = this.getUserPermission('payment',['delete', 'admin']);
         let { pageNumber, pageSize, pageTotal, pageCondition, totalItem, list } = this.props.payment && this.props.payment.page ?
             this.props.payment.page : { pageNumber: 1, pageSize: 50, pageTotal: 1, pageCondition: {}, totalItem: 0, list: [] };
         const table = renderTable({
@@ -65,6 +72,7 @@ class PaymentPage extends AdminPage {
                     <th style={{ width: 'auto' }}  nowrap='true'>Đối tượng nợ</th>
                     <th style={{ width: 'auto' }}  nowrap='true'>Đối tượng có</th>
                     <th style={{ width: 'auto' }}  nowrap='true'>Nội dung SMS ( Nhân viên nhập dữ liệu )</th>
+                    {permission.admin ? <th style={{ width: 'auto' }}  nowrap='true'>Thao tác</th> : null}
                 </TableHead>),
             renderRow: (item, index) => (
                 <tr key={index}>
@@ -91,7 +99,7 @@ class PaymentPage extends AdminPage {
                     </TableCell> : 
                     <TableCell style={{ whiteSpace: 'nowrap', textAlign:'center' }} content={`${item.userImport.lastname} ${item.userImport.firstname}`} />
                     }
-                    
+                    {permission.admin ? <TableCell type='buttons' content={item} permission={permission} onDelete={this.delete} /> : null}
                 </tr >),
         });
         return this.renderPage({
@@ -129,5 +137,5 @@ class PaymentPage extends AdminPage {
 }
 
 const mapStateToProps = state => ({ system: state.system, payment: state.trainning.payment });
-const mapActionsToProps = { getPaymentPage };
+const mapActionsToProps = { getPaymentPage, deletePayment };
 export default connect(mapStateToProps, mapActionsToProps)(PaymentPage);

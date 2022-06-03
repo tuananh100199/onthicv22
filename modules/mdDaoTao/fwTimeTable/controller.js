@@ -6,7 +6,12 @@ module.exports = (app) => {
         }
     };
     app.permission.add(
-        { name: 'timeTable:read' }, { name: 'timeTable:write' }, { name: 'timeTable:delete' }, { name: 'timeTable:create' },{ name: 'timeTable:enroll',menu:enrollmentMenu },
+        { name: 'timeTable:read' }, 
+        { name: 'timeTable:write' }, 
+        { name: 'timeTable:delete' }, 
+        { name: 'timeTable:create' },
+        { name: 'timeTable:enroll',menu:enrollmentMenu }, 
+        { name: 'timeTable:admin' }//thêm quyền xóa tổng của admin
     );
 
     app.get('/user/time-table', app.permission.check('timeTable:read'), app.templates.admin);

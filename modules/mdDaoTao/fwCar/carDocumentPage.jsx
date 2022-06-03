@@ -15,11 +15,11 @@ class UserDocumentPage extends AdminPage {
     render() {
         return this.renderPage({
             icon: 'fa fa-cubes',
-            title: 'Hướng dẫn sử dụng: Quản lý xe',
-            breadcrumb: ['Hướng dẫn sử dụng quản lý xe'],
+            title: 'Hướng dẫn sử dụng: Quản lý thiết bị',
+            breadcrumb: ['Hướng dẫn sử dụng quản lý thiết bị'],
             content: (
                 <div className='tile'>
-                    <iframe src="/document/huongDan/quanLyXe.pdf" width='100%' height='550'></iframe>
+                    <iframe className='document-container' src="/document/huongDan/quanLyXe.pdf#zoom=60"></iframe>
                 </div>
             ),
             backRoute: '/user/car',

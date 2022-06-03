@@ -15,11 +15,11 @@ class UserDocumentPage extends AdminPage {
     render() {
         return this.renderPage({
             icon: 'fa fa-cubes',
-            title: 'Hướng dẫn sử dụng: Tuyển sinh',
-            breadcrumb: ['Chỉ tiêu tuyển sinh'],
+            title: 'Hướng dẫn sử dụng: Quản trị viên khoá học',
+            breadcrumb: ['Hướng dẫn sử dụng Quản trị viên khoá học'],
             content: (
                 <div className='tile'>
-                    <iframe className='document-container' src="/document/huongDan/tuyenSinh.pdf#zoom=60"></iframe>
+                    <iframe src="/document/huongDan/quanTriKhoaHoc.pdf" width='100%' height='550'></iframe>
                 </div>
             ),
         });

@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { getOfficialStudentPage ,updateOfficialStudent, exportOfficialStudent} from './redux';
+import { getOfficialStudentPage ,updateOfficialStudent, exportOfficialStudent, deleteOfficialStudent} from './redux';
 import Pagination from 'view/component/Pagination';
 import { AdminPage, TableCell, renderTable,TableHead,TableHeadCell,AdminModal,FormTextBox,FormSelect,FormCheckbox,FormRichTextBox,FormImageBox,FormDatePicker  } from 'view/component/AdminPage';
 import { ajaxSelectDivision } from 'modules/mdDaoTao/fwDivision/redux';
@@ -136,7 +136,7 @@ class StudentPage extends AdminPage {
     componentDidMount() {
         T.ready(() =>{
             T.showSearchBox();
-            this.props.getOfficialStudentPage(1, 50, undefined,{},{});
+            this.props.getOfficialStudentPage(1, 50, {},{},{});
             this.props.getCourseAll({isDefault:false},list=>{
                 this.setState({course:list.map(item=>({id:item._id,text:item.name}))});   
             }
@@ -149,6 +149,9 @@ class StudentPage extends AdminPage {
     }
 
     edit = (e, item) => e.preventDefault() || this.modal.show(item);
+
+    delete = (e, item) => e.preventDefault() || T.confirm('Xoá học viên', 'Bạn có chắc muốn xoá học viên này?', true, isConfirm =>
+    isConfirm && this.props.deleteOfficialStudent(item._id));
 
     render() {
         const permission = this.getUserPermission('student', ['read', 'write', 'delete']);
@@ -176,7 +179,7 @@ class StudentPage extends AdminPage {
                     <TableCell type='text' content={item.division?item.division.title:''} />
                     <TableCell type='text' style={{ whiteSpace: 'nowrap' }} content={item.courseType ? item.courseType.title:''} />
                     <TableCell type='text' style={{ whiteSpace: 'nowrap' }} content={item.course ? item.course.name:''} />
-                    <TableCell type='buttons' content={item} permission={permission} onEdit={this.edit}/>
+                    <TableCell type='buttons' content={item} permission={permission} onEdit={this.edit} onDelete={this.delete}/>
                 </tr>),
         });
         return this.renderPage({
@@ -195,5 +198,5 @@ class StudentPage extends AdminPage {
 }
 
 const mapStateToProps = state => ({ system: state.system, student: state.trainning.student });
-const mapActionsToProps = { getOfficialStudentPage,getCourseAll,updateOfficialStudent,exportOfficialStudent };
+const mapActionsToProps = { getOfficialStudentPage,getCourseAll,updateOfficialStudent,exportOfficialStudent,deleteOfficialStudent };
 export default connect(mapStateToProps, mapActionsToProps)(StudentPage);

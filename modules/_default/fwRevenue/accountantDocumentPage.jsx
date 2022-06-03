@@ -19,7 +19,7 @@ class UserDocumentPage extends AdminPage {
             breadcrumb: ['Hướng dẫn sử dụng kế toán'],
             content: (
                 <div className='tile'>
-                    <iframe src="/document/huongDan/keToan.pdf" width='100%' height='550'></iframe>
+                    <iframe className='document-container' src="/document/huongDan/keToan.pdf#zoom=60"></iframe>
                 </div>
             ),
         });

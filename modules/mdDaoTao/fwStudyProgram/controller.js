@@ -2,7 +2,8 @@ module.exports = app => {
     const menu = {
         parentMenu: app.parentMenu.trainning,
         menus: {
-            4016: { title: 'Chương trình học', link: '/user/study-program', icon: 'fa fa-tasks', backgroundColor: 'rgb(106, 90, 205)' }
+            4016: { title: 'Chương trình học', link: '/user/study-program', icon: 'fa fa-tasks', backgroundColor: 'rgb(106, 90, 205)' },
+            4008: { title: 'Hướng dẫn', link: '/user/course-tutorial' }
         }
     };
     app.permission.add({ name: 'studyProgram:read', menu }, { name: 'studyProgram:write' }, { name: 'studyProgram:delete' });

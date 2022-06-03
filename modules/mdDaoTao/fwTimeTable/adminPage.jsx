@@ -164,7 +164,8 @@ class TimeTablePage extends AdminPage {
 
     render() {
         const today = T.dateToText(new Date().toISOString(), 'dd/mm/yyyy');
-        const permission = this.getUserPermission('timeTable');
+        const permission = this.getUserPermission('timeTable',['read', 'write', 'admin']);
+        permission.delete=permission.admin;
         let { pageNumber, pageSize, pageTotal, pageCondition, totalItem, list } = this.props.timeTable && this.props.timeTable.page ?
             this.props.timeTable.page : { pageNumber: 1, pageSize: 50, pageTotal: 1, pageCondition: {}, totalItem: 0, list: [] };
         const table = renderTable({
@@ -181,7 +182,7 @@ class TimeTablePage extends AdminPage {
                     <TableHeadCell style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Giờ học</TableHeadCell>
                     <TableHeadCell style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Số giờ học</TableHeadCell>
                     <TableHeadCell style={{ width: '30%', textAlign: 'center' }} nowrap='true'>Xe học</TableHeadCell>
-                    {/* <TableHeadCell style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Thao tác</TableHeadCell> */}
+                    <TableHeadCell style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Thao tác</TableHeadCell>
                 </TableHead>
                 ),
             renderRow: (item, index) => (
@@ -194,8 +195,8 @@ class TimeTablePage extends AdminPage {
                     <TableCell type='text' content={item.date ? T.dateToText(item.date, 'dd/mm/yyyy') : ''} />
                     <TableCell type='number' style={{ textAlign: 'center' }} content={item.numOfHours ? `${item.startHour}-${item.startHour + item.numOfHours}` : `${item.startHour}`} />
                     <TableCell type='number' style={{ textAlign: 'center' }} content={item.numOfHours} />
-                    <TableCell type='number' style={{ textAlign: 'center' }} content={item.licensePlates} />
-                    {/* <TableCell type='buttons' content={item} permission={permission} onEdit={this.edit} onDelete={this.delete} /> */}
+                    <TableCell type='number' style={{ textAlign: 'center' }} content={item.car?item.car.licensePlates:''} />
+                    <TableCell type='buttons' content={item} permission={permission} onDelete={this.delete} />
                 </tr>),
         });
         return this.renderPage({
