@@ -45,6 +45,10 @@ export default {
             path: '/tintuc/:link',
             component: Loadable({ loading: Loading, loader: () => import('./homeNewsDetail') })
         },
+        {
+            path: '/news',
+            component: Loadable({ loading: Loading, loader: () => import('./sectionNewsList') })
+        },
     ],
     Section: {
         SectionNews, SectionNewsList,

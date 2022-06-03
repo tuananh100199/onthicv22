@@ -17,6 +17,7 @@
 3000. Truyền thông (undefined)
 	3002 - Liên hệ (/user/contact)
 	3003 - Đăng ký nhận tin (/user/subscribe)
+	3100 - Câu hỏi thường gặp (/user/faq)
 	3101 - Danh mục tin tức (/user/category/news)
 	3102 - Tin tức (/user/news)
 	3200 - Danh mục forum (/user/category/forum)
