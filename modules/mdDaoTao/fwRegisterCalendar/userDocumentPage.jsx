@@ -45,7 +45,7 @@ class UserDocumentPage extends AdminPage {
             content: (
                 <>
                     <div className='tile'>
-                        <iframe src="/document/huongDan/hocVienDangKyLichHoc.pdf" width='100%' height='500'></iframe>
+                        <iframe className='document-container' src="/document/huongDan/hocVienDangKyLichHoc.pdf#zoom=60"></iframe>
                         <h5 className='text-right mt-2'>Nếu tồn tại thắc mắc, xin vui lòng liên hệ tới số <a href={'tel:' + mobile} className='text-primary'>{T.mobileDisplay(mobile)}</a></h5>     
                     </div>
                 </>

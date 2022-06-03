@@ -19,7 +19,7 @@ class UserDocumentPage extends AdminPage {
             breadcrumb: ['Chỉ tiêu tuyển sinh'],
             content: (
                 <div className='tile'>
-                    <iframe src="/document/huongDan/tuyenSinh.pdf" width='100%' height='550'></iframe>
+                    <iframe className='document-container' src="/document/huongDan/tuyenSinh.pdf#zoom=60"></iframe>
                 </div>
             ),
         });
