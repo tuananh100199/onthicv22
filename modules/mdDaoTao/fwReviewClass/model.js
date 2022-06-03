@@ -2,12 +2,16 @@ module.exports = app => {
     const schema = app.database.mongoDB.Schema({
         title: String,
         active: { type: Boolean, default: false },
+        state: { type: String, enum: ['approved', 'waiting', 'reject','autoReject'], default: 'waiting' }, 
         dateStart: Date,
         dateEnd: Date,
         students: [{ type: app.database.mongoDB.Schema.Types.ObjectId, ref: 'Student' }],
-        teacher: { type: app.database.mongoDB.Schema.Types.ObjectId, ref: 'User' },
+        teacher: { type: app.database.mongoDB.Schema.Types.ObjectId, ref: 'Teacher' },
         remainStudent: { type: Number, default: 100 },  
+        maxStudent: { type: Number, default: 100 },
         courseType: { type: app.database.mongoDB.Schema.ObjectId, ref: 'CourseType' }, 
+        subject: { type: app.database.mongoDB.Schema.ObjectId, ref: 'Subject' },
+        lyDoHuyOnTap: String,
     });
     const model = app.database.mongoDB.model('ReviewClass', schema);
 
@@ -22,7 +26,7 @@ module.exports = app => {
                 result.pageNumber = pageNumber === -1 ? result.pageTotal : Math.min(pageNumber, result.pageTotal);
                 const skipNumber = (result.pageNumber > 0 ? result.pageNumber - 1 : 0) * result.pageSize;
 
-                model.find(condition).sort({ title: 1 }).skip(skipNumber).limit(result.pageSize).populate('courseType', '_id title').populate('teacher', 'lastname firstname').populate('students', 'lastname firstname phoneNumber').exec((error, items) => {
+                model.find(condition).sort({ title: 1 }).skip(skipNumber).limit(result.pageSize).populate('courseType', '_id title').populate('subject', '_id title').populate('teacher', 'lastname firstname user maGiaoVien').populate('students', 'lastname firstname phoneNumber user').exec((error, items) => {
                     result.list = error ? [] : items;
                     done(error, result);
                 });
@@ -56,7 +60,7 @@ module.exports = app => {
         },
 
         addStudent: (_id, student, done) => {
-            model.findOneAndUpdate(_id, { $push: { students: student } }, { new: true }).populate('students', 'lastname firstname phoneNumber').exec(done);
+            model.findOneAndUpdate({_id}, { $push: { students: student } }, { new: true }).populate('students', 'lastname firstname phoneNumber').exec(done);
         },
 
         deleteLesson: (_id, _studentId, done) => {

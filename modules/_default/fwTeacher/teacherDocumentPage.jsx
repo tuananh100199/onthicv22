@@ -15,14 +15,13 @@ class UserDocumentPage extends AdminPage {
     render() {
         return this.renderPage({
             icon: 'fa fa-cubes',
-            title: 'Hướng dẫn sử dụng: Quản lý thiết bị',
-            breadcrumb: ['Hướng dẫn sử dụng quản lý thiết bị'],
+            title: 'Hướng dẫn sử dụng: Quản lý giáo viên',
+            breadcrumb: ['Hướng dẫn sử dụng Quản lý giáo viên'],
             content: (
                 <div className='tile'>
-                    <iframe src="/document/huongDan/quanLyXe.pdf" width='100%' height='550'></iframe>
+                    <iframe src="/document/huongDan/quanLyGiaoVien.pdf" width='100%' height='550'></iframe>
                 </div>
             ),
-            backRoute: '/user/car',
         });
     }
 }

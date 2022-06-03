@@ -2,6 +2,7 @@ module.exports = (app) => {
     const menu = {
         parentMenu: app.parentMenu.teacher,
         menus: {
+            8999: { title: 'Hướng dẫn', link: '/user/teacher-tutorial', icon: 'fa-bars', backgroundColor: '#00b0ff' },
             9001: { title: 'Hồ sơ giáo viên', link: '/user/teacher', icon: 'fa-bars', backgroundColor: '#00b0ff' },
             // 8091: { title: 'Danh mục chứng chỉ', link: '/user/teacher-certification/category', icon: 'fa-bars', backgroundColor: '#00b0ff' },
             9002: { title: 'Danh mục hợp đồng', link: '/user/contract/category', icon: 'fa-bars', backgroundColor: '#00b0ff' },
@@ -22,6 +23,7 @@ module.exports = (app) => {
     app.get('/user/contract/category', app.permission.check('category:read'), app.templates.admin);
     app.get('/user/gplx/category', app.permission.check('category:read'), app.templates.admin);
     app.get('/user/teacher', app.permission.check('teacher:read'), app.templates.admin);
+    app.get('/user/teacher-tutorial', app.permission.check('teacher:read'), app.templates.admin);
     app.get('/user/teacher/:id', app.permission.check('teacher:write'), app.templates.admin);
     app.get('/user/teacher-course', app.permission.check('teacher:read'), app.templates.admin);
     app.get('/user/teacher-course/:id', app.permission.check('teacher:write'), app.templates.admin);

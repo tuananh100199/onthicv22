@@ -2,7 +2,7 @@ module.exports = app => {
     const menu = {
         parentMenu: app.parentMenu.facility,
         menus: {
-            40001: { title: 'Cơ sở đào tạo', link: '/user/division', icon: 'fa fa-university', backgroundColor: 'rgb(106, 90, 205)' }
+            40002: { title: 'Cơ sở đào tạo', link: '/user/division', icon: 'fa fa-university', backgroundColor: 'rgb(106, 90, 205)' }
         }
     };
     app.permission.add({ name: 'division:read', menu }, { name: 'division:write' }, { name: 'division:delete' });

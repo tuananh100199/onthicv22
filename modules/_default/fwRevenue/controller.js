@@ -6,7 +6,7 @@ module.exports = app => {
             7008: { title: 'Quản lý doanh thu', link: '/user/revenue' },
         }
     };
-    app.permission.add({ name: 'revenue:read', menu }, { name: 'revenue:write' }, { name: 'revenue:delete' });
+    app.permission.add({ name: 'revenue:read', menu }, { name: 'revenue:write' }, { name: 'revenue:delete' }, { name: 'revenue:admin' });
     app.get('/user/revenue', app.permission.check('revenue:read'), app.templates.admin);
     app.get('/user/revenue/info', app.permission.check('revenue:read'), app.templates.admin);
     app.get('/user/revenue/debt', app.permission.check('revenue:read'), app.templates.admin);
@@ -32,15 +32,23 @@ module.exports = app => {
             if(condition.course) {
                 if((condition.course == '1') && condition.courseTypeId){
                     app.model.course.get({isDefault: true, courseType: condition.courseTypeId}, (error,course) => {
-                        pageCondition.course = course._id;
+                        if(course) pageCondition.course = course._id;
                         app.model.revenue.getPage(pageNumber, pageSize, pageCondition, (error, page) => res.send({ error, page }));
                     });
                 } else{
-                    pageCondition.course = condition.course;
-                    app.model.revenue.getPage(pageNumber, pageSize, pageCondition, (error, page) => res.send({ error, page }));
+                    if(condition.course == '1'){
+                        app.model.course.getAll({isDefault: true}, (error,list) => {
+                            if(list && list.length) pageCondition.course = {$in: list};
+                            app.model.revenue.getPage(pageNumber, pageSize, pageCondition, (error, page) => res.send({ error, page }));
+                        });
+                    } else {
+                        pageCondition.course = condition.course;
+                        app.model.revenue.getPage(pageNumber, pageSize, pageCondition, (error, page) => res.send({ error, page }));
+                    }
+                    
                 }
             } else  {
-                pageCondition.courseType = condition.courseTypeId;
+                if(condition.courseTypeId) pageCondition.courseType = condition.courseTypeId;
                 app.model.revenue.getPage(pageNumber, pageSize, pageCondition, (error, page) => res.send({ error, page }));
             }
            
@@ -52,6 +60,10 @@ module.exports = app => {
 
     app.get('/api/revenue/statistic', app.permission.check('revenue:read'), (req, res) => {
         app.model.setting.get('revenue', data => res.send({item: data}));
+    });
+
+    app.delete('/api/revenue/statistic', app.permission.check('revenue:admin'), (req, res) => {
+        app.model.setting.set({revenue: '2022:revenue:0'}, error => res.send({error}));
     });
 
     app.get('/api/revenue/month', app.permission.check('revenue:read'), (req, res) => {
@@ -134,11 +146,11 @@ module.exports = app => {
         app.model.bank.update(req.body._id, req.body.changes, (error, item) => res.send({ error, item }));
     });
 
-    // app.delete('/api/revenue', app.permission.check('bank:delete'), (req, res) => {
-    //     const user = req.session.user;
-    //     if (user.roles.some(role => role.name == 'admin')) {
-    //         app.model.bank.delete(req.body._id, error => res.send({ error }));
-    //     } else res.send({ error: 'Bạn không có quyền xóa ngân hàng' });
-    // });
+    app.delete('/api/revenue', app.permission.check('revenue:admin'), (req, res) => {
+        const user = req.session.user;
+        if (user.roles.some(role => role.name == 'admin')) {
+            app.model.revenue.delete(req.body._id, error => res.send({ error }));
+        } else res.send({ error: 'Bạn không có quyền xóa thông tin doanh thu' });
+    });
 
 };

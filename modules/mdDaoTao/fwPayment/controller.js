@@ -4,6 +4,7 @@ module.exports = app => {
         { name: 'payment:write' },
         { name: 'payment:delete' },
         { name: 'payment:import' },
+        { name: 'payment:admin' },
     );
 
     app.get('/user/payment', app.permission.check('payment:read'), app.templates.admin);
@@ -541,6 +542,13 @@ module.exports = app => {
                 }
             });
         }
+    });
+
+    app.delete('/api/payment', app.permission.check('payment:admin'), (req, res) => {
+        const user = req.session.user;
+        if (user.roles.some(role => role.name == 'admin')) {
+            app.model.payment.delete(req.body._id, error => res.send({ error }));
+        } else res.send({ error: 'Bạn không có quyền xóa thông tin công nợ' });
     });
 
     app.post('/api/payment/import', app.permission.check('payment:import'), (req, res) => {

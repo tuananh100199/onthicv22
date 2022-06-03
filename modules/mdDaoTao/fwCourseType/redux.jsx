@@ -197,7 +197,7 @@ export const ajaxSelectCourseType = {
     processResults: response => ({
         results: response && response.list ? response.list.map(item => ({ id: item._id, text: item.title })) : []
     }),
-    fetchOne: (_id, done) => getCourseType(_id, ({ item }) => done && done({ id: item._id, text: item.title }))
+    // fetchOne: (_id, done) => getCourseType(_id, ({ item }) => done && done({ id: item._id, text: item.title }))
 };
 
 export const ajaxSelectCourseTypeHome = {

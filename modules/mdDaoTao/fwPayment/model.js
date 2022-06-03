@@ -40,5 +40,15 @@ module.exports = app => {
                     });
             }
         }),
+
+        delete: (_id, done) => model.findOne({ _id }, (error, item) => {
+            if (error) {
+                done(error);
+            } else if (item == null) {
+                done('Invalid Id!');
+            } else {
+                item.remove(done);
+            }
+        }),
     };
 };

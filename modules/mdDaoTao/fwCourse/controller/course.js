@@ -4,7 +4,13 @@ module.exports = (app) => {
     const menu = {
         parentMenu: app.parentMenu.trainning,
         menus: {
-            4045: { title: 'Khóa học', link: '/user/course' }
+            4045: { title: 'Khóa học', link: '/user/course' },
+        },
+    };
+    const menuTutorial = {
+        parentMenu: app.parentMenu.trainning,
+        menus: {
+            4009: { title: 'Hướng dẫn giáo viên', link: '/user/course-tutorial-teacher' },
         },
     };
 
@@ -17,9 +23,12 @@ module.exports = (app) => {
         { name: 'course:export' },
         { name: 'course:import' },
         { name: 'course:report' },
+        { name: 'course:tutorial', menu: menuTutorial },
     );
 
     app.get('/user/course', app.permission.check('course:read'), app.templates.admin);
+    app.get('/user/course-tutorial', app.permission.check('course:read'), app.templates.admin);
+    app.get('/user/course-tutorial-teacher', app.permission.check('course:read'), app.templates.admin);
     app.get('/user/course/:_id', app.permission.check('course:read'), app.templates.admin);
     app.get('/user/course/:_id/info', app.permission.check('course:read'), app.templates.admin);
     app.get('/user/course/:_id/study-program', app.permission.check('course:read'), app.templates.admin);
@@ -880,7 +889,7 @@ module.exports = (app) => {
     }));
 
     app.permissionHooks.add('lecturer', 'course', (user) => new Promise(resolve => {
-        app.permissionHooks.pushUserPermission(user, 'course:read', 'student:write', 'student:read');
+        app.permissionHooks.pushUserPermission(user, 'course:read', 'student:write', 'student:read', 'course:tutorial');
         if (user.division && !user.division.isOutside) app.permissionHooks.pushUserPermission(user, 'course:export');
         resolve();
     }));

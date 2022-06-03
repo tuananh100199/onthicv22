@@ -28,6 +28,14 @@ export default {
             component: Loadable({ loading: Loading, loader: () => import('./adminPage') })
         },
         {
+            path: '/user/course-tutorial',
+            component: Loadable({ loading: Loading, loader: () => import('./courseDocumentPage') })
+        },
+        {
+            path: '/user/course-tutorial-teacher',
+            component: Loadable({ loading: Loading, loader: () => import('./courseTeacherDocumentPage') })
+        },
+        {
             path: '/user/course/:_id',
             component: Loadable({ loading: Loading, loader: () => import('./adminEditPage') })
         },

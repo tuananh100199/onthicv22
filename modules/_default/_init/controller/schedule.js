@@ -47,6 +47,29 @@ module.exports = (app) => {
                             handleDeleteTimeTable();
                         }
                     });
+                    app.model.reviewClass.getAll({ state: 'waiting' }, (error, items) => {
+                        let reviewClass = [];
+                        (items || []).forEach(item => {
+                            const expiredDate = new Date(item.dateEnd).getTime() + 1000 * 3600 * 24;
+                            const now = new Date().getTime();
+                            if (expiredDate < now) {
+                                reviewClass.push(item);
+                            }
+                        });
+                        if (reviewClass && reviewClass.length) {
+                            const handleDeleteReviewClass = (index = 0) => {
+                                if (index == reviewClass.length) {
+                                    return;
+                                } else {
+                                    const currentClass = reviewClass[index];
+                                    app.model.reviewClass.update(currentClass._id, { state: 'autoReject' }, () => {
+                                        handleDeleteReviewClass(index + 1);
+                                    });
+                                }
+                            };
+                            handleDeleteReviewClass();
+                        }
+                    });
                 }
                 app.model.user.getOld((error, data) => {
                     const yearStart = data && data[0] && data[0].createdDate && data[0].createdDate.getFullYear();
