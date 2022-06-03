@@ -97,7 +97,7 @@ export function updateReviewClass(_id, changes, done) {
     };
 }
 
-export function addStudentReviewClass(_id, student, done) {
+export function addStudentReviewClass(_id, student, courseId, subjectId, done) {
     return dispatch => {
         const url = '/api/review-class/student';
         T.put(url, { _id, student }, data => {
@@ -107,7 +107,7 @@ export function addStudentReviewClass(_id, student, done) {
                 done && done(data.error);
             } else {
                 dispatch({ type: ReviewClassGetItem, item: data.item });
-                dispatch(getReviewClassPage());
+                dispatch(getReviewClassPage(1,20, {courseType: courseId, subject: subjectId}));
                 T.notify('Cập nhật lớp ôn tập  thành công!', 'success');
                 done && done();
             }
