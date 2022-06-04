@@ -68,7 +68,7 @@ module.exports = (app) => {
     // Hook upload images ---------------------------------------------------------------------------------------------------------------------------s
     app.createFolder(app.path.join(app.publicPath, '/img/faq'));
 
-    app.uploadHooks.add('uploadNewsCkEditor', (req, fields, files, params, done) => {
+    app.uploadHooks.add('uploadFaqCkEditor', (req, fields, files, params, done) => {
         app.permission.has(req, () => app.uploadCkEditorImage('faq', fields, files, params, done), done, 'faq:write');
     });
 

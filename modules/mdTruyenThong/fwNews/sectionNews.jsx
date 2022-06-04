@@ -14,7 +14,7 @@ const newsTypeList = [
     {
         title:'Quy định pháp luật',
         image:'/img/law.jpg',
-        link:'',
+        link:'/law',
         abstract:'Các quy định mà nhà nước ban hành, thông tư mới nhất về luật an toàn giao thông.',
     },{
         title:'Câu hỏi thường gặp',

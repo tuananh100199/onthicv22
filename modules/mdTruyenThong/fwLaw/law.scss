@@ -1,0 +1,14 @@
+.law{
+    border:1px solid #999;
+    &-link{
+        display: inline-block;
+        width: 100%;
+        margin-left: -15px;
+        margin-right: -15px;
+        & img{
+            width: 100%;
+            height: 170px;
+            object-fit: cover;
+        }
+    }
+}

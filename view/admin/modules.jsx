@@ -54,8 +54,9 @@ import fwContact from 'modules/mdTruyenThong/fwContact/index';
 import fwFaq from 'modules/mdTruyenThong/fwFaq/index';
 import fwFeedback from 'modules/mdTruyenThong/fwFeedback/index';
 import fwForum from 'modules/mdTruyenThong/fwForum/index';
+import fwLaw from 'modules/mdTruyenThong/fwLaw/index';
 import fwNews from 'modules/mdTruyenThong/fwNews/index';
 import fwNotificationTemplate from 'modules/mdTruyenThong/fwNotificationTemplate/index';
 import fwSubscribe from 'modules/mdTruyenThong/fwSubscribe/index';
 
-export const modules = [_init, fwAssignRole, fwBank, fwCategory, fwCluster, fwComment, fwCourseFee, fwCoursePayment, fwDepartment, fwDiscount, fwEmail, fwEncryption, fwEnrollTarget, fwFeeType, fwHome, fwMenu, fwNotification, fwProfileType, fwRate, fwRevenue, fwRole, fwStaff, fwTeacher, fwTeacherDiploma, fwTrainingClass, fwUser, fwCandidate, fwCar, fwCertificate, fwChangeLecturer, fwChat, fwCourse, fwCourseType, fwDevice, fwDivision, fwDriveQuestion, fwDriveTest, fwFacility, fwLesson, fwLicenseTest, fwPayment, fwProfileStudent, fwProfileStudentType, fwRegisterCalendar, fwReviewClass, fwSign, fwSms, fwStudent, fwStudyProgram, fwSubject, fwTimeTable, fwContact, fwFaq, fwFeedback, fwForum, fwNews, fwNotificationTemplate, fwSubscribe];
+export const modules = [_init, fwAssignRole, fwBank, fwCategory, fwCluster, fwComment, fwCourseFee, fwCoursePayment, fwDepartment, fwDiscount, fwEmail, fwEncryption, fwEnrollTarget, fwFeeType, fwHome, fwMenu, fwNotification, fwProfileType, fwRate, fwRevenue, fwRole, fwStaff, fwTeacher, fwTeacherDiploma, fwTrainingClass, fwUser, fwCandidate, fwCar, fwCertificate, fwChangeLecturer, fwChat, fwCourse, fwCourseType, fwDevice, fwDivision, fwDriveQuestion, fwDriveTest, fwFacility, fwLesson, fwLicenseTest, fwPayment, fwProfileStudent, fwProfileStudentType, fwRegisterCalendar, fwReviewClass, fwSign, fwSms, fwStudent, fwStudyProgram, fwSubject, fwTimeTable, fwContact, fwFaq, fwFeedback, fwForum, fwLaw, fwNews, fwNotificationTemplate, fwSubscribe];
