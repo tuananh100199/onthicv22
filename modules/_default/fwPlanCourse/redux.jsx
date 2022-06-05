@@ -117,3 +117,15 @@ export const ajaxSelectPlanCourseByCourseType = (courseType) => T.createAjaxAdap
         response.page.list.map(item => ({ id: item._id, text: item.title })) : [];
     }, 
 );
+
+export const ajaxSelectCourseByCourseType = (courseType) => {
+    return {
+    ajax: false,
+    url: '/api/plan-course/page/1/20' + (courseType ? `?courseType=${courseType}` : ''),
+    // data: params => ({condition:{searchText:params.term}}),
+    data:{},
+    processResults: response =>{
+        return response && response.page && response.page.list ?
+        response.page.list.map(item => ({ id: item._id, text: item.title })) : [];
+    }, 
+};};

@@ -38,12 +38,22 @@ class CandidateModal extends AdminModal {
         this.setValueCoursePayment(coursePayment);
         this.setState({ _id,courseId:courseType._id },()=>{
             this.setValueCourseFee(courseType?courseType._id:null,courseFee);
+            this.setValuePlannedCourse(courseType?courseType._id:null,plannedCourse);
+
         });
         this.itemIsDon.value(isDon);
         this.itemIsHinh.value(isHinh);
         this.itemIsIdentityCard.value(isIdentityCard);
         this.itemIsGiayKhamSucKhoe.value(isGiayKhamSucKhoe);
         this.itemIsBangLaiA1.value(isBangLaiA1);
+    }
+
+    setValuePlannedCourse = (courseTypeId,plannedCourse=null)=>{
+        if( !courseTypeId || !plannedCourse || !plannedCourse.courseType || plannedCourse.courseType!=courseTypeId){
+            this.itemPlannedCourse.value(null);
+        }else{
+            this.itemPlannedCourse.value({id:plannedCourse._id,text:plannedCourse.title});
+        }
     }
 
     setValueCourseFee = (courseTypeId,courseFee=null)=>{
@@ -83,7 +93,7 @@ class CandidateModal extends AdminModal {
             phoneNumber: this.itemPhoneNumber.value(),
             identityCard: this.itemIdentityCard.value(),
             birthday: this.itemBirthday.value(),
-            planCourse: this.itemPlanCourse.value(),
+            plannedCourse: this.itemPlannedCourse.value(),
             courseType: this.courseType.value(),
             division: this.division.value(),
             state: this.states.value(),
@@ -117,9 +127,9 @@ class CandidateModal extends AdminModal {
         } else if (data.birthday == '') {
             T.notify('Ngày sinh người dùng bị trống!', 'danger');
             this.itemBirthday.focus();
-        } else if (data.planCourse == '') {
+        } else if (data.plannedCourse == '') {
             T.notify('Khóa dự kiến không được trống!', 'danger');
-            this.itemPlanCourse.focus();
+            this.itemPlannedCourse.focus();
         }else if (!data.courseFee) {
             T.notify('Gói học phí không được trống!', 'danger');
             this.itemCourseFee.focus();
@@ -143,7 +153,7 @@ class CandidateModal extends AdminModal {
             phoneNumber: this.itemPhoneNumber.value(),
             identityCard: this.itemIdentityCard.value(),
             birthday: this.itemBirthday.value(),
-            planCourse: this.itemPlanCourse.value(),
+            plannedCourse: this.itemPlannedCourse.value(),
             courseType: this.courseType.value(),
             division: this.division.value(),
             state: this.states.value(),
@@ -173,9 +183,9 @@ class CandidateModal extends AdminModal {
         } else if (data.birthday == '') {
             T.notify('Ngày sinh người dùng bị trống!', 'danger');
             this.itemBirthday.focus();
-        } else if (data.planCourse == '') {
+        } else if (data.plannedCourse == '') {
             T.notify('Khóa dự kiến không được trống!', 'danger');
-            this.itemPlanCourse.focus();
+            this.itemPlannedCourse.focus();
         }else if (!data.courseFee) {
             T.notify('Gói học phí không được trống!', 'danger');
             this.itemCourseFee.focus();
@@ -191,6 +201,7 @@ class CandidateModal extends AdminModal {
 
     onChangeCourseType = data => data && data.id && this.setState({courseId:data.id},()=>{
         this.setValueCourseFee(data.id);
+        this.setValuePlannedCourse(data.id);
     });
 
     render = () => this.renderModal({

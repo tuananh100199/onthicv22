@@ -30,6 +30,7 @@ module.exports = (app) => {
         hinhChupTrucTiep: { type: Boolean, default: false },
 
         planCourse: String,                                                                         // Khóa học dự kiến
+        plannedCourse: { type: app.database.mongoDB.Schema.ObjectId, ref: 'PlanCourse' },                                // Giáo viên dự kiến                                 
         planLecturer: { type: app.database.mongoDB.Schema.ObjectId, ref: 'User' },                                // Giáo viên dự kiến                                 
         division: { type: app.database.mongoDB.Schema.ObjectId, ref: 'Division' },                                // Cơ sở đào tạo
         course: { type: app.database.mongoDB.Schema.ObjectId, ref: 'Course' },                                    // Khóa học
@@ -175,6 +176,7 @@ module.exports = (app) => {
                 .populate('user', 'email phoneNumber image fcmToken')
                 .populate('course', 'courseType name active')
                 .populate('division')
+                .populate('plannedCourse','_id title courseType')
                 .populate('courseType', 'title').populate('kySatHach','_id title date')
                 .populate({
                     path: 'course', populate: { path: 'subjects', select: '-detailDescription' }
@@ -227,6 +229,7 @@ module.exports = (app) => {
                                 .populate('user', '-password').populate('division', '_id title isOutside').populate('planLecturer', '_id lastname firstname').populate('courseType').populate('course').populate({
                                     path: 'course', populate: { path: 'subjects', select: '-detailDescription' }
                                 }).populate('courseFee').populate('_id name').populate('kySatHach','_id title date')
+                                .populate('plannedCourse','_id title courseType')
                                 .exec((error, list) => {
                                     result.list = list;
                                     done(error, result);
@@ -240,6 +243,7 @@ module.exports = (app) => {
                         .populate('user', '-password').populate('division', '_id title isOutside').populate('planLecturer', '_id lastname firstname').populate('courseType').populate('course').populate({
                             path: 'course', populate: { path: 'subjects', select: '-detailDescription' }
                         }).populate('courseFee').populate('discount').populate('coursePayment').populate('kySatHach','_id title date')
+                        .populate('plannedCourse','_id title courseType')
                         .exec((error, list) => {
                             result.list = list;
                             done(error, result);

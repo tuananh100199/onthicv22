@@ -14,7 +14,10 @@ module.exports = app => {
         const pageNumber = parseInt(req.params.pageNumber),
             pageSize = parseInt(req.params.pageSize),
             condition=req.query.condition||{},pageCondition={};
-            console.log({condition});
+            if(req.query.courseType){
+                pageCondition.courseType = req.query.courseType;
+                
+            }
             if(condition.searchText){
                 pageCondition.title = new RegExp(condition.searchText, 'i');
             }
