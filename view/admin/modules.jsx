@@ -46,6 +46,7 @@ import fwProfileStudentType from 'modules/mdDaoTao/fwProfileStudentType/index';
 import fwRegisterCalendar from 'modules/mdDaoTao/fwRegisterCalendar/index';
 import fwReviewClass from 'modules/mdDaoTao/fwReviewClass/index';
 import fwSign from 'modules/mdDaoTao/fwSign/index';
+import fwSimulation from 'modules/mdDaoTao/fwSimulation/index';
 import fwSms from 'modules/mdDaoTao/fwSms/index';
 import fwStudent from 'modules/mdDaoTao/fwStudent/index';
 import fwStudyProgram from 'modules/mdDaoTao/fwStudyProgram/index';
@@ -60,4 +61,4 @@ import fwNews from 'modules/mdTruyenThong/fwNews/index';
 import fwNotificationTemplate from 'modules/mdTruyenThong/fwNotificationTemplate/index';
 import fwSubscribe from 'modules/mdTruyenThong/fwSubscribe/index';
 
-export const modules = [_init, fwAssignRole, fwBank, fwCategory, fwCluster, fwComment, fwCourseFee, fwCoursePayment, fwDepartment, fwDiscount, fwEmail, fwEncryption, fwEnrollTarget, fwFeeType, fwHome, fwMenu, fwNotification, fwPlanCourse, fwProfileType, fwRate, fwRevenue, fwRole, fwStaff, fwTeacher, fwTeacherDiploma, fwTrainingClass, fwUser, fwCandidate, fwCar, fwCertificate, fwChangeLecturer, fwChat, fwCourse, fwCourseType, fwDevice, fwDivision, fwDriveQuestion, fwDriveTest, fwFacility, fwLesson, fwLicenseTest, fwPayment, fwProfileStudent, fwProfileStudentType, fwRegisterCalendar, fwReviewClass, fwSign, fwSms, fwStudent, fwStudyProgram, fwSubject, fwTimeTable, fwContact, fwFaq, fwFeedback, fwForum, fwLaw, fwNews, fwNotificationTemplate, fwSubscribe];
+export const modules = [_init, fwAssignRole, fwBank, fwCategory, fwCluster, fwComment, fwCourseFee, fwCoursePayment, fwDepartment, fwDiscount, fwEmail, fwEncryption, fwEnrollTarget, fwFeeType, fwHome, fwMenu, fwNotification, fwPlanCourse, fwProfileType, fwRate, fwRevenue, fwRole, fwStaff, fwTeacher, fwTeacherDiploma, fwTrainingClass, fwUser, fwCandidate, fwCar, fwCertificate, fwChangeLecturer, fwChat, fwCourse, fwCourseType, fwDevice, fwDivision, fwDriveQuestion, fwDriveTest, fwFacility, fwLesson, fwLicenseTest, fwPayment, fwProfileStudent, fwProfileStudentType, fwRegisterCalendar, fwReviewClass, fwSign, fwSimulation, fwSms, fwStudent, fwStudyProgram, fwSubject, fwTimeTable, fwContact, fwFaq, fwFeedback, fwForum, fwLaw, fwNews, fwNotificationTemplate, fwSubscribe];
