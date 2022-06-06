@@ -37,6 +37,7 @@
 	4016 - Chương trình học (/user/study-program)
 	4020 - Môn học (/user/dao-tao/mon-hoc)
 	4030 - Bài học (/user/dao-tao/bai-hoc)
+	4035 - Mô phỏng (/user/simulator)
 	4045 - Khóa học (/user/course)
 	4055 - Học viên chưa tốt nghiệp (/user/student/fail-graduation)
 	4060 - Học viên chưa đạt sát hạch (/user/student/fail-exam)

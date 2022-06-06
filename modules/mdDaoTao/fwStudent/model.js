@@ -96,6 +96,11 @@ module.exports = (app) => {
         diemBoDeThi: {},
         duKienThangThi: Number,                                                                     // Dự kiến tháng thi
         duKienNamThi: Number,                                                                       // Dự kiến năm thi
+        moPhong: [{
+            question: { type: app.database.mongoDB.Schema.ObjectId, ref: 'Simulator' },
+            answer: Number,                                                                         // Thời gian trả lời
+            score: Number,
+        }],
 
         diemThiTotNghiep: [{
             monThiTotNghiep: { type: app.database.mongoDB.Schema.ObjectId },
