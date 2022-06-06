@@ -51,10 +51,11 @@ class SimulatorModal extends AdminModal {
     }
 
     onUploadSuccess = ({ error, item, image }) => {
+        console.log(item);
         if (error) {
             T.notify('Upload hình ảnh thất bại!', 'danger');
         } else {
-            item && image && this.setState({ image });
+            image && this.setState({ image });
             // item && this.props.change(item);
         }
     }

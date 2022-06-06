@@ -32,7 +32,6 @@ module.exports = (app) => {
     });
 
     app.uploadImage = (dataName, getItem, _id, srcPath, done) => {
-        console.log(_id);
         if (_id == 'new') { // Upload hình ảnh khi chưa có tạo đối tượng trong database
             const dateFolderName = app.date.getDateFolderName(),
                 image = app.path.join('/temp', dateFolderName, 'img', dataName, app.path.basename(srcPath));
