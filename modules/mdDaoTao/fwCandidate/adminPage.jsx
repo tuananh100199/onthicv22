@@ -9,6 +9,7 @@ import { ajaxSelectDivision, ajaxGetDivision, getDivisionAll } from 'modules/mdD
 import {ajaxSelectCourseFeeByCourseType,getCourseFeeAll} from 'modules/_default/fwCourseFee/redux';
 import {ajaxSelectCoursePayment,getCoursePaymentAll} from 'modules/_default/fwCoursePayment/redux';
 import {ajaxSelectDiscount,getDiscountAll} from 'modules/_default/fwDiscount/redux';
+import {ajaxSelectPlanCourseByCourseType} from 'modules/_default/fwPlanCourse/redux';
 class CandidateModal extends AdminModal {
     state = {};
     componentDidMount() {
@@ -16,8 +17,8 @@ class CandidateModal extends AdminModal {
     }
 
     onShow = ({ _id, courseFee , discount , coursePayment , firstname = '', lastname = '', email = '', phoneNumber = '',
-     identityCard = '', birthday = null, planCourse = '', onUpdated, courseType = null, state = '', division = '',
-     isDon=false,isHinh=false,isIdentityCard=false,isGiayKhamSucKhoe=false,isBangLaiA1=false }) => {
+     identityCard = '', birthday = null, onUpdated, courseType = null, state = '', division = '',
+     isDon=false,isHinh=false,isIdentityCard=false,isGiayKhamSucKhoe=false,isBangLaiA1=false,plannedCourse=null }) => {
         this.onUpdated = onUpdated;
         this.itemFirstname.value(firstname);
         this.itemLastname.value(lastname);
@@ -25,7 +26,7 @@ class CandidateModal extends AdminModal {
         this.itemPhoneNumber.value(phoneNumber);
         this.itemIdentityCard.value(identityCard);
         this.itemBirthday.value(birthday);
-        this.itemPlanCourse.value(planCourse);
+        this.itemPlannedCourse.value(plannedCourse?{id:plannedCourse._id,text:plannedCourse.title}:'');
         ajaxGetCourseType(courseType, data => { //TODO: cần xem lại đoạn code này
             this.setState({ courseTypeTitle: data.item.title,courseFee });
         });
@@ -37,12 +38,22 @@ class CandidateModal extends AdminModal {
         this.setValueCoursePayment(coursePayment);
         this.setState({ _id,courseId:courseType._id },()=>{
             this.setValueCourseFee(courseType?courseType._id:null,courseFee);
+            this.setValuePlannedCourse(courseType?courseType._id:null,plannedCourse);
+
         });
         this.itemIsDon.value(isDon);
         this.itemIsHinh.value(isHinh);
         this.itemIsIdentityCard.value(isIdentityCard);
         this.itemIsGiayKhamSucKhoe.value(isGiayKhamSucKhoe);
         this.itemIsBangLaiA1.value(isBangLaiA1);
+    }
+
+    setValuePlannedCourse = (courseTypeId,plannedCourse=null)=>{
+        if( !courseTypeId || !plannedCourse || !plannedCourse.courseType || plannedCourse.courseType!=courseTypeId){
+            this.itemPlannedCourse.value(null);
+        }else{
+            this.itemPlannedCourse.value({id:plannedCourse._id,text:plannedCourse.title});
+        }
     }
 
     setValueCourseFee = (courseTypeId,courseFee=null)=>{
@@ -82,7 +93,7 @@ class CandidateModal extends AdminModal {
             phoneNumber: this.itemPhoneNumber.value(),
             identityCard: this.itemIdentityCard.value(),
             birthday: this.itemBirthday.value(),
-            planCourse: this.itemPlanCourse.value(),
+            plannedCourse: this.itemPlannedCourse.value(),
             courseType: this.courseType.value(),
             division: this.division.value(),
             state: this.states.value(),
@@ -116,9 +127,9 @@ class CandidateModal extends AdminModal {
         } else if (data.birthday == '') {
             T.notify('Ngày sinh người dùng bị trống!', 'danger');
             this.itemBirthday.focus();
-        } else if (data.planCourse == '') {
+        } else if (data.plannedCourse == '') {
             T.notify('Khóa dự kiến không được trống!', 'danger');
-            this.itemPlanCourse.focus();
+            this.itemPlannedCourse.focus();
         }else if (!data.courseFee) {
             T.notify('Gói học phí không được trống!', 'danger');
             this.itemCourseFee.focus();
@@ -142,7 +153,7 @@ class CandidateModal extends AdminModal {
             phoneNumber: this.itemPhoneNumber.value(),
             identityCard: this.itemIdentityCard.value(),
             birthday: this.itemBirthday.value(),
-            planCourse: this.itemPlanCourse.value(),
+            plannedCourse: this.itemPlannedCourse.value(),
             courseType: this.courseType.value(),
             division: this.division.value(),
             state: this.states.value(),
@@ -172,9 +183,9 @@ class CandidateModal extends AdminModal {
         } else if (data.birthday == '') {
             T.notify('Ngày sinh người dùng bị trống!', 'danger');
             this.itemBirthday.focus();
-        } else if (data.planCourse == '') {
+        } else if (data.plannedCourse == '') {
             T.notify('Khóa dự kiến không được trống!', 'danger');
-            this.itemPlanCourse.focus();
+            this.itemPlannedCourse.focus();
         }else if (!data.courseFee) {
             T.notify('Gói học phí không được trống!', 'danger');
             this.itemCourseFee.focus();
@@ -190,6 +201,7 @@ class CandidateModal extends AdminModal {
 
     onChangeCourseType = data => data && data.id && this.setState({courseId:data.id},()=>{
         this.setValueCourseFee(data.id);
+        this.setValuePlannedCourse(data.id);
     });
 
     render = () => this.renderModal({
@@ -205,7 +217,8 @@ class CandidateModal extends AdminModal {
             <FormSelect className='col-md-4' ref={e => this.division = e} label='Cơ sở đào tạo' data={ajaxSelectDivision} required/>
             <FormTextBox className='col-md-4' ref={e => this.itemIdentityCard = e} label='CMND/CCCD' required/>
             <FormDatePicker className='col-md-4' ref={e => this.itemBirthday = e} label='Ngày sinh' type='date-mask' required/>
-            <FormTextBox className='col-md-4' ref={e => this.itemPlanCourse = e} label='Khóa dự kiến' required/>
+            {/* <FormTextBox className='col-md-4' ref={e => this.itemPlanCourse = e} label='Khóa dự kiến' required/> */}
+            <FormSelect className='col-md-4' ref={e => this.itemPlannedCourse = e} label='Khóa dự kiến' data={ajaxSelectPlanCourseByCourseType(this.state.courseId)} required/>
             <FormCheckbox className='col-md-3' ref={e => this.itemIsDon = e} label='Đơn' readOnly={this.props.readOnly} />
             <FormCheckbox className='col-md-3' ref={e => this.itemIsHinh = e} label='Hình' readOnly={this.props.readOnly} />
             <FormCheckbox className='col-md-3' ref={e => this.itemIsGiayKhamSucKhoe = e} label='GKSK' readOnly={this.props.readOnly} />

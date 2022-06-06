@@ -120,6 +120,7 @@ module.exports = app => {
         changes.modifiedDate = new Date();
         // changes.courseFee=='' && delete changes.courseFee;
         changes.discount=='' && delete changes.discount;//Không phải học viên nào cũng có discount
+        changes.plannedCourse=='' && delete changes.discount;
         (!changes.state || changes.state=='') && delete changes.state;
         // changes.coursePayment=='' && delete changes.coursePayment;
         app.model.candidate.update(req.body._id, changes, (error, item) => {
@@ -177,7 +178,6 @@ module.exports = app => {
                                                 mailTitle = result.emailCreateMemberByAdminTitle,
                                                 mailText = fillParams(result.emailCreateMemberByAdminText),
                                                 mailHtml = fillParams(result.emailCreateMemberByAdminHtml);
-                                                console.log({mailHtml});
                                             app.email.sendEmail(result.email, result.emailPassword, user.email, app.email.cc, mailTitle, mailText, mailHtml, null);
                                         });
                                     }
@@ -194,7 +194,7 @@ module.exports = app => {
                         user: _userId,
                         identityCard: item.identityCard,
                         birthday: item.birthday,
-                        planCourse: item.planCourse,
+                        plannedCourse: item.plannedCourse||null,
                         firstname: item.firstname,
                         lastname: item.lastname,
                         courseType: item.courseType,
@@ -238,7 +238,6 @@ module.exports = app => {
                 app.model.candidate.create(candidate, (error, item) => {
                     if (item) {
                         app.model.setting.get('email', 'emailPassword', 'emailCandidateTitle', 'emailCandidateText', 'emailCandidateHtml', result => {
-                            console.log(result);
                             const fillParams = (data) => data.replaceAll('{name}', `${item.lastname} ${item.firstname}`),
                                 mailSubject = fillParams(result.emailCandidateTitle),
                                 mailText = fillParams(result.emailCandidateText),
