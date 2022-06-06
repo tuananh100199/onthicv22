@@ -127,14 +127,13 @@ class AdminStudentPage extends AdminPage {
             isOutsideCourseAdmin = currentUser && currentUser.isCourseAdmin && currentUser.division && currentUser.division.isOutside ? true : false;
         outsideStudentVisible = outsideStudentVisible || isOutsideCourseAdmin;
         const isValidStudent = preStudent => preStudent.division && (!preStudent.division.isOutside || outsideStudentVisible);
-
         if (sortType == 'name') {
             (preStudents || []).forEach((preStudent, index) => {
                 if (isValidStudent(preStudent)) {
                     preStudentList.push(<li style={{ margin: 0, display: 'block' }} key={index}>
                         <div style={{ display: 'inline-flex' }}>
                             <FormCheckbox ref={e => this.preStudents[preStudent._id] = e} style={{ display: 'inline-block' }} onChange={this.selectOnePreStudent}
-                                label={<>{preStudentList.length + 1}. {preStudent.lastname} {preStudent.firstname} ({preStudent.identityCard}) - {preStudent.division && preStudent.division.title} {preStudent.division && preStudent.division.isOutside ? ' (cơ sở ngoài)' : ''} =&gt; Khóa dự kiến <span className='text-danger'>{preStudent.planCourse}</span></>} />
+                                label={<>{preStudentList.length + 1}. {preStudent.lastname} {preStudent.firstname} ({preStudent.identityCard}) - {preStudent.division && preStudent.division.title} {preStudent.division && preStudent.division.isOutside ? ' (cơ sở ngoài)' : ''} =&gt; Khóa dự kiến <span className='text-danger'>{preStudent.plannedCourse?preStudent.plannedCourse.title:''}</span></>} />
                             <div className='buttons'>
                                 <a href='#' onClick={e => this.addCourseStudents(e, _courseId, preStudent)}>
                                     <i style={{ marginLeft: 10, fontSize: 20 }} className='fa fa-arrow-right text-success' />
@@ -168,7 +167,7 @@ class AdminStudentPage extends AdminPage {
                         <ul className='menuList' style={{ width: '100%', paddingLeft: 20, margin: 0 }}>
                             {division.preStudents.map((preStudent, index) => {
                                 const studentLabel = <>{preStudentList.length + 1}. {preStudent.lastname} {preStudent.firstname} ({preStudent.identityCard})
-                                    {preStudent.planCourse ? <>=&gt; Khóa dự kiến <span className='text-danger'>{preStudent.planCourse}</span></> : ''}</>;
+                                    {preStudent.planCourse ? <>=&gt; Khóa dự kiến <span className='text-danger'>{preStudent.plannedCourse?preStudent.plannedCourse.title:''}</span></> : ''}</>;
                                 return (
                                     <li style={{ margin: 0, display: 'block' }} key={index}>
                                         <div style={{ display: 'inline-flex' }}>

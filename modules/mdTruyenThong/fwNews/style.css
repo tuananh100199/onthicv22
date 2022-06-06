@@ -85,6 +85,17 @@
     font-weight: 800;
 }
 
+.news .wrap-shadow{
+    border: none;
+    height:100%;
+    box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+    transition: all .2s linear;
+}
+
+.news .wrap-shadow:hover {
+    box-shadow: 0 10px 20px 0 rgba(0,0,0,0.2);
+}
+
 /* 
 .news .news_content .news_content_title:hover a {
     color:var(--color-primary-hover);
