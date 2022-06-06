@@ -154,6 +154,22 @@ export function updateOfficialStudent(_id, changes, done) {
     };
 }
 
+export function deleteOfficialStudent(_id,done) {
+    return dispatch => {
+        const url = '/api/student';
+        T.delete(url, { _id }, data => {
+            if (data.error) {
+                T.notify('Xóa học viên bị lỗi!', 'danger');
+                console.error(`DELETE: ${url}. ${data.error}`);
+            } else {
+                T.alert('Học viên được xóa thành công!', 'error', false, 800);
+                dispatch(getOfficialStudentPage());
+                done && done();
+            }
+        }, error => console.error(error) || T.notify('Xóa học viên bị lỗi!', 'danger'));
+    };
+}
+
 export function addStudentPayment(_studentId, payment,courseFee, fee, done) {
     return dispatch => {
         const url = '/api/student/payment';

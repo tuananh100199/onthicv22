@@ -12,7 +12,8 @@ module.exports = (app) => {
     app.get('/user/category/news', app.permission.check('category:read'), app.templates.admin);
     app.get('/user/news', app.permission.check('news:read'), app.templates.admin);
     app.get('/user/news/:_id', app.permission.check('news:read'), app.templates.admin);
-
+    
+    app.get('/news', app.templates.home);
     app.get('/news/:_id', app.templates.home);
     app.get('/tintuc/:link', app.templates.home);
 

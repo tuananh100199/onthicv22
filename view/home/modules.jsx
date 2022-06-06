@@ -11,6 +11,7 @@ import fwFeeType from 'modules/_default/fwFeeType/index';
 import fwHome from 'modules/_default/fwHome/index';
 import fwMenu from 'modules/_default/fwMenu/index';
 import fwNotification from 'modules/_default/fwNotification/index';
+import fwPlanCourse from 'modules/_default/fwPlanCourse/index';
 import fwProfileType from 'modules/_default/fwProfileType/index';
 import fwStaff from 'modules/_default/fwStaff/index';
 import fwTeacher from 'modules/_default/fwTeacher/index';
@@ -29,7 +30,9 @@ import fwReviewClass from 'modules/mdDaoTao/fwReviewClass/index';
 import fwSimulation from 'modules/mdDaoTao/fwSimulation/index';
 import fwStudyProgram from 'modules/mdDaoTao/fwStudyProgram/index';
 import fwContact from 'modules/mdTruyenThong/fwContact/index';
+import fwFaq from 'modules/mdTruyenThong/fwFaq/index';
+import fwLaw from 'modules/mdTruyenThong/fwLaw/index';
 import fwNews from 'modules/mdTruyenThong/fwNews/index';
 import fwSubscribe from 'modules/mdTruyenThong/fwSubscribe/index';
 
-export const modules = [_init, fwComment, fwCourseFee, fwCoursePayment, fwDepartment, fwDiscount, fwEncryption, fwEnrollTarget, fwFeeType, fwHome, fwMenu, fwNotification, fwProfileType, fwStaff, fwTeacher, fwTeacherDiploma, fwTrainingClass, fwUser, fwCandidate, fwCertificate, fwChangeLecturer, fwCourse, fwCourseType, fwDivision, fwLicenseTest, fwProfileStudentType, fwReviewClass, fwSimulation, fwStudyProgram, fwContact, fwNews, fwSubscribe];
+export const modules = [_init, fwComment, fwCourseFee, fwCoursePayment, fwDepartment, fwDiscount, fwEncryption, fwEnrollTarget, fwFeeType, fwHome, fwMenu, fwNotification, fwPlanCourse, fwProfileType, fwStaff, fwTeacher, fwTeacherDiploma, fwTrainingClass, fwUser, fwCandidate, fwCertificate, fwChangeLecturer, fwCourse, fwCourseType, fwDivision, fwLicenseTest, fwProfileStudentType, fwReviewClass, fwSimulation, fwStudyProgram, fwContact, fwFaq, fwLaw, fwNews, fwSubscribe];

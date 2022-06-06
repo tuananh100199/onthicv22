@@ -98,7 +98,7 @@ export function deleteRegisterCalendar(_id,done) {
             } else {
                 T.alert('Lịch nghỉ được xóa thành công!', 'error', false, 800);
                 done && done();
-                dispatch(getRegisterCalendarPageByAdmin());
+                dispatch(getRegisterCalendarPage());
             }
         }, error => console.error(error) || T.notify('Xóa lịch nghỉ bị lỗi!', 'danger'));
     };
