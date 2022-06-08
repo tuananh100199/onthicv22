@@ -1,8 +1,8 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { getRevenueByMonth, getStatisticRevenue, getRevenueByDate } from './redux';
+import { getRevenueByMonth, getStatisticRevenue, getRevenueByDate, deleteStatisticRevenue } from './redux';
 import { Link } from 'react-router-dom';
-import { AdminPage,FormSelect, FormDatePicker, TableCell, renderTable } from 'view/component/AdminPage';
+import { AdminPage,FormSelect, FormDatePicker, TableCell, renderTable, CirclePageButton } from 'view/component/AdminPage';
 
 const backRoute = '/user/revenue';
 
@@ -36,6 +36,14 @@ class RevenuePage extends AdminPage {
     onChangeType = (type) => {
         this.setState({ typeId: type });
         if(type == 0) this.handleFilter();
+    }
+
+    delete = () => {
+        T.confirm('Xoá thông tin doanh thu', 'Bạn có chắc bạn muốn xóa thông tin doanh thu này?', true, isConfirm =>{
+            if (isConfirm ) {
+                this.props.deleteStatisticRevenue();
+            }
+        });
     }
 
     handleFilter = () => {
@@ -83,6 +91,7 @@ class RevenuePage extends AdminPage {
 
     render() {
         const list = this.state.revenueData ? this.state.revenueData : [];
+        const permission = this.getUserPermission('revenue', ['admin']);
         let total =  0;
         list && list.length ? list.forEach(item => total = total + parseInt(Object.values(item)[0])) : 0;
             const table = renderTable({
@@ -125,7 +134,7 @@ class RevenuePage extends AdminPage {
                         </div>) : null}
                 <div className='pt-3'>Tổng số tiền: {T.numberDisplay(total) + ' đồng'}</div>
                 <div className='pt-3'>{table}</div>
-                
+                {permission.admin ? <CirclePageButton type='delete' onClick={this.delete} /> : null}
             </div>
             </>,
             backRoute,
@@ -134,5 +143,5 @@ class RevenuePage extends AdminPage {
 }
 
 const mapStateToProps = state => ({ system: state.system, revenue: state.accountant.revenue });
-const mapActionsToProps = { getRevenueByMonth, getStatisticRevenue, getRevenueByDate };
+const mapActionsToProps = { getRevenueByMonth, getStatisticRevenue, getRevenueByDate, deleteStatisticRevenue };
 export default connect(mapStateToProps, mapActionsToProps)(RevenuePage);

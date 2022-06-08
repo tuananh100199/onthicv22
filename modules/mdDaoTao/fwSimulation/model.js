@@ -1,22 +1,20 @@
 module.exports = app => {
     const schema = app.database.mongoDB.Schema({
         title: String,
-        active: { type: Boolean, default: false },
-        state: { type: String, enum: ['approved', 'waiting', 'reject','autoReject','onTap'], default: 'waiting' }, 
-        dateStart: Date,
-        dateEnd: Date,
-        students: [{ type: app.database.mongoDB.Schema.Types.ObjectId, ref: 'Student' }],
-        teacher: { type: app.database.mongoDB.Schema.Types.ObjectId, ref: 'Teacher' },
-        remainStudent: { type: Number, default: 100 },  
-        maxStudent: { type: Number, default: 100 },
-        courseType: { type: app.database.mongoDB.Schema.ObjectId, ref: 'CourseType' }, 
-        subject: { type: app.database.mongoDB.Schema.ObjectId, ref: 'Subject' },
-        lyDoHuyOnTap: String,
+        priority: Number,
+        active: {type: Boolean, default: true},
+        link: String,
+        maxPointAnswer: Number,                             //Thời gian trả lời để đạt điểm tối đa
+        minPointAnswer: Number,                             //Thời gian trả lời đạt điểm tối thiểu
+        image: String,
     });
-    const model = app.database.mongoDB.model('ReviewClass', schema);
+    const model = app.database.mongoDB.model('Simulator', schema);
 
-    app.model.reviewClass = {
-        create: (data, done) => model.create(data, done),
+    app.model.simulator = {
+        create: (data, done) => model.find({}).sort({ priority: -1 }).limit(1).exec((error, items) => {
+            data.priority = error || items == null || items.length === 0 ? 1 : items[0].priority + 1;
+            model.create(data, (done));
+        }),
 
         getPage: (pageNumber, pageSize, condition, done) => model.countDocuments(condition, (error, totalItem) => {
             if (error) {
@@ -26,7 +24,7 @@ module.exports = app => {
                 result.pageNumber = pageNumber === -1 ? result.pageTotal : Math.min(pageNumber, result.pageTotal);
                 const skipNumber = (result.pageNumber > 0 ? result.pageNumber - 1 : 0) * result.pageSize;
 
-                model.find(condition).sort({ title: 1 }).skip(skipNumber).limit(result.pageSize).populate('courseType', '_id title').populate('subject', '_id title').populate('teacher', 'lastname firstname user maGiaoVien').populate('students', 'lastname firstname phoneNumber user').exec((error, items) => {
+                model.find(condition).sort({ priority: -1 }).skip(skipNumber).limit(result.pageSize).populate('courseType', '_id title').populate('subject', '_id title').populate('teacher', 'lastname firstname user maGiaoVien').populate('students', 'lastname firstname phoneNumber user').exec((error, items) => {
                     result.list = error ? [] : items;
                     done(error, result);
                 });
@@ -59,13 +57,26 @@ module.exports = app => {
                 model.updateMany(condition, { $set: changes, $unset }, { new: true }, done);
         },
 
-        addStudent: (_id, student, done) => {
-            model.findOneAndUpdate({_id}, { $push: { students: student } }, { new: true }).populate('students', 'lastname firstname phoneNumber').exec(done);
-        },
-
-        deleteLesson: (_id, _studentId, done) => {
-            model.findOneAndUpdate({ _id }, { $pull: { students: _studentId } }, { new: true }).populate('students', 'lastname firstname phoneNumber').exec(done);
-        },
+        swapPriority: (_id, isMoveUp, done) => model.findById(_id, (error, item1) => {
+            if (error || item1 === null) {
+                done('Invalid simulator Id!');
+            } else {
+                model.find({ priority: isMoveUp ? { $gt: item1.priority } : { $lt: item1.priority } })
+                    .sort({ priority: isMoveUp ? 1 : -1 }).limit(1).exec((error, list) => {
+                        if (error) {
+                            done(error);
+                        } else if (list == null || list.length === 0) {
+                            done(null);
+                        } else {
+                            let item2 = list[0],
+                                priority = item1.priority;
+                            item1.priority = item2.priority;
+                            item2.priority = priority;
+                            item1.save(error1 => item2.save(error2 => done(error1 ? error1 : error2)));
+                        }
+                    });
+            }
+        }),
 
         delete: (_id, done) => model.findById(_id, (error, item) => {
             if (error) {

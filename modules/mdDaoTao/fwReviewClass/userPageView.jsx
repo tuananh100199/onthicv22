@@ -17,11 +17,11 @@ class AdminEditPage extends AdminPage {
                     T.notify('Lấy khoá học bị lỗi!', 'danger');
                     this.props.history.push('/user/hoc-vien/khoa-hoc/:courseId/mon-hoc/:_id');
                 } else if (data.item) {
-                    this.props.getReviewClassPage(1,20,{courseType: data.item.courseType._id, dateEnd: {$gte: new Date(), remainStudent: {$gte: 1}}, active: true }, reviewClass => {
+                    this.props.getReviewClassPage(1,20,{courseType: data.item.courseType._id, subject: params._id}, reviewClass => {
                         if (reviewClass.error) {
                             this.props.history.push('/user');
                         } else {
-                            this.setState({listClass: reviewClass.list, student: data.student});
+                            this.setState({listClass: reviewClass.list, student: data.student, courseTypeId: data.item.courseType._id});
                         }
                     });
                     T.ready('/user/hoc-vien/khoa-hoc/' + this.state.courseId + '/mon-hoc');
@@ -35,11 +35,11 @@ class AdminEditPage extends AdminPage {
     }
     
     registerClass = (reviewClass) => {
-        const student = this.state.student;
+        const { student, courseTypeId, subjectId} = this.state;
         const studentId = student._id;
         if(reviewClass.students && (reviewClass.students.findIndex(student => student._id == studentId) == -1)){
             T.confirm('Đăng ký lớp ôn tập', 'Bạn có chắc muốn đăng ký lớp ôn tập ' + reviewClass.title, true, isConfirm =>
-            isConfirm && this.props.addStudentReviewClass(reviewClass._id, student));
+            isConfirm && this.props.addStudentReviewClass(reviewClass._id, student, courseTypeId, subjectId));
         } else {
             const successContent = 
             `<h5 style='color:#199D76'><b>Bạn đã đăng ký thành công khoá học này</b></h5>
@@ -74,7 +74,7 @@ class AdminEditPage extends AdminPage {
             </div>
               
             ),
-            backRoute: '/user/hoc-vien/khoa-hoc/' + this.state.courseId + '/mon-hoc' + this.state.subjectId,
+            backRoute: '/user/hoc-vien/khoa-hoc/' + this.state.courseId + '/mon-hoc/' + this.state.subjectId,
         });
     }
 }
