@@ -49,7 +49,7 @@ class AdminEditPage extends AdminPage {
             const successContent = 
             `<h5 style='color:#DC3545'><b>Khoá học bạn đăng ký đã bị huỷ</b></h5>
             <p style='color:#333'>Khoá học bạn đăng ký vào lúc: ${T.dateToText(reviewClass.dateStart, 'hh:ss dd/mm/yyyy')} đã bị huỷ.</p>
-            <p style='color:#333'>Lý do: <b>${reviewClass.lyDoHuyOnTap ? reviewClass.lyDoHuyOnTap : 'Không đủ số lượng!'}</b</p>`;
+            <p style='color:#333'>Lý do: <b>${reviewClass.lyDoHuyOnTap ? reviewClass.lyDoHuyOnTap : 'Không đủ số lượng!'}</b></p>`;
             T.alert(successContent, 'info', true, 60000);
         } 
     }
