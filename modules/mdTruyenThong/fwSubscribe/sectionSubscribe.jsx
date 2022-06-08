@@ -4,19 +4,19 @@ import { createSubscribe } from './redux';
 
 class SectionSubscribe extends React.Component {
     state = {scrolled:false};
+    scrolled=false;
     componentDidMount() {
         $(document).ready(() => {
             const done = () => {
                 if (this.props && this.props.system && this.props.system.subscribe) {
+                    this.scrolled=true;
                     $(window).trigger('resize');
                     $(this.background).parallax();
-                    
-
                 } else {
                     setTimeout(done, 100);
                 }
             };
-            done();
+            // done();
             // setTimeout(()=>{
             //     if (this.props && this.props.system && this.props.system.subscribe) {
             //         // $(window).trigger('resize');
@@ -26,15 +26,14 @@ class SectionSubscribe extends React.Component {
             window.addEventListener('scroll',()=>{
                 const Y = window.scrollY;
                 const subscribe = $('#subscribe');
-                if(subscribe.offset().top-Y<=window.innerHeight){
-                    if(!this.state.scrolled){
+                if(subscribe.length && subscribe.offset().top-Y<=window.innerHeight){
+                    if(!this.scrolled){
                         done();
-                        this.setState({scrolled:true});
                     }
                 }
             });
             window.addEventListener('resize',()=>{
-                this.setState({scrolled:false});
+                this.scrolled=false;
 
             });
         });

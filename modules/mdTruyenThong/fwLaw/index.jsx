@@ -11,7 +11,7 @@ export default {
     routes: [
         {
             path: '/user/law',
-            component: Loadable({ loading: Loading,func:console.log('into indexx'), loader: () => import('./adminPage') }),
+            component: Loadable({ loading: Loading, loader: () => import('./adminPage') }),
         },
         {
             path: '/user/law/:_id',
