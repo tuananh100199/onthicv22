@@ -2,6 +2,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { login } from 'modules/_default/_init/redux';
 import { homegetLoginForm } from './redux/reduxLoginForm';
+import QrCodeModal from './qrCodeModal';
 
 class SectionLoginForm extends React.Component {
     state = {};
@@ -33,8 +34,11 @@ class SectionLoginForm extends React.Component {
     render() {
         const { item } = this.state;
         const user = this.props.system && this.props.system.user;
+        const {chPlay,appStore} = this.props.system;
         return (
         <>
+            <QrCodeModal ref={e => this.modal = e}/>
+
             { !user ?
             <div className='login_form'>
                 {item ?  
@@ -89,24 +93,24 @@ class SectionLoginForm extends React.Component {
 
                                 <div className="col-12 pt-4 login-mobile mb-0">
                                     <div className="app-button-wrap">
-                                        <div className="app-button-item">
-                                                <div className="app-button-image">
-                                                    <img src='/img/ch-play.jpg' alt="image" />
-                                                </div>
-                                                <div className="app-button-content">
-                                                    <p style={{color:'white'}}>Get it on</p>
-                                                    <h5 style={{color:'white'}}>Google Play</h5>
-                                                </div>
+                                        <a href='#' onClick={e=>e.preventDefault()|| this.modal.show({title:'Google Play',link:chPlay})} className="app-button-item">
+                                            <div className="app-button-image">
+                                                <img src='/img/ch-play.jpg' alt="image" />
                                             </div>
-                                            <div className="app-button-item">
-                                                <div className="app-button-image">
+                                            <div className="app-button-content">
+                                                <p style={{color:'white'}}>Get it on</p>
+                                                <h5 style={{color:'white'}}>Google Play</h5>
+                                            </div>
+                                        </a>
+                                        <a href='#' onClick={e=>e.preventDefault()|| this.modal.show({title:'App Store',link:appStore})} className="app-button-item">
+                                            <div className="app-button-image">
                                                 <img src='/img/app-store.jpg' alt="image" />
-                                                </div>
-                                                <div className="app-button-content">
-                                                    <p style={{color:'white'}}>Download on the</p>
-                                                    <h5 style={{color:'white'}}>App Store</h5>
-                                                    </div>
                                             </div>
+                                            <div className="app-button-content">
+                                                <p style={{color:'white'}}>Download on the</p>
+                                                <h5 style={{color:'white'}}>App Store</h5>
+                                            </div>
+                                        </a>
                                     </div>
                                 </div>
                             </div> 
