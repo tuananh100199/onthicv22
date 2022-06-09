@@ -2,6 +2,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { getAllDivisionByUser } from 'modules/mdDaoTao/fwDivision/redux';
 import 'modules/_default/fwHome/style.css';
+import QrCodeModal from 'modules/_default/fwHome/qrCodeModal';
 
 class Footer extends React.Component {
     componentDidMount() {
@@ -19,7 +20,7 @@ class Footer extends React.Component {
         </li>;
 
     render() {
-        let { footer } = this.props.system ? this.props.system : { footer: '/img/footer.jpg'};
+        let { footer,chPlay,appStore } = this.props.system ? this.props.system : { footer: '/img/footer.jpg'};
         // facebook = facebook ? <li><a href={facebook} target='_blank' rel='noreferrer'><i className='fa fa-facebook' aria-hidden='true' /></a></li> : '';
         // youtube = youtube ? <li><a href={youtube} target='_blank' rel='noreferrer'><i className='fa fa-youtube' aria-hidden='true' /></a></li> : '';
         // twitter = twitter ? <li><a href={twitter} target='_blank' rel='noreferrer'><i className='fa fa-twitter' aria-hidden='true' /></a></li> : '';
@@ -113,24 +114,24 @@ class Footer extends React.Component {
                                             </ul>
 
                                             <div className="app-button-wrap" style={{paddingTop:'32px'}}>
-                                                <div className="app-button-item">
-                                                    <div className="app-button-image">
-                                                        <img src='/img/ch-play.jpg' alt="image" />
-                                                    </div>
-                                                    <div className="app-button-content">
-                                                        <p>Get it on</p>
-                                                        <h5>Google Play</h5>
-                                                    </div>
+                                            <a href="#" className='app-button-item' onClick={e=>e.preventDefault()||this.modal.show({title:'Google play',link:chPlay})}>
+                                                <div className="app-button-image">
+                                                    <img src='/img/ch-play.jpg' alt="image" />
                                                 </div>
-                                                <div className="app-button-item">
-                                                    <div className="app-button-image">
+                                                <div className="app-button-content">
+                                                    <p>Get it on</p>
+                                                    <h5>Google Play</h5>
+                                                </div>
+                                            </a>
+                                            <a href="#" className='app-button-item' onClick={e=>e.preventDefault()||this.modal.show({title:'App Store',link:appStore})}>
+                                                <div className="app-button-image">
                                                     <img src='/img/app-store.jpg' alt="image" />
-                                                    </div>
-                                                    <div className="app-button-content">
-                                                        <p>Download on the</p>
-                                                        <h5>App Store</h5>
-                                                        </div>
                                                 </div>
+                                                <div className="app-button-content">
+                                                    <p>Download on the</p>
+                                                    <h5>App Store</h5>
+                                                </div>
+                                            </a>
                                             </div>
                                         </div>
                                         
@@ -202,6 +203,9 @@ class Footer extends React.Component {
                         </div>
                     </div>
                 </div>
+
+            <QrCodeModal ref={e => this.modal = e} />
+
             </footer>
         );
     }
