@@ -4,6 +4,7 @@ module.exports = (app) => {
 
         firstname: String,
         lastname: String,
+        fullName:String,
         sex: { type: String, enum: ['male', 'female'], default: 'male' },
         birthday: Date,
         image: String,                                                                              // Hình người dùng
@@ -167,7 +168,10 @@ module.exports = (app) => {
     // Không được phép viết hàm getAll cho model student
     const model = app.database.mongoDB.model('Student', schema);
     app.model.student = {
-        create: (data, done) => model.create(data, done),
+        create: (data, done) =>{
+            data.fullName = ((data.lastname||'')+' '+(data.firstname||'')).trim();
+            model.create(data, done);
+        }, 
 
         get: (condition, done) => (typeof condition == 'object' ? model.findOne(condition) : model.findById(condition))
             .populate('user', '-password').populate('division').populate('courseType').populate('courseFee').populate('feeType').populate('coursePayment').populate('discount').populate('course').exec(done),
@@ -277,7 +281,14 @@ module.exports = (app) => {
                 $unset = {};
             }
             changes.modifiedDate = new Date();
-            model.findOneAndUpdate({ _id }, { $set: changes, $unset }, { new: true }).populate('user', 'email phoneNumber').populate('division', 'id title').populate('course', 'name').exec(done);
+            model.findOne({_id},(error,item)=>{
+                if(error)done(error);
+                else{
+                    changes.fullName = ((changes.lastname || item.lastname).trim()+' '+(changes.firstname||item.firstname).trim()).trim();
+                    console.log(changes.fullName);
+                    model.update({ _id }, { $set: changes, $unset } , { new: true }).populate('user', 'email phoneNumber').populate('division', 'id title').populate('course', 'name').exec(done);
+                }
+            });
         },
 
         updateMany: (condition, changes, done) => {
@@ -319,7 +330,6 @@ module.exports = (app) => {
                         student.tienDoHocTap={};
                         student.tienDoHocTap[data.subjectId]={[data.lessonId]:{state: data.state,isPass:data.state=='pass'?'true':'false'}};
                     }
-                    
                     model.findOneAndUpdate({ _id: data.studentId }, { tienDoHocTap: student.tienDoHocTap }, { new: true }).exec(done);
                 } else if (data.view) {
                     const obj = {};

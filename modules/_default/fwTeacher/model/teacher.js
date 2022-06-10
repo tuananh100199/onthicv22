@@ -2,7 +2,6 @@ module.exports = (app) => {
     const schema = app.database.mongoDB.Schema({
         user: { type: app.database.mongoDB.Schema.ObjectId, ref: 'User' },            //user
         division: { type: app.database.mongoDB.Schema.ObjectId, ref: 'Division' },    // Cơ sở đào tạo
-
         dayLyThuyet: { type: Boolean, default: false },// loại giảng dạy. True là giáo viên dạy lý thuyết, false là giáo viên dạy thực hành
         courseTypes: { type: [{ type: app.database.mongoDB.Schema.Types.ObjectId, ref: 'CourseType' }], default: [] },// danh sách loại khóa học có thể dạy
         courses: { type: [{ type: app.database.mongoDB.Schema.Types.ObjectId, ref: 'Course' }], default: [] },// danh sách các khóa học đang dạy
@@ -12,6 +11,7 @@ module.exports = (app) => {
         maGiaoVien: String,
         firstname: String,
         lastname: String,
+        fullName:String,
         sex: { type: String, enum: ['male', 'female'], default: 'male' },
         birthday: Date,
         image: String,
@@ -99,11 +99,12 @@ module.exports = (app) => {
                     if (error) done(error);
                     else if (info) done('Hồ sơ giáo viên đã được tạo!');
                     else {
+                        data.fullName = ((data.lastname||'')+' '+(data.firstname||'')).trim();
                         model.create(data, done);
                     }
                 });
             } else {//trường hợp không có msnv và cmnd
-                model.create(data, done);
+                done('Thiếu dữ liệu cần thiết!');
             }
         },
 
@@ -142,20 +143,25 @@ module.exports = (app) => {
             }
         }),
 
-        update: (_id, changes, done) => {
-            if (changes && (changes.maGiaoVien || changes.identityCard)) {
+        update: (_id,changes,done)=> new Promise((resolve,reject)=>{
+            if(changes && (changes.maGiaoVien || changes.identityCard)){
                 model.findOne({ $or: [{ maGiaoVien: changes.maGiaoVien }, { identityCard: changes.identityCard }] }, (error, info) => {
-                    if (error) done(error);
+                    if (error || !info) reject('Không tìm thấy hồ sơ!');
                     else if (info && info._id != _id) {// Mã giáo viên đã tồn tại
-                        done('Hồ sơ giáo viên đã tồn tại!');
+                        reject('Hồ sơ giáo viên đã tồn tại!');
                     } else {
-                        model.findOneAndUpdate({ _id }, changes, { new: true }).populate('user', 'email phoneNumber').populate('division', 'id title').exec(done);
+                        resolve(info);
                     }
                 });
-            } else {
-                model.findOneAndUpdate({ _id }, changes, { new: true }).populate('user', 'email phoneNumber').populate('division', 'id title').exec(done);
+            }else{
+                model.findOne({_id},(error,item)=>{
+                    (error||!item)?reject('Không tìm thấy hồ sơ!'):resolve(item);
+                });
             }
-        },
+        }).then((info)=>{
+            changes.fullName = ((changes.lastname || info.lastname)+' '+(changes.firstname||info.firstname)).trim();
+            model.update({ _id }, changes, { new: true }).populate('user', 'email phoneNumber').populate('division', 'id title').exec(done);
+        }).catch(error=>done(error)),
 
         delete: (_id, done) => model.findById(_id, (error, item) => {
             if (error) {
