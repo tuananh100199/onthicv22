@@ -82,6 +82,7 @@
 	8060 - Theo dõi công nợ (/user/student/debt-enroll)
 	8070 - Thời khóa biểu học viên (/user/time-table)
 	8080 - Lịch nghỉ giáo viên (/user/register-calendar/enrollment)
+	8085 - Hình ảnh học viên (/user/verification-image)
 9000. Giáo viên (undefined)
 	8999 - Hướng dẫn (/user/teacher-tutorial)
 	9001 - Hồ sơ giáo viên (/user/teacher)
