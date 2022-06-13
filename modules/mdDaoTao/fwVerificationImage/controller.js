@@ -18,7 +18,6 @@ module.exports = (app) => {
         const pageNumber = parseInt(req.params.pageNumber),
             pageSize = parseInt(req.params.pageSize);
         let condition = req.query.pageCondition || {},filter=req.query.filter||{},sort=req.query.sort||null; 
-        console.log(filter);
         filter && app.handleFilter(filter,['state'],defaultFilter=>{
             condition={...condition,...defaultFilter};
         });
@@ -31,7 +30,6 @@ module.exports = (app) => {
                 }
             };
         }
-        console.log(condition);
         app.model.verificationImage.getPage(pageNumber, pageSize, condition , sort, (error, page) => {
             res.send({ page, error: error ? 'Danh sách  hình ảnh học viên không sẵn sàng!' : null });
         });
