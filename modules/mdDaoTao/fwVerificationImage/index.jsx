@@ -13,9 +13,5 @@ export default {
             path: '/user/verification-image',
             component: Loadable({ loading: Loading, loader: () => import('./adminPage') }),
         },
-        {
-            path: '/user/verification-image/:_id',
-            component: Loadable({ loading: Loading, loader: () => import('./adminEditPage') }),
-        },
     ]
 };

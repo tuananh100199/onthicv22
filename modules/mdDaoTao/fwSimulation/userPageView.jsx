@@ -181,7 +181,7 @@ class AdminEditPage extends AdminPage {
                                                 </div>
                                             </div>
                                             <div className='d-flex justify-content-center pt-2'>
-                                                <button className='btn btn-warning mr-1' onClick={() => this.onClickVideo()}>Nhấn để đánh dấu</button>
+                                                <button className='btn btn-warning mr-1' onClick={() => this.onClickVideo()}>Nhấn hoặc ấn phím cách để đánh dấu</button>
                                                 <button className='btn btn-success' onClick={() => {
                                                         this.modal.show(activeQuestion);
                                                     }}><span><i className="fa fa-search" aria-hidden="true"></i></span> Gợi ý </button>

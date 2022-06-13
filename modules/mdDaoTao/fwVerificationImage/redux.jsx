@@ -21,11 +21,19 @@ export default function verificationImageReducer(state = {}, data) {
 
 // Actions ------------------------------------------------------------------------------------------------------------
 T.initCookiePage('pageVerificationImage');
-export function getVerificationImagePage(pageNumber, pageSize, pageCondition, done) {
-    const page = T.updatePage('pageVerificationImage', pageNumber, pageSize);
+export function getVerificationImagePage(pageNumber, pageSize, pageCondition , filter, sort, done) {
+    if(typeof sort=='function'){
+        done=sort;
+        sort=undefined;
+    }
+    else if(typeof filter=='function'){
+        done=filter;
+        filter=undefined;
+    }
+    const page = T.updatePage('pageVerificationImage', pageNumber, pageSize,pageCondition,filter,sort);
     return (dispatch) => {
         const url = `/api/verification-image/page/${page.pageNumber}/${page.pageSize}`;
-        T.get(url,{ pageCondition }, data => {
+        T.get(url,{ pageCondition,filter:page.filter,sort:page.sort  }, data => {
             if (data.error) {
                 T.notify('Lấy danh sách hình ảnh học viên  bị lỗi!', 'danger');
                 console.error('GET: ' + url + '.', data.error);

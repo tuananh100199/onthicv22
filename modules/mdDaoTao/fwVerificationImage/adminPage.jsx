@@ -1,7 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { getVerificationImagePage, createVerificationImage, updateVerificationImage, deleteVerificationImage } from './redux';
-import { AdminPage, AdminModal, FormTextBox, TableCell, renderTable} from 'view/component/AdminPage';
+import { AdminPage, AdminModal, FormTextBox, TableCell, renderTable, TableHeadCell, TableHead } from 'view/component/AdminPage';
 import Pagination from 'view/component/Pagination';
 import { getNotificationTemplateAll } from 'modules/mdTruyenThong/fwNotificationTemplate/redux';
 import { getUserChatToken, getAllUserChatToken } from 'modules/mdDaoTao/fwChat/redux';
@@ -14,6 +14,7 @@ const  defaultTitleHuyAnh = 'Thông báo về việc từ chối ảnh đăng k�
     defaultTitleDuyetAnh = 'Thông báo về việc duyệt ảnh đăng ký học!',
     defaultAbstractDuyetAnh = 'Thông báo về việc duyệt ảnh đăng ký học!',
     defaultContentDuyetAnh = '<p>Xin chào {ho_ten},</p>\n<p>Trung tâm Đào tạo và Sát hạch lái xe Hiệp Phát thông báo ảnh đăng ký học của bạn đã được duyệt </p>';
+const dataState = [{id: 'waiting', text: 'Đang chờ đợi'}, { id:'approved', text: 'Đã xác nhận'}, { id:'reject', text:'Đã từ chối'}];
 class VerificationImageModal extends AdminModal {
     componentDidMount() {
         $(document).ready(() => this.onShown(() => this.itemUser.focus()));
@@ -248,16 +249,17 @@ class VerificationImagePage extends AdminPage {
             { pageNumber, pageSize, pageTotal, totalItem, list } = this.props.verificationImage && this.props.verificationImage.page ?
                 this.props.verificationImage.page : { pageNumber: 1, pageSize: 50, pageTotal: 1, totalItem: 0, list: [] },
             table = renderTable({
-                getDataSource: () => list,
+                autoDisplay:true,
+                getDataSource: () => list, stickyHead: true,
                 renderHead: () => (
-                    <tr>
+                    <TableHead getPage={this.props.getVerificationImagePage}>
                         <th style={{ width: 'auto', textAlign: 'center' }}>#</th>
-                        <th style={{ width: '100%' }}>Tên học viên</th>
+                        <TableHeadCell name='firstname' filter='search' style={{ width: '100%' }}>Tên học viên</TableHeadCell>
                         <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Hình ảnh</th>
-                        <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Ngày chụp</th>
-                        <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Trạng thái</th>
+                        <TableHeadCell sort={true} style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Ngày chụp</TableHeadCell>
+                        <TableHeadCell name='state' filter='select' filterData = {dataState} style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Trạng thái</TableHeadCell>
                         <th style={{ width: 'auto' }} nowrap='true'>Thao tác</th>
-                    </tr>),
+                    </TableHead>),
                 renderRow: (item, index) => (
                     <tr key={index}>
                         <TableCell type='number' content={(pageNumber - 1) * pageSize + index + 1} />

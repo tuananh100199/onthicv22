@@ -11,25 +11,28 @@ module.exports = (app) => {
     );
 
     app.get('/user/verification-image', app.permission.check('verificationImage:read'), app.templates.admin);
-    app.get('/user/verification-image/:_id', app.permission.check('verificationImage:read'), app.templates.admin);
-    app.get('/user/hoc-vien/khoa-hoc/:courseId/mon-hoc/lop-on-tap/:_id', app.permission.check('user:login'), app.templates.admin);
     
 
     // APIs ------------------------------------------------------------------------------------------------------------
     app.get('/api/verification-image/page/:pageNumber/:pageSize', (req, res) => {
         const pageNumber = parseInt(req.params.pageNumber),
             pageSize = parseInt(req.params.pageSize);
-        const {subject, courseType} = req.query.pageCondition || {};
-        let condition = {};
-        if(courseType) condition = {
-            courseType: courseType,
-            subject: {$in: [null, subject]},
-            remainStudent: {$gte: 1},
-            dateStart: {$gte: new Date()},
-            // state: 'waiting',
-            active: true
-        };
-        app.model.verificationImage.getPage(pageNumber, pageSize, condition, (error, page) => {
+        let condition = req.query.pageCondition || {},filter=req.query.filter||{},sort=req.query.sort||null; 
+        console.log(filter);
+        filter && app.handleFilter(filter,['state'],defaultFilter=>{
+            condition={...condition,...defaultFilter};
+        });
+        if(filter.firstname){// họ tên
+            condition['$expr']= {
+                '$regexMatch': {
+                  'input': {'$concat': ['$lastname', ' ', '$firstname'] },
+                  'regex': `.*${filter.firstname}.*`,  //Your text search here
+                  'options': 'i'
+                }
+            };
+        }
+        console.log(condition);
+        app.model.verificationImage.getPage(pageNumber, pageSize, condition , sort, (error, page) => {
             res.send({ page, error: error ? 'Danh sách  hình ảnh học viên không sẵn sàng!' : null });
         });
     });
