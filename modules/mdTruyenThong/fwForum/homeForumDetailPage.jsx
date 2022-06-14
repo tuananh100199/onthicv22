@@ -108,6 +108,13 @@ class NewsDetail extends React.Component {
             return <>
                 <div className='contact'>
                     <div className='container' style={{paddingTop:120,paddingBottom:50}}>
+                        
+                        <div className="d-flex justify-content-center ftco-animate">
+                            {forum.video && forum.video.active?<iframe width="600" height="320"
+                                src={`https://www.youtube.com/embed/${forum.video.link}`}>
+                            </iframe>:''}
+                        </div>
+                        
                         <div className='row'>
                             <div className='col-12'>
                                 <div className='contact_content'>
@@ -120,13 +127,13 @@ class NewsDetail extends React.Component {
                             </div>
                         </div>
 
-                        <div className="forumMessage">
+                        <div className="forumMessage ftco-animate">
                             {(!user || !user._id) ?'Đăng nhập vào hệ thống để tham gia bình luận'
                             : !permissionWriteMessage ? 'Bạn không thể tham gia bình luận!'
                             :<div className='d-flex'>
-                                <FormRichTextBox style={{flex:'auto'}} ref={e => this.itemContent = e} label='Bình luận' />
+                                <FormRichTextBox style={{flex:'auto'}} ref={e => this.itemContent = e} label='Phản hồi' />
                                 <div className='d-flex flex-column ml-2'>
-                                <button className='btn btn-success' onClick={e=>this.sendMessage(e)} style={{marginTop:30}}>Bình luận <i className="fa fa-paper-plane-o" aria-hidden="true"></i></button>
+                                <button className='btn btn-success' onClick={e=>this.sendMessage(e)} style={{marginTop:30}}>Phản hồi <i className="fa fa-paper-plane-o" aria-hidden="true"></i></button>
                                 <button onClick={e=>e.preventDefault&&this.itemContent.value('')} className='btn btn-danger mt-2'>Hủy <i className="fa fa-times" aria-hidden="true"></i></button>
                                 </div>
                             </div>

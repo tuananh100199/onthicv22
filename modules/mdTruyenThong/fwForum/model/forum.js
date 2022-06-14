@@ -11,7 +11,6 @@ module.exports = app => {
         active: { type: Boolean, default: false }, // bật/tắt forum
         video:{
             link:String,
-            position:{type:String,enum:['top','bottom']},//vị trí hiển thị video
             active: { type: Boolean, default: false },
         }
     });

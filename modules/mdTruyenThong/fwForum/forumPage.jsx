@@ -9,11 +9,6 @@ const dataFilterType = [
     { id: 0, text: 'Tất cả', condition: {} },
     { id: 1, text: 'Đang chờ duyệt', condition: { state: 'waiting' } }
 ];
-
-const positionOptions = [
-    { id: 'top', text: 'Trên cùng' },
-    { id: 'bottom', text: 'Dưới cùng' }
-];
 class ForumModal extends AdminModal {
     state = {isVideo:false};
     componentDidMount() {
@@ -28,7 +23,6 @@ class ForumModal extends AdminModal {
         this.itemState && this.itemState.value(state);
         this.itemActiveVideo.value(video.active||false);
         this.itemLinkVideo.value(video.link||'');
-        this.itemPositionVideo.value(video.position||'');
         this.setState({ _id,isVideo:video.active });
     }
 
@@ -42,7 +36,6 @@ class ForumModal extends AdminModal {
                 video:{
                     active:this.itemActiveVideo.value() ?1:0,
                     link:this.itemLinkVideo.value(),
-                    position:this.itemPositionVideo.value(),
                 }
             };
             if (data.title == '') {
@@ -56,9 +49,6 @@ class ForumModal extends AdminModal {
             } else if ( data.video.active && data.video.link=='') {
                 T.notify('Link video bị trống!', 'danger');
                 this.itemLinkVideo.focus();
-            } else if (data.video.active && !data.video.position) {
-                T.notify('Vị trí hiển thị của video bị trống!', 'danger');
-                this.itemPositionVideo.focus();
             } else {
                 if ((this.itemContent.text() || '').split(' ').length > 200) {
                     T.notify('Nội dung của forum dài hơn 200 từ', 'danger');
@@ -96,15 +86,9 @@ class ForumModal extends AdminModal {
                 {forumCreator ? <FormSelect ref={e => this.itemState = e} label='Trạng thái' data={ForumStates} readOnly={false} /> : null}
                 <div className="row">
                     <FormCheckbox ref={e => this.itemActiveVideo = e} className='col-md-2' label='Thêm video' readOnly={false} onChange={isVideo=>this.setState({isVideo})}/>
-
-                    <div className="col-md-5" style={{display:this.state.isVideo?'block':'none'}}>
+                    <div className="col-md-10" style={{display:this.state.isVideo?'block':'none'}}>
                         <FormTextBox ref={e => this.itemLinkVideo = e} label='Link video' readOnly={false} />
                     </div>
-
-                    <div className="col-md-5" style={{display:this.state.isVideo?'block':'none'}}>
-                        <FormSelect ref={e => this.itemPositionVideo = e} label='Vị trí hiển thị' data={positionOptions} readOnly={false} />
-                    </div>
-                
                 </div>
             </>,
         });
