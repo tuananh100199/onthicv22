@@ -3,25 +3,33 @@ import { connect } from 'react-redux';
 import { getForumPage, createForum, updateForum, deleteForum } from './redux';
 import { Link } from 'react-router-dom';
 import Pagination from 'view/component/Pagination';
-import { AdminPage, AdminModal, FormTextBox, FormSelect, FormEditor } from 'view/component/AdminPage';
+import { AdminPage, AdminModal, FormTextBox, FormSelect, FormEditor, FormCheckbox } from 'view/component/AdminPage';
 import { ForumStates, ForumStatesMapper, ForumButtons } from './index';
 const dataFilterType = [
     { id: 0, text: 'Tất cả', condition: {} },
     { id: 1, text: 'Đang chờ duyệt', condition: { state: 'waiting' } }
 ];
+
+const positionOptions = [
+    { id: 'top', text: 'Trên cùng' },
+    { id: 'bottom', text: 'Dưới cùng' }
+];
 class ForumModal extends AdminModal {
-    state = {};
+    state = {isVideo:false};
     componentDidMount() {
         $(this.modal).modal({ backdrop: 'static', keyboard: false, show: false });
         $(document).ready(() => this.onShown(() => this.itemTitle.focus()));
     }
 
     onShow = (item) => {
-        const { _id, title, content, state } = item || { title: '', content: '', state: 'waiting' };
+        const { _id, title, content, state,video } = item || { title: '', content: '', state: 'waiting',video:{} };
         this.itemTitle.value(title);
         this.itemContent.value(content);
         this.itemState && this.itemState.value(state);
-        this.setState({ _id });
+        this.itemActiveVideo.value(video.active||false);
+        this.itemLinkVideo.value(video.link||'');
+        this.itemPositionVideo.value(video.position||'');
+        this.setState({ _id,isVideo:video.active });
     }
 
     onSubmit = () => {
@@ -31,6 +39,11 @@ class ForumModal extends AdminModal {
                 content: this.itemContent.value(),
                 state: this.itemState ? this.itemState.value() : 'waiting',
                 category: this.props.category,
+                video:{
+                    active:this.itemActiveVideo.value() ?1:0,
+                    link:this.itemLinkVideo.value(),
+                    position:this.itemPositionVideo.value(),
+                }
             };
             if (data.title == '') {
                 T.notify('Tên chủ đề bị trống!', 'danger');
@@ -40,6 +53,12 @@ class ForumModal extends AdminModal {
                 this.itemContent.focus();
             } else if (this.itemState && data.state == null) {
                 T.notify('Trạng thái chủ đề bị trống!', 'danger');
+            } else if ( data.video.active && data.video.link=='') {
+                T.notify('Link video bị trống!', 'danger');
+                this.itemLinkVideo.focus();
+            } else if (data.video.active && !data.video.position) {
+                T.notify('Vị trí hiển thị của video bị trống!', 'danger');
+                this.itemPositionVideo.focus();
             } else {
                 if ((this.itemContent.text() || '').split(' ').length > 200) {
                     T.notify('Nội dung của forum dài hơn 200 từ', 'danger');
@@ -75,6 +94,18 @@ class ForumModal extends AdminModal {
                 <FormTextBox ref={e => this.itemTitle = e} label='Tên' readOnly={false} />
                 <FormEditor ref={e => this.itemContent = e} label='Nội dung (200 từ)' readOnly={false} uploadUrl='/user/upload?category=forum' />
                 {forumCreator ? <FormSelect ref={e => this.itemState = e} label='Trạng thái' data={ForumStates} readOnly={false} /> : null}
+                <div className="row">
+                    <FormCheckbox ref={e => this.itemActiveVideo = e} className='col-md-2' label='Thêm video' readOnly={false} onChange={isVideo=>this.setState({isVideo})}/>
+
+                    <div className="col-md-5" style={{display:this.state.isVideo?'block':'none'}}>
+                        <FormTextBox ref={e => this.itemLinkVideo = e} label='Link video' readOnly={false} />
+                    </div>
+
+                    <div className="col-md-5" style={{display:this.state.isVideo?'block':'none'}}>
+                        <FormSelect ref={e => this.itemPositionVideo = e} label='Vị trí hiển thị' data={positionOptions} readOnly={false} />
+                    </div>
+                
+                </div>
             </>,
         });
     }

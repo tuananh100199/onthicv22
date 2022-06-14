@@ -1944,6 +1944,16 @@
     color:var(--color-primary) !important;
 }
 
+.btn-main{
+    color:var(--color-primary) !important;
+    
+} 
+.btn-main:hover, 
+.btn-main:active, 
+.btn-main:focus{
+    color:var(--color-primary-hover) !important;
+}
+
 .text-logo{
     color:var(--color-logo) !important;
 }
