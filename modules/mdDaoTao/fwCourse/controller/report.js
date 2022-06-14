@@ -134,6 +134,34 @@ module.exports = (app) => {
         });
     });
 
+    app.get('/api/course/report-8/export', app.permission.check('course:export'), (req, res) => {
+        const { listCar } = req.query;
+        app.model.car.getAll({ _id : {$in: listCar}}, (error, data) => {
+            if(error || !data) res.send({ error: 'Xuất file báo cáo bị lỗi'});
+            else{
+                let cars = [];
+                const handleExport = (index=0)=>{
+                    if(index>=data.length){
+                        const data = {
+                            cars
+                        };
+                        app.docx.generateFile('/document/Phu_Luc_8.docx', data, (error, buf) => {
+                            res.send({ error: error, buf: buf });
+                        });
+                    }else{
+                        const car = data[index];
+                        const { brand, division, licensePlates, type } = car;                        
+                            cars.push({
+                                idx:index+1, licensePlate: licensePlates, division: division && division.title, brand: brand && brand.title, type: type && type.title
+                            });
+                        handleExport(index+1);
+                    }
+                };
+                handleExport();
+            }
+        });
+    });
+
     app.get('/api/course/report-tn01/export', app.permission.check('course:report'), (req, res) => {
         const { courseId, bienBan } = req.query;
         app.model.course.get({ _id : courseId}, (error, course) => {

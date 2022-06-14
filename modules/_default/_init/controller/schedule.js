@@ -111,43 +111,50 @@ module.exports = (app) => {
                 });
             });
             app.schedule('0 6 * * *', () => {
-                // const axios = require('axios');
-                // Tìm và gửi thông báo chúc mừng sinh nhật học viên
-                // if (app.primaryWorker) {
-                //     app.model.user.getAll({$expr:{$eq: [{$dayOfYear: new Date()}, {$dayOfYear: '$birthday'}]}}, (error, items) => {
-                //         if (items && items.length) {
-                //             const handleNotificationUser = (index = 0) => {
-                //                 if (index == items.length) {
-                //                     return;
-                //                 } else {
-                //                     const user = items[index];
-                //                     const currentDay = new Date().getDate();
-                //                     const currentMonth = new Date.getMonth();
-                //                     if(user && user.birthday && (user.birthday.getDate() == currentDay) && (user.birthday.getMonth() == currentMonth)){
-                //                         axios.post('https://fcm.googleapis.com/fcm/send', {
-                //                             notification: {
-                //                                 title: 'Chúc mừng sinh nhật',
-                //                                 // type: item.type,
-                //                                 body: 'Trung tâm đào tạo lái xe Hiệp Phát chúc mừng sinh nhật bạn!',
-                //                                 mutable_content: true,
-                //                                 sound: 'Tri-tone'
-                //                             },
-                //                             to: user.fcmToken 
-                //                         },
-                //                         {
-                //                             headers: {
-                //                                 Authorization: 'key=AAAAyyg1JDc:APA91bGhj8NFiemEgwLCesYoQcbGOiZ0KX2qbc7Ir7sFnANrypzIpniGsVZB9xS8ZtAkRrYqLCi5QhFGp32cKjsK_taIIXrkGktBrCZk7u0cphZ1hjI_QXFGRELhQQ_55xdYccZvmZWg'
-                //                             }
-                //                         }
-                //                         );
-                //                     } 
-                //                     handleNotificationUser(index+1);
-                //                 }
-                //             };
-                //             handleNotificationUser();
-                //         }
-                //     });
-                // }
+                const axios = require('axios');
+                function convertBirth(str) {
+                    let date = new Date(str),
+                        mnth = ('0' + (date.getMonth() + 1)).slice(-2),
+                        day = ('0' + date.getDate()).slice(-2);
+                    return [day, mnth].join('');
+                }
+                //Tìm và gửi thông báo chúc mừng sinh nhật học viên
+                if (app.primaryWorker) {
+                    const day = convertBirth(new Date());
+                    app.model.user.getAll({birth: day}, (error, items) => {
+                        if (items && items.length) {
+                            const handleNotificationUser = (index = 0) => {
+                                if (index == items.length) {
+                                    return;
+                                } else {
+                                    const user = items[index];
+                                    const currentDay = new Date().getDate();
+                                    const currentMonth = new Date.getMonth();
+                                    if(user && user.birthday && (user.birthday.getDate() == currentDay) && (user.birthday.getMonth() == currentMonth)){
+                                        axios.post('https://fcm.googleapis.com/fcm/send', {
+                                            notification: {
+                                                title: 'Chúc mừng sinh nhật',
+                                                // type: item.type,
+                                                body: 'Trung tâm đào tạo lái xe Hiệp Phát chúc mừng sinh nhật bạn!',
+                                                mutable_content: true,
+                                                sound: 'Tri-tone'
+                                            },
+                                            to: user.fcmToken 
+                                        },
+                                        {
+                                            headers: {
+                                                Authorization: 'key=AAAAyyg1JDc:APA91bGhj8NFiemEgwLCesYoQcbGOiZ0KX2qbc7Ir7sFnANrypzIpniGsVZB9xS8ZtAkRrYqLCi5QhFGp32cKjsK_taIIXrkGktBrCZk7u0cphZ1hjI_QXFGRELhQQ_55xdYccZvmZWg'
+                                            }
+                                        }
+                                        );
+                                    } 
+                                    handleNotificationUser(index+1);
+                                }
+                            };
+                            handleNotificationUser();
+                        }
+                    });
+                }
                 // Tìm và gửi thông báo lịch học/ dạy
                 // if(app.primaryWorker){
                 //     const today = new Date();

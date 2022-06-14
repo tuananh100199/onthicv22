@@ -890,10 +890,10 @@ export function exportSH02(bienBan, done) {
     };
 }
 
-export function export8(bienBan, done) {
+export function export8(listCar, done) {
     return () => {
-        const url = '/api/course/report-tn09/export';
-        T.get(url, { bienBan }, data => {
+        const url = '/api/course/report-8/export';
+        T.get(url, { listCar }, data => {
             if (data.error) {
                 T.notify('Xuất file word bị lỗi!', 'danger');
                 console.error(`GET: ${url}.`, data.error);

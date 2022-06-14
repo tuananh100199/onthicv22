@@ -25,8 +25,8 @@ module.exports = (app) => {
             courseType: courseType,
             subject: {$in: [null, subject]},
             remainStudent: {$gte: 1},
-            dateEnd: {$gte: new Date()},
-            state: 'waiting',
+            dateStart: {$gte: new Date()},
+            // state: 'waiting',
             active: true
         };
         app.model.reviewClass.getPage(pageNumber, pageSize, condition, (error, page) => {
@@ -66,14 +66,14 @@ module.exports = (app) => {
         });
     });
 
-    app.delete('/api/review-class/student', app.permission.check('reviewClass:write'), (req, res) => {
+    app.delete('/api/review-class/student', app.permission.check('user:login'), (req, res) => {
         const { _id, _studentId } = req.body;
         app.model.reviewClass.get(_id, (error, item) => {
             if(error) res.send({error});
             else{
                 const remainStudent = item.remainStudent;
                 app.model.reviewClass.update(_id, {remainStudent: remainStudent + 1}, () => {
-                    app.model.reviewClass.deleteLesson(_id, _studentId, (error) => {
+                    app.model.reviewClass.deleteStudent(_id, _studentId, (error) => {
                         if (error) {
                             res.send({ error });
                         } else {

@@ -13,6 +13,7 @@ module.exports = (app) => {
     app.get('/user/simulator', app.permission.check('simulator:read'), app.templates.admin);
     // app.get('/user/simulator/:_id', app.permission.check('simulator:read'), app.templates.admin);
     app.get('/user/hoc-vien/khoa-hoc/:courseId/mon-hoc/mo-phong', app.permission.check('user:login'), app.templates.admin);
+    app.get('/user/hoc-vien/khoa-hoc/:courseId/mon-hoc/mo-phong/kiem-tra', app.permission.check('user:login'), app.templates.admin);
     
 
     // APIs ------------------------------------------------------------------------------------------------------------
@@ -28,6 +29,28 @@ module.exports = (app) => {
     app.get('/api/simulator/all', (req, res) => {
         const condition = req.query.condition || {};
         app.model.simulator.getAll(condition,(error, list) => res.send({ error, list }));
+    });
+
+    app.get('/api/simulator/random', (req, res) => {
+        const condition = req.query.condition || {};
+        const chooseRandom = (arr, num = 1) => {
+            const result = [];
+            for(let i = 0; i < num; ){
+               const random = Math.floor(Math.random() * arr.length);
+               if(result.indexOf(arr[random]) !== -1){
+                  continue;
+               }
+               result.push(arr[random]);
+               i++;
+            }
+            return result;
+         };
+        app.model.simulator.getAll(condition,(error, list) => {
+            let randomList = [];
+            if(list.length > 10) randomList = chooseRandom(list, 10);
+            else randomList = list;
+            res.send({error, list:randomList});
+        });
     });
 
     app.get('/api/simulator', (req, res) => {
