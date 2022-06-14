@@ -27,13 +27,13 @@ export function getSimulatorPage(pageNumber, pageSize, pageCondition, done) {
         const url = `/api/simulator/page/${page.pageNumber}/${page.pageSize}`;
         T.get(url,{ pageCondition }, data => {
             if (data.error) {
-                T.notify('Lấy danh sách lớp ôn tập  bị lỗi!', 'danger');
+                T.notify('Lấy danh sách mô phỏng  bị lỗi!', 'danger');
                 console.error('GET: ' + url + '.', data.error);
             } else {
                 done && done(data.page);
                 dispatch({ type: SimulatorGetPage, page: data.page });
             }
-        }, error => console.error(error) || T.notify('Lấy danh sách lớp ôn tập  bị lỗi!', 'danger'));
+        }, error => console.error(error) || T.notify('Lấy danh sách mô phỏng  bị lỗi!', 'danger'));
     };
 }
 
@@ -42,20 +42,35 @@ export function getSimulatorAll(condition,done) {
         const url = '/api/simulator/all';
         T.get(url,{condition}, data => {
             if (data.error) {
-                T.notify('Lấy lớp ôn tập  bị lỗi', 'danger');
+                T.notify('Lấy mô phỏng  bị lỗi', 'danger');
                 console.error('GET: ' + url + '. ' + data.error);
             } else {
                 done && data && done(data.list);
                 dispatch({ type: SimulatorGetAll, list: data.list });
             }
-        }, error => console.error(error) || T.notify('Lấy lớp ôn tập  bị lỗi', 'danger'));
+        }, error => console.error(error) || T.notify('Lấy mô phỏng  bị lỗi', 'danger'));
+    };
+}
+
+export function getSimulatorRandom(condition,done) {
+    return dispatch => {
+        const url = '/api/simulator/random';
+        T.get(url,{condition}, data => {
+            if (data.error) {
+                T.notify('Lấy mô phỏng  bị lỗi', 'danger');
+                console.error('GET: ' + url + '. ' + data.error);
+            } else {
+                done && data && done(data.list);
+                dispatch({ type: SimulatorGetAll, list: data.list });
+            }
+        }, error => console.error(error) || T.notify('Lấy mô phỏng  bị lỗi', 'danger'));
     };
 }
 
 export function getSimulator(_id, done) {
     return dispatch => ajaxGetSimulator(_id, data => {
         if (data.error) {
-            T.notify('Lấy lớp ôn tập  bị lỗi!', 'danger');
+            T.notify('Lấy mô phỏng  bị lỗi!', 'danger');
             console.error('GET: getCourseType.', data.error);
         } else {
             done && done(data.item);
@@ -69,13 +84,13 @@ export function createSimulator(data, done) {
         const url = '/api/simulator';
         T.post(url, { data }, data => {
             if (data.error) {
-                T.notify('Tạo lớp ôn tập  bị lỗi!', 'danger');
+                T.notify('Tạo mô phỏng  bị lỗi!', 'danger');
                 console.error('POST: ' + url + '.', data.error);
             } else {
                 dispatch(getSimulatorPage());
                 done && done(data);
             }
-        }, error => console.error(error) || T.notify('Tạo lớp ôn tập  bị lỗi!', 'danger'));
+        }, error => console.error(error) || T.notify('Tạo mô phỏng  bị lỗi!', 'danger'));
     };
 }
 
@@ -84,16 +99,16 @@ export function updateSimulator(_id, changes, done) {
         const url = '/api/simulator';
         T.put(url, { _id, changes }, data => {
             if (data.error) {
-                T.notify('Cập nhật thông tin lớp ôn tập  bị lỗi!', 'danger');
+                T.notify('Cập nhật thông tin mô phỏng  bị lỗi!', 'danger');
                 console.error('PUT: ' + url + '.', data.error);
                 done && done(data.error);
             } else {
                 dispatch({ type: SimulatorGetItem, item: data.item });
                 dispatch(getSimulatorPage());
-                T.notify('Cập nhật lớp ôn tập  thành công!', 'success');
+                T.notify('Cập nhật mô phỏng  thành công!', 'success');
                 done && done();
             }
-        }, error => console.error(error) || T.notify('Cập nhật lớp ôn tập  bị lỗi!', 'danger'));
+        }, error => console.error(error) || T.notify('Cập nhật mô phỏng  bị lỗi!', 'danger'));
     };
 }
 
@@ -117,16 +132,16 @@ export function addStudentSimulator(_id, student, courseId, subjectId, done) {
         const url = '/api/simulator/student';
         T.put(url, { _id, student }, data => {
             if (data.error) {
-                T.notify('Cập nhật thông tin lớp ôn tập  bị lỗi!', 'danger');
+                T.notify('Cập nhật thông tin mô phỏng  bị lỗi!', 'danger');
                 console.error('PUT: ' + url + '.', data.error);
                 done && done(data.error);
             } else {
                 dispatch({ type: SimulatorGetItem, item: data.item });
                 dispatch(getSimulatorPage(1,20, {courseType: courseId, subject: subjectId}));
-                T.notify('Cập nhật lớp ôn tập  thành công!', 'success');
+                T.notify('Cập nhật mô phỏng  thành công!', 'success');
                 done && done();
             }
-        }, error => console.error(error) || T.notify('Cập nhật lớp ôn tập  bị lỗi!', 'danger'));
+        }, error => console.error(error) || T.notify('Cập nhật mô phỏng  bị lỗi!', 'danger'));
     };
 }
 
@@ -152,16 +167,16 @@ export function updateSimulatorDefault(diploma, done) {
         const url = '/api/simulator/default';
         T.put(url, { diploma }, data => {
             if (data.error) {
-                T.notify('Cập nhật thông tin lớp ôn tập  bị lỗi!', 'danger');
+                T.notify('Cập nhật thông tin mô phỏng  bị lỗi!', 'danger');
                 console.error('PUT: ' + url + '.', data.error);
                 done && done(data.error);
             } else {
                 dispatch({ type: SimulatorGetItem, item: data.item });
                 dispatch(getSimulatorPage());
-                T.notify('Cập nhật lớp ôn tập  thành công!', 'success');
+                T.notify('Cập nhật mô phỏng  thành công!', 'success');
                 done && done();
             }
-        }, error => console.error(error) || T.notify('Cập nhật lớp ôn tập  bị lỗi!', 'danger'));
+        }, error => console.error(error) || T.notify('Cập nhật mô phỏng  bị lỗi!', 'danger'));
     };
 }
 
@@ -170,13 +185,13 @@ export function deleteSimulator(_id) {
         const url = '/api/simulator';
         T.delete(url, { _id }, data => {
             if (data.error) {
-                T.notify('Xóa lớp ôn tập  bị lỗi!', 'danger');
+                T.notify('Xóa mô phỏng  bị lỗi!', 'danger');
                 console.error('DELETE: ' + url + '.', data.error);
             } else {
-                T.notify('Xoá lớp ôn tập  thành công!', 'success');
+                T.notify('Xoá mô phỏng  thành công!', 'success');
                 dispatch(getSimulatorPage());
             }
-        }, error => console.error(error) || T.notify('Xóa lớp ôn tập  bị lỗi!', 'danger'));
+        }, error => console.error(error) || T.notify('Xóa mô phỏng  bị lỗi!', 'danger'));
     };
 }
 
@@ -193,5 +208,5 @@ export const ajaxSelectSimulator = {
 
 export function ajaxGetSimulator(_id, done) {
     const url = '/api/simulator';
-    T.get(url, { _id }, done, error => console.error(error) || T.notify('Lấy lớp ôn tập  bị lỗi!', 'danger'));
+    T.get(url, { _id }, done, error => console.error(error) || T.notify('Lấy mô phỏng  bị lỗi!', 'danger'));
 }

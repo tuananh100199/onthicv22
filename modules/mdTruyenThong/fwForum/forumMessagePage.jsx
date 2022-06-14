@@ -94,6 +94,11 @@ class ForumMessagePage extends AdminPage {
             breadcrumb: [<Link key={0} to='/user/forum'>Forum</Link>, forum && forum.category ? <Link key={1} to={backRoute}>{forum.category.title}</Link> : '', 'Nội dung'],
             content: forum ? <>
                 <div className='tile'>
+                    <div className="d-flex justify-content-center">
+                        {forum.video && forum.video.active?<iframe width="600" height="320"
+                            src={`https://www.youtube.com/embed/${forum.video.link}`}>
+                        </iframe>:''}
+                    </div>
                     {/* <small className='bg-secondary' style={createdDateStyle}>
                         {forum.user ? `${forum.user.lastname} ${forum.user.firstname}` : ''} -&nbsp;
                         {new Date(forum.modifiedDate || forum.createdDate).getText()}

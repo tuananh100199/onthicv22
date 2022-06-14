@@ -73,7 +73,7 @@ class AdminTeacherPage extends AdminPage {
                 <TableHead getPage={this.props.getTeacherPage}>
                     <TableHeadCell style={{ width: 'auto', textAlign: 'center' }}>#</TableHeadCell>
                     <TableHeadCell name='maGiaoVien' sort={true} style={{ display:'inline-block',width: 170, textAlign: 'center' }} content='Mã giáo viên' nowrap='true'  filter='search'/> 
-                    <TableHeadCell sort={true} style={{ width: '100%' }} content='Họ tên' nowrap='true' name='firstname' filter='search'/>
+                    <TableHeadCell sort={true} style={{ width: '100%' }} content='Họ tên' nowrap='true' name='fullName' filter='search'/>
                     <TableHeadCell style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Cơ sở đào tạo</TableHeadCell>
                     <TableHeadCell style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Loại giáo viên</TableHeadCell>
                     <TableHeadCell name='courseTypes' filter='select' filterData = {ajaxSelectCourseType} style={{ width: 'auto', textAlign: 'center' }} nowrap='true' content='Loại khóa học' /> 

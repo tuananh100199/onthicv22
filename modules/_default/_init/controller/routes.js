@@ -48,7 +48,7 @@ module.exports = (app) => {
 
     // API ------------------------------------------------------------------------------------------------------------------------------------------
     app.put('/api/system', app.permission.check('system:settings'), (req, res) => {
-        let { emailPassword, email, address, mobile, fax, facebook, youtube, twitter, instagram,activeZalo,zaloId,smsAPIToken } = req.body;
+        let { emailPassword, email, address, mobile, fax, facebook, youtube, twitter, instagram,activeZalo,zaloId,smsAPIToken, chPlay, appStore } = req.body;
         if (emailPassword) {
             app.model.setting.set({ emailPassword }, error => {
                 if (error) {
@@ -72,6 +72,9 @@ module.exports = (app) => {
             if (activeZalo || activeZalo == '') changes.push('activeZalo', activeZalo.trim() || '0');
             if (zaloId || zaloId == '') changes.push('zaloId', zaloId.trim() || '');
             if(smsAPIToken||smsAPIToken=='') changes.push('smsAPIToken',app.getToken(32));
+            if (chPlay || chPlay == '') changes.push('chPlay', chPlay.trim() || '');
+            if (appStore || appStore == '') changes.push('appStore', appStore.trim() || '');
+            
             app.state.set(...changes, error => {
                 error && console.log('Error when save system state!', error);
                 app.state.get((error, data) => {
@@ -407,6 +410,9 @@ module.exports = (app) => {
         app.createFolder(
             app.path.join(app.publicPath, 'img', '/user'),
         );
+        app.createFolder(
+            app.path.join(app.publicPath, 'img', '/verificationImage'),
+        );
         app.model.user.get({_id: user}, (error, item) => {
             if(error) res.send({ error });
             else {
@@ -415,7 +421,28 @@ module.exports = (app) => {
                     else {
                         const image ='/img/user/' + user + '.jpg';
                         item.image = image + '?t=' + new Date().getTime().toString().slice(-8);
-                        item.save((error) => res.send({ error, item, image: item.image }));
+                        item.save(() => {
+                            app.fs.writeFile(app.path.join(app.publicPath, 'img/verificationImage', new Date().getTime() + '.jpg'), base64Data, 'base64', (error) => {
+                                if(error) res.send({ error });
+                                else {
+                                    const verificationImage ='/img/verificationImage/' + user + '.jpg';
+                                    app.model.verificationImage.get({user: user}, (error, avatar) =>{
+                                        if(error) res.send({ error });
+                                        else if(!avatar){
+                                            const data = {
+                                                state: 'waiting', 
+                                                createdDate: new Date(),
+                                                user: user,
+                                                image: verificationImage,
+                                            };
+                                            app.model.verificationImage.create(data, (error, item) => res.send({ error, item, image: item.image }));
+                                        } else {
+                                            app.model.verificationImage.update(avatar._id, {image: verificationImage, createdDate: new Date(), state: 'waiting'}, (error, item) => res.send({ error, item, image: item.image }));
+                                        }
+                                    });
+                                }
+                            });
+                        });
                     }
                 });
             }

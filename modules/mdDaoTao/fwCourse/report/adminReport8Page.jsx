@@ -1,55 +1,12 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import {  getCourseTypeAll } from 'modules/mdDaoTao/fwCourseType/redux';
-import { getStudentPage, updateStudent } from 'modules/mdDaoTao/fwStudent/redux';
+import { getCarPage, updateCar } from 'modules/mdDaoTao/fwCar/redux';
 import { export8, getCourse } from '../redux';
 import FileSaver from 'file-saver';
 import Pagination from 'view/component/Pagination';
 import { Link } from 'react-router-dom';
-import { AdminPage, FormTextBox , FormDatePicker, renderTable, TableCell, AdminModal, CirclePageButton } from 'view/component/AdminPage';
-
-class StudentModal extends AdminModal {
-    state = {};
-    componentDidMount() {
-        T.ready(() => this.onShown(() => this.itemLastname.focus()));
-    }
-
-    onShow = (item) => {
-        this.itemLastname.value(item.lastname || '');
-        this.itemFirstname.value(item.firstname || '');
-        this.itemIdentityCard.value(item.identityCard || '');
-        this.itemResidence.value(item.residence || '');
-        this.itemBirth.value(item.birthday || '');
-        this.setState({student: item});
-    }
-
-    onSubmit = () => {
-        const current = this.state.student;
-        const listStudent = this.props.listStudent;
-        const changes = {
-            lastname: this.itemLastname.value(),
-            firstname: this.itemFirstname.value(),
-            identityCard: this.itemIdentityCard.value(),
-            residence: this.itemResidence.value(),
-        };
-        let index = listStudent.findIndex(student => student._id == current._id);
-        if(listStudent[index]) listStudent[index] = changes;
-        this.props.updateState({listStudent: listStudent});
-        this.props.update(current._id, changes, () => this.hide());       
-    }
-
-    render = () => this.renderModal({
-        title: 'Chỉnh sửa học viên',
-        body: (
-            <div className='row'>
-                <FormTextBox ref={e => this.itemLastname = e} className='col-md-6' label='Họ' readOnly={false} />
-                <FormTextBox ref={e => this.itemFirstname = e} className='col-md-6' label='Tên' readOnly={false} />
-                <FormDatePicker className='col-md-6' ref={e => this.itemBirth = e} label='Ngày tháng năm sinh (dd/mm/yyyy)' readOnly={false} type='date-mask' />
-                <FormTextBox ref={e => this.itemIdentityCard = e} className='col-md-6' label='Số CMND/CCCD' readOnly={false} />
-                <FormTextBox ref={e => this.itemResidence = e} className='col-md-6' label='Nơi cư trú' readOnly={false} />
-            </div>),
-    });
-}
+import { AdminPage, renderTable, TableCell, CirclePageButton } from 'view/component/AdminPage';
 
 class AdminReport8Page extends AdminPage {
     state = { searchText: '' };
@@ -59,7 +16,7 @@ class AdminReport8Page extends AdminPage {
             if (params && params._id) {
                 const course = this.props.course ? this.props.course.item : null;
                 if (course) {
-                    this.props.getStudentPage(undefined, undefined, { courseId: course._id, totNghiep: 'true', datSatHach: 'false' }, (data) => {
+                    this.props.getCarPage(undefined, undefined, { courseId: course._id, totNghiep: 'true', datSatHach: 'false' }, (data) => {
                         this.setState({listStudent: data.list, courseId: params._id});
                     });
                 } else {
@@ -68,8 +25,12 @@ class AdminReport8Page extends AdminPage {
                             T.notify('Lấy khóa học bị lỗi!', 'danger');
                             this.props.history.push('/user/course/' + params._id);
                         } else {
-                            this.props.getStudentPage(undefined, undefined, { courseId: params._id, totNghiep: 'true', datSatHach: 'false' }, (data) => {
-                                this.setState({listStudent: data.list, courseId: params._id});
+                            const teacherGroups = data && data.item && data.item.teacherGroups || [];
+                            let listTeacher = [];
+                            teacherGroups.forEach(group =>listTeacher.push(group.teacher._id));
+                            this.props.getCarPage(undefined, undefined, { user: {$in: listTeacher}, courseType: data.item.courseType._id }, (data) => {
+                                console.log(data);
+                                this.setState({listCar: data && data.list, courseId: params._id});
                             });
                         }
                     });
@@ -81,49 +42,47 @@ class AdminReport8Page extends AdminPage {
     }
 
     export8 = () => {
-        const list  = this.props.student && this.props.student.page && this.props.student.page.list;
-        const listStudent = this.state.listStudent;
-        let listId = listStudent.map(student => student._id);
+        const list  = this.props.car && this.props.car.page && this.props.car.page.list;
+        const listCar = this.state.listCar;
+        let listId = listCar.map(car => car._id);
         if(list && list.length){
             this.props.export8(listId, (data) => {
                 FileSaver.saveAs(new Blob([new Uint8Array(data.buf.data)]), 'Phu_Luc_8.docx');
             });
         } else{
-            T.notify('Danh sách học viên trống!', 'danger');
+            T.notify('Danh sách xe trống!', 'danger');
         }
     };
 
-    edit = (e, item) => e.preventDefault() || this.modal.show(item);
-
     delete = (e, item) => {
         e.preventDefault();
-        T.confirm('Xoá học viên', 'Bạn có chắc muốn xoá học viên ' + item.lastname + ' ' + item.firstname, true, isConfirm =>
-            isConfirm && this.setState({listStudent: this.state.listStudent.filter((student) => student._id != item._id)}));
+        T.confirm('Xoá xe', 'Bạn có chắc muốn xoá xe ' + item.licensePlates, true, isConfirm =>
+            isConfirm && this.setState({listCar: this.state.listCar.filter((car) => car._id != item._id)}));
     };
 
-    updateState = (newState) => {
-        this.setState(newState);
-    }
+    // updateState = (newState) => {
+    //     this.setState(newState);
+    // }
 
     render() {
-        const permission = this.getUserPermission('student', ['read', 'write', 'delete']);
-        let { pageNumber, pageSize, pageTotal, pageCondition, totalItem } = this.props.student && this.props.student.page ?
-            this.props.student.page : { pageNumber: 1, pageSize: 50, pageTotal: 1, pageCondition: {}, totalItem: 0, list: [] };
-        const list = this.state.listStudent;
+        const permission = this.getUserPermission('car', ['read']);
+        permission.delete = true;
+        let { pageNumber, pageSize, pageTotal, pageCondition, totalItem } = this.props.car && this.props.car.page ?
+            this.props.car.page : { pageNumber: 1, pageSize: 50, pageTotal: 1, pageCondition: {}, totalItem: 0, list: [] };
+        const listCar = this.state.listCar;
         const backRoute = `/user/course/${this.state.courseId}/report`;
         const table = renderTable({
-            getDataSource: () => list, stickyHead: true,
+            getDataSource: () => listCar, stickyHead: true,
             renderHead: () => (
                 <tr>
                     <th style={{ width: 'auto', textAlign: 'center' }}>#</th>
                     <th style={{ width: '100%' }}>Biển số đăng ký</th>
                     <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Cơ sở</th>
-                    <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Xe hợp đồng</th>
                     <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Nhãn hiệu</th>
                     <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Loại xe</th>
-                    <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Số động cơ</th>
-                    <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Số khung</th>
-                    <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Ngày cấp</th>
+                    {/* <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Số động cơ</th>
+                    <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Số khung</th> */}
+                    <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Ngày đăng ký</th>
                     <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Ngày hết hạn</th>
                     <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Thao tác</th>
 
@@ -131,16 +90,15 @@ class AdminReport8Page extends AdminPage {
             renderRow: (item, index) => (
                 <tr key={index}>
                     <TableCell type='number' content={index + 1} />
-                    <TableCell content={'51F-65432'} style={{ whiteSpace: 'nowrap' }} />
-                    <TableCell content={'Tân Nhựt'} style={{ whiteSpace: 'nowrap' }} />
-                    <TableCell content={''} />
-                    <TableCell content={'Hino'} />
-                    <TableCell content={''} />
-                    <TableCell content={'123'} />
-                    <TableCell content={'123'} />
-                    <TableCell content={'01/01/2021'} />
-                    <TableCell content={'01/04/2022'} />
-                    <TableCell type='buttons' content={item} permission={permission} onEdit={this.edit} onDelete={this.delete} />
+                    <TableCell content={item.licensePlates} style={{ whiteSpace: 'nowrap' }} />
+                    <TableCell content={item.division.title} style={{ whiteSpace: 'nowrap' }} />
+                    <TableCell content={item.brand && item.brand.title} />
+                    <TableCell content={item.type && item.type.title} />
+                    {/* <TableCell content={'123'} />
+                    <TableCell content={'123'} /> */}
+                    <TableCell content={T.dateToText(item.ngayDangKy,'dd/mm/yyyy')} />
+                    <TableCell content={T.dateToText(item.ngayHetHanXeTapLai,'dd/mm/yyyy')} />
+                    <TableCell type='buttons' content={item} permission={permission} onDelete={this.delete} />
                 </tr>)
         });
         return this.renderPage({
@@ -153,7 +111,6 @@ class AdminReport8Page extends AdminPage {
                         {table}
                     </div>
                 </div>
-                <StudentModal readOnly={false} updateState={this.updateState} listStudent={this.state.listStudent} courseId={this.state.courseId} ref={e => this.modal = e} update={this.props.updateStudent} />
                 <CirclePageButton type='export' onClick={() => this.export8()} />
                 <Pagination name='pageCourse' pageNumber={pageNumber} pageSize={pageSize} pageTotal={pageTotal} totalItem={totalItem} pageCondition={pageCondition} style={{ left: 320 }}
                     getPage={(pageNumber, pageSize) => this.props.getStudentPage(pageNumber, pageSize, { courseId: this.state.courseId, totNghiep: 'true', datSatHach: 'false' })} />
@@ -163,6 +120,6 @@ class AdminReport8Page extends AdminPage {
     }
 }
 
-const mapStateToProps = state => ({ system: state.system, student: state.trainning.student});
-const mapActionsToProps = { getStudentPage, updateStudent, getCourseTypeAll, export8, getCourse };
+const mapStateToProps = state => ({ system: state.system, car: state.trainning.car});
+const mapActionsToProps = { getCarPage, updateCar, getCourseTypeAll, export8, getCourse };
 export default connect(mapStateToProps, mapActionsToProps)(AdminReport8Page);

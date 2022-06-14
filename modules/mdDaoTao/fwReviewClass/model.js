@@ -63,7 +63,7 @@ module.exports = app => {
             model.findOneAndUpdate({_id}, { $push: { students: student } }, { new: true }).populate('students', 'lastname firstname phoneNumber').exec(done);
         },
 
-        deleteLesson: (_id, _studentId, done) => {
+        deleteStudent: (_id, _studentId, done) => {
             model.findOneAndUpdate({ _id }, { $pull: { students: _studentId } }, { new: true }).populate('students', 'lastname firstname phoneNumber').exec(done);
         },
 

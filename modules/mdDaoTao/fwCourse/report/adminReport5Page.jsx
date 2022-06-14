@@ -11,14 +11,15 @@ import { AdminPage, FormTextBox , renderTable, TableCell, AdminModal, CirclePage
 class SubjectModal extends AdminModal {
     state = {};
     componentDidMount() {
-        T.ready(() => this.onShown(() => this.itemLastname.focus()));
+        T.ready(() => this.onShown(() => this.itemTitle.focus()));
     }
 
     onShow = (item) => {
-        this.itemTitle.value(item.title || '');
-        this.itemTotalTime.value(item.totalTime || '');
-        this.itemLyThuyet.value(item.gioHocLyThuyet || '');
-        this.itemTrongHinh.value(item.gioHocTrongHinh || '');
+        const name = this.props.course && this.props.course.name;
+        this.itemTitle.value(name || '');
+        this.itemTeacher.value(item.teacher ? item.teacher.lastname + ' ' + item.teacher.firstname : '');
+        this.itemSoLuongHocVien.value(item.student ? item.student.length : 0);
+        this.itemSoLuongHocVienTotNghiep.value(item.soLuongHocVienTotNghiep || 0);
     }
 
     onSubmit = () => {
@@ -45,10 +46,10 @@ class SubjectModal extends AdminModal {
         title: 'Chỉnh sửa tiến độ',
         body: (
             <div className='row'>
-                <FormTextBox ref={e => this.itemTitle = e} className='col-md-6' label='Tên lớp' readOnly={false} />
-                <FormTextBox ref={e => this.itemTotalTime = e} className='col-md-6' label='Tên giáo viên' readOnly={false} />
-                <FormTextBox ref={e => this.itemLyThuyet = e} className='col-md-6' label='Số lượng học viên' readOnly={false} />
-                <FormTextBox ref={e => this.itemTrongHinh = e} className='col-md-6' label='Số học viên tốt nghiệp' readOnly={false} />
+                <FormTextBox ref={e => this.itemTitle = e} className='col-md-6' label='Tên lớp' readOnly={true} />
+                <FormTextBox ref={e => this.itemTeacher = e} className='col-md-6' label='Tên giáo viên' readOnly={true} />
+                <FormTextBox ref={e => this.itemSoLuongHocVien = e} className='col-md-6' label='Số lượng học viên' readOnly={true} />
+                <FormTextBox ref={e => this.itemSoLuongHocVienTotNghiep = e} className='col-md-6' label='Số học viên tốt nghiệp' readOnly={false} />
             </div>),
     });
 }
@@ -139,7 +140,7 @@ class AdminReport5Page extends AdminPage {
                         {table}
                     </div>
                 </div>
-                <SubjectModal readOnly={false} updateState={this.updateState} listStudent={this.state.listStudent} courseId={this.state.courseId} ref={e => this.modal = e} update={this.props.updateStudent} />
+                <SubjectModal readOnly={false} updateState={this.updateState} listStudent={this.state.listStudent} courseId={this.state.courseId} ref={e => this.modal = e} course={course} update={this.props.updateStudent} />
                 <CirclePageButton type='export' onClick={() => this.exportPhuLuc5()} />
                 <Pagination name='pageCourse' pageNumber={pageNumber} pageSize={pageSize} pageTotal={pageTotal} totalItem={totalItem} pageCondition={pageCondition} style={{ left: 320 }}
                     getPage={(pageNumber, pageSize) => this.props.getStudentPage(pageNumber, pageSize, { courseId: this.state.courseId, totNghiep: 'true', datSatHach: 'false' })} />

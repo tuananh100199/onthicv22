@@ -67,7 +67,7 @@ module.exports = app => {
     app.model.car = {
         create: (data, done) => model.create(data, done),
 
-        getAll: (condition, done) => model.find(condition).populate('user', 'lastname firstname').sort({ priority: -1 }).exec(done),
+        getAll: (condition, done) => model.find(condition).populate('user', 'lastname firstname').populate('brand', 'title').populate('type', 'title').populate('division', 'title').sort({ priority: -1 }).exec(done),
 
         getPage: (pageNumber, pageSize, condition, sort, done) => model.countDocuments(condition, (error, totalItem) => {
             if (error) {

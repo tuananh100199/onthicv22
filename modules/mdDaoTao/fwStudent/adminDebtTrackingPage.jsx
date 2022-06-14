@@ -291,7 +291,7 @@ class DebtTrackingPage extends AdminPage {
             renderHead: () => (
                 <TableHead getPage={this.props.getDebtStudentPage}>
                     <th style={{ width: 'auto', textAlign: 'center' }}>#</th>
-                    <TableHeadCell sort={true} filter='search' name='firstname'  style={{ width: '100%' }}>Họ và tên</TableHeadCell>
+                    <TableHeadCell sort={true} filter='search' name='fullName'  style={{ width: '100%' }}>Họ và tên</TableHeadCell>
                     <TableHeadCell name='course' filter='select' filterData = {ajaxSelectCourse} style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Khóa học</TableHeadCell>
                     <TableHeadCell name='courseFee' filter='select' filterData = {ajaxSelectCourseFeeByCourseType()} style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Loại gói</TableHeadCell>
                     <TableHeadCell sort={true} name='courseFee' style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Số tiền gói</TableHeadCell>

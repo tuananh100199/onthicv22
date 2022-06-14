@@ -9,8 +9,9 @@ class SettingsPage extends AdminPage {
 
     componentDidMount() {
         T.ready(() => {
-            let { address, email, mobile, fax, facebook, youtube, twitter, instagram, logo, footer, contact, subscribe, smsAPIToken,activeZalo,zaloId} = this.props.system ?
-                this.props.system : { address: '', email: '', mobile: '', fax: '', facebook: '', youtube: '', twitter: '', instagram: '', logo: '/img/logo.jpg', footer: '/img/footer.jpg', contact: '/img/contact.jpg', subscribe: '/img/subscribe.jpg', smsAPIToken:'',activeZalo:false,zaloId:'' };
+            let { address, email, mobile, fax, facebook, youtube, twitter, instagram, logo, footer, contact, subscribe, smsAPIToken,activeZalo,zaloId, chPlay, appStore} = this.props.system ?
+                this.props.system : { address: '', email: '', mobile: '', fax: '', facebook: '', youtube: '', twitter: '', instagram: '', logo: '/img/logo.jpg', footer: '/img/footer.jpg',
+                 contact: '/img/contact.jpg', subscribe: '/img/subscribe.jpg', smsAPIToken:'',activeZalo:false,zaloId:'',chPlay:'',appStore:'' };
             this.systemAddress.value(address);
             this.systemEmail.value(email);
             this.systemMobile.value(mobile);
@@ -25,6 +26,8 @@ class SettingsPage extends AdminPage {
             this.systemFooter.setData('footer', footer);
             this.systemActiveZalo.value(activeZalo &&  activeZalo!='0');
             this.systemZaloId.value(zaloId);
+            this.systemChPlay.value(chPlay);
+            this.systemAppStore.value(appStore);
             this.setState({ logo, footer, contact, subscribe, smsAPIToken });
         });
     }
@@ -39,6 +42,8 @@ class SettingsPage extends AdminPage {
             youtube: this.systemYoutube.value(),
             twitter: this.systemTwitter.value(),
             instagram: this.systemInstagram.value(),
+            chPlay:this.systemChPlay.value(),
+            appStore:this.systemAppStore.value(),
         });
     }
 
@@ -107,6 +112,8 @@ class SettingsPage extends AdminPage {
                                 <FormTextBox ref={e => this.systemYoutube = e} label='You tube' readOnly={readOnly} />
                                 <FormTextBox ref={e => this.systemTwitter = e} label='Twitter' readOnly={readOnly} />
                                 <FormTextBox ref={e => this.systemInstagram = e} label='Instagram' readOnly={readOnly} />
+                                <FormTextBox ref={e => this.systemChPlay = e} label='CH Play' readOnly={readOnly} />
+                                <FormTextBox ref={e => this.systemAppStore = e} label='App Store' readOnly={readOnly} />
                             </div>
                             {readOnly ? null :
                                 <div className='tile-footer' style={{ textAlign: 'right' }}>
