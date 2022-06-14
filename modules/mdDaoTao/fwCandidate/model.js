@@ -2,6 +2,7 @@ module.exports = app => {
     const schema = app.database.mongoDB.Schema({
         firstname: String,
         lastname: String,
+        fullName:String,
         email: String,
         phoneNumber: String,
         birthday: Date,
@@ -29,7 +30,10 @@ module.exports = app => {
     const model = app.database.mongoDB.model('Candidate', schema);
 
     app.model.candidate = {
-        create: (data, done) => model.create(data, done),
+        create: (data, done) =>{
+            data.fullName = ((data.lastname||'').trim()+' '+(data.firstname||'').trim()).trim();
+            model.create(data, done);
+        },
 
         getAll: (condition, done) => typeof condition == 'function' ?
             model.find({}).populate('courseType', 'title').sort({ _id: -1 }).exec(condition) :
@@ -55,7 +59,15 @@ module.exports = app => {
             model.findOne(condition, done) : model.findById(condition, done),
 
         // changes = { $set, $unset, $push, $pull }
-        update: (_id, changes, done) => model.findOneAndUpdate({ _id }, changes, { new: true }, done),
+        update: (_id, changes, done) =>{
+            model.findOne({_id},(error,item)=>{
+                if(error)done(error);
+                else{
+                    changes.fullName = ((changes.lastname || item.lastname).trim()+' '+(changes.firstname||item.firstname).trim()).trim();
+                    model.update({ _id }, changes , { new: true }).exec(done);
+                }
+            });
+        },
 
         delete: (_id, done) => model.findById(_id, (error, item) => {
             if (error) {

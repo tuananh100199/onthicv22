@@ -70,7 +70,7 @@ module.exports = (app) => {
             pageCondition.trainingClass={$nin:[condition.notTrainingClass]};
         }
         // --------------filter------------------------
-        filter && app.handleFilter(filter,['maGiaoVien','courseTypes'],defaultFilter=>{
+        filter && app.handleFilter(filter,['maGiaoVien','fullName','courseTypes'],defaultFilter=>{
             // console.log('-----------------defaultCondition:----------------------');
             pageCondition={...pageCondition,...defaultFilter};
         }); 
@@ -80,15 +80,15 @@ module.exports = (app) => {
         //     pageCondition.maGiaoVien=value;
         // }
 
-        if(filter.firstname){// họ tên
-            pageCondition['$expr']= {
-                '$regexMatch': {
-                  'input': { '$concat': ['$lastname', ' ', '$firstname'] },
-                  'regex': `.*${filter.firstname}.*`,  //Your text search here
-                  'options': 'i'
-                }
-            };
-        }
+        // if(filter.firstname){// họ tên
+        //     pageCondition['$expr']= {
+        //         '$regexMatch': {
+        //           'input': { '$concat': ['$lastname', ' ', '$firstname'] },
+        //           'regex': `.*${filter.firstname}.*`,  //Your text search here
+        //           'options': 'i'
+        //         }
+        //     };
+        // }
 
         // course
         if(filter.courses && filter.courses.length){
@@ -109,10 +109,13 @@ module.exports = (app) => {
                 pageCondition.doneCourses={$in:filter.doneCourses};
             }
         }
-        // filter lọc nghỉ việc
-        // if(condition.nghiViec){
-        //   pageCondition.thoiGianLamViec={['nghiViec']:condition.nghiViec=='1'?true:false};
-        // }
+
+        //sort
+        if(sort && sort.fullName){
+            sort.firstname=sort.fullName;
+            delete sort.fullName;
+        }
+        
         app.model.teacher.getPage(pageNumber, pageSize, pageCondition, sort , (error, page) => {
             if(error) res.send({error});
             else{

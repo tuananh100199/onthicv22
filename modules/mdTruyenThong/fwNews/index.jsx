@@ -6,7 +6,6 @@ import Loading from 'view/component/Loading';
 import SectionNews from './sectionNews';
 import SectionNewsList from './sectionNewsList';
 import news from './redux';
-
 export default {
     init: () => {
         T.component['all news'] = {
@@ -16,7 +15,7 @@ export default {
         };
         T.component['last news'] = {
             render: (viewId) => <SectionNews viewId={viewId} />,
-            text: 'Bài viết mới nhất',
+            text: 'Những điều cần biết',
             backgroundColor: '#d7ccc8',
         };
     },

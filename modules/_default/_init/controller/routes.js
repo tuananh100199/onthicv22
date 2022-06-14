@@ -48,7 +48,7 @@ module.exports = (app) => {
 
     // API ------------------------------------------------------------------------------------------------------------------------------------------
     app.put('/api/system', app.permission.check('system:settings'), (req, res) => {
-        let { emailPassword, email, address, mobile, fax, facebook, youtube, twitter, instagram,activeZalo,zaloId,smsAPIToken } = req.body;
+        let { emailPassword, email, address, mobile, fax, facebook, youtube, twitter, instagram,activeZalo,zaloId,smsAPIToken, chPlay, appStore } = req.body;
         if (emailPassword) {
             app.model.setting.set({ emailPassword }, error => {
                 if (error) {
@@ -72,6 +72,9 @@ module.exports = (app) => {
             if (activeZalo || activeZalo == '') changes.push('activeZalo', activeZalo.trim() || '0');
             if (zaloId || zaloId == '') changes.push('zaloId', zaloId.trim() || '');
             if(smsAPIToken||smsAPIToken=='') changes.push('smsAPIToken',app.getToken(32));
+            if (chPlay || chPlay == '') changes.push('chPlay', chPlay.trim() || '');
+            if (appStore || appStore == '') changes.push('appStore', appStore.trim() || '');
+            
             app.state.set(...changes, error => {
                 error && console.log('Error when save system state!', error);
                 app.state.get((error, data) => {

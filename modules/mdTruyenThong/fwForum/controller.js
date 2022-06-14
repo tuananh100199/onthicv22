@@ -16,6 +16,9 @@ module.exports = app => {
     app.get('/user/course/:_courseId/forum', app.permission.check('user:login'), app.templates.admin);
     app.get('/user/course/:_courseId/forum/:_categoryId', app.permission.check('user:login'), app.templates.admin);
     app.get('/user/course/:_courseId/forum/:_forumId/message', app.permission.check('user:login'), app.templates.admin);
+    app.get('/forums', app.templates.home);
+    app.get('/forums/bai-viet/:_id', app.templates.home);
+    app.get('/forums/:_categoryId', app.templates.home);
 
     // APIs -----------------------------------------------------------------------------------------------------------------------------------------
     app.get('/api/forum/categories', app.permission.check('user:login'), (req, res) => {
@@ -261,6 +264,52 @@ module.exports = app => {
                 res.send({ error: 'Bạn không được phép xoá bài viết này!' });
             }
         });
+    });
+    // Home APIS-----------------------------
+    app.get('/api/home/forum/page/:pageNumber/:pageSize', (req, res) => {
+        const pageNumber = parseInt(req.params.pageNumber),
+            pageSize = parseInt(req.params.pageSize),
+            { categoryId } = req.query.pageCondition,
+            pageCondition = { 
+                category:categoryId,
+                state:'approved',
+                active:true,
+            };
+        app.model.category.get(categoryId, (error, category) => {
+            if (error || category == null) {
+                res.send({ error: 'Danh mục không hợp lệ!' });
+            } else {
+                app.model.forum.getPage(pageNumber, pageSize, pageCondition, (error, page) => {
+                    res.send({ error, category, page });
+                });
+            }
+        });
+    });
+
+    app.get('/api/home/forum', (req, res) => {
+        app.model.forum.get(req.query._id, (error, item) => {
+            res.send({ error, item });
+        });
+    });
+
+    app.get('/api/home/forum/message/page/:pageNumber/:pageSize', (req, res) => {
+        const pageNumber = parseInt(req.params.pageNumber),
+            pageSize = parseInt(req.params.pageSize),
+            condition = req.query.condition||{},
+            forum=condition.forum;
+        let subObject1 = {}, subObject2 = {}, pageCondition = {};
+        subObject1.$or = [];
+        subObject2.$or = [];
+        pageCondition = {...condition, state:'approved'};
+        app.model.forum.get({_id:forum},(error,forum)=>{
+            if(error||!forum) res.send({error:'Không tìm thấy bài viết'});
+            else{
+                app.model.forumMessage.getPage(pageNumber, pageSize, pageCondition, (error, page) => {
+                    res.send({ error, page, forum });
+                });
+            }
+        });
+        
     });
 
     // Hook permissionHooks -------------------------------------------------------------------------------------------

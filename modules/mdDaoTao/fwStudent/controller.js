@@ -107,18 +107,10 @@ module.exports = (app) => {
                 }
             } else  {
                 if(condition.courseTypeId) pageCondition.courseType = condition.courseTypeId;
-                filter && app.handleFilter(filter,['coursePayment', 'courseFee', 'discount'],defaultFilter=>{
+                filter && app.handleFilter(filter,['coursePayment','fullName', 'courseFee', 'discount'],defaultFilter=>{
                     pageCondition={...pageCondition,...defaultFilter};
                 });
-                if(filter.firstname){// họ tên
-                    pageCondition['$expr']= {
-                        '$regexMatch': {
-                          'input': { '$concat': ['$lastname', ' ', '$firstname'] },
-                          'regex': `.*${filter.firstname}.*`,  //Your text search here
-                          'options': 'i'
-                        }
-                    };
-                }
+                if(sort && sort.fullName) sort = {firstname:sort.fullName};
                 app.model.student.getPage(pageNumber, pageSize, pageCondition, sort, (error, page) => res.send({ error, page }));
             }
             // app.model.student.getPage(pageNumber, pageSize, pageCondition, (error, page) => res.send({ error, page }));
@@ -143,18 +135,9 @@ module.exports = (app) => {
                 }
                 
                 if(filter){
-                    app.handleFilter(filter,['courseType','division','course'],filterCondition=>{
+                    app.handleFilter(filter,['courseType','fullName','division','course'],filterCondition=>{
                         pageCondition={...pageCondition,...filterCondition};
                     });
-                    if(filter.fullName){// họ tên
-                        pageCondition['$expr']= {
-                            '$regexMatch': {
-                                'input': { '$concat': ['$lastname', ' ', '$firstname'] },
-                                'regex': `.*${filter.fullName}.*`,  //Your text search here
-                                'options': 'i'
-                            }
-                        };
-                    }
                 }
                 if(sort && sort.fullName) sort={firstname:sort.fullName}; 
 
@@ -1171,18 +1154,10 @@ module.exports = (app) => {
             if (req.session.user.isCourseAdmin && req.session.user.division && req.session.user.division.isOutside) { // Session user là quản trị viên khóa học
                 pageCondition.division = req.session.user.division._id;
             }
-            filter && app.handleFilter(filter,['coursePayment', 'courseFee', 'discount'],defaultFilter=>{
+            filter && app.handleFilter(filter,['coursePayment','fullName', 'courseFee', 'discount'],defaultFilter=>{
                 pageCondition={...pageCondition,...defaultFilter};
             });
-            if(filter.firstname){// họ tên
-                pageCondition['$expr']= {
-                    '$regexMatch': {
-                      'input': { '$concat': ['$lastname', ' ', '$firstname'] },
-                      'regex': `.*${filter.firstname}.*`,  //Your text search here
-                      'options': 'i'
-                    }
-                };
-            }
+            if(sort && sort.fullName) sort = {firstname:sort.fullName};
             app.model.student.getPage(pageNumber, pageSize, pageCondition, sort, (error, page) => {
                if(page && page.list){
                     const list = page && page.list ? page.list : [];

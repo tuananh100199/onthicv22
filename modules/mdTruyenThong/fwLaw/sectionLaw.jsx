@@ -40,19 +40,19 @@ class SectionFaq extends React.Component {
         const link = `/law/${item._id}`;
         return (
             <div key={index} className='law row mb-3'>
-                <div className="col-md-3">
+                <div className="col-md-3 p-0">
                     <Link className='law-link' to={link}>
                         <img src={item.image||'img/avatar.jpg'} alt={item.title} />
                     </Link>
                 </div>
 
-                <div className="col-md-9 pl-0">
+                <div className="col-md-9 p-2">
                     <Link to={link} className='btn btn-link text-dark pl-0'>
-                        <h4>
+                        <h4 style={{whiteSpace:'normal'}} className='text-justify'>
                             {item.title}
                         </h4>
                     </Link>
-                    <p  className='mb-4'>{item.abstract}</p>
+                    <p  className='mb-4 text-justify'>{item.abstract} </p>
                     <Link className='text-primary' to={link}><i className="fa fa-calendar text-primary" aria-hidden="true"></i> {T.dateToText(item.createdDate,'dd/mm/yyyy HH:mm')}</Link>
                 </div>
             </div>

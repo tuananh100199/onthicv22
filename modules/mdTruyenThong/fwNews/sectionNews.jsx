@@ -88,9 +88,7 @@ class SectionNews extends React.Component {
     )
 
     render() {
-        const newsFeed = this.props.news && this.props.news.newsFeed ? this.props.news.newsFeed : [];
         return (
-
             <div className='services news'>
                 <div className='container' >
                     <div className='news_title'>
@@ -107,13 +105,13 @@ class SectionNews extends React.Component {
                     </div>
                     <div className='news_mobile'>
                             <div className="owl-carousel news_carousel carousel_nav carousel_dots" id='newCarousel'>
-                                {newsFeed.map((item, index) => (
+                                {newsTypeList.map((item, index) => (
                                         <div key={index} className='item team_col'>
                                             <div className='team_item d-flex flex-column'>
                                             <div className="container-fluid" style={{flex:'auto'}}>
                                                 <div className='team_content  d-flex flex-column justify-content-between'>
                                                     <div className='team_name'>
-                                                        <Link to={item.link ? '/tintuc/' + item.link : '/news/' + item._id}>{item.title}</Link>
+                                                        <Link to={item.link}>{item.title}</Link>
                                                     </div>
                                                     <div className='team_text'>
                                                         <blockquote>
@@ -121,7 +119,7 @@ class SectionNews extends React.Component {
                                                         </blockquote>
                                                     </div>
                                                     <div>
-                                                        <a href={item.link ? '/tintuc/' + item.link : '/news/' + item._id} className="link_watch_more text-main">Xem thêm</a>
+                                                        <Link to={item.link} className="link_watch_more text-main">Xem thêm</Link>
                                                     </div>
                                                 </div>
                                                 

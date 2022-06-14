@@ -1,4 +1,4 @@
-//TEMPLATES: admin
+//TEMPLATES: admin|home
 import React from 'react';
 import Loadable from 'react-loadable';
 import Loading from 'view/component/Loading';
@@ -26,6 +26,18 @@ export default {
         {
             path: '/user/forum/message/:_forumId',
             component: Loadable({ loading: Loading, loader: () => import('./forumMessagePage') })
+        },
+        {
+            path: '/forums',
+            component: Loadable({ loading: Loading, loader: () => import('./homeForumPage') })
+        },
+        {
+            path: '/forums/:_categoryId',
+            component: Loadable({ loading: Loading, loader: () => import('./homeForumCategoryPage') })
+        },
+        {
+            path: '/forums/bai-viet/:_id',
+            component: Loadable({ loading: Loading, loader: () => import('./homeForumDetailPage') })
         },
     ],
 };
