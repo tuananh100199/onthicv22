@@ -89,7 +89,7 @@ class AdminReviewClassPage extends AdminPage {
                     <div className='row'>
                         <FormTextBox ref={e => this.name = e} label='Tên lớp học' className='col-md-4' value={reviewClass.title} readOnly={true} />
                         <p className='col-md-4'>Thời gian bắt đầu: {T.dateToText(reviewClass.dateStart, 'hh:ss dd/mm/yyyy')}</p>
-                        <p className='col-md-4'>Sỉ số lớp: {reviewClass && reviewClass.students && reviewClass.students.length ? (reviewClass.students.length + '/' + (reviewClass.remainStudent + reviewClass.students.length)) : 0 + '/' + reviewClass.remainStudent}</p>
+                        <p className='col-md-4'>Sỉ số lớp: {reviewClass.students ? (reviewClass.students.length + '/' + reviewClass.maxStudent) : '0/' + reviewClass.maxStudent}</p>
                     </div>
                     {table}
                     {/* {!readOnly ? <CirclePageButton type='save' onClick={this.saveInfo} /> : null} */}

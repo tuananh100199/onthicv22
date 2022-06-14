@@ -15,6 +15,8 @@ module.exports = (app) => {
         active: { type: Boolean, default: true },
         createdDate: { type: Date, default: Date.now },
 
+        birth: String,
+
         isCourseAdmin: { type: Boolean, default: false },                                           // Là quản trị viên khóa học
         isLecturer: { type: Boolean, default: false },                                              // Là giáo viên
         isStaff: { type: Boolean, default: false },                                                 // Là nhân viên
@@ -37,6 +39,12 @@ module.exports = (app) => {
         return app.crypt.compareSync(password, this.password);
     };
 
+    function convertBirth(str) {
+        let date = new Date(str),
+            mnth = ('0' + (date.getMonth() + 1)).slice(-2),
+            day = ('0' + date.getDate()).slice(-2);
+        return [day, mnth].join('');
+    }
     const model = app.database.mongoDB.model('User', schema);
     app.model.user = {
         hashPassword: (password) =>
@@ -56,6 +64,7 @@ module.exports = (app) => {
                     data.tokenDate = new Date();
                     data.token = 'new'; //app.getToken(8);
                     data.password = app.model.user.hashPassword(data.password);
+                    data.birth = convertBirth(data.birthday);
                     if (data.active === undefined) data.active = false;
 
                     model.create(data, (error, user) => {

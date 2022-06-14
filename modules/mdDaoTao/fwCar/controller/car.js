@@ -6,7 +6,7 @@ module.exports = app => {
             40001: { title: 'Hướng dẫn', link: '/user/car-tutorial' }
         }
     };
-    app.permission.add({ name: 'car:read', menu }, { name: 'car:write' }, { name: 'car:delete' }, { name: 'car:import' }, { name: 'car:export' }, { name: 'car:fuel' }, { name: 'car:repair' }, { name: 'car:practice' }, { name: 'car:registration' }, { name: 'car:insurance' });
+    app.permission.add({ name: 'car:read' }, { name: 'car:write',menu }, { name: 'car:delete' }, { name: 'car:import' }, { name: 'car:export' }, { name: 'car:fuel' }, { name: 'car:repair' }, { name: 'car:practice' }, { name: 'car:registration' }, { name: 'car:insurance' });
 
     app.get('/user/car', app.permission.check('car:read'), app.templates.admin);
     app.get('/user/car-tutorial', app.permission.check('car:read'), app.templates.admin);
@@ -57,7 +57,6 @@ module.exports = app => {
             };
             pageCondition={...pageCondition,...conditionCourse};
         } 
-        console.log(pageCondition);
         app.model.car.getPage(pageNumber, pageSize, pageCondition, sort, (error, page) => {
             res.send({ page, error });
         });
@@ -691,5 +690,11 @@ module.exports = app => {
             });
         }
     });
+
+    app.permissionHooks.add('courseAdmin', 'car', (user) => new Promise(resolve => {
+        app.permissionHooks.pushUserPermission(user, 'car:read');
+        // Quản lý khóa học nội bộ thì được import danh sách học viên bằng file Excel
+        resolve();
+    }));
 
 };

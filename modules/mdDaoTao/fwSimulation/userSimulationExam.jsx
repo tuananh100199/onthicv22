@@ -1,50 +1,24 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { getSimulatorAll } from './redux';
+import { getSimulatorRandom } from './redux';
 import { getCourseByStudent } from '../fwCourse/redux';
 import { Link } from 'react-router-dom';
-import { AdminPage, AdminModal, FormTextBox, CirclePageButton } from 'view/component/AdminPage';
+import { AdminPage } from 'view/component/AdminPage';
 import YouTube from 'react-youtube';
 
-class HintModal extends AdminModal {
-    componentDidMount() {
-        $(document).ready(() => this.onShown(() => this.itemTitle.focus()));
-        
-    }
-
-    onShow = (item) => {
-        const { _id, title, image } = item || { _id: null, title: '' };
-        this.itemTitle.value(title);
-        this.setState({ _id, image});
-    }
-
-    render = () => this.renderModal({
-        title: 'Gợi ý',
-        size: 'large',
-        body: 
-            <>
-                <FormTextBox className='d-flex justify-content-center' ref={e => this.itemTitle = e} label='Tên bài mô phỏng' readOnly={true} />
-                <div className='d-flex justify-content-center'>
-                    <img  alt='Gợi ý' style={{width: '80%'}} src={this.state.image||''}></img>
-                </div>
-                
-            </>,
-    });
-}
-
 class AdminEditPage extends AdminPage {
-    state = {};
+    state = {result:{1: 0}, isLastVideo: false};
     componentDidMount() {
         window.addEventListener('keydown', this.logKey);
         let url = window.location.pathname,
-            params = T.routeMatcher('/user/hoc-vien/khoa-hoc/:courseId/mon-hoc/mo-phong').parse(url);
+            params = T.routeMatcher('/user/hoc-vien/khoa-hoc/:courseId/mon-hoc/mo-phong/kiem-tra').parse(url);
         this.setState({ courseId: params.courseId });
         this.props.getCourseByStudent(params.courseId, data => {
             if (data.error) {
                 T.notify('Lấy khoá học bị lỗi!', 'danger');
                 this.props.history.push('/user/hoc-vien/khoa-hoc/:courseId');
             } else if (data.item) {
-                this.props.getSimulatorAll({},(simulators) => {
+                this.props.getSimulatorRandom({},(simulators) => {
                     if (simulators && simulators.error) {
                         this.props.history.push('/user');
                     } else {
@@ -70,6 +44,7 @@ class AdminEditPage extends AdminPage {
     logKey = (e) => {
         const { activeQuestionIndex, isAnswer, questions} = this.state,
             maxIndex = this.state.questions.length - 1;
+            let result = this.state.result;
         if (e.code == 'ArrowRight' && activeQuestionIndex < maxIndex) {
             this.changeQuestion(e, this.state.activeQuestionIndex + 1);
         } else if (e.code == 'ArrowLeft' && activeQuestionIndex > 0) {
@@ -81,14 +56,30 @@ class AdminEditPage extends AdminPage {
                 { minPointAnswer, maxPointAnswer, _id} = questions[activeQuestionIndex],
                 distance = (minPointAnswer - maxPointAnswer + 1)/5;
                 if(answer <maxPointAnswer || answer >minPointAnswer){
+                    result[activeQuestionIndex] = 0;
                     $('#' + _id).text('0 điểm').css('color', 'black');
-                } else if(answer<maxPointAnswer+distance) $('#' + _id).text('5 điểm').css('color', 'black');
-                else if(answer<maxPointAnswer+distance*2) $('#' + _id).text('4 điểm').css('color', 'black');
-                else if(answer<maxPointAnswer+distance*3) $('#' + _id).text('3 điểm').css('color', 'black');
-                else if(answer<maxPointAnswer+distance*4) $('#' + _id).text('2 điểm').css('color', 'black');
-                else $('#' + _id).text('1 điểm').css('color', 'black');
-                this.setState({isAnswer: true, time: answer});
-            } else T.alert('Bạn đã trả lời tại lượt xem này rồi, vui lòng chờ hết video để trả lời lại!', 'error', false, 2500);
+                } else if(answer<maxPointAnswer+distance) {
+                    result[activeQuestionIndex] = 5;
+                    $('#' + _id).text('5 điểm').css('color', 'black');
+                }
+                else if(answer<maxPointAnswer+distance*2) {
+                    result[activeQuestionIndex] = 4;
+                    $('#' + _id).text('4 điểm').css('color', 'black');
+                }
+                else if(answer<maxPointAnswer+distance*3) {
+                    result[activeQuestionIndex] = 3;
+                    $('#' + _id).text('3 điểm').css('color', 'black');
+                }
+                else if(answer<maxPointAnswer+distance*4) {
+                    result[activeQuestionIndex] = 2;
+                    $('#' + _id).text('2 điểm').css('color', 'black');
+                }
+                else {
+                    result[activeQuestionIndex] = 1;
+                    $('#' + _id).text('1 điểm').css('color', 'black');
+                }
+                this.setState({isAnswer: true, time: answer, result});
+            }
             //$('#traLoi').text('Bạn đã trả lời tại lượt xem này rồi, vui lòng chờ hết video để trả lời lại!').css('color', 'red');
             
         }
@@ -96,24 +87,41 @@ class AdminEditPage extends AdminPage {
 
     onClickVideo = () => {
         const { activeQuestionIndex, questions, isAnswer} = this.state;
+        let result = this.state.result;
             if(!isAnswer){
                 const answer = (this.state.currentTime % 60).toFixed(0),
                 { minPointAnswer, maxPointAnswer, _id} = questions[activeQuestionIndex],
                 distance = (minPointAnswer - maxPointAnswer + 1)/5;
                 if(answer <maxPointAnswer || answer >minPointAnswer){
+                    result[activeQuestionIndex] = 0;
                     $('#' + _id).text('0 điểm').css('color', 'black');
-                } else if(answer<maxPointAnswer+distance) $('#' + _id).text('5 điểm').css('color', 'black');
-                else if(answer<maxPointAnswer+distance*2) $('#' + _id).text('4 điểm').css('color', 'black');
-                else if(answer<maxPointAnswer+distance*3) $('#' + _id).text('3 điểm').css('color', 'black');
-                else if(answer<maxPointAnswer+distance*4) $('#' + _id).text('2 điểm').css('color', 'black');
-                else $('#' + _id).text('1 điểm').css('color', 'black');
-                this.setState({isAnswer: true, time: answer});
+                } else if(answer<maxPointAnswer+distance) {
+                    result[activeQuestionIndex] = 5;
+                    $('#' + _id).text('5 điểm').css('color', 'black');
+                }
+                else if(answer<maxPointAnswer+distance*2) {
+                    result[activeQuestionIndex] = 4;
+                    $('#' + _id).text('4 điểm').css('color', 'black');
+                }
+                else if(answer<maxPointAnswer+distance*3) {
+                    result[activeQuestionIndex] = 3;
+                    $('#' + _id).text('3 điểm').css('color', 'black');
+                }
+                else if(answer<maxPointAnswer+distance*4) {
+                    result[activeQuestionIndex] = 2;
+                    $('#' + _id).text('2 điểm').css('color', 'black');
+                }
+                else {
+                    result[activeQuestionIndex] = 1;
+                    $('#' + _id).text('1 điểm').css('color', 'black');
+                }
+                this.setState({isAnswer: true, time: answer, result});
             } else T.alert('Bạn đã trả lời tại lượt xem này rồi, vui lòng chờ hết video để trả lời lại!', 'error', false, 2500);
             //$('#traLoi').text('Bạn đã trả lời tại lượt xem này rồi, vui lòng chờ hết video để trả lời lại!').css('color', 'red');
     }
 
     onStateChange(event) {
-        const { activeQuestionIndex, questions} = this.state,
+        const { activeQuestionIndex, questions, result} = this.state,
         { _id} = questions[activeQuestionIndex];
         if (event.data == 1) {
                 this.intervalVideo = setInterval(() => {
@@ -124,42 +132,45 @@ class AdminEditPage extends AdminPage {
             $('#' + _id).text('Chưa có').css('color', 'black');
             clearInterval(this.intervalVideo);
             this.intervalVideo = null;
+            if(activeQuestionIndex < questions.length - 1) this.changeQuestion(null, activeQuestionIndex + 1);
+            else{
+                const score = Object.values(result).reduce((prev, next) => prev + next);
+                event.target.pauseVideo();
+                this.setState({isLastVideo: true});
+                const successContent = `<h5 style='color:#199D76'><b>Bạn đã hoàn thành bài kiểm tra</b></h5>
+                <p style='color:#333'>Số điểm của bạn là ${score}</p>
+                <p style='color:#333'>Kết quả của bài kiểm tra của bạn là: <span style='color:green'>Đạt</span>.</p>
+                <p style='color:#333'> Xin chúc mừng!</p>`;
+                const failContent = `<h5 style='color:red'><b>Bạn đã hoàn thành bài kiểm tra</b></h5>
+                <p style='color:#333'>Số điểm của bạn là ${score}</p>
+                <p style='color:#333'>Kết quả của bài kiểm tra của bạn là: <span style='color:red'>Chưa đạt</span>. </p>
+                <p style='color:#333'>Chúc bạn làm lại bài kiểm tra tốt hơn!</p>`;
+                if(score >= 35) T.alert(successContent, 'success', true, 15000);
+                else T.alert(failContent, 'error', true, 15000);
+            }
         }
     }
 
     changeQuestion = (e, index) => {
         const { activeQuestionIndex, questions} = this.state,
         { _id} = questions[activeQuestionIndex];
-        e.preventDefault();
+        e && e.preventDefault();
         clearInterval(this.intervalVideo);
         this.intervalVideo = null;
         $('#' + _id).text('Chưa có').css('color', 'black');
-        this.setState({ activeQuestionIndex: index, isAnswer: false }, () => {
-            const activeQuestion = questions[index];
-            if (activeQuestion) {
-                if (index == 0 && questions.length != 1) {
-                    this.setState({ prevButton: 'invisible', nextButton: 'visible' });
-                } else if (questions.length == 2 && index == 1) {
-                    this.setState({ prevButton: 'visible', nextButton: 'invisible' });
-                } else if (index == questions.length - 1) {
-                    this.setState({ nextButton: 'invisible' });
-                } else {
-                    this.setState({ nextButton: 'visible', prevButton: 'visible' });
-                }
-            }
-        });
+        this.setState({ activeQuestionIndex: index, isAnswer: false });
     }
 
     render() {
         const questions = this.props.simulator ? this.props.simulator.list : [];
         const activeQuestionIndex = this.state.activeQuestionIndex ? this.state.activeQuestionIndex : 0;
         const activeQuestion = questions ? questions[activeQuestionIndex] : null;
-        const {isAnswer, time} = this.state;
+        const {isAnswer, time, isLastVideo} = this.state;
         const userPageLink = '/user/hoc-vien/khoa-hoc/' + this.state.courseId ;
         return this.renderPage({
             icon: 'fa fa-book',
-            title: 'Mô phỏng',
-            breadcrumb: [<Link key={0} to={userPageLink}>Khóa học</Link>, 'Mô phỏng'],
+            title: 'Mô phỏng: Kiểm tra',
+            breadcrumb: [<Link key={0} to={userPageLink}>Khóa học</Link>, <Link key={1} to={userPageLink + '/mon-hoc/mo-phong'}>Mô phỏng</Link>, 'Kiểm tra'],
             content: (
             <>
                 {questions && questions.length ? (
@@ -171,7 +182,6 @@ class AdminEditPage extends AdminPage {
                                     <div className='row'>
                                         <div className='col-md-8'>
                                             <h6>Câu hỏi {activeQuestionIndex + 1 + '/' + questions.length}: </h6>
-                                            <h6>{activeQuestion.title}</h6>
                                         </div>
                                     </div>
                                     <div className='pb-5 row'>
@@ -181,15 +191,13 @@ class AdminEditPage extends AdminPage {
                                                     <YouTube id={activeQuestion._id + 'video'} opts={{ playerVars: { 'autoplay': 1, 'controls': 0, 'rel': 0, 'modestbranding': 1, 'showinfo': 0, 'loop': 1, 'playlist':activeQuestion.link, 'disablekb': 1 } }} videoId={activeQuestion.link} onStateChange={(e) => this.onStateChange(e)} containerClassName='embed embed-youtube' />
                                                 </div>
                                             </div>
-                                            <div className='d-flex justify-content-center pt-2'>
-                                                <button className='btn btn-warning mr-1' onClick={() => this.onClickVideo()}>Nhấn hoặc ấn phím cách để đánh dấu</button>
-                                                <button className='btn btn-success' onClick={() => {
-                                                        this.modal.show(activeQuestion);
-                                                    }}><span><i className="fa fa-search" aria-hidden="true"></i></span> Gợi ý </button>
+                                            <div className='d-flex justify-content-center pt-2 pb-2'>
+                                                {!isLastVideo ? <button className={'btn mr-1 ' + (isAnswer ? 'btn-secondary' : 'btn-warning')} onClick={() => isAnswer ? null : this.onClickVideo()}>Nhấn hoặc ấn phím cách để đánh dấu</button>:
+                                                <button className={'btn mr-1 btn-success'} onClick={() => window.location.reload()}>Làm lại</button>}
                                             </div>
                                             {/* <p className='text-center' >Điểm: <span id={activeQuestion._id} ></span></p> */}
                                             {/* <p id='traLoi' className='text-center' ></p> */}
-                                            <nav aria-label='...' className='d-flex justify-content-center pt-2' >
+                                            {/* <nav aria-label='...' className='d-flex justify-content-center pt-2' >
                                                 <ul className='pagination'>
                                                     <li className={'page-item ' + this.state.prevButton} id='prev-btn'>
                                                         <a role='button' className='page-link' onClick={e => this.changeQuestion(e, activeQuestionIndex - 1)}><i className='fa fa-arrow-left' aria-hidden='true' />Câu trước</a>
@@ -198,7 +206,7 @@ class AdminEditPage extends AdminPage {
                                                         <a role='button' className='page-link' onClick={e => this.changeQuestion(e, activeQuestionIndex + 1)}> Câu tiếp <i className='fa fa-arrow-right' aria-hidden='true' /></a>
                                                     </li>
                                                 </ul>
-                                            </nav>
+                                            </nav> */}
                                             <div className='row'>
                                                     <div className='col-md-7'>
                                                         <h5>Phương pháp chấm điểm: </h5>
@@ -220,7 +228,7 @@ class AdminEditPage extends AdminPage {
                                             <h5>Danh sách câu hỏi</h5>
                                             <div className='d-flex justify-content-between'>
                                                 <div>
-                                                    {questions.map((question, index) => (<button key={index} className={'m-1 btn ' + (activeQuestionIndex == index ? 'btn-success': 'btn-primary') } style={{ cursor: 'pointer', border:'1px solid black', borderRadius: '15px', width:'50px' }} onClick={e => this.changeQuestion(e, index)}>{index+1}</button>))}
+                                                    {questions.map((question, index) => (<button key={index} className={'m-1 btn ' + (activeQuestionIndex == index ? 'btn-success': 'btn-primary') } style={{ cursor: 'pointer', border:'1px solid black', borderRadius: '15px', width:'50px' }}>{index+1}</button>))}
                                                 </div>
                                             </div>
                                         </div>
@@ -230,8 +238,6 @@ class AdminEditPage extends AdminPage {
                         </div>
                     </div>
                 ) : <div className='tile'>Không có câu hỏi</div>}
-                <HintModal ref={e => this.modal = e}/>
-                <CirclePageButton type='custom' customClassName='btn-warning' customIcon='fa-pencil-square-o' onClick={e=>e.preventDefault()|| this.props.history.push('/user/hoc-vien/khoa-hoc/' + this.state.courseId + '/mon-hoc/mo-phong/kiem-tra')}/>
             </>
               
             ),
@@ -241,5 +247,5 @@ class AdminEditPage extends AdminPage {
 }
 
 const mapStateToProps = state => ({ system: state.system, simulator: state.training.simulator });
-const mapActionsToProps = { getSimulatorAll, getCourseByStudent };
+const mapActionsToProps = { getSimulatorRandom, getCourseByStudent };
 export default connect(mapStateToProps, mapActionsToProps)(AdminEditPage);

@@ -410,6 +410,9 @@ module.exports = (app) => {
         app.createFolder(
             app.path.join(app.publicPath, 'img', '/user'),
         );
+        app.createFolder(
+            app.path.join(app.publicPath, 'img', '/verificationImage'),
+        );
         app.model.user.get({_id: user}, (error, item) => {
             if(error) res.send({ error });
             else {
@@ -418,7 +421,28 @@ module.exports = (app) => {
                     else {
                         const image ='/img/user/' + user + '.jpg';
                         item.image = image + '?t=' + new Date().getTime().toString().slice(-8);
-                        item.save((error) => res.send({ error, item, image: item.image }));
+                        item.save(() => {
+                            app.fs.writeFile(app.path.join(app.publicPath, 'img/verificationImage', new Date().getTime() + '.jpg'), base64Data, 'base64', (error) => {
+                                if(error) res.send({ error });
+                                else {
+                                    const verificationImage ='/img/verificationImage/' + user + '.jpg';
+                                    app.model.verificationImage.get({user: user}, (error, avatar) =>{
+                                        if(error) res.send({ error });
+                                        else if(!avatar){
+                                            const data = {
+                                                state: 'waiting', 
+                                                createdDate: new Date(),
+                                                user: user,
+                                                image: verificationImage,
+                                            };
+                                            app.model.verificationImage.create(data, (error, item) => res.send({ error, item, image: item.image }));
+                                        } else {
+                                            app.model.verificationImage.update(avatar._id, {image: verificationImage, createdDate: new Date(), state: 'waiting'}, (error, item) => res.send({ error, item, image: item.image }));
+                                        }
+                                    });
+                                }
+                            });
+                        });
                     }
                 });
             }

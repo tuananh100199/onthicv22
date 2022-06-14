@@ -17,5 +17,9 @@ export default {
             path: '/user/hoc-vien/khoa-hoc/:courseId/mon-hoc/mo-phong',
             component: Loadable({ loading: Loading, loader: () => import('./userPageView') }),
         },
+        {
+            path: '/user/hoc-vien/khoa-hoc/:courseId/mon-hoc/mo-phong/kiem-tra',
+            component: Loadable({ loading: Loading, loader: () => import('./userSimulationExam') }),
+        },
     ]
 };
