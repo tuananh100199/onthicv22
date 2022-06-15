@@ -710,18 +710,9 @@ module.exports = (app) => {
                         ];
                     }
                     if(filter){
-                        app.handleFilter(filter,['courseType','division'],filterCondition=>{
+                        app.handleFilter(filter,['fullName','courseType','division'],filterCondition=>{
                             pageCondition={...pageCondition,...filterCondition};
                         });
-                        if(filter.fullName){// họ tên
-                            pageCondition['$expr']= {
-                                '$regexMatch': {
-                                  'input': { '$concat': ['$lastname', ' ', '$firstname'] },
-                                  'regex': `.*${filter.fullName}.*`,  //Your text search here
-                                  'options': 'i'
-                                }
-                            };
-                        }
                     }
                     if(sort && sort.fullName) sort={firstname:sort.fullName}; 
 

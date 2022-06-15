@@ -109,7 +109,6 @@ class AdminEditPage extends AdminPage {
         const item = this.props.course && this.props.course.item ? this.props.course.item : {},
             students = this.props.course && this.props.course && this.props.course.students ? this.props.course.students : [];
             const courseId = item._id;
-        console.log({students});
             const table = renderTable({
             getDataSource: () => students, stickyHead: true,
             renderHead: () => (

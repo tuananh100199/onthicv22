@@ -24,18 +24,9 @@ module.exports = app => {
                 courseCondition.courseType=condition.courseType;
             }
             if(filter){
-                app.handleFilter(filter,['identityCard','isDon','isHinh','isIdentityCard','isGiayKhamSucKhoe','isBangLaiA1'],defaultFilter=>{
+                app.handleFilter(filter,['fullName','identityCard','isDon','isHinh','isIdentityCard','isGiayKhamSucKhoe','isBangLaiA1'],defaultFilter=>{
                     pageCondition={...pageCondition,...defaultFilter};
-                });
-                if(filter.fullName){
-                    pageCondition['$expr']= {
-                        '$regexMatch': {
-                          'input': { '$concat': ['$lastname', ' ', '$firstname'] },
-                          'regex': `.*${filter.fullName}.*`,  //Your text search here
-                          'options': 'i'
-                        }
-                    };
-                }    
+                });    
             }
         new Promise((resolve,reject)=>{// handle condition course.
             if(condition.course){
