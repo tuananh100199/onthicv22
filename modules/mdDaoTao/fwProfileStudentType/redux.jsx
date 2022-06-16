@@ -16,14 +16,10 @@ export default function EnrollTargetReducer(state = {}, data) {
 }
 
 // Actions ------------------------------------------------------------------------------------------------------------
-export function getProfileStudentTypeAll(searchText, done) {
+export function getProfileStudentTypeAll(condition, done) {
     return dispatch => {
         const url = '/api/profile-student-type/all';
-        if (typeof searchText == 'function') {
-            done = searchText;
-            searchText = '';
-        }
-        T.get(url, { searchText }, data => {
+        T.get(url, { condition }, data => {
             if (data.error) {
                 T.notify('Lấy tất cả loại hồ sơ học viên bị lỗi!', 'danger');
                 console.error('GET: ' + url + '. ' + data.error);

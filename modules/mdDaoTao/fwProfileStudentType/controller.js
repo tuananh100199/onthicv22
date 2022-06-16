@@ -17,6 +17,10 @@ module.exports = app => {
         app.model.profileStudentType.getPage(pageNumber, pageSize, condition, (error, page) => res.send({ error, page }));
     });
 
+    app.get('/api/profile-student-type/all', app.permission.check('profileStudentType:read'), (req, res) => {
+        app.model.profileStudentType.getAll(req.query.condition||{},(error, list) => res.send({ error, list }));
+    });
+
     app.post('/api/profile-student-type', app.permission.check('profileStudentType:write'), (req, res) => {
         app.model.profileStudentType.create(req.body.data, (error, item) => res.send({ error, item }));
     });

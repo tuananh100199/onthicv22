@@ -13,8 +13,13 @@ module.exports = app => {
     app.get('/api/profile-type/page/:pageNumber/:pageSize',app.permission.check('profileType:read'), (req, res) => {
         const pageNumber = parseInt(req.params.pageNumber),
             pageSize = parseInt(req.params.pageSize),
-            condition=req.query.condition;
-        app.model.profileType.getPage(pageNumber, pageSize, condition, (error, page) => res.send({ error, page }));
+            condition=req.query.condition||{},
+            pageCondition={};
+        console.log({condition});
+        if(condition.searchText){
+            pageCondition.title = new RegExp(condition.searchText, 'i');
+        }
+        app.model.profileType.getPage(pageNumber, pageSize, pageCondition, (error, page) => res.send({ error, page }));
     });
 
     app.post('/api/profile-type', app.permission.check('profileType:write'), (req, res) => {

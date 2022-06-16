@@ -83,6 +83,8 @@ module.exports = app => {
 
         lock: { type: Boolean, default: false },                            // Cho phép thay đổi thông tin toàn khoá học => TODO: readOnly
         close: { type: Boolean, default: false },                           // Khóa học đã đóng
+        profileType:{ type: app.database.mongoDB.Schema.ObjectId, ref: 'ProfileType' }, // Hồ sơ đăng ký
+
     });
     const model = app.database.mongoDB.model('Course', schema);
 
@@ -98,7 +100,8 @@ module.exports = app => {
                 detailDescription: item.detailDescription,
                 subjects: item.subjects,
                 monThiTotNghiep: item.monThiTotNghiep,
-                practiceNumOfHours: item.practiceNumOfHours
+                practiceNumOfHours: item.practiceNumOfHours,
+                profileType:item.profileType
             }, done)),
 
         getPage: (pageNumber, pageSize, condition, done) => model.countDocuments(condition, (error, totalItem) => {
@@ -125,7 +128,8 @@ module.exports = app => {
 
         get: (condition, done) => {
             const findTask = typeof condition == 'string' ? model.findById(condition) : model.findOne(condition);
-            findTask.populate('courseType').populate('subjects', '-detailDescription').populate({
+            findTask.populate('courseType').populate('subjects', '-detailDescription').populate('profileType','_id title')
+            .populate({
                 path: 'teacherGroups.teacher', select: '-password', populate: { path: 'division' }
             }).populate({
                 path: 'teacherGroups.student', populate: { path: 'user division courseType course', select: 'email title name image phoneNumber' }
