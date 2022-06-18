@@ -160,7 +160,7 @@ module.exports = (app) => {
             }
         }).then((info)=>{
             changes.fullName = ((changes.lastname || info.lastname)+' '+(changes.firstname||info.firstname)).trim();
-            model.update({ _id }, changes, { new: true }).populate('user', 'email phoneNumber').populate('division', 'id title').exec(done);
+            model.findOneAndUpdate({ _id }, changes, { new: true }).populate('user', 'email phoneNumber').populate('division', 'id title').exec(done);
         }).catch(error=>done(error)),
 
         delete: (_id, done) => model.findById(_id, (error, item) => {

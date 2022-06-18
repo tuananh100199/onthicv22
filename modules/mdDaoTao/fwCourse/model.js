@@ -139,6 +139,8 @@ module.exports = app => {
                 path: 'roleManager.user',select: '_id lastname firstname identityCard'
             }).populate({
                 path: 'subjects.lessons', select: '_id title'
+            }).populate({
+                path: 'profileType', populate: { path: 'profiles', populate: { path:'type', select:'_id title'} }
             }).exec(done);
         },
 

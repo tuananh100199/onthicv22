@@ -71,7 +71,7 @@ class ProfileStudentTypePage extends AdminPage {
             renderHead: () => (
                 <tr>
                     <th style={{ width: 'auto', textAlign: 'center' }}>#</th>
-                    <th style={{ width: '100%'}}>Tên hồ sơ</th>
+                    <th style={{ width: '100%'}}>Tên</th>
                     <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Kích hoạt</th>
                     <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Thao tác</th>
                 </tr>),
@@ -86,8 +86,8 @@ class ProfileStudentTypePage extends AdminPage {
 
         return this.renderPage({
             icon: 'fa fa-university',
-            title: 'Hồ sơ đăng ký ĐT và SHLX ô tô theo D9TT12',
-            breadcrumb: ['Hồ sơ đăng ký'],
+            title: 'Giấy tờ',
+            breadcrumb: ['Giấy tờ'],
             content: <>
                 <div className='tile'>{table}</div>
                 <Pagination name='pageProfileStudentType' pageNumber={pageNumber} pageSize={pageSize} pageTotal={pageTotal} totalItem={totalItem}

@@ -123,7 +123,7 @@ class ProfileTypePage extends AdminPage {
         isConfirm && this.props.deleteProfileType(item._id));
 
     renderListPapers = papers=>(<>
-            {papers.map((paper,index)=><p style={{marginBottom:0}} key={index}> - {paper?paper.amount:''} {paper.type ? paper.type.title:''}</p>)}
+            {papers.map((paper,index)=><p style={{marginBottom:0}} key={index}> - {paper?paper.amount:''} {paper.type ? paper.type.title:''} {!paper.required?'(Nếu có)':''}</p>)}
         </>)
 
     render() {
@@ -137,7 +137,7 @@ class ProfileTypePage extends AdminPage {
                 <tr>
                     <th style={{ width: 'auto', textAlign: 'center' }}>#</th>
                     <th style={{ width: '100%'}}>Loại hồ sơ</th>
-                    <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Giấy tờ</th>
+                    <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Giấy tờ liên quan</th>
                     <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Kích hoạt</th>
                     <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Thao tác</th>
                 </tr>),
@@ -153,8 +153,8 @@ class ProfileTypePage extends AdminPage {
 
         return this.renderPage({
             icon: 'fa fa-university',
-            title: 'Loại hồ sơ',
-            breadcrumb: ['Loại hồ sơ'],
+            title: 'Hồ sơ đăng ký',
+            breadcrumb: ['Hồ sơ đăng ký'],
             content: <>
                 <div className='tile'>{table}</div>
                 <Pagination name='pageProfileType' pageNumber={pageNumber} pageSize={pageSize} pageTotal={pageTotal} totalItem={totalItem}

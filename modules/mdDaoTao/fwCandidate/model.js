@@ -21,11 +21,7 @@ module.exports = app => {
         discount: { type: app.database.mongoDB.Schema.ObjectId, ref: 'Discount' },
         courseFee: { type: app.database.mongoDB.Schema.ObjectId, ref: 'CourseFee' },
         // thêm phần bổ sung hồ sơ
-        isDon: { type: Boolean, default: false },
-        isHinh: { type: Boolean, default: false },
-        isIdentityCard: { type: Boolean, default: false },
-        isGiayKhamSucKhoe: { type: Boolean, default: false },
-        isBangLaiA1: { type: Boolean, default: false },
+        giayToDangKy:[{ type: app.database.mongoDB.Schema.ObjectId, ref: 'ProfileStudentType'}]
     });
     const model = app.database.mongoDB.model('Candidate', schema);
 
@@ -64,9 +60,10 @@ module.exports = app => {
                 if(error)done(error);
                 else{
                     changes.fullName = ((changes.lastname || item.lastname).trim()+' '+(changes.firstname||item.firstname).trim()).trim();
-                    model.update({ _id }, changes , { new: true }).exec(done);
+                    model.findOneAndUpdate({_id},changes,{new:true}).exec(done);
                 }
             });
+
         },
 
         delete: (_id, done) => model.findById(_id, (error, item) => {

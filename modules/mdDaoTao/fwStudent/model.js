@@ -160,6 +160,7 @@ module.exports = (app) => {
         noiDungSatHach: String,
         soKMThucHanh: Number,
         diemCuoiKhoa: Number,
+        giayToDangKy:[{ type: app.database.mongoDB.Schema.ObjectId, ref: 'ProfileStudentType' }],
 
         createdDate: { type: Date, default: Date.now },                                             // Ngày tạo
         modifiedDate: { type: Date, default: Date.now },                                            // Ngày cập nhật cuối cùng
@@ -238,7 +239,7 @@ module.exports = (app) => {
                                 .populate('user', '-password').populate('division', '_id title isOutside').populate('planLecturer', '_id lastname firstname').populate('courseType').populate('course').populate({
                                     path: 'course', populate: { path: 'subjects', select: '-detailDescription' }
                                 }).populate('courseFee').populate('_id name').populate('kySatHach','_id title date')
-                                .populate('plannedCourse','_id title courseType')
+                                .populate('plannedCourse','_id title courseType').populate('giayToDangKy','_id title')
                                 .exec((error, list) => {
                                     result.list = list;
                                     done(error, result);
@@ -252,7 +253,7 @@ module.exports = (app) => {
                         .populate('user', '-password').populate('division', '_id title isOutside').populate('planLecturer', '_id lastname firstname').populate('courseType').populate('course').populate({
                             path: 'course', populate: { path: 'subjects', select: '-detailDescription' }
                         }).populate('courseFee').populate('discount').populate('coursePayment').populate('kySatHach','_id title date')
-                        .populate('plannedCourse','_id title courseType')
+                        .populate('plannedCourse','_id title courseType').populate('giayToDangKy','_id title')
                         .exec((error, list) => {
                             result.list = list;
                             done(error, result);
@@ -285,8 +286,7 @@ module.exports = (app) => {
                 if(error)done(error);
                 else{
                     changes.fullName = ((changes.lastname || item.lastname).trim()+' '+(changes.firstname||item.firstname).trim()).trim();
-                    console.log(changes.fullName);
-                    model.update({ _id }, { $set: changes, $unset } , { new: true }).populate('user', 'email phoneNumber').populate('division', 'id title').populate('course', 'name').exec(done);
+                    model.findOneAndUpdate({ _id }, { $set: changes, $unset } , { new: true }).populate('user', 'email phoneNumber').populate('division', 'id title').populate('course', 'name').exec(done);
                 }
             });
         },
@@ -451,5 +451,13 @@ module.exports = (app) => {
             });
         },
         count: (condition, done) => done ? model.countDocuments(condition, done) : model.countDocuments({}, condition),
+        
+        addGiayToDangKy: (_id, giayTo, done) => {
+            model.findOneAndUpdate(_id, { $push: { giayToDangKy: giayTo } }, { new: true }).exec(done);
+        },
+        deleteGiayToDangKy: (_id, _giayToId, done) => {
+            model.findOneAndUpdate({ _id }, { $pull: { giayToDangKy: _giayToId } }, { new: true }).exec(done);
+        },
+    
     };
 };
