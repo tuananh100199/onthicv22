@@ -3,7 +3,10 @@ import T from 'view/js/common';
 // Reducer ------------------------------------------------------------------------------------------------------------
 const ForumGetCategories = 'ForumGetCategories';
 const ForumGetPage = 'ForumGetPage';
+const ForumGetPageByUser = 'ForumGetPageByUser';
 const ForumGetItem = 'ForumGetItem';
+const ForumGetForumByUser = 'ForumGetForumByUser';
+const ForumMessageUserGetPage = 'ForumMessageUserGetPage';
 
 export default function forumReducer(state = {}, data) {
     switch (data.type) {
@@ -15,7 +18,43 @@ export default function forumReducer(state = {}, data) {
 
         case ForumGetItem:
             return Object.assign({}, state, { item: Object.assign({}, state ? state.item : {}, data.item || {}) });
-
+        
+        case ForumGetPageByUser:
+            if (state == null || state.category && data.category && state.category._id != data.category._id) {
+                return Object.assign({}, state, { category:data.category, userForumPage: data.page });
+            } else {
+                const userForumPage = Object.assign({}, data.page);
+                userForumPage.list = state.userForumPage && state.userForumPage.list ? state.userForumPage.list.slice() : [];
+                let _ids = userForumPage.list.map(item => item._id);
+                if (data.page && data.page.list && data.page.list.length > 0) {
+                    data.page.list.forEach(item => {
+                        if (_ids.indexOf(item._id) == -1) {
+                            _ids.push(item._id);
+                            userForumPage.list.push(item);
+                        }
+                    });
+                }
+                return Object.assign({}, state, { userForumPage,category: data.category });
+            }
+        case ForumGetForumByUser:
+            return Object.assign({}, state, { userForum: data.item });
+        case ForumMessageUserGetPage:
+            if (state == null || state.forum && data.forum && state.forum._id!= data.forum._id) {
+                return Object.assign({}, state, { forum: data.forum, userMessagePage: data.page });
+            } else {
+                const userMessagePage = Object.assign({}, data.page);
+                userMessagePage.list = state.userMessagePage && state.userMessagePage.list ? state.userMessagePage.list.slice() : [];
+                let _ids = userMessagePage.list.map(item => item._id);
+                if (data.page && data.page.list && data.page.list.length > 0) {
+                    data.page.list.forEach(item => {
+                        if (_ids.indexOf(item._id) == -1) {
+                            _ids.push(item._id);
+                            userMessagePage.list.push(item);
+                        }
+                    });
+                }
+                return Object.assign({}, state, { userMessagePage, forum:data.forum });
+            }
         default:
             return state;
     }
@@ -118,6 +157,8 @@ export function deleteForum(_id, condition) {
 }
 
 
+
+
 // Message -------------------------------------------------------------------------------------------------------
 T.initCookiePage('pageForumMessage');
 export function getForumMessagePage(_forumId, pageNumber, pageSize, searchText, done) {
@@ -181,5 +222,56 @@ export function deleteForumMessage(_id, done) {
                 data.item && data.item.forum && dispatch(getForumMessagePage(data.item.forum));
             }
         }, error => console.error(`DELETE: ${url}. ${error}`) || T.notify('Xóa bài viết bị lỗi!', 'danger'));
+    };
+}
+
+// Home--------------------------------------------------------------------
+
+export function getForumHomePage(pageNumber, pageSize, pageCondition, done) {
+    const page = T.updatePage('pageForum', pageNumber, pageSize);
+    return dispatch => {
+        const url = '/api/home/forum/page/' + page.pageNumber + '/' + page.pageSize;
+        T.get(url, { pageCondition }, data => {
+            if (data.error) {
+                T.notify('Lấy danh sách bài viết bị lỗi!', 'danger');
+                console.error(`GET: ${url}. ${data.error}`);
+            } else {
+                console.log(data.page);
+                done && done(data.page);
+                dispatch({ type: ForumGetPageByUser, category: data.category, page: data.page });
+            }
+        }, error => console.error(error) || T.notify('Lấy danh sách bài viết bị lỗi!', 'danger'));
+    };
+}
+
+export function getHomeForum(_id, done) {
+    return dispatch => {
+        const url = '/api/home/forum';
+        T.get(url, { _id }, data => {
+            if (data.error) {
+                T.notify('Lấy forum bị lỗi!', 'danger');
+                console.error(`GET: ${url}. ${data.error}`);
+            } else {
+                done && done(data);
+                dispatch({ type: ForumGetForumByUser, item: data.item });
+            }
+        }, error => console.error(error) || T.notify('Lấy forum bị lỗi!', 'danger'));
+    };
+}
+
+export function getHomeForumMessagePage(pageNumber, pageSize, pageCondition, done) {
+    const page = T.updatePage('pageForumMessage', pageNumber, pageSize);
+    console.log({pageCondition});
+    return dispatch => {
+        const url = '/api/home/forum/message/page/' + page.pageNumber + '/' + page.pageSize;
+        T.get(url, { condition:pageCondition }, data => {
+            if (data.error) {
+                T.notify('Lấy danh sách bình luận bị lỗi!', 'danger');
+                console.error(`GET: ${url}. ${data.error}`);
+            } else {
+                done && done(data.page);
+                dispatch({ type: ForumMessageUserGetPage, page: data.page ,forum:data.forum });
+            }
+        }, error => console.error(`GET: ${url}. ${error}`) || T.notify('Lấy danh sách bình luận bị lỗi!', 'danger'));
     };
 }

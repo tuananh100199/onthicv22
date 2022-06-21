@@ -9,6 +9,10 @@ module.exports = app => {
         createdDate: { type: Date, default: Date.now },
         modifiedDate: { type: Date, default: Date.now },
         active: { type: Boolean, default: false }, // bật/tắt forum
+        video:{
+            link:String,
+            active: { type: Boolean, default: false },
+        }
     });
     const model = app.database.mongoDB.model('Forum', schema);
 
@@ -22,13 +26,13 @@ module.exports = app => {
                 let result = { totalItem, pageSize, pageTotal: Math.ceil(totalItem / pageSize) };
                 result.pageNumber = pageNumber === -1 ? result.pageTotal : Math.min(pageNumber, result.pageTotal);
                 const skipNumber = (result.pageNumber > 0 ? result.pageNumber - 1 : 0) * result.pageSize;
-                model.find(condition).populate('user', 'firstname lastname').populate('course', 'name').sort({ modifiedDate: -1 }).skip(skipNumber).limit(result.pageSize).exec((error, list) => {
+                model.find(condition).populate('user', 'firstname lastname image').populate('course', 'name').sort({ modifiedDate: -1 }).skip(skipNumber).limit(result.pageSize).exec((error, list) => {
                     result.list = [];
                     const numberOfForums = list ? list.length : 0,
                         solve = (index = 0) => {
                             if (index < numberOfForums) {
                                 const item = app.clone(list[index]);
-                                app.model.forumMessage.getPage(1, 3, { forum: item._id }, (error, messages) => {
+                                app.model.forumMessage.getPage(1, 3, { forum: item._id,state:'approved' }, (error, messages) => {
                                     item.messages = error || messages == null ? [] : messages;
                                     result.list.push(item);
                                     solve(index + 1);
@@ -44,7 +48,7 @@ module.exports = app => {
 
         get: (condition, done) => {
             const findTask = typeof condition == 'string' ? model.findById(condition) : model.findOne(condition);
-            findTask.populate('user', 'firstname lastname').populate('category', 'title').exec(done);
+            findTask.populate('user', 'firstname lastname image').populate('category', 'title').exec(done);
         },
 
         // changes = { $set, $unset, $push, $pull }

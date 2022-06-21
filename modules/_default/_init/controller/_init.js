@@ -203,7 +203,8 @@ module.exports = (app) => {
             address: '',
             smsAPIToken: app.getToken(32),
             activeZalo: false,
-            zaloId: ''
+            chPlay: '',
+            appStore: '',
         },
 
         init: () => app.database.redisDB.keys(`${app.appName}:state:*`, (_, keys) => {

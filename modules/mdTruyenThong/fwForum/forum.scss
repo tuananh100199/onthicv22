@@ -1,0 +1,48 @@
+.forum{
+    border-radius: 5px;
+    &_header{
+    background-color: #ddd;
+    }
+
+    &_icon{
+        font-size:36px;
+    }
+
+    &_title{
+        font-size: 24px;
+    }
+    
+
+    &_body{
+        overflow-x: hidden;
+    }
+
+    &_item{
+        &:not(:last-child){
+            border-bottom: 1px solid #ccc;
+        }
+    }
+
+    &_image{
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        object-fit: cover;
+    }
+}
+
+.forumMessage{
+    margin-top: 50px;
+    &_avatar{
+        width: 48px;
+        height: 48px;
+        object-fit: cover;
+        border-radius: 50%;
+    }
+
+    &_content{
+        flex-grow: 1;
+        background-color:#ccc;
+        border-radius: 5px;
+    }
+}

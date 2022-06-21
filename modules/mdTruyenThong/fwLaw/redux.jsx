@@ -153,7 +153,6 @@ export function getLawPageByUser(pageNumber, pageSize, done) {
     return dispatch => {
         const url = '/api/home/law/page/' + pageNumber + '/' + pageSize;
         T.get(url, data => {
-            console.log({data});
             if (data.error) {
                 T.notify('Lấy danh sách quy định pháp luật bị lỗi!', 'danger');
                 console.error('GET: ' + url + '.', data.error);
@@ -169,7 +168,6 @@ export function getLawByUser(_id, done) {
     return dispatch => {
         const url = '/home/law/item';
         T.get(url, { _id }, data => {
-            console.log({data});
             if (data.error) {
                 T.notify('Lấy tin tức bị lỗi!', 'danger');
                 console.error('GET: ' + url + '.', data.error);
