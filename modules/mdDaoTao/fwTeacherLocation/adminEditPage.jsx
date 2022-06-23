@@ -27,9 +27,9 @@ class TeacherLocation extends AdminPage {
       });
     }
     render() {
-      const teacherLocation = this.props.teacherLocation ? this.props.teacherLocation.item || {} : {};
+      const teacherLocation = this.props.teacherLocation ? this.props.teacherLocation.item : {};
       const previousRoute = '/user/teacher-location';
-      
+      const data = this.state.data;
       let polyline = [];
       teacherLocation && teacherLocation.record && teacherLocation.record.forEach(gps => {
         polyline.push([gps.latitude, gps.longtitude]);
@@ -37,32 +37,32 @@ class TeacherLocation extends AdminPage {
 
         return this.renderPage({
             icon: 'fa fa-folder',
-            title: 'Định vị giáo viên: ' + (teacherLocation.teacher ? teacherLocation.teacher.lastname + ' ' + teacherLocation.teacher.firstname : '...'),
+            title: 'Định vị giáo viên: ' + (teacherLocation && teacherLocation.teacher ? teacherLocation.teacher.lastname + ' ' + teacherLocation.teacher.firstname : '...'),
             breadcrumb: ['Định vị giáo viên'],
             content: 
               <div className='tile'>
-              <div className="flex ml-auto">
-              {teacherLocation && teacherLocation.timeTable && <h5>Buổi học ngày: {T.dateToText(teacherLocation.date,'dd/mm/yyyy')} {teacherLocation.timeTable.startHour}:00</h5>}
-              <div className="w-4/5">
-                <MapContainer
-                  center={polyline && polyline.length ? {lat:polyline[0][0], lng:polyline[0][1]} : { lat: 10.713056, lng: 106.552550 }}
-                  zoom={17}
-                  style={{ height: '100vh' }}
-                  scrollWheelZoom={false}
-                >
-                <TileLayer
-                    attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-                    url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                />
-                  <Marker position={[10.713056, 106.552550]}>
-                    <Popup>
-                      Trụ sở chính
-                    </Popup>
-                  </Marker>
-                <Polyline pathOptions={{ color: 'lime' }} positions={polyline} />
-              </MapContainer>
-            </div>
-              </div>
+                <div className="flex ml-auto">
+                  {teacherLocation && teacherLocation.timeTable && <h5>Buổi học ngày: {T.dateToText(teacherLocation.date,'dd/mm/yyyy')} {teacherLocation.timeTable.startHour}:00</h5>}
+                  {data && data.record ? <div className="w-4/5">
+                    <MapContainer
+                      center={{lat: data.record[0].latitude, lng:data.record[0].longtitude}}
+                      zoom={15}
+                      style={{ height: '60vh', width: '50%' }}
+                      scrollWheelZoom={false}
+                    >
+                      <TileLayer
+                        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                      />
+                      <Marker position={[10.713056, 106.552550]}>
+                        <Popup>
+                          Trụ sở chính
+                        </Popup>
+                      </Marker>
+                      <Polyline pathOptions={{ color: 'lime' }} positions={polyline} />
+                    </MapContainer>
+                  </div> : null}
+                </div>
               </div>,
             backRoute: previousRoute,
             
