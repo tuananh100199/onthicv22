@@ -952,6 +952,12 @@ export const ajaxSelectOfficialCourse = {
     fetchOne: (_id, done) => fetchCourse(_id, ({ item }) => done && done({ id: item._id, text: item.name + (item.courseType ? ` (${item.courseType.title})` : '') }))
 };
 
+export const ajaxSelectOfficialCourseByCourseType = (courseType) => T.createAjaxAdapter(
+    `/api/course/page/1/20?isDefault=false&courseType=${courseType}`,
+    params => ({searchText:params.term}),
+    response => response && response.page && response.page.list ? response.page.list.map(course => ({ id: course._id, text: course.name })) : []
+);
+
 
 
 

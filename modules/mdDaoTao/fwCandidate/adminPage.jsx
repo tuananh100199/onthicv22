@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { getCandidatePage, getCandidate, updateCandidate, deleteCandidate,updateUngVienTiemNang } from './redux';
 import Pagination from 'view/component/Pagination';
 import { getCourseTypeAll, ajaxSelectCourseType, ajaxGetCourseType } from 'modules/mdDaoTao/fwCourseType/redux';
-import { AdminPage, AdminModal, FormTextBox, TableCell, renderTable, FormSelect, FormDatePicker,FormCheckbox } from 'view/component/AdminPage';
+import { AdminPage, AdminModal, FormTextBox, TableCell, renderTable, FormSelect, FormDatePicker } from 'view/component/AdminPage';
 import Dropdown from 'view/component/Dropdown';
 import { ajaxSelectDivision, ajaxGetDivision, getDivisionAll } from 'modules/mdDaoTao/fwDivision/redux';
 import {ajaxSelectCourseFeeByCourseType,getCourseFeeAll} from 'modules/_default/fwCourseFee/redux';
@@ -11,14 +11,14 @@ import {ajaxSelectCoursePayment,getCoursePaymentAll} from 'modules/_default/fwCo
 import {ajaxSelectDiscount,getDiscountAll} from 'modules/_default/fwDiscount/redux';
 import {ajaxSelectPlanCourseByCourseType} from 'modules/_default/fwPlanCourse/redux';
 class CandidateModal extends AdminModal {
-    state = {};
+    state = {giayToDangKy:[]};
     componentDidMount() {
         $(document).ready(() => this.onShown(() => this.itemLastname.focus()));
     }
 
     onShow = ({ _id, courseFee , discount , coursePayment , firstname = '', lastname = '', email = '', phoneNumber = '',
      identityCard = '', birthday = null, onUpdated, courseType = null, state = '', division = '',
-     isDon=false,isHinh=false,isIdentityCard=false,isGiayKhamSucKhoe=false,isBangLaiA1=false,plannedCourse=null }) => {
+     giayToDangKy=[],plannedCourse=null }) => {
         this.onUpdated = onUpdated;
         this.itemFirstname.value(firstname);
         this.itemLastname.value(lastname);
@@ -34,18 +34,21 @@ class CandidateModal extends AdminModal {
         ajaxGetDivision(division, data => //TODO: cần xem lại đoạn code này
             this.division.value(data && data.item ? { id: data.item._id, text: data.item.title } : null));
         this.states.value(state);
+
+        // this.itemIsDon.value(isDon);
+        // this.itemIsHinh.value(isHinh);
+        // this.itemIsIdentityCard.value(isIdentityCard);
+        // this.itemIsGiayKhamSucKhoe.value(isGiayKhamSucKhoe);
+        // this.itemIsBangLaiA1.value(isBangLaiA1);
+
         this.setValueDiscount(discount);
         this.setValueCoursePayment(coursePayment);
-        this.setState({ _id,courseId:courseType._id },()=>{
+        
+        const courseTypes = this.props.courseTypes;
+        this.setState({ _id,courseId:courseType._id,giayToDangKy, courseType:courseTypes.find(item=>item._id==courseType._id) },()=>{
             this.setValueCourseFee(courseType?courseType._id:null,courseFee);
             this.setValuePlannedCourse(courseType?courseType._id:null,plannedCourse);
-
         });
-        this.itemIsDon.value(isDon);
-        this.itemIsHinh.value(isHinh);
-        this.itemIsIdentityCard.value(isIdentityCard);
-        this.itemIsGiayKhamSucKhoe.value(isGiayKhamSucKhoe);
-        this.itemIsBangLaiA1.value(isBangLaiA1);
     }
 
     setValuePlannedCourse = (courseTypeId,plannedCourse=null)=>{
@@ -100,11 +103,7 @@ class CandidateModal extends AdminModal {
             courseFee:this.itemCourseFee.value(),
             discount:this.itemDiscount.value(),
             coursePayment:this.itemCoursePayment.value(),
-            isDon:this.itemIsDon.value(),
-            isHinh:this.itemIsHinh.value(),
-            isIdentityCard:this.itemIsIdentityCard.value(),
-            isGiayKhamSucKhoe:this.itemIsGiayKhamSucKhoe.value(),
-            isBangLaiA1:this.itemIsBangLaiA1.value(),
+            giayToDangKy:this.state.giayToDangKy
         };
         if (data.lastname == '') {
             T.notify('Họ không được trống!', 'danger');
@@ -161,6 +160,7 @@ class CandidateModal extends AdminModal {
             courseFee:this.itemCourseFee.value()!=''?this.itemCourseFee.value():null,
             discount:this.itemDiscount.value()!=''?this.itemDiscount.value():null,
             coursePayment:this.itemCoursePayment.value()?this.itemCoursePayment.value():null,
+            giayToDangKy:this.state.giayToDangKy
         };
         if (data.lastname == '') {
             T.notify('Họ không được trống!', 'danger');
@@ -199,41 +199,64 @@ class CandidateModal extends AdminModal {
         }
     }
 
-    onChangeCourseType = data => data && data.id && this.setState({courseId:data.id},()=>{
+    onChangeCourseType = data => data && data.id && this.setState({courseId:data.id, courseType:this.props.courseTypes.find(item=>item._id==data.id)},()=>{
         this.setValueCourseFee(data.id);
         this.setValuePlannedCourse(data.id);
     });
 
-    render = () => this.renderModal({
-        title: 'Đăng ký tư vấn',
-        size: 'large',
-        body: <div className='row'>
-            <FormTextBox className='col-md-4' ref={e => this.itemLastname = e} label='Họ' required/>
-            <FormTextBox className='col-md-4' ref={e => this.itemFirstname = e} label='Tên' required/>
-            <FormTextBox className='col-md-4' ref={e => this.itemEmail = e} type='email' label='Email' />
-            <FormTextBox className='col-md-4' ref={e => this.itemPhoneNumber = e} type='phone' label='Số điện thoại' required/>
-            <FormSelect className='col-md-4' ref={e => this.courseType = e} label='Loại khóa học' data={ajaxSelectCourseType} onChange = {this.onChangeCourseType} required/>
-            <FormSelect className='col-md-4' ref={e => this.states = e} label='Trạng thái' data={this.props.states} />
-            <FormSelect className='col-md-4' ref={e => this.division = e} label='Cơ sở đào tạo' data={ajaxSelectDivision} required/>
-            <FormTextBox className='col-md-4' ref={e => this.itemIdentityCard = e} label='CMND/CCCD' required/>
-            <FormDatePicker className='col-md-4' ref={e => this.itemBirthday = e} label='Ngày sinh' type='date-mask' required/>
-            {/* <FormTextBox className='col-md-4' ref={e => this.itemPlanCourse = e} label='Khóa dự kiến' required/> */}
-            <FormSelect className='col-md-4' ref={e => this.itemPlannedCourse = e} label='Khóa dự kiến' data={ajaxSelectPlanCourseByCourseType(this.state.courseId)} required/>
-            <FormCheckbox className='col-md-3' ref={e => this.itemIsDon = e} label='Đơn' readOnly={this.props.readOnly} />
-            <FormCheckbox className='col-md-3' ref={e => this.itemIsHinh = e} label='Hình' readOnly={this.props.readOnly} />
-            <FormCheckbox className='col-md-3' ref={e => this.itemIsGiayKhamSucKhoe = e} label='GKSK' readOnly={this.props.readOnly} />
-            <FormCheckbox className='col-md-3' ref={e => this.itemIsIdentityCard = e} label='CMND/CCCD' readOnly={this.props.readOnly} />
-            <FormCheckbox className='col-md-3' ref={e => this.itemIsBangLaiA1 = e} label='Bằng lái A1' readOnly={this.props.readOnly} />
-            <FormSelect className='col-md-4' ref={e => this.itemCourseFee = e} label='Gói học phí' data={ajaxSelectCourseFeeByCourseType(this.state.courseId)} required/>
-            <FormSelect className='col-md-4' ref={e => this.itemDiscount = e} label='Giảm giá' data={ajaxSelectDiscount} />
-            <FormSelect className='col-md-4' ref={e => this.itemCoursePayment = e} label='Số lần thanh toán' data={ajaxSelectCoursePayment} required/>
+    selectProfile = (giayTo) => {
+        let giayToDangKy = this.state.giayToDangKy;
+        const isSelected = giayToDangKy.find(item=>item==giayTo._id)!=undefined;
+        if(isSelected){
+            this.setState({ giayToDangKy:giayToDangKy.filter(item=>item!=giayTo._id)});
+        }else{
+            this.setState({giayToDangKy:[...giayToDangKy,giayTo._id]});
+        }
+    }
 
-        </div>,
-        buttons: this.props.permission.write ?
-            <a className='btn btn-warning' href='#' onClick={e => this.onUpStudent(e)} style={{ color: 'white' }}>
-                <i className='fa fa-lg fa-paper-plane' /> Chuyển thành ứng viên
-            </a> : null
-    });
+    renderHoSoDangKy = (profile)=>{
+        const {type} = profile;
+        return( 
+        <a key={profile._id} className='col-md-4 mt-1 d-flex align-items-center text-secondary' href='#' onClick={e => e.preventDefault()|| e.stopPropagation() || this.selectProfile(type)}>
+            <div className={'animated-checkbox'}>
+                <input type='checkbox' checked={type._id && (this.state.giayToDangKy.find(id=>id==type._id)!=undefined)} onChange={e=>e.preventDefault()} />
+                <span className={'label-text'}></span>
+            </div>
+            <span style={{whiteSpace:'normal'}}> {type ? type.title : ''}</span>
+        </a>
+        );
+    }
+
+    render = () =>{
+        const {profileType} = this.state.courseType||{};
+        const profiles = profileType && profileType.profiles ? profileType.profiles:null;
+        return this.renderModal({
+            title: 'Đăng ký tư vấn',
+            size: 'large',
+            body: <div className='row'>
+                <FormTextBox className='col-md-4' ref={e => this.itemLastname = e} label='Họ' required/>
+                <FormTextBox className='col-md-4' ref={e => this.itemFirstname = e} label='Tên' required/>
+                <FormTextBox className='col-md-4' ref={e => this.itemEmail = e} type='email' label='Email' />
+                <FormTextBox className='col-md-4' ref={e => this.itemPhoneNumber = e} type='phone' label='Số điện thoại' required/>
+                <FormSelect className='col-md-4' ref={e => this.courseType = e} label='Loại khóa học' data={ajaxSelectCourseType} onChange = {this.onChangeCourseType} required/>
+                <FormSelect className='col-md-4' ref={e => this.states = e} label='Trạng thái' data={this.props.states} />
+                <FormSelect className='col-md-4' ref={e => this.division = e} label='Cơ sở đào tạo' data={ajaxSelectDivision} required/>
+                <FormTextBox className='col-md-4' ref={e => this.itemIdentityCard = e} label='CMND/CCCD' required/>
+                <FormDatePicker className='col-md-4' ref={e => this.itemBirthday = e} label='Ngày sinh' type='date-mask' required/>
+                {/* <FormTextBox className='col-md-4' ref={e => this.itemPlanCourse = e} label='Khóa dự kiến' required/> */}
+                <FormSelect className='col-md-4' ref={e => this.itemPlannedCourse = e} label='Khóa dự kiến' data={ajaxSelectPlanCourseByCourseType(this.state.courseId)} required/>
+                <FormSelect className='col-md-4' ref={e => this.itemCourseFee = e} label='Gói học phí' data={ajaxSelectCourseFeeByCourseType(this.state.courseId)} required/>
+                <FormSelect className='col-md-4' ref={e => this.itemDiscount = e} label='Giảm giá' data={ajaxSelectDiscount} />
+                <FormSelect className='col-md-4' ref={e => this.itemCoursePayment = e} label='Số lần thanh toán' data={ajaxSelectCoursePayment} required/>
+                {profileType ? <div className="col-12"><p><b>Hồ sơ đăng ký:</b> {profileType.title||''}</p></div>:null}
+                {profiles && profiles.length ? profiles.map(item=>this.renderHoSoDangKy(item)) :null}
+            </div>,
+            buttons: this.props.permission.write ?
+                <a className='btn btn-warning' href='#' onClick={e => this.onUpStudent(e)} style={{ color: 'white' }}>
+                    <i className='fa fa-lg fa-paper-plane' /> Chuyển thành ứng viên
+                </a> : null
+        });
+    } 
 }
 
 const stateMapper = {
@@ -250,8 +273,7 @@ class CandidatePage extends AdminPage {
         T.ready(() => T.showSearchBox());
         this.props.getCandidatePage(null,null,{},{},{});
         this.props.getCourseTypeAll(list => {
-            const courseTypes = list.map(item => ({ id: item._id, text: item.title }));
-            this.setState({ courseTypes });
+            this.setState({ courseTypes:list });
         });
         this.props.getDivisionAll(list => {
             const division = list.map(item => ({ id: item._id, text: item.title }));
@@ -310,7 +332,7 @@ class CandidatePage extends AdminPage {
                 const selectedState = stateMapper[item.state],
                     dropdownState = <Dropdown items={states} item={selectedState} onSelected={e => this.updateState(item, e.id)} textStyle={selectedState ? selectedState.style : null} />;
                 const courseTypeText = item.courseType ? item.courseType.title : '',
-                    dropdownCourseType = <Dropdown items={this.state.courseTypes} item={courseTypeText} onSelected={e => this.updateCourseType(item, e.id)} />;
+                    dropdownCourseType = <Dropdown items={this.state.courseTypes.map(item=>({id:item._id,text:item.title}))} item={courseTypeText} onSelected={e => this.updateCourseType(item, e.id)} />;
                 const divisionText = item.division ? item.division.title : 'Chưa gán',
                     dropdownDivision = <Dropdown items={this.state.division} item={divisionText} onSelected={e => this.updateDivision(item, e.id)} />;
                 const dates = <>
@@ -344,7 +366,7 @@ class CandidatePage extends AdminPage {
                 <div className='tile'>{table}</div>
                 <Pagination name='pageCandidate' pageNumber={pageNumber} pageSize={pageSize} pageTotal={pageTotal} totalItem={totalItem} getPage={this.props.getCandidatePage} />
                 <CandidateModal ref={e => this.candidateModal = e} update={this.props.updateCandidate} states={states} upStudent={this.upStudent} permission={permission}
-                 defaultCourseFees={this.state.defaultCourseFees} defaultDiscount={this.state.defaultDiscount} defaultCoursePayment={this.state.defaultCoursePayment} />
+                 defaultCourseFees={this.state.defaultCourseFees} defaultDiscount={this.state.defaultDiscount} defaultCoursePayment={this.state.defaultCoursePayment} courseTypes = {this.state.courseTypes} />
             </>,
             // onExport: permission.export ? exportCandidateToExcel : null,
         });

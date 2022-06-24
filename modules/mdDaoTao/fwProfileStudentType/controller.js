@@ -2,7 +2,7 @@ module.exports = app => {
     const menu = {
         parentMenu: app.parentMenu.enrollment,
         menus: {
-            8025: { title: 'Hồ sơ đăng ký', link: '/user/profile-student-type', icon: 'fa-envelope-o', backgroundColor: '#00897b' },
+            8025: { title: 'Giấy tờ', link: '/user/profile-student-type', icon: 'fa-envelope-o', backgroundColor: '#00897b' },
         },
     };
     app.permission.add({ name: 'profileStudentType:read', menu }, { name: 'profileStudentType:write' }, { name: 'profileStudentType:delete' },);
@@ -15,6 +15,10 @@ module.exports = app => {
             pageSize = parseInt(req.params.pageSize),
             condition=req.query.condition;
         app.model.profileStudentType.getPage(pageNumber, pageSize, condition, (error, page) => res.send({ error, page }));
+    });
+
+    app.get('/api/profile-student-type/all', app.permission.check('profileStudentType:read'), (req, res) => {
+        app.model.profileStudentType.getAll(req.query.condition||{},(error, list) => res.send({ error, list }));
     });
 
     app.post('/api/profile-student-type', app.permission.check('profileStudentType:write'), (req, res) => {

@@ -81,7 +81,6 @@ module.exports = (app) => {
         if (fields.userData && fields.userData[0].startsWith('law:') && files.LawImage && files.LawImage.length > 0) {
             console.log('Hook: uploadLaw => law image upload');
             const _id = fields.userData[0].substring('law:'.length);
-            console.log('id: ',_id);
             app.uploadImage('law', app.model.law.get, _id, files.LawImage[0].path, done);
         }
     };

@@ -1,10 +1,12 @@
 module.exports = app => {
     const schema = app.database.mongoDB.Schema({
         title: String,
-        courseType: { type: app.database.mongoDB.Schema.ObjectId, ref: 'CourseType' },
         active: { type: Boolean, default: false },
-        papers: { type: [{ type: app.database.mongoDB.Schema.Types.ObjectId, ref: 'ProfileStudentType' }], default: [] }
-
+        profiles:[{
+            type:{ type: app.database.mongoDB.Schema.Types.ObjectId, ref: 'ProfileStudentType' },
+            amount:Number,
+            required:{ type: Boolean, default: true },
+        }],
     });
     const model = app.database.mongoDB.model('ProfileType', schema);
 
@@ -20,7 +22,10 @@ module.exports = app => {
                 const skipNumber = (result.pageNumber > 0 ? result.pageNumber - 1 : 0) * result.pageSize;
 
                 model.find(condition).sort({ title: -1 }).skip(skipNumber).limit(result.pageSize)
-                    .populate('courseType', '_id title').populate('papers', '_id title')
+                    .populate('courseType', '_id title')
+                    .populate({
+                        path: 'profiles', populate: { path: 'type', select: '_id title' }
+                    })
                     .exec((error, items) => {
                         result.list = error ? [] : items;
                         done(error, result);

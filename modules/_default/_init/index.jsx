@@ -34,5 +34,9 @@ export default {
             path: '/user/document',
             component: Loadable({ loading: Loading, loader: () => import('./adminDocumentPage') })
         },
+        {
+            path: '/user/sms-brandname',
+            component: Loadable({ loading: Loading, loader: () => import('./adminSettingSmsPage') }),
+        }
     ],
 };

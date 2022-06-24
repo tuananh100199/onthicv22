@@ -1,7 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { createProfileStudentType,updateProfileStudentType,deleteProfileStudentType,getProfileStudentTypePage } from './redux';
-import { AdminPage, AdminModal, FormCheckbox, FormTextBox, TableCell, renderTable } from 'view/component/AdminPage';
+import { AdminPage, AdminModal, FormCheckbox, FormTextBox, TableCell, renderTable, FormRichTextBox } from 'view/component/AdminPage';
 import Pagination from 'view/component/Pagination';
 
 class EditModal extends AdminModal {
@@ -10,18 +10,19 @@ class EditModal extends AdminModal {
     }
 
     onShow = (item) => {
-        const { _id=null, title='',active=true,required=true } = item || {};
+        const { _id=null, title='',active=true,description='' } = item || {};
         this.itemTitle.value(title);
         this.itemActive.value(active);
-        this.itemRequired.value(required);
+        this.itemDescription.value(description);
         this.setState({ _id });
     }
 
     onSubmit = () => {
         const data = {
             title: this.itemTitle.value(),
+            description:this.itemDescription.value(),
             active: this.itemActive.value()?1:0,
-            required: this.itemRequired.value()?1:0,
+
         };
         if (data.title == '') {
             T.notify('Loại giấy tờ bị trống!', 'danger');
@@ -37,9 +38,9 @@ class EditModal extends AdminModal {
             title: 'Loại giấy tờ học viên',
             size: 'medium',
             body: <div className='row'>
-                <FormTextBox ref={e => this.itemTitle = e} className='col-md-12' label='Loại giấy tờ' readOnly={readOnly} required/>
+                <FormTextBox ref={e => this.itemTitle = e} className='col-md-12' label='Tiêu đề' readOnly={readOnly} required/>
                 <FormCheckbox ref={e => this.itemActive = e} className='col-md-6' label='Kích hoạt' readOnly={readOnly} />
-                <FormCheckbox ref={e => this.itemRequired = e} className='col-md-6' label='Bắt buộc' readOnly={readOnly} />
+                <FormRichTextBox ref={e => this.itemDescription = e} rows={2} className='col-md-12' label='Mô tả' readOnly={readOnly}/>
             </div>
         });
     }
@@ -70,8 +71,7 @@ class ProfileStudentTypePage extends AdminPage {
             renderHead: () => (
                 <tr>
                     <th style={{ width: 'auto', textAlign: 'center' }}>#</th>
-                    <th style={{ width: '100%'}}>Tên hồ sơ</th>
-                    <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Bắt buộc</th>
+                    <th style={{ width: '100%'}}>Tên</th>
                     <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Kích hoạt</th>
                     <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Thao tác</th>
                 </tr>),
@@ -79,7 +79,6 @@ class ProfileStudentTypePage extends AdminPage {
                 <tr key={index}>
                     <TableCell type='number' content={(pageNumber - 1) * pageSize+ index + 1} />
                     <TableCell type='link' content={item.title} style={{whiteSpace:'nowrap'}} onClick={e => this.edit(e, item)}/>
-                    <TableCell type='checkbox' content={item.required} permission={permission} onChanged={required => this.props.updateProfileStudentType(item._id, { required })} />
                     <TableCell type='checkbox' content={item.active} permission={permission} onChanged={active => this.props.updateProfileStudentType(item._id, { active })} />
                     <TableCell type='buttons' content={item} permission={permission} onEdit={this.edit} onDelete={this.delete} />
                 </tr>),
@@ -87,8 +86,8 @@ class ProfileStudentTypePage extends AdminPage {
 
         return this.renderPage({
             icon: 'fa fa-university',
-            title: 'Hồ sơ đăng ký ĐT và SHLX ô tô theo D9TT12',
-            breadcrumb: ['Hồ sơ đăng ký'],
+            title: 'Giấy tờ',
+            breadcrumb: ['Giấy tờ'],
             content: <>
                 <div className='tile'>{table}</div>
                 <Pagination name='pageProfileStudentType' pageNumber={pageNumber} pageSize={pageSize} pageTotal={pageTotal} totalItem={totalItem}
