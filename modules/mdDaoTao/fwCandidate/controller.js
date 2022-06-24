@@ -234,12 +234,14 @@ module.exports = app => {
             } else {
                 app.model.candidate.create(candidate, (error, item) => {
                     if (item) {
-                        app.model.setting.get('email', 'emailPassword', 'emailCandidateTitle', 'emailCandidateText', 'emailCandidateHtml', result => {
+                        app.model.setting.get('email', 'emailPassword', 'emailCandidateTitle', 'emailCandidateText', 'emailCandidateHtml','smsCandidate', result => {
                             const fillParams = (data) => data.replaceAll('{name}', `${item.lastname} ${item.firstname}`),
                                 mailSubject = fillParams(result.emailCandidateTitle),
                                 mailText = fillParams(result.emailCandidateText),
                                 mailHtml = fillParams(result.emailCandidateHtml);
-                                app.email.sendEmail(result.email, result.emailPassword, item.email, [], mailSubject, mailText, mailHtml, null);
+                            app.email.sendEmail(result.email, result.emailPassword, item.email, [], mailSubject, mailText, mailHtml, null);
+                            const smsContent = fillParams(result.smsCandidate);
+                            app.sms.sendByViettel({mess:smsContent,phone:item.phoneNumber},item.email);
                         });
                     }
                     res.send({ error, item });
