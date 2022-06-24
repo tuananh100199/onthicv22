@@ -241,7 +241,8 @@ module.exports = app => {
                                 mailHtml = fillParams(result.emailCandidateHtml);
                             app.email.sendEmail(result.email, result.emailPassword, item.email, [], mailSubject, mailText, mailHtml, null);
                             const smsContent = fillParams(result.smsCandidate);
-                            app.sms.sendByViettel({mess:smsContent,phone:item.phoneNumber},item.email);
+                            console.log(smsContent);
+                            // app.sms.sendByViettel({mess:smsContent,phone:item.phoneNumber},item.email);
                         });
                     }
                     res.send({ error, item });
