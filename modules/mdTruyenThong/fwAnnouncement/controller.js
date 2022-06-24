@@ -87,7 +87,6 @@ module.exports = (app) => {
                 ]
             };
         app.model.announcement.getPage(pageNumber, pageSize, condition, (error, page) => {
-            console.log({page});
             res.send({ page, error });
         });
     });
@@ -122,7 +121,7 @@ module.exports = (app) => {
         ) {
             console.log('Hook: uploadNewsAvatar => Announcement image upload');
             const _id = fields.userData[0].substring('announcement:'.length);
-            app.uploadImage('Announcement', app.model.announcement.get, _id, files.AnnouncementImage[0].path, done);
+            app.uploadImage('announcement', app.model.announcement.get, _id, files.AnnouncementImage[0].path, done);
         }
     };
     app.uploadHooks.add('uploadAnnouncementAvatar', (req, fields, files, params, done) => {

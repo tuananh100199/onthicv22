@@ -165,8 +165,9 @@ class AdminEditPage extends AdminPage {
         const questions = this.props.simulator ? this.props.simulator.list : [];
         const activeQuestionIndex = this.state.activeQuestionIndex ? this.state.activeQuestionIndex : 0;
         const activeQuestion = questions ? questions[activeQuestionIndex] : null;
-        const {isAnswer, time, isLastVideo} = this.state;
+        const {isAnswer, time, isLastVideo, result} = this.state;
         const userPageLink = '/user/hoc-vien/khoa-hoc/' + this.state.courseId ;
+        const score = Object.values(result).reduce((prev, next) => prev + next);
         return this.renderPage({
             icon: 'fa fa-book',
             title: 'Mô phỏng: Kiểm tra',
@@ -192,7 +193,7 @@ class AdminEditPage extends AdminPage {
                                                 </div>
                                             </div>
                                             <div className='d-flex justify-content-center pt-2 pb-2'>
-                                                {!isLastVideo ? <button className={'btn mr-1 ' + (isAnswer ? 'btn-secondary' : 'btn-warning')} onClick={() => isAnswer ? null : this.onClickVideo()}>Nhấn hoặc ấn phím cách để đánh dấu</button>:
+                                                {!isLastVideo ? <button className={'btn mr-1 ' + (isAnswer ? 'btn-secondary' : 'btn-warning')} onClick={() => isAnswer ? null : this.onClickVideo()}>Nhấn nút này hoặc ấn phím cách để đánh dấu</button>:
                                                 <button className={'btn mr-1 btn-success'} onClick={() => window.location.reload()}>Làm lại</button>}
                                             </div>
                                             {/* <p className='text-center' >Điểm: <span id={activeQuestion._id} ></span></p> */}
@@ -208,29 +209,28 @@ class AdminEditPage extends AdminPage {
                                                 </ul>
                                             </nav> */}
                                             <div className='row'>
-                                                    <div className='col-md-7'>
+                                                    {/* <div className='col-md-7'>
                                                         <h5>Phương pháp chấm điểm: </h5>
                                                         <p>*Trong mỗi tình huống có 02 mốc thời điểm 5đ và 0đ:</p>
                                                         <p className='ml-2'>- 5 điểm: thời điểm bắt đầu có dấu hiệu phát hiện ra tình huống nguy hiểm, lái xe cần xử lý.</p>
                                                         <p className='ml-2'>- 0 điểm: mốc thời điểm mà xử lý từ thời điểm này vẫn xảy ra tai nạn.</p>
                                                         <p>*Học viên lựa chọn được giữa 2 mốc này sẽ đạt mức điểm tương ứng từ 5-4-3-2-1 điểm</p>
-                                                    </div>
-                                                    <div className='col-md-5 border-left border-dark'>
+                                                    </div> */}
+                                                    {/* <div className='col-md-5 '>
                                                         <h5>Kết quả tình huống của bạn: </h5>
                                                         <p>*Tình huống số: {activeQuestionIndex+1}</p>
                                                         <p>*Thời điểm gắn cờ: {isAnswer ? time+'s' : 'Chưa có'}</p>
                                                         <p>*Kết quả: <span id={activeQuestion._id} >Chưa có</span></p>
-                                                    </div>
+                                                    </div> */}
                                             </div>
                                            
                                         </div>
-                                        <div className='col-md-4'>
-                                            <h5>Danh sách câu hỏi</h5>
-                                            <div className='d-flex justify-content-between'>
-                                                <div>
-                                                    {questions.map((question, index) => (<button key={index} className={'m-1 btn ' + (activeQuestionIndex == index ? 'btn-success': 'btn-primary') } style={{ cursor: 'pointer', border:'1px solid black', borderRadius: '15px', width:'50px' }}>{index+1}</button>))}
-                                                </div>
-                                            </div>
+                                        <div className='col-md-4 border-left border-dark'>
+                                            <h5>Kết quả tình huống của bạn: </h5>
+                                            <p>*Tình huống số: {activeQuestionIndex+1}</p>
+                                            <p>*Thời điểm gắn cờ: {isAnswer ? time+'s' : 'Chưa có'}</p>
+                                            <p>*Kết quả: <span id={activeQuestion._id} >Chưa có</span></p>
+                                            <p>*Điểm của bạn: {score}</p>
                                         </div>
                                     </div>
                                 </div>

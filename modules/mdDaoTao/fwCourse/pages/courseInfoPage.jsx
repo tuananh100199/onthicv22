@@ -2,6 +2,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { getCourse, updateCourse } from '../redux';
 import { ajaxSelectCourseType } from 'modules/mdDaoTao/fwCourseType/redux';
+import {ajaxSelectProfileType} from 'modules/_default/fwProfileType/redux';
 import { Link } from 'react-router-dom';
 import { AdminPage, FormTextBox, FormDatePicker, FormEditor, FormSelect, FormRichTextBox, CirclePageButton, FormCheckbox } from 'view/component/AdminPage';
 
@@ -9,13 +10,13 @@ class EditCoursePage extends AdminPage {
     state = {};
     componentDidMount() {
         const setData = (course) => {
-            const { name, maxStudent, courseFee, shortDescription, detailDescription, courseType, close, lock,
+            const { name, maxStudent, shortDescription, detailDescription, courseType, close, lock, profileType,
                 thoiGianKhaiGiang, thoiGianBatDau, thoiGianKetThuc, thoiGianThiKetThucMonDuKien, thoiGianThiTotNghiepDuKien, thoiGianThiTotNghiepChinhThuc, active, chatActive, commentActive } = course;
 
             this.name.value(name);
             this.courseType.value(courseType ? { id: courseType._id, text: courseType.title } : null);
             this.maxStudent.value(maxStudent);
-            this.courseFee.value(courseFee);
+            this.profileType.value(profileType?{id:profileType._id,text:profileType.title}:'');
             this.shortDescription.value(shortDescription);
             this.detailDescription.html(detailDescription);
 
@@ -63,7 +64,7 @@ class EditCoursePage extends AdminPage {
             const changes = {
                 name: this.name.value().trim(),
                 maxStudent: this.maxStudent.value(),
-                courseFee: this.courseFee.value(),
+                profileType:this.profileType.value(),
                 courseType: this.courseType.value(),
                 shortDescription: this.shortDescription.value(),
                 detailDescription: this.detailDescription.html(),
@@ -81,7 +82,6 @@ class EditCoursePage extends AdminPage {
 
             };
             this.setState({ chatActive: changes.chatActive, commentActive: changes.commentActive });
-            if (changes.courseFee == null) changes.courseFee = 0;
             if (changes.thoiGianThiTotNghiepChinhThuc == 'Invalid Date') changes.thoiGianThiTotNghiepChinhThuc = null;
             if (changes.name == '') {
                 T.notify('Tên khóa học trống!', 'danger');
@@ -118,10 +118,10 @@ class EditCoursePage extends AdminPage {
                         <h3 className='tile-title col-md-8' style={{ paddingLeft: 15, marginBottom: 5 }}>Thông tin chung</h3>
                         <FormCheckbox ref={e => this.active = e} className={'col-md-2 ' + (readOnly ? 'invisible' : '')} label='Kích hoạt' isSwitch={true} readOnly={readOnly} />
                         <FormCheckbox ref={e => this.close = e} className={'col-md-2 ' + (readOnly ? 'invisible' : '')} label='Kết thúc khóa học' isSwitch={true} readOnly={readOnly} />
-                        <FormTextBox ref={e => this.name = e} label='Tên khóa học' className='col-md-3' value={course.name} onChange={e => this.setState({ title: e.target.value })} readOnly={readOnly} />
-                        <FormSelect ref={e => this.courseType = e} label='Loại khóa học' data={ajaxSelectCourseType} className='col-md-3' readOnly={readOnly} />
-                        <FormTextBox ref={e => this.maxStudent = e} label='Số  học viên tối đa' className='col-md-3' type='number' readOnly={readOnly} />
-                        <FormTextBox ref={e => this.courseFee = e} label='Học phí' className='col-md-3' type='number' readOnly={readOnly} />
+                        <FormTextBox ref={e => this.name = e} label='Tên khóa học' className='col-md-6' value={course.name} onChange={e => this.setState({ title: e.target.value })} readOnly={readOnly} />
+                        <FormSelect ref={e => this.courseType = e} label='Loại khóa học' data={ajaxSelectCourseType} className='col-md-6' readOnly={readOnly} />
+                        <FormTextBox ref={e => this.maxStudent = e} label='Số  học viên tối đa' className='col-md-6' type='number' readOnly={readOnly} />
+                        <FormSelect ref={e => this.profileType = e} label='Hồ sơ đăng ký' data={ajaxSelectProfileType} className='col-md-6' readOnly={readOnly} />
                     </div>
                 </div>
 

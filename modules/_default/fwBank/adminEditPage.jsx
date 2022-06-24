@@ -150,7 +150,6 @@ class BankEditPage extends AdminPage {
             contentLine: this.contentLine.value(),
             contentStr: this.contentStr.value().trim(),
         };
-        console.log('changes: ', changes);
         if (changes.contentSyntax == '') {
             T.notify('Cú pháp chuyển tiền học phí chính thức của học viên bị trống!', 'danger');
             this.contentSyntax.focus();

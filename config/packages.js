@@ -66,4 +66,5 @@ module.exports = (app, http, appConfig) => {
     // require('./lib/language')(app);
     require('./lib/schedule')(app);
     require('./lib/string')(app);
+    require('./lib/sms')(app);
 };

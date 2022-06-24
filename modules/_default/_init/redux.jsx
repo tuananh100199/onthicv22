@@ -272,6 +272,31 @@ export function changeSystemState(changes) {
     return { type: SystemUpdateState, state: changes };
 }
 
+export function getSystemSettings(keys, done) {
+    return dispatch => {
+        const url = '/api/system/settings';
+        T.get(url, { keys }, data => {
+            done && done(data);
+            dispatch({ type: SystemUpdateState, state: data });
+        });
+    };
+}
+
+export function updateSystemSettings(changes, done) {
+    return dispatch => {
+        const url = '/api/system/settings';
+        T.put(url, { changes }, data => {
+            if(data.error){
+                T.notify('Cập nhật hệ thống bị lỗi!', 'danger');
+                console.error(`PUT: ${url}.`, data.error);
+            }else{
+                done && done(data);
+                dispatch({ type: SystemUpdateState, state: data.item });
+            }
+        });
+    };
+}
+
 
 // AJAX ---------------------------------------------------------------------------------------------------------------
 export function register(data, done) {

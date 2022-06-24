@@ -1,24 +1,24 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { getPreStudentPage, createPreStudent, updatePreStudent, deletePreStudent,exportPreStudent } from './redux';
-import { ajaxSelectCourseType } from 'modules/mdDaoTao/fwCourseType/redux';
+import { ajaxSelectCourseType,getCourseTypeAll } from 'modules/mdDaoTao/fwCourseType/redux';
 import { ajaxSelectLecturer } from 'modules/_default/fwUser/redux';
 import Pagination from 'view/component/Pagination';
-import { AdminPage, CirclePageButton, FormImageBox, FormDatePicker, AdminModal, FormTextBox, FormRichTextBox, FormSelect, TableCell, renderTable,FormCheckbox,TableHead,TableHeadCell } from 'view/component/AdminPage';
+import { AdminPage, CirclePageButton, FormImageBox, FormDatePicker, AdminModal, FormTextBox, FormRichTextBox, FormSelect, TableCell, renderTable,TableHead,TableHeadCell } from 'view/component/AdminPage';
 import { ajaxSelectDivision } from 'modules/mdDaoTao/fwDivision/redux';
 import {ajaxSelectCourseFeeByCourseType,getCourseFeeAll} from 'modules/_default/fwCourseFee/redux';
 import {ajaxSelectCoursePayment,getCoursePaymentAll} from 'modules/_default/fwCoursePayment/redux';
 import {ajaxSelectDiscount,getDiscountAll} from 'modules/_default/fwDiscount/redux';
 import {ajaxSelectPlanCourseByCourseType} from 'modules/_default/fwPlanCourse/redux';
 class PreStudenModal extends AdminModal {
-    state = {courseType:''};
+    state = {courseType:'', giayToDangKy:[]};
     componentDidMount() {
         $(document).ready(() => this.onShown(() => this.itemLastname.focus()));
     }
 
     onShow = (item) => {
-        const { _id, firstname, lastname, birthday, user, image, residence, regularResidence, courseType, sex, division, planLecturer, identityCard,courseFee,discount,coursePayment,isDon,isHinh,isIdentityCard,isGiayKhamSucKhoe,isBangLaiA1, plannedCourse } = item 
-        || { _id: null, firstname: '', lastname: '', birthday: '', user: {}, image, residence: '', regularResidence: '', identityCard: '', planCourse: '', hocPhiPhaiDong: '',isDon:false,isHinh:false,isIdentityCard:false,isGiayKhamSucKhoe:false,isBangLaiA1:false };
+        const { _id, firstname, lastname, birthday, user, image, residence, regularResidence, courseType, sex, division, planLecturer, identityCard,courseFee,discount,coursePayment, plannedCourse,giayToDangKy } = item 
+        || { _id: null, firstname: '', lastname: '', birthday: '', user: {}, image, residence: '', regularResidence: '', identityCard: '', planCourse: '', hocPhiPhaiDong: '',isDon:false,isHinh:false,isIdentityCard:false,isGiayKhamSucKhoe:false,isBangLaiA1:false,giayToDangKy:[] };
         this.itemFirstname.value(firstname || '');
         this.itemLastname.value(lastname || '');
         this.itemBirthday.value(birthday);
@@ -37,12 +37,15 @@ class PreStudenModal extends AdminModal {
         // this.itemCoursePayment.value(coursePayment?{id:coursePayment._id,text:coursePayment.title}:null);
         this.setValueCoursePayment(coursePayment);
         
-        this.itemIsDon.value(isDon);
-        this.itemIsHinh.value(isHinh);
-        this.itemIsIdentityCard.value(isIdentityCard);
-        this.itemIsGiayKhamSucKhoe.value(isGiayKhamSucKhoe);
-        this.itemIsBangLaiA1.value(isBangLaiA1);
-        this.setState({ _id, divisionId: division && division._id, image,courseType:courseType?courseType._id:'' }, () => {
+        // this.itemIsDon.value(isDon);
+        // this.itemIsHinh.value(isHinh);
+        // this.itemIsIdentityCard.value(isIdentityCard);
+        // this.itemIsGiayKhamSucKhoe.value(isGiayKhamSucKhoe);
+        // this.itemIsBangLaiA1.value(isBangLaiA1);
+
+        const courseTypes = this.props.courseTypes;
+
+        this.setState({ _id,giayToDangKy:giayToDangKy.length ? giayToDangKy.map(item=>item._id):[], divisionId: division && division._id, image,courseType:courseTypes.find(item=>courseType && item._id==courseType._id)}, () => {
             this.itemPlanLecturer.value(planLecturer ? { id: planLecturer._id, text: `${planLecturer.lastname} ${planLecturer.firstname}` } : null);
             this.setValueCourseFee(courseType?courseType._id:null,courseFee);
             this.setValuePlannedCourse(courseType?courseType._id:null,plannedCourse);
@@ -108,11 +111,12 @@ class PreStudenModal extends AdminModal {
             courseFee:this.itemCourseFee.value(),
             discount:this.itemDiscount.value(),
             coursePayment:this.itemCoursePayment.value(),
-            isDon:this.itemIsDon.value(),
-            isHinh:this.itemIsHinh.value(),
-            isIdentityCard:this.itemIsIdentityCard.value(),
-            isGiayKhamSucKhoe:this.itemIsGiayKhamSucKhoe.value(),
-            isBangLaiA1:this.itemIsBangLaiA1.value(),
+            // isDon:this.itemIsDon.value(),
+            // isHinh:this.itemIsHinh.value(),
+            // isIdentityCard:this.itemIsIdentityCard.value(),
+            // isGiayKhamSucKhoe:this.itemIsGiayKhamSucKhoe.value(),
+            // isBangLaiA1:this.itemIsBangLaiA1.value(),
+            giayToDangKy:this.state.giayToDangKy
         };
         if (data.lastname == '') {
             T.notify('Họ không được trống!', 'danger');
@@ -170,13 +174,38 @@ class PreStudenModal extends AdminModal {
         this.itemPlanLecturer.value(null);
     });
 
-    onChangeCourseType = (data) =>data && data.id && this.setState({courseType:data.id},()=>{
+    onChangeCourseType = (data) =>data && data.id && this.setState({courseType:this.props.courseTypes.find(item=>item._id==data.id)},()=>{
         this.setValueCourseFee(data.id);
         this.setValuePlannedCourse(data.id);
     });
 
+    selectProfile = (giayTo) => {
+        let giayToDangKy = this.state.giayToDangKy;
+        const isSelected = giayToDangKy.find(item=>item==giayTo._id)!=undefined;
+        if(isSelected){
+            this.setState({ giayToDangKy:giayToDangKy.filter(item=>item!=giayTo._id)});
+        }else{
+            this.setState({giayToDangKy:[...giayToDangKy,giayTo._id]});
+        }
+    }
+
+    renderHoSoDangKy = (profile)=>{
+        const {type} = profile;
+        return( 
+        <a key={profile._id} className='col-md-4 mt-1 d-flex align-items-center text-secondary' href='#' onClick={e => e.preventDefault()|| e.stopPropagation() || this.selectProfile(type)}>
+            <div className={'animated-checkbox'}>
+                <input type='checkbox' checked={type._id && (this.state.giayToDangKy.find(id=>id==type._id)!=undefined)} onChange={e=>e.preventDefault()} />
+                <span className={'label-text'}></span>
+            </div>
+            <span style={{whiteSpace:'normal'}}> {type ? type.title : ''}</span>
+        </a>
+        );
+    }
+
     render = () => {
         const readOnly = this.props.readOnly;
+        const {profileType} = this.state.courseType||{};
+        const profiles = profileType && profileType.profiles ? profileType.profiles:null;
         return this.renderModal({
             title: 'Ứng viên',
             size: 'large',
@@ -200,11 +229,12 @@ class PreStudenModal extends AdminModal {
                 <FormSelect className='col-md-4' ref={e => this.itemCourseFee = e} label='Gói học phí' data={ajaxSelectCourseFeeByCourseType(this.state.courseType,true)} readOnly={readOnly} required />
                 <FormSelect className='col-md-6' ref={e => this.itemDiscount = e} label='Giảm giá' data={ajaxSelectDiscount} readOnly={readOnly} />
                 <FormSelect className='col-md-6' ref={e => this.itemCoursePayment = e} label='Số lần thanh toán' data={ajaxSelectCoursePayment} readOnly={readOnly} required/>
-                <FormCheckbox className='col-md-2' ref={e => this.itemIsDon = e} label='Đơn' readOnly={this.props.readOnly} />
-                <FormCheckbox className='col-md-2' ref={e => this.itemIsHinh = e} label='Hình' readOnly={this.props.readOnly} />
-                <FormCheckbox className='col-md-2' ref={e => this.itemIsGiayKhamSucKhoe = e} label='GKSK' readOnly={this.props.readOnly} />
-                <FormCheckbox className='col-md-3' ref={e => this.itemIsIdentityCard = e} label='CMND/CCCD' readOnly={this.props.readOnly} />
-                <FormCheckbox className='col-md-3' ref={e => this.itemIsBangLaiA1 = e} label='Bằng lái A1' readOnly={this.props.readOnly} />
+                <div className="col-md-12">
+                    <div className="row">
+                        {profileType ? <div className="col-12"><p className='mb-0'><b>Hồ sơ đăng ký:</b> {profileType.title||''}</p></div>:null}
+                        {profiles && profiles.length ? profiles.map(item=>this.renderHoSoDangKy(item)) :null}
+                    </div>
+                </div>
                 <FormSelect className='col-md-6' ref={e => this.itemPlanLecturer = e} label='Giáo viên dự kiến' data={ajaxSelectLecturer(this.state.divisionId)} readOnly={readOnly} required />
                 <FormSelect className='col-md-6' ref={e => this.itemPlannedCourse = e} label='Khóa dự kiến' data={ajaxSelectPlanCourseByCourseType(this.state.courseType)} required/>
                 {/* <FormTextBox className='col-md-6' ref={e => this.itemPlanCourse = e} label='Khóa dự kiến' readOnly={readOnly} /> */}
@@ -216,7 +246,7 @@ class PreStudenModal extends AdminModal {
 }
 
 class PreStudentPage extends AdminPage {
-    state = { searchText: '', isSearching: false };
+    state = { searchText: '', isSearching: false, courseTypes:[] };
 
     componentDidMount() {
         T.ready(() => T.showSearchBox());
@@ -236,6 +266,8 @@ class PreStudentPage extends AdminPage {
         this.props.getCoursePaymentAll({default:true},defaultCoursePayments=>{//get default coursePayment
             this.setState({defaultCoursePayment:defaultCoursePayments? defaultCoursePayments[0]:null});
         });
+
+        this.props.getCourseTypeAll(courseTypes=>this.setState({courseTypes}));
     }
 
     edit = (e, item) => e.preventDefault() || this.modal.show(item);
@@ -284,7 +316,7 @@ class PreStudentPage extends AdminPage {
                 <div className='tile'>{table}</div>
                 <Pagination name='adminPreStudent' pageCondition={pageCondition} pageNumber={pageNumber} pageSize={pageSize} pageTotal={pageTotal} totalItem={totalItem}
                     getPage={this.props.getPreStudentPage} />
-                <PreStudenModal readOnly={!permission.write} ref={e => this.modal = e} create={this.props.createPreStudent} update={this.props.updatePreStudent} 
+                <PreStudenModal readOnly={!permission.write} ref={e => this.modal = e} create={this.props.createPreStudent} update={this.props.updatePreStudent} courseTypes={this.state.courseTypes}
                 defaultCourseFees={this.state.defaultCourseFees} defaultDiscount={this.state.defaultDiscount} defaultCoursePayment={this.state.defaultCoursePayment} />
                 {permission.import ? <CirclePageButton type='import' style={{ right: '70px' }} onClick={() => this.props.history.push('/user/pre-student/import')} /> : null}
                 {permission.export ? <CirclePageButton type='export' style={{ right: '130px' }} onClick={(e) => e.preventDefault()||this.props.exportPreStudent()} /> : null}
@@ -295,5 +327,5 @@ class PreStudentPage extends AdminPage {
 }
 
 const mapStateToProps = state => ({ system: state.system, student: state.trainning.student });
-const mapActionsToProps = { getPreStudentPage, deletePreStudent, createPreStudent, updatePreStudent,getCourseFeeAll,getCoursePaymentAll,getDiscountAll,exportPreStudent };
+const mapActionsToProps = { getPreStudentPage, deletePreStudent, createPreStudent, updatePreStudent,getCourseFeeAll,getCoursePaymentAll,getDiscountAll,exportPreStudent, getCourseTypeAll };
 export default connect(mapStateToProps, mapActionsToProps)(PreStudentPage);

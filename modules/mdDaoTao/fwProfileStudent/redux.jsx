@@ -6,7 +6,7 @@ const ProfileStudentGetPage = 'ProfileStudentGetPage';
 export default function profileStudentReducer(state = {}, data) {
     switch (data.type) {
         case ProfileStudentGetPage:
-            return Object.assign({}, state, { page: data.page });
+            return Object.assign({}, state, { page: data.page, courseType:data.courseType, course:data.course });
 
         default:
             return state;
@@ -29,8 +29,8 @@ export function getProfileStudentPage(pageNumber, pageSize, pageCondition,filter
                 console.error(`GET: ${url}. ${data.error}`);
             } else {
                 if (pageCondition) data.page.pageCondition = pageCondition;
-                done && done(data.page);
-                dispatch({ type: ProfileStudentGetPage, page: data.page });
+                done && done(data);
+                dispatch({ type: ProfileStudentGetPage, page: data.page,courseType:data.courseType,course:data.course });
             }
         }, error => console.error(error) || T.notify('Lấy danh sách hồ sơ học viên bị lỗi!', 'danger'));
     };
@@ -39,6 +39,7 @@ export function updateProfileStudent(_id, changes, done) {
     return () => {
         const url = '/api/profile-student';
         T.put(url, { _id, changes }, data => {
+            console.log(data);
             if (data.error) {
                 T.notify('Cập nhật hồ sơ học viên bị lỗi!', 'danger');
                 console.error('PUT: ' + url + '. ' + data.error);

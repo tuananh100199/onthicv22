@@ -2,7 +2,7 @@ module.exports = app => {
     const menu = {
         parentMenu: app.parentMenu.enrollment,
         menus: {
-            8021: { title: 'Loại hồ sơ', link: '/user/profile-type', icon: 'fa-envelope-o', backgroundColor: '#00897b' },
+            8021: { title: 'Hồ sơ đăng ký', link: '/user/profile-type', icon: 'fa-envelope-o', backgroundColor: '#00897b' },
         },
     };
     app.permission.add({ name: 'profileType:read', menu }, { name: 'profileType:write' }, { name: 'profileType:delete' },);
@@ -13,8 +13,13 @@ module.exports = app => {
     app.get('/api/profile-type/page/:pageNumber/:pageSize',app.permission.check('profileType:read'), (req, res) => {
         const pageNumber = parseInt(req.params.pageNumber),
             pageSize = parseInt(req.params.pageSize),
-            condition=req.query.condition;
-        app.model.profileType.getPage(pageNumber, pageSize, condition, (error, page) => res.send({ error, page }));
+            condition=req.query.condition||{},
+            pageCondition={};
+        console.log({condition});
+        if(condition.searchText){
+            pageCondition.title = new RegExp(condition.searchText, 'i');
+        }
+        app.model.profileType.getPage(pageNumber, pageSize, pageCondition, (error, page) => res.send({ error, page }));
     });
 
     app.post('/api/profile-type', app.permission.check('profileType:write'), (req, res) => {
