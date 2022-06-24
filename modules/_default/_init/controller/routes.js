@@ -442,7 +442,7 @@ module.exports = (app) => {
                     else {
                         const image ='/img/user/' + user + '.jpg';
                         item.image = image + '?t=' + new Date().getTime().toString().slice(-8);
-                        item.save(() => {
+                        item.save().then(() => {
                             app.fs.writeFile(app.path.join(app.publicPath, 'img/verificationImage', new Date().getTime() + '.jpg'), base64Data, 'base64', (error) => {
                                 if(error) res.send({ error });
                                 else {
@@ -463,7 +463,7 @@ module.exports = (app) => {
                                     });
                                 }
                             });
-                        });
+                        });   
                     }
                 });
             }

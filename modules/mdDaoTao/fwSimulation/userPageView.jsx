@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { getSimulatorAll } from './redux';
 import { getCourseByStudent } from '../fwCourse/redux';
 import { Link } from 'react-router-dom';
-import { AdminPage, AdminModal, FormTextBox, CirclePageButton } from 'view/component/AdminPage';
+import { AdminPage, AdminModal, FormTextBox } from 'view/component/AdminPage';
 import YouTube from 'react-youtube';
 
 class HintModal extends AdminModal {
@@ -182,10 +182,13 @@ class AdminEditPage extends AdminPage {
                                                 </div>
                                             </div>
                                             <div className='d-flex justify-content-center pt-2'>
-                                                <button className='btn btn-warning mr-1' onClick={() => this.onClickVideo()}>Nhấn hoặc ấn phím cách để đánh dấu</button>
-                                                <button className='btn btn-success' onClick={() => {
+                                                <button className='btn btn-warning mr-1' onClick={() => this.onClickVideo()}>Nhấn nút này hoặc ấn phím cách để đánh dấu</button>
+                                                <button className='btn btn-success mr-1' onClick={() => {
                                                         this.modal.show(activeQuestion);
-                                                    }}><span><i className="fa fa-search" aria-hidden="true"></i></span> Gợi ý </button>
+                                                    }}><span><i className='fa fa-search' aria-hidden='true'></i></span> Gợi ý </button>
+                                                <button className='btn btn-info' onClick={() => {
+                                                        this.props.history.push('/user/hoc-vien/khoa-hoc/' + this.state.courseId + '/mon-hoc/mo-phong/kiem-tra');
+                                                    }}><span><i className='fa fa-pencil-square-o' aria-hidden='true'></i></span>Thi mô phỏng</button>
                                             </div>
                                             {/* <p className='text-center' >Điểm: <span id={activeQuestion._id} ></span></p> */}
                                             {/* <p id='traLoi' className='text-center' ></p> */}
@@ -231,7 +234,7 @@ class AdminEditPage extends AdminPage {
                     </div>
                 ) : <div className='tile'>Không có câu hỏi</div>}
                 <HintModal ref={e => this.modal = e}/>
-                <CirclePageButton type='custom' customClassName='btn-warning' customIcon='fa-pencil-square-o' onClick={e=>e.preventDefault()|| this.props.history.push('/user/hoc-vien/khoa-hoc/' + this.state.courseId + '/mon-hoc/mo-phong/kiem-tra')}/>
+                {/* <CirclePageButton type='custom' customClassName='btn-warning' customIcon='fa-pencil-square-o' onClick={e=>e.preventDefault()|| this.props.history.push('/user/hoc-vien/khoa-hoc/' + this.state.courseId + '/mon-hoc/mo-phong/kiem-tra')}/> */}
             </>
               
             ),
