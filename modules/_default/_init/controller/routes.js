@@ -437,7 +437,8 @@ module.exports = (app) => {
                                             };
                                             app.model.verificationImage.create(data, (error, item) => res.send({ error, item, image: item.image }));
                                         } else {
-                                            app.model.verificationImage.update(avatar._id, {image: verificationImage, createdDate: new Date(), state: 'waiting'}, (error, item) => {
+
+                                            app.model.verificationImage.update({_id: avatar._id}, {image: verificationImage, createdDate: new Date(), state: 'waiting'}, (error, item) => {
                                                 res.send({ error, item });
                                             });
                                         }

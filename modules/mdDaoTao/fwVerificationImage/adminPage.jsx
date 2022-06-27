@@ -264,7 +264,7 @@ class VerificationImagePage extends AdminPage {
                     <tr key={index}>
                         <TableCell type='number' content={(pageNumber - 1) * pageSize + index + 1} />
                         <TableCell type='text' content={item.user ? item.user.lastname + ' ' + item.user.firstname : ''}/>
-                        <TableCell type='image' style={{ width: '20%' }} content={item.image ? item.image : '/img/avatar.png'} />
+                        <TableCell type='image' style={{ width: '20%' }} content={item.image ? item.image : '/img/avatar-default.png'} />
                         <TableCell type='text' style={{ width: 'auto', textAlign: 'center' }} content={item.createdDate ? T.dateToText(item.createdDate, 'dd/mm/yyyy') : ''} />
                         <TableCell type='text' style={{ width: 'auto', textAlign: 'center', whiteSpace: 'nowrap' }} content={item.state == 'approved' ? 'Đã xác nhận' : (item.state == 'reject' ? 'Đã từ chối' : 'Đang chờ duyệt')} />
                         <TableCell type='buttons' content={item} permission={permission} onEdit={item.state == 'waiting' ?  this.edit : null} onDelete={this.delete} />
