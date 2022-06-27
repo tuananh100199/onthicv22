@@ -68,7 +68,7 @@ class NewsDetail extends React.Component {
         const data = {
             content: this.itemContent.value(),
             state: this.itemState ? this.itemState.value() : 'waiting',
-            forum: this.props._id,
+            forum: this.state._id,
         };
 
         if (data.content == '') {
