@@ -198,7 +198,7 @@ class LecturerView extends AdminPage {
             end: `${year}-${formatTime(month)}-${formatTime(day)}T${newItem.timeOff == 'morning' ? '11' : '17'}:00:00`,
             item: newItem,
             textColor:'white',
-            color: newItem.state ==  'approved' ? 'red' : RegisterCalendarStatesMapper[newItem.state] && RegisterCalendarStatesMapper[newItem.state].color,
+            color: newItem.state ==  'approved' ? 'green' : RegisterCalendarStatesMapper[newItem.state] && RegisterCalendarStatesMapper[newItem.state].color,
         };
         return newEvent;
     }

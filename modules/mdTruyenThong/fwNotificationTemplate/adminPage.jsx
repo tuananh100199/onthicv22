@@ -21,7 +21,10 @@ const listParams = ['{ho_ten}', '{cmnd}', '{khoa}', '{ngay_thi_tot_nghiep}', '{n
     defaultContentHuyOnTap = '<p>Xin chào {ho_ten},</p>\n<p>Trung tâm Đào tạo và Sát hạch lái xe Hiệp Phát thông báo huỷ buổi ôn tập ngày {ngayOnTap} với lý do: {lyDoHuyOnTap}, chúng tôi sẽ thông báo tới bạn các buổi học khác trong thời gian sớm nhất!</p>',
     defaultTitleOnTap = 'Thông báo về việc mở lớp ôn tập!',
     defaultAbstractOnTap = 'Thông báo về việc mở lớp ôn tập ngày {ngayOnTap}',
-    defaultContentOnTap = '<p>Xin chào {ho_ten},</p>\n<p>Trung tâm Đào tạo và Sát hạch lái xe Hiệp Phát thông báo buổi ôn tập bạn đã đăng ký ngày {ngayOnTap} đã được xác nhận, bạn vui lòng có mặt trước 15p để chúng tôi sắp xếp vị trí ngồi học!</p>';
+    defaultContentOnTap = '<p>Xin chào {ho_ten},</p>\n<p>Trung tâm Đào tạo và Sát hạch lái xe Hiệp Phát thông báo buổi ôn tập bạn đã đăng ký ngày {ngayOnTap} đã được xác nhận, bạn vui lòng có mặt trước 15p để chúng tôi sắp xếp vị trí ngồi học!</p>',
+    defaultTitleDiscountCode = 'Thông báo khuyến mãi dành cho bạn!',
+    defaultAbstractDiscountCode = 'Thông báo khuyến mãi học phí dành cho bạn!',
+    defaultContentDiscountCode = '<p>Xin chào {ho_ten},</p>\n<p>Trung tâm Đào tạo và Sát hạch lái xe Hiệp Phát dành tặng cho bạn mã code {code} có giá trị {fee}, hạn dùng đến {endDate} vui lòng sử dụng trước thời hạn để nhận được các ưu đãi của chúng tôi!</p>';
 class NotificationTemplatePage extends AdminPage {
     state = {};
     componentDidMount() {
@@ -94,6 +97,17 @@ class NotificationTemplatePage extends AdminPage {
                         this.itemAbstractOnTap.value(defaultAbstractOnTap);
                         this.editorOnTap.html(defaultContentOnTap);
                     }
+                    const indexGiamGia = data.findIndex(template => template.state == 'giamGia');
+                    if (indexGiamGia != -1) {
+                        this.itemTitleGiamGia.value(data[indexGiamGia].title);
+                        this.itemAbstractGiamGia.value(data[indexGiamGia].abstract);
+                        this.editorGiamGia.html(data[indexGiamGia].content);
+                        this.setState({ idGiamGia: data[indexGiamGia]._id });
+                    } else {
+                        this.itemTitleGiamGia.value(defaultTitleDiscountCode);
+                        this.itemAbstractGiamGia.value(defaultAbstractDiscountCode);
+                        this.editorGiamGia.html(defaultContentDiscountCode);
+                    }
                 } else {
                     this.itemTitleTotNghiep.value(defaultTitleTotNghiep);
                     this.itemAbstractTotNghiep.value(defaultAbstractTotNghiep);
@@ -113,6 +127,9 @@ class NotificationTemplatePage extends AdminPage {
                     this.itemTitleOnTap.value(defaultTitleOnTap);
                     this.itemAbstractOnTap.value(defaultAbstractOnTap);
                     this.editorOnTap.html(defaultContentOnTap);
+                    this.itemTitleGiamGia.value(defaultTitleDiscountCode);
+                    this.itemAbstractGiamGia.value(defaultAbstractDiscountCode);
+                    this.editorGiamGia.html(defaultContentDiscountCode);
                 }
             });
         });
@@ -203,7 +220,7 @@ class NotificationTemplatePage extends AdminPage {
                     });
                 });
             }
-        } else {
+        } else if(index == 2){
             const changes = {
                 title: this.itemTitleHoanTien.value().trim(),
                 abstract: this.itemAbstractHoanTien.value().trim(),
@@ -217,6 +234,23 @@ class NotificationTemplatePage extends AdminPage {
                 this.props.createNotificationTemplate(changes, data => {
                     data && data.item && this.setState({
                         idHoanTien: data.item._id
+                    });
+                });
+            }
+        } else {
+            const changes = {
+                title: this.itemTitleGiamGia.value().trim(),
+                abstract: this.itemAbstractGiamGia.value().trim(),
+                content: this.editorGiamGia.html(),
+                type: '0',
+                state:'giamGia'
+            };
+            if (this.state.idGiamGia) {
+                this.props.updateNotificationTemplate(this.state.idGiamGia, changes);
+            } else {
+                this.props.createNotificationTemplate(changes, data => {
+                    data && data.item && this.setState({
+                        idGiamGia: data.item._id
                     });
                 });
             }
@@ -279,13 +313,23 @@ class NotificationTemplatePage extends AdminPage {
             </div>
         );
 
+        const giamGiaTabs = (
+            <div className='tile-body' id={this.props.id}>
+                <FormTextBox ref={e => this.itemTitleGiamGia = e} label='Chủ đề' readOnly={this.props.readOnly} />
+                <FormRichTextBox ref={e => this.itemAbstractGiamGia = e} listParams={listParams} label='Mô tả ngắn gọn' readOnly={this.props.readOnly} />
+                <FormEditor ref={e => this.editorGiamGia = e} height='600px' label='Nội dung' uploadUrl='/user/upload?category=notification' listParams={listParams} readOnly={this.props.readOnly} />
+                {permission.write ? <CirclePageButton type='save' onClick={this.save} /> : null}
+            </div>
+        );
+
         const tabs = [
             { title: 'Thông báo thi tốt nghiệp', component: thiTotNghiepTabs },
             { title: 'Thông báo thi sát hạch', component: thiSatHachTabs },
             { title: 'Thông báo hoàn tiền', component: hoanTienTabs },
             { title: 'Thông báo thanh toán', component: thanhToanTabs },
             { title: 'Thông báo huỷ ôn tập', component: huyOnTapTabs },
-            { title: 'Thông báo ôn tập', component: onTapTabs }
+            { title: 'Thông báo ôn tập', component: onTapTabs },
+            { title: 'Thông báo mã code giảm giá', component: giamGiaTabs }
         ];
 
         return this.renderPage({

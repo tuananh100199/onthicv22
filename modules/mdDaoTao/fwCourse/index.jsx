@@ -308,6 +308,10 @@ export default {
             component: Loadable({ loading: Loading, loader: () => import('./userPaymentHistory') })
         },
         {
+            path: '/user/hoc-vien/khoa-hoc/:_id/cong-no/giam-gia',
+            component: Loadable({ loading: Loading, loader: () => import('./userDiscountCode') })
+        },
+        {
             path: '/user/course/:_id/practical-subject',
             component: Loadable({ loading: Loading, loader: () => import('./pages/adminPracticalSubjectPage') })
         },

@@ -5,7 +5,8 @@ import { getBankByStudent } from 'modules/_default/fwBank/redux';
 import { Link } from 'react-router-dom';
 import { CopyToClipboard } from 'react-copy-to-clipboard';
 import MessengerCustomerChat from 'react-messenger-customer-chat';
-import { AdminPage, TableCell, renderTable, FormCheckbox, AdminModal, FormTextBox } from 'view/component/AdminPage';
+import { getDiscountCodePage } from 'modules/_default/fwDiscountCode/redux';
+import { AdminPage, TableCell, renderTable, FormCheckbox, AdminModal, FormTextBox, FormSelect } from 'view/component/AdminPage';
 
 
 const previousRoute = '/user';
@@ -17,12 +18,23 @@ class PaymentInfoModal extends AdminModal {
     }
 
     onShow = (item) => {
-        const { code, nameBank, accounts, contentSyntax } = this.props || { code: '', nameBank: '', accounts: {}, contentSyntax: '' };
+        const { code, nameBank, accounts, contentSyntax, listDiscountCode } = this.props || { code: '', nameBank: '', accounts: {}, contentSyntax: '' };
         this.itemBankName.value(code + ' - ' + nameBank);
         this.itemAccounts.value(accounts && accounts.number ? accounts.number : '');
         this.itemAccountsUser.value(accounts && accounts.holder ? accounts.holder : '');
         this.itemFee.value(item ? T.numberDisplay(item) : (this.props.fee ? T.numberDisplay(this.props.fee) + ' đồng' : 0));
         this.itemContentSyntax.value(contentSyntax);
+        let listCode = [{id: '0', text:'Không áp dụng khuyến mãi', fee: 0}];
+        listDiscountCode.forEach(discountCode => listCode.push({id: discountCode.code, text: discountCode.code + ' - Giảm ' + T.numberDisplay(discountCode.fee) + ' đồng', fee: discountCode.fee}));
+        this.setState({listDiscountCode: listCode, fee: item});
+    }
+
+    onChange = (id, fee) => {
+        const contentSyntax =  this.props.contentSyntax;
+        let originalFee = this.state.fee ? this.state.fee : this.props.fee;
+        let currentFee = originalFee - fee;
+        this.itemContentSyntax.value(id == '0' ? contentSyntax :  contentSyntax + ' ' + id);
+        this.itemFee.value(currentFee ? T.numberDisplay(currentFee) + ' đồng': 0);
     }
 
     render = () => this.renderModal({
@@ -46,6 +58,10 @@ class PaymentInfoModal extends AdminModal {
                             onCopy={() => T.notify('Đã copy', 'success')}>
                             <span><i className='fa fa-clone'></i></span>
                         </CopyToClipboard>
+                    </div>
+                    <div className='d-flex justify-content-between'>
+                        {/* <FormTextBox ref={e => this.itemCodeLabel = e} type='text' label='Mã giảm giá' readOnly={this.props.readOnly} /> */}
+                        <FormSelect ref={e => this.itemCode = e} onChange={data => this.onChange(data.id, data.fee)} label='Chọn mã giảm giá' data={this.state.listDiscountCode} readOnly={false} />
                     </div>
                     <div className='d-flex justify-content-between'>
                         <FormTextBox ref={e => this.itemContentSyntax = e} type='text' label='Cú pháp chuyển khoản' readOnly={this.props.readOnly} />
@@ -75,6 +91,7 @@ class UserPaymentInfo extends AdminPage {
                         T.alert(data.notify, 'error', false, 2000);
                         this.props.history.push(previousRoute);
                     } else if (data.item && data.student) {
+                        this.props.getDiscountCodePage(1,50,{endDate: {$gte: new Date()}, user: data.student._id, state:'waiting'});
                         this.setState({ ...data.item, ngayDuKienThiSatHach: data.student.ngayDuKienThiSatHach, hocPhiPhaiDong: data.student.courseFee, hocPhiDaDong: data.student.hocPhiDaDong, hocPhiMienGiam: data.student.discount, ngayHetHanNopHocPhi: data.student.ngayHetHanNopHocPhi, soLanDong: data.student.coursePayment, lichSuDongTien: data.student.lichSuDongTien });
                         this.props.getBankByStudent({ active: true }, (item) => {
                             if (item) {
@@ -111,6 +128,7 @@ class UserPaymentInfo extends AdminPage {
 
     render() {
         const userPageLink = '/user/hoc-vien/khoa-hoc/' + this.state.courseId + '/cong-no';
+        const listDiscountCode = this.props.discountCode && this.props.discountCode.page ? this.props.discountCode.page.list : [];
         const { hocPhiPhaiDong, hocPhiMienGiam, soLanDong, ngayHetHanNopHocPhi, soTienThanhToan, lichSuDongTien } = this.state;
         const list = [],
             numOfPayments = soLanDong ? soLanDong.numOfPayments : 1;
@@ -200,7 +218,7 @@ class UserPaymentInfo extends AdminPage {
                         pageId='102156059185946'
                         appId='735844990778782'
                     />
-                    <PaymentInfoModal fee={soTienThanhToan} lichSuDongTien={lichSuDongTien} accountsNumber={this.state.accounts && this.state.accounts.number} code={this.state.code} nameBank={this.state.nameBank} contentSyntax={this.state.contentSyntax} accounts={this.state.accounts} readOnly={true} ref={e => this.modal = e} />
+                    <PaymentInfoModal fee={soTienThanhToan} listDiscountCode={listDiscountCode} lichSuDongTien={lichSuDongTien} accountsNumber={this.state.accounts && this.state.accounts.number} code={this.state.code} nameBank={this.state.nameBank} contentSyntax={this.state.contentSyntax} accounts={this.state.accounts} readOnly={true} ref={e => this.modal = e} />
                 </>
             ),
             backRoute: userPageLink,
@@ -208,6 +226,6 @@ class UserPaymentInfo extends AdminPage {
     }
 }
 
-const mapStateToProps = state => ({ system: state.system, course: state.trainning.course });
-const mapActionsToProps = { getCourseByStudent, getBankByStudent };
+const mapStateToProps = state => ({ system: state.system, course: state.trainning.course, discountCode: state.accountant.discountCode });
+const mapActionsToProps = { getCourseByStudent, getBankByStudent, getDiscountCodePage };
 export default connect(mapStateToProps, mapActionsToProps)(UserPaymentInfo);

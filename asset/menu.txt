@@ -67,6 +67,7 @@
 	7007 - Kích hoạt khóa học (/user/student/active-course)
 	7008 - Quản lý doanh thu (/user/revenue)
 	7009 - SMS Banking (/user/sms)
+	7020 - Code giảm giá (/user/discount-code)
 8000. Tuyển sinh (undefined)
 	8008 - Hướng dẫn (/user/enroll-tutorial)
 	8009 - Chỉ tiêu tuyển sinh (/user/enroll-target)

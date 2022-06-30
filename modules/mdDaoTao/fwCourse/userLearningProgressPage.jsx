@@ -100,15 +100,15 @@ class LecturerStudentPage extends AdminPage {
       else return null;
     }
 
-    renderPracticalSubject = (student,subject)=>{
+    renderPracticalSubject = (student,subject, showMonThucHanh)=>{
         if(subject){
-            return (<PageIcon key={student._id} to={'/user/hoc-vien/khoa-hoc/' + this.state.courseId + '/mon-hoc/' + subject._id} icon='fa-book' className={'col-12'} subtitle={
+            return (<PageIcon key={student._id} onClick={() => !showMonThucHanh ? T.alert('Vui lòng hoàn thành hai môn học: Pháp luật giao thông đường bộ và Kỹ thuật lái xe để mở khóa!', 'error', false, 8000) : null} to={!showMonThucHanh ? '#' : '/user/hoc-vien/khoa-hoc/' + this.state.courseId + '/mon-hoc/' + subject._id} icon='fa-book' className={'col-12'} subtitle={
                 <>
                      <div className='progress'>
                         <div className={'progress-bar progress-bar-striped progress-bar-animated ' + (this.checkTienDoHocThucHanh(student, subject) == 100 ? 'bg-success' : '')} role='progressbar' style={{width: this.checkTienDoHocThucHanh(student,subject) + '%'}} aria-valuenow={this.checkTienDoHocThucHanh(student,subject)} aria-valuemin='0' aria-valuemax='100'></div>
                     </div>
                 </>
-          } iconBackgroundColor='#17a2b8' text={subject.title}/>);
+          } iconBackgroundColor={showMonThucHanh ? '#17a2b8' : 'gray'} text={subject.title}/>);
         }else{
             return null;
         }
@@ -144,6 +144,8 @@ class LecturerStudentPage extends AdminPage {
             subjectColumns.push(<th key={index} style={{ width: 'auto', textAlign: 'center' }}  >{subject.title}</th>);
         });
         const showMonLyThuyet = parseInt(hocPhiDaDong)/parseInt(hocPhi) > 0.5;
+        const showMonThucHanh = subjects && subjects.length && student && student.tienDoThiHetMon && (subjects.findIndex(subject => (subject.monTienQuyet == true && !student.tienDoThiHetMon[subject._id])) == -1);
+        console.log(course);
         const pageIcon = 
         student ? 
         <>
@@ -197,18 +199,20 @@ class LecturerStudentPage extends AdminPage {
                 } iconBackgroundColor={hocPhi ? (parseInt(hocPhiDaDong)/parseInt(hocPhi) < 1 ? 'gray' : '#69f0ae') : '#69f0ae'} text={'Thực hành'}/>
                 <div className="col-md-4">
                     <div className="row">
-                    {monThucHanh && monThucHanh.map(item=>this.renderPracticalSubject(student,item))}
+                    {monThucHanh && monThucHanh.map(item=>this.renderPracticalSubject(student,item, showMonThucHanh))}
                     </div>
                 </div>
             </div>
             <div className='row'>
                 <PageIcon className='col-md-4' to={'#'} icon='fa-graduation-cap' subtitle={
                     <p>
+                        Thời gian thi dự kiến: {course && course.item && course.item.thoiGianThiTotNghiepDuKien ? T.dateToText(course.item.thoiGianThiTotNghiepDuKien, 'dd/mm/yyyy') : ''}<br />
                         {(student.totNghiep) ? 'Đạt' : 'Chưa đạt'}
                     </p>
                 } iconBackgroundColor='#64b5f6' text={'Thi tốt nghiệp'} />
                 <PageIcon className='col-md-4' to={'#'} icon='fa-pencil-square-o' subtitle={
                     <p>
+                        Thời gian thi dự kiến: {course && course.item && course.item.thoiGianThiSatHachDuKien ? T.dateToText(course.item.thoiGianThiSatHachDuKien, 'dd/mm/yyyy') : ''}<br />
                         {(student.datSatHach) ? 'Đạt' : 'Chưa đạt'}
                     </p>
                 } iconBackgroundColor='#18ffff' text={'Thi sát hạch'} />
