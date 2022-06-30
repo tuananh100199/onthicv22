@@ -155,7 +155,7 @@ module.exports = (app) => {
     });
 
     app.put('/api/student', app.permission.check('user:login'), (req, res) => {
-        app.model.student.update(req.body._id, req.body.changes, (error, item) => res.send({ error, item }));
+        app.model.student.update(req.body._id, req.body.changes||{}, (error, item) => res.send({ error, item }));
     });
 
     app.post('/api/student/payment', app.permission.check('courseFee:write'), (req, res) => {

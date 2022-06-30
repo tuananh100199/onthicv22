@@ -443,7 +443,7 @@ module.exports = (app) => {
                         const image ='/img/user/' + user + '.jpg';
                         item.image = image + '?t=' + new Date().getTime().toString().slice(-8);
                         item.save().then(() => {
-                            app.fs.writeFile(app.path.join(app.publicPath, 'img/verificationImage', new Date().getTime() + '.jpg'), base64Data, 'base64', (error) => {
+                            app.fs.writeFile(app.path.join(app.publicPath, 'img/verificationImage', user + '.jpg'), base64Data, 'base64', (error) => {
                                 if(error) res.send({ error });
                                 else {
                                     const verificationImage ='/img/verificationImage/' + user + '.jpg';
@@ -458,7 +458,10 @@ module.exports = (app) => {
                                             };
                                             app.model.verificationImage.create(data, (error, item) => res.send({ error, item, image: item.image }));
                                         } else {
-                                            app.model.verificationImage.update(avatar._id, {image: verificationImage, createdDate: new Date(), state: 'waiting'}, (error, item) => res.send({ error, item, image: item.image }));
+
+                                            app.model.verificationImage.update({_id: avatar._id}, {image: verificationImage, createdDate: new Date(), state: 'waiting'}, (error, item) => {
+                                                res.send({ error, item });
+                                            });
                                         }
                                     });
                                 }

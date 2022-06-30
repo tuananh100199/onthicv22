@@ -64,13 +64,14 @@ module.exports = (app) => {
 
     app.post('/api/teacher-location', app.permission.check('teacherLocation:write'), (req, res) => {
         const data = req.body.data;
-        app.model.teacherLocation.get({timeTable: data.timeTable}, (error, item) => {
-            if(error) res.send({ error});
-            else if(!item){
-                app.model.teacherLocation.create(data, (error, item) => res.send({ error, item }));
-            } else app.model.teacherLocation.addRecord(item._id, data, (error, item) => res.send({ error, item }));
+        if(data){
+            app.model.teacherLocation.get({timeTable: data.timeTable}, (error, item) => {
+                if(error) res.send({ error});
+                else if(!item){
+                    app.model.teacherLocation.create(data, (error, item) => res.send({ error, item }));
+                } else app.model.teacherLocation.addRecord({_id: item._id}, data, (error, item) => res.send({ error, item }));
         });
-        
+       } else res.send({error: 'Không nhận được dữ liệu'});   
     });
 
     app.put('/api/teacher-location', app.permission.check('teacherLocation:write'), (req, res) => {
@@ -88,4 +89,9 @@ module.exports = (app) => {
         const { _id } = req.body;
         app.model.teacherLocation.delete(_id, (error) => res.send({ error }));
     });
+
+    app.permissionHooks.add('lecturer', 'teacherLocation', (user) => new Promise(resolve => {
+        app.permissionHooks.pushUserPermission(user, 'teacherLocation:write');
+        resolve();
+    }));
 };
