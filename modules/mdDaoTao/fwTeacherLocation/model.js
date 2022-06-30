@@ -86,7 +86,8 @@ module.exports = app => {
             }
         }),
         addRecord: (_id, data, done) => {
-            model.findOneAndUpdate(_id, { $push: { record: data.record[0] } }, { new: true }).exec(done);
+            const dataRecord = data.record[0];
+            model.findOneAndUpdate(_id, { $push: { record: dataRecord } }, { new: true, useFindAndModify: false }).exec(done);
         },
     };
 };
