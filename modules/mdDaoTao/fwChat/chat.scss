@@ -41,6 +41,16 @@ img{ max-width:100%;}
   float: left;
   padding: 0 0 0 15px;
   width: 88%;
+  font-weight: 500;
+}
+
+.chat_unread{
+  float:right;
+  display: inline-block;
+  background-color:#dc3545;
+  color:white;
+  padding:5px 10px;
+  border-radius: 50%;
 }
 
 .chat_people{ overflow:hidden; clear:both;}

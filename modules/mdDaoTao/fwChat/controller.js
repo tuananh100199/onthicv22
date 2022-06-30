@@ -1,4 +1,3 @@
-
 module.exports = app => {
     app.get('/user/chat/:id', app.templates.admin);
 
@@ -55,7 +54,41 @@ module.exports = app => {
             }
         });
     });
+    const getSenderUnreadChat = (receiver,sender)=> new Promise((resolve,reject)=>{
+        app.model.chat.count({receiver,sender:sender.user?sender.user._id:sender._id,read:false},(error,numOfUnreadChat)=>{
+            error ? reject(error) : resolve(numOfUnreadChat);
+        });
+    });
 
+    const getSenderLastMessage = (receiver,sender)=> new Promise((resolve,reject)=>{
+        app.model.chat.getUserPage(1,1,{receiver,sender:sender.user?sender.user._id:sender._id},(error,list)=>{
+            if(error) reject(error);
+            else{
+                const lastMessage = list && list.length? list[0]:undefined;
+                resolve(lastMessage);
+            }
+        });
+    });
+
+    const getListSenderSorted = (receiver,listSender)=> new Promise((resolve,reject)=>{
+        const promiseList=[];
+        listSender.forEach(sender=>promiseList.push(new Promise((res,rej)=>{
+            Promise.all([getSenderUnreadChat(receiver,sender),getSenderLastMessage(receiver,sender)]).then(([numOfUnreadChat,lastMessage])=>{
+                sender = {...sender._doc,numOfUnreadChat,lastMessage};
+                res(sender);
+            }).catch(error=>rej(error));
+        })));
+
+        promiseList && promiseList.length && Promise.all(promiseList).then(senders=>{
+            // TODO: Sort list sender by last message chat.
+            const list = senders.sort((a,b)=>{
+                if(!a.lastMessage || !a.lastMessage.sent) return 1;
+                if(!b.lastMessage || !b.lastMessage.sent) return -1;
+                return b.lastMessage.sent - a.lastMessage.sent;
+            });
+            resolve(list);
+        }).catch(error=>reject(error));
+    });
     // Chat API
     app.get('/api/chat/admin', app.permission.check('course:read'), (req, res) => {
         const sessionUser = req.session.user;
@@ -66,7 +99,11 @@ module.exports = app => {
                 } else {
                     let listTeacher = [];
                     item.teacherGroups && item.teacherGroups.length && item.teacherGroups.forEach(teacherGroup => teacherGroup.teacher && listTeacher.push(teacherGroup.teacher));
-                    res.send({ error, item: listTeacher });
+                    getListSenderSorted(sessionUser._id,listTeacher)
+                    .then(list=>{
+                        res.send({item:list});  
+                    })
+                    .catch(error=>console.error(error)||res.end({error}));
                 }
             });
         } else {
@@ -78,7 +115,9 @@ module.exports = app => {
                     let listUser = [];
                     item.admins && item.admins.length && item.admins.forEach(admin => listUser.push(admin));
                     listUser = listUser.concat(listStudent[0] ? listStudent[0].student : []);
-                    res.send({ error, item: listUser });
+                    getListSenderSorted(sessionUser._id,listUser)
+                    .then(item=>res.send({item}))
+                    .catch(error=>console.error(error)||res.send({error}));
                 }
             });
         }
