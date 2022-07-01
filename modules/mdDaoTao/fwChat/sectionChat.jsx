@@ -10,8 +10,16 @@ import inView from 'in-view';
 class SectionChat extends AdminPage {
     state = { clientId: null, oldMessageAll: [], oldMessagePersonal: [], isLastedChat: false };
     componentDidMount() {
-        const { courseId, listUser, _selectedUserId } = this.props,
+        let { courseId, listUser=[], _selectedUserId } = this.props,
             user = this.props.system.user;
+        listUser=listUser.map(item=>{
+            if((item.user && item.user._id==_selectedUserId) || item._id==_selectedUserId){
+                return {...item,numOfUnreadChat:0};
+            }else{
+                return item;
+            }
+        });
+
         this.setState({ courseId, user, listUser, _selectedUserId });
         this.props.oldMessageAll && this.setState({
             oldMessageAll: this.props.oldMessageAll
@@ -109,13 +117,20 @@ class SectionChat extends AdminPage {
         const userId = user.user ? user.user._id : user._id;
         if (this.state._selectedUserId != userId && this.props.system && this.props.system.user) {
             this.props.getUserChats(userId, null, data => {
-                this.setState({
+                this.setState(prev=>({
                     oldMessagePersonal: data.chats,
                     _selectedUserId: userId,
                     isLastedChat: data.chats && data.chats.length < 20,
                     userName: user.lastname + ' ' + user.firstname,
-                    userImage: user.image
-                });
+                    userImage: user.image,
+                    listUser:prev.listUser.map(item=>{
+                        if((item.user && item.user._id==userId) || item._id==userId){
+                            return {...item,numOfUnreadChat:0};
+                        }else{
+                            return item;
+                        }
+                    })
+                }));
             });
             T.socket.emit('chat:join', { _userId: userId });
         }
@@ -184,18 +199,34 @@ class SectionChat extends AdminPage {
     onReceiveMessage = (data) => {
         const user = this.props.system ? this.props.system.user : null;
         const chat = data ? data.chat : null;
-        const { _selectedUserId, courseId } = this.state;
+        let { _selectedUserId, courseId, listUser } = this.state;
         if (user && chat) {
             this.props.addChat(user._id == chat.sender._id, data.chat);
-            if (chat.receiver == courseId) {
+            if (chat.receiver == courseId) {//phòng chat chung
                 this.setState(prevState => ({
                     oldMessageAll: [data.chat, ...prevState.oldMessageAll]
                 }));
                 this.scrollToChat();
-            } else {
+            } else {// chat cá nhân
+                listUser = listUser.map(item=>{
+                    if((item.user && item.user._id==chat.sender._id) || item._id==chat.sender._id){// user này gửi chat
+                        if(chat.sender && chat.sender._id!=_selectedUserId){ // không focus trong tab đó
+                            return {...item,numOfUnreadChat:item.numOfUnreadChat+1,lastMessage:chat};
+                        }else{
+                            return {...item,lastMessage:chat,numOfUnreadChat:0};
+                        } 
+                    }
+                    return item;
+                        
+                }).sort((a,b)=>{
+                    if(!a.lastMessage || !a.lastMessage.sent) return 1;
+                    if(!b.lastMessage || !b.lastMessage.sent) return -1;
+                    return new Date(b.lastMessage.sent).getTime() - new Date(a.lastMessage.sent).getTime();
+                });
+                this.setState({listUser});
                 if (_selectedUserId == chat.receiver._id || _selectedUserId == chat.sender._id) {//Hội thoại hiện tại
                     this.setState(prevState => ({
-                        oldMessagePersonal: [data.chat, ...prevState.oldMessagePersonal]
+                        oldMessagePersonal: [data.chat, ...prevState.oldMessagePersonal],
                     }));
                     this.props.readAllChats(_selectedUserId);
                     this.scrollToChat();
@@ -241,7 +272,7 @@ class SectionChat extends AdminPage {
         const urlRegex = /^(https?|chrome):\/\/[^\s$.?#].[^\s]*$/gm,
             oldMessage = this.state._selectedUserId ? this.state.oldMessagePersonal : this.state.oldMessageAll,
             isLecturerChat = this.state._selectedUserId && this.state.listUser && this.state.listUser.length > 1;
-        const user = this.props.system ? this.props.system.user : {};
+            const user = this.props.system ? this.props.system.user : {};
         const listChats = [];
         if (oldMessage && oldMessage.length) {
             let index = oldMessage.length,
@@ -260,7 +291,12 @@ class SectionChat extends AdminPage {
                     this.renderChatBox(listChats, chats, prevItem, user._id);
                     chats = [];
                 }
-                chats.push(<p key={chats.length} id={`chat${item._id}`} style={{ margin: 0 }}>{newMessage}</p>);
+                chats.push(<p key={item._id} id={`chat${item._id}`} style={{ margin: 0 }}>{newMessage}</p>);
+            }
+            //Check tin nhắn cuối là của mình và đã được người nhận đọc chưa
+            if(oldMessage[0].sender  && oldMessage[0].sender._id==user._id && oldMessage[0].read==true){
+                chats.push(<p key={listChats.length} id={listChats.length} 
+                    style={{ margin: 0,fontWeight:'600', fontSize:'12px', color:'#ccc' }}>Đã xem</p>);
             }
             this.renderChatBox(listChats, chats, oldMessage[0], user._id);
         }
@@ -269,14 +305,17 @@ class SectionChat extends AdminPage {
         const userName = this.state.userName ? this.state.userName : listUser && listUser[0] && listUser[0].lastname + ' ' + listUser[0].firstname,
             userImage = this.state.userImage ? this.state.userImage : (listUser && listUser[0] && (listUser[0].user ? listUser[0].user.image : listUser[0].image));
         const { _selectedUserId, isLastedChat } = this.state;
-        const inboxChat = this.state.listUser && this.state.listUser.map((userChat, index) => {
+        const inboxChat = listUser && listUser.length && listUser.map((userChat, index) => {
+            const { numOfUnreadChat } = userChat;
             const isSelectedUser = _selectedUserId == (userChat.user ? userChat.user._id : userChat._id);
             return (
                 <div key={index} className={'chat_list' + (isSelectedUser ? ' active_chat' : '')} style={{ cursor: 'pointer' }} onClick={e => e.preventDefault() || this.selectUser(userChat)}>
                     <div className='chat_people'>
                         <div className='chat_img'> <img src={userChat.user ? userChat.user.image : userChat.image} alt={userChat.lastname} /> </div>
                         <div className='chat_ib'>
-                            <h6>{userChat.lastname + ' ' + userChat.firstname}</h6>
+                            <h6 className={!isSelectedUser && numOfUnreadChat && numOfUnreadChat>0?'font-weight-bold':'font-weight-normal'}>
+                                {userChat.lastname + ' ' + userChat.firstname} {!isSelectedUser && numOfUnreadChat && numOfUnreadChat>0 ?<span className="chat_unread">{numOfUnreadChat}</span> :null}
+                            </h6>
                         </div>
                     </div>
                 </div>);

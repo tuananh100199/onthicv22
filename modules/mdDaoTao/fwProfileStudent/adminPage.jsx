@@ -4,56 +4,101 @@ import { getProfileStudentPage,updateProfileStudent } from './redux';
 import { AdminPage, renderTable, TableCell,FormSelect,TableHeadCell,TableHead } from 'view/component/AdminPage';
 import Pagination from 'view/component/Pagination';
 import {  getCourseTypeAll,ajaxSelectCourseType } from 'modules/mdDaoTao/fwCourseType/redux';
-import {ajaxSelectCourseByCourseType} from 'modules/mdDaoTao/fwCourse/redux';
+import {ajaxSelectOfficialCourseByCourseType} from 'modules/mdDaoTao/fwCourse/redux';
 
 const filterCondition = [
     {id:'1',text:'Hoàn tất'},
     {id:'0',text:'Chưa hoàn tất'},
 ];
 class ProfileStudentPage extends AdminPage {
-    state = {defaultFilterValue:'all',filterCondition:{},isExpandFilter:true};
+    state = {courseType:{},course:{}};
     componentDidMount() {
         T.ready('/user/profile-student', () => {
             // T.showSearchBox();
             // T.onSearch = (searchText) => this.onSearch({searchText},()=>this.setState({searchText}));
             
-            this.props.getCourseTypeAll(data => {
-                const courseTypes = data.length && data.map(item => ({ id: item._id, text: item.title }));
-                this.courseType.value(courseTypes.length ? courseTypes[0] : null);
-            });
+            // this.props.getCourseTypeAll(data => {
+            //     const courseTypes = data.length && data.map(item => ({ id: item._id, text: item.title }));
+            //     this.courseType.value(courseTypes.length ? courseTypes[0] : null);
+            // });
             // this.onSearch({});
-            this.props.getProfileStudentPage(1,null,{},{});
+            this.props.getProfileStudentPage(1,null,{},{},data=>{
+                const {courseType,course} = data;
+                this.setState({course,courseType},()=>{
+                    this.courseType.value(courseType?{id:courseType._id,text:courseType.title}:'');
+                    this.course.value(course?{id:course._id,text:course.name}:'');
+                });
+            });
         });
     }
 
-    onSearch = ({pageNumber,pageSize,courseType = this.courseType.value(),course=this.course.value()},done)=>{        
-        // const courseType = this.state.courseTypeId;
-        const condition = course == '0' ? { courseType } : { courseType, course };
-        this.props.getProfileStudentPage(pageNumber, pageSize, condition, () => {
-            done && done();
+    onSearch = ({pageNumber,pageSize,_courseTypeId = this.courseType.value(),_courseId=this.course.value()},done)=>{        
+        this.props.getProfileStudentPage(pageNumber, pageSize, {_courseId,_courseTypeId}, (data) => {
+            done && done(data);
+            const {courseType,course} = data;
+            this.setState({course,courseType},()=>{
+                this.courseType.value(courseType?{id:courseType._id,text:courseType.title}:'');
+                this.course.value(course?{id:course._id,text:course.name}:'');
+            });
         });
     }
     
-    update = (_id,change)=>{
-        this.props.updateProfileStudent(_id,change,()=>{
+    update = (student,giayTo,active)=>{
+        let giayToDangKy = student.giayToDangKy?student.giayToDangKy.map(item=>item._id):[];
+        console.log({giayToDangKy});
+        if(active){
+            giayToDangKy=[...giayToDangKy,giayTo];
+        }else{
+            giayToDangKy=giayToDangKy.filter(item=>item!=giayTo);
+        }
+        this.props.updateProfileStudent(student._id,{giayToDangKy},()=>{
             this.onSearch({});
         });
     };
 
-    handleChangeFilter = (filterCondition)=>{
-        this.onSearch({filterCondition},()=>this.setState({filterCondition}));
-    }
-
     onChangeCourseType = (courseType) => {
-        this.setState({ courseTypeId: courseType });
-        this.course.value({ id: 0, text: 'Tất cả khóa học' });
-        // this.onSearch({ courseType });
+        if(!this.state.courseType || this.state.courseType._id!=courseType.id){
+            this.onSearch({_courseId:null});
+        } 
     }
 
+    onChangeCourse = (courseId) => {
+        if(!this.state.course || this.state.course._id!=courseId.id){
+            this.onSearch({});
+        } 
+    }
+
+    renderGiayToDangKyHeader = (profile)=>{
+        const {type} = profile;
+        return (
+            <TableHeadCell key={profile._id} name={`giayToDangKy:${type._id}`} content={`${type.title}`} style={{width:'auto'}} nowrap='true' filter='select' filterData = {filterCondition}/>
+        );
+    }
+
+    renderGiayToDangKyBody = (profile,student,permission)=>{
+        const {type} = profile;
+        return (
+            <TableCell key={profile._id} type='checkbox' isSwitch={false} content={student.giayToDangKy && student.giayToDangKy.length && student.giayToDangKy.find(item=>item._id==type._id)!=undefined} permission={permission} onChanged={active => this.update(student,type._id,active)}/>
+        );
+    }
+
+    checkNopDuGiayTo = (profiles,student)=>{
+        if(!profiles||!profiles.length) return false;
+        if(!student || !student.giayToDangKy || !student.giayToDangKy.length) return false;
+        const giayToDangKy = student.giayToDangKy;
+        for(const profile of profiles){
+            if(profile.required && giayToDangKy.find(giayTo=>profile.type && giayTo._id==profile.type._id)==undefined){
+                return false;
+            }
+        }
+        return true;
+    }
     render() {
         const permission = this.getUserPermission('profileStudent');
         const { pageNumber, pageSize, pageTotal, totalItem, list } = this.props.profileStudent && this.props.profileStudent.page ?
             this.props.profileStudent.page : { pageNumber: 1, pageSize: 50, pageTotal: 1, totalItem: 0 };
+        const {profileType} = this.state.course;
+        const profiles = profileType && profileType.profiles ? profileType.profiles :null;
         const table = renderTable({
             getDataSource: () => list, stickyHead: true,autoDisplay:true,
         renderHead: () => (
@@ -62,11 +107,8 @@ class ProfileStudentPage extends AdminPage {
                 <TableHeadCell name='fullName' content='Học viên' style={{width:'100%'}} filter='search' />
                 <TableHeadCell name='identityCard' content='CMND/CCCD' style={{width:'auto'}} nowrap='true' filter='search' />
                 <TableHeadCell style={{ width: 'auto' }} nowrap='true'>Thông tin liên lạc</TableHeadCell>
-                <TableHeadCell name='isDon' content='Đơn' style={{width:'auto'}} nowrap='true' filter='select' filterData = {filterCondition}/>
-                <TableHeadCell name='isHinh' content='Hình' style={{width:'auto'}} nowrap='true'filter='select' filterData = {filterCondition}/>
-                <TableHeadCell name='isIdentityCard' content='CMND/CCCD' style={{width:'auto'}} filter='select' nowrap='true' filterData = {filterCondition}/>
-                <TableHeadCell name='isGiayKhamSucKhoe' content='Giấy khám sức khỏe' style={{width:'auto'}} filter='select' nowrap='true' filterData = {filterCondition}/>
-                <TableHeadCell name='isBangLaiA1' content='Bằng lái A1' style={{width:'auto'}} nowrap='true' filter='select' filterData = {filterCondition}/>
+                {profiles && profiles.length ? profiles.map(profile=>this.renderGiayToDangKyHeader(profile)):null}
+                
                 <TableHeadCell style={{ width: 'auto' }} nowrap='true'>Hoàn tất</TableHeadCell>
             </TableHead>),
             renderRow: (item, index) => (
@@ -75,12 +117,8 @@ class ProfileStudentPage extends AdminPage {
                     <TableCell type='text' content={<>{item.lastname} {item.firstname}</>} />
                     <TableCell type='text' content={item.identityCard} />
                     <TableCell type='text' content={item.user ? <>{item.user.email} <br/> {item.user.phoneNumber}</> : ''} />
-                    <TableCell type='checkbox' isSwitch={false} content={item.isDon} permission={permission} onChanged={active => this.update(item._id, { isDon:active })}/>
-                    <TableCell type='checkbox' isSwitch={false} content={item.isHinh} permission={permission} onChanged={active => this.update(item._id, { isHinh:active })}/>
-                    <TableCell type='checkbox' isSwitch={false} content={item.isIdentityCard} permission={permission} onChanged={active => this.update(item._id, { isIdentityCard:active })}/>
-                    <TableCell type='checkbox' isSwitch={false} content={item.isGiayKhamSucKhoe} permission={permission} onChanged={active => this.update(item._id, { isGiayKhamSucKhoe:active })}/>
-                    <TableCell type='checkbox' isSwitch={false} content={item.isBangLaiA1} permission={permission} onChanged={active => this.update(item._id, { isBangLaiA1:active })}/>
-                    <TableCell type='checkbox' content={item.isDon && item.isHinh && item.isIdentityCard && item.isGiayKhamSucKhoe && item.isBangLaiA1} />
+                    {profiles && profiles.length ? profiles.map(profile=>this.renderGiayToDangKyBody(profile,item,permission)):null}
+                    <TableCell type='checkbox' content={this.checkNopDuGiayTo(profiles,item)} />
                 
                 </tr>),
         });
@@ -104,12 +142,15 @@ class ProfileStudentPage extends AdminPage {
                             <label className='col-form-label'>Loại khóa học: </label>
                         </div>
                         <FormSelect ref={e => this.courseType = e} data={ajaxSelectCourseType} placeholder='Loại khóa học'
-                            onChange={data => this.onChangeCourseType(data.id)} style={{ margin: 0, width: '200px' }} />
+                            onChange={data => this.onChangeCourseType(data)} style={{ margin: 0, width: '200px' }} />
                         <div className='col-auto'>
                             <label className='col-form-label'>Khóa học: </label>
                         </div>
-                        <FormSelect ref={e => this.course = e} data={ajaxSelectCourseByCourseType(this.state.courseTypeId)} placeholder='Khóa học'
-                            onChange={data => this.onSearch(data.id)} style={{ margin: 0, width: '200px' }} />
+                        <FormSelect ref={e => this.course = e} data={ajaxSelectOfficialCourseByCourseType(this.state.courseType._id)} placeholder='Khóa học'
+                            onChange={data =>this.onChangeCourse(data)} style={{ margin: 0, width: '200px' }} />
+                        <div className="col-12">
+                            {profileType && <p className='mb-0 mt-2'><b>Hồ sơ đăng ký: </b>{profileType.title}</p>}
+                        </div>
                     </div>
                         {table}
                     </div>

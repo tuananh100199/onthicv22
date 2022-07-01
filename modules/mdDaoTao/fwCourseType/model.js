@@ -12,7 +12,6 @@ module.exports = app => {
             category: { type: app.database.mongoDB.Schema.ObjectId, ref: 'Category' },
             amount: Number,
         }],
-
         monThiTotNghiep: [{
             title: String,
             totalScore: Number,
@@ -29,6 +28,9 @@ module.exports = app => {
 
         soLuongCauHoiThi: { type: Number, default: 0 },                            // Số lượng câu hỏi trong một đề thi
         soLuongCauDat: { type: Number, default: 0 },                               // Số lượng câu để thi đậu
+    
+        profileType:{ type: app.database.mongoDB.Schema.ObjectId, ref: 'ProfileType' }, // Hồ sơ đăng ký
+    
     });
     const model = app.database.mongoDB.model('CourseType', schema);
 
@@ -58,11 +60,18 @@ module.exports = app => {
             }
         }),
 
-        getAll: (condition, done) => done ? model.find(condition).sort({ title: 1 }).exec(done) : model.find({}).sort({ title: 1 }).exec(condition),
+        getAll: (condition, done) => done 
+        ? model.find(condition).sort({ title: 1 })
+        .populate({
+            path: 'profileType', populate: { path: 'profiles', populate: { path:'type', select:'_id title'} }
+        }).exec(done) 
+        : model.find({}).sort({ title: 1 }).populate({
+            path: 'profileType', populate: { path: 'profiles', populate: { path:'type', select:'_id title'} }
+        }).exec(done),
 
         get: (condition, done) => {
             const findTask = typeof condition == 'string' ? model.findById(condition) : model.findOne(condition);
-            findTask.populate('subjects', '-detailDescription').exec(done);
+            findTask.populate('subjects', '-detailDescription').populate('profileType','_id title').exec(done);
         },
 
         // changes = { $set, $unset, $push, $pull }

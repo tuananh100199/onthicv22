@@ -1,8 +1,8 @@
 module.exports = app => {
     const schema = app.database.mongoDB.Schema({
         title: String,
+        description: String,
         active: { type: Boolean, default: false },
-        required: { type: Boolean, default: true },
     });
     const model = app.database.mongoDB.model('ProfileStudentType', schema);
 

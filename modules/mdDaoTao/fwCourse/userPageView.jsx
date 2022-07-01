@@ -149,7 +149,14 @@ class UserCoursePageDetail extends AdminPage {
             }
         }
     }
-
+    onHandleContact = (e,active,link)=>{
+        e.preventDefault();
+        if(active){
+            this.props.history.push(link);
+        }else{
+            T.alert('Bạn cần phải nâng cấp tài khoản để thực hiện tính năng này!', 'error', false, 2000);
+        }
+    }
     render() {
         const course = this.props.course && this.props.course.item,
             subjects = course && course.subjects ? course.subjects : [];
@@ -200,13 +207,12 @@ class UserCoursePageDetail extends AdminPage {
                         <PageIcon to={`/user/hoc-vien/khoa-hoc/${courseId}/thoi-khoa-bieu`} icon='fa-calendar' onClick={() => !showMonThucHanh ? T.alert('Vui lòng hoàn thành hai môn học: Pháp luật giao thông đường bộ và Kỹ thuật lái xe để mở khóa!', 'error', false, 8000) : null} notify={!showMonThucHanh} iconBackgroundColor={showMonThucHanh ? '#ffc107' : 'secondary'} text='Thời khóa biểu' />
                     </> : null}
                     
-                    {course && !course.isDefault ?
+                    
                     <>
                         <PageIconHeader text='Liên lạc' />
-                        <PageIcon to={`/user/chat/${courseId}`} icon='fa-comments-o' iconBackgroundColor='#28a745' text='Chat' visible={this.state.chatActive} />
-                        <PageIcon to={`/user/hoc-vien/khoa-hoc/${courseId}/phan-hoi`} icon='fa-commenting-o' iconBackgroundColor='#dc3545' text='Phản hồi khoá học' />
-                        {/* <CirclePageButton type='custom' customClassName='btn-success' customIcon='fa-comments-o' onClick={() => this.props.history.push('/user/chat/' + this.state.courseId)} /> */}
-                    </> : null}
+                        <PageIcon to='#' icon='fa-comments-o' iconBackgroundColor='#28a745' text='Chat' onClick={e => this.onHandleContact(e,course && !course.isDefault && this.state.chatActive,`/user/chat/${courseId}`)}/>
+                        <PageIcon to='#' icon='fa-commenting-o' iconBackgroundColor='#dc3545' text='Phản hồi' onClick={e => this.onHandleContact(e,course && !course.isDefault && this.state.chatActive,`/user/hoc-vien/khoa-hoc/${courseId}/phan-hoi`)}/>
+                    </>
                     <MessengerCustomerChat
                         pageId='102156059185946'
                         appId='735844990778782'

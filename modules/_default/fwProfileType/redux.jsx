@@ -102,7 +102,7 @@ export function deleteProfileType(_id) {
 
 export const ajaxSelectProfileType = T.createAjaxAdapter(
     '/api/profile-type/page/1/20',
-    params => ({searchText: params.term}),
+    params => ({condition:{searchText: params.term}}),
     response => response && response.page && response.page.list ?
         response.page.list.map(item => ({ id: item._id, text: item.title })) : [],
 );

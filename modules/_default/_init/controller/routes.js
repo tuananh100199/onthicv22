@@ -27,6 +27,14 @@ module.exports = (app) => {
         },
     };
 
+    const menuSmsBrandName = {
+        parentMenu: app.parentMenu.setting,
+        menus: {
+            2081: { title: 'Sms', link: '/user/sms-brandname', icon: 'fa-sliders', backgroundColor: '#ff3d00' }
+        },
+    };
+
+
     app.permission.add(
         { name: 'dashboard:standard', menu: { parentMenu: { index: 100, title: 'Dashboard', icon: 'fa-dashboard', link: '/user/dashboard' } } },
         { name: 'user:login', menu: { parentMenu: app.parentMenu.user } },
@@ -37,7 +45,8 @@ module.exports = (app) => {
         { name: 'document:read' },
         { name: 'document:write', menu: menuDocument },
         { name: 'document:delete' },
-    );
+        { name: 'smsBrandName:read', menu:menuSmsBrandName },
+        );
 
     app.get('/user/dashboard', app.permission.check('dashboard:standard'), app.templates.admin);
     app.get('/user/statistic', app.permission.check('statistic:read'), app.templates.admin);
@@ -45,10 +54,12 @@ module.exports = (app) => {
     app.get('/user/setting-capture', app.permission.check('settingCapture:read'), app.templates.admin);
     app.get('/user/document', app.permission.check('document:read'), app.templates.admin);
     ['/index.htm(l)?', '/404.htm(l)?', '/request-permissions(/:roleId?)', '/request-login'].forEach((route) => app.get(route, app.templates.home));
+    app.get('/user/sms-brandname', app.permission.check('smsBrandName:read'), app.templates.admin);
 
     // API ------------------------------------------------------------------------------------------------------------------------------------------
     app.put('/api/system', app.permission.check('system:settings'), (req, res) => {
-        let { emailPassword, email, address, mobile, fax, facebook, youtube, twitter, instagram,activeZalo,zaloId,smsAPIToken, chPlay, appStore } = req.body;
+        let { emailPassword, email, address, mobile, fax, facebook, youtube,
+             twitter, instagram,activeZalo,zaloId,smsAPIToken, chPlay, appStore } = req.body;
         if (emailPassword) {
             app.model.setting.set({ emailPassword }, error => {
                 if (error) {
@@ -154,6 +165,16 @@ module.exports = (app) => {
                 });
             }
         });
+    });
+
+    app.get('/api/system/settings',app.permission.check('system:settings'),(req,res)=>{
+        const keys = req.query.keys;
+        app.model.setting.get(...keys,data=>res.send(data));
+    });
+
+    app.put('/api/system/settings',app.permission.check('system:settings'),(req,res)=>{
+        const changes = req.body.changes;
+        app.model.setting.set(changes,error=>res.send({error,data:changes}));
     });
 
     app.get('/api/statistic/dashboard', app.permission.check('statistic:read'), (req, res) => {

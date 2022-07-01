@@ -155,7 +155,7 @@ module.exports = (app) => {
     });
 
     app.put('/api/student', app.permission.check('user:login'), (req, res) => {
-        app.model.student.update(req.body._id, req.body.changes, (error, item) => res.send({ error, item }));
+        app.model.student.update(req.body._id, req.body.changes||{}, (error, item) => res.send({ error, item }));
     });
 
     app.post('/api/student/payment', app.permission.check('courseFee:write'), (req, res) => {
@@ -710,18 +710,9 @@ module.exports = (app) => {
                         ];
                     }
                     if(filter){
-                        app.handleFilter(filter,['courseType','division'],filterCondition=>{
+                        app.handleFilter(filter,['fullName','courseType','division'],filterCondition=>{
                             pageCondition={...pageCondition,...filterCondition};
                         });
-                        if(filter.fullName){// họ tên
-                            pageCondition['$expr']= {
-                                '$regexMatch': {
-                                  'input': { '$concat': ['$lastname', ' ', '$firstname'] },
-                                  'regex': `.*${filter.fullName}.*`,  //Your text search here
-                                  'options': 'i'
-                                }
-                            };
-                        }
                     }
                     if(sort && sort.fullName) sort={firstname:sort.fullName}; 
 

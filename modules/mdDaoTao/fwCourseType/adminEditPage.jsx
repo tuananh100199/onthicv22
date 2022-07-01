@@ -5,7 +5,7 @@ import { getCategoryAll } from 'modules/_default/fwCategory/redux';
 import { Link } from 'react-router-dom';
 import { getSubjectAll } from 'modules/mdDaoTao/fwSubject/redux';
 import { AdminPage, CirclePageButton, AdminModal, FormTextBox, FormRichTextBox, FormEditor, FormImageBox, TableCell, renderTable, FormCheckbox, FormTabs, FormSelect } from 'view/component/AdminPage';
-
+import {ajaxSelectProfileType} from 'modules/_default/fwProfileType/redux';
 class CourseTypeModal extends AdminModal {
     state = { subjects: [] };
     componentDidUpdate(prevProps) {
@@ -103,8 +103,9 @@ class CourseTypeEditPage extends AdminPage {
                         this.totalTime.value(item.totalTime || '');
                         this.itemShortDescription.value(item.shortDescription);
                         this.itemDetailDescription.html(item.detailDescription);
-                        this.itemPrice.value(item.price);
-                        this.itemIsPriceDisplayed.value(item.isPriceDisplayed);
+                        this.itemProfileType.value(item.profileType?{id:item.profileType._id,text:item.profileType.title}:'');
+                        // this.itemPrice.value(item.price);
+                        // this.itemIsPriceDisplayed.value(item.isPriceDisplayed);
                         this.itemPracticeNumOfMonths.value(item.practiceNumOfMonths);
                         this.itemPracticeNumOfHours.value(item.practiceNumOfHours);
                         this.itemPracticeNumOfReviewHours.value(item.practiceNumOfReviewHours);
@@ -133,8 +134,9 @@ class CourseTypeEditPage extends AdminPage {
             totalTime: this.totalTime.value(),
             shortDescription: this.itemShortDescription.value().trim(),
             detailDescription: this.itemDetailDescription.html(),
-            price: this.itemPrice.value(),
-            isPriceDisplayed: this.itemIsPriceDisplayed.value(),
+            // price: this.itemPrice.value(),
+            // isPriceDisplayed: this.itemIsPriceDisplayed.value(),
+            profileType:this.itemProfileType.value(),
             practiceNumOfMonths: this.itemPracticeNumOfMonths.value(),
             practiceNumOfHours: this.itemPracticeNumOfHours.value(),
             practiceNumOfReviewHours: this.itemPracticeNumOfReviewHours.value(),
@@ -258,8 +260,9 @@ class CourseTypeEditPage extends AdminPage {
                         <div className='row'>
                             <FormTextBox className='col-md-8' ref={e => this.itemTitle = e} label='Tên loại khóa học' value={this.state.title} onChange={e => this.setState({ title: e.target.value })} readOnly={readOnly} />
                             <FormTextBox className='col-md-4' ref={e => this.totalTime = e} label='Thời gian làm bài thi' type='number' readOnly={readOnly} />
-                            <FormTextBox className='col-md-8' ref={e => this.itemPrice = e} label='Giá loại khóa học' type='number' readOnly={readOnly} />
-                            <FormCheckbox className='col-md-4' ref={e => this.itemIsPriceDisplayed = e} label='Hiển thị giá' readOnly={readOnly} />
+                            {/* <FormTextBox className='col-md-8' ref={e => this.itemPrice = e} label='Giá loại khóa học' type='number' readOnly={readOnly} />
+                            <FormCheckbox className='col-md-4' ref={e => this.itemIsPriceDisplayed = e} label='Hiển thị giá' readOnly={readOnly} /> */}
+                            <FormSelect className='col-md-12' ref = {e=>this.itemProfileType=e} label = 'Hồ sơ đăng ký' data = {ajaxSelectProfileType} readOnly={readOnly}/>
                         </div>
                     </div>
                 </div>
