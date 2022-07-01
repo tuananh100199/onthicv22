@@ -95,7 +95,7 @@ class AdminEditPage extends AdminPage {
     }
 
     onClickVideo = () => {
-        const { activeQuestionIndex, questions, isAnswer} = this.state;
+        const { activeQuestionIndex, questions, isAnswer, duration} = this.state;
             if(!isAnswer){
                 const answer = (this.state.currentTime % 60).toFixed(0),
                 { minPointAnswer, maxPointAnswer, _id} = questions[activeQuestionIndex],
@@ -108,6 +108,10 @@ class AdminEditPage extends AdminPage {
                 else if(answer<maxPointAnswer+distance*4) $('#' + _id).text('2 điểm').css('color', 'black');
                 else $('#' + _id).text('1 điểm').css('color', 'black');
                 this.setState({isAnswer: true, time: answer});
+                const correctProgress = maxPointAnswer/duration;
+                console.log($('#progress').width());
+                $('#flag').css('left', $('#progressbar').width()).removeClass('d-none');
+                $('#flagCorrect').css('left', correctProgress*$('#progress').width()).removeClass('d-none');
             } else T.alert('Bạn đã trả lời tại lượt xem này rồi, vui lòng chờ hết video để trả lời lại!', 'error', false, 2500);
             //$('#traLoi').text('Bạn đã trả lời tại lượt xem này rồi, vui lòng chờ hết video để trả lời lại!').css('color', 'red');
     }
@@ -117,11 +121,15 @@ class AdminEditPage extends AdminPage {
         { _id} = questions[activeQuestionIndex];
         if (event.data == 1) {
                 this.intervalVideo = setInterval(() => {
-                    this.setState({currentTime: event.target.getCurrentTime()});
+                    this.setState({currentTime: event.target.getCurrentTime(), duration: event.target.getDuration()});
+                    const newProgress = (event.target.getDuration() ? (event.target.getCurrentTime()/event.target.getDuration()) : 0)*100;
+                    $('#progressbar').attr('aria-valuenow', newProgress).css('width', newProgress+'%');
                 }, 1000);
         } else if (event.data == -1 || event.data == 0) {
             this.setState({isAnswer: false});
             $('#' + _id).text('Chưa có').css('color', 'black');
+            $('#flag').addClass('d-none');
+            $('#flagCorrect').addClass('d-none');
             clearInterval(this.intervalVideo);
             this.intervalVideo = null;
         }
@@ -134,6 +142,8 @@ class AdminEditPage extends AdminPage {
         clearInterval(this.intervalVideo);
         this.intervalVideo = null;
         $('#' + _id).text('Chưa có').css('color', 'black');
+        $('#flag').addClass('d-none');
+        $('#flagCorrect').addClass('d-none');
         this.setState({ activeQuestionIndex: index, isAnswer: false }, () => {
             const activeQuestion = questions[index];
             if (activeQuestion) {
@@ -180,6 +190,11 @@ class AdminEditPage extends AdminPage {
                                                 <div className='embed-responsive embed-responsive-16by9' style={{ width: '100%', display: 'block' }} >
                                                     <YouTube id={activeQuestion._id + 'video'} opts={{ playerVars: { 'autoplay': 1, 'controls': 0, 'rel': 0, 'modestbranding': 1, 'showinfo': 0, 'loop': 1, 'playlist':activeQuestion.link, 'disablekb': 1 } }} videoId={activeQuestion.link} onStateChange={(e) => this.onStateChange(e)} containerClassName='embed embed-youtube' />
                                                 </div>
+                                            </div>
+                                            <div className='progress' id='progress'>
+                                                <div id='progressbar' className={'progress-bar progress-bar-striped progress-bar-animated'} role='progressbar' style={{width: '0%'}} aria-valuenow={0} aria-valuemin='0' aria-valuemax='100'></div>
+                                                <i className='fa fa-flag text-danger d-none' id='flag' style={{position:'absolute'}} aria-hidden='true'></i>
+                                                <i className='fa fa-flag text-success d-none' id='flagCorrect' style={{position:'absolute'}} aria-hidden='true'></i>
                                             </div>
                                             <div className='d-flex justify-content-center pt-2'>
                                                 <button className='btn btn-warning mr-1' onClick={() => this.onClickVideo()}>Nhấn nút này hoặc ấn phím cách để đánh dấu</button>
