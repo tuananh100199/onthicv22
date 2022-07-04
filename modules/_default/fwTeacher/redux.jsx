@@ -307,6 +307,23 @@ export const ajaxSelectTeacherByCourseType = (courseType,nghiViec) => T.createAj
     } 
 );
 
+export const ajaxSelectTeacherByCourseTypeStudent = (courseType,nghiViec) => T.createAjaxAdapter(
+    '/api/teacher/student/page/1/20?',
+    params => { 
+        let condition = {searchText: params.term, courseType };
+        if(nghiViec!=undefined && nghiViec!=null){
+            condition.nghiViec=nghiViec;
+        }
+        return { condition};
+    },
+    response =>{
+        const result = response && response.page && response.page.list ?
+        response.page.list.map(item => ({ id: `${item._id}:${item.user._id}`, text: `${item.lastname} ${item.firstname} ${item.maGiaoVien ? '(' + item.maGiaoVien + ')' : ''}` })) : [];
+        // userId for addTeacher
+        return result;
+    } 
+);
+
 export const ajaxSelectTeacher = (condition) => T.createAjaxAdapter(
     '/api/teacher/page/1/20?',
     params => {

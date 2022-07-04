@@ -145,7 +145,6 @@ class LecturerStudentPage extends AdminPage {
         });
         const showMonLyThuyet = parseInt(hocPhiDaDong)/parseInt(hocPhi) > 0.5;
         const showMonThucHanh = subjects && subjects.length && student && student.tienDoThiHetMon && (subjects.findIndex(subject => (subject.monTienQuyet == true && !student.tienDoThiHetMon[subject._id])) == -1);
-        console.log(course);
         const pageIcon = 
         student ? 
         <>
@@ -167,7 +166,7 @@ class LecturerStudentPage extends AdminPage {
                     <div className='progress'>
                        <div className={'progress-bar progress-bar-striped progress-bar-animated ' + (this.checkHocPhi(student) == 100 ? 'bg-success' : '')} role='progressbar' style={{width: this.checkHocPhi(student) + '%'}} aria-valuenow={this.checkHocPhi(student)} aria-valuemin='0' aria-valuemax='100'></div>
                    </div>
-                   <p>Còn lại: {T.numberDisplay(parseInt(hocPhi)-parseInt(hocPhiDaDong))} đồng</p>
+                   {T.numberDisplay(parseInt(hocPhi)-parseInt(hocPhiDaDong)) > 0 ? <p>Còn lại: {T.numberDisplay(parseInt(hocPhi)-parseInt(hocPhiDaDong))} đồng</p> : <p>Đã hoàn thành</p>}
                    </> 
                 } iconBackgroundColor={'#64b5f6'} text={'Học phí'} />
               <PageIcon className='col-md-4 lythuyet' icon='fa-briefcase' subtitle={

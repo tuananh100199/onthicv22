@@ -5,7 +5,8 @@ import { createChangeLecturer } from 'modules/mdDaoTao/fwChangeLecturer/redux';
 import { getRateByUser } from 'modules/_default/fwRate/redux';
 import RateModal from 'modules/_default/fwRate/RateModal';
 import MessengerCustomerChat from 'react-messenger-customer-chat';
-import { AdminPage, PageIconHeader, PageIcon, AdminModal, FormTextBox, FormRichTextBox, FormDatePicker } from 'view/component/AdminPage';
+import {ajaxSelectTeacherByCourseTypeStudent} from 'modules/_default/fwTeacher/redux';
+import { AdminPage, PageIconHeader, PageIcon, AdminModal, FormTextBox, FormRichTextBox, FormDatePicker, FormSelect } from 'view/component/AdminPage';
 
 class ViewScoreModal extends AdminModal {
     state = {};
@@ -48,16 +49,20 @@ class ChangeLecturerModal extends AdminModal {
         this.itemCurrentName.value(currentLecturer ? currentLecturer.lastname + ' ' + currentLecturer.firstname : '');
         this.itemPhoneNumber.value(currentLecturer ? currentLecturer.phoneNumber : '');
         this.itemIdentityCard.value(currentLecturer ? currentLecturer.identityCard : '');
+        console.log(course);
         this.setState({ student, course, currentLecturer });
     };
 
     onSubmit = () => {
-        const data = {
+        let data = {
             student: this.state.student && this.state.student._id,
             requestedLecturer: this.itemRequestedLecturer.value(),
             startDate: this.itemStartDate.value(),
             reason: this.itemReason.value()
         };
+        console.log(this.itemRequestedLecturer.value());
+        let dataRequested = data.requestedLecturer.split(':');
+        data.requestedLecturer = dataRequested[1];
         if (data.startDate == '') {
             T.notify('Ngày đổi bị trống!', 'danger');
             this.itemStartDate.focus();
@@ -83,8 +88,10 @@ class ChangeLecturerModal extends AdminModal {
                     </div>
                     <div className='row'>
                         <h6 className='col-md-12'> Thông tin thay đổi giáo viên: </h6>
-                        <FormTextBox className='col-md-4' ref={e => this.itemRequestedLecturer = e} label='Giáo viên thay đổi' readOnly={false} />
-                        <FormDatePicker ref={e => this.itemStartDate = e} label='Ngày bắt đầu đổi' className='col-md-6' />
+                        <FormSelect className='col-md-4' ref={e => this.itemRequestedLecturer = e} label='Giáo viên thay đổi' style={{width: '300px'}} data={ajaxSelectTeacherByCourseTypeStudent(this.state.course && this.state.course.courseType?this.state.course.courseType._id:'',0)} />
+                        
+                        {/* <FormTextBox className='col-md-4' ref={e => this.itemRequestedLecturer = e}  readOnly={false} /> */}
+                        <FormDatePicker ref={e => this.itemStartDate = e} label='Ngày bắt đầu đổi' className='col-md-4' />
                         <FormRichTextBox ref={e => this.itemReason = e} label='Lý do' className='col-md-12' readOnly={false} />
                     </div>
                 </>
@@ -174,7 +181,7 @@ class UserCoursePageDetail extends AdminPage {
                     <PageIcon to={`/user/hoc-vien/khoa-hoc/thong-tin/${courseId}`} icon='fa-info' iconBackgroundColor='#17a2b8' text='Thông tin khóa học' />
                     <PageIcon to={`/user/hoc-vien/khoa-hoc/chuong-trinh-hoc/${courseId}`} icon='fa-tasks' iconBackgroundColor='#18ffff' text='Chương trình học' />
                     {course && !course.isDefault ? <PageIcon to='#' icon='fa-graduation-cap ' text='Xem điểm thi tốt nghiệp' iconBackgroundColor={showDiemThiTotNghiep ? '#8d6e63' : 'secondary'} onClick={(e) => { e.preventDefault(); showDiemThiTotNghiep ? this.viewScoreModal.show({ student, course }) : T.alert('Bạn chưa có điểm thi tốt nghiệp!', 'error', false, 8000); }} /> : null}
-                    <PageIcon to={`/user/course/${courseId}/forum`} icon='fa-users' iconBackgroundColor='#3e24aa' text='Forum' />
+                    {/* <PageIcon to={`/user/course/${courseId}/forum`} icon='fa-users' iconBackgroundColor='#3e24aa' text='Forum' /> */}
                     <PageIcon to={''} icon='fa-star' iconBackgroundColor='orange' text='Đánh giá giáo viên' visible={teacher != null}
                         onClick={(e) => { e.preventDefault(); this.modal.show(); }} subtitle={rate ? rate + ' sao' : 'Chưa đánh giá'} />
                     {/* check render */}

@@ -186,9 +186,9 @@ class ForumPage extends AdminPage {
 
         return this.renderPage({
             icon: 'fa fa-users',
-            title: category ? category.title : 'Forum',
+            title: category ? category.title : 'Diễn đàn',
             header: header,
-            breadcrumb: [<Link key={0} to={backRoute}>Forum</Link>, category ? category.title : ''],
+            breadcrumb: [<Link key={0} to={backRoute}>Diễn đàn</Link>, category ? category.title : ''],
             content: category ? <>
                 {listForums}
                 <Pagination name='pageForum' style={{ marginLeft: '70px' }} pageNumber={pageNumber} pageSize={pageSize} pageTotal={pageTotal} totalItem={totalItem} getPage={this.getPage} />
