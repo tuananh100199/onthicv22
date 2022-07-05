@@ -111,7 +111,7 @@ class Comment extends React.Component {
             <li>
                 <div className={'comments-details ' + comment.state}>
                     <div className='comments-list-img' style={{ backgroundImage: `url('${author.image || '/img/avatar-default.png'}')` }} />
-                    <div className='comments-content-wrap'>
+                    <div className='comments-content-wrap' style={{backgroundColor:'#ddd', padding:'5px 10px', borderRadius:5}}>
                         <span>
                             <b><a href='#' onClick={e => e.preventDefault()}>{author.lastname} {author.firstname} &nbsp;</a></b>
                             <span className='post-time'>{new Date(comment.createdDate).getShortText()}</span>
@@ -145,7 +145,7 @@ class Comment extends React.Component {
                     <li key={index} className='threaded-comments'>
                         <div className={'comments-details ' + comment.state}>
                             <div className='comments-list-img' style={{ backgroundImage: `url('${author.image || '/img/avatar-default.png'}')` }} />
-                            <div className='comments-content-wrap'>
+                            <div className='comments-content-wrap' style={{backgroundColor:'#ddd', padding:'5px 10px', borderRadius:5}}>
                                 <span>
                                     <b><a href='#' onClick={e => e.preventDefault()}>{author.lastname} {author.firstname} &nbsp;</a></b>
                                     <span className='post-time'>{new Date(comment.createdDate).getShortText()}</span>
