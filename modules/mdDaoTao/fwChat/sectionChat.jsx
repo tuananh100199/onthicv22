@@ -8,16 +8,13 @@ import './chat.scss';
 import inView from 'in-view';
 
 class SectionChat extends AdminPage {
-    state = { clientId: null, oldMessageAll: [], oldMessagePersonal: [], isLastedChat: false };
+    state = { clientId: null, oldMessageAll: [], oldMessagePersonal: [], isLastedChat: false, readMessage:false };
     componentDidMount() {
         let { courseId, listUser=[], _selectedUserId } = this.props,
             user = this.props.system.user;
         listUser=listUser.map(item=>{
-            if((item.user && item.user._id==_selectedUserId) || item._id==_selectedUserId){
-                return {...item,numOfUnreadChat:0};
-            }else{
-                return item;
-            }
+            if((item.user && item.user._id==_selectedUserId) || item._id==_selectedUserId) item.numOfUnreadChat = 0;
+            return item;
         });
 
         this.setState({ courseId, user, listUser, _selectedUserId });
@@ -25,7 +22,8 @@ class SectionChat extends AdminPage {
             oldMessageAll: this.props.oldMessageAll
         });
         this.props.oldMessagePersonal && this.setState({
-            oldMessagePersonal: this.props.oldMessagePersonal
+            oldMessagePersonal: this.props.oldMessagePersonal,
+            readMessage:this.checkLastMessageRead(this.props.oldMessagePersonal),
         });
         if (!(user.isLecturer || user.isCourseAdmin)) {
             this.props.getStudent({ course: courseId, user: user._id }, data => {
@@ -55,9 +53,19 @@ class SectionChat extends AdminPage {
 
         _selectedUserId ? T.socket.emit('chat:join', { _userId: _selectedUserId }) : T.socket.emit('chat:joinCourseRoom', { courseId });
         T.socket.on('chat:send', this.onReceiveMessage);
+        T.socket.on('chat:read',data=>{
+            const user = this.props.system.user;
+            const _selectedUserId = this.state._selectedUserId;
+            if(user._id==data.sender && _selectedUserId==data.receiver){// tin nhắn mình gửi đã được đọc
+                this.setState({readMessage:true});
+            }
+        });
+        // đọc tin nhắn của người đầu tiên.
+        T.socket.emit('chat:read',{receiver:user._id,sender:_selectedUserId});
         this.scrollToBottom();
     }
 
+    checkLastMessageRead = messages=> messages && messages.length && messages[0] && messages[0].read
     componentDidUpdate() {
         const listUser = this.state;
         !this.state._selectedUserId && listUser && listUser.length && this.selectUser(listUser[0]);
@@ -129,8 +137,11 @@ class SectionChat extends AdminPage {
                         }else{
                             return item;
                         }
-                    })
+                    }),
+                    readMessage:this.checkLastMessageRead(data.chats),
                 }));
+                const receiver = this.props.system && this.props.system.user ? this.props.system.user:null;
+                T.socket.emit('chat:read', { receiver:receiver?receiver._id:'',sender:userId});
             });
             T.socket.emit('chat:join', { _userId: userId });
         }
@@ -189,6 +200,7 @@ class SectionChat extends AdminPage {
             T.socket.emit('chat:send', { receiver, message });
             this.message.value = '';
             this.message.focus();
+            this.setState({readMessage:false});
         }
     }
 
@@ -198,13 +210,14 @@ class SectionChat extends AdminPage {
 
     onReceiveMessage = (data) => {
         const user = this.props.system ? this.props.system.user : null;
-        const chat = data ? data.chat : null;
+        let chat = data ? data.chat : null;
+
         let { _selectedUserId, courseId, listUser } = this.state;
         if (user && chat) {
             this.props.addChat(user._id == chat.sender._id, data.chat);
             if (chat.receiver == courseId) {//phòng chat chung
                 this.setState(prevState => ({
-                    oldMessageAll: [data.chat, ...prevState.oldMessageAll]
+                    oldMessageAll: [chat, ...prevState.oldMessageAll]
                 }));
                 this.scrollToChat();
             } else {// chat cá nhân
@@ -226,10 +239,11 @@ class SectionChat extends AdminPage {
                 this.setState({listUser});
                 if (_selectedUserId == chat.receiver._id || _selectedUserId == chat.sender._id) {//Hội thoại hiện tại
                     this.setState(prevState => ({
-                        oldMessagePersonal: [data.chat, ...prevState.oldMessagePersonal],
+                        oldMessagePersonal: [chat, ...prevState.oldMessagePersonal],
                     }));
                     this.props.readAllChats(_selectedUserId);
                     this.scrollToChat();
+                    chat.sender &&  user._id!=chat.sender._id && T.socket.emit('chat:read',{ receiver:chat.receiver?chat.receiver._id:'',sender:chat.sender?chat.sender._id:'' });
                 }
             }
             this.scrollToBottom();
@@ -271,6 +285,7 @@ class SectionChat extends AdminPage {
     render() {
         const urlRegex = /^(https?|chrome):\/\/[^\s$.?#].[^\s]*$/gm,
             oldMessage = this.state._selectedUserId ? this.state.oldMessagePersonal : this.state.oldMessageAll,
+            readMessate = this.state.readMessage,
             isLecturerChat = this.state._selectedUserId && this.state.listUser && this.state.listUser.length > 1;
             const user = this.props.system ? this.props.system.user : {};
         const listChats = [];
@@ -293,9 +308,9 @@ class SectionChat extends AdminPage {
                 }
                 chats.push(<p key={item._id} id={`chat${item._id}`} style={{ margin: 0 }}>{newMessage}</p>);
             }
-            //Check tin nhắn cuối là của mình và đã được người nhận đọc chưa
-            if(oldMessage[0].sender  && oldMessage[0].sender._id==user._id && oldMessage[0].read==true){
-                chats.push(<p key={listChats.length} id={listChats.length} 
+            // Check tin nhắn cuối là của mình và đã được người nhận đọc chưa
+            if(this.state._selectedUserId && oldMessage[0].sender  && oldMessage[0].sender._id==user._id && readMessate){
+                chats.push(<p key={listChats.length} 
                     style={{ margin: 0,fontWeight:'600', fontSize:'12px', color:'#ccc' }}>Đã xem</p>);
             }
             this.renderChatBox(listChats, chats, oldMessage[0], user._id);
