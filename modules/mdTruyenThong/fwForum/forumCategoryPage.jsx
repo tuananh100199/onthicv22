@@ -15,8 +15,8 @@ class ForumCategoryPage extends AdminPage {
     render() {
         return this.renderPage({
             icon: 'fa fa-users',
-            title: 'Forum',
-            breadcrumb: ['Forum'],
+            title: 'Diễn đàn',
+            breadcrumb: ['Diễn đàn'],
             content: <SectionForumCategory />,
         });
     }

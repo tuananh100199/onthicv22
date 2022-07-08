@@ -23,7 +23,7 @@ class UserDocumentPage extends AdminPage {
                     this.props.history.push(previousRoute);
                 } else if (data.item) {
                     T.ready('/user/hoc-vien/khoa-hoc/' + this.state.courseId);
-                    this.setState(data.item);
+                    this.setState({subject: data.item});
                 } else {
                     this.props.history.push(previousRoute);
                 }
@@ -35,6 +35,8 @@ class UserDocumentPage extends AdminPage {
 
     render() {
         const {mobile} = this.props.system;
+        const subject = this.state.subject;
+        console.log(subject);
         const userPageLink = '/user/hoc-vien/khoa-hoc/' + this.state.courseId + '/mon-hoc/' + this.state.subjectId;
         return this.renderPage({
             icon: 'fa fa-cubes',
@@ -43,7 +45,7 @@ class UserDocumentPage extends AdminPage {
             content: (
                 <>
                     <div className='tile'>
-                        <iframe className='document-container' src="/document/huongDan/hocVienLyThuyet.pdf#zoom=60"></iframe>
+                        {subject && subject.monThucHanh ? <iframe className='document-container' src="/document/huongDan/hocVienThucHanh.pdf#zoom=60"></iframe> : <iframe className='document-container' src="/document/huongDan/hocVienLyThuyet.pdf#zoom=60"></iframe>}
                         <h5 className='text-right mt-2'>Nếu tồn tại thắc mắc, xin vui lòng liên hệ tới số <a href={'tel:' + mobile} className='text-primary'>{T.mobileDisplay(mobile)}</a></h5>     
                     </div>
                 </>

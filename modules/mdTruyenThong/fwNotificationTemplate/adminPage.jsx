@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { createNotificationTemplate, getNotificationTemplateAll, updateNotificationTemplate, deleteNotificationTemplate } from './redux';
 import { AdminPage, FormTextBox, FormTabs, FormEditor, CirclePageButton, FormRichTextBox } from 'view/component/AdminPage';
 
-const listParams = ['{ho_ten}', '{cmnd}', '{khoa}', '{ngay_thi_tot_nghiep}', '{ngay_thi_sat_hach}', '{fee}', '{hocPhiConLai}', '{ngayOnTap}', '{lyDoHuyOnTap}'],
+const listParams = ['{ho_ten}', '{cmnd}', '{khoa}', '{ngay_thi_tot_nghiep}', '{ngay_thi_sat_hach}', '{fee}', '{hocPhiConLai}', '{ngayOnTap}', '{lyDoHuyOnTap}', '{ngayDangKy}'],
     defaultTitleTotNghiep = 'Thông báo thời gian thi tốt nghiệp',
     defaultAbstractTotNghiep = 'Thông báo thời gian thi tốt nghiệp khóa {khoa}',
     defaultContentTotNghiep = '<p>Xin chào {ho_ten}({cmnd}),</p>\n<p>Thời gian thi tốt nghiệp khóa {khoa} của bạn là: {ngay_thi_tot_nghiep}</p>',
@@ -21,7 +21,16 @@ const listParams = ['{ho_ten}', '{cmnd}', '{khoa}', '{ngay_thi_tot_nghiep}', '{n
     defaultContentHuyOnTap = '<p>Xin chào {ho_ten},</p>\n<p>Trung tâm Đào tạo và Sát hạch lái xe Hiệp Phát thông báo huỷ buổi ôn tập ngày {ngayOnTap} với lý do: {lyDoHuyOnTap}, chúng tôi sẽ thông báo tới bạn các buổi học khác trong thời gian sớm nhất!</p>',
     defaultTitleOnTap = 'Thông báo về việc mở lớp ôn tập!',
     defaultAbstractOnTap = 'Thông báo về việc mở lớp ôn tập ngày {ngayOnTap}',
-    defaultContentOnTap = '<p>Xin chào {ho_ten},</p>\n<p>Trung tâm Đào tạo và Sát hạch lái xe Hiệp Phát thông báo buổi ôn tập bạn đã đăng ký ngày {ngayOnTap} đã được xác nhận, bạn vui lòng có mặt trước 15p để chúng tôi sắp xếp vị trí ngồi học!</p>';
+    defaultContentOnTap = '<p>Xin chào {ho_ten},</p>\n<p>Trung tâm Đào tạo và Sát hạch lái xe Hiệp Phát thông báo buổi ôn tập bạn đã đăng ký ngày {ngayOnTap} đã được xác nhận, bạn vui lòng có mặt trước 15p để chúng tôi sắp xếp vị trí ngồi học!</p>',
+    defaultTitleDiscountCode = 'Thông báo khuyến mãi dành cho bạn!',
+    defaultAbstractDiscountCode = 'Thông báo khuyến mãi học phí dành cho bạn!',
+    defaultContentDiscountCode = '<p>Xin chào {ho_ten},</p>\n<p>Trung tâm Đào tạo và Sát hạch lái xe Hiệp Phát dành tặng cho bạn mã code {code} có giá trị {fee}, hạn dùng đến {endDate} vui lòng sử dụng trước thời hạn để nhận được các ưu đãi của chúng tôi!</p>',
+    defaultTitleHuyDangKyThoiKhoaBieu = 'Thông báo về việc huỷ đăng ký thời khoá biểu!',
+    defaultAbstractHuyDangKyThoiKhoaBieu = 'Thông báo về việc huỷ đăng ký thời khoá biểu ngày {ngayDangKy}',
+    defaultContentHuyDangKyThoiKhoaBieu = '<p>Xin chào {ho_ten},</p>\n<p>Trung tâm Đào tạo và Sát hạch lái xe Hiệp Phát thông báo huỷ thời khoá biểu học thực hành bạn đã đăng ký ngày {ngayDangKy} với lý do: {lyDoHuyThoiKhoaBieu}, chúng tôi sẽ thông báo tới bạn các buổi học khác trong thời gian sớm nhất!</p>',
+    defaultTitleDangKyThoiKhoaBieu = 'Thông báo về việc đăng ký thời khoá biểu thành công!',
+    defaultAbstractDangKyThoiKhoaBieu = 'Thông báo về việc đăng ký thời khoá biểu ngày: {ngayDangKy} thành công',
+    defaultContentDangKyThoiKhoaBieu = '<p>Xin chào {ho_ten},</p>\n<p>Trung tâm Đào tạo và Sát hạch lái xe Hiệp Phát thông báo thời khoá biểu ngày {ngayDangKy} đã được xác nhận, bạn vui lòng có mặt trước 15p chuẩn bị tham gia buổi học!</p>';
 class NotificationTemplatePage extends AdminPage {
     state = {};
     componentDidMount() {
@@ -94,6 +103,39 @@ class NotificationTemplatePage extends AdminPage {
                         this.itemAbstractOnTap.value(defaultAbstractOnTap);
                         this.editorOnTap.html(defaultContentOnTap);
                     }
+                    const indexGiamGia = data.findIndex(template => template.state == 'giamGia');
+                    if (indexGiamGia != -1) {
+                        this.itemTitleGiamGia.value(data[indexGiamGia].title);
+                        this.itemAbstractGiamGia.value(data[indexGiamGia].abstract);
+                        this.editorGiamGia.html(data[indexGiamGia].content);
+                        this.setState({ idGiamGia: data[indexGiamGia]._id });
+                    } else {
+                        this.itemTitleGiamGia.value(defaultTitleDiscountCode);
+                        this.itemAbstractGiamGia.value(defaultAbstractDiscountCode);
+                        this.editorGiamGia.html(defaultContentDiscountCode);
+                    }
+                    const indexThoiKhoaBieu = data.findIndex(template => template.state == 'thoiKhoaBieu');
+                    if (indexThoiKhoaBieu != -1) {
+                        this.itemTitleThoiKhoaBieu.value(data[indexThoiKhoaBieu].title);
+                        this.itemAbstractThoiKhoaBieu.value(data[indexThoiKhoaBieu].abstract);
+                        this.editorThoiKhoaBieu.html(data[indexThoiKhoaBieu].content);
+                        this.setState({ idThoiKhoaBieu: data[indexThoiKhoaBieu]._id });
+                    } else {
+                        this.itemTitleThoiKhoaBieu.value(defaultTitleDangKyThoiKhoaBieu);
+                        this.itemAbstractThoiKhoaBieu.value(defaultAbstractDangKyThoiKhoaBieu);
+                        this.editorThoiKhoaBieu.html(defaultContentDangKyThoiKhoaBieu);
+                    }
+                    const indexHuyThoiKhoaBieu = data.findIndex(template => template.state == 'huyThoiKhoaBieu');
+                    if (indexHuyThoiKhoaBieu != -1) {
+                        this.itemTitleHuyThoiKhoaBieu.value(data[indexHuyThoiKhoaBieu].title);
+                        this.itemAbstractHuyThoiKhoaBieu.value(data[indexHuyThoiKhoaBieu].abstract);
+                        this.editorHuyThoiKhoaBieu.html(data[indexHuyThoiKhoaBieu].content);
+                        this.setState({ idHuyThoiKhoaBieu: data[indexHuyThoiKhoaBieu]._id });
+                    } else {
+                        this.itemTitleHuyThoiKhoaBieu.value(defaultTitleHuyDangKyThoiKhoaBieu);
+                        this.itemAbstractHuyThoiKhoaBieu.value(defaultAbstractHuyDangKyThoiKhoaBieu);
+                        this.editorHuyThoiKhoaBieu.html(defaultContentHuyDangKyThoiKhoaBieu);
+                    }
                 } else {
                     this.itemTitleTotNghiep.value(defaultTitleTotNghiep);
                     this.itemAbstractTotNghiep.value(defaultAbstractTotNghiep);
@@ -113,6 +155,15 @@ class NotificationTemplatePage extends AdminPage {
                     this.itemTitleOnTap.value(defaultTitleOnTap);
                     this.itemAbstractOnTap.value(defaultAbstractOnTap);
                     this.editorOnTap.html(defaultContentOnTap);
+                    this.itemTitleGiamGia.value(defaultTitleDiscountCode);
+                    this.itemAbstractGiamGia.value(defaultAbstractDiscountCode);
+                    this.editorGiamGia.html(defaultContentDiscountCode);
+                    this.itemTitleThoiKhoaBieu.value(defaultTitleDangKyThoiKhoaBieu);
+                    this.itemAbstractThoiKhoaBieu.value(defaultAbstractDangKyThoiKhoaBieu);
+                    this.editorThoiKhoaBieu.html(defaultContentDangKyThoiKhoaBieu);
+                    this.itemTitleHuyThoiKhoaBieu.value(defaultTitleHuyDangKyThoiKhoaBieu);
+                    this.itemAbstractHuyThoiKhoaBieu.value(defaultAbstractHuyDangKyThoiKhoaBieu);
+                    this.editorHuyThoiKhoaBieu.html(defaultContentHuyDangKyThoiKhoaBieu);
                 }
             });
         });
@@ -203,7 +254,7 @@ class NotificationTemplatePage extends AdminPage {
                     });
                 });
             }
-        } else {
+        } else if(index == 2){
             const changes = {
                 title: this.itemTitleHoanTien.value().trim(),
                 abstract: this.itemAbstractHoanTien.value().trim(),
@@ -217,6 +268,57 @@ class NotificationTemplatePage extends AdminPage {
                 this.props.createNotificationTemplate(changes, data => {
                     data && data.item && this.setState({
                         idHoanTien: data.item._id
+                    });
+                });
+            }
+        } else if(index == 6){
+            const changes = {
+                title: this.itemTitleThoiKhoaBieu.value().trim(),
+                abstract: this.itemAbstractThoiKhoaBieu.value().trim(),
+                content: this.editorThoiKhoaBieu.html(),
+                type: '0',
+                state:'thoiKhoaBieu'
+            };
+            if (this.state.idThoiKhoaBieu) {
+                this.props.updateNotificationTemplate(this.state.idThoiKhoaBieu, changes);
+            } else {
+                this.props.createNotificationTemplate(changes, data => {
+                    data && data.item && this.setState({
+                        idThoiKhoaBieu: data.item._id
+                    });
+                });
+            }
+        } else if(index == 7){
+            const changes = {
+                title: this.itemTitleHuyThoiKhoaBieu.value().trim(),
+                abstract: this.itemAbstractHuyThoiKhoaBieu.value().trim(),
+                content: this.editorHuyThoiKhoaBieu.html(),
+                type: '0',
+                state:'huyThoiKhoaBieu'
+            };
+            if (this.state.idHuyThoiKhoaBieu) {
+                this.props.updateNotificationTemplate(this.state.idHuyThoiKhoaBieu, changes);
+            } else {
+                this.props.createNotificationTemplate(changes, data => {
+                    data && data.item && this.setState({
+                        idHuyThoiKhoaBieu: data.item._id
+                    });
+                });
+            }
+        }else {
+            const changes = {
+                title: this.itemTitleGiamGia.value().trim(),
+                abstract: this.itemAbstractGiamGia.value().trim(),
+                content: this.editorGiamGia.html(),
+                type: '0',
+                state:'giamGia'
+            };
+            if (this.state.idGiamGia) {
+                this.props.updateNotificationTemplate(this.state.idGiamGia, changes);
+            } else {
+                this.props.createNotificationTemplate(changes, data => {
+                    data && data.item && this.setState({
+                        idGiamGia: data.item._id
                     });
                 });
             }
@@ -279,13 +381,43 @@ class NotificationTemplatePage extends AdminPage {
             </div>
         );
 
+        const thoiKhoaBieuTabs = (
+            <div className='tile-body' id={this.props.id}>
+                <FormTextBox ref={e => this.itemTitleThoiKhoaBieu = e} label='Chủ đề' readOnly={this.props.readOnly} />
+                <FormRichTextBox ref={e => this.itemAbstractThoiKhoaBieu = e} listParams={listParams} label='Mô tả ngắn gọn' readOnly={this.props.readOnly} />
+                <FormEditor ref={e => this.editorThoiKhoaBieu = e} height='600px' label='Nội dung' uploadUrl='/user/upload?category=notification' listParams={listParams} readOnly={this.props.readOnly} />
+                {permission.write ? <CirclePageButton type='save' onClick={this.save} /> : null}
+            </div>
+        );
+
+        const huyThoiKhoaBieuTabs = (
+            <div className='tile-body' id={this.props.id}>
+                <FormTextBox ref={e => this.itemTitleHuyThoiKhoaBieu = e} label='Chủ đề' readOnly={this.props.readOnly} />
+                <FormRichTextBox ref={e => this.itemAbstractHuyThoiKhoaBieu = e} listParams={listParams} label='Mô tả ngắn gọn' readOnly={this.props.readOnly} />
+                <FormEditor ref={e => this.editorHuyThoiKhoaBieu = e} height='600px' label='Nội dung' uploadUrl='/user/upload?category=notification' listParams={listParams} readOnly={this.props.readOnly} />
+                {permission.write ? <CirclePageButton type='save' onClick={this.save} /> : null}
+            </div>
+        );
+
+        const giamGiaTabs = (
+            <div className='tile-body' id={this.props.id}>
+                <FormTextBox ref={e => this.itemTitleGiamGia = e} label='Chủ đề' readOnly={this.props.readOnly} />
+                <FormRichTextBox ref={e => this.itemAbstractGiamGia = e} listParams={listParams} label='Mô tả ngắn gọn' readOnly={this.props.readOnly} />
+                <FormEditor ref={e => this.editorGiamGia = e} height='600px' label='Nội dung' uploadUrl='/user/upload?category=notification' listParams={listParams} readOnly={this.props.readOnly} />
+                {permission.write ? <CirclePageButton type='save' onClick={this.save} /> : null}
+            </div>
+        );
+
         const tabs = [
             { title: 'Thông báo thi tốt nghiệp', component: thiTotNghiepTabs },
             { title: 'Thông báo thi sát hạch', component: thiSatHachTabs },
             { title: 'Thông báo hoàn tiền', component: hoanTienTabs },
             { title: 'Thông báo thanh toán', component: thanhToanTabs },
             { title: 'Thông báo huỷ ôn tập', component: huyOnTapTabs },
-            { title: 'Thông báo ôn tập', component: onTapTabs }
+            { title: 'Thông báo ôn tập', component: onTapTabs },
+            { title: 'Thông báo thời khoá biểu', component: thoiKhoaBieuTabs },
+            { title: 'Thông báo huỷ thời khoá biểu', component: huyThoiKhoaBieuTabs },
+            { title: 'Thông báo mã code giảm giá', component: giamGiaTabs }
         ];
 
         return this.renderPage({

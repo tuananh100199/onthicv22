@@ -9,6 +9,7 @@ import fwCourseFee from 'modules/_default/fwCourseFee/index';
 import fwCoursePayment from 'modules/_default/fwCoursePayment/index';
 import fwDepartment from 'modules/_default/fwDepartment/index';
 import fwDiscount from 'modules/_default/fwDiscount/index';
+import fwDiscountCode from 'modules/_default/fwDiscountCode/index';
 import fwEmail from 'modules/_default/fwEmail/index';
 import fwEncryption from 'modules/_default/fwEncryption/index';
 import fwEnrollTarget from 'modules/_default/fwEnrollTarget/index';
@@ -64,4 +65,4 @@ import fwNews from 'modules/mdTruyenThong/fwNews/index';
 import fwNotificationTemplate from 'modules/mdTruyenThong/fwNotificationTemplate/index';
 import fwSubscribe from 'modules/mdTruyenThong/fwSubscribe/index';
 
-export const modules = [_init, fwAssignRole, fwBank, fwCategory, fwCluster, fwComment, fwCourseFee, fwCoursePayment, fwDepartment, fwDiscount, fwEmail, fwEncryption, fwEnrollTarget, fwFeeType, fwHome, fwMenu, fwNotification, fwPlanCourse, fwProfileType, fwRate, fwRevenue, fwRole, fwStaff, fwTeacher, fwTeacherDiploma, fwTrainingClass, fwUser, fwCandidate, fwCar, fwCertificate, fwChangeLecturer, fwChat, fwCourse, fwCourseType, fwDevice, fwDivision, fwDriveQuestion, fwDriveTest, fwFacility, fwLesson, fwLicenseTest, fwPayment, fwProfileStudent, fwProfileStudentType, fwRegisterCalendar, fwReviewClass, fwSign, fwSimulation, fwSms, fwStudent, fwStudyProgram, fwSubject, fwTeacherLocation, fwTimeTable, fwVerificationImage, fwAnnouncement, fwContact, fwFaq, fwFeedback, fwForum, fwLaw, fwNews, fwNotificationTemplate, fwSubscribe];
+export const modules = [_init, fwAssignRole, fwBank, fwCategory, fwCluster, fwComment, fwCourseFee, fwCoursePayment, fwDepartment, fwDiscount, fwDiscountCode, fwEmail, fwEncryption, fwEnrollTarget, fwFeeType, fwHome, fwMenu, fwNotification, fwPlanCourse, fwProfileType, fwRate, fwRevenue, fwRole, fwStaff, fwTeacher, fwTeacherDiploma, fwTrainingClass, fwUser, fwCandidate, fwCar, fwCertificate, fwChangeLecturer, fwChat, fwCourse, fwCourseType, fwDevice, fwDivision, fwDriveQuestion, fwDriveTest, fwFacility, fwLesson, fwLicenseTest, fwPayment, fwProfileStudent, fwProfileStudentType, fwRegisterCalendar, fwReviewClass, fwSign, fwSimulation, fwSms, fwStudent, fwStudyProgram, fwSubject, fwTeacherLocation, fwTimeTable, fwVerificationImage, fwAnnouncement, fwContact, fwFaq, fwFeedback, fwForum, fwLaw, fwNews, fwNotificationTemplate, fwSubscribe];

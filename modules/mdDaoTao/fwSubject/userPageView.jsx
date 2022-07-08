@@ -170,7 +170,7 @@ class AdminEditPage extends AdminPage {
                         <div className={'widget-small coloured-icon info'} style={{backgroundColor: '#cd5c5c'}}>
                             <i className='icon fa fa-3x fa-book' style={{borderRight:'1px solid white',backgroundColor: '#cd5c5c'}}/>
                             <div className='info'>
-                                <h4 style={{color: 'white'}}>Hướng dẫn học lý thuyết</h4>
+                                <h4 style={{color: 'white'}}>{monThucHanh ? 'Hướng dẫn học thực hành' : 'Hướng dẫn học lý thuyết'}</h4>
                             </div>
                         </div>
                     </Link>
