@@ -182,8 +182,6 @@ class UserCoursePageDetail extends AdminPage {
                     <PageIcon to={`/user/hoc-vien/khoa-hoc/chuong-trinh-hoc/${courseId}`} icon='fa-tasks' iconBackgroundColor='#18ffff' text='Chương trình học' />
                     {course && !course.isDefault ? <PageIcon to='#' icon='fa-graduation-cap ' text='Xem điểm thi tốt nghiệp' iconBackgroundColor={showDiemThiTotNghiep ? '#8d6e63' : 'secondary'} onClick={(e) => { e.preventDefault(); showDiemThiTotNghiep ? this.viewScoreModal.show({ student, course }) : T.alert('Bạn chưa có điểm thi tốt nghiệp!', 'error', false, 8000); }} /> : null}
                     {/* <PageIcon to={`/user/course/${courseId}/forum`} icon='fa-users' iconBackgroundColor='#3e24aa' text='Forum' /> */}
-                    <PageIcon to={''} icon='fa-star' iconBackgroundColor='orange' text='Đánh giá giáo viên' visible={teacher != null}
-                        onClick={(e) => { e.preventDefault(); this.modal.show(); }} subtitle={rate ? rate + ' sao' : 'Chưa đánh giá'} />
                     {/* check render */}
                     {teacher && <RateModal ref={e => this.modal = e} title='Đánh giá giáo viên' type='teacher' _refId={teacher._id} />}
                     {teacher && <PageIcon to='#' icon='fa-refresh' iconBackgroundColor='#D00' text='Thay đổi giáo viên' onClick={(e) => { e.preventDefault(); this.changeLecturerModal.show({ student, course }); }} />}
@@ -219,6 +217,8 @@ class UserCoursePageDetail extends AdminPage {
                         <PageIconHeader text='Liên lạc' />
                         <PageIcon to='#' icon='fa-comments-o' iconBackgroundColor='#28a745' text='Chat' onClick={e => this.onHandleContact(e,course && !course.isDefault && this.state.chatActive,`/user/chat/${courseId}`)}/>
                         <PageIcon to='#' icon='fa-commenting-o' iconBackgroundColor='#dc3545' text='Phản hồi' onClick={e => this.onHandleContact(e,course && !course.isDefault && this.state.chatActive,`/user/hoc-vien/khoa-hoc/${courseId}/phan-hoi`)}/>
+                        <PageIcon to={''} icon='fa-star' iconBackgroundColor='orange' text='Đánh giá giáo viên' visible={teacher != null}
+                        onClick={(e) => { e.preventDefault(); this.modal.show(); }} subtitle={rate ? rate + ' sao' : 'Chưa đánh giá'} />
                     </>
                     <MessengerCustomerChat
                         pageId='102156059185946'
