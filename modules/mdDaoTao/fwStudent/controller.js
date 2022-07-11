@@ -12,6 +12,7 @@ module.exports = (app) => {
             menus: {
                 4055: { title: 'Học viên chưa tốt nghiệp', link: '/user/student/fail-graduation' },
                 4060: { title: 'Học viên chưa đạt sát hạch', link: '/user/student/fail-exam' },
+                4062: { title: 'Học viên hoàn thành khóa', link: '/user/student/done-course' },
             }
         },
         menuDebt = {
@@ -45,6 +46,8 @@ module.exports = (app) => {
     app.get('/user/student/debt-enroll', app.permission.check('debt:read'), app.templates.admin);
     app.get('/user/revenue', app.permission.check('debt:read'), app.templates.admin);
     app.get('/user/student', app.permission.check('student:read'), app.templates.admin);
+    app.get('/user/student/done-course', app.permission.check('student:read'), app.templates.admin);
+    
     // Student APIs ---------------------------------------------------------------------------------------------------
     app.get('/api/student/page/:pageNumber/:pageSize', (req, res) => {
         let pageNumber = parseInt(req.params.pageNumber),

@@ -45,6 +45,7 @@
 	4045 - Khóa học (/user/course)
 	4055 - Học viên chưa tốt nghiệp (/user/student/fail-graduation)
 	4060 - Học viên chưa đạt sát hạch (/user/student/fail-exam)
+	4062 - Học viên hoàn thành khóa (/user/student/done-course)
 	4065 - Danh mục kỳ sát hạch (/user/license-test)
 	4070 - Lớp ôn tập (/user/review-class)
 40000. Quản lý thiết bị (undefined)

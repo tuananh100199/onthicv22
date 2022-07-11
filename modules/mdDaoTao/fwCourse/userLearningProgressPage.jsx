@@ -3,6 +3,8 @@ import { connect } from 'react-redux';
 import { getCourseByStudent } from './redux';
 import { Link } from 'react-router-dom';
 import { AdminPage, PageIcon } from 'view/component/AdminPage';
+import RateModal from 'modules/_default/fwRate/RateModal';
+import { getRateByUser } from 'modules/_default/fwRate/redux';
 
 class LecturerStudentPage extends AdminPage {
     state = {};
@@ -14,6 +16,9 @@ class LecturerStudentPage extends AdminPage {
             T.ready('/user/hoc-vien/khoa-hoc/' + _id, () => {
                 this.props.getCourseByStudent(_id, data => {
                     this.setState({ data });
+                    if (data.teacher) {
+                        this.props.getRateByUser('teacher', data.teacher._id);
+                    }
                 });
             });
         } else {
@@ -130,6 +135,15 @@ class LecturerStudentPage extends AdminPage {
         return text;
     }
 
+    onHandleRatingTeacher = (e,rate,showDanhGia)=>{
+        e.preventDefault();
+        if(!showDanhGia) T.alert('Bạn phải hoàn thành khóa học để thực hiện đánh giá', 'error', false, 2000);
+        else if(rate) T.alert('Bạn đã thực hiện đánh giá rồi!', 'error', false, 2000);
+        else{
+            this.modal.show();
+        }
+    }
+
     render() {
         const course = this.props.course;
         const subjects = course && course.item && course.item.subjects;
@@ -145,6 +159,10 @@ class LecturerStudentPage extends AdminPage {
         });
         const showMonLyThuyet = parseInt(hocPhiDaDong)/parseInt(hocPhi) > 0.5;
         const showMonThucHanh = subjects && subjects.length && student && student.tienDoThiHetMon && (subjects.findIndex(subject => (subject.monTienQuyet == true && !student.tienDoThiHetMon[subject._id])) == -1);
+        const teacher = this.state.data && this.state.data.teacher ? this.state.data.teacher:null;
+        const showDanhGiaGiaoVien = student && student.datSatHach;
+        const rate = this.props.rate.item && this.props.rate.item.value;
+        
         const pageIcon = 
         student ? 
         <>
@@ -215,6 +233,9 @@ class LecturerStudentPage extends AdminPage {
                         {(student.datSatHach) ? 'Đạt' : 'Chưa đạt'}
                     </p>
                 } iconBackgroundColor='#18ffff' text={'Thi sát hạch'} />
+                <PageIcon className='col-md-4' to={'#'} icon='fa-star' iconBackgroundColor={ showDanhGiaGiaoVien ? 'orange':'secondary'} text='Đánh giá giáo viên' visible={teacher != null}
+                        onClick={(e) => this.onHandleRatingTeacher(e,rate,showDanhGiaGiaoVien)} subtitle={rate ? rate + ' sao' : 'Chưa đánh giá'} />
+                
                 <PageIcon className='col-md-4' to={'#'} icon='fa-id-card' subtitle={
                     <p>
                         {(student.isLicense) ? 'Đã có tại trung tâm' : 'Chưa có'}
@@ -233,6 +254,7 @@ class LecturerStudentPage extends AdminPage {
             content: (
                 <div>
                     {pageIcon}
+                    {teacher && <RateModal ref={e => this.modal = e} title='Đánh giá giáo viên' type='teacher' _refId={teacher._id} />}
                 </div>
             ),
             backRoute: userPageLink,
@@ -240,6 +262,6 @@ class LecturerStudentPage extends AdminPage {
     }
 }
 
-const mapStateToProps = state => ({ system: state.system, course: state.trainning.course });
-const mapActionsToProps = { getCourseByStudent };
+const mapStateToProps = state => ({ system: state.system, course: state.trainning.course, rate: state.framework.rate });
+const mapActionsToProps = { getCourseByStudent, getRateByUser };
 export default connect(mapStateToProps, mapActionsToProps)(LecturerStudentPage);

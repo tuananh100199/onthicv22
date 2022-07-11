@@ -6,6 +6,7 @@ import { getRateByUser } from 'modules/_default/fwRate/redux';
 import RateModal from 'modules/_default/fwRate/RateModal';
 import MessengerCustomerChat from 'react-messenger-customer-chat';
 import {ajaxSelectTeacherByCourseTypeStudent} from 'modules/_default/fwTeacher/redux';
+import {updateStudent} from 'modules/mdDaoTao/fwStudent/redux';
 import { AdminPage, PageIconHeader, PageIcon, AdminModal, FormTextBox, FormRichTextBox, FormDatePicker, FormSelect } from 'view/component/AdminPage';
 
 class ViewScoreModal extends AdminModal {
@@ -164,12 +165,24 @@ class UserCoursePageDetail extends AdminPage {
             T.alert('Bạn cần phải nâng cấp tài khoản để thực hiện tính năng này!', 'error', false, 2000);
         }
     }
+
+    onHandleRatingTeacher = (e,rate,showDanhGia)=>{
+        e.preventDefault();
+        if(!showDanhGia) T.alert('Bạn phải hoàn thành khóa học để thực hiện đánh giá', 'error', false, 2000);
+        else if(rate) T.alert('Bạn đã thực hiện đánh giá rồi!', 'error', false, 2000);
+        else{
+            this.modal.show();
+        }
+    }
+
     render() {
         const course = this.props.course && this.props.course.item,
             subjects = course && course.subjects ? course.subjects : [];
         const { name, courseId, teacher, student } = this.state, rate = this.props.rate.item && this.props.rate.item.value;
         const showDiemThiTotNghiep = student && student.diemThiTotNghiep && student.diemThiTotNghiep.length;
         const showMonThucHanh = subjects.length && student && student.tienDoThiHetMon && (subjects.findIndex(subject => (subject.monTienQuyet == true && !student.tienDoThiHetMon[subject._id])) == -1);
+        
+        const showDanhGiaGiaoVien = student && student.datSatHach;
         return this.renderPage({
             icon: 'fa fa-cubes',
             title: `Khóa học: ${name}`,
@@ -217,8 +230,8 @@ class UserCoursePageDetail extends AdminPage {
                         <PageIconHeader text='Liên lạc' />
                         <PageIcon to='#' icon='fa-comments-o' iconBackgroundColor='#28a745' text='Chat' onClick={e => this.onHandleContact(e,course && !course.isDefault && this.state.chatActive,`/user/chat/${courseId}`)}/>
                         <PageIcon to='#' icon='fa-commenting-o' iconBackgroundColor='#dc3545' text='Phản hồi' onClick={e => this.onHandleContact(e,course && !course.isDefault && this.state.chatActive,`/user/hoc-vien/khoa-hoc/${courseId}/phan-hoi`)}/>
-                        <PageIcon to={''} icon='fa-star' iconBackgroundColor='orange' text='Đánh giá giáo viên' visible={teacher != null}
-                        onClick={(e) => { e.preventDefault(); this.modal.show(); }} subtitle={rate ? rate + ' sao' : 'Chưa đánh giá'} />
+                        <PageIcon to={''} icon='fa-star' iconBackgroundColor={ showDanhGiaGiaoVien ? 'orange':'secondary'} text='Đánh giá giáo viên' visible={teacher != null}
+                        onClick={(e) => this.onHandleRatingTeacher(e,rate,showDanhGiaGiaoVien)} subtitle={rate ? rate + ' sao' : 'Chưa đánh giá'} />
                     </>
                     <MessengerCustomerChat
                         pageId='102156059185946'
@@ -233,5 +246,5 @@ class UserCoursePageDetail extends AdminPage {
 }
 
 const mapStateToProps = state => ({ system: state.system, course: state.trainning.course, driveTest: state.trainning.driveTest, rate: state.framework.rate });
-const mapActionsToProps = { getCourseByStudent, getRateByUser, createChangeLecturer };
+const mapActionsToProps = { getCourseByStudent, getRateByUser, createChangeLecturer, updateStudent };
 export default connect(mapStateToProps, mapActionsToProps)(UserCoursePageDetail);
