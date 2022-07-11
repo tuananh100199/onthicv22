@@ -30,7 +30,10 @@ const listParams = ['{ho_ten}', '{cmnd}', '{khoa}', '{ngay_thi_tot_nghiep}', '{n
     defaultContentHuyDangKyThoiKhoaBieu = '<p>Xin chào {ho_ten},</p>\n<p>Trung tâm Đào tạo và Sát hạch lái xe Hiệp Phát thông báo huỷ thời khoá biểu học thực hành bạn đã đăng ký ngày {ngayDangKy} với lý do: {lyDoHuyThoiKhoaBieu}, chúng tôi sẽ thông báo tới bạn các buổi học khác trong thời gian sớm nhất!</p>',
     defaultTitleDangKyThoiKhoaBieu = 'Thông báo về việc đăng ký thời khoá biểu thành công!',
     defaultAbstractDangKyThoiKhoaBieu = 'Thông báo về việc đăng ký thời khoá biểu ngày: {ngayDangKy} thành công',
-    defaultContentDangKyThoiKhoaBieu = '<p>Xin chào {ho_ten},</p>\n<p>Trung tâm Đào tạo và Sát hạch lái xe Hiệp Phát thông báo thời khoá biểu ngày {ngayDangKy} đã được xác nhận, bạn vui lòng có mặt trước 15p chuẩn bị tham gia buổi học!</p>';
+    defaultContentDangKyThoiKhoaBieu = '<p>Xin chào {ho_ten},</p>\n<p>Trung tâm Đào tạo và Sát hạch lái xe Hiệp Phát thông báo thời khoá biểu ngày {ngayDangKy} đã được xác nhận, bạn vui lòng có mặt trước 15p chuẩn bị tham gia buổi học!</p>',
+    defaultTitleHoanThanhKhoaHoc = 'Thông báo hoàn thành khóa học',
+    defaultAbstractHoanThanhKhoaHoc = 'Chúc mừng bạn đã hoàn thành khóa {khoa}',
+    defaultContentHoanThanhKhoaHoc = '<p>Xin chào {ho_ten}({cmnd}),</p>\n<p>Chúc mừng bạn đã hoàn thành khóa học {khoa}</p><p>Hãy cho chúng tôi biết thêm về trải nghiệm của bạn bằng cách vào khóa học và thực hiện đánh giá giáo viên, khóa học</p><p>Xin cảm ơn</>';
 class NotificationTemplatePage extends AdminPage {
     state = {};
     componentDidMount() {
@@ -136,6 +139,18 @@ class NotificationTemplatePage extends AdminPage {
                         this.itemAbstractHuyThoiKhoaBieu.value(defaultAbstractHuyDangKyThoiKhoaBieu);
                         this.editorHuyThoiKhoaBieu.html(defaultContentHuyDangKyThoiKhoaBieu);
                     }
+
+                    const indexHoanThanhKhoaHoc = data.findIndex(template => template.state == 'hoanThanhKhoaHoc');
+                    if (indexHoanThanhKhoaHoc != -1) {
+                        this.itemTitleHoanThanhKhoaHoc.value(data[indexHoanThanhKhoaHoc].title);
+                        this.itemAbstractHoanThanhKhoaHoc.value(data[indexHoanThanhKhoaHoc].abstract);
+                        this.editorHoanThanhKhoaHoc.html(data[indexHoanThanhKhoaHoc].content);
+                        this.setState({ idHoanThanhKhoaHoc: data[indexHoanThanhKhoaHoc]._id });
+                    } else {
+                        this.itemTitleHoanThanhKhoaHoc.value(defaultTitleHoanThanhKhoaHoc);
+                        this.itemAbstractHoanThanhKhoaHoc.value(defaultAbstractHoanThanhKhoaHoc);
+                        this.editorHoanThanhKhoaHoc.html(defaultContentHoanThanhKhoaHoc);
+                    }
                 } else {
                     this.itemTitleTotNghiep.value(defaultTitleTotNghiep);
                     this.itemAbstractTotNghiep.value(defaultAbstractTotNghiep);
@@ -164,6 +179,9 @@ class NotificationTemplatePage extends AdminPage {
                     this.itemTitleHuyThoiKhoaBieu.value(defaultTitleHuyDangKyThoiKhoaBieu);
                     this.itemAbstractHuyThoiKhoaBieu.value(defaultAbstractHuyDangKyThoiKhoaBieu);
                     this.editorHuyThoiKhoaBieu.html(defaultContentHuyDangKyThoiKhoaBieu);
+                    this.itemTitleHoanThanhKhoaHoc.value(defaultTitleHoanThanhKhoaHoc);
+                    this.itemAbstractHoanThanhKhoaHoc.value(defaultAbstractHoanThanhKhoaHoc);
+                    this.editorHoanThanhKhoaHoc.html(defaultContentHoanThanhKhoaHoc);
                 }
             });
         });
@@ -305,7 +323,7 @@ class NotificationTemplatePage extends AdminPage {
                     });
                 });
             }
-        }else {
+        }else if(index==8) {
             const changes = {
                 title: this.itemTitleGiamGia.value().trim(),
                 abstract: this.itemAbstractGiamGia.value().trim(),
@@ -319,6 +337,23 @@ class NotificationTemplatePage extends AdminPage {
                 this.props.createNotificationTemplate(changes, data => {
                     data && data.item && this.setState({
                         idGiamGia: data.item._id
+                    });
+                });
+            }
+        }else {
+            const changes = {
+                title: this.itemTitleHoanThanhKhoaHoc.value().trim(),
+                abstract: this.itemAbstractHoanThanhKhoaHoc.value().trim(),
+                content: this.editorHoanThanhKhoaHoc.html(),
+                type: '0',
+                state:'hoanThanhKhoaHoc'
+            };
+            if (this.state.idHoanThanhKhoaHoc) {
+                this.props.updateNotificationTemplate(this.state.idHoanThanhKhoaHoc, changes);
+            } else {
+                this.props.createNotificationTemplate(changes, data => {
+                    data && data.item && this.setState({
+                        idHoanThanhKhoaHoc: data.item._id
                     });
                 });
             }
@@ -408,6 +443,15 @@ class NotificationTemplatePage extends AdminPage {
             </div>
         );
 
+        const hoanThanhKhoaHocTabs = (
+            <div className='tile-body' id={this.props.id}>
+                <FormTextBox ref={e => this.itemTitleHoanThanhKhoaHoc = e} label='Chủ đề' readOnly={this.props.readOnly} />
+                <FormRichTextBox ref={e => this.itemAbstractHoanThanhKhoaHoc = e} listParams={listParams} label='Mô tả ngắn gọn' readOnly={this.props.readOnly} />
+                <FormEditor ref={e => this.editorHoanThanhKhoaHoc = e} height='600px' label='Nội dung' uploadUrl='/user/upload?category=notification' listParams={listParams} readOnly={this.props.readOnly} />
+                {permission.write ? <CirclePageButton type='save' onClick={this.save} /> : null}
+            </div>
+        );
+
         const tabs = [
             { title: 'Thông báo thi tốt nghiệp', component: thiTotNghiepTabs },
             { title: 'Thông báo thi sát hạch', component: thiSatHachTabs },
@@ -417,7 +461,8 @@ class NotificationTemplatePage extends AdminPage {
             { title: 'Thông báo ôn tập', component: onTapTabs },
             { title: 'Thông báo thời khoá biểu', component: thoiKhoaBieuTabs },
             { title: 'Thông báo huỷ thời khoá biểu', component: huyThoiKhoaBieuTabs },
-            { title: 'Thông báo mã code giảm giá', component: giamGiaTabs }
+            { title: 'Thông báo mã code giảm giá', component: giamGiaTabs },
+            { title: 'Thông báo hoàn thành khóa học', component: hoanThanhKhoaHocTabs },
         ];
 
         return this.renderPage({

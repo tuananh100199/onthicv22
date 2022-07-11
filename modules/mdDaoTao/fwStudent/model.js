@@ -163,9 +163,10 @@ module.exports = (app) => {
         soKMThucHanh: Number,
         diemCuoiKhoa: Number,
         giayToDangKy:[{ type: app.database.mongoDB.Schema.ObjectId, ref: 'ProfileStudentType' }],
-
         createdDate: { type: Date, default: Date.now },                                             // Ngày tạo
         modifiedDate: { type: Date, default: Date.now },                                            // Ngày cập nhật cuối cùng
+
+        hienDanhGia:{type:Boolean,default:false},
     });
 
     // Không được phép viết hàm getAll cho model student

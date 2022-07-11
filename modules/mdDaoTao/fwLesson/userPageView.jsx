@@ -257,6 +257,13 @@ class adminEditPage extends AdminPage {
         }
     }
 
+    onHandleRatingCourse = (e,rate)=>{
+        e.preventDefault();
+        if(rate) T.alert('Bạn đã thực hiện đánh giá rồi!', 'error', false, 2000);
+        else{
+            this.modal.show();
+        }
+    }
     render() {
         const { lessonId, subjectId, title, courseId, tienDoHocTap, isView, listViewVideo, monThucHanh, nextLesson } = this.state,
             lesson = this.props.lesson && this.props.lesson.item,
@@ -328,7 +335,7 @@ class adminEditPage extends AdminPage {
                     <div className='tile-footer' >
                         <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                             <div className={isShowRating ? 'visible' : 'invisible'}>
-                                <button className='btn btn-primary mb-2' onClick={(e) => { e.preventDefault(); this.modal.show(); }}>Đánh giá bài học</button>
+                                {!rate && <button className='btn btn-primary mb-2' onClick={(e) => this.onHandleRatingCourse(e,rate)}>Đánh giá bài học</button>}
                                 {rate && <h5>Đã đánh giá:   <span className='text-warning'>{rate.value + ' sao'}</span></h5>}
                                 <RateModal ref={e => this.modal = e} title='Đánh giá bài giảng' type='lesson' _refId={lessonId} />
                             </div>

@@ -80,6 +80,30 @@ class ForumMessagePage extends AdminPage {
     delete = (item) => T.confirm('Bài viết', 'Bạn có chắc bạn muốn xóa bài viết này?', 'warning', true, isConfirm =>
         isConfirm && this.props.deleteForumMessage(item._id));
 
+    sendMessage = (e)=>{
+        e.preventDefault();
+        const adminPermission = this.getUserPermission('system', ['settings']);
+        const { userId, isLecturer, isCourseAdmin } = this.state;
+        const { item: forum } = this.props.forum || {};
+        const forumOwner = adminPermission && adminPermission.settings || isCourseAdmin || (isLecturer && forum && forum.user && (userId == forum.user._id));
+        const data = {
+            content: this.itemContent.value(),
+            state: forumOwner ? 'approved' : 'waiting',
+            forum: this.state.forumId,
+        };
+
+        if (data.content == '') {
+            T.notify('Nội dung bài viết bị trống!', 'danger');
+            this.itemContent.focus();
+        }else{
+            this.props.createForumMessage(data,()=>{
+                // có thể làm 1 hàm trên redux để nhét item mới tạo này vào trực tiếp bên trong userMessagePage.list;
+                this.itemContent.value('');
+                T.alert('Bình luận của bạn đã được gửi thành công và  quản trị viên duyệt bình luận của bạn. Cảm ơn', 'success', false);
+            });
+        }
+    }
+
     render() {
         const adminPermission = this.getUserPermission('system', ['settings']);
         const { userId, isLecturer, isCourseAdmin } = this.state;
@@ -105,7 +129,16 @@ class ForumMessagePage extends AdminPage {
                     </small> */}
                     <p dangerouslySetInnerHTML={{ __html: forum.content }} />
                 </div>
-
+                <div className="tile">
+                    <div className='d-flex'>
+                        <FormRichTextBox style={{flex:'auto'}} ref={e => this.itemContent = e} label='Bình luận(Tối đa 200 từ)' />
+                        <div className='d-flex flex-column ml-2'>
+                        <button className='btn btn-success' onClick={e=>this.sendMessage(e)} style={{marginTop:30}}>Phản hồi <i className="fa fa-paper-plane-o" aria-hidden="true"></i></button>
+                        <button onClick={e=>e.preventDefault&&this.itemContent.value('')} className='btn btn-danger mt-2'>Hủy <i className="fa fa-times" aria-hidden="true"></i></button>
+                        </div>
+                    </div>
+                    {/* <FormRichTextBox ref={e => this.itemContent = e} label='Bình luận(Tối đa 200 từ)' readOnly={false} /> */}
+                </div>
                 {list && list.length ?
                     list.map((item, index) =>
                         <div key={index} className='tile' style={{ marginLeft: 20 }}>
@@ -119,7 +152,8 @@ class ForumMessagePage extends AdminPage {
                                 <ForumButtons state={item.state} permission={{ forumOwner, messageOwner: item && item.user && userId == item.user._id }} onChangeState={(state) => this.props.updateForumMessage(item._id, { state })} onEdit={() => this.modal.show(item)} onDelete={() => this.delete(item)} />
                             </div>
                         </div>) :
-                    <div className='tile' style={{ marginLeft: 20 }}>Chưa có bài viết!</div>}
+                    <div className='tile' style={{ marginLeft: 20 }}>Chưa có phản hồi!</div>}
+                
                 <Pagination name='pageForumMessage' style={{ marginLeft: '70px' }} pageNumber={pageNumber} pageSize={pageSize} pageTotal={pageTotal} totalItem={totalItem} getPage={this.getPage} />
                 <MessageModal ref={e => this.modal = e} forum={forum._id} permission={{ forumOwner }} create={this.props.createForumMessage} update={this.props.updateForumMessage} getPage={this.getPage} />
             </> : '...',
