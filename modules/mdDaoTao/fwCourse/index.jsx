@@ -252,6 +252,14 @@ export default {
             component: Loadable({ loading: Loading, loader: () => import('modules/mdDaoTao/fwRegisterCalendar/pages/adminStudentRegisterCalendarPage') })
         },
         {
+            path: '/user/course/:_id/location',
+            component: Loadable({ loading: Loading, loader: () => import('modules/mdDaoTao/fwTeacherLocation/adminHistoryPage') }),
+        },
+        {
+            path: '/user/course/:_id/location-course',
+            component: Loadable({ loading: Loading, loader: () => import('modules/mdDaoTao/fwTeacherLocation/adminHistoryPageAll') }),
+        },
+        {
             path: '/user/course/:_id/rate-subject',
             component: Loadable({ loading: Loading, loader: () => import('./pages/adminRatingPage') })
         },
