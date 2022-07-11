@@ -24,7 +24,11 @@ module.exports = app => {
                 result.pageNumber = pageNumber === -1 ? result.pageTotal : Math.min(pageNumber, result.pageTotal);
                 const skipNumber = (result.pageNumber > 0 ? result.pageNumber - 1 : 0) * result.pageSize;
 
-                model.find(condition).sort({ priority: -1 }).skip(skipNumber).limit(result.pageSize).populate('courseType', '_id title').populate('subject', '_id title').populate('teacher', 'lastname firstname user maGiaoVien').populate('students', 'lastname firstname phoneNumber user').populate('timeTable', 'startHour numOfHours lecturer').exec((error, items) => {
+                model.find(condition).sort({ priority: -1 }).skip(skipNumber).limit(result.pageSize).populate('courseType', '_id title').populate('subject', '_id title').populate('teacher', 'lastname firstname user maGiaoVien').populate({
+                    path: 'timeTable', populate: { path: 'car',  select:'licensePlates'}
+                }).populate({
+                    path: 'timeTable', populate: { path: 'student',  populate: { path:'course', select:'_id name'}}
+                }).exec((error, items) => {
                     result.list = error ? [] : items;
                     done(error, result);
                 });

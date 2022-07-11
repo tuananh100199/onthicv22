@@ -63,6 +63,7 @@
 	7002 - Gói học phí (/user/course-fee)
 	7003 - Loại gói học phí (/user/fee-type)
 	7004 - Giảm giá (/user/discount)
+	70041 - Lịch sử giảm giá (/user/discount-history)
 	7005 - Theo dõi công nợ (/user/student/debt)
 	7006 - Số lần thanh toán (/user/course-payment)
 	7007 - Kích hoạt khóa học (/user/student/active-course)

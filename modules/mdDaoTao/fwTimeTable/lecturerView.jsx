@@ -387,16 +387,20 @@ class TimeTableModal extends AdminModal {
                     </> :null }
                     
 
-                    {/* <FormCheckbox ref={e => this.itemTruant = e} label='Học viên vắng học' className='col-md-4' readOnly={this.props.readOnly} />
-                    <FormSelect className='col-md-4' ref={e => this.itemState = e} label='Trạng thái' data={RegisterCalendarStates} readOnly={this.props.readOnly} /> 
+                    <FormCheckbox ref={e => this.itemTruant = e} label='Học viên vắng học' className='col-md-4' readOnly={false} />
+                    <FormSelect className='col-md-4' ref={e => this.itemState = e} label='Trạng thái' data={RegisterCalendarStates} readOnly={false} /> 
 
-                    <FormRichTextBox ref={e => this.itemContent = e} label='Nội dung học' className='col-lg-6' readOnly={this.props.readOnly} />
-                    <FormRichTextBox ref={e => this.itemNote = e} label='Ghi chú' className='col-lg-6' readOnly={this.props.readOnly} /> */}
+                    <FormRichTextBox ref={e => this.itemContent = e} label='Nội dung học' className='col-lg-6' readOnly={false} />
+                    <FormRichTextBox ref={e => this.itemNote = e} label='Ghi chú' className='col-lg-6' readOnly={false} />
                 </div>
             </>,
-        //     buttons: <>
-        //         {this.state._id && this.props.calendar ? <button type='button' className='btn btn-danger' onClick={() => this.delete()}>Xóa</button> : null}
-        // </>
+            buttons: <>
+                {this.state._id && this.props.calendar ? 
+                [
+                    <button type='button' key={1} className='btn btn-danger' onClick={() => this.delete()}>Xóa</button>,
+                    // <button type='button' className='btn btn-primary' onClick={() => this.onSubmit()}>Lưu</button>
+                ] : null}
+        </>
         });
     }
 }

@@ -169,77 +169,162 @@ module.exports = (app) => {
             } else if (!item) {
                 res.send({ check: 'Không tìm thấy học viên!' });
             } else {
-                app.model.student.addPayment({ _id: item._id }, data, (error, item) => {
-                    if(error) res.send({error});
-                    else{
-                        const revenue = {
-                            payer: studentId,
-                            receiver: req.session.user._id,
-                            fee: data.fee,
-                            date: new Date(),
-                            type: 'offline',
-                            course: item.course && item.course._id,
-                            courseType: item.courseType && item.courseType._id,
-                        };
-                        app.model.revenue.create(revenue, (error) => {
-                            if (error) res.send({error});
-                            else {
-                                app.model.setting.get('revenue', result => {
-                                    if (result && Object.keys(result).length != 0) {
-                                        let value = result.revenue && result.revenue.split(';');
-                                        value = value.sort((a, b) => parseInt(a.slice(0, 3)) - parseInt(b.slice(0, 3)));
-                                        const indexYear = value.findIndex(item => item.startsWith(year));
-                                        if (indexYear != -1) {
-                                            const newItem = value[indexYear].split(':');
-                                            newItem[2] = parseInt(newItem[2]);
-                                            newItem[2] = newItem[2] + parseInt(data.fee);
-                                            value[indexYear] = newItem.join(':');
-                                            data.revenue = value.join(';');
-                                        } else {
-                                            const indexPreviousYear = value.findIndex(item => item.startsWith(year - 1));
-                                            if (indexPreviousYear != -1) {
-                                                const newItem = value[indexPreviousYear].split(':');
-                                                newItem[2] = parseInt(newItem[2]);
-                                                newItem[2] = newItem[2] + parseInt(data.fee);
-                                                data.revenue = result.revenue + year + ':revenue:' + newItem[2];
-                                            } else {
-                                                data.revenue = result.revenue + year + ':revenue:' + parseInt(data.fee);
-                                            }
-                                        }
-                                        app.model.setting.set(data, err => {
-                                            if (err) {
-                                                res.send({ error: 'Update doanh thu hàng năm bị lỗi' });
-                                            } else {
-                                                if(courseFee && (fee-data.fee) <= 0){
-                                                    if(courseFee == data.fee){
-                                                        app.model.student.update({_id: item._id}, {activeKhoaLyThuyet: true, activeKhoaThucHanh: true, soGioThucHanhTangThem: 1}, (error, student) => res.send({ error, item: student}));
+                if(item.discount && item.discount.fee && !item.daNhanKhuyenMai){
+                    const discount = item.discount;
+                    const dataDiscount = {
+                        name: discount.name,
+                        type: 'goi',
+                        fee: discount.fee,
+                        date: new Date(), 
+                        user: item.user && item.user._id
+                    };
+                    app.model.discountHistory.create(dataDiscount, () =>{
+                        app.model.student.addPayment({ _id: item._id }, data, (error, item) => {
+                            if(error) res.send({error});
+                            else{
+                                const revenue = {
+                                    payer: studentId,
+                                    receiver: req.session.user._id,
+                                    fee: data.fee,
+                                    date: new Date(),
+                                    type: 'offline',
+                                    course: item.course && item.course._id,
+                                    courseType: item.courseType && item.courseType._id,
+                                };
+                                app.model.revenue.create(revenue, (error) => {
+                                    if (error) res.send({error});
+                                    else {
+                                        app.model.setting.get('revenue', result => {
+                                            if (result && Object.keys(result).length != 0) {
+                                                let value = result.revenue && result.revenue.split(';');
+                                                value = value.sort((a, b) => parseInt(a.slice(0, 3)) - parseInt(b.slice(0, 3)));
+                                                const indexYear = value.findIndex(item => item.startsWith(year));
+                                                if (indexYear != -1) {
+                                                    const newItem = value[indexYear].split(':');
+                                                    newItem[2] = parseInt(newItem[2]);
+                                                    newItem[2] = newItem[2] + parseInt(data.fee);
+                                                    value[indexYear] = newItem.join(':');
+                                                    data.revenue = value.join(';');
+                                                } else {
+                                                    const indexPreviousYear = value.findIndex(item => item.startsWith(year - 1));
+                                                    if (indexPreviousYear != -1) {
+                                                        const newItem = value[indexPreviousYear].split(':');
+                                                        newItem[2] = parseInt(newItem[2]);
+                                                        newItem[2] = newItem[2] + parseInt(data.fee);
+                                                        data.revenue = result.revenue + year + ':revenue:' + newItem[2];
                                                     } else {
-                                                        app.model.student.update({_id: item._id}, {activeKhoaLyThuyet: true, activeKhoaThucHanh: true}, (error, student) => res.send({ error, item: student}));
+                                                        data.revenue = result.revenue + year + ':revenue:' + parseInt(data.fee);
                                                     }
-                                                } else if(courseFee && (fee-data.fee) <= (courseFee/2)){
-                                                    app.model.student.update({_id: item._id}, {activeKhoaLyThuyet: true}, (error, student) => res.send({ error, item: student}));
-                                                } else res.send({ error, student: item });
-                                            }
-                                        });
-                                    } else {
-                                        data.revenue = year + ':revenue:' + parseInt(data.fee);
-                                        app.model.setting.set(data, err => {
-                                            if (err) {
-                                                res.send({ error: 'Update doanh thu hàng năm bị lỗi' });
+                                                }
+                                                app.model.setting.set(data, err => {
+                                                    if (err) {
+                                                        res.send({ error: 'Update doanh thu hàng năm bị lỗi' });
+                                                    } else {
+                                                        if(courseFee && (fee-data.fee) <= 0){
+                                                            if(courseFee == data.fee){
+                                                                app.model.student.update({_id: item._id}, {activeKhoaLyThuyet: true, activeKhoaThucHanh: true, soGioThucHanhTangThem: 1}, (error, student) => res.send({ error, item: student}));
+                                                            } else {
+                                                                app.model.student.update({_id: item._id}, {activeKhoaLyThuyet: true, activeKhoaThucHanh: true}, (error, student) => res.send({ error, item: student}));
+                                                            }
+                                                        } else if(courseFee && (fee-data.fee) <= (courseFee/2)){
+                                                            app.model.student.update({_id: item._id}, {activeKhoaLyThuyet: true}, (error, student) => res.send({ error, item: student}));
+                                                        } else res.send({ error, student: item });
+                                                    }
+                                                });
                                             } else {
-                                                if(courseFee && ((fee-data.fee) <= (courseFee/2))){
-                                                    app.model.student.update({_id: item._id}, {activeKhoaLyThuyet: true}, (error, student) => res.send({ error, item: student}));
-                                                } else res.send({ error, student: item });
+                                                data.revenue = year + ':revenue:' + parseInt(data.fee);
+                                                app.model.setting.set(data, err => {
+                                                    if (err) {
+                                                        res.send({ error: 'Update doanh thu hàng năm bị lỗi' });
+                                                    } else {
+                                                        if(courseFee && ((fee-data.fee) <= (courseFee/2))){
+                                                            app.model.student.update({_id: item._id}, {activeKhoaLyThuyet: true}, (error, student) => res.send({ error, item: student}));
+                                                        } else res.send({ error, student: item });
+                                                    }
+                                                });
                                             }
+                            
                                         });
                                     }
-                    
                                 });
+                                
                             }
                         });
+                    });
+                } else {
+                    app.model.student.addPayment({ _id: item._id }, data, (error, item) => {
+                        if(error) res.send({error});
+                        else{
+                            const revenue = {
+                                payer: studentId,
+                                receiver: req.session.user._id,
+                                fee: data.fee,
+                                date: new Date(),
+                                type: 'offline',
+                                course: item.course && item.course._id,
+                                courseType: item.courseType && item.courseType._id,
+                            };
+                            app.model.revenue.create(revenue, (error) => {
+                                if (error) res.send({error});
+                                else {
+                                    app.model.setting.get('revenue', result => {
+                                        if (result && Object.keys(result).length != 0) {
+                                            let value = result.revenue && result.revenue.split(';');
+                                            value = value.sort((a, b) => parseInt(a.slice(0, 3)) - parseInt(b.slice(0, 3)));
+                                            const indexYear = value.findIndex(item => item.startsWith(year));
+                                            if (indexYear != -1) {
+                                                const newItem = value[indexYear].split(':');
+                                                newItem[2] = parseInt(newItem[2]);
+                                                newItem[2] = newItem[2] + parseInt(data.fee);
+                                                value[indexYear] = newItem.join(':');
+                                                data.revenue = value.join(';');
+                                            } else {
+                                                const indexPreviousYear = value.findIndex(item => item.startsWith(year - 1));
+                                                if (indexPreviousYear != -1) {
+                                                    const newItem = value[indexPreviousYear].split(':');
+                                                    newItem[2] = parseInt(newItem[2]);
+                                                    newItem[2] = newItem[2] + parseInt(data.fee);
+                                                    data.revenue = result.revenue + year + ':revenue:' + newItem[2];
+                                                } else {
+                                                    data.revenue = result.revenue + year + ':revenue:' + parseInt(data.fee);
+                                                }
+                                            }
+                                            app.model.setting.set(data, err => {
+                                                if (err) {
+                                                    res.send({ error: 'Update doanh thu hàng năm bị lỗi' });
+                                                } else {
+                                                    if(courseFee && (fee-data.fee) <= 0){
+                                                        if(courseFee == data.fee){
+                                                            app.model.student.update({_id: item._id}, {activeKhoaLyThuyet: true, activeKhoaThucHanh: true, soGioThucHanhTangThem: 1}, (error, student) => res.send({ error, item: student}));
+                                                        } else {
+                                                            app.model.student.update({_id: item._id}, {activeKhoaLyThuyet: true, activeKhoaThucHanh: true}, (error, student) => res.send({ error, item: student}));
+                                                        }
+                                                    } else if(courseFee && (fee-data.fee) <= (courseFee/2)){
+                                                        app.model.student.update({_id: item._id}, {activeKhoaLyThuyet: true}, (error, student) => res.send({ error, item: student}));
+                                                    } else res.send({ error, student: item });
+                                                }
+                                            });
+                                        } else {
+                                            data.revenue = year + ':revenue:' + parseInt(data.fee);
+                                            app.model.setting.set(data, err => {
+                                                if (err) {
+                                                    res.send({ error: 'Update doanh thu hàng năm bị lỗi' });
+                                                } else {
+                                                    if(courseFee && ((fee-data.fee) <= (courseFee/2))){
+                                                        app.model.student.update({_id: item._id}, {activeKhoaLyThuyet: true}, (error, student) => res.send({ error, item: student}));
+                                                    } else res.send({ error, student: item });
+                                                }
+                                            });
+                                        }
                         
-                    }
-                });
+                                    });
+                                }
+                            });
+                            
+                        }
+                    });
+                }
+                
             }
         });
     });

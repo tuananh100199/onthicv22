@@ -137,152 +137,312 @@ module.exports = app => {
                                                                                 isOnlinePayment: true,
                                                                             };
                                                                             const year = new Date().getFullYear();
-                                                                            app.model.student.addPayment({ _id: item._id }, data, (error, item) => {
-                                                                                payment.sms = sms._id;
-                                                                                payment.student = item._id;
-                                                                                payment.firstname = item.firstname;
-                                                                                payment.lastname = item.lastname;
-                                                                                payment.courseType = item.courseType && item.courseType._id;
-                                                                                if (error) res.send({ error });
-                                                                                else {
-                                                                                    const revenue = {
-                                                                                        payer: item._id,
-                                                                                        receiver: null,
-                                                                                        fee: payment.moneyAmount,
-                                                                                        date: new Date(),
-                                                                                        type: 'online',
-                                                                                        course: item.course && item.course._id,
-                                                                                        courseType: item.courseType && item.courseType._id,
-                                                                                    };
-                                                                                    app.model.revenue.create(revenue, (error) => {
+                                                                            if(item.discount && item.discount.fee && !item.daNhanKhuyenMai){
+                                                                                const discount = item.discount;
+                                                                                const dataDiscount = {
+                                                                                    name: discount.name,
+                                                                                    type: 'goi',
+                                                                                    fee: discount.fee,
+                                                                                    date: new Date(), 
+                                                                                    user: item.user && item.user._id
+                                                                                };
+                                                                                app.model.discountHistory.create(dataDiscount, () =>{
+                                                                                    app.model.student.addPayment({ _id: item._id }, data, (error, item) => {
+                                                                                        payment.sms = sms._id;
+                                                                                        payment.student = item._id;
+                                                                                        payment.firstname = item.firstname;
+                                                                                        payment.lastname = item.lastname;
+                                                                                        payment.courseType = item.courseType && item.courseType._id;
                                                                                         if (error) res.send({ error });
                                                                                         else {
-                                                                                            app.model.setting.get('revenue', result => {
-                                                                                                if (result && Object.keys(result).length != 0) {
-                                                                                                    let value = result.revenue && result.revenue.split(';');
-                                                                                                    value = value.sort((a, b) => parseInt(a.slice(0, 3)) - parseInt(b.slice(0, 3)));
-                                                                                                    const indexYear = value.findIndex(item => item.startsWith(year));
-                                                                                                    if (indexYear != -1) {
-                                                                                                        const newItem = value[indexYear].split(':');
-                                                                                                        newItem[2] = parseInt(newItem[2]);
-                                                                                                        newItem[2] = newItem[2] + parseInt(payment.moneyAmount);
-                                                                                                        value[indexYear] = newItem.join(':');
-                                                                                                        data.revenue = value.join(';');
-                                                                                                    } else {
-                                                                                                        const indexPreviousYear = value.findIndex(item => item.startsWith(year - 1));
-                                                                                                        if (indexPreviousYear != -1) {
-                                                                                                            const newItem = value[indexPreviousYear].split(':');
-                                                                                                            newItem[2] = parseInt(newItem[2]);
-                                                                                                            newItem[2] = newItem[2] + parseInt(payment.moneyAmount);
-                                                                                                            data.revenue = result.revenue + year + ':revenue:' + newItem[2];
-                                                                                                        } else {
-                                                                                                            data.revenue = result.revenue + year + ':revenue:' + parseInt(payment.moneyAmount);
-                                                                                                        }
-                                                                                                    }
-                                                                                                    app.model.setting.set(data, err => {
-                                                                                                        if (err) {
-                                                                                                            res.send({ error: 'Update doanh thu hàng năm bị lỗi' });
-                                                                                                        } else {
-                                                                                                            if (hocPhi && (hocPhiConLai - data.fee) <= (0)) {
-                                                                                                                let changes = { activeKhoaThucHanh: true };
-                                                                                                                if(hocPhi == data.fee && lichSuDongTien && !lichSuDongTien.length){
-                                                                                                                    changes = { activeKhoaThucHanh: true,  soGioThucHanhTangThem: 2};
+                                                                                            const revenue = {
+                                                                                                payer: item._id,
+                                                                                                receiver: null,
+                                                                                                fee: payment.moneyAmount,
+                                                                                                date: new Date(),
+                                                                                                type: 'online',
+                                                                                                course: item.course && item.course._id,
+                                                                                                courseType: item.courseType && item.courseType._id,
+                                                                                            };
+                                                                                            app.model.revenue.create(revenue, (error) => {
+                                                                                                if (error) res.send({ error });
+                                                                                                else {
+                                                                                                    app.model.setting.get('revenue', result => {
+                                                                                                        if (result && Object.keys(result).length != 0) {
+                                                                                                            let value = result.revenue && result.revenue.split(';');
+                                                                                                            value = value.sort((a, b) => parseInt(a.slice(0, 3)) - parseInt(b.slice(0, 3)));
+                                                                                                            const indexYear = value.findIndex(item => item.startsWith(year));
+                                                                                                            if (indexYear != -1) {
+                                                                                                                const newItem = value[indexYear].split(':');
+                                                                                                                newItem[2] = parseInt(newItem[2]);
+                                                                                                                newItem[2] = newItem[2] + parseInt(payment.moneyAmount);
+                                                                                                                value[indexYear] = newItem.join(':');
+                                                                                                                data.revenue = value.join(';');
+                                                                                                            } else {
+                                                                                                                const indexPreviousYear = value.findIndex(item => item.startsWith(year - 1));
+                                                                                                                if (indexPreviousYear != -1) {
+                                                                                                                    const newItem = value[indexPreviousYear].split(':');
+                                                                                                                    newItem[2] = parseInt(newItem[2]);
+                                                                                                                    newItem[2] = newItem[2] + parseInt(payment.moneyAmount);
+                                                                                                                    data.revenue = result.revenue + year + ':revenue:' + newItem[2];
+                                                                                                                } else {
+                                                                                                                    data.revenue = result.revenue + year + ':revenue:' + parseInt(payment.moneyAmount);
                                                                                                                 }
-                                                                                                                app.model.student.update({ _id: item._id }, changes, (error) => {
-                                                                                                                    if (error) res.send({ error });
-                                                                                                                    else {
-                                                                                                                        app.model.payment.create(payment, (error, item) => {
-                                                                                                                            if (error || !item) {
-                                                                                                                                res.send({ error: error || 'Lỗi khi tạo thu công nợ' });
-                                                                                                                            } else {
-                                                                                                                                sms.isHandled = true;
-                                                                                                                                sms.save((error, item) => res.send({ error, item }));
-                                                                                                                            }
-                                                                                                                        });
-                                                                                                                    }
-                                                                                                                });
                                                                                                             }
-                                                                                                            else if (hocPhi && (hocPhiConLai - data.fee) <= (hocPhi / 2)) {
-                                                                                                                app.model.student.update({ _id: item._id }, { activeKhoaLyThuyet: true }, (error) => {
-                                                                                                                    if (error) res.send({ error });
-                                                                                                                    else {
-                                                                                                                        app.model.payment.create(payment, (error, item) => {
-                                                                                                                            if (error || !item) {
-                                                                                                                                res.send({ error: error || 'Lỗi khi tạo thu công nợ' });
-                                                                                                                            } else {
-                                                                                                                                sms.isHandled = true;
-                                                                                                                                sms.save((error, item) => res.send({ error, item }));
+                                                                                                            app.model.setting.set(data, err => {
+                                                                                                                if (err) {
+                                                                                                                    res.send({ error: 'Update doanh thu hàng năm bị lỗi' });
+                                                                                                                } else {
+                                                                                                                    if (hocPhi && (hocPhiConLai - data.fee) <= (0)) {
+                                                                                                                        let changes = { activeKhoaThucHanh: true };
+                                                                                                                        if(hocPhi == data.fee && lichSuDongTien && !lichSuDongTien.length){
+                                                                                                                            changes = { activeKhoaThucHanh: true,  soGioThucHanhTangThem: 2};
+                                                                                                                        }
+                                                                                                                        app.model.student.update({ _id: item._id }, changes, (error) => {
+                                                                                                                            if (error) res.send({ error });
+                                                                                                                            else {
+                                                                                                                                app.model.payment.create(payment, (error, item) => {
+                                                                                                                                    if (error || !item) {
+                                                                                                                                        res.send({ error: error || 'Lỗi khi tạo thu công nợ' });
+                                                                                                                                    } else {
+                                                                                                                                        sms.isHandled = true;
+                                                                                                                                        sms.save((error, item) => res.send({ error, item }));
+                                                                                                                                    }
+                                                                                                                                });
                                                                                                                             }
                                                                                                                         });
                                                                                                                     }
-                                                                                                                });
-                                                                                                            } else {
-                                                                                                                app.model.payment.create(payment, (error, item) => {
-                                                                                                                    if (error || !item) {
-                                                                                                                        res.send({ error: error || 'Lỗi khi tạo thu công nợ' });
+                                                                                                                    else if (hocPhi && (hocPhiConLai - data.fee) <= (hocPhi / 2)) {
+                                                                                                                        app.model.student.update({ _id: item._id }, { activeKhoaLyThuyet: true }, (error) => {
+                                                                                                                            if (error) res.send({ error });
+                                                                                                                            else {
+                                                                                                                                app.model.payment.create(payment, (error, item) => {
+                                                                                                                                    if (error || !item) {
+                                                                                                                                        res.send({ error: error || 'Lỗi khi tạo thu công nợ' });
+                                                                                                                                    } else {
+                                                                                                                                        sms.isHandled = true;
+                                                                                                                                        sms.save((error, item) => res.send({ error, item }));
+                                                                                                                                    }
+                                                                                                                                });
+                                                                                                                            }
+                                                                                                                        });
                                                                                                                     } else {
-                                                                                                                        sms.isHandled = true;
-                                                                                                                        sms.save((error, item) => res.send({ error, item }));
+                                                                                                                        app.model.payment.create(payment, (error, item) => {
+                                                                                                                            if (error || !item) {
+                                                                                                                                res.send({ error: error || 'Lỗi khi tạo thu công nợ' });
+                                                                                                                            } else {
+                                                                                                                                sms.isHandled = true;
+                                                                                                                                sms.save((error, item) => res.send({ error, item }));
+                                                                                                                            }
+                                                                                                                        });
                                                                                                                     }
-                                                                                                                });
-                                                                                                            }
-                                                                                                        }
-                                                                                                    });
-                                                                                                } else {
-                                                                                                    data.revenue = year + ':revenue:' + parseInt(payment.moneyAmount);
-                                                                                                    app.model.setting.set(data, err => {
-                                                                                                        if (err) {
-                                                                                                            res.send({ error: 'Update doanh thu hàng năm bị lỗi' });
+                                                                                                                }
+                                                                                                            });
                                                                                                         } else {
-                                                                                                            if (hocPhi && (hocPhiConLai - data.fee) <= (0)) {
-                                                                                                                app.model.student.update({ _id: item._id }, { activeKhoaThucHanh: true }, (error) => {
-                                                                                                                    if (error) res.send({ error });
-                                                                                                                    else {
-                                                                                                                        app.model.payment.create(payment, (error, item) => {
-                                                                                                                            if (error || !item) {
-                                                                                                                                res.send({ error: error || 'Lỗi khi tạo thu công nợ' });
-                                                                                                                            } else {
-                                                                                                                                sms.isHandled = true;
-                                                                                                                                sms.save((error, item) => res.send({ error, item }));
+                                                                                                            data.revenue = year + ':revenue:' + parseInt(payment.moneyAmount);
+                                                                                                            app.model.setting.set(data, err => {
+                                                                                                                if (err) {
+                                                                                                                    res.send({ error: 'Update doanh thu hàng năm bị lỗi' });
+                                                                                                                } else {
+                                                                                                                    if (hocPhi && (hocPhiConLai - data.fee) <= (0)) {
+                                                                                                                        app.model.student.update({ _id: item._id }, { activeKhoaThucHanh: true }, (error) => {
+                                                                                                                            if (error) res.send({ error });
+                                                                                                                            else {
+                                                                                                                                app.model.payment.create(payment, (error, item) => {
+                                                                                                                                    if (error || !item) {
+                                                                                                                                        res.send({ error: error || 'Lỗi khi tạo thu công nợ' });
+                                                                                                                                    } else {
+                                                                                                                                        sms.isHandled = true;
+                                                                                                                                        sms.save((error, item) => res.send({ error, item }));
+                                                                                                                                    }
+                                                                                                                                });
                                                                                                                             }
                                                                                                                         });
                                                                                                                     }
-                                                                                                                });
-                                                                                                            }
-                                                                                                            else if (hocPhi && (hocPhiConLai - data.fee) <= (hocPhi / 2)) {
-                                                                                                                app.model.student.update({ _id: item._id }, { activeKhoaLyThuyet: true }, (error) => {
-                                                                                                                    if (error) res.send({ error });
-                                                                                                                    else {
-                                                                                                                        app.model.payment.create(payment, (error, item) => {
-                                                                                                                            if (error || !item) {
-                                                                                                                                res.send({ error: error || 'Lỗi khi tạo thu công nợ' });
-                                                                                                                            } else {
-                                                                                                                                sms.isHandled = true;
-                                                                                                                                sms.save((error, item) => res.send({ error, item }));
+                                                                                                                    else if (hocPhi && (hocPhiConLai - data.fee) <= (hocPhi / 2)) {
+                                                                                                                        app.model.student.update({ _id: item._id }, { activeKhoaLyThuyet: true }, (error) => {
+                                                                                                                            if (error) res.send({ error });
+                                                                                                                            else {
+                                                                                                                                app.model.payment.create(payment, (error, item) => {
+                                                                                                                                    if (error || !item) {
+                                                                                                                                        res.send({ error: error || 'Lỗi khi tạo thu công nợ' });
+                                                                                                                                    } else {
+                                                                                                                                        sms.isHandled = true;
+                                                                                                                                        sms.save((error, item) => res.send({ error, item }));
+                                                                                                                                    }
+                                                                                                                                });
                                                                                                                             }
                                                                                                                         });
-                                                                                                                    }
-                                                                                                                });
-                                                                                                            } else {
-                                                                                                                app.model.payment.create(payment, (error, item) => {
-                                                                                                                    if (error || !item) {
-                                                                                                                        res.send({ error: error || 'Lỗi khi tạo thu công nợ' });
                                                                                                                     } else {
-                                                                                                                        sms.isHandled = true;
-                                                                                                                        sms.save((error, item) => res.send({ error, item }));
+                                                                                                                        app.model.payment.create(payment, (error, item) => {
+                                                                                                                            if (error || !item) {
+                                                                                                                                res.send({ error: error || 'Lỗi khi tạo thu công nợ' });
+                                                                                                                            } else {
+                                                                                                                                sms.isHandled = true;
+                                                                                                                                sms.save((error, item) => res.send({ error, item }));
+                                                                                                                            }
+                                                                                                                        });
                                                                                                                     }
-                                                                                                                });
-                                                                                                            }
+                                                                                                                }
+                                                                                                            });
                                                                                                         }
+        
                                                                                                     });
                                                                                                 }
-
                                                                                             });
+        
                                                                                         }
                                                                                     });
-
-                                                                                }
-                                                                            });
+                                                                                });
+                                                                            } else {
+                                                                                app.model.student.addPayment({ _id: item._id }, data, (error, item) => {
+                                                                                    payment.sms = sms._id;
+                                                                                    payment.student = item._id;
+                                                                                    payment.firstname = item.firstname;
+                                                                                    payment.lastname = item.lastname;
+                                                                                    payment.courseType = item.courseType && item.courseType._id;
+                                                                                    if (error) res.send({ error });
+                                                                                    else {
+                                                                                        const revenue = {
+                                                                                            payer: item._id,
+                                                                                            receiver: null,
+                                                                                            fee: payment.moneyAmount,
+                                                                                            date: new Date(),
+                                                                                            type: 'online',
+                                                                                            course: item.course && item.course._id,
+                                                                                            courseType: item.courseType && item.courseType._id,
+                                                                                        };
+                                                                                        app.model.revenue.create(revenue, (error) => {
+                                                                                            if (error) res.send({ error });
+                                                                                            else {
+                                                                                                app.model.setting.get('revenue', result => {
+                                                                                                    if (result && Object.keys(result).length != 0) {
+                                                                                                        let value = result.revenue && result.revenue.split(';');
+                                                                                                        value = value.sort((a, b) => parseInt(a.slice(0, 3)) - parseInt(b.slice(0, 3)));
+                                                                                                        const indexYear = value.findIndex(item => item.startsWith(year));
+                                                                                                        if (indexYear != -1) {
+                                                                                                            const newItem = value[indexYear].split(':');
+                                                                                                            newItem[2] = parseInt(newItem[2]);
+                                                                                                            newItem[2] = newItem[2] + parseInt(payment.moneyAmount);
+                                                                                                            value[indexYear] = newItem.join(':');
+                                                                                                            data.revenue = value.join(';');
+                                                                                                        } else {
+                                                                                                            const indexPreviousYear = value.findIndex(item => item.startsWith(year - 1));
+                                                                                                            if (indexPreviousYear != -1) {
+                                                                                                                const newItem = value[indexPreviousYear].split(':');
+                                                                                                                newItem[2] = parseInt(newItem[2]);
+                                                                                                                newItem[2] = newItem[2] + parseInt(payment.moneyAmount);
+                                                                                                                data.revenue = result.revenue + year + ':revenue:' + newItem[2];
+                                                                                                            } else {
+                                                                                                                data.revenue = result.revenue + year + ':revenue:' + parseInt(payment.moneyAmount);
+                                                                                                            }
+                                                                                                        }
+                                                                                                        app.model.setting.set(data, err => {
+                                                                                                            if (err) {
+                                                                                                                res.send({ error: 'Update doanh thu hàng năm bị lỗi' });
+                                                                                                            } else {
+                                                                                                                if (hocPhi && (hocPhiConLai - data.fee) <= (0)) {
+                                                                                                                    let changes = { activeKhoaThucHanh: true };
+                                                                                                                    if(hocPhi == data.fee && lichSuDongTien && !lichSuDongTien.length){
+                                                                                                                        changes = { activeKhoaThucHanh: true,  soGioThucHanhTangThem: 2};
+                                                                                                                    }
+                                                                                                                    app.model.student.update({ _id: item._id }, changes, (error) => {
+                                                                                                                        if (error) res.send({ error });
+                                                                                                                        else {
+                                                                                                                            app.model.payment.create(payment, (error, item) => {
+                                                                                                                                if (error || !item) {
+                                                                                                                                    res.send({ error: error || 'Lỗi khi tạo thu công nợ' });
+                                                                                                                                } else {
+                                                                                                                                    sms.isHandled = true;
+                                                                                                                                    sms.save((error, item) => res.send({ error, item }));
+                                                                                                                                }
+                                                                                                                            });
+                                                                                                                        }
+                                                                                                                    });
+                                                                                                                }
+                                                                                                                else if (hocPhi && (hocPhiConLai - data.fee) <= (hocPhi / 2)) {
+                                                                                                                    app.model.student.update({ _id: item._id }, { activeKhoaLyThuyet: true }, (error) => {
+                                                                                                                        if (error) res.send({ error });
+                                                                                                                        else {
+                                                                                                                            app.model.payment.create(payment, (error, item) => {
+                                                                                                                                if (error || !item) {
+                                                                                                                                    res.send({ error: error || 'Lỗi khi tạo thu công nợ' });
+                                                                                                                                } else {
+                                                                                                                                    sms.isHandled = true;
+                                                                                                                                    sms.save((error, item) => res.send({ error, item }));
+                                                                                                                                }
+                                                                                                                            });
+                                                                                                                        }
+                                                                                                                    });
+                                                                                                                } else {
+                                                                                                                    app.model.payment.create(payment, (error, item) => {
+                                                                                                                        if (error || !item) {
+                                                                                                                            res.send({ error: error || 'Lỗi khi tạo thu công nợ' });
+                                                                                                                        } else {
+                                                                                                                            sms.isHandled = true;
+                                                                                                                            sms.save((error, item) => res.send({ error, item }));
+                                                                                                                        }
+                                                                                                                    });
+                                                                                                                }
+                                                                                                            }
+                                                                                                        });
+                                                                                                    } else {
+                                                                                                        data.revenue = year + ':revenue:' + parseInt(payment.moneyAmount);
+                                                                                                        app.model.setting.set(data, err => {
+                                                                                                            if (err) {
+                                                                                                                res.send({ error: 'Update doanh thu hàng năm bị lỗi' });
+                                                                                                            } else {
+                                                                                                                if (hocPhi && (hocPhiConLai - data.fee) <= (0)) {
+                                                                                                                    app.model.student.update({ _id: item._id }, { activeKhoaThucHanh: true }, (error) => {
+                                                                                                                        if (error) res.send({ error });
+                                                                                                                        else {
+                                                                                                                            app.model.payment.create(payment, (error, item) => {
+                                                                                                                                if (error || !item) {
+                                                                                                                                    res.send({ error: error || 'Lỗi khi tạo thu công nợ' });
+                                                                                                                                } else {
+                                                                                                                                    sms.isHandled = true;
+                                                                                                                                    sms.save((error, item) => res.send({ error, item }));
+                                                                                                                                }
+                                                                                                                            });
+                                                                                                                        }
+                                                                                                                    });
+                                                                                                                }
+                                                                                                                else if (hocPhi && (hocPhiConLai - data.fee) <= (hocPhi / 2)) {
+                                                                                                                    app.model.student.update({ _id: item._id }, { activeKhoaLyThuyet: true }, (error) => {
+                                                                                                                        if (error) res.send({ error });
+                                                                                                                        else {
+                                                                                                                            app.model.payment.create(payment, (error, item) => {
+                                                                                                                                if (error || !item) {
+                                                                                                                                    res.send({ error: error || 'Lỗi khi tạo thu công nợ' });
+                                                                                                                                } else {
+                                                                                                                                    sms.isHandled = true;
+                                                                                                                                    sms.save((error, item) => res.send({ error, item }));
+                                                                                                                                }
+                                                                                                                            });
+                                                                                                                        }
+                                                                                                                    });
+                                                                                                                } else {
+                                                                                                                    app.model.payment.create(payment, (error, item) => {
+                                                                                                                        if (error || !item) {
+                                                                                                                            res.send({ error: error || 'Lỗi khi tạo thu công nợ' });
+                                                                                                                        } else {
+                                                                                                                            sms.isHandled = true;
+                                                                                                                            sms.save((error, item) => res.send({ error, item }));
+                                                                                                                        }
+                                                                                                                    });
+                                                                                                                }
+                                                                                                            }
+                                                                                                        });
+                                                                                                    }
+    
+                                                                                                });
+                                                                                            }
+                                                                                        });
+    
+                                                                                    }
+                                                                                });
+                                                                            }
+                                                                            
                                                                         }
                                                                     });
                                                                 }
@@ -583,119 +743,158 @@ module.exports = app => {
                                 isOnlinePayment: false,
                             };
                             const year = new Date().getFullYear();
-                            app.model.student.addPayment({ _id: item._id }, data, (error, item) => {
-                                payment.student = item._id;
-                                payment.firstname = item.firstname;
-                                payment.lastname = item.lastname;
-                                payment.courseType = item.courseType && item.courseType._id;
-                                if(error) {
-                                    err = error;
-                                    handleImport(index + 1);
-                                }
-                                else{
-                                    const revenue = {
-                                        payer: item._id,
-                                        receiver: null,
-                                        fee: payment.moneyAmount,
-                                        date: new Date(),
-                                        type: 'offline',
-                                        course: item.course && item.course._id,
-                                        courseType: item.courseType && item.courseType._id,
-                                    };
-                                    app.model.revenue.create(revenue, (error) => {
+                            if(item.discount && item.discount.fee && !item.daNhanKhuyenMai){
+                                const discount = item.discount;
+                                const dataDiscount = {
+                                    name: discount.name,
+                                    type: 'goi',
+                                    fee: discount.fee,
+                                    date: new Date(), 
+                                    user: item.user && item.user._id
+                                };
+                                app.model.discountHistory.create(dataDiscount, () =>{
+                                    app.model.student.addPayment({ _id: item._id }, data, (error, item) => {
+                                        payment.student = item._id;
+                                        payment.firstname = item.firstname;
+                                        payment.lastname = item.lastname;
+                                        payment.courseType = item.courseType && item.courseType._id;
                                         if(error) {
                                             err = error;
                                             handleImport(index + 1);
-                                        } 
-                                        else {
-                                            app.model.setting.get('revenue', result => {
-                                                if (result && Object.keys(result).length != 0) {
-                                                    let value = result.revenue && result.revenue.split(';');
-                                                    value = value.sort((a, b) => parseInt(a.slice(0, 3)) - parseInt(b.slice(0, 3)));
-                                                    const indexYear = value.findIndex(item => item.startsWith(year));
-                                                    if (indexYear != -1) {
-                                                        const newItem = value[indexYear].split(':');
-                                                        newItem[2] = parseInt(newItem[2]);
-                                                        newItem[2] = newItem[2] + parseInt(payment.moneyAmount);
-                                                        value[indexYear] = newItem.join(':');
-                                                        data.revenue = value.join(';');
-                                                    } else {
-                                                        const indexPreviousYear = value.findIndex(item => item.startsWith(year - 1));
-                                                        if (indexPreviousYear != -1) {
-                                                            const newItem = value[indexPreviousYear].split(':');
-                                                            newItem[2] = parseInt(newItem[2]);
-                                                            newItem[2] = newItem[2] + parseInt(payment.moneyAmount);
-                                                            data.revenue = result.revenue + year + ':revenue:' + newItem[2];
-                                                        } else {
-                                                            data.revenue = result.revenue + year + ':revenue:' + parseInt(payment.moneyAmount);
-                                                        }
-                                                    }
-                                                    app.model.setting.set(data, err => {
-                                                        if (err){
-                                                            err = error;
-                                                            handleImport(index + 1);
-                                                        } else {
-                                                            if(hocPhi && (hocPhiConLai-data.fee) <= (0)){
-                                                                app.model.student.update({_id: item._id}, {activeKhoaThucHanh: true}, (error) => {
-                                                                    if(error) {
-                                                                        err = error;
-                                                                        handleImport(index + 1);
-                                                                    } 
-                                                                    else {
-                                                                        app.model.payment.create(payment, (error, item) =>{
-                                                                            if(error || !item){
-                                                                                err = error;
-                                                                                handleImport(index + 1);
-                                                                            } else {
-                                                                                handleImport(index + 1);
-                                                                            }
-                                                                        });
-                                                                    }
-                                                                });
-                                                            } 
-                                                            else if(hocPhi && (hocPhiConLai-data.fee) <= (hocPhi/2)){
-                                                                app.model.student.update({_id: item._id}, {activeKhoaLyThuyet: true}, (error) => {
-                                                                    if(error) {
-                                                                        err = error;
-                                                                        handleImport(index + 1);
-                                                                    } 
-                                                                    else {
-                                                                        app.model.payment.create(payment, (error, item) =>{
-                                                                            if(error || !item){
-                                                                                err = error;
-                                                                                handleImport(index + 1);
-                                                                            } else {
-                                                                                handleImport(index + 1);
-                                                                            }
-                                                                        });
-                                                                    }
-                                                                });
-                                                            }  else {
-                                                                app.model.payment.create(payment, (error, item) =>{
-                                                                    if(error || !item){
-                                                                        err = error;
-                                                                        handleImport(index + 1);
-                                                                    } else {
-                                                                        handleImport(index + 1);
-                                                                    }
-                                                                    });
+                                        }
+                                        else{
+                                            const revenue = {
+                                                payer: item._id,
+                                                receiver: null,
+                                                fee: payment.moneyAmount,
+                                                date: new Date(),
+                                                type: 'offline',
+                                                course: item.course && item.course._id,
+                                                courseType: item.courseType && item.courseType._id,
+                                            };
+                                            app.model.revenue.create(revenue, (error) => {
+                                                if(error) {
+                                                    err = error;
+                                                    handleImport(index + 1);
+                                                } 
+                                                else {
+                                                    app.model.setting.get('revenue', result => {
+                                                        if (result && Object.keys(result).length != 0) {
+                                                            let value = result.revenue && result.revenue.split(';');
+                                                            value = value.sort((a, b) => parseInt(a.slice(0, 3)) - parseInt(b.slice(0, 3)));
+                                                            const indexYear = value.findIndex(item => item.startsWith(year));
+                                                            if (indexYear != -1) {
+                                                                const newItem = value[indexYear].split(':');
+                                                                newItem[2] = parseInt(newItem[2]);
+                                                                newItem[2] = newItem[2] + parseInt(payment.moneyAmount);
+                                                                value[indexYear] = newItem.join(':');
+                                                                data.revenue = value.join(';');
+                                                            } else {
+                                                                const indexPreviousYear = value.findIndex(item => item.startsWith(year - 1));
+                                                                if (indexPreviousYear != -1) {
+                                                                    const newItem = value[indexPreviousYear].split(':');
+                                                                    newItem[2] = parseInt(newItem[2]);
+                                                                    newItem[2] = newItem[2] + parseInt(payment.moneyAmount);
+                                                                    data.revenue = result.revenue + year + ':revenue:' + newItem[2];
+                                                                } else {
+                                                                    data.revenue = result.revenue + year + ':revenue:' + parseInt(payment.moneyAmount);
+                                                                }
                                                             }
-                                                        }
-                                                    });
-                                                } else {
-                                                    data.revenue = year + ':revenue:' + parseInt(payment.moneyAmount);
-                                                    app.model.setting.set(data, err => {
-                                                        if (err) if(error || !item){
-                                                            err = error;
-                                                            handleImport(index + 1);
+                                                            app.model.setting.set(data, err => {
+                                                                if (err){
+                                                                    err = error;
+                                                                    handleImport(index + 1);
+                                                                } else {
+                                                                    if(hocPhi && (hocPhiConLai-data.fee) <= (0)){
+                                                                        app.model.student.update({_id: item._id}, {activeKhoaThucHanh: true}, (error) => {
+                                                                            if(error) {
+                                                                                err = error;
+                                                                                handleImport(index + 1);
+                                                                            } 
+                                                                            else {
+                                                                                app.model.payment.create(payment, (error, item) =>{
+                                                                                    if(error || !item){
+                                                                                        err = error;
+                                                                                        handleImport(index + 1);
+                                                                                    } else {
+                                                                                        handleImport(index + 1);
+                                                                                    }
+                                                                                });
+                                                                            }
+                                                                        });
+                                                                    } 
+                                                                    else if(hocPhi && (hocPhiConLai-data.fee) <= (hocPhi/2)){
+                                                                        app.model.student.update({_id: item._id}, {activeKhoaLyThuyet: true}, (error) => {
+                                                                            if(error) {
+                                                                                err = error;
+                                                                                handleImport(index + 1);
+                                                                            } 
+                                                                            else {
+                                                                                app.model.payment.create(payment, (error, item) =>{
+                                                                                    if(error || !item){
+                                                                                        err = error;
+                                                                                        handleImport(index + 1);
+                                                                                    } else {
+                                                                                        handleImport(index + 1);
+                                                                                    }
+                                                                                });
+                                                                            }
+                                                                        });
+                                                                    }  else {
+                                                                        app.model.payment.create(payment, (error, item) =>{
+                                                                            if(error || !item){
+                                                                                err = error;
+                                                                                handleImport(index + 1);
+                                                                            } else {
+                                                                                handleImport(index + 1);
+                                                                            }
+                                                                            });
+                                                                    }
+                                                                }
+                                                            });
                                                         } else {
-                                                            if(hocPhi && (hocPhiConLai-data.fee) <= (0)){
-                                                                app.model.student.update({_id: item._id}, {activeKhoaThucHanh: true}, (error) => {
-                                                                    if(error) if(error || !item){
-                                                                        err = error;
-                                                                        handleImport(index + 1);
-                                                                    }
-                                                                    else {
+                                                            data.revenue = year + ':revenue:' + parseInt(payment.moneyAmount);
+                                                            app.model.setting.set(data, err => {
+                                                                if (err) if(error || !item){
+                                                                    err = error;
+                                                                    handleImport(index + 1);
+                                                                } else {
+                                                                    if(hocPhi && (hocPhiConLai-data.fee) <= (0)){
+                                                                        app.model.student.update({_id: item._id}, {activeKhoaThucHanh: true}, (error) => {
+                                                                            if(error) if(error || !item){
+                                                                                err = error;
+                                                                                handleImport(index + 1);
+                                                                            }
+                                                                            else {
+                                                                                app.model.payment.create(payment, (error, item) =>{
+                                                                                    if(error || !item){
+                                                                                        err = error;
+                                                                                        handleImport(index + 1);
+                                                                                    } else {
+                                                                                        handleImport(index + 1);
+                                                                                    }
+                                                                                });
+                                                                            }
+                                                                        });
+                                                                    } 
+                                                                    else if(hocPhi && (hocPhiConLai-data.fee) <= (hocPhi/2)){
+                                                                        app.model.student.update({_id: item._id}, {activeKhoaLyThuyet: true}, (error) => {
+                                                                            if(error) {
+                                                                                err = error;
+                                                                                handleImport(index + 1);
+                                                                            }
+                                                                            else {
+                                                                                app.model.payment.create(payment, (error, item) =>{
+                                                                                    if(error || !item){
+                                                                                        err = error;
+                                                                                        handleImport(index + 1);
+                                                                                    } else {
+                                                                                        handleImport(index + 1);
+                                                                                    }
+                                                                                });
+                                                                            }
+                                                                        });
+                                                                    }  else {
                                                                         app.model.payment.create(payment, (error, item) =>{
                                                                             if(error || !item){
                                                                                 err = error;
@@ -703,47 +902,181 @@ module.exports = app => {
                                                                             } else {
                                                                                 handleImport(index + 1);
                                                                             }
-                                                                        });
+                                                                            });
                                                                     }
-                                                                });
-                                                            } 
-                                                            else if(hocPhi && (hocPhiConLai-data.fee) <= (hocPhi/2)){
-                                                                app.model.student.update({_id: item._id}, {activeKhoaLyThuyet: true}, (error) => {
-                                                                    if(error) {
-                                                                        err = error;
-                                                                        handleImport(index + 1);
-                                                                    }
-                                                                    else {
-                                                                        app.model.payment.create(payment, (error, item) =>{
-                                                                            if(error || !item){
-                                                                                err = error;
-                                                                                handleImport(index + 1);
-                                                                            } else {
-                                                                                handleImport(index + 1);
-                                                                            }
-                                                                        });
-                                                                    }
-                                                                });
-                                                            }  else {
-                                                                app.model.payment.create(payment, (error, item) =>{
-                                                                    if(error || !item){
-                                                                        err = error;
-                                                                        handleImport(index + 1);
-                                                                    } else {
-                                                                        handleImport(index + 1);
-                                                                    }
-                                                                    });
-                                                            }
+                                                                }
+                                                            });
                                                         }
-                                                    });
+                                        
+                                                    });              
                                                 }
-                                
-                                            });              
+                                            });  
                                         }
                                     });
+                                });
+                            } else {
+                                app.model.student.addPayment({ _id: item._id }, data, (error, item) => {
+                                    payment.student = item._id;
+                                    payment.firstname = item.firstname;
+                                    payment.lastname = item.lastname;
+                                    payment.courseType = item.courseType && item.courseType._id;
+                                    if(error) {
+                                        err = error;
+                                        handleImport(index + 1);
+                                    }
+                                    else{
+                                        const revenue = {
+                                            payer: item._id,
+                                            receiver: null,
+                                            fee: payment.moneyAmount,
+                                            date: new Date(),
+                                            type: 'offline',
+                                            course: item.course && item.course._id,
+                                            courseType: item.courseType && item.courseType._id,
+                                        };
+                                        app.model.revenue.create(revenue, (error) => {
+                                            if(error) {
+                                                err = error;
+                                                handleImport(index + 1);
+                                            } 
+                                            else {
+                                                app.model.setting.get('revenue', result => {
+                                                    if (result && Object.keys(result).length != 0) {
+                                                        let value = result.revenue && result.revenue.split(';');
+                                                        value = value.sort((a, b) => parseInt(a.slice(0, 3)) - parseInt(b.slice(0, 3)));
+                                                        const indexYear = value.findIndex(item => item.startsWith(year));
+                                                        if (indexYear != -1) {
+                                                            const newItem = value[indexYear].split(':');
+                                                            newItem[2] = parseInt(newItem[2]);
+                                                            newItem[2] = newItem[2] + parseInt(payment.moneyAmount);
+                                                            value[indexYear] = newItem.join(':');
+                                                            data.revenue = value.join(';');
+                                                        } else {
+                                                            const indexPreviousYear = value.findIndex(item => item.startsWith(year - 1));
+                                                            if (indexPreviousYear != -1) {
+                                                                const newItem = value[indexPreviousYear].split(':');
+                                                                newItem[2] = parseInt(newItem[2]);
+                                                                newItem[2] = newItem[2] + parseInt(payment.moneyAmount);
+                                                                data.revenue = result.revenue + year + ':revenue:' + newItem[2];
+                                                            } else {
+                                                                data.revenue = result.revenue + year + ':revenue:' + parseInt(payment.moneyAmount);
+                                                            }
+                                                        }
+                                                        app.model.setting.set(data, err => {
+                                                            if (err){
+                                                                err = error;
+                                                                handleImport(index + 1);
+                                                            } else {
+                                                                if(hocPhi && (hocPhiConLai-data.fee) <= (0)){
+                                                                    app.model.student.update({_id: item._id}, {activeKhoaThucHanh: true}, (error) => {
+                                                                        if(error) {
+                                                                            err = error;
+                                                                            handleImport(index + 1);
+                                                                        } 
+                                                                        else {
+                                                                            app.model.payment.create(payment, (error, item) =>{
+                                                                                if(error || !item){
+                                                                                    err = error;
+                                                                                    handleImport(index + 1);
+                                                                                } else {
+                                                                                    handleImport(index + 1);
+                                                                                }
+                                                                            });
+                                                                        }
+                                                                    });
+                                                                } 
+                                                                else if(hocPhi && (hocPhiConLai-data.fee) <= (hocPhi/2)){
+                                                                    app.model.student.update({_id: item._id}, {activeKhoaLyThuyet: true}, (error) => {
+                                                                        if(error) {
+                                                                            err = error;
+                                                                            handleImport(index + 1);
+                                                                        } 
+                                                                        else {
+                                                                            app.model.payment.create(payment, (error, item) =>{
+                                                                                if(error || !item){
+                                                                                    err = error;
+                                                                                    handleImport(index + 1);
+                                                                                } else {
+                                                                                    handleImport(index + 1);
+                                                                                }
+                                                                            });
+                                                                        }
+                                                                    });
+                                                                }  else {
+                                                                    app.model.payment.create(payment, (error, item) =>{
+                                                                        if(error || !item){
+                                                                            err = error;
+                                                                            handleImport(index + 1);
+                                                                        } else {
+                                                                            handleImport(index + 1);
+                                                                        }
+                                                                        });
+                                                                }
+                                                            }
+                                                        });
+                                                    } else {
+                                                        data.revenue = year + ':revenue:' + parseInt(payment.moneyAmount);
+                                                        app.model.setting.set(data, err => {
+                                                            if (err) if(error || !item){
+                                                                err = error;
+                                                                handleImport(index + 1);
+                                                            } else {
+                                                                if(hocPhi && (hocPhiConLai-data.fee) <= (0)){
+                                                                    app.model.student.update({_id: item._id}, {activeKhoaThucHanh: true}, (error) => {
+                                                                        if(error) if(error || !item){
+                                                                            err = error;
+                                                                            handleImport(index + 1);
+                                                                        }
+                                                                        else {
+                                                                            app.model.payment.create(payment, (error, item) =>{
+                                                                                if(error || !item){
+                                                                                    err = error;
+                                                                                    handleImport(index + 1);
+                                                                                } else {
+                                                                                    handleImport(index + 1);
+                                                                                }
+                                                                            });
+                                                                        }
+                                                                    });
+                                                                } 
+                                                                else if(hocPhi && (hocPhiConLai-data.fee) <= (hocPhi/2)){
+                                                                    app.model.student.update({_id: item._id}, {activeKhoaLyThuyet: true}, (error) => {
+                                                                        if(error) {
+                                                                            err = error;
+                                                                            handleImport(index + 1);
+                                                                        }
+                                                                        else {
+                                                                            app.model.payment.create(payment, (error, item) =>{
+                                                                                if(error || !item){
+                                                                                    err = error;
+                                                                                    handleImport(index + 1);
+                                                                                } else {
+                                                                                    handleImport(index + 1);
+                                                                                }
+                                                                            });
+                                                                        }
+                                                                    });
+                                                                }  else {
+                                                                    app.model.payment.create(payment, (error, item) =>{
+                                                                        if(error || !item){
+                                                                            err = error;
+                                                                            handleImport(index + 1);
+                                                                        } else {
+                                                                            handleImport(index + 1);
+                                                                        }
+                                                                        });
+                                                                }
+                                                            }
+                                                        });
+                                                    }
                                     
-                                }
-                            });
+                                                });              
+                                            }
+                                        });
+                                        
+                                    }
+                                });
+                            } 
                         }
                     });
                 }
