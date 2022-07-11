@@ -23,7 +23,7 @@ class ChangeLecturerModal extends AdminModal {
     onShow = (item) => {
         let { _id, student, requestedLecturer, lecturer, startDate, reason, state } = item || { _id: null, student: null, lecturer: null, startDate: '', reason: '', state: 'waiting' };
         this.itemStudent.value(student ? student.lastname + ' ' + student.firstname : '');
-        this.itemRequestedLecturer.value(requestedLecturer ? requestedLecturer : 'Chưa có');
+        this.itemRequestedLecturer.value(requestedLecturer ? requestedLecturer.lastname +' '+ requestedLecturer.firstname + (requestedLecturer.identityCard ? '(' + requestedLecturer.identityCard +')' : ''): 'Chưa có');
         this.itemStartDate.value(startDate);
         this.itemReason.value(reason);
         this.itemState.value(state);
@@ -105,7 +105,7 @@ class ChangeLecturerPage extends AdminPage {
                 <tr key={index}>
                     <TableCell type='number' content={index + 1} />
                     <TableCell type='text' content={`${item.student && item.student.lastname} ${item.student && item.student.firstname}`} />
-                    <TableCell type='text' content={item.requestedLecturer ? item.requestedLecturer : 'Chưa có'} />
+                    <TableCell type='text' content={item.requestedLecturer ? item.requestedLecturer.lastname + ' ' + item.requestedLecturer.firstname + (item.requestedLecturer.identityCard ? '(' + item.requestedLecturer.identityCard +')' : '') : 'Chưa có'} />
                     <TableCell type='text' content={item.lecturer ? item.lecturer.lastname + ' ' + item.lecturer.firstname : 'Chưa có'} />
                     <TableCell type='text' content={item.reason} />
                     <TableCell type='date' content={new Date(item.createdDate).getShortText()} />

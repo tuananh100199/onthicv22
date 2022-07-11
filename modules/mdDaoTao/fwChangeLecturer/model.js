@@ -1,7 +1,7 @@
 module.exports = app => {
     const schema = app.database.mongoDB.Schema({
         student: { type: app.database.mongoDB.Schema.ObjectId, ref: 'Student' },              // Học viên đổi
-        requestedLecturer: String,                                              // Giáo viên được học viên yêu cầu
+        requestedLecturer: { type: app.database.mongoDB.Schema.ObjectId, ref: 'User' },         // Giáo viên được học viên yêu cầu
         lecturer: { type: app.database.mongoDB.Schema.ObjectId, ref: 'User' },                // Giáo viên được thay đổi
         reason: String,
         createdDate: { type: Date, default: Date.now },
@@ -20,7 +20,7 @@ module.exports = app => {
                 let result = { totalItem, pageSize, pageTotal: Math.ceil(totalItem / pageSize) };
                 result.pageNumber = pageNumber === -1 ? result.pageTotal : Math.min(pageNumber, result.pageTotal);
                 const skipNumber = (result.pageNumber > 0 ? result.pageNumber - 1 : 0) * result.pageSize;
-                model.find(condition).populate('student', 'lastname firstname division').populate('lecturer', 'lastname firstname phoneNumber identityCard').sort({ _id: -1 }).skip(skipNumber).limit(result.pageSize).exec((error, list) => {
+                model.find(condition).populate('student', 'lastname firstname division').populate('requestedLecturer', 'lastname firstname phoneNumber identityCard').populate('lecturer', 'lastname firstname phoneNumber identityCard').sort({ _id: -1 }).skip(skipNumber).limit(result.pageSize).exec((error, list) => {
                     result.list = list;
                     done(error, result);
                 });

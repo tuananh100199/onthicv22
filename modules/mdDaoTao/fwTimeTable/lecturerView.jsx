@@ -4,12 +4,22 @@ import {getTimeTablePageByAdmin, updateTimeTableByAdmin, createTimeTableByAdmin,
 import { getStudent, ajaxSelectStudentOfLecturer } from 'modules/mdDaoTao/fwStudent/redux';
 import { getCourse } from 'modules/mdDaoTao/fwCourse/redux';
 import { getCarOfLecturer } from 'modules/mdDaoTao/fwCar/redux';
+import { getUserChatToken } from 'modules/mdDaoTao/fwChat/redux';
+import { createNotification } from 'modules/_default/fwNotification/redux';
+import { getNotificationTemplateAll } from 'modules/mdTruyenThong/fwNotificationTemplate/redux';
 import Pagination from 'view/component/Pagination';
-import { AdminPage, AdminModal, TableCell, renderTable, FormTextBox, FormSelect, FormDatePicker,FormCheckbox  } from 'view/component/AdminPage';
+import { AdminPage, AdminModal, TableCell, renderTable, FormTextBox, FormSelect, FormDatePicker,FormCheckbox, FormRichTextBox, FormEditor  } from 'view/component/AdminPage';
 import {  RegisterCalendarStatesMapper,RegisterCalendarStates,sectionHours,sectionOverTimeHours,timeOffStatesMapper } from 'modules/mdDaoTao/fwRegisterCalendar/index';
 import Dropdown from 'view/component/Dropdown';
 import {  getAllRegisterCalendars } from 'modules/mdDaoTao/fwRegisterCalendar/redux';
+import axios from 'axios';
 
+const defaultTitleHuyDangKyThoiKhoaBieu = 'Thông báo về việc huỷ đăng ký thời khoá biểu!',
+defaultAbstractHuyDangKyThoiKhoaBieu = 'Thông báo về việc huỷ đăng ký thời khoá biểu ngày {ngayDangKy}',
+defaultContentHuyDangKyThoiKhoaBieu = '<p>Xin chào {ho_ten} {cmnd},</p>\n<p>Trung tâm Đào tạo và Sát hạch lái xe Hiệp Phát thông báo huỷ thời khoá biểu học thực hành bạn đã đăng ký ngày {ngayDangKy} với lý do: {lyDoHuyThoiKhoaBieu}, chúng tôi sẽ thông báo tới bạn các buổi học khác trong thời gian sớm nhất!</p>',
+defaultTitleDangKyThoiKhoaBieu = 'Thông báo về việc đăng ký thời khoá biểu thành công!',
+defaultAbstractDangKyThoiKhoaBieu = 'Thông báo về việc đăng ký thời khoá biểu ngày: {ngayDangKy} thành công',
+defaultContentDangKyThoiKhoaBieu = '<p>Xin chào {ho_ten} {cmnd},</p>\n<p>Trung tâm Đào tạo và Sát hạch lái xe Hiệp Phát thông báo thời khoá biểu ngày {ngayDangKy} đã được xác nhận, bạn vui lòng có mặt trước 15p chuẩn bị tham gia buổi học!</p>';
 class TimeTableModal extends AdminModal {
     state = {listTimeTable: null};
     sectionHour = {};
@@ -377,18 +387,104 @@ class TimeTableModal extends AdminModal {
                     </> :null }
                     
 
-                    {/* <FormCheckbox ref={e => this.itemTruant = e} label='Học viên vắng học' className='col-md-4' readOnly={this.props.readOnly} />
-                    <FormSelect className='col-md-4' ref={e => this.itemState = e} label='Trạng thái' data={RegisterCalendarStates} readOnly={this.props.readOnly} /> 
+                    <FormCheckbox ref={e => this.itemTruant = e} label='Học viên vắng học' className='col-md-4' readOnly={false} />
+                    <FormSelect className='col-md-4' ref={e => this.itemState = e} label='Trạng thái' data={RegisterCalendarStates} readOnly={false} /> 
 
-                    <FormRichTextBox ref={e => this.itemContent = e} label='Nội dung học' className='col-lg-6' readOnly={this.props.readOnly} />
-                    <FormRichTextBox ref={e => this.itemNote = e} label='Ghi chú' className='col-lg-6' readOnly={this.props.readOnly} /> */}
+                    <FormRichTextBox ref={e => this.itemContent = e} label='Nội dung học' className='col-lg-6' readOnly={false} />
+                    <FormRichTextBox ref={e => this.itemNote = e} label='Ghi chú' className='col-lg-6' readOnly={false} />
                 </div>
             </>,
-        //     buttons: <>
-        //         {this.state._id && this.props.calendar ? <button type='button' className='btn btn-danger' onClick={() => this.delete()}>Xóa</button> : null}
-        // </>
+            buttons: <>
+                {this.state._id && this.props.calendar ? 
+                [
+                    <button type='button' key={1} className='btn btn-danger' onClick={() => this.delete()}>Xóa</button>,
+                    // <button type='button' className='btn btn-primary' onClick={() => this.onSubmit()}>Lưu</button>
+                ] : null}
+        </>
         });
     }
+}
+
+class NotificationModal extends AdminModal {
+    state = {};
+    componentDidMount() {
+        $(document).ready(() => this.onShown(() => this.itemTitle.focus()));
+    }
+
+    onShow = (item) => {
+        const { state, student } = item;
+        const { _id, title, content, abstract } = (state =='approved' ? this.props.data : this.props.dataHuyThoiKhoaBieu) || { _id: '', title: '', content: '', abstract: '' };
+        console.log(item);
+        let newAbstract = '',
+        newContent = '';
+        newAbstract = abstract.replaceAll('{ho_ten}', student ? student.fullName : '')
+            .replaceAll('{cmnd}',student ? '(' + student.identityCard + ')' : '')
+            .replaceAll('{ngayDangKy}', item && item.date ? T.dateToText(item.date, 'dd/mm/yyyy') : '');
+            newContent = content.replaceAll('{ho_ten}', student ? student.fullName : '')
+            .replaceAll('{cmnd}', student ? '(' + student.identityCard + ')' : '')
+            .replaceAll('{lyDoHuyThoiKhoaBieu}', 'Không sắp xếp được giáo viên')
+            .replaceAll('{ngayDangKy}', item && item.date ? T.dateToText(item.date, 'dd/mm/yyyy') : '');
+        this.itemTitle.value(title);
+        this.itemAbstract.value(newAbstract);
+        this.itemContent.html(newContent);
+        this.setState({ _id, item, content, abstract });
+    }
+
+    onSend = () => {
+        const student = this.state.item && this.state.item.student,
+        user = student && student.user;
+        const data = {
+            title: this.itemTitle.value(),
+            abstract: this.itemAbstract.value(),
+            content: this.itemContent.html(),
+            type: '0',
+            user: user._id,
+            sentDate: new Date(),
+        };
+        T.confirm('Xác nhận gửi thông báo thời khoá biểu', 'Bạn có chắc muốn gửi thông báo thời khoá biểu đến học viên ' + student.fullName , true, isConfirm =>
+            isConfirm && this.props.create(data, () => {
+                this.props.getUserChatToken(data.user, dataUser => {
+                    if (dataUser && dataUser.token){
+                        axios.post('https://fcm.googleapis.com/fcm/send', {
+                            notification: {
+                                title: data.title,
+                                type: data.type,
+                                body: data.content,
+                                abstract: data.abstract,
+                                mutable_content: true,
+                                sound: 'Tri-tone'
+                            },
+                            to:  dataUser.token
+                        },
+                            {
+                                headers: {
+                                    Authorization: 'key=AAAAyyg1JDc:APA91bGhj8NFiemEgwLCesYoQcbGOiZ0KX2qbc7Ir7sFnANrypzIpniGsVZB9xS8ZtAkRrYqLCi5QhFGp32cKjsK_taIIXrkGktBrCZk7u0cphZ1hjI_QXFGRELhQQ_55xdYccZvmZWg'
+                                }
+                            }
+                        );
+                    }
+                });
+                T.notify('Gửi thông báo thành công!', 'success');
+                this.hide();
+                window.location.reload();
+            }));   
+    }
+
+    render = () => this.renderModal({
+        title: 'Cấu hình thông báo học viên',
+        size: 'large',
+        dataBackdrop: 'static',
+        body: <>
+            <FormTextBox ref={e => this.itemTitle = e} label='Chủ đề' readOnly={this.props.readOnly} />
+            <FormTextBox ref={e => this.itemFee = e} label='Số tiền hoàn' readOnly={true} />
+            <FormRichTextBox ref={e => this.itemAbstract = e} label='Mô tả ngắn gọn' readOnly={this.props.readOnly} />
+            <FormEditor ref={e => this.itemContent = e} smallText={'{ho_ten},{cmnd}'} uploadUrl='/user/upload?category=notification' label='Nội dung' readOnly={this.props.readOnly} />
+        </>,
+        buttons:
+            <a className='btn btn-success' href='#' onClick={e => this.onSend(e)} style={{ color: 'white' }}>
+                <i className='fa fa-lg fa-paper-plane' /> Gửi thông báo
+            </a>
+    });
 }
 
 class LecturerView extends AdminPage {
@@ -413,6 +509,43 @@ class LecturerView extends AdminPage {
             this.getTimeTablePage(undefined, undefined);
             this.props.getAllRegisterCalendars({lecturerId});
         }
+
+        this.props.getNotificationTemplateAll({}, data => {
+            if (data && data.length) {
+                const indexThoiKhoaBieu = data.findIndex(template => template.state == 'thoiKhoaBieu');
+                if (indexThoiKhoaBieu != -1) {
+                    this.setState({ data: data[indexThoiKhoaBieu] });
+                } else {
+                    this.setState({
+                        data: {
+                            title: defaultTitleDangKyThoiKhoaBieu,
+                            abstract: defaultAbstractDangKyThoiKhoaBieu,
+                            content: defaultContentDangKyThoiKhoaBieu,
+                        }
+                    });
+                }
+                const indexHuyThoiKhoaBieu = data.findIndex(template => template.state == 'huyThoiKhoaBieu');
+                if (indexHuyThoiKhoaBieu != -1) {
+                    this.setState({ data: data[indexHuyThoiKhoaBieu] });
+                } else {
+                    this.setState({
+                        dataHuyThoiKhoaBieu: {
+                            title: defaultTitleHuyDangKyThoiKhoaBieu,
+                            abstract: defaultAbstractHuyDangKyThoiKhoaBieu,
+                            content: defaultContentHuyDangKyThoiKhoaBieu,
+                        }
+                    });
+                }
+            } else {
+                this.setState({
+                    dataHuyThoiKhoaBieu: {
+                        title: defaultTitleHuyDangKyThoiKhoaBieu,
+                        abstract: defaultAbstractHuyDangKyThoiKhoaBieu,
+                        content: defaultContentHuyDangKyThoiKhoaBieu
+                    }
+                });
+            }
+        });
 
         const _this = this;
         T.ready('/user/course', () => {
@@ -487,19 +620,6 @@ class LecturerView extends AdminPage {
     }
 
     onModalFormSave = (_id, data, done) => {
-        // _id ? this.updateTimeTable(_id, data, item => {
-        //     done && done();
-        //     if (this.eventSelect && item) {
-        //         const eventSelect = this.getEventObject(this.eventSelect, item);
-        //         $(this.calendar).fullCalendar('removeEvents', [this.eventSelect._id]);
-        //         $(this.calendar).fullCalendar('renderEvent', eventSelect);
-        //         this.eventSelect = null;
-        //     }
-        // }) : this.props.createTimeTableByAdmin(data, {courseId: this.props.courseId, lecturerId: this.props.lecturerId, filterOn: this.props.filterOn, filterType: this.props.filterType, official: this.props.official}, data => {
-        //     done && done();
-        //     const newEvent = this.getEventObject({}, data);
-        //     $(this.calendar).fullCalendar('renderEvent', newEvent);
-        // });
         if(!_id){
             const {selectedSectionHours, selectedSectionOverTimeHours } = data;
             const list = selectedSectionHours.concat(selectedSectionOverTimeHours);
@@ -607,7 +727,13 @@ class LecturerView extends AdminPage {
                             <TableCell content={dropdownState} style={{ whiteSpace: 'nowrap', textAlign: 'center' }} />:
                             <TableCell type='text' content={RegisterCalendarStatesMapper[item.state] && RegisterCalendarStatesMapper[item.state].text} style={{ whiteSpace: 'nowrap', textAlign: 'center', color: RegisterCalendarStatesMapper[item.state] && RegisterCalendarStatesMapper[item.state].color }}  nowrap='true'/>
                         }
-                        <TableCell type='buttons' content={item} permission={permission} onEdit={this.edit} onDelete={this.delete} />
+                        <TableCell type='buttons' content={item} permission={permission} onEdit={this.edit} onDelete={this.delete}>
+                            {this.state.isCourseAdmin && (item.state == 'approved' || item.state == 'reject')  &&
+                                <a className='btn btn-success' href='#' onClick={e => e.preventDefault() || this.notiModal.show(item)}>
+                                    <i className='fa fa-lg fa-paper-plane' />
+                                </a>}
+                        </TableCell>
+                        
                     </tr>
             );
         },
@@ -621,6 +747,7 @@ class LecturerView extends AdminPage {
                 </div>
                 <TimeTableModal ref={e => this.modal = e} getTimeTabletAll = {this.props.getTimeTabletAll} listTeacherDateOff={listTeacherDateOff} isCourseAdmin={this.state.isCourseAdmin} readOnly={!permission.write||!this.state.isCourseAdmin} courseItem={courseItem} getStudent={this.props.getStudent} courseId={this.props.courseId} lecturerId={this.props.lecturerId} filterOn={this.props.filterOn} calendar={this.props.calendar} lecturerName={this.props.lecturerName}
                     create={this.props.createTimeTableByAdmin} update={this.props.updateTimeTableByAdmin} delete={this.deleteCalendar} getDateNumber={this.props.getTimeTableDateNumber} getPage={this.props.getTimeTablePageByAdmin} getTimeTableOfLecturer={this.props.getTimeTableOfLecturer} onSave={this.onModalFormSave} getCarOfLecturer={this.props.getCarOfLecturer}  /> 
+                 <NotificationModal readOnly={!permission.write} ref={e => this.notiModal = e} create={this.props.createNotification} getUserChatToken={this.props.getUserChatToken} data={this.state.data} dataHuyThoiKhoaBieu={this.state.dataHuyThoiKhoaBieu} />
                  <Pagination name='pageTimeTable' pageNumber={pageNumber} pageSize={pageSize} pageTotal={pageTotal} totalItem={totalItem} style={{ left: 320 }}
                         getPage={this.getPage} />
                 {this.state.isCourseAdmin ?
@@ -634,6 +761,6 @@ class LecturerView extends AdminPage {
 }
 
 const mapStateToProps = state => ({ system: state.system, course: state.trainning.course, timeTable: state.trainning.timeTable,registerCalendar:state.trainning.registerCalendar });
-const mapActionsToProps = { getTimeTablePageByAdmin, updateTimeTableByAdmin, createTimeTableByAdmin, deleteTimeTableByAdmin, getTimeTableDateNumber, getCourse, getStudent, getTimeTableOfLecturer, getCarOfLecturer,getAllRegisterCalendars,getTimeTabletAll,createTimeTableMulti };
+const mapActionsToProps = { getTimeTablePageByAdmin, updateTimeTableByAdmin, createTimeTableByAdmin, deleteTimeTableByAdmin, getTimeTableDateNumber, getCourse, getStudent, getTimeTableOfLecturer, getCarOfLecturer,getAllRegisterCalendars,getTimeTabletAll,createTimeTableMulti, getUserChatToken, createNotification, getNotificationTemplateAll };
 export default connect(mapStateToProps, mapActionsToProps)(LecturerView);
 

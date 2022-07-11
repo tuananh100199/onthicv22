@@ -238,6 +238,7 @@ class SectionChat extends AdminPage {
 
     renderChatBox = (listChats, chats, prevItem, _userId) => {
         if (chats && chats.length && prevItem) {
+            console.log(prevItem);
             const sent = prevItem.sent ? T.dateToText(new Date(prevItem.sent), 'dd/mm HH:MM') : '';
             listChats.push(
                 <div key={listChats.length} style={{ width: '100%', display: 'flex', marginBottom: 8 }}>
@@ -245,7 +246,7 @@ class SectionChat extends AdminPage {
                         <>
                             <div style={{ width: '70%', position: 'relative', border: 'solid 1px #ddd', borderRadius: 6, padding: 8, marginLeft: '20%', textAlign: 'right' }}>
                                 <p style={{ marginBottom: 6, fontWeight: 'bolder' }}>
-                                    {prevItem.sender ? prevItem.sender.lastname : 'Người dùng hệ thống'} {prevItem.sender ? prevItem.sender.firstname : ''}
+                                    {prevItem.sender ? prevItem.sender.lastname : 'Người dùng hệ thống'} {prevItem.sender ? prevItem.sender.firstname : ''} {prevItem.sender.isCourseAdmin ? ' - QTV' : ''}
                                 </p>
                                 <small className='text-secondary' style={{ position: 'absolute', top: 6, left: 6 }}>{sent}</small>
                                 {chats}
@@ -259,7 +260,7 @@ class SectionChat extends AdminPage {
                                 <img src={prevItem.sender ? prevItem.sender.image : '/img/avatar-default.png'} alt='image' style={{ width: '100%', height: 'auto', borderRadius: '50%', border: 'solid 1px #ddd' }} />
                             </div>
                             <div style={{ width: '70%', position: 'relative', border: 'solid 1px #ddd', borderRadius: 6, padding: 8 }}>
-                                <p style={{ marginBottom: 6, fontWeight: 'bolder' }}>{prevItem.sender ? prevItem.sender.lastname : 'Người dùng hệ thống'} {prevItem.sender ? prevItem.sender.firstname : ''}</p>
+                                <p style={{ marginBottom: 6, fontWeight: 'bolder' }}>{prevItem.sender ? prevItem.sender.lastname : 'Người dùng hệ thống'} {prevItem.sender ? prevItem.sender.firstname : ''} {prevItem.sender.isCourseAdmin ? ' - QTV' : ''}</p>
                                 <small className='text-secondary' style={{ position: 'absolute', top: 6, right: 6 }}>{sent}</small>
                                 {chats}
                             </div>

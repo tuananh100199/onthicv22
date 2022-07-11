@@ -144,7 +144,7 @@ class CommentTextBox extends React.Component {
                 </div>
                 <div className='comments-buttons' ref={e => this.buttons = e} style={hideAvatar ? { marginLeft: 0, paddingLeft: 0, paddingRight: 0 } : {}}>
                     <small className='text-hint'>Nhấn shift + enter để thêm dòng mới</small>
-                    <button className='btn btn-primary' onClick={e => this.onSave(e)}><i className='fa fa-send' /> Lưu</button>
+                    <button className='btn btn-primary' onClick={e => this.onSave(e)}><i className='fa fa-send' /> Gửi</button>
                     <button className='btn btn-secondary' style={{ marginLeft: '5px' }} onClick={e => this.cancel(e)}><i className='fa fa-ban' /> Hủy</button>
                 </div>
             </div>
