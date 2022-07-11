@@ -77,6 +77,7 @@ class UserCoursePageDetail extends AdminPage {
                     <PageIcon to={`/user/hoc-vien/khoa-hoc/${courseId}/cong-no/huong-dan`} icon='fa-book' iconBackgroundColor='#CD5C5C' text='Hướng dẫn sử dụng' />
                     <PageIcon to={`/user/hoc-vien/khoa-hoc/${courseId}/cong-no/chinh-thuc`} icon='fa-credit-card' iconBackgroundColor='#17a2b8' text='Học phí chính thức' />
                     <PageIcon to={`/user/hoc-vien/khoa-hoc/${courseId}/cong-no/tang-them`} icon='fa-plus' iconBackgroundColor='#3e24aa' text='Học phí tăng thêm' />
+                    <PageIcon to={`/user/hoc-vien/khoa-hoc/${courseId}/cong-no/giam-gia`} icon='fa-gift' iconBackgroundColor='#CC0' text='Mã giảm giá của bạn' />
                     <PageIcon to={`/user/hoc-vien/khoa-hoc/${courseId}/cong-no/lich-su`} icon='fa-history' iconBackgroundColor='#8d74aa' text='Lịch sử thanh toán' />
                     <MessengerCustomerChat
                         pageId='102156059185946'

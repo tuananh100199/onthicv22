@@ -257,6 +257,13 @@ class adminEditPage extends AdminPage {
         }
     }
 
+    onHandleRatingCourse = (e,rate)=>{
+        e.preventDefault();
+        if(rate) T.alert('Bạn đã thực hiện đánh giá rồi!', 'error', false, 2000);
+        else{
+            this.modal.show();
+        }
+    }
     render() {
         const { lessonId, subjectId, title, courseId, tienDoHocTap, isView, listViewVideo, monThucHanh, nextLesson } = this.state,
             lesson = this.props.lesson && this.props.lesson.item,
@@ -268,7 +275,7 @@ class adminEditPage extends AdminPage {
                 <div key={index} className=' pb-5'>
                     <div className='d-flex justify-content-center'>
                         <div className='embed-responsive embed-responsive-16by9' style={{ width: '70%', display: 'block' }} >
-                            <YouTube opts={{ playerVars: { 'autoplay': 0, 'controls': ((listViewVideo && (listViewVideo.findIndex(viewVideo => viewVideo == video._id) != -1)) || !(isView === 'false')) ? 1 : 0, 'rel': 0, 'modestbranding': 1, 'showinfo': 0 } }} videoId={video.link} containerClassName='embed embed-youtube' onEnd={(e) => this.onEnd(e)} onStateChange={(e) => this.onStateChange(e, video._id)} />
+                            <YouTube opts={{ playerVars: { 'autoplay': 0, 'disablekb': 1, 'controls': ((listViewVideo && (listViewVideo.findIndex(viewVideo => viewVideo == video._id) != -1)) || !(isView === 'false')) ? 1 : 0, 'rel': 0, 'modestbranding': 1, 'showinfo': 0 } }} videoId={video.link} containerClassName='embed embed-youtube' onEnd={(e) => this.onEnd(e)} onStateChange={(e) => this.onStateChange(e, video._id)} />
                         </div>
                     </div>
                     <p id={video._id} className='text-center' ></p>
@@ -328,7 +335,7 @@ class adminEditPage extends AdminPage {
                     <div className='tile-footer' >
                         <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                             <div className={isShowRating ? 'visible' : 'invisible'}>
-                                <button className='btn btn-primary mb-2' onClick={(e) => { e.preventDefault(); this.modal.show(); }}>Đánh giá bài học</button>
+                                {!rate && <button className='btn btn-primary mb-2' onClick={(e) => this.onHandleRatingCourse(e,rate)}>Đánh giá bài học</button>}
                                 {rate && <h5>Đã đánh giá:   <span className='text-warning'>{rate.value + ' sao'}</span></h5>}
                                 <RateModal ref={e => this.modal = e} title='Đánh giá bài giảng' type='lesson' _refId={lessonId} />
                             </div>

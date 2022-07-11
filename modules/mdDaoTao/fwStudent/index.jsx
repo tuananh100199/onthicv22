@@ -51,6 +51,10 @@ export default {
             path: '/user/student/active-course',
             component: Loadable({ loading: Loading, loader: () => import('./adminActiveCoursePage') })
         },
+        {
+            path: '/user/student/done-course',
+            component: Loadable({ loading: Loading, loader: () => import('./adminDoneCourseStudentPage') })
+        },
     ],
     Section: {
     }

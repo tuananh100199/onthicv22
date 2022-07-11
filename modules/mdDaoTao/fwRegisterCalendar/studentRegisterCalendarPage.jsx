@@ -88,6 +88,7 @@ class RegisterTimeTableModal extends AdminModal {
                                     document.getElementById(`timeRemain${timeTable._id}`).innerHTML = null;
                                 }
                             }, 1000);
+                            this.setState({ showDelete: true});
                         }
                     });
                 });
@@ -164,7 +165,7 @@ class RegisterTimeTableModal extends AdminModal {
     })
 
     render = () => {
-        const { _id, loading, date, dateNumber, startHour, endHour, state, currentStudentTimeTables, OffCalendar, avaiableHours, avaiableOverTimeHours } = this.state;
+        const { _id, loading, date, dateNumber, startHour, endHour, state, showDelete, currentStudentTimeTables, OffCalendar, avaiableHours, avaiableOverTimeHours } = this.state;
         const student = this.props.student;
         const table = renderTable({
             getDataSource: () => currentStudentTimeTables,
@@ -245,7 +246,7 @@ class RegisterTimeTableModal extends AdminModal {
                 </div>
             </>,
             buttons: <>
-                {_id && state == 'waiting' ? <button type='button' className='btn btn-danger' onClick={() => this.delete(_id, {date: formatDate(date)})}>Xóa</button> : null}
+                {_id && (state == 'waiting' || showDelete) ? <button type='button' className='btn btn-danger' onClick={() => this.delete(_id, {date: formatDate(date)})}>Xóa</button> : null}
         </>
         });
     }

@@ -42,15 +42,20 @@ module.exports = app => {
                     ],
                 };
                 if (sent) condition.sent = { $lt: new Date(sent) };
-                app.model.chat.getUserPage(1, 20, condition, (error, chats) => {
-                    if (!error) {
-                        condition = { sender: _selectedUserId, receiver: sessionUser._id };
-                        if (sent) condition.sent = { $lt: new Date(sent) };
-                        app.model.chat.update(condition, { $set: { read: true } });
+                let updateCondition = { sender: _selectedUserId, receiver: sessionUser._id };
+                if (sent) updateCondition.sent = { $lt: new Date(sent) };
+
+                app.model.chat.update(updateCondition, { $set: { read: true } },(error)=>{
+                    if(error) res.send({error});
+                    else{
+                        app.model.chat.getUserPage(1, 20, condition, (error, chats) => {
+                            const { _id, firstname, lastname, image } = user;
+                            res.send({ error, chats, selectedUser: { _id, firstname, lastname, image } });
+                        });
                     }
-                    const { _id, firstname, lastname, image } = user;
-                    res.send({ error, chats, selectedUser: { _id, firstname, lastname, image } });
                 });
+
+                
             }
         });
     });
@@ -267,7 +272,7 @@ module.exports = app => {
                     message: data.message,
                 }, (error, item) => !error && item && app.model.chat.get(item._id, (error, chat) => {
                     if (!error && chat) {
-                        socket.emit('chat:send', { chat });
+                        socket.emit('chat:send', { item });
                         app.model.chat.getSocketIds(receiver._id, (error, socketIds) => {
                             let listSocketIds = [];
                             !error && socketIds && socketIds.map(socketId => {
@@ -280,7 +285,7 @@ module.exports = app => {
                             !error && socketIds && socketIds.map(socketId => {
                                 listSocketIds.push(socketId);
                             });
-                            socket.to(listSocketIds).emit('chat:send', { chat });
+                            socket.to(listSocketIds).emit('chat:send', { chat:item });
                         });
                     }
                 }));
@@ -300,6 +305,25 @@ module.exports = app => {
                     }
                 });
             }
+        });
+    });
+
+    // read message 
+    app.io.addSocketListener('chat:read', (socket, data) => {
+        socket.emit('chat:read',data);
+        app.model.chat.getSocketIds(data.receiver, (error, socketIds) => {
+            let listSocketIds = [];
+            !error && socketIds && socketIds.map(socketId => {
+                listSocketIds.push(socketId);
+            });
+            socket.to(listSocketIds).emit('chat:read', data);
+        });
+        app.model.chat.getSocketIds(data.sender, (error, socketIds) => {
+            let listSocketIds = [];
+            !error && socketIds && socketIds.map(socketId => {
+                listSocketIds.push(socketId);
+            });
+            socket.to(listSocketIds).emit('chat:read', data);
         });
     });
 };

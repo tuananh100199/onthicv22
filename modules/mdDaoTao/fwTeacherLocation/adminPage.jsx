@@ -40,8 +40,8 @@ class TeacherLocation extends AdminPage {
                             <TableCell type='number' content={(pageNumber - 1) * pageSize + index + 1} />
                             <TableCell type='link' content={item.teacher ? item.teacher.lastname + ' ' + item.teacher.firstname : ''} url={'/user/teacher-location/' + item._id}/>
                             <TableCell type='text' style={{ width: 'auto', textAlign: 'center', whiteSpace: 'nowrap' }} content={item.date && item.timeTable ? T.dateToText(item.date, 'dd/mm/yyyy') + ' ' + item.timeTable.startHour + ':00' : 'Ôn tập chung'} />
-                            <TableCell type='text' style={{ width: 'auto', textAlign: 'center' }} content={item.car} />
-                            <TableCell type='text' style={{ width: 'auto', textAlign: 'center' }} content={item.course} />
+                            <TableCell type='text' style={{ width: 'auto', textAlign: 'center', whiteSpace: 'nowrap'  }} content={item.timeTable && item.timeTable.car && item.timeTable.car.licensePlates} />
+                            <TableCell type='text' style={{ width: 'auto', textAlign: 'center', whiteSpace: 'nowrap'  }} content={item.timeTable && item.timeTable.student && item.timeTable.student.course ? item.timeTable.student.course.name : ''} />
                             <TableCell type={'buttons'} style={{ textAlign: 'center' }}>
                                 <a className='btn btn-success' href={'/user/teacher-location/' + item._id}>
                                     <i className='fa fa-lg fa-eye' />

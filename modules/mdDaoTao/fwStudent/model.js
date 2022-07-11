@@ -45,6 +45,7 @@ module.exports = (app) => {
         ngayHetHanNopHocPhi: Date,                                                                  // Ngày hết hạn nộp học phí
         coursePayment: { type: app.database.mongoDB.Schema.ObjectId, ref: 'CoursePayment' },
         discount: { type: app.database.mongoDB.Schema.ObjectId, ref: 'Discount' },
+        daNhanKhuyenMai: { type: Boolean, default: false },
         courseFee: { type: app.database.mongoDB.Schema.ObjectId, ref: 'CourseFee' },
         lichSuDongTien: [{
             date: { type: Date, default: Date.now },
@@ -150,6 +151,7 @@ module.exports = (app) => {
         isGiayKhamSucKhoe: { type: Boolean, default: false },
         isBangLaiA1: { type: Boolean, default: false },
 
+
         soNamLaiXe: Number,
         soKMLaiXe: Number,
         soChungChi: String,
@@ -161,9 +163,10 @@ module.exports = (app) => {
         soKMThucHanh: Number,
         diemCuoiKhoa: Number,
         giayToDangKy:[{ type: app.database.mongoDB.Schema.ObjectId, ref: 'ProfileStudentType' }],
-
         createdDate: { type: Date, default: Date.now },                                             // Ngày tạo
         modifiedDate: { type: Date, default: Date.now },                                            // Ngày cập nhật cuối cùng
+
+        hienDanhGia:{type:Boolean,default:false},
     });
 
     // Không được phép viết hàm getAll cho model student
@@ -432,7 +435,7 @@ module.exports = (app) => {
         },
 
         addPayment: (_id, data, done) => {
-            model.findOneAndUpdate(_id, { $push: { lichSuDongTien: data } }, { new: true }).exec(done);
+            model.findOneAndUpdate(_id, { $push: { lichSuDongTien: data }, daNhanKhuyenMai: true }, { new: true }).exec(done);
         },
 
         addPaymentExtra: (_id, data, done) => {

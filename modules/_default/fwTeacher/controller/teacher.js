@@ -148,6 +148,116 @@ module.exports = (app) => {
         });
     });
 
+    app.get('/api/teacher/student/page/:pageNumber/:pageSize', app.permission.check('user:login'), (req, res) => {
+        let pageNumber = parseInt(req.params.pageNumber),
+            pageSize = parseInt(req.params.pageSize),
+            condition=req.query.condition||{},
+            pageCondition = { },filter=req.query.filter||{},sort=req.query.sort||null;            
+            if (condition.searchText) {
+            const value = { $regex: `.*${condition.searchText}.*`, $options: 'i' };
+            pageCondition['$or'] = [
+                { firstname: value },
+                { lastname: value },
+                { identityCard: value },
+                { maGiaoVien: value },
+            ];
+        }
+        // theo cơ sở
+        if (req.session.user.division && req.session.user.division.isOutside){
+            pageCondition.division = req.session.user.division._id;
+        }
+
+        //courseTypes
+        if(condition.courseType){
+            pageCondition.courseTypes={$in:[condition.courseType]};
+        }
+        
+        //lọc nghỉ việc
+        if(condition.nghiViec){
+          pageCondition={...pageCondition,['thoiGianLamViec.nghiViec']:condition.nghiViec};
+        } 
+
+
+        // lớp tập huấn
+        if(condition.trainingClass){
+            pageCondition.trainingClass={$in:[condition.trainingClass]};
+        }
+
+        // lớp tập huấn
+        if(condition.notTrainingClass){
+            pageCondition.trainingClass={$nin:[condition.notTrainingClass]};
+        }
+        // --------------filter------------------------
+        filter && app.handleFilter(filter,['maGiaoVien','fullName','courseTypes'],defaultFilter=>{
+            // console.log('-----------------defaultCondition:----------------------');
+            pageCondition={...pageCondition,...defaultFilter};
+        }); 
+        // mã giáo viên
+        // if(filter.maGiaoVien){
+        //     const value = { $regex: `.*${filter.maGiaoVien}.*`, $options: 'i' };
+        //     pageCondition.maGiaoVien=value;
+        // }
+
+        // if(filter.firstname){// họ tên
+        //     pageCondition['$expr']= {
+        //         '$regexMatch': {
+        //           'input': { '$concat': ['$lastname', ' ', '$firstname'] },
+        //           'regex': `.*${filter.firstname}.*`,  //Your text search here
+        //           'options': 'i'
+        //         }
+        //     };
+        // }
+
+        // course
+        if(filter.courses && filter.courses.length){
+            if(filter.courses.find(item=>item=='null')){
+                const courses = filter.courses.filter(course=>course!='null');
+                pageCondition.courses= {$in: [null,[],...courses]};
+            }else{
+                pageCondition.courses={$in:filter.courses};
+            }
+        }
+
+        // doneCourse
+        if(filter.doneCourses && filter.doneCourses.length){
+            if(filter.doneCourses.find(item=>item=='null')){
+                const courses = filter.doneCourses.filter(course=>course!='null');
+                pageCondition.doneCourses= {$in: [null,[],...courses]};
+            }else{
+                pageCondition.doneCourses={$in:filter.doneCourses};
+            }
+        }
+
+        //sort
+        if(sort && sort.fullName){
+            sort.firstname=sort.fullName;
+            delete sort.fullName;
+        }
+        
+        app.model.teacher.getPage(pageNumber, pageSize, pageCondition, sort , (error, page) => {
+            if(error) res.send({error});
+            else{
+                const getCountCalendarTeacher = (index=0)=>{
+                    if(index>=page.list.length){
+                        res.send({page});
+                    }else{
+                        let teacher = page.list[index]._doc;
+                        const teacherUserId = teacher.user._id;
+                        app.model.timeTable.count({lecturer:teacherUserId,state:'approved'},(error,numOfCalendar)=>{
+                            if(error) res.send({error});
+                            else{
+                                Object.assign(teacher,{numOfCalendar});
+                                page.list[index]=teacher;
+                                getCountCalendarTeacher(index+1);
+                            }
+                        });
+                    }
+                };
+                getCountCalendarTeacher();
+            }
+        });
+    });
+
     app.get('/api/teacher', app.permission.check('teacher:write'), (req, res) => {
         const { _id } = req.query;
         app.model.teacher.get(_id, (error, item) => res.send({ error, item }));

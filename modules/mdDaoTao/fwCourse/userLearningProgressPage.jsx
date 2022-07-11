@@ -3,6 +3,8 @@ import { connect } from 'react-redux';
 import { getCourseByStudent } from './redux';
 import { Link } from 'react-router-dom';
 import { AdminPage, PageIcon } from 'view/component/AdminPage';
+import RateModal from 'modules/_default/fwRate/RateModal';
+import { getRateByUser } from 'modules/_default/fwRate/redux';
 
 class LecturerStudentPage extends AdminPage {
     state = {};
@@ -14,6 +16,9 @@ class LecturerStudentPage extends AdminPage {
             T.ready('/user/hoc-vien/khoa-hoc/' + _id, () => {
                 this.props.getCourseByStudent(_id, data => {
                     this.setState({ data });
+                    if (data.teacher) {
+                        this.props.getRateByUser('teacher', data.teacher._id);
+                    }
                 });
             });
         } else {
@@ -100,15 +105,15 @@ class LecturerStudentPage extends AdminPage {
       else return null;
     }
 
-    renderPracticalSubject = (student,subject)=>{
+    renderPracticalSubject = (student,subject, showMonThucHanh)=>{
         if(subject){
-            return (<PageIcon key={student._id} to={'/user/hoc-vien/khoa-hoc/' + this.state.courseId + '/mon-hoc/' + subject._id} icon='fa-book' className={'col-12'} subtitle={
+            return (<PageIcon key={student._id} onClick={() => !showMonThucHanh ? T.alert('Vui lòng hoàn thành hai môn học: Pháp luật giao thông đường bộ và Kỹ thuật lái xe để mở khóa!', 'error', false, 8000) : null} to={!showMonThucHanh ? '#' : '/user/hoc-vien/khoa-hoc/' + this.state.courseId + '/mon-hoc/' + subject._id} icon='fa-book' className={'col-12'} subtitle={
                 <>
                      <div className='progress'>
                         <div className={'progress-bar progress-bar-striped progress-bar-animated ' + (this.checkTienDoHocThucHanh(student, subject) == 100 ? 'bg-success' : '')} role='progressbar' style={{width: this.checkTienDoHocThucHanh(student,subject) + '%'}} aria-valuenow={this.checkTienDoHocThucHanh(student,subject)} aria-valuemin='0' aria-valuemax='100'></div>
                     </div>
                 </>
-          } iconBackgroundColor='#17a2b8' text={subject.title}/>);
+          } iconBackgroundColor={showMonThucHanh ? '#17a2b8' : 'gray'} text={subject.title}/>);
         }else{
             return null;
         }
@@ -130,6 +135,15 @@ class LecturerStudentPage extends AdminPage {
         return text;
     }
 
+    onHandleRatingTeacher = (e,rate,showDanhGia)=>{
+        e.preventDefault();
+        if(!showDanhGia) T.alert('Bạn phải hoàn thành khóa học để thực hiện đánh giá', 'error', false, 2000);
+        else if(rate) T.alert('Bạn đã thực hiện đánh giá rồi!', 'error', false, 2000);
+        else{
+            this.modal.show();
+        }
+    }
+
     render() {
         const course = this.props.course;
         const subjects = course && course.item && course.item.subjects;
@@ -144,6 +158,11 @@ class LecturerStudentPage extends AdminPage {
             subjectColumns.push(<th key={index} style={{ width: 'auto', textAlign: 'center' }}  >{subject.title}</th>);
         });
         const showMonLyThuyet = parseInt(hocPhiDaDong)/parseInt(hocPhi) > 0.5;
+        const showMonThucHanh = subjects && subjects.length && student && student.tienDoThiHetMon && (subjects.findIndex(subject => (subject.monTienQuyet == true && !student.tienDoThiHetMon[subject._id])) == -1);
+        const teacher = this.state.data && this.state.data.teacher ? this.state.data.teacher:null;
+        const showDanhGiaGiaoVien = student && student.datSatHach;
+        const rate = this.props.rate.item && this.props.rate.item.value;
+        
         const pageIcon = 
         student ? 
         <>
@@ -165,7 +184,7 @@ class LecturerStudentPage extends AdminPage {
                     <div className='progress'>
                        <div className={'progress-bar progress-bar-striped progress-bar-animated ' + (this.checkHocPhi(student) == 100 ? 'bg-success' : '')} role='progressbar' style={{width: this.checkHocPhi(student) + '%'}} aria-valuenow={this.checkHocPhi(student)} aria-valuemin='0' aria-valuemax='100'></div>
                    </div>
-                   <p>Còn lại: {T.numberDisplay(parseInt(hocPhi)-parseInt(hocPhiDaDong))} đồng</p>
+                   {T.numberDisplay(parseInt(hocPhi)-parseInt(hocPhiDaDong)) > 0 ? <p>Còn lại: {T.numberDisplay(parseInt(hocPhi)-parseInt(hocPhiDaDong))} đồng</p> : <p>Đã hoàn thành</p>}
                    </> 
                 } iconBackgroundColor={'#64b5f6'} text={'Học phí'} />
               <PageIcon className='col-md-4 lythuyet' icon='fa-briefcase' subtitle={
@@ -197,21 +216,26 @@ class LecturerStudentPage extends AdminPage {
                 } iconBackgroundColor={hocPhi ? (parseInt(hocPhiDaDong)/parseInt(hocPhi) < 1 ? 'gray' : '#69f0ae') : '#69f0ae'} text={'Thực hành'}/>
                 <div className="col-md-4">
                     <div className="row">
-                    {monThucHanh && monThucHanh.map(item=>this.renderPracticalSubject(student,item))}
+                    {monThucHanh && monThucHanh.map(item=>this.renderPracticalSubject(student,item, showMonThucHanh))}
                     </div>
                 </div>
             </div>
             <div className='row'>
                 <PageIcon className='col-md-4' to={'#'} icon='fa-graduation-cap' subtitle={
                     <p>
+                        Thời gian thi dự kiến: {course && course.item && course.item.thoiGianThiTotNghiepDuKien ? T.dateToText(course.item.thoiGianThiTotNghiepDuKien, 'dd/mm/yyyy') : ''}<br />
                         {(student.totNghiep) ? 'Đạt' : 'Chưa đạt'}
                     </p>
                 } iconBackgroundColor='#64b5f6' text={'Thi tốt nghiệp'} />
                 <PageIcon className='col-md-4' to={'#'} icon='fa-pencil-square-o' subtitle={
                     <p>
+                        Thời gian thi dự kiến: {course && course.item && course.item.thoiGianThiSatHachDuKien ? T.dateToText(course.item.thoiGianThiSatHachDuKien, 'dd/mm/yyyy') : ''}<br />
                         {(student.datSatHach) ? 'Đạt' : 'Chưa đạt'}
                     </p>
                 } iconBackgroundColor='#18ffff' text={'Thi sát hạch'} />
+                <PageIcon className='col-md-4' to={'#'} icon='fa-star' iconBackgroundColor={ showDanhGiaGiaoVien ? 'orange':'secondary'} text='Đánh giá giáo viên' visible={teacher != null}
+                        onClick={(e) => this.onHandleRatingTeacher(e,rate,showDanhGiaGiaoVien)} subtitle={rate ? rate + ' sao' : 'Chưa đánh giá'} />
+                
                 <PageIcon className='col-md-4' to={'#'} icon='fa-id-card' subtitle={
                     <p>
                         {(student.isLicense) ? 'Đã có tại trung tâm' : 'Chưa có'}
@@ -230,6 +254,7 @@ class LecturerStudentPage extends AdminPage {
             content: (
                 <div>
                     {pageIcon}
+                    {teacher && <RateModal ref={e => this.modal = e} title='Đánh giá giáo viên' type='teacher' _refId={teacher._id} />}
                 </div>
             ),
             backRoute: userPageLink,
@@ -237,6 +262,6 @@ class LecturerStudentPage extends AdminPage {
     }
 }
 
-const mapStateToProps = state => ({ system: state.system, course: state.trainning.course });
-const mapActionsToProps = { getCourseByStudent };
+const mapStateToProps = state => ({ system: state.system, course: state.trainning.course, rate: state.framework.rate });
+const mapActionsToProps = { getCourseByStudent, getRateByUser };
 export default connect(mapStateToProps, mapActionsToProps)(LecturerStudentPage);
