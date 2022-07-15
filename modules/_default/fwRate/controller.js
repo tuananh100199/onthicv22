@@ -71,11 +71,9 @@ module.exports = (app) => {
     const updateRatingTeacher = (_teacherId)=> new Promise((resolve,reject)=>{
         app.model.rate.getAll({_refId:_teacherId},(error,ratingTeachers)=>{
             if(error) reject(error);
-            else if(!ratingTeachers.length){
-                resolve();
-            }else{
-                const ratingAmount = ratingTeachers.length;
-                const ratingScore = ratingTeachers.reduce((result,rate)=>result+rate.value,0)/ratingAmount;
+            else{
+                const ratingAmount =ratingTeachers? ratingTeachers.length:0;
+                const ratingScore = ratingAmount==0?0:ratingTeachers.reduce((result,rate)=>result+rate.value,0)/ratingAmount;
                 app.model.user.update(_teacherId,{ratingAmount,ratingScore},error=>{
                     error?reject(error):resolve();
                 });
