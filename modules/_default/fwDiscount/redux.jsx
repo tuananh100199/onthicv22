@@ -173,11 +173,18 @@ export function ajaxGetDiscount(_id, done) {
 
 // DiscountHistory
 T.initCookiePage('pageDiscountHistory');
-export function getDiscountHistoryPage(pageNumber, pageSize, done) {
-    const page = T.updatePage('pageDiscountHistory', pageNumber, pageSize);
+export function getDiscountHistoryPage(pageNumber, pageSize, pageCondition, filter, sort, done) {
+    if(typeof sort=='function'){
+        done=sort;
+        sort=undefined;
+    }else if(typeof filter=='function'){
+        done = filter;
+        filter=undefined;
+    }
+    const page = T.updatePage('pageDiscountHistory', pageNumber, pageSize,pageCondition,filter,sort);
     return (dispatch) => {
         const url = `/api/discount-history/page/${page.pageNumber}/${page.pageSize}`;
-        T.get(url, data => {
+        T.get(url,{ pageCondition:page.pageCondition,filter:page.filter,sort:page.sort } ,data => {
             if (data.error) {
                 T.notify('Lấy lịch sử giảm giá bị lỗi!', 'danger');
                 console.error('GET: ' + url + '.', data.error);

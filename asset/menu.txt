@@ -85,6 +85,7 @@
 	8050 - Đánh giá giáo viên (/user/rating-teacher)
 	8060 - Theo dõi công nợ (/user/student/debt-enroll)
 	8070 - Thời khóa biểu học viên (/user/time-table)
+	8071 - Giáo viên nghỉ đột xuất (/user/teacher-off)
 	8080 - Lịch nghỉ giáo viên (/user/register-calendar/enrollment)
 	8085 - Hình ảnh học viên (/user/verification-image)
 9000. Giáo viên (undefined)

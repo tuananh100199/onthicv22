@@ -1,7 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import {getTimeTablePageByAdmin, updateTimeTableByAdmin, updateTimeTable, createTimeTableByAdmin, deleteTimeTableByAdmin, getTimeTableDateNumber, getTimeTableOfLecturer, getTimeTabletAll,createTimeTableMulti } from './redux';
-import { getStudent, ajaxSelectStudentOfLecturer } from 'modules/mdDaoTao/fwStudent/redux';
+import { getStudent, ajaxSelectStudentOfLecturer, updateStudent } from 'modules/mdDaoTao/fwStudent/redux';
 import { getCourse } from 'modules/mdDaoTao/fwCourse/redux';
 import { getCarOfLecturer } from 'modules/mdDaoTao/fwCar/redux';
 import { getUserChatToken } from 'modules/mdDaoTao/fwChat/redux';
@@ -42,7 +42,6 @@ class TimeTableModal extends AdminModal {
     }
 
     onShow = (item) => {
-        console.log(item);
         function formatDayOrMonth(item){
             return ('0' + item).slice(-2);
         }
@@ -96,9 +95,10 @@ class TimeTableModal extends AdminModal {
                     });
                 });
             } else {
-                this.setState({ listTimeTable: null });
+                this.setState({ listTimeTable: null});
             }
         }) : null;
+        this.setState({ isTeacherOff: item.data && item.data.state && item.data.state == 'teacherOff' });
     }
 
     onSubmit = () => {
@@ -186,6 +186,13 @@ class TimeTableModal extends AdminModal {
             });
         }
     }
+
+    onTeacherOffRegister = () => T.confirm('Đăng ký nghỉ buổi học này', 'Bạn có chắc chắn muốn đăng ký nghỉ buổi học này vì lý do đột xuất?', isConfirm => {
+        isConfirm && this.props.updateTeacher(this.state._id, {state: 'teacherOff'}, () => {
+            T.alert('Chúng tôi đã nhận được thông tin, bộ phận tuyển sinh sẽ liên hệ với học viên của bạn!', 'info', true, 3000);
+            this.hide();
+        }); 
+    })
 
     delete = () => T.confirm('Xóa thời khóa biểu', 'Bạn có chắc chắn xóa thời khóa biểu này?', isConfirm => {
         isConfirm && this.props.delete(this.state._id);
@@ -410,9 +417,10 @@ class TimeTableModal extends AdminModal {
                 </div>
             </>,
             buttons: <>
-                {this.state._id && !this.props.isCourseAdmin ? 
+                {this.state._id && !this.props.isCourseAdmin && !this.state.isTeacherOff ? 
                 [
                     //<button type='button' key={1} className='btn btn-danger' onClick={() => this.delete()}>Xóa</button>,
+                    <button type='button' key={2} className='btn btn-warning' onClick={() => this.onTeacherOffRegister()}>Nghỉ đột xuất</button>,
                     <button type='button' key={1} className='btn btn-primary' onClick={() => this.onSubmitTeacher()}>Lưu</button>
                 ] : null}
         </>
@@ -429,7 +437,6 @@ class NotificationModal extends AdminModal {
     onShow = (item) => {
         const { state, student } = item;
         const { _id, title, content, abstract } = (state =='approved' ? this.props.data : this.props.dataHuyThoiKhoaBieu) || { _id: '', title: '', content: '', abstract: '' };
-        console.log(item);
         let newAbstract = '',
         newContent = '';
         newAbstract = abstract.replaceAll('{ho_ten}', student ? student.fullName : '')
@@ -442,7 +449,7 @@ class NotificationModal extends AdminModal {
         this.itemTitle.value(title);
         this.itemAbstract.value(newAbstract);
         this.itemContent.html(newContent);
-        this.setState({ _id, item, content, abstract });
+        this.setState({ _id, item, content, abstract, state });
     }
 
     onSend = () => {
@@ -479,6 +486,9 @@ class NotificationModal extends AdminModal {
                         );
                     }
                 });
+                if(this.state.state == 'reject'){
+                    this.props.updateStudent(student._id, {soGioThucHanhNgoaiGio: student.soGioThucHanhNgoaiGio + 1});
+                }
                 T.notify('Gửi thông báo thành công!', 'success');
                 this.hide();
                 window.location.reload();
@@ -625,7 +635,7 @@ class LecturerView extends AdminPage {
     
     getData = (done) => {
         this.props.getTimeTableOfLecturer({ courseId: this.props.courseId, lecturerId: this.props.lecturerId, official: this.props.official, filterType: this.props.filterType }, data => {
-           done && done(data.items);
+            done && done(data.items);
         });
     }
     
@@ -761,8 +771,8 @@ class LecturerView extends AdminPage {
                     : null} 
                 </div>
                 <TimeTableModal ref={e => this.modal = e} getTimeTabletAll = {this.props.getTimeTabletAll} listTeacherDateOff={listTeacherDateOff} isCourseAdmin={this.state.isCourseAdmin} readOnly={!permission.write||!this.state.isCourseAdmin} courseItem={courseItem} getStudent={this.props.getStudent} courseId={this.props.courseId} lecturerId={this.props.lecturerId} filterOn={this.props.filterOn} calendar={this.props.calendar} lecturerName={this.props.lecturerName}
-                    create={this.props.createTimeTableByAdmin} updateTeacher={this.props.updateTimeTable} update={this.props.updateTimeTableByAdmin} delete={this.deleteCalendar} getDateNumber={this.props.getTimeTableDateNumber} getPage={this.props.getTimeTablePageByAdmin} getTimeTableOfLecturer={this.props.getTimeTableOfLecturer} onSave={this.onModalFormSave} getCarOfLecturer={this.props.getCarOfLecturer}  /> 
-                 <NotificationModal readOnly={!permission.write} ref={e => this.notiModal = e} create={this.props.createNotification} getUserChatToken={this.props.getUserChatToken} data={this.state.data} dataHuyThoiKhoaBieu={this.state.dataHuyThoiKhoaBieu} />
+                    create={this.props.createTimeTableByAdmin} updateTeacher={this.props.updateTimeTable} updateStudent={this.props.updateStudent} update={this.props.updateTimeTableByAdmin} delete={this.deleteCalendar} getDateNumber={this.props.getTimeTableDateNumber} getPage={this.props.getTimeTablePageByAdmin} getTimeTableOfLecturer={this.props.getTimeTableOfLecturer} onSave={this.onModalFormSave} getCarOfLecturer={this.props.getCarOfLecturer}  /> 
+                 <NotificationModal readOnly={!permission.write} ref={e => this.notiModal = e} updateStudent={this.props.updateStudent} create={this.props.createNotification} getUserChatToken={this.props.getUserChatToken} data={this.state.data} dataHuyThoiKhoaBieu={this.state.dataHuyThoiKhoaBieu} />
                  <Pagination name='pageTimeTable' pageNumber={pageNumber} pageSize={pageSize} pageTotal={pageTotal} totalItem={totalItem} style={{ left: 320 }}
                         getPage={this.getPage} />
                 {this.state.isCourseAdmin ?
@@ -776,6 +786,6 @@ class LecturerView extends AdminPage {
 }
 
 const mapStateToProps = state => ({ system: state.system, course: state.trainning.course, timeTable: state.trainning.timeTable,registerCalendar:state.trainning.registerCalendar });
-const mapActionsToProps = { getTimeTablePageByAdmin, updateTimeTableByAdmin, createTimeTableByAdmin, deleteTimeTableByAdmin, getTimeTableDateNumber, getCourse, getStudent, getTimeTableOfLecturer, getCarOfLecturer,getAllRegisterCalendars,getTimeTabletAll,createTimeTableMulti, getUserChatToken, createNotification, getNotificationTemplateAll, updateTimeTable };
+const mapActionsToProps = { getTimeTablePageByAdmin, updateTimeTableByAdmin, createTimeTableByAdmin, deleteTimeTableByAdmin, getTimeTableDateNumber, getCourse, getStudent, getTimeTableOfLecturer, getCarOfLecturer,getAllRegisterCalendars,getTimeTabletAll,createTimeTableMulti, getUserChatToken, createNotification, getNotificationTemplateAll, updateTimeTable, updateStudent };
 export default connect(mapStateToProps, mapActionsToProps)(LecturerView);
 
