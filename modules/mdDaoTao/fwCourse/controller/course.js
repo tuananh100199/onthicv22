@@ -64,7 +64,9 @@ module.exports = (app) => {
     app.get('/user/course/:_courseId/additional-profile', app.permission.check('course:read'), app.templates.admin);
     app.get('/user/course/:_id/practical-subject', app.permission.check('course:read'), app.templates.admin);
     app.get('/user/course/:_id/practical-subject/:_subjectId/lesson/:_lessonId', app.permission.check('course:read'), app.templates.admin);
-    
+    app.get('/user/course/:_id/location', app.permission.check('course:read'), app.templates.admin);
+    app.get('/user/course/:_id/location-course', app.permission.check('course:read'), app.templates.admin);
+
     app.get('/user/course/:_id/report', app.permission.check('course:report'), app.templates.admin);
     app.get('/user/course/:_id/report/dang-ky-sat-hach', app.permission.check('course:report'), app.templates.admin);
     app.get('/user/course/:_id/report/xe-tap-lai', app.permission.check('course:report'), app.templates.admin);

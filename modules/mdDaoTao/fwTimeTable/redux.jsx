@@ -206,7 +206,7 @@ export function updateTimeTableByAdmin(_id, changes, condition, done) {
             } else {
                 T.notify('Cập nhật thời khóa biểu thành công!', 'success');
                 done && done(data.item);
-                dispatch(getTimeTablePageByAdmin(undefined, undefined, condition));
+                dispatch(getTimeTablePageByAdmin(1, 20, condition));
             }
             done && done(data.item);
         }, error => console.error(error) || T.notify('Cập nhật thời khóa biểu bị lỗi!', 'danger'));

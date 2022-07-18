@@ -16,6 +16,10 @@ export default {
             path: '/user/time-table',
             component: Loadable({ loading: Loading, loader: () => import('./adminPage') })
         },
+        {
+            path: '/user/teacher-off',
+            component: Loadable({ loading: Loading, loader: () => import('./adminTeacherOffPage') })
+        },
     ],
     Section: {
         StudentView

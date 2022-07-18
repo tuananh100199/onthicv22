@@ -9,7 +9,7 @@ import Pagination from 'view/component/Pagination';
 class TeacherLocation extends AdminPage {
     componentDidMount() {
         T.ready();
-        // this.props.getTeacherLocationPage();
+        this.props.getTeacherLocationPage();
     }
 
     handleFilterByTime = (item) => {
