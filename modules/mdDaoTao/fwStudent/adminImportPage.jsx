@@ -1,7 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { ajaxSelectDivision } from 'modules/mdDaoTao/fwDivision/redux';
-import { ajaxSelectCourseType } from 'modules/mdDaoTao/fwCourseType/redux';
+import { getCourseTypeAll } from 'modules/mdDaoTao/fwCourseType/redux';
 import { importPreStudent } from './redux';
 import { Link } from 'react-router-dom';
 import { AdminPage, AdminModal, FormFileBox, FormCheckbox, FormDatePicker, FormTextBox, FormSelect, TableCell, renderTable } from 'view/component/AdminPage';
@@ -14,12 +14,12 @@ class EditModal extends AdminModal {
         $(document).ready(() => this.onShown(() => this.itemLastname.focus()));
     }
     onShow = (item) => {
-        let { id, firstname, lastname, email, phoneNumber, sex, birthday, nationality, residence, regularResidence, identityCard, identityIssuedBy, identityDate,
-            giayPhepLaiXe2BanhSo, giayPhepLaiXe2BanhNgay, giayPhepLaiXe2BanhNoiCap, giayKhamSucKhoe, giayKhamSucKhoeNgayKham, hinhThe3x4, hinhChupTrucTiep, lecturerIdentityCard, lecturerName,
-            isDon,isIdentityCard,isGiayKhamSucKhoe,isBangLaiA1 } = item || {
+        let { id, firstname, lastname, email, phoneNumber, sex, birthday, nationality, residence, regularResidence,
+            identityCard, identityIssuedBy, identityDate, giayKhamSucKhoe, lecturerIdentityCard, lecturerName,
+            isGiayKhamSucKhoe,isBangLaiA1, giayToDangKy } = item || {
                 firstname: '', lastname: '', email: '', phoneNumber: '', sex: '', birthday: '', nationality: '', residence: '', regularResidence: '', identityCard: '', identityIssuedBy: '', identityDate: '',
                 giayPhepLaiXe2BanhSo: '', giayPhepLaiXe2BanhNgay: '', giayPhepLaiXe2BanhNoiCap: '', giayKhamSucKhoe: '', giayKhamSucKhoeNgayKham: '', hinhThe3x4: '', hinhChupTrucTiep: '', lecturerIdentityCard: '', lecturerName: '', hocPhiPhaiDong: '',
-                isDon:false,isHinh:false,isIdentityCard:false,isGiayKhamSucKhoe:false,isBangLaiA1:false
+                isDon:false,isHinh:false,isIdentityCard:false,isGiayKhamSucKhoe:false,isBangLaiA1:false,giayToDangKy:[]
             };
         this.setState({ id: id, className: giayKhamSucKhoe ? 'col-md-4' : 'invisible',isGiayKhamSucKhoe,isBangLaiA1 });
         this.itemFirstname.value(firstname);
@@ -34,30 +34,32 @@ class EditModal extends AdminModal {
         this.itemIdentityCard.value(identityCard);
         this.itemIdentityIssuedBy.value(identityIssuedBy);
         this.itemIdentityDate.value(identityDate);
-        this.itemLincenseNumber.value(giayPhepLaiXe2BanhSo);
-        this.itemLincenseDate.value(giayPhepLaiXe2BanhNgay);
-        this.itemLincenseIssuedBy.value(giayPhepLaiXe2BanhNoiCap);
-        this.itemGiayKhamSucKhoe.value(giayKhamSucKhoe);
-        this.itemGiayKhamSucKhoeNgayKham.value(giayKhamSucKhoeNgayKham);
-        this.itemHinhThe3x4.value(hinhThe3x4);
-        this.itemHinhChupTrucTiep.value(hinhChupTrucTiep);
+        // this.itemLincenseNumber.value(giayPhepLaiXe2BanhSo);
+        // this.itemLincenseDate.value(giayPhepLaiXe2BanhNgay);
+        // this.itemLincenseIssuedBy.value(giayPhepLaiXe2BanhNoiCap);
+
+
+        // this.itemGiayKhamSucKhoe.value(giayKhamSucKhoe);
+        // this.itemGiayKhamSucKhoeNgayKham.value(giayKhamSucKhoeNgayKham);
+        // this.itemHinhThe3x4.value(hinhThe3x4);
+        // this.itemHinhChupTrucTiep.value(hinhChupTrucTiep);
         this.itemLecturerIdentityCard.value(lecturerIdentityCard);
         this.itemLecturerName.value(lecturerName);
         // this.itemHocPhiPhaiDong.value(hocPhiPhaiDong);
-
-        this.itemIsDon.value(isDon);
-        // this.itemIsHinh.value(isHinh);
-        this.itemIsIdentityCard.value(isIdentityCard);
-        // this.itemIsGiayKhamSucKhoe.value(isGiayKhamSucKhoe);
-        this.itemIsBangLaiA1.value(isBangLaiA1);
-    }
-
-    isChecked = (checked) => {
-        console.log('checked: ',checked);
-        this.setState({ className: checked ? 'col-md-4' : 'invisible',isGiayKhamSucKhoe:checked });
+        giayToDangKy.forEach(profile => {
+            this[profile] && this[profile].value(true);
+        });
+        // this.itemIsDon.value(isDon);
+        // // this.itemIsHinh.value(isHinh);
+        // this.itemIsIdentityCard.value(isIdentityCard);
+        // // this.itemIsGiayKhamSucKhoe.value(isGiayKhamSucKhoe);
+        // this.itemIsBangLaiA1.value(isBangLaiA1);
     }
 
     onSubmit = () => {
+        const giayToDangKy = this.props.profileType && this.props.profileType.profiles 
+        ? this.props.profileType.profiles.filter(profile=>profile.type && this[profile.type._id] && this[profile.type._id].value())
+        .map(profile=>profile.type._id):null;
         const data = {
             id: this.state.id,
             firstname: this.itemFirstname.value(),
@@ -72,21 +74,23 @@ class EditModal extends AdminModal {
             identityCard: this.itemIdentityCard.value(),
             identityIssuedBy: this.itemIdentityIssuedBy.value(),
             identityDate: this.itemIdentityDate.value(),
-            giayPhepLaiXe2BanhSo: this.itemLincenseNumber.value(),
-            giayPhepLaiXe2BanhNgay: this.itemLincenseDate.value(),
-            giayPhepLaiXe2BanhNoiCap: this.itemLincenseIssuedBy.value(),
-            giayKhamSucKhoe: this.itemGiayKhamSucKhoe.value(),
-            giayKhamSucKhoeNgayKham: this.itemGiayKhamSucKhoe.value() ? this.itemGiayKhamSucKhoeNgayKham.value() : null,
-            hinhThe3x4: this.itemHinhThe3x4.value(),
-            hinhChupTrucTiep: this.itemHinhChupTrucTiep.value(),
+            // giayPhepLaiXe2BanhSo: this.itemLincenseNumber.value(),
+            // giayPhepLaiXe2BanhNgay: this.itemLincenseDate.value(),
+            // giayPhepLaiXe2BanhNoiCap: this.itemLincenseIssuedBy.value(),
+            // giayKhamSucKhoe: this.itemGiayKhamSucKhoe.value(),
+            // giayKhamSucKhoeNgayKham: this.itemGiayKhamSucKhoe.value() ? this.itemGiayKhamSucKhoeNgayKham.value() : null,
+            // hinhThe3x4: this.itemHinhThe3x4.value(),
+            // hinhChupTrucTiep: this.itemHinhChupTrucTiep.value(),
             lecturerIdentityCard: this.itemLecturerIdentityCard.value(),
             // hocPhiPhaiDong: this.itemHocPhiPhaiDong.value(),
-            isDon:this.itemIsDon.value(),
-            isHinh:this.itemHinhThe3x4.value(),
-            isIdentityCard:this.itemIsIdentityCard.value(),
-            isGiayKhamSucKhoe:this.itemGiayKhamSucKhoe.value(),
-            isBangLaiA1:this.itemIsBangLaiA1.value()
+            // isDon:this.itemIsDon.value(),
+            // isHinh:this.itemHinhThe3x4.value(),
+            // isIdentityCard:this.itemIsIdentityCard.value(),
+            // isGiayKhamSucKhoe:this.itemGiayKhamSucKhoe.value(),
+            // isBangLaiA1:this.itemIsBangLaiA1.value(),
+            giayToDangKy
         };
+
         if (data.lastname == '') {
             T.notify('Họ không được trống!', 'danger');
             this.itemLastname.focus();
@@ -99,14 +103,7 @@ class EditModal extends AdminModal {
         } else if (data.email == '') {
             T.notify('Địa chỉ email không được trống!', 'danger');
             this.itemEmail.focus();
-        } else if (data.giayKhamSucKhoeNgayKham == 'Invalid Date') {
-            T.notify('Ngày khám sức khỏe không chính xác!', 'danger');
-            this.itemGiayKhamSucKhoeNgayKham.focus();
-        } 
-        // else if (data.hocPhiPhaiDong == '') {
-        //     T.notify('Học phí phải đóng không được trống!', 'danger');
-        //     this.itemHocPhiPhaiDong.focus();
-        // } 
+        }  
         else {
             this.props.edit(this.state.id, data);
             T.notify('Cập nhật thông tin ứng viên thành công!', 'success');
@@ -114,92 +111,81 @@ class EditModal extends AdminModal {
         }
     }
 
-    render = () => this.renderModal({
-        title: 'Chỉnh sửa ứng viên',
-        size: 'large',
-        body: (
-            <div className='row'>
-                {/* <FormTextBox ref={e => this.itemLastname = e} className='col-md-8' label='Họ ứng viên' readOnly={this.props.readOnly} required />
-                <FormTextBox ref={e => this.itemFirstname = e} className='col-md-4' label='Tên ứng viên' readOnly={this.props.readOnly} required />
-                <FormTextBox ref={e => this.itemEmail = e} className='col-md-6' label='Email' readOnly={this.props.readOnly} required />
-                <FormTextBox ref={e => this.itemPhoneNumber = e} className='col-md-6' label='Số điện thoại' readOnly={this.props.readOnly} />
-                <FormSelect ref={e => this.itemSex = e} className='col-md-3' label='Giới tính' data={[{ id: 'female', text: 'Nữ' }, { id: 'male', text: 'Nam' }]} readOnly={this.props.readOnly} />
-                <FormDatePicker ref={e => this.itemBirthday = e} className='col-md-3' label='Năm sinh' readOnly={this.props.readOnly} required />
-                <FormTextBox ref={e => this.itemNationality = e} className='col-md-6' label='Quốc tịch' readOnly={this.props.readOnly} />
-                <FormTextBox ref={e => this.itemResidence = e} className='col-md-6' label='Nơi cư trú' readOnly={this.props.readOnly} />
-                <FormTextBox ref={e => this.itemRegularResidence = e} className='col-md-6' label='Nơi đăng ký hộ khẩu thường trú' readOnly={this.props.readOnly} />
-                <FormTextBox ref={e => this.itemIdentityCard = e} className='col-md-4' label='Số CMND,CCCD' readOnly={this.props.readOnly} required />
-                <FormDatePicker ref={e => this.itemIdentityDate = e} className='col-md-4' label='Ngày cấp' readOnly={this.props.readOnly} />
-                <FormTextBox ref={e => this.itemIdentityIssuedBy = e} className='col-md-4' label='Nơi cấp' readOnly={this.props.readOnly} />
-                <FormTextBox ref={e => this.itemLincenseNumber = e} className='col-md-4' label='Số giấy phép lái xe 2 bánh' readOnly={this.props.readOnly} />
-                <FormDatePicker ref={e => this.itemLincenseDate = e} className='col-md-4' label='Ngày trúng tuyển' readOnly={this.props.readOnly} />
-                <FormTextBox ref={e => this.itemLincenseIssuedBy = e} className='col-md-4' label='Nơi cấp' readOnly={this.props.readOnly} />
-                <FormCheckbox ref={e => this.itemGiayKhamSucKhoe = e} className='col-md-4' label='Đã có giấy khám sức khỏe' readOnly={this.props.readOnly} onChange={this.isChecked} />
-                <FormDatePicker ref={e => this.itemGiayKhamSucKhoeNgayKham = e} className={this.state.className} label='Ngày khám sức khỏe' readOnly={this.props.readOnly} />
-                <FormTextBox ref={e => this.itemHocPhiPhaiDong = e} className='col-md-4' label='Học phí' readOnly={this.props.readOnly} required />
-                <FormCheckbox ref={e => this.itemHinhThe3x4 = e} className='col-md-6' label='Hình thẻ 3x4' readOnly={this.props.readOnly} />
-                <FormCheckbox ref={e => this.itemHinhChupTrucTiep = e} className='col-md-6' label='Hình chụp trực tiếp' readOnly={this.props.readOnly} />
-                <FormTextBox ref={e => this.itemLecturerIdentityCard = e} className='col-md-6' label='Số CMND,CCCD của giáo viên dự kiến' readOnly={this.props.readOnly} required />
-                <FormTextBox ref={e => this.itemLecturerName = e} className='col-md-6' label='Tên giáo viên dự kiến' readOnly={this.props.readOnly} required /> */}
-
-                <FormTextBox ref={e => this.itemLastname = e} className='col-md-8' label='Họ ứng viên' readOnly={this.props.readOnly} required />
-                <FormTextBox ref={e => this.itemFirstname = e} className='col-md-4' label='Tên ứng viên' readOnly={this.props.readOnly} required />
-                <FormTextBox ref={e => this.itemEmail = e} className='col-md-6' label='Email' readOnly={this.props.readOnly} required />
-                <FormTextBox ref={e => this.itemPhoneNumber = e} className='col-md-6' label='Số điện thoại' readOnly={this.props.readOnly} />
-                <FormSelect ref={e => this.itemSex = e} className='col-md-3' label='Giới tính' data={[{ id: 'female', text: 'Nữ' }, { id: 'male', text: 'Nam' }]} readOnly={this.props.readOnly} />
-                <FormDatePicker ref={e => this.itemBirthday = e} className='col-md-3' label='Năm sinh' readOnly={this.props.readOnly} required />
-                <FormTextBox ref={e => this.itemNationality = e} className='col-md-6' label='Quốc tịch' readOnly={this.props.readOnly} />
-                <FormTextBox ref={e => this.itemResidence = e} className='col-md-6' label='Nơi cư trú' readOnly={this.props.readOnly} />
-                <FormTextBox ref={e => this.itemRegularResidence = e} className='col-md-6' label='Nơi đăng ký hộ khẩu thường trú' readOnly={this.props.readOnly} />
-                <FormTextBox ref={e => this.itemIdentityCard = e} className='col-md-4' label='Số CMND,CCCD' readOnly={this.props.readOnly} required />
-                <FormDatePicker ref={e => this.itemIdentityDate = e} className='col-md-4' label='Ngày cấp' readOnly={this.props.readOnly} />
-                <FormTextBox ref={e => this.itemIdentityIssuedBy = e} className='col-md-4' label='Nơi cấp' readOnly={this.props.readOnly} />
-                <FormTextBox ref={e => this.itemLincenseNumber = e} className='col-md-4' label='Số giấy phép lái xe 2 bánh' readOnly={this.props.readOnly} />
-                <FormDatePicker ref={e => this.itemLincenseDate = e} className='col-md-4' label='Ngày trúng tuyển' readOnly={this.props.readOnly} />
-                <FormTextBox ref={e => this.itemLincenseIssuedBy = e} className='col-md-4' label='Nơi cấp' readOnly={this.props.readOnly} />
-                <FormCheckbox className='col-md-4' ref={e => this.itemIsDon = e} label='Đơn' readOnly={this.props.readOnly} />
-                <FormCheckbox ref={e => this.itemHinhThe3x4 = e} className='col-md-4' label='Hình thẻ 3x4' readOnly={this.props.readOnly} />
-                <FormCheckbox ref={e => this.itemHinhChupTrucTiep = e} className='col-md-4' label='Hình chụp trực tiếp' readOnly={this.props.readOnly} />
-                <FormCheckbox className='col-md-4' ref={e => this.itemIsIdentityCard = e} label='Bản sao CMND/CCCD' readOnly={this.props.readOnly} />
-                <FormCheckbox className='col-md-4' ref={e => this.itemIsBangLaiA1 = e} label='Photo bằng lái A1' readOnly={this.props.readOnly} />
-                <FormCheckbox ref={e => this.itemGiayKhamSucKhoe = e} className='col-md-4' label='Đã có giấy khám sức khỏe' readOnly={this.props.readOnly} onChange={this.isChecked} />
-                <FormTextBox ref={e => this.itemLecturerIdentityCard = e} className='col-md-4' label='CMND,CCCD giáo viên dự kiến' readOnly={this.props.readOnly} required />
-                <FormTextBox ref={e => this.itemLecturerName = e} className='col-md-4' label='Tên giáo viên dự kiến' readOnly={this.props.readOnly} required />
-                <div className="col-md-4" style={{display:this.state.isGiayKhamSucKhoe?'block':'none'}}>
-                <FormDatePicker ref={e => this.itemGiayKhamSucKhoeNgayKham = e} label='Ngày khám sức khỏe' readOnly={this.props.readOnly} />
-                </div>
-                {/* <FormCheckbox className='col-md-3' ref={e => this.itemIsGiayKhamSucKhoe = e} label='GKSK' readOnly={this.props.readOnly} /> */}
-
-            </div>),
-    });
+    render = () =>{
+        const profileType = this.props.profileType;
+        const profiles = profileType && profileType.profiles ? profileType.profiles:null;
+        return this.renderModal({
+            title: 'Chỉnh sửa ứng viên',
+            size: 'large',
+            body: (
+                <div className='row'>
+    
+                    <FormTextBox ref={e => this.itemLastname = e} className='col-md-8' label='Họ ứng viên' readOnly={this.props.readOnly} required />
+                    <FormTextBox ref={e => this.itemFirstname = e} className='col-md-4' label='Tên ứng viên' readOnly={this.props.readOnly} required />
+                    <FormTextBox ref={e => this.itemEmail = e} className='col-md-6' label='Email' readOnly={this.props.readOnly} required />
+                    <FormTextBox ref={e => this.itemPhoneNumber = e} className='col-md-6' label='Số điện thoại' readOnly={this.props.readOnly} />
+                    <FormSelect ref={e => this.itemSex = e} className='col-md-3' label='Giới tính' data={[{ id: 'female', text: 'Nữ' }, { id: 'male', text: 'Nam' }]} readOnly={this.props.readOnly} />
+                    <FormDatePicker ref={e => this.itemBirthday = e} className='col-md-3' label='Năm sinh' readOnly={this.props.readOnly} required />
+                    <FormTextBox ref={e => this.itemNationality = e} className='col-md-6' label='Quốc tịch' readOnly={this.props.readOnly} />
+                    <FormTextBox ref={e => this.itemResidence = e} className='col-md-6' label='Nơi cư trú' readOnly={this.props.readOnly} />
+                    <FormTextBox ref={e => this.itemRegularResidence = e} className='col-md-6' label='Nơi đăng ký hộ khẩu thường trú' readOnly={this.props.readOnly} />
+                    <FormTextBox ref={e => this.itemIdentityCard = e} className='col-md-4' label='Số CMND,CCCD' readOnly={this.props.readOnly} required />
+                    <FormDatePicker ref={e => this.itemIdentityDate = e} className='col-md-4' label='Ngày cấp' readOnly={this.props.readOnly} />
+                    <FormTextBox ref={e => this.itemIdentityIssuedBy = e} className='col-md-4' label='Nơi cấp' readOnly={this.props.readOnly} />
+                    {/* <FormTextBox ref={e => this.itemLincenseNumber = e} className='col-md-4' label='Số giấy phép lái xe 2 bánh' readOnly={this.props.readOnly} />
+                    <FormDatePicker ref={e => this.itemLincenseDate = e} className='col-md-4' label='Ngày trúng tuyển' readOnly={this.props.readOnly} />
+                    <FormTextBox ref={e => this.itemLincenseIssuedBy = e} className='col-md-4' label='Nơi cấp' readOnly={this.props.readOnly} /> */}
+                    {profileType?<div className='col-12'>
+                        <div className="row">
+                            <h6 className='col-12'>Hồ sơ đăng ký: {profileType.title}</h6>
+                            {profiles && profiles.length && profiles.map(profile=><FormCheckbox key={profile._id} className='col-md-4' ref = {e=>this[profile.type._id]=e} label = {profile.type.title} readOnly={this.props.readOnly}/>)}
+                        </div>
+                    </div> : null}
+                    {/* <FormCheckbox className='col-md-4' ref={e => this.itemIsDon = e} label='Đơn' readOnly={this.props.readOnly} />
+                    <FormCheckbox ref={e => this.itemHinhThe3x4 = e} className='col-md-4' label='Hình thẻ 3x4' readOnly={this.props.readOnly} />
+                    <FormCheckbox ref={e => this.itemHinhChupTrucTiep = e} className='col-md-4' label='Hình chụp trực tiếp' readOnly={this.props.readOnly} />
+                    <FormCheckbox className='col-md-4' ref={e => this.itemIsIdentityCard = e} label='Bản sao CMND/CCCD' readOnly={this.props.readOnly} />
+                    <FormCheckbox className='col-md-4' ref={e => this.itemIsBangLaiA1 = e} label='Photo bằng lái A1' readOnly={this.props.readOnly} />
+                    
+                    <FormCheckbox ref={e => this.itemGiayKhamSucKhoe = e} className='col-md-4' label='Đã có giấy khám sức khỏe' readOnly={this.props.readOnly} onChange={this.isChecked} /> */}
+                    
+                    <FormTextBox ref={e => this.itemLecturerIdentityCard = e} className='col-md-4' label='CMND,CCCD giáo viên dự kiến' readOnly={this.props.readOnly} required />
+                    <FormTextBox ref={e => this.itemLecturerName = e} className='col-md-4' label='Tên giáo viên dự kiến' readOnly={this.props.readOnly} required />
+                    <div className="col-md-4" style={{display:this.state.isGiayKhamSucKhoe?'block':'none'}}>
+                    <FormDatePicker ref={e => this.itemGiayKhamSucKhoeNgayKham = e} label='Ngày khám sức khỏe' readOnly={this.props.readOnly} />
+                    </div>
+                    {/* <FormCheckbox className='col-md-3' ref={e => this.itemIsGiayKhamSucKhoe = e} label='GKSK' readOnly={this.props.readOnly} /> */}
+    
+                </div>),
+        });
+    } 
 }
 
 class ImportPage extends AdminPage {
     fileBox = React.createRef();
-    state = {courseType:''};
+    state = {courseType:'',showDetail:false};
     componentDidMount() {
         T.ready('/user/pre-student');
+
+        this.props.getCourseTypeAll(courseTypes=>this.setState({courseTypes}));
+
         this.props.getCourseFeeAll({isDefault:true},defaultCourseFees=>{//get default courseFee
             this.setState({defaultCourseFees});
         });
 
         this.props.getDiscountAll({isDefault:true},defaultDiscounts=>{//get default discount
             this.setState({defaultDiscount:defaultDiscounts? defaultDiscounts[0]:null});
-            console.log(defaultDiscounts);
-            this.itemDiscount.value(defaultDiscounts?{id:defaultDiscounts[0]._id,text:defaultDiscounts[0].name}:null);
+            this.discount.value(defaultDiscounts?{id:defaultDiscounts[0]._id,text:defaultDiscounts[0].name}:null);
         });
 
         this.props.getCoursePaymentAll({default:true},defaultCoursePayments=>{//get default coursePayment
             this.setState({defaultCoursePayment:defaultCoursePayments? defaultCoursePayments[0]:null});
-            console.log(defaultCoursePayments);
-            this.itemCoursePayment.value(defaultCoursePayments?{id:defaultCoursePayments[0]._id,text:defaultCoursePayments[0].title}:null);
+            this.coursePayment.value(defaultCoursePayments?{id:defaultCoursePayments[0]._id,text:defaultCoursePayments[0].title}:null);
         });
     }
 
     onUploadSuccess = (data) => {
         this.setState(data);
-        this.itemDivision.value(null);
-        this.itemCourseType.value(null);
     }
 
     showEditModal = (e, item) => e.preventDefault() || this.modalEdit.show(item);
@@ -221,20 +207,20 @@ class ImportPage extends AdminPage {
     }
 
     save = () => {
-        if (!this.itemDivision.value()) {
+        if (!this.division.value()) {
             T.notify('Chưa chọn cơ sở đào tạo!', 'danger');
-            this.itemDivision.focus();
-        } else if (!this.itemCourseType.value()) {
+            this.division.focus();
+        } else if (!this.courseType.value()) {
             T.notify('Chưa chọn loại khóa học!', 'danger');
-            this.itemCourseType.focus();
-        }else if (!this.itemCourseFee.value()) {
+            this.courseType.focus();
+        }else if (!this.courseFee.value()) {
             T.notify('Chưa chọn gói học phí!', 'danger');
-            this.itemCourseFee.focus();
-        } else if (!this.itemCoursePayment.value()) {
+            this.courseFee.focus();
+        } else if (!this.coursePayment.value()) {
             T.notify('Chưa chọn số lần thanh toán!', 'danger');
-            this.itemCoursePayment.focus();
+            this.coursePayment.focus();
         }  else {
-            T.confirm('Lưu thông tin ứng viên', 'Bạn có chắc bạn muốn lưu file danh sách ứng viên này?', true, isConfirm => isConfirm && this.props.importPreStudent(this.state.data, this.itemDivision.value(), this.itemCourseType.value(), this.itemCourseFee.value(), this.itemDiscount.value(), this.itemCoursePayment.value(), data => {
+            T.confirm('Lưu thông tin ứng viên', 'Bạn có chắc bạn muốn lưu file danh sách ứng viên này?', true, isConfirm => isConfirm && this.props.importPreStudent(this.state.data, this.division.value(), this.courseType.value(), this.courseFee.value(), this.discount.value(), this.coursePayment.value(), data => {
                 if (data.error) {
                     T.notify('Import ứng viên bị lỗi!', 'danger');
                 } else {
@@ -247,25 +233,73 @@ class ImportPage extends AdminPage {
         }
     }
 
-    onChangeCourseType = (data) =>data && data.id && this.setState({courseType:data.id},()=>{
+    onChangeCourseType = (data) =>data && data.id && this.setState({courseType:data.id,showDetail:true,profileType:this.getProfileType(data.id)},()=>{
         this.setValueCourseFee(data.id);
+        this.onHandleFillValue();
     });
 
     setValueCourseFee = (courseTypeId,courseFee=null)=>{
         if(!courseTypeId){
-            this.itemCourseFee.value(null);    
+            this.courseFee.value(null);    
         }
         else if(courseFee){
-            this.itemCourseFee.value({id:courseFee._id,text:courseFee.name});    
+            this.courseFee.value({id:courseFee._id,text:courseFee.name});    
         }else{
             courseFee = this.state.defaultCourseFees.find(item=>item.courseType._id==courseTypeId);
-            this.itemCourseFee.value(courseFee?{id:courseFee._id,text:courseFee.name}:null);
+            this.courseFee.value(courseFee?{id:courseFee._id,text:courseFee.name}:null);
         }
+    }
+
+    getProfileType = (courseTypeId)=>{
+        const courseTypes = this.state.courseTypes;
+        const courseType = courseTypes ? courseTypes.find(item=>item._id==courseTypeId):null;
+        return courseType && courseType.profileType ? courseType.profileType:null;
+    }
+
+    renderHoSoDangKy = ()=>{
+        const profiles = this.state.profileType && this.state.profileType.profiles ? this.state.profileType.profiles : null;
+        return profiles && profiles.length ? 
+        profiles.map((profile,index)=><FormTextBox key={index} onChange = {this.onHandleFillValue} className='col-md-4' ref={e => this[profile.type._id] = e} label = {`Cột ${profile.type.title}`} required={profile.required}/>)
+        : null;
+    }
+
+    onHandleFillValue = ()=>{
+        const profiles = this.state.profileType && this.state.profileType.profiles ? this.state.profileType.profiles :null,
+        defaultParams = ['division','courseType','courseFee','discount','coursePayment'],
+        params = profiles ? profiles.map(profile=>profile.type._id): null;
+        let isFullFillParams = true;
+        // kiểm tra những cột cố định 
+        for(const param of defaultParams){
+            if(!this[param].value()||this[param].value()==''){
+                isFullFillParams = false;
+                break;
+            }
+        }
+        // hồ sơ đăng ký
+        if(isFullFillParams &&  params && params.length){
+            for(const param of params){
+                if(!this[param].value()||this[param].value()==''){
+                    isFullFillParams = false;
+                    break;
+                }
+            }
+        }else{
+            isFullFillParams=false;
+        }
+        
+        this.setState({isFullFillParams},()=>{
+            if(isFullFillParams){
+                const userData = params.reduce((result, item) => `${result}${item}-${this[item].value().trim().toUpperCase()},`,'PreStudentFile:');
+                this.fileBox.setData(userData);
+            }
+        });
     }
 
     render() {
         const permission = this.getUserPermission('pre-student', ['read', 'write', 'delete', 'import']),
             readOnly = !permission.write;
+        const courseTypeOptions = this.state.courseTypes ? this.state.courseTypes.map(courseType=>({id:courseType._id,text:courseType.title})):null;
+        const profileType = this.state.profileType;
         const table = renderTable({
             getDataSource: () => this.state.data && this.state.data.length > 0 ? this.state.data : [],
             renderHead: () => (
@@ -295,7 +329,41 @@ class ImportPage extends AdminPage {
         });
 
         const filebox = (
-            <div className='tile'>
+            <>
+            <div className="tile row">
+                <div className='col-md-6'>
+                    <h5>Cơ sở</h5>
+                    <FormSelect ref={e => this.division = e} onChange={this.onHandleFillValue} labelStyle={{ display: 'none' }} label={'Chọn cơ sở'} data={ajaxSelectDivision} readOnly={readOnly} required />
+                </div>
+
+                <div className='col-md-6'>
+                    <h5>Loại khóa học</h5>
+                    <FormSelect ref={e => this.courseType = e} labelStyle={{ display: 'none' }} onChange={this.onChangeCourseType} label={'Chọn loại khóa học'} data={courseTypeOptions} readOnly={readOnly} required />
+                </div>
+                
+                <div className='col-12' style={{display:this.state.showDetail?'block':'none'}}>
+                    <div className="row">
+                        <h5 className='col-12'>Học phí</h5>
+                        <div className='col-md-4'>
+                            <FormSelect ref={e => this.courseFee = e} onChange={this.onHandleFillValue} label={'Gói học phí'} data={ajaxSelectCourseFeeByCourseType(this.state.courseType,true)} readOnly={readOnly} required />
+                        </div>
+
+                        <div className='col-md-4'>
+                            <FormSelect ref={e => this.discount = e} onChange={this.onHandleFillValue} label={'Gói giảm giá'} data={ajaxSelectDiscount} readOnly={readOnly} required/>
+                        </div>
+
+                        <div className='col-md-4'>
+                            <FormSelect ref={e => this.coursePayment = e} onChange={this.onHandleFillValue} label={'Số lần thanh toán'} data={ajaxSelectCoursePayment} readOnly={readOnly} required/>
+                        </div>
+                    
+                        <h5 className='col-12'>Hồ sơ đăng ký: {profileType?profileType.title:''}</h5>
+                        {this.renderHoSoDangKy()}
+                    </div>
+                    
+                </div>
+                
+            </div>
+            {this.state.isFullFillParams && <div className='tile'>
                 <h3 className='tile-title'>Import danh sách ứng viên</h3>
                 <FormFileBox ref={e => this.fileBox = e} uploadType='CandidateFile'
                     onSuccess={this.onUploadSuccess} readOnly={readOnly} />
@@ -304,12 +372,14 @@ class ImportPage extends AdminPage {
                         <a href='/download/candidate.xlsx' style={{ textDecoration: 'none', color: 'white' }}><i className='fa-fw fa-lg fa fa-download' /> Tải xuống file mẫu</a>
                     </button>
                 </div>
-            </div >
+            </div >}
+            </>
+            
         );
         const list = (
             <div>
                 <div className='tile row'>
-                    <div className='col-md-6'>
+                    {/* <div className='col-md-6'>
                         <h3 className='tile-title'>Chọn cơ sở</h3>
                         <FormSelect ref={e => this.itemDivision = e} labelStyle={{ display: 'none' }} label={'Chọn cơ sở'} data={ajaxSelectDivision} readOnly={readOnly} required />
                     </div>
@@ -331,7 +401,7 @@ class ImportPage extends AdminPage {
                     <div className='col-md-4'>
                         <h3 className='tile-title'>Chọn số lần thanh toán</h3>
                         <FormSelect ref={e => this.itemCoursePayment = e} labelStyle={{ display: 'none' }} label={'Chọn số lần thanh toán'} data={ajaxSelectCoursePayment} readOnly={readOnly} required/>
-                    </div>
+                    </div> */}
 
                     
                     <div className='col-md-12'>
@@ -348,9 +418,8 @@ class ImportPage extends AdminPage {
                             </button>
                         </div>
                     </div>
-
                 </div>
-                <EditModal ref={e => this.modalEdit = e} readOnly={readOnly} edit={this.edit} />
+                <EditModal ref={e => this.modalEdit = e} readOnly={readOnly} edit={this.edit} profileType = {profileType}/>
             </div>
         );
         const isUpload = this.state.data && this.state.data.length;
@@ -369,5 +438,5 @@ class ImportPage extends AdminPage {
     }
 }
 const mapStateToProps = state => ({ system: state.system });
-const mapActionsToProps = { importPreStudent,getCourseFeeAll,getCoursePaymentAll,getDiscountAll };
+const mapActionsToProps = { importPreStudent,getCourseFeeAll,getCoursePaymentAll,getDiscountAll,getCourseTypeAll };
 export default connect(mapStateToProps, mapActionsToProps)(ImportPage);

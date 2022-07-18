@@ -3,7 +3,7 @@ module.exports = app => {
         lecturer: { type: app.database.mongoDB.Schema.ObjectId, ref: 'User' },                        // Tên giáo viên
         dateOff: { type: Date, default: Date.now },                                     // Ngày nghỉ
         timeOff: { type: String, enum: ['morning', 'noon', 'allDay'], default: 'allDay' }, // Buổi nghỉ
-        state: { type: String, enum: ['approved', 'waiting', 'reject', 'cancel'], default: 'waiting' },
+        state: { type: String, enum: ['approved', 'waiting', 'reject', 'cancel', 'teacherOff'], default: 'waiting' },
     });
     const model = app.database.mongoDB.model('RegisterCalendar', schema);
 

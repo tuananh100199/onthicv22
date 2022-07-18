@@ -16,15 +16,19 @@ module.exports = app => {
     app.model.teacherLocation = {
         create: (data, done) => model.create(data, done),
 
-        getPage: (pageNumber, pageSize, condition, done) => model.countDocuments(condition, (error, totalItem) => {
+        getPage: (pageNumber, pageSize, condition, sort, done) => model.countDocuments(condition, (error, totalItem) => {
             if (error) {
                 done(error);
             } else {
+                if (typeof sort == 'function') {
+                    done = sort;
+                    sort = null;
+                }
                 let result = { totalItem, pageSize, pageTotal: Math.ceil(totalItem / pageSize) };
                 result.pageNumber = pageNumber === -1 ? result.pageTotal : Math.min(pageNumber, result.pageTotal);
                 const skipNumber = (result.pageNumber > 0 ? result.pageNumber - 1 : 0) * result.pageSize;
 
-                model.find(condition).sort({ priority: -1 }).skip(skipNumber).limit(result.pageSize).populate('courseType', '_id title').populate('subject', '_id title').populate('teacher', 'lastname firstname user maGiaoVien').populate({
+                model.find(condition).sort(sort ? sort : { date: -1 }).skip(skipNumber).limit(result.pageSize).populate('courseType', '_id title').populate('subject', '_id title').populate('teacher', 'lastname firstname user maGiaoVien').populate({
                     path: 'timeTable', populate: { path: 'car',  select:'licensePlates'}
                 }).populate({
                     path: 'timeTable', populate: { path: 'student',  populate: { path:'course', select:'_id name'}}

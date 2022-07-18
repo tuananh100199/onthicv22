@@ -16,8 +16,8 @@ module.exports = (app) => {
     // APIs ------------------------------------------------------------------------------------------------------------
     app.get('/api/discount-history/page/:pageNumber/:pageSize', (req, res) => {
         const pageNumber = parseInt(req.params.pageNumber),
-            pageSize = parseInt(req.params.pageSize);
-        app.model.discountHistory.getPage(pageNumber, pageSize, {}, (error, page) => {
+            pageSize = parseInt(req.params.pageSize), sort=req.query.sort||null;
+        app.model.discountHistory.getPage(pageNumber, pageSize, {}, sort, (error, page) => {
             res.send({ page, error: error ? 'Danh sách gói học phí không sẵn sàng!' : null });
         });
     });

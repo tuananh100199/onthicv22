@@ -31,8 +31,10 @@ module.exports = (app) => {
         notificationRead: [{ type: app.database.mongoDB.Schema.ObjectId, ref: 'Notification' }],                  // Người dùng đã đọc các notification này
         notificationUnread: [{ type: app.database.mongoDB.Schema.ObjectId, ref: 'Notification' }],                // Người dùng chưa đọc các notification này
         //rating teacher
-        ratingScore: Number,
-        ratingAmount: Number,
+        ratingScore: { type: Number, default: 0 },
+        ratingAmount: { type: Number, default: 0 },
+        publicRatingScore: { type: Number, default: 0 },
+        publicRating: { type: Boolean, default: false }, 
     });
 
     schema.methods.equalPassword = function (password) {

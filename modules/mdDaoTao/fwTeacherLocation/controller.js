@@ -19,14 +19,18 @@ module.exports = (app) => {
     app.get('/api/teacher-location/page/:pageNumber/:pageSize', (req, res) => {
         const pageNumber = parseInt(req.params.pageNumber),
             pageSize = parseInt(req.params.pageSize);
-        let condition = req.query.pageCondition || {};
+        let condition = req.query.pageCondition || {},filter=req.query.filter||{},sort=req.query.sort||null;
         if(condition.date){
             const date = condition.date;
             let conditionDate = new Date(new Date(date).getFullYear(), new Date(date).getMonth(), new Date(date).getDate());
             let conditionNextDate = new Date(new Date(conditionDate).setDate(conditionDate.getDate()  + 1));
             condition.date = {$gte: conditionDate, $lt: conditionNextDate};
         }
-        app.model.teacherLocation.getPage(pageNumber, pageSize, condition, (error, page) => {
+        filter && app.handleFilter(filter,['fullName','car'],defaultFilter=>{
+            // console.log('-----------------defaultCondition:----------------------');
+            condition={...condition,...defaultFilter};
+        }); 
+        app.model.teacherLocation.getPage(pageNumber, pageSize, condition, sort, (error, page) => {
             res.send({ page, error: error ? 'Danh sách lớp ôn tập không sẵn sàng!' : null });
         });
     });

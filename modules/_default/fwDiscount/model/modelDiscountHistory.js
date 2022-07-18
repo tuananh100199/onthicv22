@@ -15,7 +15,11 @@ module.exports = (app) => {
 
         get: (condition, done) => (typeof condition == 'object' ? model.findOne(condition) : model.findById(condition)).exec(done),
 
-        getPage: (pageNumber, pageSize, condition, done) => model.countDocuments(condition, (error, totalItem) => {
+        getPage: (pageNumber, pageSize, condition, sort, done) => model.countDocuments(condition, (error, totalItem) => {
+            if (done == undefined) {
+                done = sort;
+                sort = { date: -1};
+            }
             if (error) {
                 done(error);
             } else {
@@ -23,7 +27,7 @@ module.exports = (app) => {
                 result.pageNumber = pageNumber === -1 ? result.pageTotal : Math.min(pageNumber, result.pageTotal);
                 const skipNumber = (result.pageNumber > 0 ? result.pageNumber - 1 : 0) * result.pageSize;
 
-                model.find(condition).sort({ fee: 1 }).populate('user', 'lastname firstname').skip(skipNumber).limit(result.pageSize)
+                model.find(condition).sort(sort ? sort : { date: -1 }).populate('user', 'lastname firstname').skip(skipNumber).limit(result.pageSize)
                     .exec((error, items) => {
                         result.list = error ? [] : items;
                         done(error, result);
