@@ -1349,6 +1349,11 @@ module.exports = (app) => {
 
     // Hook upload pre-students excel---------------------------------------------------------------------------------------
     app.uploadHooks.add('uploadExcelFile', (req, fields, files, params, done) => {
+        const userData = fields.userData[0],
+        profileParams = userData.slice(15,-1).split(',').map(item=>{
+            const data = item.split('-');
+            return {key:data[0],column:data[1]};
+        });
         if (files.CandidateFile && files.CandidateFile.length > 0) {
             console.log('Hook: uploadExcelFile => your excel file upload');
             const srcPath = files.CandidateFile[0].path;
@@ -1356,6 +1361,8 @@ module.exports = (app) => {
                 app.deleteFile(srcPath);
                 if (workbook) {
                     const worksheet = workbook.getWorksheet(1), data = [], totalRow = worksheet.lastRow.number;
+                    const getCellValue = (row, col) => worksheet.getCell(`${col}${row}`).text;
+                    
                     const handleUpload = (index = 2) => {
                         const values = worksheet.getRow(index).values;
                         if (values.length == 0 || index == totalRow + 1) {
@@ -1366,6 +1373,10 @@ module.exports = (app) => {
                                 return values.length >= 10 ? new Date(values.slice(6, 10), values.slice(3, 5) - 1, values.slice(0, 2)) : null;
                             };
                             const email = values[4] && values[4] != undefined ? values[4] : '';
+                            const profiles = profileParams.filter(item=>{
+                                const value = getCellValue(index,item.column);
+                                return value && value.toLowerCase().trim()=='x';
+                            }).map(item=>item.key);
                             data.push({
                                 id: index - 1,
                                 lastname: values[2],
@@ -1380,20 +1391,21 @@ module.exports = (app) => {
                                 identityCard: values[11],
                                 identityIssuedBy: values[12],
                                 identityDate: stringToDate(values[13]),
-                                isIdentityCard:values[14] && values[14].toLowerCase().trim() == 'x' ? true : false,
-                                giayPhepLaiXe2BanhSo: values[15],
-                                giayPhepLaiXe2BanhNgay: stringToDate(values[16]),
-                                giayPhepLaiXe2BanhNoiCap: values[17],
-                                isBangLaiA1:values[18] && values[18].toLowerCase().trim() == 'x' ? true : false,
-                                giayKhamSucKhoe: values[19] && values[19].toLowerCase().trim() == 'x' ? true : false,
-                                giayKhamSucKhoeNgayKham: values[19] && values[19].toLowerCase().trim() == 'x' ? stringToDate(values[20]) : null,
-                                hinhThe3x4: values[21] && values[21].toLowerCase().trim() == 'x' ? true : false,
-                                hinhChupTrucTiep: values[22] && values[22].toLowerCase().trim() == 'x' ? true : false,
-                                lecturerIdentityCard: values[23],
-                                lecturerName: values[24],
-                                isDon:values[25] && values[25].toLowerCase().trim() == 'x' ? true : false,
-                                isGiayKhamSucKhoe: values[19] && values[19].toLowerCase().trim() == 'x' ? true : false,
-                                isHinh: values[21] && values[21].toLowerCase().trim() == 'x' ? true : false,
+                                giayToDangKy:profiles,
+                                // isIdentityCard:values[14] && values[14].toLowerCase().trim() == 'x' ? true : false,
+                                // giayPhepLaiXe2BanhSo: values[15],
+                                // giayPhepLaiXe2BanhNgay: stringToDate(values[16]),
+                                // giayPhepLaiXe2BanhNoiCap: values[17],
+                                // isBangLaiA1:values[18] && values[18].toLowerCase().trim() == 'x' ? true : false,
+                                // giayKhamSucKhoe: values[19] && values[19].toLowerCase().trim() == 'x' ? true : false,
+                                // giayKhamSucKhoeNgayKham: values[19] && values[19].toLowerCase().trim() == 'x' ? stringToDate(values[20]) : null,
+                                // hinhThe3x4: values[21] && values[21].toLowerCase().trim() == 'x' ? true : false,
+                                // hinhChupTrucTiep: values[22] && values[22].toLowerCase().trim() == 'x' ? true : false,
+                                lecturerIdentityCard: values[18],
+                                lecturerName: values[19],
+                                // isDon:values[25] && values[25].toLowerCase().trim() == 'x' ? true : false,
+                                // isGiayKhamSucKhoe: values[19] && values[19].toLowerCase().trim() == 'x' ? true : false,
+                                // isHinh: values[21] && values[21].toLowerCase().trim() == 'x' ? true : false,
                             });
                             handleUpload(index + 1);
                         }

@@ -144,8 +144,30 @@ class LecturerStudentPage extends AdminPage {
         }
     }
 
+    renderPageIconHoSo = (giayToDangKy, profiles)=>{
+        const notDone = profiles.filter(profile=>giayToDangKy.find(giayTo=>profile.type && giayTo==profile.type._id) || profile.required).length==0;
+        return <PageIcon to='#' className='col-12' icon='fa-info' subtitle={
+            <div className='row d-flex pl-3'>
+                {profiles.map(profile=>{
+                    return <div key={profile._id} className='mb-2 mr-4'>
+                        <a className='d-flex' href='#' onClick={e => e.preventDefault()}>
+                            <div className={'animated-checkbox mr-1'}>
+                                    <input type='checkbox' checked={giayToDangKy.find(giayTo=>profile.type && profile.type._id==giayTo)} onChange={e=>e.preventDefault()} />
+                                    <span className={'label-text'}></span>
+                            </div>
+                            <span style={{whiteSpace:'normal'}}>{`${profile.type && profile.type.title ? profile.type.title:''} ${!profile.required?'(Không bắt buộc)':''}`}</span>
+                            
+                        </a>
+                    </div>;
+                })}
+            </div>
+        } iconBackgroundColor={notDone ? 'gray' : '#8A0'} text={'Hồ sơ học viên'} />;
+    }
+
     render() {
         const course = this.props.course;
+        console.log({course});
+
         const subjects = course && course.item && course.item.subjects;
         const student = course && course.student;
         const monLyThuyet = subjects ? subjects.filter(subject => subject.monThucHanh == false) : [];
@@ -162,17 +184,23 @@ class LecturerStudentPage extends AdminPage {
         const teacher = this.state.data && this.state.data.teacher ? this.state.data.teacher:null;
         const showDanhGiaGiaoVien = student && student.datSatHach;
         const rate = this.props.rate.item && this.props.rate.item.value;
-        
+
+        // hồ sơ học viên:
+        const profiles = course && course.item &&  course.item.profileType && course.item.profileType.profiles ? course.item.profileType.profiles : null;
+        const giayToDangKy = student &&  student.giayToDangKy?student.giayToDangKy:[];
         const pageIcon = 
         student ? 
         <>
         <div className='line'>
             <div className='row justify-content-between hoso'>
-                <PageIcon className='col-md-4' icon='fa-info' subtitle={
+                {/* <PageIcon className='col-12' icon='fa-info' subtitle={
                     <p>
                         {this.renderHoSo(student)}
                     </p>
-                } iconBackgroundColor={(student.isDon && student.isHinh && student.isIdentityCard && student.isGiayKhamSucKhoe && student.isBangLaiA1) ? '#8A0' : 'gray'} text={'Hồ sơ học viên'} />
+                } iconBackgroundColor={(student.isDon && student.isHinh && student.isIdentityCard && student.isGiayKhamSucKhoe && student.isBangLaiA1) ? '#8A0' : 'gray'} text={'Hồ sơ học viên'} /> */}
+                {this.renderPageIconHoSo(giayToDangKy,profiles)}
+            </div>
+            <div className='row justify-content-end'>
                 {this.renderSubject(student, monLyThuyet, 0, showMonLyThuyet)}
             </div>
             <div className='row justify-content-end'>
