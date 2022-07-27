@@ -145,7 +145,8 @@ class LecturerStudentPage extends AdminPage {
     }
 
     renderPageIconHoSo = (giayToDangKy, profiles)=>{
-        const notDone = profiles.filter(profile=>giayToDangKy.find(giayTo=>profile.type && giayTo==profile.type._id) || profile.required).length==0;
+        const notDone = profiles.filter(profile=>giayToDangKy.find(giayTo=>profile.type && giayTo==profile.type._id)==undefined && profile.required).length>0;
+        console.log({notDone});
         return <PageIcon to='#' className='col-12' icon='fa-info' subtitle={
             <div className='row d-flex pl-3'>
                 {profiles.map(profile=>{

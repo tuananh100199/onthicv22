@@ -290,6 +290,7 @@ export function updateSystemSettings(changes, done) {
                 T.notify('Cập nhật hệ thống bị lỗi!', 'danger');
                 console.error(`PUT: ${url}.`, data.error);
             }else{
+                T.notify('Cập nhật hệ thống thành công!', 'success');
                 done && done(data);
                 dispatch({ type: SystemUpdateState, state: data.item });
             }

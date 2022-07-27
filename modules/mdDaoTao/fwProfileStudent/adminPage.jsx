@@ -45,12 +45,12 @@ class ProfileStudentPage extends AdminPage {
     
     update = (student,giayTo,active)=>{
         let giayToDangKy = student.giayToDangKy?student.giayToDangKy.map(item=>item._id):[];
-        console.log({giayToDangKy});
         if(active){
             giayToDangKy=[...giayToDangKy,giayTo];
         }else{
             giayToDangKy=giayToDangKy.filter(item=>item!=giayTo);
         }
+        console.log({giayToDangKy});
         this.props.updateProfileStudent(student._id,{giayToDangKy},()=>{
             this.onSearch({});
         });
