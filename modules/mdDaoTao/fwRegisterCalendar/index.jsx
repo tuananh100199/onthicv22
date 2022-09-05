@@ -40,6 +40,7 @@ export const RegisterCalendarStates = [
     { id: 'waiting', text: 'Đang chờ duyệt', color: '#ffc107', className: 'btn btn-warning', icon: 'fa fa-lg fa-clock-o' },
     { id: 'reject', text: 'Từ chối', color: '#F80000', className: 'btn btn-danger', icon: 'fa fa-lg fa-times' },
     { id: 'cancel', text: 'Hủy', color: '#6C757D', className: 'btn btn-danger', icon: 'fa fa-ban' },
+    { id: 'teacherOff', text: 'Giáo viên huỷ đột xuất', color: '#6C757D', className: 'btn btn-secondary', icon: 'fa fa-ban' },
 ];
 export const RegisterCalendarStatesMapper = {};
 RegisterCalendarStates.forEach(({ id, text, color }) => RegisterCalendarStatesMapper[id] = { text, color });

@@ -7,11 +7,13 @@ module.exports = app => {
         numOfHours: { type: Number, default: 1 },                                       // Số giờ học, số nguyên dương.
         dateNumber: { type: Number, default: -1 },                                      // Buổi học thứ
         truant: { type: Boolean, default: false },                                      // Học viên không đến lớp
-        state: { type: String, enum: ['approved', 'waiting', 'reject', 'cancel', 'autoCancel'], default: 'waiting' }, // Trạng thái của thời khóa biểu
+        state: { type: String, enum: ['approved', 'waiting', 'reject', 'cancel', 'autoCancel', 'teacherOff'], default: 'waiting' }, // Trạng thái của thời khóa biểu
         car: { type: app.database.mongoDB.Schema.ObjectId, ref: 'Car' },                              // Xe học
         createdAt: { type: Date, default: Date.now },                                   // Thời gian tạo thời khóa biểu
         content: String,                                                                // Nội dung học
         note: String,                                                                   // Ghi chú
+        stateTeacherOff: { type: String, enum: ['choLienHe', 'dangLienHe', 'daLienHe'], default: 'choLienHe' }, // Trạng thái liên hệ khi giáo viên nghỉ
+        staff:{ type: app.database.mongoDB.Schema.ObjectId, ref: 'User' },
     });
     const model = app.database.mongoDB.model('TimeTable', schema);
 
@@ -40,7 +42,7 @@ module.exports = app => {
                 let result = { totalItem, pageSize, pageTotal: Math.ceil(totalItem / pageSize) };
                 result.pageNumber = pageNumber === -1 ? result.pageTotal : Math.min(pageNumber, result.pageTotal);
                 const skipNumber = (result.pageNumber > 0 ? result.pageNumber - 1 : 0) * result.pageSize;
-                model.find(condition).populate(populateStudent).populate('car', 'licensePlates').sort(sort || { date: -1, startHour: 1 }).skip(skipNumber).limit(result.pageSize).exec((error, list) => {
+                model.find(condition).populate(populateStudent).populate('car', 'licensePlates').populate('staff', 'lastname firstname').populate('lecturer', 'lastname firstname').sort(sort || { date: -1, startHour: 1 }).skip(skipNumber).limit(result.pageSize).exec((error, list) => {
                     result.list = error ? [] : list;
                     done(error, result);
                 });

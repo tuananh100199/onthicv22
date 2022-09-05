@@ -3,6 +3,7 @@ module.exports = (app) => {
         parentMenu: app.parentMenu.enrollment,
         menus: {
             8070: { title: 'Thời khóa biểu học viên', link: '/user/time-table' },
+            8071: { title: 'Giáo viên nghỉ đột xuất', link: '/user/teacher-off' },
         }
     };
     app.permission.add(
@@ -15,6 +16,7 @@ module.exports = (app) => {
     );
 
     app.get('/user/time-table', app.permission.check('timeTable:read'), app.templates.admin);
+    app.get('/user/teacher-off', app.permission.check('timeTable:read'), app.templates.admin);
     app.get('/user/time-table/teacher', app.permission.check('timeTable:read'), app.templates.admin);
     app.get('/user/hoc-vien/khoa-hoc/:_id/thoi-khoa-bieu', app.permission.check('user:login'), app.templates.admin);
     app.get('/user/lecturer/student-time-table', app.permission.check('timeTable:write'), app.templates.admin);
@@ -45,12 +47,12 @@ module.exports = (app) => {
                 if (condition.lecturer) {
                     pageCondition.lecturer = condition.lecturer;
                 }
+                if(condition.state) pageCondition.state = condition.state;
                 filter && app.handleFilter(filter,['student'],filterCondition=>{
                     pageCondition={...pageCondition,...filterCondition};
                 });
             }
             if (pageCondition.$or && pageCondition.$or.length == 0) delete pageCondition.$or;
-
             app.model.timeTable.getPage(pageNumber, pageSize, pageCondition,sort, (error, page) => res.send({ error, page }));
         } catch (error) {
             res.send({ error });
@@ -150,7 +152,19 @@ module.exports = (app) => {
     });
 
     app.put('/api/time-table', app.permission.check('timeTable:write'), (req, res) => {
-        app.model.timeTable.update(req.body._id, req.body.changes, (error, item) => res.send({ error, item }));
+        const changes = req.body.changes;
+        if(changes && changes.stateTeacherOff){
+            changes.staff = req.session.user._id;
+            app.model.timeTable.get(req.body._id, (error, item) => {
+                if(error || !item) res.send({error});
+                else {
+                    app.model.timeTable.update(req.body._id, changes, (error, item) => res.send({ error, item }));
+                }
+            });
+        } else {
+            app.model.timeTable.update(req.body._id, changes, (error, item) => res.send({ error, item }));
+        }
+        
     });
 
     app.put('/api/time-table/admin', app.permission.check('timeTable:write'), (req, res) => {
@@ -275,9 +289,9 @@ module.exports = (app) => {
                     lecturerCondition.state = 'waiting';
                 } else {
                     if (isCourseAdmin) {
-                        lecturerCondition.state = { $in: ['approved', 'waiting', 'reject', 'cancel', 'autoCancel' ] };
+                        lecturerCondition.state = { $in: ['approved', 'waiting', 'reject', 'cancel', 'autoCancel', 'teacherOff' ] };
                     } else {
-                        lecturerCondition.state = { $in: ['approved', 'waiting', 'reject', 'cancel' ] };
+                        lecturerCondition.state = { $in: ['approved', 'waiting', 'reject', 'cancel','teacherOff' ] };
                     }
                 }
                 app.model.timeTable.getAll(lecturerCondition, (error, items) => res.send({ error, items }));

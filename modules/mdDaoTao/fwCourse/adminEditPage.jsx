@@ -68,6 +68,8 @@ class EditCoursePage extends AdminPage {
                     <PageIcon visible={!item.isDefault && (isCourseAdmin||permissionTimeTable.read) && !isLecturer} to={`/user/course/${item._id}/calendar`} icon='fa-calendar' iconBackgroundColor='#64b5f6' text='Thời khoá biểu toàn khoá' />
                     <PageIcon visible={!item.isDefault && (isCourseAdmin||permissionTimeTable.read) && !isLecturer} to={`/user/course/${item._id}/register-calendar`} icon='fa-calendar-plus-o' iconBackgroundColor='#8d74aa' text='Lịch nghỉ giáo viên' />
                     <PageIcon visible={!item.isDefault && (isCourseAdmin||permissionTimeTable.read) && !isLecturer} to={`/user/course/${item._id}/student-register-calendar`} icon='fa fa-list-alt' iconBackgroundColor='#4e25a2' text='Danh sách lịch học học viên đăng ký' />
+                    <PageIcon visible={!item.isDefault && (isLecturer)} to={`/user/course/${item._id}/location`} icon='fa fa-history' iconBackgroundColor='#006400' text='Lịch sử dạy thực hành' />
+                    <PageIcon visible={!item.isDefault && (isCourseAdmin)} to={`/user/course/${item._id}/location-course`} icon='fa fa-history' iconBackgroundColor='#006400' text='Lịch sử dạy thực hành toàn khoá' />
                     {/* <PageIcon visible={permission.delete} to={`/user/course/${item._id}/photo`} icon='fa-camera' iconBackgroundColor='#900' text='Theo dõi' /> */}
                 </div>
             ),

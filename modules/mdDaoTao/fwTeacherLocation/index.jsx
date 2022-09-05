@@ -16,6 +16,7 @@ export default {
         {
             path: '/user/teacher-location/:_id',
             component: Loadable({ loading: Loading, loader: () => import('./adminEditPage') }),
-        },
+        }
+        
     ]
 };

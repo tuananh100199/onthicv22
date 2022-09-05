@@ -21,11 +21,19 @@ export default function teacherLocationReducer(state = {}, data) {
 
 // Actions ------------------------------------------------------------------------------------------------------------
 T.initCookiePage('pageTeacherLocation');
-export function getTeacherLocationPage(pageNumber, pageSize, pageCondition, done) {
-    const page = T.updatePage('pageTeacherLocation', pageNumber, pageSize);
+export function getTeacherLocationPage(pageNumber, pageSize, pageCondition,filter,sort, done) {
+    if(typeof sort=='function'){
+        done=sort;
+        sort=undefined;
+    }
+    else if(typeof filter=='function'){
+        done=filter;
+        filter=undefined;
+    }
+    const page = T.updatePage('pageTeacherLocation', pageNumber, pageSize, pageCondition, filter, sort);
     return (dispatch) => {
         const url = `/api/teacher-location/page/${page.pageNumber}/${page.pageSize}`;
-        T.get(url,{ pageCondition }, data => {
+        T.get(url,{ pageCondition:page.pageCondition,filter:page.filter,sort:page.sort }, data => {
             if (data.error) {
                 T.notify('Lấy danh sách định vị giáo viên bị lỗi!', 'danger');
                 console.error('GET: ' + url + '.', data.error);

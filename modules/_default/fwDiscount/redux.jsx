@@ -4,6 +4,9 @@ import T from 'view/js/common';
 const DiscountGetAll = 'DiscountGetAll';
 const DiscountGetPage = 'DiscountGetPage';
 const DiscountGetItem = 'DiscountGetItem';
+const DiscountHistoryGetAll = 'DiscountHistoryGetAll';
+const DiscountHistoryGetPage = 'DiscountHistoryGetPage';
+const DiscountHistoryGetItem = 'DiscountHistoryGetItem';
 
 export default function courseTypeReducer(state = {}, data) {
     switch (data.type) {
@@ -14,6 +17,14 @@ export default function courseTypeReducer(state = {}, data) {
 
         case DiscountGetItem:
             return Object.assign({}, state, { item: data.item });
+
+        case DiscountHistoryGetAll:
+            return Object.assign({}, state, { list: data.list });
+        case DiscountHistoryGetPage:
+            return Object.assign({}, state, { page: data.page });
+
+        case DiscountHistoryGetItem:
+            return Object.assign({}, state, { item: data.item });   
         default:
             return state;
     }
@@ -157,5 +168,110 @@ export const ajaxSelectDiscount = {
 
 export function ajaxGetDiscount(_id, done) {
     const url = '/api/discount';
+    T.get(url, { _id }, done, error => console.error(error) || T.notify('Lấy giảm giá bị lỗi!', 'danger'));
+}
+
+// DiscountHistory
+T.initCookiePage('pageDiscountHistory');
+export function getDiscountHistoryPage(pageNumber, pageSize, pageCondition, filter, sort, done) {
+    if(typeof sort=='function'){
+        done=sort;
+        sort=undefined;
+    }else if(typeof filter=='function'){
+        done = filter;
+        filter=undefined;
+    }
+    const page = T.updatePage('pageDiscountHistory', pageNumber, pageSize,pageCondition,filter,sort);
+    return (dispatch) => {
+        const url = `/api/discount-history/page/${page.pageNumber}/${page.pageSize}`;
+        T.get(url,{ pageCondition:page.pageCondition,filter:page.filter,sort:page.sort } ,data => {
+            if (data.error) {
+                T.notify('Lấy lịch sử giảm giá bị lỗi!', 'danger');
+                console.error('GET: ' + url + '.', data.error);
+            } else {
+                done && done(data.page.pageNumber, data.page.pageSize, data.page.pageTotal, data.page.totalItem);
+                dispatch({ type: DiscountHistoryGetPage, page: data.page });
+            }
+        }, error => console.error(error) || T.notify('Lấy lịch sử giảm giá bị lỗi!', 'danger'));
+    };
+}
+
+export function getDiscountHistoryAll(condition,done) {
+    return dispatch => {
+        const url = '/api/discount-history/all';
+        T.get(url,{condition}, data => {
+            if (data.error) {
+                T.notify('Lấy lịch sử giảm giá bị lỗi', 'danger');
+                console.error('GET: ' + url + '. ' + data.error);
+            } else {
+                done && data && done(data.list);
+                dispatch({ type: DiscountHistoryGetAll, list: data.list });
+            }
+        }, error => console.error(error) || T.notify('Lấy lịch sử giảm giá bị lỗi', 'danger'));
+    };
+}
+
+export function getDiscountHistory(_id, done) {
+    return dispatch => ajaxGetDiscountHistory(_id, data => {
+        if (data.error) {
+            T.notify('Lấy lịch sử giảm giá bị lỗi!', 'danger');
+            console.error('GET: getCourseType.', data.error);
+        } else {
+            done && done(data.item);
+            dispatch({ type: DiscountHistoryGetItem, item: data.item });
+        }
+    });
+}
+
+export function createDiscountHistory(data, done) {
+    return dispatch => {
+        const url = '/api/discount-history';
+        T.post(url, { data }, data => {
+            if (data.error) {
+                T.notify('Tạo lịch sử giảm giá bị lỗi!', 'danger');
+                console.error('POST: ' + url + '.', data.error);
+            } else {
+                dispatch(getDiscountHistoryPage());
+                done && done(data);
+            }
+        }, error => console.error(error) || T.notify('Tạo lịch sử giảm giá bị lỗi!', 'danger'));
+    };
+}
+
+export function updateDiscountHistory(_id, changes, done) {
+    return dispatch => {
+        const url = '/api/discount-history';
+        T.put(url, { _id, changes }, data => {
+            if (data.error) {
+                T.notify('Cập nhật thông tin giảm giá bị lỗi!', 'danger');
+                console.error('PUT: ' + url + '.', data.error);
+                done && done(data.error);
+            } else {
+                dispatch({ type: DiscountGetItem, item: data.item });
+                dispatch(getDiscountHistoryPage());
+                T.notify('Cập nhật giảm giá thành công!', 'success');
+                done && done();
+            }
+        }, error => console.error(error) || T.notify('Cập nhật giảm giá bị lỗi!', 'danger'));
+    };
+}
+
+export function deleteDiscountHistory(_id) {
+    return dispatch => {
+        const url = '/api/discount-history';
+        T.delete(url, { _id }, data => {
+            if (data.error) {
+                T.notify('Xóa lịch sử giảm giá bị lỗi!', 'danger');
+                console.error('DELETE: ' + url + '.', data.error);
+            } else {
+                T.notify('Xoá lịch sử giảm giá thành công!', 'success');
+                dispatch(getDiscountHistoryPage());
+            }
+        }, error => console.error(error) || T.notify('Xóa lịch sử giảm giá bị lỗi!', 'danger'));
+    };
+}
+
+export function ajaxGetDiscountHistory(_id, done) {
+    const url = '/api/discount-history';
     T.get(url, { _id }, done, error => console.error(error) || T.notify('Lấy giảm giá bị lỗi!', 'danger'));
 }
