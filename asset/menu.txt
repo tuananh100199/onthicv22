@@ -5,6 +5,7 @@
 	2010 - Thông tin chung (/user/setting)
 	2020 - Email (/user/email)
 	2040 - Cluster (/user/cluster)
+	2050 - Backup (/user/backup)
 	2060 - Người dùng (/user/member)
 	2080 - Vai trò (/user/role)
 	2081 - Sms (/user/sms-brandname)

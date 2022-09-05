@@ -16,6 +16,9 @@ asset/host.json
 asset/menu.txt
 asset/hpo.edu.vn.conf
 asset/tool/backup
+asset/backup
+
+backup/*
 
 public/img/*
 !public/img/flag
