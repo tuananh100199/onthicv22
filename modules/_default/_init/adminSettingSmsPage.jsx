@@ -4,6 +4,7 @@ import { getSystemSettings,updateSystemSettings } from './redux';
 import { AdminPage, FormTextBox, FormTabs, FormRichTextBox } from 'view/component/AdminPage';
 
 const brandNameViettelKeys = ['brandName','usernameViettel','passwordViettel','totalSMSViettel'];
+const brandNameCMCKeys = ['brandNameCMC','usernameCMC','passwordCMC','totalSmsCMC'];
 class SmsItem extends React.Component {
     set = ( content='') => {
         this.content.value(content);
@@ -39,9 +40,13 @@ class SettingsPage extends AdminPage {
     componentDidMount() {
         T.ready('/user/sms-brandname',() => {
             const smsItemsKeys = this.smsItems.map(item=>item.id);
-            this.props.getSystemSettings([...brandNameViettelKeys,...smsItemsKeys],data=>{
+            this.props.getSystemSettings([...brandNameViettelKeys,...smsItemsKeys,...brandNameCMCKeys],data=>{
                 console.log({data});
                 brandNameViettelKeys.forEach(key=>{// settings viettel sms info
+                    this[key] && this[key].value(data[key]||'');
+                });
+
+                brandNameCMCKeys.forEach(key=>{// settings viettel sms info
                     this[key] && this[key].value(data[key]||'');
                 });
 
@@ -56,12 +61,16 @@ class SettingsPage extends AdminPage {
         });
     }
 
-    saveInfo = () => {
-        this.props.updateSystemSettings({
-            brandName: this.brandName.value(),
-            usernameViettel: this.usernameViettel.value(),
-            passwordViettel: this.passwordViettel.value(),
-        });
+    saveInfo = (keys) => {
+        const changes = keys.reduce((result,item)=>({...result,[item]:this[item].value()}),{});
+        console.log(changes);
+        this.props.updateSystemSettings(changes);
+        
+        // this.props.updateSystemSettings({
+        //     brandName: this.brandName.value(),
+        //     usernameViettel: this.usernameViettel.value(),
+        //     passwordViettel: this.passwordViettel.value(),
+        // });
     }
 
     saveSms = ()=>{
@@ -98,14 +107,32 @@ class SettingsPage extends AdminPage {
                             </div>
                             {readOnly ? null :
                                 <div className='tile-footer' style={{ textAlign: 'right' }}>
-                                    <button className='btn btn-primary' type='button' onClick={this.saveInfo}>
+                                    <button className='btn btn-primary' type='button' onClick={e=>e.preventDefault()||this.saveInfo(brandNameViettelKeys)}>
                                         <i className='fa fa-fw fa-lg fa-save' /> Lưu
                                     </button>
                                 </div>}
                         </div>
                     </div>
 
-                       <div className='col-md-6'>
+                    <div className='col-md-6'>
+                        <div className='tile'>
+                            <h3 className='tile-title'>SMS CMC</h3>
+                            <div className='tile-body'>
+                                <FormTextBox ref={e => this.brandNameCMC = e} label='Tên thương hiệu' readOnly={readOnly} />
+                                <FormTextBox ref={e => this.usernameCMC = e} label='Username' readOnly={readOnly} />
+                                <FormTextBox ref={e => this.passwordCMC = e} label='Password' readOnly={readOnly} />
+                                <FormTextBox ref={e => this.totalSmsCMC = e} label='Tổng tin nhắn' type='number' readOnly={true} />
+                            </div>
+                            {readOnly ? null :
+                                <div className='tile-footer' style={{ textAlign: 'right' }}>
+                                    <button className='btn btn-primary' type='button' onClick={e=>e.preventDefault()||this.saveInfo(brandNameCMCKeys)}>
+                                        <i className='fa fa-fw fa-lg fa-save' /> Lưu
+                                    </button>
+                                </div>}
+                        </div>
+                    </div>
+
+                       <div className='col-md-12'>
                             <FormTabs ref={e => this.tabs = e} id='smsPageTab' contentClassName='tile' tabs={tabs} />
                         </div>
                 </div>

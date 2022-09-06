@@ -101,6 +101,7 @@ module.exports = app => {
 
     app.put('/api/profile-student', app.permission.check('profileStudent:write'), (req, res) => {
         const {_id,changes} = req.body;
-        app.model.student.update(_id,changes,(error,item)=>res.send({error,item}));
+        const giayToDangKy = changes && changes.giayToDangKy?changes.giayToDangKy : [];
+        app.model.student.update(_id,{...changes,giayToDangKy},(error,item)=>res.send({error,item}));
     });
 };
