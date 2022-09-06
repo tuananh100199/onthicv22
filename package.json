@@ -16,7 +16,7 @@
     "port": 27017
   },
   "scripts": {
-    "nodemon": "nodemon hiepphat.main.js --ignore node_modules/ --ignore public/ --ignore src/view/ --ignore webpack.config.js --ignore *.json",
+    "nodemon": "nodemon hiepphat.main.js --ignore node_modules/ --ignore public/ --ignore src/view/ --ignore backup/ --ignore webpack.config.js --ignore *.json",
     "webpack-server": "webpack serve --mode development --color",
     "build-webpack": "webpack --mode production",
     "build": "db.generate -d",
@@ -105,6 +105,7 @@
     "express-session": "^1.17.1",
     "face-api.js": "^0.22.2",
     "file-saver": "^2.0.5",
+    "fs-extra": "^10.1.0",
     "helmet": "^4.2.0",
     "html2canvas": "^1.0.0-rc.7",
     "husky": "^6.0.0",

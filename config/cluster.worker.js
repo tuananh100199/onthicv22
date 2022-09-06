@@ -26,6 +26,8 @@ module.exports = (cluster, isDebug) => {
     app.defaultAdminPassword = appConfig.default.adminPassword;
     app.assetPath = app.path.join(__dirname, '../asset');
     app.bundlePath = app.path.join(app.assetPath, 'bundle');
+    // app.backupPath = app.path.join(app.assetPath, 'backup');
+    app.backupPath = app.path.join(__dirname, '../backup');
     app.viewPath = app.path.join(__dirname, '../view');
     app.modulesPath = app.path.join(__dirname, '../modules');
     app.publicPath = app.path.join(__dirname, '../public');
