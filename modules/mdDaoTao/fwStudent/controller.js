@@ -1,9 +1,19 @@
 module.exports = (app) => {
-    const menu = {
+    const menuPreStudentEnroll = {
         parentMenu: app.parentMenu.enrollment,
         menus: {
             8020: { title: 'Ứng viên', link: '/user/pre-student' },
+        }
+    },
+    menuStudentEnroll = {
+        parentMenu: app.parentMenu.enrollment,
+        menus: {
             8027: { title: 'Học viên', link: '/user/student' },
+        }
+    },
+    menuDebtEnroll = {
+        parentMenu: app.parentMenu.enrollment,
+        menus: {
             8060: { title: 'Theo dõi công nợ', link: '/user/student/debt-enroll' },
         }
     },
@@ -12,6 +22,11 @@ module.exports = (app) => {
             menus: {
                 4055: { title: 'Học viên chưa tốt nghiệp', link: '/user/student/fail-graduation' },
                 4060: { title: 'Học viên chưa đạt sát hạch', link: '/user/student/fail-exam' },
+            }
+        },
+        menuPassStudent = {
+            parentMenu: app.parentMenu.trainning,
+            menus: {
                 4062: { title: 'Học viên hoàn thành khóa', link: '/user/student/done-course' },
             }
         },
@@ -29,10 +44,11 @@ module.exports = (app) => {
         };
 
     app.permission.add(
-        { name: 'student:read' }, { name: 'student:write' }, { name: 'student:delete', menu }, { name: 'student:import' }, { name: 'student: fail', menu: menuFailStudent },//TODO: Thầy TÙNG
-        { name: 'pre-student:read', menu }, { name: 'pre-student:write' }, { name: 'pre-student:delete' }, { name: 'pre-student:import' }, { name: 'pre-student:export' },
+        { name: 'student:read' }, { name: 'student:write' }, { name: 'student:delete' }, { name: 'student:import' }, { name: 'student:fail', menu: menuFailStudent }, { name: 'student:pass', menu: menuPassStudent },//TODO: Thầy TÙNG
+        { name: 'pre-student:read' }, { name: 'pre-student:write' }, { name: 'pre-student:delete' }, { name: 'pre-student:import' }, { name: 'pre-student:export' },
         { name: 'debt:read', menu: menuDebt }, { name: 'debt:write' }, { name: 'debt:delete' },
         { name: 'activeCourse:read', menu: menuActiveCourse }, { name: 'activeCourse:write' }, { name: 'activeCourse:delete' },
+        {name:'pre-student:enroll',menu:menuPreStudentEnroll},{name:'student:enroll',menu:menuStudentEnroll},{name:'debt:enroll',menu:menuDebtEnroll}
     );
 
     app.get('/user/student/import-fail-pass', app.permission.check('student:import'), app.templates.admin);
@@ -1597,7 +1613,7 @@ module.exports = (app) => {
 
     // Hook permissionHooks -------------------------------------------------------------------------------------------
     app.permissionHooks.add('courseAdmin', 'student', (user) => new Promise(resolve => {
-        app.permissionHooks.pushUserPermission(user, 'student:read', 'student:write');
+        app.permissionHooks.pushUserPermission(user, 'student:read', 'student:write', 'student:pass');
         // Quản lý khóa học nội bộ thì được import danh sách học viên bằng file Excel
         if (user.division && !user.division.isOutside) app.permissionHooks.pushUserPermission(user, 'student:import');
         resolve();
