@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { getReviewClassPage, createReviewClass, updateReviewClass, deleteReviewClass } from './redux';
 import { AdminPage, AdminModal, FormTextBox, TableCell, renderTable, CirclePageButton, FormCheckbox , FormDatePicker, FormSelect} from 'view/component/AdminPage';
 import Pagination from 'view/component/Pagination';
-import {ajaxSelectTeacherByCourseType} from 'modules/_default/fwTeacher/redux';
+import {ajaxSelectTeacherByCourseTypeStudent} from 'modules/_default/fwTeacher/redux';
 import {ajaxSelectCourseType} from 'modules/mdDaoTao/fwCourseType/redux';
 import { ajaxSelectSubject } from 'modules/mdDaoTao/fwSubject/redux';
 import { getNotificationTemplateAll } from 'modules/mdTruyenThong/fwNotificationTemplate/redux';
@@ -76,7 +76,7 @@ class ReviewClassModal extends AdminModal {
             <FormTextBox className='col-md-6' ref={e => this.itemRemainStudent = e} label='Số học viên tối đa' readOnly={this.props.readOnly || new Date(this.state.dateEnd) < new Date()} />
             <FormDatePicker className='col-md-6' ref={e => this.itemDateStart = e} label='Thời gian bắt đầu'  type='time' readOnly={this.props.readOnly||new Date(this.state.dateEnd) < new Date()} />
             <FormDatePicker className='col-md-6' ref={e => this.itemDateEnd = e} label='Thời gian kết thúc đăng ký'  type='time' readOnly={this.props.readOnly||new Date(this.state.dateEnd) < new Date()}/>
-            <FormSelect className='col-md-6' ref={e => this.itemTeacher = e} label='Giáo viên' data={ajaxSelectTeacherByCourseType('',0)}  style={{ width: '100%' }} readOnly={this.props.readOnly||new Date(this.state.dateEnd) < new Date()}/>
+            <FormSelect className='col-md-6' ref={e => this.itemTeacher = e} label='Giáo viên' data={ajaxSelectTeacherByCourseTypeStudent('',0)}  style={{ width: '100%' }} readOnly={this.props.readOnly||new Date(this.state.dateEnd) < new Date()}/>
             <FormSelect className='col-md-6' ref={e => this.itemCourseType = e} label='Khoá học' data={ajaxSelectCourseType}  style={{ width: '100%' }} readOnly={this.props.readOnly||new Date(this.state.dateEnd) < new Date()}/>
             <FormSelect className='col-md-6' ref={e => this.itemSubject = e} label='Môn học' data={ajaxSelectSubject}  style={{ width: '100%' }} readOnly={this.props.readOnly||new Date(this.state.dateEnd) < new Date()}/>
             <FormCheckbox className='col-md-6' ref={e => this.itemActive = e} isSwitch={true} label='Kích hoạt' readOnly={this.props.readOnly || new Date(this.state.dateEnd) < new Date()} />
@@ -280,6 +280,8 @@ class ReviewClassPage extends AdminPage {
     }
 
     render() {
+        const user = this.props.system && this.props.system.user ? this.props.system.user:null;
+        console.log({user});
         const permission = this.getUserPermission('reviewClass'),
             { pageNumber, pageSize, pageTotal, totalItem, list } = this.props.reviewClass && this.props.reviewClass.page ?
                 this.props.reviewClass.page : { pageNumber: 1, pageSize: 50, pageTotal: 1, totalItem: 0, list: [] },

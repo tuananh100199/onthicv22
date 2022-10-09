@@ -91,4 +91,11 @@ module.exports = (app) => {
         app.model.reviewClass.delete(_id, (error) => res.send({ error }));
     });
 
+    // Hook permissionHooks -------------------------------------------------------------------------------------------
+    app.permissionHooks.add('courseAdmin', 'reviewClass', (user) => new Promise(resolve => {
+        app.permissionHooks.pushUserPermission(user, 'reviewClass:read', 'reviewClass:write');
+        // Quản lý khóa học nội bộ thì được import danh sách học viên bằng file Excel
+        resolve();
+    }));
+
 };
