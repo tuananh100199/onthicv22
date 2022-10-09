@@ -31,7 +31,7 @@ body
 blockquote
 {
 	font-style: italic;
-	font-family: Georgia, Times, "Times New Roman", serif;
+	font-family: Georgia, Times, "Times New Roman", serif, "VNI-Aptima";
 	padding: 2px 0;
 	border-style: solid;
 	border-color: #ccc;

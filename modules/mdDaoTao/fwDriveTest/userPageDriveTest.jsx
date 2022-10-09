@@ -24,7 +24,7 @@ class DriveTestContent extends AdminPage {
         const { pageNumber, pageSize, pageTotal, pageCondition, totalItem, list } = this.props.driveTest && this.props.driveTest[this.state.courseType] ?
             this.props.driveTest[this.state.courseType] : { pageNumber: 1, pageSize: 50, pageTotal: 1, totalItem: 0, pageCondition: '', list: [] };
         return (
-            <div className='tile-body'>
+            <div className='tile-body' style={{ fontFamily: 'VNI-Aptima' }}>
                 <div className='row'>
                     {list && list.length ? list.map((driveTest, index) => (
                         <div key={index} className='col-md-6 col-lg-4'>

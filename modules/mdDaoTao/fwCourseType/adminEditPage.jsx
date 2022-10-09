@@ -111,7 +111,7 @@ class CourseTypeEditPage extends AdminPage {
                         this.itemPracticeNumOfReviewHours.value(item.practiceNumOfReviewHours);
                         this.itemSoLuongCauHoiThi.value(item.soLuongCauHoiThi);
                         this.itemSoLuongCauDat.value(item.soLuongCauDat);
-                        this.itemContentSyntax.value(item.contentSyntax);
+                        // this.itemContentSyntax.value(item.contentSyntax);
                         this.itemImage.setData('course-type:' + item._id);
 
                         this.itemTitle.focus();
@@ -142,7 +142,7 @@ class CourseTypeEditPage extends AdminPage {
             practiceNumOfReviewHours: this.itemPracticeNumOfReviewHours.value(),
             soLuongCauHoiThi: this.itemSoLuongCauHoiThi.value(),
             soLuongCauDat: this.itemSoLuongCauDat.value(),
-            contentSyntax: this.itemContentSyntax.value().trim().toUpperCase(),
+            // contentSyntax: this.itemContentSyntax.value().trim().toUpperCase(),
             questionTypes: this.state.types.map(type => ({
                 category: type._id,
                 amount: this[type._id].value(),
@@ -271,7 +271,7 @@ class CourseTypeEditPage extends AdminPage {
                     <FormTextBox className='col-md-3' ref={e => this.itemPracticeNumOfMonths = e} label='Số tháng dạy thực hành' type='number' readOnly={readOnly} />
                     <FormTextBox className='col-md-3' ref={e => this.itemPracticeNumOfHours = e} label='Số giờ dạy thực hành' type='number' readOnly={readOnly} />
                     <FormTextBox className='col-md-3' ref={e => this.itemPracticeNumOfReviewHours = e} label='Số giờ ôn tập thực hành' type='number' readOnly={readOnly} />
-                    <FormTextBox className='col-md-3' ref={e => this.itemContentSyntax = e} label='Cú pháp' type='text' readOnly={readOnly} />
+                    {/* <FormTextBox className='col-md-3' ref={e => this.itemContentSyntax = e} label='Cú pháp' type='text' readOnly={readOnly} /> */}
                     <FormTextBox className='col-md-6' ref={e => this.itemSoLuongCauHoiThi = e} label='Số lượng câu hỏi trong một đề thi' type='number' readOnly={readOnly} />
                     <FormTextBox className='col-md-6' ref={e => this.itemSoLuongCauDat = e} label='Số lượng câu tối thiểu để đậu trong đề thi' type='number' readOnly={readOnly} />
 

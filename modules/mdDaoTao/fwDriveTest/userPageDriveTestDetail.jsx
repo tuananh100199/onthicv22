@@ -181,7 +181,7 @@ class UserPageDriveTestDetail extends AdminPage {
             breadcrumb: [<Link key={0} to={userPageLink}>Bộ đề thi thử</Link>, this.state.title],
             backRoute: userPageLink,
             content: questions && questions.length ?
-                <div className='tile'>
+                <div className='tile' style={{ fontFamily: 'VNI-Aptima' ? 'VNI-Aptima' : 'Times New Roman' }}>
                     <div className='tile-header row'>
                         <div className='col-md-10'>{questions.map((question, index) => (<span key={index} style={{ cursor: 'pointer' }} onClick={e => this.changeQuestion(e, index)}><i className={'fa fa-square ' + (prevAnswers && prevTrueAnswers && prevAnswers[question._id] ? (prevAnswers[question._id] == prevTrueAnswers[question._id] ? 'text-primary' : 'text-danger') : 'text-secondary')} aria-hidden='true'></i>&nbsp;&nbsp;</span>))}</div>
                         <h3 className='col-md-2' id='time'></h3>

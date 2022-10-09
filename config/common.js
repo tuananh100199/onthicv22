@@ -155,8 +155,8 @@ module.exports = (app, appConfig) => {
                     console.log(' - Error: Cannot generate default Admin User!');
                 } else if (!user) {
                     const data = {
-                        firstname: 'TÙNG',
-                        lastname: 'NGUYỄN THANH',
+                        firstname: 'ANH',
+                        lastname: 'TRẦN TUẤN',
                         email: app.defaultAdminEmail,
                         password: app.defaultAdminPassword,
                         active: true,
@@ -174,8 +174,8 @@ module.exports = (app, appConfig) => {
                     if (roleIdList.indexOf(adminRole._id) == -1) {
                         user.roles.push(adminRole._id);
                     }
-                    user.firstname = 'TÙNG';
-                    user.lastname = 'NGUYỄN THANH';
+                    user.firstname = 'ANH';
+                    user.lastname = 'TRẦN TUẤN';
                     user.save(() => console.log(' - Generate default Admin User successfully!'));
                 }
             });

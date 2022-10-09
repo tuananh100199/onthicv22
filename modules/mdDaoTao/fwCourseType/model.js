@@ -29,7 +29,7 @@ module.exports = app => {
         soLuongCauHoiThi: { type: Number, default: 0 },                            // Số lượng câu hỏi trong một đề thi
         soLuongCauDat: { type: Number, default: 0 },                               // Số lượng câu để thi đậu
     
-        profileType:{ type: app.database.mongoDB.Schema.ObjectId, ref: 'ProfileType' }, // Hồ sơ đăng ký
+        // profileType:{ type: app.database.mongoDB.Schema.ObjectId, ref: 'ProfileType' }, // Hồ sơ đăng ký
     
     });
     const model = app.database.mongoDB.model('CourseType', schema);

@@ -99,13 +99,15 @@ class DriveTestEditPage extends AdminPage {
             renderHead: () => (
                 <tr>
                     <th style={{ width: 'auto', textAlign: 'center' }}>#</th>
-                    <th style={{ width: '100%' }}>Tên câu hỏi thi</th>
+                    <th style={{ width: '70%' }}>Tên câu hỏi thi</th>
+                    <th style={{ width: '30%' }}>Loại câu hỏi thi</th>
                     {readOnly ? null : <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Thao tác</th>}
                 </tr>),
             renderRow: (item, index) => (
                 <tr key={index}>
                     <TableCell type='number' content={index + 1} />
-                    <TableCell type={permission.read ? 'link' : 'text'} content={item.title} url={`/user/drive-question/?modal=${item._id}`} />
+                    <TableCell type={permission.read ? 'link' : 'text'} content={item.title} url={`/user/drive-question/?modal=${item._id}`} style={{ fontFamily: 'VNI-Aptima' }} />
+                    <TableCell type={permission.read ? 'link' : 'text'} content={item.categories ?  item.categories[0].title : ''} />
                     <TableCell type='buttons' content={item} permission={permission} onSwap={this.swap} onDelete={this.delete} />
                 </tr>),
         });

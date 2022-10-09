@@ -12,11 +12,12 @@ class QuestionModal extends AdminModal {
     }
 
     onShow = (item) => {
+        console.log(item);
         let { _id, title, active, image, answers, trueAnswer, importance, categories } = item || { title: '', active: true, answers: '', trueAnswer: 0, importance: false, categories: [] };
         this.itemTitle.value(title);
-        this.itemImage.setData(`driveQuestion:${_id || 'new'}`);
+        // this.itemImage.setData(`driveQuestion:${_id || 'new'}`);
         this.itemAnswers.value(answers);
-        this.itemCategories.value(categories.some(item => item._id) ? categories.map(({_id})=> _id) : categories);
+        // this.itemCategories.value(categories.some(item => item._id) ? categories.map(({_id})=> _id) : categories);
         this.itemIsImportance.value(importance);
         this.itemIsActive.value(active);
         this.setState({ _id, image, answers, trueAnswer });
@@ -28,7 +29,9 @@ class QuestionModal extends AdminModal {
                 title: this.itemTitle.value(),
                 answers: this.state.answers,
                 trueAnswer: this.state.trueAnswer < answers.length ? this.state.trueAnswer : 0,
-                categories: this.itemCategories.value(),
+                // categories: this.itemCategories.value(), đẩy loại Toát Yếu GLHTCG
+                // categories: '606ab9b7c3722d33582125fd', // Toát yếu
+                categories: '63216cc5b17dfe1c4ce5712c', // Cựu ước
                 active: this.itemIsActive.value(),
                 importance: this.itemIsImportance.value(),
                 image: this.state.image,
@@ -77,18 +80,22 @@ class QuestionModal extends AdminModal {
             title: 'Câu hỏi mới',
             size: 'large',
             body: <div className='row'>
-                <FormRichTextBox ref={e => this.itemTitle = e} className='col-md-8' label='Câu hỏi' rows='6' readOnly={readOnly} />
-                <FormImageBox ref={e => this.itemImage = e} className='col-md-4' label='Hình minh họa' uploadType='DriveQuestionImage' image={this.state.image}
-                    onDelete={this.deleteImage} onSuccess={this.onUploadSuccess} readOnly={readOnly} />
+                {/* <FormRichTextBox ref={e => this.itemTitle = e} className='col-md-8' style={{ fontFamily: 'VNI-Aptima' }} label='Câu hỏi' rows='6' readOnly={readOnly} /> Toát yếu dùng aptima */}
+                <FormRichTextBox ref={e => this.itemTitle = e} className='col-md-8'  label='Câu hỏi' rows='6' readOnly={readOnly} />
 
+                {/* <FormImageBox ref={e => this.itemImage = e} className='col-md-4' label='Hình minh họa' uploadType='DriveQuestionImage' image={this.state.image}
+                    onDelete={this.deleteImage} onSuccess={this.onUploadSuccess} readOnly={readOnly} /> */}
+
+                {/* <FormRichTextBox ref={e => this.itemAnswers = e} className='col-md-12' label='Danh sách câu trả lời' rows='5' onChange={e => this.setState({ answers: e.target.value })} readOnly={readOnly} style={{ display: readOnly ? 'none' : 'block', fontFamily: 'VNI-Aptima' }} /> Toát yếu dùng aptima */}
                 <FormRichTextBox ref={e => this.itemAnswers = e} className='col-md-12' label='Danh sách câu trả lời' rows='5' onChange={e => this.setState({ answers: e.target.value })} readOnly={readOnly} style={{ display: readOnly ? 'none' : 'block' }} />
+
                 <div className='col-md-12' style={{ display: readOnly ? 'block' : 'none' }}>
                     <label>Danh sách câu trả lời</label>
                     <b>{listAnswers}</b>
                 </div>
                 <label className='col-md-12'>Đáp án:{listTrueAnswers}</label>
 
-                <FormSelect ref={e => this.itemCategories = e} className='col-md-12' data={this.props.questionTypes} multiple={true} label='Loại câu hỏi' readOnly={readOnly} />
+                {/* <FormSelect ref={e => this.itemCategories = e} className='col-md-12' data={this.props.questionTypes} multiple={true} label='Loại câu hỏi' readOnly={readOnly} /> */}
 
                 <FormCheckbox ref={e => this.itemIsImportance = e} className='col-md-6' style={{ color: 'red' }} label='Câu điểm liệt' readOnly={readOnly} />
                 <FormCheckbox ref={e => this.itemIsActive = e} className='col-md-6' label='Kích hoạt' readOnly={readOnly} />
@@ -137,7 +144,7 @@ class AdminQuestionPage extends AdminPage {
             renderRow: (item, index) => (
                 <tr key={index}>
                     <TableCell type='number' content={(pageNumber - 1) * pageSize + index + 1} />
-                    <TableCell type='link' content={item.title} onClick={e => this.edit(e, item)} />
+                    <TableCell type='link' style={{ fontFamily: 'VNI-Aptima' }} content={item.title} onClick={e => this.edit(e, item)} />
                     <TableCell type='image' content={item.image} />
                     <TableCell type='checkbox' content={item.importance} permission={permission} onChanged={importance => this.props.updateDriveQuestion(item._id, { importance })} />
                     <TableCell type='checkbox' content={item.active} permission={permission} onChanged={active => this.props.updateDriveQuestion(item._id, { active })} />

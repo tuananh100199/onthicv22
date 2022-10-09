@@ -5,7 +5,7 @@
   "description": "Trung tam dao tao lai xe Hiep Phat",
   "main": "hiepphat.main.js",
   "port": 5090,
-  "rootUrl": "https://hpo.edu.vn",
+  "rootUrl": "abc.com.vn",
   "redisDB": {
     "host": "localhost",
     "port": 6379
@@ -26,20 +26,20 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://gitlab.com/hithanhtung/hiep-phat.git"
+    "url": "git+https://gitlab.com/anhtran1199/onthicv22.git"
   },
   "keywords": [
     "Hiep Phat"
   ],
   "email": {
-    "from": "thanhtung@hcmut.edu.vn",
-    "password": "C0nc0b3b3"
+    "from": "trantuananh100119999@gmail.com",
+    "password": "tuananh1001"
   },
   "default": {
-    "adminEmail": "thanhtung@hcmut.edu.vn",
-    "adminPassword": "18012016"
+    "adminEmail": "trantuananh100119999@gmail.com",
+    "adminPassword": "tuananh1001"
   },
-  "author": "Nguyen Thanh Tung",
+  "author": "Tran Tuan Anh",
   "license": "ISC",
   "devDependencies": {
     "@babel/cli": "^7.16.8",

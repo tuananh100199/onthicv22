@@ -110,6 +110,7 @@ module.exports = app => {
                                 });
 
                                 const randomQuestions = [];
+                                console.log(' item.questionTypes',  item.questionTypes);
                                 item.questionTypes.forEach(type => {
                                     randomQuestions.push(app.getRandom(questionMapper[type.category], type.amount));
                                 });
