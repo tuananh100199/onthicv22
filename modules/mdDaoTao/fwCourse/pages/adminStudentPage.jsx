@@ -1,0 +1,271 @@
+import React from 'react';
+import { connect } from 'react-redux';
+import { getCourse, updateCourseStudents, updateStudentInfoInCourse, exportStudentInfoToExcel, autoAssignStudent } from '../redux';
+import { getPreStudentPage, updateStudent,getPreStudentByCourseTypePage } from 'modules/mdDaoTao/fwStudent/redux';
+import { Link } from 'react-router-dom';
+import Pagination from 'view/component/Pagination';
+import AdminStudentModal from '../adminStudentModal';
+import { AdminPage, CirclePageButton, FormTextBox, FormCheckbox } from 'view/component/AdminPage';
+
+class AdminStudentPage extends AdminPage {
+    state = { searchPreStudentText: '', searchPreStudentCourse: '', searchStudentText: '', outsideStudentVisible: true, sortType: 'division', assignedButtonVisible: false }; // sortType = name | division
+    preStudents = {};
+    itemDivisionSelectAll = {};
+    itemDivisionDeSelectAll = {};
+
+    componentDidMount() {
+        T.ready('/user/course', () => {
+            const params = T.routeMatcher('/user/course/:_id/student').parse(window.location.pathname);
+            if (params && params._id) {
+                const course = this.props.course ? this.props.course.item : null;
+                if (course) {
+                    this.onSearch({});
+                } else {
+                    this.props.getCourse(params._id, data => {
+                        if (data.error) {
+                            T.notify('Lấy khóa học bị lỗi!', 'danger');
+                            this.props.history.push('/user/course/' + params._id);
+                        } else {
+                            const waitSearch = () => (this.props.course && this.props.course.item) ?
+                                this.onSearch({}) : setTimeout(waitSearch, 1000);
+                            waitSearch();
+                        }
+                    });
+                }
+            } else {
+                this.props.history.push('/user/course/');
+            }
+        });
+    }
+
+    onSearch = ({ pageNumber, pageSize, searchText, searchPlanCourse }, sort, done) => {
+        const courseType = this.props.course.item.courseType;
+        if (searchText == undefined) searchText = this.state.searchPreStudentText;
+        if (searchPlanCourse == undefined) searchPlanCourse = this.state.searchPreStudentCourse;
+        if (sort == undefined) sort = { lastname: 1, firstname: 1 };
+        if (sort.division == undefined) sort.division = this.state.sortType == 'division' ? 1 : 0;
+        this.props.getPreStudentByCourseTypePage(pageNumber, pageSize, { searchText, searchPlanCourse }, sort,courseType._id, () => {
+            this.setState({
+                searchPreStudentText: searchText,
+                searchPreStudentPlanCourse: searchPlanCourse,
+                sortType: sort.division ? 'division' : 'name',
+                assignedButtonVisible: false,
+            });
+            done && done();
+        });
+    }
+
+    selectDivisionStudents = (_divisionId, selected) => {
+        this.itemDivisionSelectAll[_divisionId] && this.itemDivisionSelectAll[_divisionId].value(true);
+        this.itemDivisionDeSelectAll[_divisionId] && this.itemDivisionDeSelectAll[_divisionId].value(false);
+
+        let assignedButtonVisible = selected;
+        if (this.props.student && this.props.student.prePage) {
+            (this.props.student.prePage.list || []).forEach(preStudent => {
+                if (preStudent.division && preStudent.division._id == _divisionId) {
+                    this.preStudents[preStudent._id].value(selected);
+                } else if (!assignedButtonVisible) {
+                    assignedButtonVisible = this.preStudents[preStudent._id].value();
+                }
+            });
+        }
+
+        this.setState({ assignedButtonVisible });
+    }
+
+    selectOnePreStudent = () => this.setState({ assignedButtonVisible: Object.keys(this.preStudents).filter(_preStudentId => this.preStudents[_preStudentId] && this.preStudents[_preStudentId].value()).length > 0 });
+    selectManyPreStudents = selected => {
+        this.itemSelectAll.value(true);
+        this.itemDeSelectAll.value(false);
+        Object.keys(this.preStudents).forEach(_id => this.preStudents[_id] && this.preStudents[_id].value(selected));
+        this.setState({ assignedButtonVisible: selected });
+    }
+
+    addCourseStudents = (e, _courseId, preStudent) => {
+        e.preventDefault();
+        preStudent && this.preStudents[preStudent._id].value(true);
+        const _studentIds = [];
+        Object.keys(this.preStudents).forEach(_studentId => {
+            if (!this.preStudents[_studentId]) {
+                delete this.preStudents[_studentId];
+            } else if (this.preStudents[_studentId].value()) {
+                _studentIds.push(_studentId);
+                this.preStudents[_studentId].value(false);
+            }
+        });
+
+        preStudent && !_studentIds.includes(preStudent._id) && _studentIds.push(preStudent._id);
+        _studentIds.length && this.props.updateCourseStudents(_courseId, _studentIds, 'add', () => this.onSearch({}));
+    }
+
+    removeCourseStudent = (e, student) => e.preventDefault() || T.confirm('Xoá Học viên', `Bạn có chắc muốn xoá ${student.lastname} ${student.firstname} khỏi khóa học này?`, true, isConfirm => {
+        isConfirm && this.props.updateCourseStudents(student.course._id, [student._id], 'remove', () => this.onSearch({}));
+    });
+
+    showStudentInfo = (e, student) => e.preventDefault() || this.modal.show(student);
+
+    updateStudent = (studentId, changes) => {
+        this.props.updateStudent(studentId, changes, (data) => {
+            data && this.props.updateStudentInfoInCourse(studentId, data);
+        });
+    }
+
+    onAutoAssignStudent = (e, _courseId) => {
+        e.preventDefault();
+        this.props.autoAssignStudent(_courseId, () => this.onSearch({}));
+    }
+
+    render() {
+        // const permission = this.getUserPermission('course');
+        const item = this.props.course && this.props.course.item ? this.props.course.item : { admins: [] };
+        const { pageNumber, pageSize, pageTotal, pageCondition, totalItem, list: preStudents } = this.props.student && this.props.student.prePage ?
+            this.props.student.prePage : { pageNumber: 1, pageSize: 50, pageTotal: 1, pageCondition: {}, totalItem: 0, list: [] };
+        let { outsideStudentVisible, sortType, searchStudentText, assignedButtonVisible } = this.state;
+        const { _id: _courseId, students } = this.props.course && this.props.course.item ? this.props.course.item : {};
+        const studentList = [], preStudentList = [];
+        const currentUser = this.props.system ? this.props.system.user : null,
+            isOutsideCourseAdmin = currentUser && currentUser.isCourseAdmin && currentUser.division && currentUser.division.isOutside ? true : false;
+        outsideStudentVisible = outsideStudentVisible || isOutsideCourseAdmin;
+        const isValidStudent = preStudent => preStudent.division && (!preStudent.division.isOutside || outsideStudentVisible);
+        if (sortType == 'name') {
+            (preStudents || []).forEach((preStudent, index) => {
+                if (isValidStudent(preStudent)) {
+                    preStudentList.push(<li style={{ margin: 0, display: 'block' }} key={index}>
+                        <div style={{ display: 'inline-flex' }}>
+                            <FormCheckbox ref={e => this.preStudents[preStudent._id] = e} style={{ display: 'inline-block' }} onChange={this.selectOnePreStudent}
+                                label={<>{preStudentList.length + 1}. {preStudent.lastname} {preStudent.firstname} ({preStudent.identityCard}) - {preStudent.division && preStudent.division.title} {preStudent.division && preStudent.division.isOutside ? ' (cơ sở ngoài)' : ''} =&gt; Khóa dự kiến <span className='text-danger'>{preStudent.plannedCourse?preStudent.plannedCourse.title:''}</span></>} />
+                            <div className='buttons'>
+                                <a href='#' onClick={e => this.addCourseStudents(e, _courseId, preStudent)}>
+                                    <i style={{ marginLeft: 10, fontSize: 20 }} className='fa fa-arrow-right text-success' />
+                                </a>
+                            </div>
+                        </div>
+                    </li>);
+                }
+            });
+        } else {
+            const divisionContainer = {};
+            preStudents.forEach(preStudent => {
+                if (isValidStudent(preStudent)) {
+                    if (!divisionContainer[preStudent.division._id]) divisionContainer[preStudent.division._id] = Object.assign({}, preStudent.division);
+                    const division = divisionContainer[preStudent.division._id];
+                    if (division.preStudents == null) division.preStudents = [];
+                    division.preStudents.push(preStudent);
+                }
+            });
+
+            Object.values(divisionContainer).sort((a, b) => a.title - b.title).forEach((division, index) => {
+                preStudentList.push(
+                    <li style={{ margin: 0, display: 'block' }} key={index}>
+                        <div style={{ display: 'inline-flex' }}>
+                            <h5>{preStudentList.length + 1}. {division.title} {division.isOutside ? ' (cơ sở ngoài)' : ''}</h5>
+                            <div className='buttons'>
+                                <FormCheckbox ref={e => this.itemDivisionSelectAll[division._id] = e} label='Chọn tất cả' onChange={() => this.selectDivisionStudents(division._id, true)} style={{ display: 'inline-block' }} defaultValue={true} />
+                                <FormCheckbox ref={e => this.itemDivisionDeSelectAll[division._id] = e} label='Không chọn tất cả' onChange={() => this.selectDivisionStudents(division._id, false)} style={{ display: 'inline-block', marginLeft: 12 }} defaultValue={false} />
+                            </div>
+                        </div>
+                        <ul className='menuList' style={{ width: '100%', paddingLeft: 20, margin: 0 }}>
+                            {division.preStudents.map((preStudent, index) => {
+                                const studentLabel = <>{preStudentList.length + 1}. {preStudent.lastname} {preStudent.firstname} ({preStudent.identityCard})
+                                    {preStudent.planCourse ? <>=&gt; Khóa dự kiến <span className='text-danger'>{preStudent.plannedCourse?preStudent.plannedCourse.title:''}</span></> : ''}</>;
+                                return (
+                                    <li style={{ margin: 0, display: 'block' }} key={index}>
+                                        <div style={{ display: 'inline-flex' }}>
+                                            <FormCheckbox ref={e => this.preStudents[preStudent._id] = e} label={studentLabel} onChange={value => this.selectOnePreStudent(preStudent, value)} style={{ display: 'inline-block' }} />
+                                            <div className='buttons'>
+                                                <a href='#' onClick={e => this.addCourseStudents(e, _courseId, preStudent)}>
+                                                    <i style={{ marginLeft: 10, fontSize: 20 }} className='fa fa-arrow-right text-success' />
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </li>);
+                            })}
+                        </ul>
+                    </li>);
+            });
+        }
+
+        (students || []).forEach((student, index) => {
+            if (searchStudentText == '' || (student.lastname + ' ' + student.firstname).toLowerCase().includes(searchStudentText)) {
+                studentList.push(
+                    <li style={{ margin: 10, display: 'block' }} key={index}>
+                        <div style={{ display: 'inline-flex' }}>
+                            <a href='#' style={{ color: 'black' }} onClick={e => this.showStudentInfo(e, student)}>
+                                {studentList.length + 1}. {student.lastname} {student.firstname}&nbsp;
+                                ({student.identityCard}) - {student.division && student.division.title} {student.division && student.division.isOutside ? ' (cơ sở ngoài)' : ''}
+                            </a>
+                            <div className='buttons'>
+                                <a href='#' onClick={e => this.removeCourseStudent(e, student)}>
+                                    <i style={{ marginLeft: 10, fontSize: 20 }} className='fa fa-times text-danger' />
+                                </a>
+                            </div>
+                        </div>
+                    </li>);
+            }
+        });
+
+        const backRoute = `/user/course/${_courseId}`;
+        return this.renderPage({
+            icon: 'fa fa-user-plus',
+            title: 'Gán Học viên: ' + item.name,
+            breadcrumb: [<Link key={0} to='/user/course'>Khóa học</Link>, item._id ? <Link key={0} to={backRoute}>{item.name}</Link> : '', 'Gán Học viên'],
+            content: (
+                <div className='tile'>
+                    <div className='tile-body row'>
+                        <div className='col-md-6' >
+                            <h3 className='tile-title'>Ứng viên</h3>
+                            <div style={{ float: 'right', marginTop: 8, marginRight: 8 }}>
+                                <FormCheckbox label='Hiện cơ sở ngoài' onChange={value => this.setState({ outsideStudentVisible: value })} style={{ display: isOutsideCourseAdmin ? 'none' : 'inline-block', marginRight: 16 }} defaultValue={true} />
+                                Sắp xếp theo:&nbsp;
+                                <a className={sortType == 'name' ? ' text-warning' : 'text-secondary'} href='#' onClick={e => e.preventDefault() || this.onSearch({ pageNumber, pageSize }, { division: 0, lastname: 1, firstname: 1 })}>
+                                    Tên
+                                </a> |&nbsp;
+                                <a className={sortType == 'division' ? ' text-warning' : 'text-secondary'} href='#' onClick={e => e.preventDefault() || this.onSearch({ pageNumber, pageSize }, { division: 1, lastname: 1, firstname: 1 })}>
+                                    Cơ sở
+                                </a>
+                            </div>
+
+                            <div style={{ borderWidth: 1, borderStyle: 'solid', borderColor: '#ddd', borderRadius: 5, padding: 12 }}>
+                                <FormTextBox label='Tìm kiếm ứng viên theo họ tên' onChange={e => this.onSearch({ searchText: e.target.value })} />
+                                <FormTextBox label='Tìm kiếm ứng viên theo khóa dự kiến' onChange={e => this.onSearch({ searchPlanCourse: e.target.value })} />
+                                <div style={{ display: preStudentList.length ? 'block' : 'none' }}>
+                                    <FormCheckbox ref={e => this.itemSelectAll = e} label='Chọn tất cả' onChange={() => this.selectManyPreStudents(true)} style={{ display: 'inline-block' }} defaultValue={true} />
+                                    <FormCheckbox ref={e => this.itemDeSelectAll = e} label='Không chọn tất cả' onChange={() => this.selectManyPreStudents(false)} style={{ display: 'inline-block', marginLeft: 12 }} defaultValue={false} />
+                                    <a href='#' onClick={e => this.addCourseStudents(e, _courseId)} style={{ float: 'right', color: 'black', display: assignedButtonVisible ? 'block' : 'none' }}>
+                                        Gán <i style={{ marginLeft: 5, fontSize: 20 }} className='fa fa-arrow-right text-success' />
+                                    </a>
+                                </div>
+
+                                {preStudentList.length ?
+                                    <ul className='menuList' style={{ width: '100%', paddingLeft: 20, margin: 0, overflow: 'hidden', overflowY: 'scroll', height: 'calc(100vh - 450px)' }}>
+                                        {preStudentList}
+                                    </ul> : 'Không có ứng viên!'}
+                                <Pagination name='adminPreStudent' pageNumber={pageNumber} pageSize={pageSize} pageTotal={pageTotal} totalItem={totalItem} style={{ left: 320 }}
+                                    pageCondition={pageCondition} getPage={(pageNumber, pageSize) => this.onSearch({ pageNumber, pageSize })} />
+                            </div>
+                        </div>
+
+                        <div className='col-md-6'>
+                            <h3 className='tile-title'>Học viên</h3>
+                            <div style={{ borderWidth: 1, borderStyle: 'solid', borderColor: '#ddd', borderRadius: 5, padding: 12 }}>
+                                <FormTextBox ref={e => this.searchBox = e} label='Tìm kiếm học viên' onChange={e => this.setState({ searchStudentText: e.target.value })} />
+                                {studentList.length ?
+                                    <ul className='menuList' style={{ width: '100%', paddingLeft: 20, margin: 0 }}>
+                                        {studentList}
+                                    </ul> : 'Danh sách trống!'}
+                            </div>
+                        </div>
+                        {!isOutsideCourseAdmin ? <>
+                            <CirclePageButton type='custom' customClassName='btn-primary' customIcon='fa-arrow-right' style={{ right: 70 }} onClick={(e) => this.onAutoAssignStudent(e, _courseId)} />
+                            <CirclePageButton type='export' onClick={() => exportStudentInfoToExcel(_courseId)} /></> : null}
+                        <AdminStudentModal ref={e => this.modal = e} updateStudent={this.updateStudent} />
+                    </div>
+                </div>),
+            backRoute,
+        });
+    }
+}
+
+const mapStateToProps = state => ({ system: state.system, course: state.trainning.course, student: state.trainning.student });
+const mapActionsToProps = { autoAssignStudent, getCourse, updateCourseStudents, getPreStudentPage, updateStudent, updateStudentInfoInCourse, exportStudentInfoToExcel,getPreStudentByCourseTypePage };
+export default connect(mapStateToProps, mapActionsToProps)(AdminStudentPage);

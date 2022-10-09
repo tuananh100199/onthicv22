@@ -1,0 +1,17 @@
+.faq{
+
+    border-bottom: 2px solid #CCC;
+    &:last-child{
+        border-bottom: none;
+    }
+    &--title,&--title:hover,&--title:active{
+        font-size: 20px;
+        color:#828282;
+    }
+
+    &--title:hover,&--title:active{
+        color:#199D76;
+    }
+
+    
+}

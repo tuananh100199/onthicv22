@@ -1,0 +1,77 @@
+.comments-area {
+  margin-top: 20px;
+}
+
+.comments-list, .comment-respond {
+  ul {
+    padding-inline-start: 0 !important;
+
+    li {
+      margin-bottom: 25px;
+
+      &.threaded-comments {
+        margin-left: 50px;
+      }
+    }
+  }
+
+  .comments-details {
+    &.waiting {
+      background-color: rgba(#ffc107, 0.4);
+    }
+
+    &.reject {
+      background-color: rgba(255, 0, 0, 0.4);
+    }
+
+    .comments-list-img {
+      float: left;
+      margin-right: 15px;
+      background-size: cover;
+      background-repeat: no-repeat;
+      background-position: center center;
+      border-radius: 50%;
+      width: 55px;
+      height: 55px;
+    }
+
+    .comments-content-wrap {
+      position: relative;
+      margin: 0 0 0 60px;
+      padding: 0 10px 10px;
+
+      &.contact-form textarea {
+        height: auto;
+        padding-right: 25px !important;
+        resize: none;
+      }
+
+      .send-button {
+        position: absolute;
+        right: 15px;
+        top: 6px;
+        color: #909295;
+        font-size: 20px;
+        z-index: 10;
+        opacity: 0;
+        transition: opacity 150ms ease-in-out;
+      }
+    }
+
+    .comments-buttons {
+      opacity: 0;
+      height: 0;
+      padding: 0 10px;
+      position: relative;
+      margin-left: 80px;
+      transition: opacity 150ms ease-in-out, height 300ms ease-in-out;
+
+      .text-hint {
+        position: absolute;
+        color: #909295;
+        top: -10px;
+        right: 10px;
+      }
+    }
+  }
+}

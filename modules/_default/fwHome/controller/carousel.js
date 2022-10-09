@@ -1,0 +1,96 @@
+module.exports = app => {
+    app.componentModel['carousel'] = app.model.carousel;
+
+    app.get('/api/carousel/page/:pageNumber/:pageSize', app.permission.check('component:read'), (req, res) => {
+        const pageNumber = parseInt(req.params.pageNumber),
+            pageSize = parseInt(req.params.pageSize);
+        app.model.carousel.getPage(pageNumber, pageSize, {}, (error, page) => {
+            res.send({ error: error || page == null ? 'Carousel list are not ready!' : null, page });
+        });
+    });
+
+    app.get('/api/carousel/all', app.permission.check('component:read'), (req, res) => {
+        app.model.carousel.getAll((error, list) => res.send({ error, list }));
+    });
+
+    app.get('/api/carousel', app.permission.check('component:read'), (req, res) => {
+        app.model.carousel.get(req.query._id, (error, carousel) => {
+            if (error || carousel == null) {
+                res.send({ error: 'Get carousel failed!' });
+            } else {
+                app.model.carouselItem.getAll({ carouselId: carousel._id }, (error, items) => {
+                    if (error || items == null) {
+                        res.send({ error: 'Get carousel items failed!' });
+                    } else {
+                        res.send({ item: app.clone(carousel, { items }) });
+                    }
+                });
+            }
+        });
+    });
+
+    app.post('/api/carousel', app.permission.check('component:write'), (req, res) => {
+        app.model.carousel.create(req.body.data, (error, carousel) => res.send({ error, carousel }));
+    });
+
+    app.put('/api/carousel', app.permission.check('component:write'), (req, res) => {
+        app.model.carousel.update(req.body._id, req.body.changes, (error, item) => res.send({ error, item }));
+    });
+
+    app.delete('/api/carousel', app.permission.check('component:write'), (req, res) => {
+        app.model.carousel.delete(req.body._id, error => res.send({ error }));
+    });
+
+
+    app.post('/api/carousel/item', app.permission.check('component:write'), (req, res) => {
+        app.model.carouselItem.create(req.body.data, (error, item) => {
+            if (error || (item && item.image == null)) {
+                res.send({ error, item });
+            } else {
+                app.uploadImage('carouselItem', app.model.carouselItem.get, item._id, item.image, data => res.send(data));
+            }
+        });
+    });
+
+    app.put('/api/carousel/item', app.permission.check('component:write'), (req, res) => {
+        app.model.carouselItem.update(req.body._id, req.body.changes, (error, item) => res.send({ error, item }));
+    });
+
+    app.put('/api/carousel/item/swap', app.permission.check('component:write'), (req, res) => {
+        const isMoveUp = req.body.isMoveUp.toString() == 'true';
+        app.model.carouselItem.swapPriority(req.body._id, isMoveUp, (error, item1, item2) => res.send({ error, item1, item2 }));
+    });
+
+    app.delete('/api/carousel/item', app.permission.check('component:write'), (req, res) => {
+        app.model.carouselItem.delete(req.body._id, (error, item) => res.send({ error, carouselId: item.carouselId }));
+    });
+
+    // Home -----------------------------------------------------------------------------------------------------------------------------------------
+    app.get('/home/carousel', (req, res) => app.model.carousel.get(req.query._id, (error, carousel) => {
+        if (error || carousel == null) {
+            res.send({ error: 'Get carousel failed!' });
+        } else {
+            app.model.carouselItem.getAll({ carouselId: carousel._id, active: true }, (error, items) => {
+                if (error || items == null) {
+                    res.send({ error: 'Get carousel failed!' });
+                } else {
+                    res.send({ item: app.clone(carousel, { items }) });
+                }
+            });
+        }
+    }));
+
+
+    // Hook upload images ---------------------------------------------------------------------------------------------------------------------------s
+    app.createFolder(app.path.join(app.publicPath, '/img/carouselItem'));
+
+    const uploadCarouselItemImage = (fields, files, done) => {
+        if (fields.userData && fields.userData[0].startsWith('carouselItem:') && files.CarouselItemImage && files.CarouselItemImage.length > 0) {
+            console.log('Hook: uploadCarouselItemImage => carousel image upload');
+            const _id = fields.userData[0].substring('carouselItem:'.length);
+            app.uploadImage('carouselItem', app.model.carouselItem.get, _id, files.CarouselItemImage[0].path, done);
+        }
+    };
+    app.uploadHooks.add('uploadCarouselItemImage', (req, fields, files, params, done) =>
+        app.permission.has(req, () => uploadCarouselItemImage(fields, files, done), done, 'component:write'));
+};
