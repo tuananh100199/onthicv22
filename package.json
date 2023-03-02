@@ -1,8 +1,8 @@
 {
   "name": "hiep-phat",
   "version": "1.0.178",
-  "title": "Hiep Phat Website",
-  "description": "Trung tam dao tao lai xe Hiep Phat",
+  "title": "Ôn thi chủng viện 2022",
+  "description": "Ôn thi chủng viện",
   "main": "hiepphat.main.js",
   "port": 5090,
   "rootUrl": "abc.com.vn",
@@ -16,12 +16,13 @@
     "port": 27017
   },
   "scripts": {
+    "start": "nodemon && webpack-server",
     "nodemon": "nodemon hiepphat.main.js --ignore node_modules/ --ignore public/ --ignore src/view/ --ignore backup/ --ignore webpack.config.js --ignore *.json",
     "webpack-server": "webpack serve --mode development --color",
     "build-webpack": "webpack --mode production",
     "build": "db.generate -d",
     "lint:fix": "npm run lint --  --fix",
-    "lint": "eslint . --ext .jsx,.js --ignore-path .gitignore",
+    "lint": "eslint . --ext .js --ignore-path .gitignore",
     "prepare": "husky install"
   },
   "repository": {

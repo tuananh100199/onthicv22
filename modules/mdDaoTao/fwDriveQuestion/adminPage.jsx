@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { getCategoryAll } from 'modules/_default/fwCategory/redux';
 import { getDriveQuestionPage, createDriveQuestion, updateDriveQuestion, swapDriveQuestion, deleteDriveQuestion, deleteDriveQuestionImage, changeDriveQuestion, getDriveQuestionItem } from './redux';
 import Pagination from 'view/component/Pagination';
-import { AdminPage, AdminModal, FormCheckbox, FormRichTextBox, FormImageBox, FormSelect, TableCell, renderTable } from 'view/component/AdminPage';
+import { AdminPage, AdminModal, FormCheckbox, FormRichTextBox, FormSelect, TableCell, renderTable } from 'view/component/AdminPage';
 
 class QuestionModal extends AdminModal {
     state = { answers: '' };
@@ -12,12 +12,11 @@ class QuestionModal extends AdminModal {
     }
 
     onShow = (item) => {
-        console.log(item);
         let { _id, title, active, image, answers, trueAnswer, importance, categories } = item || { title: '', active: true, answers: '', trueAnswer: 0, importance: false, categories: [] };
         this.itemTitle.value(title);
         // this.itemImage.setData(`driveQuestion:${_id || 'new'}`);
         this.itemAnswers.value(answers);
-        // this.itemCategories.value(categories.some(item => item._id) ? categories.map(({_id})=> _id) : categories);
+        this.itemCategories.value(categories.some(item => item._id) ? categories.map(({_id})=> _id) : categories);
         this.itemIsImportance.value(importance);
         this.itemIsActive.value(active);
         this.setState({ _id, image, answers, trueAnswer });
@@ -29,9 +28,14 @@ class QuestionModal extends AdminModal {
                 title: this.itemTitle.value(),
                 answers: this.state.answers,
                 trueAnswer: this.state.trueAnswer < answers.length ? this.state.trueAnswer : 0,
-                // categories: this.itemCategories.value(), đẩy loại Toát Yếu GLHTCG
+                // categories: this.itemCategories.value(), 
                 // categories: '606ab9b7c3722d33582125fd', // Toát yếu
-                categories: '63216cc5b17dfe1c4ce5712c', // Cựu ước
+                // categories: '63216cc5b17dfe1c4ce5712c', // Cựu ước
+                //  categories: '63217987319bab3208c88f44', // Tân ước
+                // categories: '634cb46410d3f73b74f96650',  // Lịch sử GHVN
+                // categories: '63f601b2620ae8251001de87',  // Phụng vụ + bí tích
+                // categories: '606a7fa9aeeed4180cbe5fa9', // Công đồng + văn kiện giáo hội
+                categories: '632abe1015158804a86ba6be', // Xã hội + triết học
                 active: this.itemIsActive.value(),
                 importance: this.itemIsImportance.value(),
                 image: this.state.image,
@@ -75,11 +79,10 @@ class QuestionModal extends AdminModal {
                 const trueAnswerStyle = trueAnswer == index ? { color: 'white', backgroundColor: '#28a745' } : {};
                 return <label key={index} style={{ ...defaultStyle, ...trueAnswerStyle }} onClick={e => !readOnly && this.setTrueAnswer(e, index)}>{index + 1}</label>;
             });
-
         return this.renderModal({
             title: 'Câu hỏi mới',
             size: 'large',
-            body: <div className='row'>
+            body: <div className='row'style={{ fontFamily:  this.itemCategories && this.itemCategories.value() == '606ab9b7c3722d33582125fd' ? 'VNI-Aptima' : 'Times New Roman' }}>
                 {/* <FormRichTextBox ref={e => this.itemTitle = e} className='col-md-8' style={{ fontFamily: 'VNI-Aptima' }} label='Câu hỏi' rows='6' readOnly={readOnly} /> Toát yếu dùng aptima */}
                 <FormRichTextBox ref={e => this.itemTitle = e} className='col-md-8'  label='Câu hỏi' rows='6' readOnly={readOnly} />
 
@@ -95,7 +98,7 @@ class QuestionModal extends AdminModal {
                 </div>
                 <label className='col-md-12'>Đáp án:{listTrueAnswers}</label>
 
-                {/* <FormSelect ref={e => this.itemCategories = e} className='col-md-12' data={this.props.questionTypes} multiple={true} label='Loại câu hỏi' readOnly={readOnly} /> */}
+                <FormSelect ref={e => this.itemCategories = e} className='col-md-12' data={this.props.questionTypes} multiple={true} label='Loại câu hỏi' readOnly={readOnly} />
 
                 <FormCheckbox ref={e => this.itemIsImportance = e} className='col-md-6' style={{ color: 'red' }} label='Câu điểm liệt' readOnly={readOnly} />
                 <FormCheckbox ref={e => this.itemIsActive = e} className='col-md-6' label='Kích hoạt' readOnly={readOnly} />
@@ -136,7 +139,7 @@ class AdminQuestionPage extends AdminPage {
                 <tr>
                     <th style={{ width: 'auto', textAlign: 'center' }}>#</th>
                     <th style={{ width: '80%' }}>Câu hỏi</th>
-                    <th style={{ width: '20%', textAlign: 'center' }} nowrap='true'>Hình ảnh</th>
+                    <th style={{ width: '20%', textAlign: 'center' }} nowrap='true'>Loại</th>
                     <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Câu điểm liệt</th>
                     <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Kích hoạt</th>
                     <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Thao tác</th>
@@ -144,8 +147,8 @@ class AdminQuestionPage extends AdminPage {
             renderRow: (item, index) => (
                 <tr key={index}>
                     <TableCell type='number' content={(pageNumber - 1) * pageSize + index + 1} />
-                    <TableCell type='link' style={{ fontFamily: 'VNI-Aptima' }} content={item.title} onClick={e => this.edit(e, item)} />
-                    <TableCell type='image' content={item.image} />
+                    <TableCell type='link' style={{ fontFamily:  item.categories && item.categories[0] && item.categories[0]._id == '606ab9b7c3722d33582125fd' ? 'VNI-Aptima' : 'Times New Roman' }} content={item.title} onClick={e => this.edit(e, item)} />
+                    <TableCell type='text' content={item.categories && item.categories[0] ? item.categories[0].title : ''} />
                     <TableCell type='checkbox' content={item.importance} permission={permission} onChanged={importance => this.props.updateDriveQuestion(item._id, { importance })} />
                     <TableCell type='checkbox' content={item.active} permission={permission} onChanged={active => this.props.updateDriveQuestion(item._id, { active })} />
                     <TableCell type='buttons' content={item} permission={permission} onSwap={this.swap} onEdit={this.edit} onDelete={this.delete} />

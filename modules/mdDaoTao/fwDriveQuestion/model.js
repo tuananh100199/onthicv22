@@ -28,7 +28,7 @@ module.exports = app => {
                     result.pageNumber = pageNumber === -1 ? result.pageTotal : Math.min(pageNumber, result.pageTotal);
                     const skipNumber = (result.pageNumber > 0 ? result.pageNumber - 1 : 0) * result.pageSize;
 
-                    model.find(condition).sort({ priority: -1 }).skip(skipNumber).limit(result.pageSize).exec((error, items) => {
+                    model.find(condition).populate('categories', 'title').sort({ priority: -1 }).skip(skipNumber).limit(result.pageSize).exec((error, items) => {
                         result.list = error ? [] : items;
                         done(error, result);
                     });

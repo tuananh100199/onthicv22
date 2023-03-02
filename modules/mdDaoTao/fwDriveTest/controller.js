@@ -108,9 +108,7 @@ module.exports = app => {
                                         questionMapper[question.categories[0]].push(question) :
                                         (questionMapper[question.categories[0]] = [question]);
                                 });
-
                                 const randomQuestions = [];
-                                console.log(' item.questionTypes',  item.questionTypes);
                                 item.questionTypes.forEach(type => {
                                     randomQuestions.push(app.getRandom(questionMapper[type.category], type.amount));
                                 });

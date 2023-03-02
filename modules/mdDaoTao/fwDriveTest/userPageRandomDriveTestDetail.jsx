@@ -171,7 +171,6 @@ class UserPageRandomDriveTestDetail extends AdminPage {
         } else if (activeQuestionIndex == 0) {
             activeQuestion && prevAnswers && prevAnswers[activeQuestion._id] && $('#' + activeQuestion._id + prevAnswers[activeQuestion._id]).prop('checked', true);
         }
-        console.log('oki', questions);
 
         return this.renderPage({
             icon: 'fa fa-cubes',
@@ -181,14 +180,14 @@ class UserPageRandomDriveTestDetail extends AdminPage {
             content: (<>
                 {questions && questions.length ? (
                     <div className='tile'>
-                        {/* <div className='tile-header row'>
+                        <div className='tile-header row'>
                             <div className='col-md-10'>{questions.map((question, index) => (<span key={index} style={{ cursor: 'pointer' }} onClick={e => this.changeQuestion(e, index)}><i className={'fa fa-square ' + (prevAnswers && prevTrueAnswers && prevAnswers[question._id] ? (prevAnswers[question._id] == prevTrueAnswers[question._id] ? 'text-primary' : 'text-danger') : 'text-secondary')} aria-hidden='true'></i>&nbsp;&nbsp;</span>))}</div>
                             <h3 className='col-md-2' id='time'></h3>
-                        </div> */}
+                        </div>
                         <div className='tile-body row'>
                             {activeQuestion ? (
-                                <div className='col-md-12 pb-5' style={{ fontFamily: activeQuestion.categories[0] == '606ab9b7c3722d33582125fd' ? 'VNI-Aptima' : 'Times New Roman' }}>
-                                    <h6>Câu hỏi {activeQuestionIndex + 1 + '/' + questions.length}: {activeQuestion.title}</h6>
+                                <div className='col-md-12 pb-5' style={{ fontFamily: activeQuestion.categories[0] == '606ab9b7c3722d33582125fd' ? 'VNI-Aptima' : 'Times New Roman', fontSize: '25px' }}>
+                                    <h6 style={{ fontSize: '25px' }}>Câu hỏi {activeQuestionIndex + 1 + '/' + questions.length}: [{activeQuestion && activeQuestion.categories ? activeQuestion.categories.title : ''}] {activeQuestion.title}</h6>
                                     {activeQuestion.image ? <img src={activeQuestion.image} alt='question' style={{ width: '50%', height: 'auto', display: 'block', margin: 'auto', padding: '50px 0px' }} /> : null}
                                     <div className='form-check'>
                                         {activeQuestion.answers.split('\n').map((answer, index) => (
