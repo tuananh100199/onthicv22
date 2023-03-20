@@ -33,5 +33,13 @@ export default {
             path: '/user/hoc-vien/khoa-hoc/bo-de-thi-ngau-nhien/:_id',
             component: Loadable({ loading: Loading, loader: () => import('./userPageRandomDriveTestDetail') })
         },
+        {
+            path: '/user/hoc-vien/khoa-hoc/cau-de-sai',
+            component: Loadable({ loading: Loading, loader: () => import('./userPageDriveTestEasyFail') })
+        },
+        {
+            path: '/user/hoc-vien/khoa-hoc/cau-de-sai/:_id',
+            component: Loadable({ loading: Loading, loader: () => import('./userPageDriveTestEasyFailDetail') })
+        },
     ]
 };

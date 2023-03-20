@@ -85,6 +85,20 @@ export function getDriveTestItemByStudent(_id, done) {
         }, error => console.error(error) || T.notify('Lấy bộ đề thi bị lỗi', 'danger'));
     };
 }
+export function getEasyFailQuestions(_id, done) { // lấy những câu hỏi dễ sai 
+    return dispatch => {
+        const url = '/api/drive-test/easy-fail';
+        T.get(url, { _id }, data => {
+            if (data.error) {
+                T.notify('Lấy câu hỏi thi bị lỗi', 'danger');
+                console.error('GET: ' + url + '. ' + data.error);
+            } else {
+                dispatch({ type: DriveTestGet, item: data.item });
+            }
+            done && done(data);
+        }, error => console.error(error) || T.notify('Lấy câu hỏi thi bị lỗi', 'danger'));
+    };
+}
 
 export function createDriveTest(data, done) {
     return dispatch => {
@@ -194,6 +208,19 @@ export function checkRandomDriveTestScore(answers, courseType, done) {
     };
 }
 
+export function checkEasyFailDriveTestScore(answers, courseType, done) {
+    return () => {
+        const url = '/api/drive-test/easy-fail/submit';
+        T.post(url, { answers, courseType }, data => {
+            if (data.error) {
+                T.notify('Kiểm tra đáp án bị lỗi!', 'danger');
+                console.error('GET: ' + url + '.', data.error);
+            } else {
+                done && done(data.result);
+            }
+        }, error => console.error(error) || T.notify('Kiểm tra đáp án bị lỗi!', 'danger'));
+    };
+}
 // Questions ----------------------------------------------------------------------------------------------------------
 export function createDriveTestQuestion(driveTestId, questionId, done) {
     return dispatch => {

@@ -10,7 +10,8 @@ module.exports = app => {
         parentMenu: app.parentMenu.driveTest,
         menus: {
             6010: { title: 'Bộ đề thi ngẫu nhiên', link: '/user/hoc-vien/khoa-hoc/bo-de-thi-ngau-nhien' },
-            6020: { title: 'Bộ đề thi thử', link: '/user/hoc-vien/khoa-hoc/bo-de-thi-thu' },
+            // 6020: { title: 'Bộ đề thi thử', link: '/user/hoc-vien/khoa-hoc/bo-de-thi-thu' },
+            6030: { title: 'Câu dễ sai', link: '/user/hoc-vien/khoa-hoc/cau-de-sai' },
         },
     };
 
@@ -22,7 +23,8 @@ module.exports = app => {
     app.get('/user/hoc-vien/khoa-hoc/bo-de-thi-ngau-nhien/:_id', app.templates.admin);
     app.get('/user/hoc-vien/khoa-hoc/bo-de-thi-thu', app.templates.admin);
     app.get('/user/hoc-vien/khoa-hoc/bo-de-thi-thu/:_id', app.templates.admin);
-
+    app.get('/user/hoc-vien/khoa-hoc/cau-de-sai', app.templates.admin);
+    app.get('/user/hoc-vien/khoa-hoc/cau-de-sai/:_id', app.templates.admin);
     // APIs -----------------------------------------------------------------------------------------------------------
     app.get('/api/drive-test/all', (req, res) => {//mobile
         const condition = req.query.condition;
@@ -44,11 +46,16 @@ module.exports = app => {
     });
 
     app.get('/api/drive-test/student', (req, res) => {
-        app.model.driveTest.get(req.query._id, (error, item) => {
+        app.model.driveQuestion.get(req.query._id, (error, item) => {
             res.send({ error, item });
         });
     });
-
+    app.get('/api/drive-test/easy-fail', (req, res) => {
+        app.model.driveQuestion.getAll({categories: req.query._id, importance: true}, (error, list) => {
+            req.session.driveTest = list;
+            res.send({ error, list });
+        });
+    });
     app.post('/api/drive-test', app.permission.check('driveTest:write'), (req, res) => {
         app.model.driveTest.create(req.body.data, (error, item) => res.send({ error, item }));
     });
@@ -204,6 +211,36 @@ module.exports = app => {
             }
             res.send({ error: err, result: { score, trueAnswer, answers, importanceScore, pass: score < Number(item.soLuongCauDat) ? false : true } });
         });
+    });
+
+    app.post('/api/drive-test/easy-fail/submit', (req, res) => {//mobile
+        const { answers } = req.body,
+            randomTest = req.session.driveTest;
+        let score = 0,
+            err = null,
+            importanceScore = null;
+        const questionMapper = {},
+            trueAnswer = {};
+        randomTest && randomTest.forEach(item => {
+            questionMapper[item._id] = item;
+            trueAnswer[item._id] = item.trueAnswer;
+        });
+        if (answers) {
+            for (const [key, value] of Object.entries(answers)) {
+                if (questionMapper[key]) {
+                    if (questionMapper[key].trueAnswer == value) {
+                        score = score + 1;
+                    } else {
+                        if (questionMapper[key]._id == key) {
+                            importanceScore = key;
+                        }
+                    }
+                } else {
+                    err = 'Không tìm thấy câu hỏi!';
+                }
+            }
+        }
+        res.send({ error: err, result: { score, trueAnswer, answers, importanceScore } });
     });
 
     // Question APIs -----------------------------------------------------------------------------------------------------

@@ -49,6 +49,9 @@ class UserProfilePage extends AdminPage {
                     <PageIcon to='/user/hoc-vien/khoa-hoc/bo-de-thi-thu' icon='fa-sitemap' iconBackgroundColor='#7cb342' text='Bộ đề thi thử' />
                     <PageIcon to='/user/hoc-vien/khoa-hoc/bo-de-thi-ngau-nhien' icon='fa-share-alt' iconBackgroundColor='#69f0ae' text='Bộ đề thi ngẫu nhiên' />
 
+                    <PageIconHeader text='Những câu dễ sai theo từng loại' />
+                    <PageIcon to='/user/hoc-vien/khoa-hoc/cau-de-sai' icon='fa-share-alt' iconBackgroundColor='#69f0ae' text='Câu dễ sai' />
+                    
                     {/* {currentCourseType != '' ? 
                         <>
                             <PageIconHeader text='Công nợ' />

@@ -6,7 +6,7 @@ module.exports = app => {
         answers: { type: String, default: '' },                                     // Dùng FormRichTextBox => mỗi câu là 1 dòng
         trueAnswer: { type: Number, default: 0 },                                   // Ghi là 1 thì dòng 1 của answers là đúng. Hiển thị: nếu answers có 3 dòng thì phải hiện Đáp án 1, Đáp án 2, Đáp án 3
         priority: { type: Number, default: 0 },
-        importance: { type: Boolean, default: false },                              // true => câu liệt
+        importance: { type: Boolean, default: false },                              // true => câu quan trọng dễ sai
         categories: [{ type: app.database.mongoDB.Schema.ObjectId, ref: 'Category' }],            // Phân loại câu hỏi, xử lý giống news
     });
     const model = app.database.mongoDB.model('DriveQuestion', schema);

@@ -43,7 +43,7 @@ class QuestionModal extends AdminModal {
                 <FormSelect ref={e => this.category = e} label='Loại câu hỏi' data={this.state.questionTypes} onChange={data => this.viewTypeChanged(data.id)} readOnly={this.props.readOnly} />
                 {this.state._idSelectedType ? <>
                     <div>Loại câu hỏi này đã có <b>{numberOfQuestionsByType}</b> câu hỏi trong bộ đề thi này</div>
-                    <FormSelect ref={e => this.questionSelect = e} label='Câu hỏi thi' data={ajaxSelectDriveQuestion(_idSelectedType, questionIds)} readOnly={this.props.readOnly} /></> : null}
+                    <FormSelect ref={e => this.questionSelect = e} label='Câu hỏi thi' data={ajaxSelectDriveQuestion(_idSelectedType, questionIds)} readOnly={this.props.readOnly}/></> : null}
             </>,
         });
     };
@@ -106,7 +106,7 @@ class DriveTestEditPage extends AdminPage {
             renderRow: (item, index) => (
                 <tr key={index}>
                     <TableCell type='number' content={index + 1} />
-                    <TableCell type={permission.read ? 'link' : 'text'} content={item.title} url={`/user/drive-question/?modal=${item._id}`} style={{ fontFamily: 'VNI-Aptima' }} />
+                    <TableCell type={permission.read ? 'link' : 'text'} content={item.title} url={`/user/drive-question/?modal=${item._id}`} style={{ fontFamily: item.categories && item.categories[0]._id == '606ab9b7c3722d33582125fd' ? 'VNI-Aptima' : 'Times New Roman' }} />
                     <TableCell type={permission.read ? 'link' : 'text'} content={item.categories ?  item.categories[0].title : ''} />
                     <TableCell type='buttons' content={item} permission={permission} onSwap={this.swap} onDelete={this.delete} />
                 </tr>),

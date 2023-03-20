@@ -110,7 +110,7 @@ class AdminHeader extends React.Component {
 
         return <>
             <header className='app-header' >
-                <a className='app-header__logo' href='/'>Hiệp Phát</a>
+                <a className='app-header__logo' href='/'>Ôn thi chủng viện</a>
                 <a className='app-sidebar__toggle' href='#' data-toggle='sidebar' aria-label='Hide Sidebar' />
                 <ul className='app-nav'>
                     {isAdmin || isDebug ?

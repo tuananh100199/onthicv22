@@ -2,7 +2,8 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { checkRandomDriveTestScore, createRandomDriveTest } from 'modules/mdDaoTao/fwDriveTest/redux';
-import { AdminPage } from 'view/component/AdminPage';
+import { updateDriveQuestion } from 'modules/mdDaoTao/fwDriveQuestion/redux';
+import { AdminPage, FormCheckbox } from 'view/component/AdminPage';
 import 'view/component/input.scss';
 
 const backRoute = '/user/hoc-vien/khoa-hoc/bo-de-thi-ngau-nhien';
@@ -21,7 +22,10 @@ class UserPageRandomDriveTestDetail extends AdminPage {
                     } else {
                         this.setState({ prevButton: 'invisible' });
                     }
-                    this.setState({ activeQuestionIndex: 0, questions, courseType: _id });
+                    const activeQuestion = questions ? questions[0] : null;
+
+                    this.setState({ activeQuestion, activeQuestionIndex: 0, questions, courseType: _id });
+                    this.itemIsImportance.value(activeQuestion ? activeQuestion.importance : false);
                     let minutes = data.driveTest.totalTime;
                     let seconds = 0;
                     window.interval = setInterval(() => {
@@ -122,6 +126,7 @@ class UserPageRandomDriveTestDetail extends AdminPage {
         }
         this.setState({ activeQuestionIndex: index }, () => {
             if (activeQuestion) {
+                this.itemIsImportance.value(activeQuestion ? activeQuestion.importance : false);
                 if (this.state.prevAnswers && this.state.prevAnswers[questionId]) {
                     $('#' + questionId + this.state.prevAnswers[questionId]).prop('checked', true);
                     this.setState(prevState => ({
@@ -181,13 +186,14 @@ class UserPageRandomDriveTestDetail extends AdminPage {
                 {questions && questions.length ? (
                     <div className='tile'>
                         <div className='tile-header row'>
-                            <div className='col-md-10'>{questions.map((question, index) => (<span key={index} style={{ cursor: 'pointer' }} onClick={e => this.changeQuestion(e, index)}><i className={'fa fa-square ' + (prevAnswers && prevTrueAnswers && prevAnswers[question._id] ? (prevAnswers[question._id] == prevTrueAnswers[question._id] ? 'text-primary' : 'text-danger') : 'text-secondary')} aria-hidden='true'></i>&nbsp;&nbsp;</span>))}</div>
+                            <div className='col-md-8'>{questions.map((question, index) => (<span key={index} style={{ cursor: 'pointer' }} onClick={e => this.changeQuestion(e, index)}><i className={'fa fa-square ' + (prevAnswers && prevTrueAnswers && prevAnswers[question._id] ? (prevAnswers[question._id] == prevTrueAnswers[question._id] ? 'text-primary' : 'text-danger') : 'text-secondary')} aria-hidden='true'></i>&nbsp;&nbsp;</span>))}</div>
                             <h3 className='col-md-2' id='time'></h3>
+                            <FormCheckbox ref={e => this.itemIsImportance = e} className='col-md-2' style={{ color: 'red', fontSize: 'large', fontWeight: 'bold' }} label='CÂU DỄ SAI' onChange={active => this.props.updateDriveQuestion({ _id: activeQuestion && activeQuestion._id }, { importance: active })}/>
                         </div>
                         <div className='tile-body row'>
                             {activeQuestion ? (
                                 <div className='col-md-12 pb-5' style={{ fontFamily: activeQuestion.categories[0] == '606ab9b7c3722d33582125fd' ? 'VNI-Aptima' : 'Times New Roman', fontSize: '25px' }}>
-                                    <h6 style={{ fontSize: '25px' }}>Câu hỏi {activeQuestionIndex + 1 + '/' + questions.length}: [{activeQuestion && activeQuestion.categories ? activeQuestion.categories.title : ''}] {activeQuestion.title}</h6>
+                                    <h6 style={{ fontSize: '25px' }}> {activeQuestionIndex + 1 + '/' + questions.length}: [{activeQuestion && activeQuestion.categories ? activeQuestion.categories.title : ''}] {activeQuestion.title}</h6>
                                     {activeQuestion.image ? <img src={activeQuestion.image} alt='question' style={{ width: '50%', height: 'auto', display: 'block', margin: 'auto', padding: '50px 0px' }} /> : null}
                                     <div className='form-check'>
                                         {activeQuestion.answers.split('\n').map((answer, index) => (
@@ -242,5 +248,5 @@ class UserPageRandomDriveTestDetail extends AdminPage {
     }
 }
 const mapStateToProps = state => ({ system: state.system, driveTest: state.trainning.driveTest });
-const mapActionsToProps = { checkRandomDriveTestScore, createRandomDriveTest };
+const mapActionsToProps = { checkRandomDriveTestScore, createRandomDriveTest, updateDriveQuestion };
 export default connect(mapStateToProps, mapActionsToProps)(UserPageRandomDriveTestDetail);

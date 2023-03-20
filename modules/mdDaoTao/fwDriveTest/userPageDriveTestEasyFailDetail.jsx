@@ -1,44 +1,27 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
-import { getDriveTestItemByStudent, checkDriveTestScore } from 'modules/mdDaoTao/fwDriveTest/redux';
+import { getEasyFailQuestions, checkEasyFailDriveTestScore } from 'modules/mdDaoTao/fwDriveTest/redux';
 import { AdminPage } from 'view/component/AdminPage';
 import 'view/component/input.scss';
 
-const backRoute = '/user/hoc-vien/khoa-hoc/bo-de-thi-thu';
+const backRoute = '/user/hoc-vien/khoa-hoc/cau-de-sai';
 class UserPageDriveTestDetail extends AdminPage {
     state = { showSubmitButton: true, showTotalScore: false };
     componentDidMount() {
         window.addEventListener('keydown', this.logKey);
         T.ready(backRoute, () => {
-            const route = T.routeMatcher('/user/hoc-vien/khoa-hoc/bo-de-thi-thu/:_id'),
+            const route = T.routeMatcher('/user/hoc-vien/khoa-hoc/cau-de-sai/:_id'),
                 params = route.parse(window.location.pathname);
-            this.props.getDriveTestItemByStudent(params._id, data => {
-                if (data.item) {
-                    const newState = {
-                        activeQuestionIndex: 0,
-                        prevButton: 'invisible',
-                        _id: data.item._id,
-                        title: data.item.title,
-                        questions: data.item.questions,
-                        totalTime: data.item.courseType.totalTime,
-                    };
-                    if (newState.questions && newState.questions.length == 1) newState.nextButton = 'invisible';
-                    this.setState(newState);
-                    let minutes = data.item.courseType.totalTime;
-                    let seconds = 0;
-                    window.interval = setInterval(() => {
-                        --seconds;
-                        minutes = (seconds < 0) ? --minutes : minutes;
-                        seconds = (seconds < 0) ? 59 : seconds;
-                        seconds = (seconds < 10) ? '0' + seconds : seconds;
-                        $('#time').text(minutes + ':' + seconds);
-                        if (minutes < 0) clearInterval(window.interval);
-                        if ((seconds <= 0) && (minutes <= 0)) {
-                            clearInterval(window.interval);
-                            this.submitAnswer();
-                        }
-                    }, 1000);
+            this.props.getEasyFailQuestions(params._id, data => {
+                if (data.list) {
+                    const  questions  = data.list;
+                    if (questions && questions.length == 1) {
+                        this.setState({ prevButton: 'invisible', nextButton: 'invisible' });
+                    } else {
+                        this.setState({ prevButton: 'invisible' });
+                    }
+                    this.setState({ activeQuestionIndex: 0, questions, courseType: params._id });
                 } else {
                     this.props.history.push(backRoute);
                 }
@@ -79,7 +62,7 @@ class UserPageDriveTestDetail extends AdminPage {
 
     submitAnswer = (e) => {
         e && e.preventDefault();
-        this.props.checkDriveTestScore(this.state._id, this.state.studentAnswer, result => {
+        this.props.checkEasyFailDriveTestScore(this.state.studentAnswer, this.state.courseType, result => {
             T.alert('Gửi câu trả lời thành công!', 'success', false, 2000);
             this.setState({
                 prevTrueAnswers: result.trueAnswer,
@@ -164,7 +147,7 @@ class UserPageDriveTestDetail extends AdminPage {
     }
 
     render() {
-        const userPageLink = '/user/hoc-vien/khoa-hoc/bo-de-thi-thu';
+        const userPageLink = '/user/hoc-vien/khoa-hoc/cau-de-sai';
         const { questions } = this.state ? this.state : { questions: [] };
         const activeQuestionIndex = this.state.activeQuestionIndex ? this.state.activeQuestionIndex : 0;
         const activeQuestion = questions ? questions[activeQuestionIndex] : null;
@@ -177,19 +160,19 @@ class UserPageDriveTestDetail extends AdminPage {
 
         return this.renderPage({
             icon: 'fa fa-dashboard',
-            title: 'Ôn tập: ' + (this.state.title || '...'),
+            title: 'Ôn tập: ' + (this.state.title || 'Câu Dễ Sai'),
             breadcrumb: [<Link key={0} to={userPageLink}>Bộ đề thi thử</Link>, this.state.title],
             backRoute: userPageLink,
             content: questions && questions.length ?
-                <div className='tile' style={{ fontFamily: 'VNI-Aptima' ? 'VNI-Aptima' : 'Times New Roman' }}>
+                <div className='tile'>
                     <div className='tile-header row'>
                         <div className='col-md-10'>{questions.map((question, index) => (<span key={index} style={{ cursor: 'pointer' }} onClick={e => this.changeQuestion(e, index)}><i className={'fa fa-square ' + (prevAnswers && prevTrueAnswers && prevAnswers[question._id] ? (prevAnswers[question._id] == prevTrueAnswers[question._id] ? 'text-primary' : 'text-danger') : 'text-secondary')} aria-hidden='true'></i>&nbsp;&nbsp;</span>))}</div>
-                        <h3 className='col-md-2' id='time'></h3>
+                        {/* <h3 className='col-md-2' id='time'></h3> */}
                     </div>
                     <div className='tile-body row'>
                         {activeQuestion ? (
-                            <div className='col-md-12 pb-5'>
-                                <h6>{activeQuestionIndex + 1 + '/' + questions.length}: {activeQuestion.title}</h6>
+                            <div className='col-md-12 pb-5' style={{ fontFamily: activeQuestion.categories[0] == '606ab9b7c3722d33582125fd' ? 'VNI-Aptima' : 'Times New Roman', fontSize: '25px' }}>
+                                <h6 style={{ fontSize: '25px' }}>{activeQuestionIndex + 1 + '/' + questions.length}: {activeQuestion.title}</h6>
                                 {activeQuestion.image ? <img src={activeQuestion.image} alt='question' style={{ width: '50%', height: 'auto', display: 'block', margin: 'auto', padding: '50px 0px' }} /> : null}
                                 <div className='form-check'>
                                     {activeQuestion.answers.split('\n').map((answer, index) => (
@@ -243,5 +226,5 @@ class UserPageDriveTestDetail extends AdminPage {
 }
 
 const mapStateToProps = state => ({ system: state.system, driveTest: state.trainning.driveTest });
-const mapActionsToProps = { getDriveTestItemByStudent, checkDriveTestScore };
+const mapActionsToProps = { getEasyFailQuestions, checkEasyFailDriveTestScore };
 export default connect(mapStateToProps, mapActionsToProps)(UserPageDriveTestDetail);

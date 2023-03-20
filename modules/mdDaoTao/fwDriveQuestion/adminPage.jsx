@@ -28,14 +28,19 @@ class QuestionModal extends AdminModal {
                 title: this.itemTitle.value(),
                 answers: this.state.answers,
                 trueAnswer: this.state.trueAnswer < answers.length ? this.state.trueAnswer : 0,
-                // categories: this.itemCategories.value(), 
+                categories: this.itemCategories.value(), 
                 // categories: '606ab9b7c3722d33582125fd', // Toát yếu
                 // categories: '63216cc5b17dfe1c4ce5712c', // Cựu ước
                 //  categories: '63217987319bab3208c88f44', // Tân ước
                 // categories: '634cb46410d3f73b74f96650',  // Lịch sử GHVN
-                // categories: '63f601b2620ae8251001de87',  // Phụng vụ + bí tích
+                // categories: '63f601b2620ae8251001de87',  // Phụng vụ + bí tích3
                 // categories: '606a7fa9aeeed4180cbe5fa9', // Công đồng + văn kiện giáo hội
-                categories: '632abe1015158804a86ba6be', // Xã hội + triết học
+                // categories: '632abe1015158804a86ba6be', // Xã hội + triết học
+                // categories: '606146bab43e9811489116de', // Các thánh + nhân vật nổi tiếng
+                //  categories: '640a7a322152ad0cbc2afa16', // 1001 Câu giáo lý phổ thông
+                //  categories: '64107a1b285caa0708575773', // 1800 Câu cựu ước
+                //  categories: '6415ce693a79913038aba012', // TOÁT YẾU TỰ SOẠN
+
                 active: this.itemIsActive.value(),
                 importance: this.itemIsImportance.value(),
                 image: this.state.image,
