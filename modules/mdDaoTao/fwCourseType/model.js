@@ -20,7 +20,7 @@ module.exports = app => {
         }],
 
         isPriceDisplayed: { type: Boolean, default: false },
-        totalTime: Number,
+        totalTime: { type: Number, default: 60 },
 
         practiceNumOfMonths: { type: Number, default: 0 },                          // Tổng tháng dạy thực hành
         practiceNumOfHours: { type: Number, default: 0 },                           // Tổng giờ dạy thực hành

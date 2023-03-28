@@ -28,7 +28,7 @@ class QuestionModal extends AdminModal {
                 title: this.itemTitle.value(),
                 answers: this.state.answers,
                 trueAnswer: this.state.trueAnswer < answers.length ? this.state.trueAnswer : 0,
-                categories: this.itemCategories.value(), 
+                // categories: this.itemCategories.value(), 
                 // categories: '606ab9b7c3722d33582125fd', // Toát yếu
                 // categories: '63216cc5b17dfe1c4ce5712c', // Cựu ước
                 //  categories: '63217987319bab3208c88f44', // Tân ước
@@ -39,7 +39,10 @@ class QuestionModal extends AdminModal {
                 // categories: '606146bab43e9811489116de', // Các thánh + nhân vật nổi tiếng
                 //  categories: '640a7a322152ad0cbc2afa16', // 1001 Câu giáo lý phổ thông
                 //  categories: '64107a1b285caa0708575773', // 1800 Câu cựu ước
-                //  categories: '6415ce693a79913038aba012', // TOÁT YẾU TỰ SOẠN
+                 categories: '6415ce693a79913038aba012', // TOÁT YẾU TỰ SOẠN
+                //   categories: '63f601cf620ae8251001de93', // Giáo Luật
+                //   categories: '641bc398c4fdbc3f00cf9bda', // Dẫn Chứng
+                //   categories: '6420dc286d7286241cedfcf6', // PHAOLO
 
                 active: this.itemIsActive.value(),
                 importance: this.itemIsImportance.value(),

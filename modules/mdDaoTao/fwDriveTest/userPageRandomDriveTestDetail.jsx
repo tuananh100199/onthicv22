@@ -25,7 +25,7 @@ class UserPageRandomDriveTestDetail extends AdminPage {
                     const activeQuestion = questions ? questions[0] : null;
 
                     this.setState({ activeQuestion, activeQuestionIndex: 0, questions, courseType: _id });
-                    this.itemIsImportance.value(activeQuestion ? activeQuestion.importance : false);
+                    this.itemIsImportance && this.itemIsImportance.value(activeQuestion ? activeQuestion.importance : false);
                     let minutes = data.driveTest.totalTime;
                     let seconds = 0;
                     window.interval = setInterval(() => {
@@ -126,7 +126,7 @@ class UserPageRandomDriveTestDetail extends AdminPage {
         }
         this.setState({ activeQuestionIndex: index }, () => {
             if (activeQuestion) {
-                this.itemIsImportance.value(activeQuestion ? activeQuestion.importance : false);
+                this.itemIsImportance && this.itemIsImportance.value(activeQuestion ? activeQuestion.importance : false);
                 if (this.state.prevAnswers && this.state.prevAnswers[questionId]) {
                     $('#' + questionId + this.state.prevAnswers[questionId]).prop('checked', true);
                     this.setState(prevState => ({

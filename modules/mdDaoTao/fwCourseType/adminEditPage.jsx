@@ -259,7 +259,7 @@ class CourseTypeEditPage extends AdminPage {
                     <div className='col-md-9 order-md-1'>
                         <div className='row'>
                             <FormTextBox className='col-md-8' ref={e => this.itemTitle = e} label='Tên loại khóa học' value={this.state.title} onChange={e => this.setState({ title: e.target.value })} readOnly={readOnly} />
-                            <FormTextBox className='col-md-4' ref={e => this.totalTime = e} label='Thời gian làm bài thi' type='number' readOnly={readOnly} />
+                            <FormTextBox className='col-md-4' ref={e => this.totalTime = e} label='Thời gian làm bài thi' type='number' default='60' readOnly={readOnly} />
                             {/* <FormTextBox className='col-md-8' ref={e => this.itemPrice = e} label='Giá loại khóa học' type='number' readOnly={readOnly} />
                             <FormCheckbox className='col-md-4' ref={e => this.itemIsPriceDisplayed = e} label='Hiển thị giá' readOnly={readOnly} /> */}
                             <FormSelect className='col-md-12' ref = {e=>this.itemProfileType=e} label = 'Hồ sơ đăng ký' data = {ajaxSelectProfileType} readOnly={readOnly}/>
