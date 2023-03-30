@@ -51,6 +51,7 @@ class UserProfilePage extends AdminPage {
 
                     <PageIconHeader text='Những câu dễ sai theo từng loại' />
                     <PageIcon to='/user/hoc-vien/khoa-hoc/cau-de-sai' icon='fa-share-alt' iconBackgroundColor='#69f0ae' text='Câu dễ sai' />
+                    <PageIcon to='/user/hoc-vien/khoa-hoc/bo-de-co-dinh' icon='fa-share-alt' iconBackgroundColor='#69f0ae' text='Bộ đề cố dịnh' />
                     
                     {/* {currentCourseType != '' ? 
                         <>

@@ -41,5 +41,17 @@ export default {
             path: '/user/hoc-vien/khoa-hoc/cau-de-sai/:_id',
             component: Loadable({ loading: Loading, loader: () => import('./userPageDriveTestEasyFailDetail') })
         },
+        {
+            path: '/user/hoc-vien/khoa-hoc/bo-de-co-dinh',
+            component: Loadable({ loading: Loading, loader: () => import('./userPageDriveTestFixed') })
+        },
+        {
+            path: '/user/hoc-vien/khoa-hoc/bo-de-co-dinh/:_id',
+            component: Loadable({ loading: Loading, loader: () => import('./userPageDriveTestFixedPage') })
+        },
+        {
+            path: '/user/hoc-vien/khoa-hoc/bo-de-co-dinh/:_id/:_index',
+            component: Loadable({ loading: Loading, loader: () => import('./userPageDriveTestFixedDetail') })
+        },
     ]
 };

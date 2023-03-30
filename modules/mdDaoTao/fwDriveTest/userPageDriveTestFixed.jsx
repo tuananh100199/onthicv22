@@ -24,18 +24,18 @@ class UserDriveTestPage extends AdminPage {
         const types = this.state.types ? this.state.types : [], readOnly = true;
         return this.renderPage({
             icon: 'fa fa-check-square-o',
-            title: 'NHỮNG CÂU DỄ SAI THEO TỪNG LOẠI',
+            title: 'BỘ ĐỀ CỐ ĐỊNH THEO TỪNG LOẠI',
             breadcrumb: ['Bộ đề thi thử'],
             content: <>
                 <div className='tile-body'>
-                    <div className='row'>
-                        <div className='row'>
-                            {types.map((item, index) =>
-                                <PageIcon to={`/user/hoc-vien/khoa-hoc/cau-de-sai/${item._id}`} key={index} icon='fa-cloud' iconBackgroundColor='#7cb342' text={item.text} />)}
-                            {readOnly ? null : <CirclePageButton type='save' onClick={this.save} />}
-                        </div>
-                    </div>
-                </div>;
+                <div className='row'>
+                <div className='row'>
+                    {types.map((item, index) =>
+                        <PageIcon to={`/user/hoc-vien/khoa-hoc/bo-de-co-dinh/${item._id}`} key={index} icon='fa-cloud' iconBackgroundColor='#7cb342' text={item.text} />)}
+                    {readOnly ? null : <CirclePageButton type='save' onClick={this.save} />}
+                </div>
+            </div>
+            </div>
             </>,
         });
     }

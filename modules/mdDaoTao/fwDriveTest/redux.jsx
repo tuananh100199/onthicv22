@@ -99,6 +99,34 @@ export function getEasyFailQuestions(_id, done) { // lấy những câu hỏi d�
         }, error => console.error(error) || T.notify('Lấy câu hỏi thi bị lỗi', 'danger'));
     };
 }
+export function getDriveTestFixed(_id, done) { // lấy từng bộ đề mỗi bộ 100 câu 
+    return dispatch => {
+        const url = '/api/drive-test/fixed';
+        T.get(url, { _id }, data => {
+            if (data.error) {
+                T.notify('Lấy câu hỏi thi bị lỗi', 'danger');
+                console.error('GET: ' + url + '. ' + data.error);
+            } else {
+                dispatch({ type: DriveTestGet, item: data.item });
+            }
+            done && done(data);
+        }, error => console.error(error) || T.notify('Lấy câu hỏi thi bị lỗi', 'danger'));
+    };
+}
+export function getDriveTestFixedQuestions(_id, _index, done) { // lấy bộ câu hỏi cố định
+    return dispatch => {
+        const url = '/api/drive-test/fixed/test';
+        T.get(url, { _id, _index }, data => {
+            if (data.error) {
+                T.notify('Lấy câu hỏi thi bị lỗi', 'danger');
+                console.error('GET: ' + url + '. ' + data.error);
+            } else {
+                dispatch({ type: DriveTestGet, item: data.item });
+            }
+            done && done(data);
+        }, error => console.error(error) || T.notify('Lấy câu hỏi thi bị lỗi', 'danger'));
+    };
+}
 
 export function createDriveTest(data, done) {
     return dispatch => {
@@ -211,6 +239,19 @@ export function checkRandomDriveTestScore(answers, courseType, done) {
 export function checkEasyFailDriveTestScore(answers, courseType, done) {
     return () => {
         const url = '/api/drive-test/easy-fail/submit';
+        T.post(url, { answers, courseType }, data => {
+            if (data.error) {
+                T.notify('Kiểm tra đáp án bị lỗi!', 'danger');
+                console.error('GET: ' + url + '.', data.error);
+            } else {
+                done && done(data.result);
+            }
+        }, error => console.error(error) || T.notify('Kiểm tra đáp án bị lỗi!', 'danger'));
+    };
+}
+export function checkDriveTestFixedScore(answers, courseType, done) {
+    return () => {
+        const url = '/api/drive-test/fixed/submit';
         T.post(url, { answers, courseType }, data => {
             if (data.error) {
                 T.notify('Kiểm tra đáp án bị lỗi!', 'danger');

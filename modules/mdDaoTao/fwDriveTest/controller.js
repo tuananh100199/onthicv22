@@ -10,8 +10,9 @@ module.exports = app => {
         parentMenu: app.parentMenu.driveTest,
         menus: {
             6010: { title: 'Bộ đề thi ngẫu nhiên', link: '/user/hoc-vien/khoa-hoc/bo-de-thi-ngau-nhien' },
-            // 6020: { title: 'Bộ đề thi thử', link: '/user/hoc-vien/khoa-hoc/bo-de-thi-thu' },
+            6020: { title: 'Bộ đề thi thử', link: '/user/hoc-vien/khoa-hoc/bo-de-thi-thu' },
             6030: { title: 'Câu dễ sai', link: '/user/hoc-vien/khoa-hoc/cau-de-sai' },
+            6040: { title: 'Bộ đề cố định', link: '/user/hoc-vien/khoa-hoc/bo-de-co-dinh' },
         },
     };
 
@@ -25,6 +26,10 @@ module.exports = app => {
     app.get('/user/hoc-vien/khoa-hoc/bo-de-thi-thu/:_id', app.templates.admin);
     app.get('/user/hoc-vien/khoa-hoc/cau-de-sai', app.templates.admin);
     app.get('/user/hoc-vien/khoa-hoc/cau-de-sai/:_id', app.templates.admin);
+    app.get('/user/hoc-vien/khoa-hoc/bo-de-co-dinh', app.templates.admin);
+    app.get('/user/hoc-vien/khoa-hoc/bo-de-co-dinh/:_id', app.templates.admin);
+    app.get('/user/hoc-vien/khoa-hoc/bo-de-co-dinh/:_id/:_index', app.templates.admin);
+
     // APIs -----------------------------------------------------------------------------------------------------------
     app.get('/api/drive-test/all', (req, res) => {//mobile
         const condition = req.query.condition;
@@ -54,6 +59,37 @@ module.exports = app => {
         app.model.driveQuestion.getAll({categories: req.query._id, importance: true}, (error, list) => {
             req.session.driveTest = list;
             res.send({ error, list });
+        });
+    });
+    app.get('/api/drive-test/fixed', (req, res) => { // chia ra nhiều bộ, mỗi bộ 100 câu cố định
+        app.model.driveQuestion.getAll({categories: req.query._id}, (error, list) => {
+            const size = 100;
+            if (error || list.length == 0) {
+                res.send({ error });
+            } else {
+                let chunkList= [];
+                while (list.length > size || list.length > 0) {
+                    let chunk = list.splice(0,size);
+                    chunkList.push(chunk);
+                }
+                res.send({ error, chunkList });
+            }
+        });
+    });
+
+    app.get('/api/drive-test/fixed/test', (req, res) => {
+        app.model.driveQuestion.getAll({categories: req.query._id}, (error, list) => {
+            const size = 100;
+            if (list.length == 0) {
+                res.send({ error, list });
+            } else {
+                let chunkList= [];
+                while (list.length > size || list.length > 0) {
+                    let chunk = list.splice(0,size);
+                    chunkList.push(chunk);
+                }
+                res.send({ error, list: chunkList[req.query._index] });
+            }
         });
     });
     app.post('/api/drive-test', app.permission.check('driveTest:write'), (req, res) => {
@@ -242,7 +278,36 @@ module.exports = app => {
         }
         res.send({ error: err, result: { score, trueAnswer, answers, importanceScore } });
     });
-
+    app.post('/api/drive-test/fixed/submit', (req, res) => {//mobile
+        const { answers } = req.body,
+            randomTest = req.session.driveTest;
+        let score = 0,
+            err = null,
+            importanceScore = null;
+        const questionMapper = {},
+            trueAnswer = {};
+        randomTest && randomTest.forEach(item => {
+            questionMapper[item._id] = item;
+            trueAnswer[item._id] = item.trueAnswer;
+        });
+        if (answers) {
+            for (const [key, value] of Object.entries(answers)) {
+                if (questionMapper[key]) {
+                    if (questionMapper[key].trueAnswer == value) {
+                        score = score + 1;
+                    } else {
+                        if (questionMapper[key]._id == key) {
+                            importanceScore = key;
+                        }
+                    }
+                } else {
+                    err = 'Không tìm thấy câu hỏi!';
+                }
+            }
+        }
+        res.send({ error: err, result: { score, trueAnswer, answers, importanceScore } });
+    });
+    
     // Question APIs -----------------------------------------------------------------------------------------------------
     app.post('/api/drive-test/question', app.permission.check('driveTest:write'), (req, res) => {
         const { driveTestId, questionId } = req.body;
