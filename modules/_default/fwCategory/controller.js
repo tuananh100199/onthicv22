@@ -8,7 +8,27 @@ module.exports = app => {
             active = req.query.active;
         if (searchText) condition.title = new RegExp(searchText, 'i');
         if (active) condition.active = active == 'true';
-        app.model.category.getAll(condition, (error, items) => res.send({ error, items }));
+        let promiseList = [];
+        app.model.category.getAll(condition, (error, items) => {
+            items.forEach((item) => {
+                promiseList.push(
+                    new Promise((resolve, reject) => { // Lấy dữ liệu số lượng câu hỏi mỗi loại
+                    app.model.driveQuestion.getAll({categories: item._id}, (error, list) => {
+                        if (error) {
+                            reject('Lỗi khi đọc thông tin người dùng!');
+                        } else {
+                            item = app.clone(item);
+                            Object.assign(item,{ count: list.length });
+                            resolve(item);
+                        }
+                    });
+                }));
+            });
+            Promise.all(promiseList)// Trả giá trị danh mục câu hỏi thi + tổng số lượng câu hỏi đang có
+            .then((items)=>{
+                res.send({ error, items });
+            }).catch(error=>console.log(error)||res.send({error}));
+        });
     });
 
     app.post('/api/category', app.permission.check('category:write'), (req, res) => {

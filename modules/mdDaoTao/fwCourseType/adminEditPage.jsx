@@ -93,7 +93,7 @@ class CourseTypeEditPage extends AdminPage {
     state = {};
     componentDidMount() {
         this.props.getCategoryAll('drive-question', null, (items) =>
-            this.setState({ types: (items || []).map(item => ({ _id: item._id, text: item.title })) }));
+            this.setState({ types: (items || []).map(item => ({ _id: item._id, text: item.title, count: item.count })) }));
         T.ready(backRoute, () => {
             const route = T.routeMatcher(backRoute + '/:_id'), params = route.parse(window.location.pathname);
             this.props.getCourseType(params._id, item => {
@@ -296,7 +296,7 @@ class CourseTypeEditPage extends AdminPage {
         const componentSetRandomDriveTest = (
             <div className='row'>
                 {types.map((item, index) =>
-                    <FormTextBox className='col-xl-4 col-md-6' key={index} type='number' ref={e => this[item._id] = e} label={item.text} readOnly={this.props.readOnly} />)}
+                    <FormTextBox className='col-xl-4 col-md-6' key={index} type='number' ref={e => this[item._id] = e} label={`${item.text} (Tổng: ${item.count})` } readOnly={this.props.readOnly} />)}
                 {readOnly ? null : <CirclePageButton type='save' onClick={this.save} />}
             </div>);
 
