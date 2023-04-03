@@ -10,7 +10,7 @@ module.exports = app => {
         parentMenu: app.parentMenu.driveTest,
         menus: {
             6010: { title: 'Bộ đề thi ngẫu nhiên', link: '/user/hoc-vien/khoa-hoc/bo-de-thi-ngau-nhien' },
-            6020: { title: 'Bộ đề thi thử', link: '/user/hoc-vien/khoa-hoc/bo-de-thi-thu' },
+            // 6020: { title: 'Bộ đề thi thử', link: '/user/hoc-vien/khoa-hoc/bo-de-thi-thu' },
             6030: { title: 'Câu dễ sai', link: '/user/hoc-vien/khoa-hoc/cau-de-sai' },
             6040: { title: 'Bộ đề cố định', link: '/user/hoc-vien/khoa-hoc/bo-de-co-dinh' },
         },
@@ -88,6 +88,7 @@ module.exports = app => {
                     let chunk = list.splice(0,size);
                     chunkList.push(chunk);
                 }
+                req.session.driveTest = chunkList[req.query._index];
                 res.send({ error, list: chunkList[req.query._index] });
             }
         });

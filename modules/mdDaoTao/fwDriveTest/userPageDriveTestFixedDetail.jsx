@@ -2,6 +2,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { getDriveTestFixedQuestions, checkDriveTestFixedScore } from 'modules/mdDaoTao/fwDriveTest/redux';
+import { updateDriveQuestion } from 'modules/mdDaoTao/fwDriveQuestion/redux';
 import { AdminPage, FormCheckbox } from 'view/component/AdminPage';
 import 'view/component/input.scss';
 
@@ -244,5 +245,5 @@ class UserPageDriveTestFixedDetail extends AdminPage {
 }
 
 const mapStateToProps = state => ({ system: state.system, driveTest: state.trainning.driveTest });
-const mapActionsToProps = { getDriveTestFixedQuestions, checkDriveTestFixedScore };
+const mapActionsToProps = { getDriveTestFixedQuestions, checkDriveTestFixedScore, updateDriveQuestion };
 export default connect(mapStateToProps, mapActionsToProps)(UserPageDriveTestFixedDetail);

@@ -10,7 +10,7 @@ class UserDriveTestPage extends AdminPage {
     state = {};
     componentDidMount() {
         this.props.getCategoryAll('drive-question', null, (items) =>
-            this.setState({ types: (items || []).map(item => ({ _id: item._id, text: item.title })) }));
+        this.setState({ types: (items || []).map(item => ({ _id: item._id, text: item.title, count: item.count })) }));
         this.props.getCourseTypeAll(list => {
             const courseTypes = list.map(item => ({ id: item._id, text: item.title }));
             this.setState({ courseTypes });
@@ -31,11 +31,11 @@ class UserDriveTestPage extends AdminPage {
                     <div className='row'>
                         <div className='row'>
                             {types.map((item, index) =>
-                                <PageIcon to={`/user/hoc-vien/khoa-hoc/cau-de-sai/${item._id}`} key={index} icon='fa-cloud' iconBackgroundColor='#7cb342' text={item.text} />)}
+                                <PageIcon to={`/user/hoc-vien/khoa-hoc/cau-de-sai/${item._id}`} key={index} icon='fa-cloud' iconBackgroundColor='#7cb342' text={`${item.text} - ${item.count} câu` } />)}
                             {readOnly ? null : <CirclePageButton type='save' onClick={this.save} />}
                         </div>
                     </div>
-                </div>;
+                </div>
             </>,
         });
     }
