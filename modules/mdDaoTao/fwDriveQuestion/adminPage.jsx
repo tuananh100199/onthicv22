@@ -119,8 +119,8 @@ class AdminQuestionPage extends AdminPage {
     state = { questionTypes: [] };
     componentDidMount() {
         T.ready('/user/drive-question', () => T.showSearchBox());
-        this.props.getCategoryAll('drive-question', null, (items) =>
-            this.setState({ questionTypes: (items || []).map(item => ({ id: item._id, text: item.title })) }));
+        this.props.getCategoryAll('drive-question', null, (data) =>
+            this.setState({ questionTypes: (data && data.items || []).map(item => ({ id: item._id, text: item.title })) }));
         this.props.getDriveQuestionPage(1);
         T.onSearch = (searchText) => this.props.getDriveQuestionPage(1, 50, searchText);
         const urlParams = new URLSearchParams(window.location.search);

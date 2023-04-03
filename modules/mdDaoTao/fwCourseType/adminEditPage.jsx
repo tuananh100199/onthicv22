@@ -92,8 +92,8 @@ const backRoute = '/user/course-type';
 class CourseTypeEditPage extends AdminPage {
     state = {};
     componentDidMount() {
-        this.props.getCategoryAll('drive-question', null, (items) =>
-            this.setState({ types: (items || []).map(item => ({ _id: item._id, text: item.title, count: item.count })) }));
+        this.props.getCategoryAll('drive-question', null, (data) =>
+            this.setState({ types: (data && data.items || []).map(item => ({ _id: item._id, text: item.title, count: item.count })) }));
         T.ready(backRoute, () => {
             const route = T.routeMatcher(backRoute + '/:_id'), params = route.parse(window.location.pathname);
             this.props.getCourseType(params._id, item => {
