@@ -33,8 +33,8 @@ export function getCategoryAll(type, searchText, done) {
                 T.notify('Lấy danh mục bị lỗi!', 'danger');
                 console.error('GET: ' + url + '.', data.error);
             } else {
-                dispatch({ type: CategoryGetAll, items: data.items });
-                done && done(data.items);
+                dispatch({ type: CategoryGetAll, items: data.items, totalCount: data.totalCount });
+                done && done(data);
             }
         }, error => console.error(error) || T.notify('Lấy danh mục bị lỗi!', 'danger'));
     };

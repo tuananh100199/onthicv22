@@ -9,13 +9,11 @@ import { getCourseTypeAll } from 'modules/mdDaoTao/fwCourseType/redux';
 class UserDriveTestPage extends AdminPage {
     state = {};
     componentDidMount() {
-        this.props.getCategoryAll('drive-question', null, (items) =>
-        this.setState({ types: (items || []).map(item => ({ _id: item._id, text: item.title, count: item.count })) }));
-        this.props.getCourseTypeAll(list => {
-            const courseTypes = list.map(item => ({ id: item._id, text: item.title }));
-            this.setState({ courseTypes });
+        this.props.getCategoryAll('drive-question', null, (data) => {
+            this.setState({ types: (data && data.items || []).map(item => ({ _id: item._id, text: item.title, count: item.count })) });
+            this.setState({ totalCount: data.totalCount });
+            T.ready();
         });
-        T.ready();
     }
 
     create = e => e.preventDefault() || this.modal.show();
@@ -24,7 +22,7 @@ class UserDriveTestPage extends AdminPage {
         const types = this.state.types ? this.state.types : [], readOnly = true;
         return this.renderPage({
             icon: 'fa fa-check-square-o',
-            title: 'NHỮNG CÂU DỄ SAI THEO TỪNG LOẠI',
+            title: `NHỮNG CÂU DỄ SAI THEO TỪNG LOẠI - TỔNG: ${this.state.totalCount}`,
             breadcrumb: ['Bộ đề thi thử'],
             content: <>
                 <div className='tile-body'>

@@ -9,6 +9,7 @@ module.exports = app => {
         if (searchText) condition.title = new RegExp(searchText, 'i');
         if (active) condition.active = active == 'true';
         let promiseList = [];
+        let totalCount = 0;
         app.model.category.getAll(condition, (error, items) => {
             items.forEach((item) => {
                 promiseList.push(
@@ -18,6 +19,7 @@ module.exports = app => {
                             reject('Lỗi khi đọc thông tin người dùng!');
                         } else {
                             item = app.clone(item);
+                            totalCount += Number(list.length);
                             Object.assign(item,{ count: list.length });
                             resolve(item);
                         }
@@ -26,7 +28,8 @@ module.exports = app => {
             });
             Promise.all(promiseList)// Trả giá trị danh mục câu hỏi thi + tổng số lượng câu hỏi đang có
             .then((items)=>{
-                res.send({ error, items });
+                Object.assign(items,{ totalCount });
+                res.send({ error, items, totalCount });
             }).catch(error=>console.log(error)||res.send({error}));
         });
     });
