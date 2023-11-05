@@ -69,8 +69,10 @@ module.exports = app => {
             } else {
                 let chunkList= [];
                 while (list.length > size || list.length > 0) {
+                    // list = list.reverse();
+                    // console.log('list', list);
                     let chunk = list.splice(0,size);
-                    chunkList.push(chunk);
+                    chunkList.push(chunk.reverse());
                 }
                 res.send({ error, chunkList });
             }

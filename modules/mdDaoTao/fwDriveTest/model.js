@@ -36,7 +36,7 @@ module.exports = app => {
 
         getAll: (condition, done) => done ? model.find(condition).populate({
             path: 'questions', populate: { path: 'categories' }
-        }).sort({ priority: -1 }).exec(done) : model.find({}).sort({ priority: -1 }).exec(condition),
+        }).sort({ priority: 1 }).exec(done) : model.find({}).sort({ priority: 1 }).exec(condition),
 
         get: (condition, done) => {
             if (typeof condition == 'string') condition = { _id: condition };
